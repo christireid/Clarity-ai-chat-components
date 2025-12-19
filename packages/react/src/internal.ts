@@ -51,7 +51,6 @@ export * from './webhooks'
 // ============================================================================
 export * from './components/dashboards'
 export * from './components/ai-ops'
-// export * from './components/enterprise'
 export * from './components/ab-testing'
 export * from './components/pro'
 
@@ -66,23 +65,9 @@ export * from './vector-stores'
 export * from './reranking'
 
 // ============================================================================
-// PLUGIN & EXTENSION SYSTEM
-// ============================================================================
-// NOTE: Plugins module has build errors, commenting out
-// export * from './plugins'
-// NOTE: Extensions module has build errors, commenting out
-// export * from './extensions'
-
-// ============================================================================
 // AGENTS & TOOLS
 // ============================================================================
 export * from './agents/tool-ui-registry'
-
-// ============================================================================
-// TEMPLATES
-// ============================================================================
-// NOTE: Templates module has build errors, commenting out
-// export * from './templates'
 
 // ============================================================================
 // ANIMATION SYSTEM

@@ -25,9 +25,6 @@
  * - ab-testing/   A/B testing components
  */
 
-// Chat Components
-export * from './chat'
-
 // Message Components
 export * from './message'
 
