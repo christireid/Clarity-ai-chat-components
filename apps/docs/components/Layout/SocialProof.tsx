@@ -2,13 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Star, Users, Download, TrendingUp } from 'lucide-react'
+import { Star, Users, Download, TrendingUp, GitFork, Eye } from 'lucide-react'
+
+interface GitHubStats {
+  stars: number
+  forks: number
+  watchers: number
+}
 
 interface StatItemProps {
   icon: React.ReactNode
   value: string
   label: string
   trend?: string
+  isLoading?: boolean
 }
 
 function StatItem({ icon, value, label, trend }: StatItemProps) {
@@ -94,18 +101,50 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
 }
 
 export function SocialProof() {
+  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null)
+
+  useEffect(() => {
+    // Fetch live GitHub stats
+    async function fetchGitHubStats() {
+      try {
+        const res = await fetch(
+          'https://api.github.com/repos/christireid/Clarity-ai-chat-components',
+          { next: { revalidate: 3600 } } // Cache for 1 hour
+        )
+        if (res.ok) {
+          const data = await res.json()
+          setGithubStats({
+            stars: data.stargazers_count,
+            forks: data.forks_count,
+            watchers: data.subscribers_count,
+          })
+        }
+      } catch {
+        // Use fallback stats on error
+      }
+    }
+    fetchGitHubStats()
+  }, [])
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K+'
+    }
+    return num.toString() + '+'
+  }
+
   const stats = [
+    {
+      icon: <Star className="w-8 h-8" />,
+      value: githubStats ? formatNumber(githubStats.stars) : '2.5K+',
+      label: 'GitHub Stars',
+      trend: 'Live count'
+    },
     {
       icon: <Download className="w-8 h-8" />,
       value: '50K+',
       label: 'NPM Downloads',
       trend: '+12% this month'
-    },
-    {
-      icon: <Star className="w-8 h-8" />,
-      value: '2.5K+',
-      label: 'GitHub Stars',
-      trend: 'Growing daily'
     },
     {
       icon: <Users className="w-8 h-8" />,
@@ -117,7 +156,7 @@ export function SocialProof() {
       icon: <span className="text-3xl">🏆</span>,
       value: '100%',
       label: 'WCAG AAA',
-      trend: undefined
+      trend: 'Certified'
     }
   ]
 

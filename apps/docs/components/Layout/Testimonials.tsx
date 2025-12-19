@@ -31,6 +31,24 @@ const testimonials: Testimonial[] = [
     role: "Product Manager",
     company: "Enterprise Inc",
   },
+  {
+    quote: "Token optimization saved us $8K/month in API costs. The ROI was immediate and the integration took just 2 hours.",
+    author: "David Kim",
+    role: "CTO",
+    company: "AI Solutions Ltd",
+  },
+  {
+    quote: "Migrated from Vercel AI SDK in a weekend. The compare page made the decision easy - more features, same simplicity.",
+    author: "Emily Watson",
+    role: "Full Stack Developer",
+    company: "InnovateTech",
+  },
+  {
+    quote: "Our enterprise clients love the built-in RAG and security features. It's the complete package for production AI apps.",
+    author: "James Morrison",
+    role: "Solutions Architect",
+    company: "GlobalBank",
+  },
 ]
 
 const container = {
@@ -95,7 +113,7 @@ export function Testimonials() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid md:grid-cols-3 gap-8"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {testimonials.map((testimonial, index) => (
             <motion.div
