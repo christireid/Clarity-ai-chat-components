@@ -442,17 +442,17 @@ export class ResponseLengthPredictor {
   /**
    * Record actual response for learning
    */
-  recordActualResponse(
+  async recordActualResponse(
     prompt: string,
     actualResponse: string,
     model: string,
     context?: ConversationContext
-  ): void {
+  ): Promise<void> {
     const key = `${model}_${context?.conversationId || 'global'}`
     const history = this.historicalData.get(key) || []
 
-    const actualTokens = TokenCounter.count(actualResponse)
-    const prediction = this.predictResponseLength(prompt, model, context)
+    const actualTokens = await TokenCounter.count(actualResponse)
+    const prediction = await this.predictResponseLength(prompt, model, context)
 
     history.push({
       timestamp: Date.now(),

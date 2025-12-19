@@ -690,10 +690,10 @@ SUMMARY METRICS:
 - Cost Savings: $${data.costAnalysis.totalSaved}
 
 PERFORMANCE INSIGHTS:
-${data.insights.topOptimizations.map((opt) => `- ${opt}`).join('\n')}
+${data.insights.topOptimizations.map((opt: string) => `- ${opt}`).join('\n')}
 
 RECOMMENDATIONS:
-${data.insights.recommendations.map((rec) => `- ${rec}`).join('\n')}
+${data.insights.recommendations.map((rec: string) => `- ${rec}`).join('\n')}
     `
 
     return report

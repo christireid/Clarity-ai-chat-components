@@ -488,6 +488,7 @@ export async function countConversationTokens(
         operation: 'countConversationTokens',
         input: messages,
         config: options,
+        timestamp: Date.now(),
       },
       {
         attemptRecovery: true,
