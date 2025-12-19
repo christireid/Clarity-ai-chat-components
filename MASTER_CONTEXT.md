@@ -439,12 +439,12 @@ The following are used by marketing/docs sites but should NOT be in public API:
 
 ### GTM North Star Metrics
 
-| Metric | Current | Target | Measurement |
-|--------|---------|--------|-------------|
-| Time to first working chat | ~8 min | < 5 min | User testing |
-| Time to production integration | ~2 hrs | ≤ 30 min | User testing |
-| Docs search success rate | Unknown | > 90% | Analytics |
-| Developer sentiment | Good | Exceptional | NPS/Feedback |
+| Metric                         | Current | Target      | Measurement  |
+| ------------------------------ | ------- | ----------- | ------------ |
+| Time to first working chat     | ~8 min  | < 5 min     | User testing |
+| Time to production integration | ~2 hrs  | ≤ 30 min    | User testing |
+| Docs search success rate       | Unknown | > 90%       | Analytics    |
+| Developer sentiment            | Good    | Exceptional | NPS/Feedback |
 
 ### Documentation Site Inventory
 
@@ -452,15 +452,15 @@ The following are used by marketing/docs sites but should NOT be in public API:
 
 **Total Pages: 415+**
 
-| Section | Pages | Purpose |
-|---------|-------|---------|
-| Learn (Getting Started) | 28 | Onboarding, tutorials |
-| Reference (Components) | 114 | Component API docs |
-| Reference (Hooks) | 74 | Hook API docs |
-| Guides | 63 | Task-oriented help |
-| Cookbook | 41 | Copy-paste solutions |
-| Examples | 21 | Working applications |
-| Demos | 11 | Interactive demos |
+| Section                 | Pages | Purpose               |
+| ----------------------- | ----- | --------------------- |
+| Learn (Getting Started) | 28    | Onboarding, tutorials |
+| Reference (Components)  | 114   | Component API docs    |
+| Reference (Hooks)       | 74    | Hook API docs         |
+| Guides                  | 63    | Task-oriented help    |
+| Cookbook                | 41    | Copy-paste solutions  |
+| Examples                | 21    | Working applications  |
+| Demos                   | 11    | Interactive demos     |
 
 ### What's Working Well
 
@@ -474,14 +474,14 @@ The following are used by marketing/docs sites but should NOT be in public API:
 
 ### Identified Gaps (GTM Priority)
 
-| Gap | Impact | Priority | Status |
-|-----|--------|----------|--------|
-| No comparison with Vercel AI SDK | Lost evaluators | HIGH | ✅ Fixed |
-| Social proof missing from homepage | Lower trust | HIGH | ✅ Fixed |
-| No progress indicators in tutorials | Incomplete journeys | MEDIUM | ✅ Fixed |
-| Duplicate routes confusion | User confusion | MEDIUM | ✅ Verified |
-| Mobile navigation too nested | Poor mobile UX | MEDIUM | ✅ Fixed |
-| Error messages not searchable | Troubleshooting friction | LOW | Pending |
+| Gap                                 | Impact                   | Priority | Status      |
+| ----------------------------------- | ------------------------ | -------- | ----------- |
+| No comparison with Vercel AI SDK    | Lost evaluators          | HIGH     | ✅ Fixed    |
+| Social proof missing from homepage  | Lower trust              | HIGH     | ✅ Fixed    |
+| No progress indicators in tutorials | Incomplete journeys      | MEDIUM   | ✅ Fixed    |
+| Duplicate routes confusion          | User confusion           | MEDIUM   | ✅ Verified |
+| Mobile navigation too nested        | Poor mobile UX           | MEDIUM   | ✅ Fixed    |
+| Error messages not searchable       | Troubleshooting friction | LOW      | Pending     |
 
 ### Developer Journey Map
 
@@ -496,6 +496,7 @@ Homepage → "Get Started in 60s" → /learn/quick-start
 ```
 
 **Friction Points (Addressed):**
+
 - ~~Pricing not immediately visible~~ - ROI callout added
 - ~~No "What you get" summary before install~~ - Token savings highlighted
 - ~~No success celebration after first working chat~~ - SuccessCelebration component added
@@ -504,59 +505,59 @@ Homepage → "Get Started in 60s" → /learn/quick-start
 
 #### Phase 1: Foundation (HIGH Priority) ✅ COMPLETE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Create /compare/vs-vercel page | ✅ COMPLETE | Comprehensive comparison at /compare |
-| Add Compare to main navigation | ✅ COMPLETE | Added to Navigation.tsx header |
-| Add breadcrumbs to all doc pages | ✅ COMPLETE | Breadcrumbs component integrated |
-| Surface testimonials on homepage | ✅ COMPLETE | SocialProof + Testimonials components |
-| Add progress indicators to tutorials | ✅ COMPLETE | Created TutorialProgress component |
+| Task                                 | Status      | Notes                                 |
+| ------------------------------------ | ----------- | ------------------------------------- |
+| Create /compare/vs-vercel page       | ✅ COMPLETE | Comprehensive comparison at /compare  |
+| Add Compare to main navigation       | ✅ COMPLETE | Added to Navigation.tsx header        |
+| Add breadcrumbs to all doc pages     | ✅ COMPLETE | Breadcrumbs component integrated      |
+| Surface testimonials on homepage     | ✅ COMPLETE | SocialProof + Testimonials components |
+| Add progress indicators to tutorials | ✅ COMPLETE | Created TutorialProgress component    |
 
 #### Phase 2: User Journeys (MEDIUM Priority) ✅ COMPLETE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Consolidate duplicate routes | ✅ VERIFIED | /guides/getting-started already redirects to /learn/quick-start |
-| Create migration guide from Vercel | ✅ EXISTS | /learn/migration/from-vercel-ai-sdk |
-| Add ROI visibility to Quick Start | ✅ COMPLETE | Added token savings callout with 60-90% cost reduction |
-| Surface blog posts in navigation | ✅ COMPLETE | Added Blog link to main navigation |
-| Common Mistakes section | ✅ EXISTS | Already in /learn/troubleshooting as "Common Gotchas" |
+| Task                               | Status      | Notes                                                           |
+| ---------------------------------- | ----------- | --------------------------------------------------------------- |
+| Consolidate duplicate routes       | ✅ VERIFIED | /guides/getting-started already redirects to /learn/quick-start |
+| Create migration guide from Vercel | ✅ EXISTS   | /learn/migration/from-vercel-ai-sdk                             |
+| Add ROI visibility to Quick Start  | ✅ COMPLETE | Added token savings callout with 60-90% cost reduction          |
+| Surface blog posts in navigation   | ✅ COMPLETE | Added Blog link to main navigation                              |
+| Common Mistakes section            | ✅ EXISTS   | Already in /learn/troubleshooting as "Common Gotchas"           |
 
 #### Phase 3: Enhancement ✅ COMPLETE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Dynamic tutorial progress | ✅ COMPLETE | Progress updates on scroll, section IDs mapped |
-| Success celebration | ✅ COMPLETE | Celebration after first chat works |
-| Mobile nav icons | ✅ COMPLETE | Icons for better scannability |
-| Related pages component | ✅ COMPLETE | Integrated in Quick Start and Tutorial pages |
+| Task                      | Status      | Notes                                           |
+| ------------------------- | ----------- | ----------------------------------------------- |
+| Dynamic tutorial progress | ✅ COMPLETE | Progress updates on scroll, section IDs mapped  |
+| Success celebration       | ✅ COMPLETE | Celebration after first chat works              |
+| Mobile nav icons          | ✅ COMPLETE | Icons for better scannability                   |
+| Related pages component   | ✅ COMPLETE | Integrated in Quick Start and Tutorial pages    |
 | Enhanced components index | ✅ COMPLETE | Unified exports in components/Enhanced/index.ts |
-| Code cleanup | ✅ COMPLETE | Removed unused imports across docs pages |
+| Code cleanup              | ✅ COMPLETE | Removed unused imports across docs pages        |
 
 #### Phase 4: Polish ✅ COMPLETE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Live GitHub stats | ✅ COMPLETE | SocialProof fetches real star count |
-| More testimonials | ✅ COMPLETE | 6 testimonials with ROI/migration stories |
-| Mobile bottom nav | ✅ COMPLETE | MobileBottomNav for quick actions |
-| TableOfContents | ✅ EXISTS | Auto-detects headings, tracks scroll |
-| Add video tutorials | Pending | Future enhancement |
-| Interactive code sandboxes | Pending | Future enhancement |
+| Task                       | Status      | Notes                                     |
+| -------------------------- | ----------- | ----------------------------------------- |
+| Live GitHub stats          | ✅ COMPLETE | SocialProof fetches real star count       |
+| More testimonials          | ✅ COMPLETE | 6 testimonials with ROI/migration stories |
+| Mobile bottom nav          | ✅ COMPLETE | MobileBottomNav for quick actions         |
+| TableOfContents            | ✅ EXISTS   | Auto-detects headings, tracks scroll      |
+| Add video tutorials        | Pending     | Future enhancement                        |
+| Interactive code sandboxes | Pending     | Future enhancement                        |
 
 ### Documentation Quality Score
 
-| Category | Weight | Baseline | Phase 3 | Phase 4 | Target |
-|----------|--------|----------|---------|---------|--------|
-| Time to First Success | 20% | 8/10 | 10/10 | 10/10 | 10/10 |
-| Content Accuracy | 15% | 9/10 | 9/10 | 10/10 | 10/10 |
-| Navigation Clarity | 15% | 8/10 | 9/10 | 10/10 | 10/10 |
-| Search Effectiveness | 15% | 8/10 | 8/10 | 9/10 | 10/10 |
-| Visual Design | 10% | 9/10 | 9/10 | 10/10 | 10/10 |
-| Mobile Experience | 10% | 6/10 | 8/10 | 10/10 | 10/10 |
-| Social Proof | 10% | 8/10 | 8/10 | 10/10 | 10/10 |
-| Competitive Positioning | 5% | 8/10 | 9/10 | 10/10 | 10/10 |
-| **TOTAL** | 100% | **77/100** | **88/100** | **98/100** | **100/100** |
+| Category                | Weight | Baseline   | Phase 3    | Phase 4    | Target      |
+| ----------------------- | ------ | ---------- | ---------- | ---------- | ----------- |
+| Time to First Success   | 20%    | 8/10       | 10/10      | 10/10      | 10/10       |
+| Content Accuracy        | 15%    | 9/10       | 9/10       | 10/10      | 10/10       |
+| Navigation Clarity      | 15%    | 8/10       | 9/10       | 10/10      | 10/10       |
+| Search Effectiveness    | 15%    | 8/10       | 8/10       | 9/10       | 10/10       |
+| Visual Design           | 10%    | 9/10       | 9/10       | 10/10      | 10/10       |
+| Mobile Experience       | 10%    | 6/10       | 8/10       | 10/10      | 10/10       |
+| Social Proof            | 10%    | 8/10       | 8/10       | 10/10      | 10/10       |
+| Competitive Positioning | 5%     | 8/10       | 9/10       | 10/10      | 10/10       |
+| **TOTAL**               | 100%   | **77/100** | **88/100** | **98/100** | **100/100** |
 
 ### Success Criteria
 
@@ -568,15 +569,222 @@ Homepage → "Get Started in 60s" → /learn/quick-start
 
 ---
 
+---
+
+## G) MARKETING SITE GTM OVERHAUL
+
+> **STATUS**: Phase 0 Complete | Phase 1 Starting **BRANCH**:
+> `claude/marketing-site-gtm-overhaul-BG1CG` **LAST UPDATED**: 2025-12-19 **GOAL**: Transform
+> marketing site into research-driven, GTM-validated conversion engine
+
+### Executive Summary
+
+**Critical Finding**: The marketing site has **severe credibility issues** that will kill conversion
+for skeptical developers. The site relies on fabricated testimonials, unsubstantiated metrics, and
+vague claims.
+
+**Immediate Priority**: Remove or replace all unverifiable claims before any other changes.
+
+---
+
+### G.1) Marketing Site Inventory
+
+#### Page Structure
+
+| Page            | Path                           | Purpose               | Primary CTA      | Status            |
+| --------------- | ------------------------------ | --------------------- | ---------------- | ----------------- |
+| Homepage        | `/`                            | Single-page marketing | Get Started Free | ⚠️ NEEDS OVERHAUL |
+| Docs            | `/docs`                        | External docs link    | N/A              | External          |
+| Getting Started | `/docs/guides/getting-started` | Installation          | Install command  | Unknown           |
+| Enterprise      | `/enterprise/contact`          | Lead capture          | Contact form     | Unknown           |
+
+#### Homepage Sections
+
+| Section      | Location                | Purpose          | Conversion Role | Status            |
+| ------------ | ----------------------- | ---------------- | --------------- | ----------------- |
+| Hero         | `HeroSection.tsx`       | First impression | Value prop      | ❌ Fake metrics   |
+| Features     | `FeaturesSection.tsx`   | Capabilities     | Education       | ⚠️ Generic        |
+| Comparison   | `ComparisonSection.tsx` | Build vs Buy     | Justification   | ⚠️ Unverified     |
+| Testimonials | `Testimonials.tsx`      | Social proof     | Trust           | ❌ FABRICATED     |
+| Pricing      | `PricingSection.tsx`    | Purchase         | Decision        | ✅ Structure OK   |
+| FAQ          | `FAQ.tsx`               | Objections       | Reassurance     | ⚠️ Licensing only |
+| CTA          | `CTASection.tsx`        | Final push       | Conversion      | ✅ Adequate       |
+
+---
+
+### G.2) Critical Issues (P0 - Credibility Destroyers)
+
+#### 1. FABRICATED TESTIMONIALS
+
+**File**: `apps/marketing-site/components/Testimonials.tsx:9-63` **Problem**: All 6 testimonials use
+obviously fake company names:
+
+- "HealthAI", "TechCorp", "ShopSmart", "EduTech", "FinanceFlow", "DevTools Inc"
+- Specific dollar claims ($400K, $2.4M, $3M) with no verification
+- Any developer who Googles these finds nothing
+
+**Impact**: Instant trust destruction for skeptical developers **Action**: REMOVE or replace with
+anonymous but specific testimonials
+
+#### 2. UNVERIFIABLE HERO METRICS
+
+**File**: `apps/marketing-site/components/sections/HeroSection.tsx:177-200` **Claims**:
+
+- "$400K+ Dev Costs Saved" - no methodology
+- "40% Token Savings" - no technical explanation
+- "Trusted by" fake company names
+
+**Action**: Replace with verifiable metrics (GitHub stars, npm downloads, bundle size)
+
+#### 3. BROKEN PURCHASE FLOW
+
+**File**: `apps/marketing-site/components/sections/PricingSection.tsx:46` **Problem**: "Start Free
+Trial" links to `/pricing?plan=pro` - no checkout exists **Action**: Implement checkout OR change
+CTA to "Contact Sales"
+
+---
+
+### G.3) Conversion Blockers (P1)
+
+| Issue                     | Problem                          | Action                              |
+| ------------------------- | -------------------------------- | ----------------------------------- |
+| No Live Demo              | Static code only, no working app | Add Storybook embed or sandbox      |
+| No Competitor Comparison  | Developers always compare        | Add "Why Clarity Chat vs..."        |
+| Token Savings Unexplained | 40% claim with no methodology    | Add technical explanation + diagram |
+| Enterprise Claims Vague   | "SOC 2 support" unclear          | Clarify what this actually means    |
+| No GitHub/npm Stats       | Missing social proof             | Add stars, downloads, bundle size   |
+
+---
+
+### G.4) Messaging Analysis
+
+#### Current Positioning
+
+_"Stop Building Chat UI. Start Shipping AI."_
+
+- **Verdict**: Good structure (pain → solution), too generic
+
+#### Claimed vs Verifiable
+
+| Claim                        | Verifiable?       | Action             |
+| ---------------------------- | ----------------- | ------------------ |
+| 50+ components               | Yes (count repo)  | ADD COMPONENT LIST |
+| Switch providers in one line | Partially         | ADD CODE DEMO      |
+| 40% token savings            | No methodology    | EXPLAIN OR REMOVE  |
+| $400K saved                  | Fabricated source | REMOVE             |
+| 27KB gzipped                 | Yes (npm)         | ADD PROOF          |
+| WCAG 2.1 AA                  | No audit shown    | ADD REPORT         |
+| SOC 2 compliance             | Unclear meaning   | CLARIFY            |
+
+#### Key Objections NOT Addressed
+
+1. "Why not Vercel AI SDK + shadcn/ui?"
+2. "How does token optimization work?"
+3. "Can I see real production examples?"
+4. "Who else actually uses this?"
+5. "How active is development?"
+
+---
+
+### G.5) GTM Overhaul Plan
+
+#### Phase 0: Audit ✅ COMPLETE
+
+- [x] Full site inventory
+- [x] All sections analyzed
+- [x] Critical issues documented
+
+#### Phase 1: Research Sprint ✅ COMPLETE
+
+- [x] Research top 10 dev-tool landing pages (Vercel, Supabase, Linear, etc.)
+- [x] Document conversion patterns for developers
+- [x] Analyze competitor messaging
+
+#### Phase 2: Trust Review ✅ COMPLETE
+
+- [x] "Would I trust this?" assessment
+- [x] Define required proof points
+- [x] Prioritize fixes
+
+#### Phase 3: Strategy Redesign ✅ COMPLETE
+
+- [x] New hero messaging (verifiable metrics only)
+- [x] Section content redesign
+- [x] Proof point integration plan
+
+#### Phase 4: Implementation ✅ COMPLETE
+
+- [x] Remove fake testimonials → Replaced with verifiable metrics + code examples
+- [x] Add verifiable metrics (170+ components, TypeScript, MIT, 27KB)
+- [x] Fix comparison section (removed fake quote)
+- [x] Fix pricing CTAs (clear paths, honest tier descriptions)
+- [x] Update features section (technical, specific language)
+
+#### Phase 5: QA + Review ✅ COMPLETE
+
+- [x] Content accuracy verification
+- [x] Removed unused code (trustIndicators in HeroSection)
+- [x] Updated FAQ with technical questions
+- [x] Added How It Works section
+- [x] Reordered page sections for better flow
+
+---
+
+### G.6) Implementation Summary
+
+**Files Modified:**
+
+1. `Testimonials.tsx` - Complete rewrite: Fake testimonials → Verifiable metrics + code examples
+2. `HeroSection.tsx` - Removed fake company logos, updated stats to verifiable metrics, removed
+   unused code
+3. `PricingSection.tsx` - Honest tier descriptions, working CTAs
+4. `ComparisonSection.tsx` - Removed fake quote, realistic comparison data
+5. `FeaturesSection.tsx` - Technical, specific language instead of marketing fluff
+6. `FAQ.tsx` - Replaced licensing FAQ with technical developer questions
+7. `CTASection.tsx` - Honest messaging, verifiable trust indicators
+8. `HowItWorksSection.tsx` - NEW: Three-step guide with code examples
+9. `page.tsx` - Reordered sections for better conversion flow
+
+**New Section Order:**
+
+1. Hero → 2. How It Works → 3. Features → 4. Testimonials (metrics) → 5. Comparison → 6. Pricing
+   → 7. FAQ → 8. CTA
+
+**Key Changes:**
+
+- Removed: "$400K saved", fake company names, unverifiable claims, vague FAQ
+- Added: 170+ components count, MIT license highlight, code examples, How It Works section
+- Changed: Pricing from "Start Free Trial" (broken) to "Get Started" (works)
+- Improved: Features from vague ("Users Love It") to specific ("Streaming Built-In")
+- Improved: FAQ from licensing-only to technical developer questions
+
+---
+
+### G.7) Decision Log (Marketing)
+
+| Date       | Decision                             | Rationale                                                |
+| ---------- | ------------------------------------ | -------------------------------------------------------- |
+| 2025-12-19 | Remove all fake testimonials         | Fabricated social proof destroys credibility             |
+| 2025-12-19 | Prioritize credibility over features | Trusted site with fewer claims > untrusted with many     |
+| 2025-12-19 | Target developers first              | Enterprise follows developer adoption                    |
+| 2025-12-19 | Use verifiable metrics only          | 170+ components, MIT, TypeScript, 27KB - all checkable   |
+| 2025-12-19 | Include code examples                | Developers trust code over marketing copy                |
+| 2025-12-19 | Honest pricing tiers                 | Open Source (free) + Pro (support) + Enterprise (custom) |
+
+---
+
 ## Change Log
 
-| Date       | Change                                                                                                   | Author          |
-| ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
-| 2024-12-19 | Initial creation - Public API audit phases 0-6 complete                                                  | Architect       |
-| 2024-12-19 | Added Docs Site GTM Overhaul section (I)                                                                 | PM/GTM          |
-| 2024-12-19 | Docs GTM Phase 1-3 Complete - Score improved 77→88                                                       | Docs/Engineering|
-| 2024-12-19 | Integrated RelatedPages, SuccessCelebration, TutorialProgress with scroll tracking                       | Docs/Engineering|
-| 2024-12-19 | Phase 4 Complete - Live GitHub stats, 6 testimonials, MobileBottomNav - Score 88→98                      | Docs/Engineering|
+| Date       | Change                                                                                       | Author             |
+| ---------- | -------------------------------------------------------------------------------------------- | ------------------ |
+| 2024-12-19 | Initial creation - Public API audit phases 0-6 complete                                      | Architect          |
+| 2024-12-19 | Added Docs Site GTM Overhaul section (I)                                                     | PM/GTM             |
+| 2024-12-19 | Docs GTM Phase 1-3 Complete - Score improved 77→88                                           | Docs/Engineering   |
+| 2024-12-19 | Integrated RelatedPages, SuccessCelebration, TutorialProgress with scroll tracking           | Docs/Engineering   |
+| 2024-12-19 | Phase 4 Complete - Live GitHub stats, 6 testimonials, MobileBottomNav - Score 88→98          | Docs/Engineering   |
+| 2025-12-19 | Added Section G - Marketing Site GTM Overhaul. Removed fake testimonials, fixed hero metrics | GTM Specialist     |
+| 2025-12-19 | Marketing GTM Phases 1-5 Complete. All claims now verifiable. Added How It Works section     | GTM Implementation |
+| 2025-12-19 | Added animation library with reduced-motion support. Fixed all accessibility warnings        | Engineering        |
 
 ---
 

@@ -56,7 +56,7 @@ export function RelatedPages({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: durations.slow }}
       className="mt-12 pt-8 border-t border-border"
     >
       <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">

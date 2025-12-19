@@ -16,7 +16,7 @@ interface SuccessCelebrationProps {
 }
 
 export function SuccessCelebration({
-  title = "You did it!",
+  title = 'You did it!',
   message = "Your chat app is up and running. Here's what to explore next:",
   nextSteps = [
     {
@@ -43,7 +43,7 @@ export function SuccessCelebration({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className="my-8 p-6 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/40 dark:to-emerald-950/40 border-2 border-green-200 dark:border-green-800 relative overflow-hidden"
     >
       {/* Background celebration particles */}
@@ -96,7 +96,7 @@ export function SuccessCelebration({
             {title}
             <motion.span
               animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 0.5, delay: 0.5, repeat: 2 }}
+              transition={{ duration: durations.slow, delay: 0.5, repeat: 2 }}
             >
               🎉
             </motion.span>

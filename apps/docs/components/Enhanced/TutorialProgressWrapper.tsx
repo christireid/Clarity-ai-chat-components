@@ -15,7 +15,9 @@ interface TutorialProgressWrapperProps {
  * Client-side wrapper for TutorialProgress that tracks scroll position
  * and updates the current step dynamically.
  */
-export function TutorialProgressWrapper({ steps }: TutorialProgressWrapperProps) {
+export function TutorialProgressWrapper({
+  steps,
+}: TutorialProgressWrapperProps) {
   const { currentStep, totalSteps } = useTutorialProgress(steps)
 
   return (

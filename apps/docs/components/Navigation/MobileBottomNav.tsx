@@ -75,12 +75,26 @@ export function MobileBottomNav() {
   }, [lastScrollY])
 
   const quickActions = [
-    { icon: <Search className="w-4 h-4" />, label: 'Search', action: () => {
-      // Trigger search dialog
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
-    }},
-    { icon: <BookOpen className="w-4 h-4" />, label: 'Guides', href: '/guides' },
-    { icon: <FileCode className="w-4 h-4" />, label: 'Hooks', href: '/reference/hooks' },
+    {
+      icon: <Search className="w-4 h-4" />,
+      label: 'Search',
+      action: () => {
+        // Trigger search dialog
+        document.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'k', metaKey: true })
+        )
+      },
+    },
+    {
+      icon: <BookOpen className="w-4 h-4" />,
+      label: 'Guides',
+      href: '/guides',
+    },
+    {
+      icon: <FileCode className="w-4 h-4" />,
+      label: 'Hooks',
+      href: '/reference/hooks',
+    },
   ]
 
   return (
@@ -96,7 +110,7 @@ export function MobileBottomNav() {
           >
             <div className="bg-bg-primary/95 backdrop-blur-lg border border-border rounded-xl p-3 shadow-xl">
               <div className="flex justify-around gap-2">
-                {quickActions.map((action, i) => (
+                {quickActions.map((action, i) =>
                   action.href ? (
                     <Link
                       key={i}
@@ -105,7 +119,9 @@ export function MobileBottomNav() {
                       className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-bg-secondary transition-colors flex-1"
                     >
                       <span className="text-brand-500">{action.icon}</span>
-                      <span className="text-xs text-text-secondary">{action.label}</span>
+                      <span className="text-xs text-text-secondary">
+                        {action.label}
+                      </span>
                     </Link>
                   ) : (
                     <button
@@ -117,10 +133,12 @@ export function MobileBottomNav() {
                       className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-bg-secondary transition-colors flex-1"
                     >
                       <span className="text-brand-500">{action.icon}</span>
-                      <span className="text-xs text-text-secondary">{action.label}</span>
+                      <span className="text-xs text-text-secondary">
+                        {action.label}
+                      </span>
                     </button>
                   )
-                ))}
+                )}
               </div>
             </div>
           </motion.div>

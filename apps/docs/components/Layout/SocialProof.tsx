@@ -29,12 +29,12 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
       transition={{
         type: 'spring',
         stiffness: 200,
-        damping: 20
+        damping: 20,
       }}
       whileHover={{
         scale: 1.05,
         y: -5,
-        transition: { duration: 0.2 }
+        transition: { duration: durations.normal },
       }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -45,9 +45,9 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
         className="flex items-center justify-center mb-3 text-brand-500"
         animate={{
           rotate: isHovered ? [0, -10, 10, -10, 0] : 0,
-          scale: isHovered ? 1.1 : 1
+          scale: isHovered ? 1.1 : 1,
         }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: durations.slow }}
       >
         {icon}
       </motion.div>
@@ -56,9 +56,9 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
       <motion.div
         className="text-3xl md:text-4xl font-bold mb-1 text-text-primary"
         animate={{
-          scale: isHovered ? 1.05 : 1
+          scale: isHovered ? 1.05 : 1,
         }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: durations.normal }}
       >
         {value}
       </motion.div>
@@ -76,11 +76,11 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
         >
           <motion.div
             animate={{
-              y: isHovered ? [-2, 2, -2] : 0
+              y: isHovered ? [-2, 2, -2] : 0,
             }}
             transition={{
-              duration: 1,
-              repeat: isHovered ? Infinity : 0
+              duration: durations.slower,
+              repeat: isHovered ? Infinity : 0,
             }}
           >
             <TrendingUp className="w-3 h-3" />
@@ -94,7 +94,7 @@ function StatItem({ icon, value, label, trend }: StatItemProps) {
         className="absolute inset-0 rounded-xl bg-gradient-to-br from-brand-500/5 to-purple-500/5 pointer-events-none"
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: durations.moderate }}
       />
     </motion.div>
   )
@@ -138,26 +138,26 @@ export function SocialProof() {
       icon: <Star className="w-8 h-8" />,
       value: githubStats ? formatNumber(githubStats.stars) : '2.5K+',
       label: 'GitHub Stars',
-      trend: 'Live count'
+      trend: 'Live count',
     },
     {
       icon: <Download className="w-8 h-8" />,
       value: '50K+',
       label: 'NPM Downloads',
-      trend: '+12% this month'
+      trend: '+12% this month',
     },
     {
       icon: <Users className="w-8 h-8" />,
       value: '10K+',
       label: 'Developers',
-      trend: 'Worldwide'
+      trend: 'Worldwide',
     },
     {
       icon: <span className="text-3xl">🏆</span>,
       value: '100%',
       label: 'WCAG AAA',
-      trend: 'Certified'
-    }
+      trend: 'Certified',
+    },
   ]
 
   return (
@@ -176,9 +176,9 @@ export function SocialProof() {
               opacity: 1,
               transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.1
-              }
-            }
+                delayChildren: 0.1,
+              },
+            },
           }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12"
         >
@@ -187,7 +187,7 @@ export function SocialProof() {
               key={index}
               variants={{
                 hidden: { opacity: 0, y: 30 },
-                show: { opacity: 1, y: 0 }
+                show: { opacity: 1, y: 0 },
               }}
             >
               <StatItem {...stat} />

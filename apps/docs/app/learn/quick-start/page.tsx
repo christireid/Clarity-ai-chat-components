@@ -57,7 +57,8 @@ export default function QuickStartPage() {
                   Built-in Token Optimization
                 </h3>
                 <p className="text-sm text-green-700 dark:text-green-400 mb-3">
-                  Clarity Chat includes smart token management that can <strong>reduce your AI costs by 60-90%</strong> through:
+                  Clarity Chat includes smart token management that can{' '}
+                  <strong>reduce your AI costs by 60-90%</strong> through:
                 </p>
                 <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
                   <li>• Semantic memory compression</li>
@@ -177,7 +178,11 @@ pnpm add @clarity-chat/react`}
               nextStepTitle="Manual Control"
             >
               <p className="text-text-secondary mb-4">
-                Use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ClarityChat</code> for the simplest integration - just provide an API endpoint:
+                Use{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  ClarityChat
+                </code>{' '}
+                for the simplest integration - just provide an API endpoint:
               </p>
 
               <EnhancedCodeBlock
@@ -197,7 +202,8 @@ export default App`}
 
               <Callout type="success" className="mt-6">
                 <p>
-                  <strong>That's it!</strong> ClarityChat handles all state management, streaming, error handling, and UI internally.
+                  <strong>That's it!</strong> ClarityChat handles all state
+                  management, streaming, error handling, and UI internally.
                 </p>
               </Callout>
 
@@ -237,7 +243,15 @@ export default App`}
               nextStepTitle="What's Included"
             >
               <p className="text-text-secondary mb-4">
-                For more control over state, use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ChatWindow</code> with the <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">useClarityChat</code> hook:
+                For more control over state, use{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  ChatWindow
+                </code>{' '}
+                with the{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  useClarityChat
+                </code>{' '}
+                hook:
               </p>
 
               <EnhancedCodeBlock
@@ -571,13 +585,15 @@ export default App`}
             },
             {
               title: 'Token Optimization',
-              description: 'Reduce AI costs by 60-90% with smart context management',
+              description:
+                'Reduce AI costs by 60-90% with smart context management',
               href: '/guides/token-optimization',
               type: 'guide',
             },
             {
               title: 'Enterprise RAG Integration',
-              description: 'Add document search with citations and confidence scores',
+              description:
+                'Add document search with citations and confidence scores',
               href: '/cookbook/enterprise-rag',
               type: 'cookbook',
             },
