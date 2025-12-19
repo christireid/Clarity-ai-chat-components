@@ -112,9 +112,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.info(formatLogEntry(entry))
+        console.info(formatLogEntry(entry))
       } else {
-        utilsLogger.info(formatPrefix('ℹ', pc.blue), message, ...args)
+        console.info(formatPrefix('ℹ', pc.blue), message, ...args)
       }
     },
 
@@ -130,9 +130,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.warn(formatLogEntry(entry))
+        console.warn(formatLogEntry(entry))
       } else {
-        utilsLogger.warn(formatPrefix('⚠', pc.yellow), message, ...args)
+        console.warn(formatPrefix('⚠', pc.yellow), message, ...args)
       }
     },
 
@@ -156,9 +156,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.error(formatLogEntry(entry))
+        console.error(formatLogEntry(entry))
       } else {
-        utilsLogger.error(formatPrefix('✖', pc.red), errorMessage, ...args)
+        console.error(formatPrefix('✖', pc.red), errorMessage, ...args)
 
         if (
           error &&
@@ -166,7 +166,7 @@ export function getLogger(
           error.stack &&
           (process.env.DEBUG || process.env.VERBOSE)
         ) {
-          utilsLogger.error(pc.gray(String(error.stack)))
+          console.error(pc.gray(String(error.stack)))
         }
       }
     },
@@ -183,9 +183,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.info(formatLogEntry(entry))
+        console.info(formatLogEntry(entry))
       } else {
-        utilsLogger.info(formatPrefix('✔', pc.green), message, ...args)
+        console.info(formatPrefix('✔', pc.green), message, ...args)
       }
     },
 
@@ -201,15 +201,14 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.debug(formatLogEntry(entry))
+        console.debug(formatLogEntry(entry))
       } else {
-        utilsLogger.debug(formatPrefix('🐛', pc.magenta), message, ...args)
+        console.debug(formatPrefix('🐛', pc.magenta), message, ...args)
       }
     },
 
     setLevel: (level: LogLevel) => {
       instanceLevel = level
-      utilsLogger.setLevel(level)
     },
 
     getLevel: () => instanceLevel,
