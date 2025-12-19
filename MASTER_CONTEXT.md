@@ -406,7 +406,8 @@ import { ClarityChat, ErrorBoundary } from '@clarity-chat/react'
 | File                                            | Status   | Notes                                                           |
 | ----------------------------------------------- | -------- | --------------------------------------------------------------- |
 | `docs/getting-started.md`                       | ✅       | Already aligned with public API (useClarityChat, ThemeProvider) |
-| `docs/api-reference.md`                         | Pending  | Should match public-api.ts                                      |
+| `docs/api-reference.md`                         | ✅       | Documents public API correctly (useClarityChat, components)     |
+| `docs/clarity-vs-vercel-ai-sdk-ui.md`           | ✅ Fixed | Updated streaming section to use useClarityChat transport       |
 | `examples/basic-chat/components/basic-chat.tsx` | ✅ Fixed | Changed from internal `useChat` to public `useClarityChat`      |
 | `examples/basic-chat/README.md`                 | ✅ Fixed | Updated documentation to reflect correct hook names             |
 | `examples/tool-calling/`                        | ✅       | Uses custom state (intentional - advanced demo)                 |
