@@ -6,6 +6,14 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Github, Shield, Sparkles, Zap } from 'lucide-react'
 import SplitScreenDemo from '../ui/SplitScreenDemo'
 import { durations } from '@/lib/constants'
+import {
+  fadeInUp,
+  fadeIn,
+  scaleUp,
+  fadeInRight,
+  reducedMotionConfig,
+  useReducedMotion,
+} from '@/lib/animations'
 
 // Dynamically import Hero3D to avoid SSR issues with Three.js
 const Hero3D = dynamic(() => import('../3d/Hero3D'), {
@@ -25,6 +33,11 @@ const trustBadges = [
 
 import MagneticButton from '../ui/MagneticButton'
 
+/**
+ * Hero section with benefit-driven headline, animated code preview, and CTAs.
+ * Displays only verifiable metrics (component count, bundle size, etc.).
+ * Respects reduced-motion preferences via animation library.
+ */
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-surface-950">
@@ -47,16 +60,17 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-8rem)]">
           {/* Left column - Text content */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: durations.slow }}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
             className="text-center lg:text-left"
           >
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: durations.moderate }}
+              variants={scaleUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.1 }}
               className="mb-6"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium">
@@ -70,9 +84,10 @@ export default function HeroSection() {
 
             {/* Headline - Benefit-driven */}
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: durations.slow }}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6"
             >
               Stop Building Chat UI.{' '}
@@ -81,9 +96,10 @@ export default function HeroSection() {
 
             {/* Subheadline */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: durations.slow }}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.3 }}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
               170+ production-ready React components for AI chat. OpenAI,
@@ -93,9 +109,10 @@ export default function HeroSection() {
 
             {/* CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: durations.slow }}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10 items-center lg:items-center"
             >
               <MagneticButton
@@ -116,9 +133,10 @@ export default function HeroSection() {
 
             {/* Trust badges */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: durations.slow }}
+              variants={fadeIn}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-6 justify-center lg:justify-start"
             >
               {trustBadges.map((badge) => {
@@ -138,9 +156,10 @@ export default function HeroSection() {
 
           {/* Right column - Code preview */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: durations.slow }}
+            variants={fadeInRight}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3 }}
             className="relative w-full lg:w-[120%]"
           >
             <SplitScreenDemo />
@@ -149,9 +168,10 @@ export default function HeroSection() {
 
         {/* Stats bar - Verifiable metrics only */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: durations.slow }}
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.6 }}
           className="mt-16 lg:mt-0 grid grid-cols-2 sm:grid-cols-4 gap-8 p-8 rounded-2xl glass-card"
         >
           <div className="text-center">
@@ -183,9 +203,10 @@ export default function HeroSection() {
 
       {/* Scroll indicator */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: durations.slow }}
+        variants={fadeIn}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-2 text-gray-500">

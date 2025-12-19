@@ -14,6 +14,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import { fadeInUp, useReducedMotion } from '@/lib/animations'
 import Link from 'next/link'
 
 // Verifiable metrics - these can be confirmed by visiting the repo/npm
@@ -96,9 +97,10 @@ function MetricCard({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: durations.slow, delay: index * 0.1 }}
+      variants={fadeInUp}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      transition={{ delay: index * 0.1 }}
       className="relative group"
     >
       <div
@@ -138,9 +140,10 @@ function FeatureCard({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: durations.slow, delay: index * 0.15 }}
+      variants={fadeInUp}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      transition={{ delay: index * 0.15 }}
       className="glass-card p-6 border border-white/10 rounded-xl"
     >
       <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
@@ -179,11 +182,9 @@ export default function Testimonials() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={
-            isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          transition={{ duration: durations.slow }}
+          variants={fadeInUp}
+          initial="hidden"
+          animate={isHeaderInView ? 'visible' : 'hidden'}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">

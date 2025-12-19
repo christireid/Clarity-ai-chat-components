@@ -4,6 +4,11 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Gauge, Coins, Users, Zap } from 'lucide-react'
 
+/**
+ * Interactive ROI calculator for estimating token cost savings.
+ * Uses conservative estimates with transparent methodology.
+ * All projections are clearly labeled as estimates.
+ */
 export default function TokenSavingsCalculator() {
   const [mau, setMau] = useState(10000)
   const [msgsPerUser, setMsgsPerUser] = useState(50)

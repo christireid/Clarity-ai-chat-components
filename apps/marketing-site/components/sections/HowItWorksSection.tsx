@@ -5,6 +5,11 @@ import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { Sparkles, Code, Zap, ArrowRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import {
+  fadeInUp,
+  reducedMotionConfig,
+  useReducedMotion,
+} from '@/lib/animations'
 
 const steps = [
   {
@@ -59,9 +64,10 @@ function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: durations.slow, delay: index * 0.15 }}
+      variants={fadeInUp}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      transition={{ delay: index * 0.15 }}
       className="relative"
     >
       {/* Connector line */}
@@ -113,11 +119,9 @@ export default function HowItWorksSection() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={
-            isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          transition={{ duration: durations.slow }}
+          variants={fadeInUp}
+          initial="hidden"
+          animate={isHeaderInView ? 'visible' : 'hidden'}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
@@ -141,10 +145,9 @@ export default function HowItWorksSection() {
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: durations.slow, delay: 0.3 }}
+          variants={fadeInUp}
+          {...reducedMotionConfig}
+          transition={{ delay: 0.3 }}
           className="mt-16 text-center"
         >
           <a

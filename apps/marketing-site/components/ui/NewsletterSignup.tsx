@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Check, Sparkles, Star } from 'lucide-react'
+import { fadeInUp, useReducedMotion } from '@/lib/animations'
 
+/**
+ * Newsletter signup form with email validation.
+ * Offers AI chat implementation guide as lead magnet.
+ * Uses subtle animations with reduced-motion support.
+ */
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<
@@ -87,8 +93,9 @@ export default function NewsletterSignup() {
           </div>
           {status === 'success' && (
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
               className="absolute -bottom-8 left-0 text-sm text-green-400"
             >
               Thanks! Check your inbox for the guide.
