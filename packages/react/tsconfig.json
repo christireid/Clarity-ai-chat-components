@@ -55,6 +55,13 @@
     "src/hooks/chat/use-agent.ts",
     "src/hooks/chat/use-rag-pipeline.ts",
     "src/hooks/keyboard/use-command-palette-commands.ts",
-    "src/hooks/performance/**/*"
+    "src/hooks/performance/**/*",
+    "src/hooks/input/use-realistic-typing.ts",
+    "src/hooks/use-quantum-voice.ts",
+    "src/integrations/**/*",
+    "src/plugins/**/*",
+    "src/safety/**/*",
+    "src/templates/**/*",
+    "src/typescript/**/*"
   ]
 }

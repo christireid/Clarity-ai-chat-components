@@ -220,6 +220,7 @@ export {
   countConversationTokens,
   truncateToTokenBudget,
   type ModelName,
+  type TokenCount,
 } from './accurate-counter.js'
 
 // Export validation utilities for convenience

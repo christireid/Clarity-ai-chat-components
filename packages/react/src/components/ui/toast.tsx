@@ -261,7 +261,7 @@ ToastContainer.displayName = 'ToastContainer'
 /**
  * Toast Context
  */
-interface ToastContextValue {
+export interface ToastContextValue {
   toasts: Toast[]
   addToast: (toast: Omit<Toast, 'id'>) => string
   removeToast: (id: string) => void

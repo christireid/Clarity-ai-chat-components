@@ -267,7 +267,7 @@ export function useStreamingSSE(
   const [events, setEvents] = React.useState<SSEEvent[]>([])
   const [lastEvent, setLastEvent] = React.useState<SSEEvent | null>(null)
   const [data, setData] = React.useState<string>('')
-  const [error, setError] = React.useState<Error | null>(null)
+  const [error, setError] = React.useState<Error | undefined>(undefined)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
 
@@ -356,7 +356,7 @@ export function useStreamingSSE(
 
     try {
       setStatus('connecting')
-      setError(null)
+      setError(undefined)
       shouldReconnectRef.current = true
 
       // Create abort controller for cancellation
@@ -598,7 +598,7 @@ export function useStreamingSSE(
     setEvents([])
     setLastEvent(null)
     setData('')
-    setError(null)
+    setError(undefined)
     setReconnectAttempt(0)
     setIsReconnecting(false)
     lastEventIdRef.current = ''

@@ -168,7 +168,7 @@ export function useChatWithOperations(
       })
     },
     isLoading: chat.isLoading,
-    error: chat.error ?? null,
+    error: chat.error ?? undefined,
 
     // From operations
     editMessage: enableOperations ? operations.editMessage : () => {},

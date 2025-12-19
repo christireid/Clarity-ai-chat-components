@@ -101,7 +101,7 @@ export function useChatCore(
     coreMessages: chat.messages,
     sendMessage,
     isLoading: chat.isLoading,
-    error: chat.error ?? null,
+    error: chat.error ?? undefined,
     chat,
   }
 }

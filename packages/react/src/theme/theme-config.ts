@@ -256,6 +256,12 @@ export interface ThemeMetadata {
     browsers?: string[]
     features?: string[]
   }
+  designSystem?: {
+    primary?: string
+    secondary?: string
+    accent?: string
+  }
+  useCases?: string[]
 }
 
 /**

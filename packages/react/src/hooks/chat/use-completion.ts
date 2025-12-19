@@ -41,7 +41,7 @@
 'use client'
 
 import * as React from 'react'
-import { generateId } from '@clarity-chat/primitives'
+import { generateId } from '../../internal/helpers'
 import {
   processStream,
   type StreamFormat,
