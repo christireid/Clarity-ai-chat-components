@@ -99,5 +99,22 @@ export type {
 // Token counting exports (legacy compatibility)
 export { TokenCounter } from './legacy-compatibility'
 
-// Simple tokenizers
+// Tokenizers - using gpt-tokenizer (20x smaller than tiktoken WASM)
+export { AccurateTokenCounter } from './tokenizers/accurate-counter'
+export type {
+  TokenizerConfig,
+  TokenInfo,
+  CacheStats as TokenCacheStats,
+  MonitoringStats,
+  ChatMessage,
+} from './tokenizers/accurate-counter'
+
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
+
+// Text chunking - using llm-splitter (100x smaller than LangChain)
+export { TextChunker, ChunkingStrategy } from './chunking/text-chunker'
+export type {
+  ChunkingConfig,
+  TextChunk,
+  ChunkingResult,
+} from './chunking/text-chunker'
