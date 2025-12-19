@@ -30,3 +30,21 @@ export class SecureLogger {
 
 export const loggerInstance = SecureLogger
 export { loggerInstance as logger }
+
+/**
+ * Log API errors with context
+ */
+export function logApiError(
+  context: string,
+  error: unknown,
+  additionalInfo?: Record<string, unknown>
+) {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const errorStack = error instanceof Error ? error.stack : undefined
+
+  logger.error(`[API Error] ${context}:`, {
+    message: errorMessage,
+    stack: errorStack,
+    ...additionalInfo,
+  })
+}

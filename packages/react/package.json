@@ -142,9 +142,9 @@
     "postbuild": "npm run build:types"
   },
   "peerDependencies": {
+    "framer-motion": "^12.23.25",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "framer-motion": "^12.23.25"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
@@ -159,9 +159,11 @@
     "@clarity-chat/types": "workspace:*",
     "@clarity-chat/utils": "workspace:*",
     "@radix-ui/react-slot": "^1.2.4",
+    "@types/dompurify": "^3.2.0",
     "@types/prismjs": "^1.26.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dompurify": "^3.3.1",
     "highlight.js": "^11.11.1",
     "js-tiktoken": "^1.0.21",
     "jszip": "^3.10.1",

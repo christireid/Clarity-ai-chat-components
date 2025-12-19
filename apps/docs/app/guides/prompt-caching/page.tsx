@@ -7,7 +7,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
-import { PropTable, type Prop } from '@/components/API/PropTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
 const cacheManagerOptions: Prop[] = [
@@ -443,7 +443,7 @@ setInterval(() => {
                   <h3 className="text-xl font-semibold mb-4">
                     PromptCacheManager Options
                   </h3>
-                  <PropTable props={cacheManagerOptions} />
+                  <PropsTable props={cacheManagerOptions} />
                 </div>
 
                 <div>
@@ -453,7 +453,7 @@ setInterval(() => {
                   <p className="text-text-secondary mb-4">
                     Call <code>cacheManager.getStats()</code> to retrieve:
                   </p>
-                  <PropTable props={cacheStatsProps} />
+                  <PropsTable props={cacheStatsProps} />
                 </div>
               </div>
             </section>

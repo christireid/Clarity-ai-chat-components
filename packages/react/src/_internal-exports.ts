@@ -32,7 +32,11 @@ export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
 export { ChatWindow } from './components/chat/chat-window'
 export { ChatInput } from './components/chat/chat-input'
 export { AdvancedChatInput } from './components/input/advanced-chat-input'
-export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
+export {
+  VirtualizedMessageList as MessageList,
+  VirtualizedMessageList,
+} from './components/chat/virtualized-message-list'
+export { ChatLayout } from './components/chat/chat-layout'
 export { StreamingMessage } from './components/message/streaming-message'
 export { ThinkingIndicator } from './components/message/thinking-indicator'
 
@@ -521,6 +525,9 @@ export type {
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
 
+// Security utilities
+export { SecurityManager, securityManager } from './utils/security'
+
 // Testing utilities (for test files only)
 export {
   createMockUseClarityChat,
@@ -534,6 +541,17 @@ export {
   assertMessageStructure,
   assertChatState,
 } from './test-utils/use-clarity-chat-test-utils'
+
+// Tabs components
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+
+// Console Alert Handler
+export {
+  ConsoleAlertHandler,
+  useConsoleAlerts,
+  type ConsoleAlert,
+  type ConsoleAlertHandlerProps,
+} from './components/feedback/console-alert-handler'
 
 // UI Primitives
 export * from './components/ui/skeleton'
