@@ -24,6 +24,7 @@ export function validatePath(
   baseDir: string = process.cwd()
 ): string {
   // Sanitize null bytes and control characters first
+  // eslint-disable-next-line no-control-regex
   const sanitized = userPath.replace(/\0/g, '').replace(/[\x00-\x1F\x7F]/g, '')
 
   // Normalize the path
@@ -37,19 +38,26 @@ export function validatePath(
 
   // Use platform-aware comparison
   if (!pathStartsWith(resolved, baseResolved)) {
-    throw new PermissionError(
-      'Invalid path: directory traversal detected',
-      { userPath, baseDir, resolved, baseResolved }
-    )
+    throw new PermissionError('Invalid path: directory traversal detected', {
+      userPath,
+      baseDir,
+      resolved,
+      baseResolved,
+    })
   }
 
   // Ensure the path separator follows the resolved path
   // This prevents /base/path from matching /base/pathfoo
-  if (resolved !== baseResolved && !pathStartsWith(resolved, baseResolved + path.sep)) {
-    throw new PermissionError(
-      'Invalid path: directory traversal detected',
-      { userPath, baseDir, resolved, baseResolved }
-    )
+  if (
+    resolved !== baseResolved &&
+    !pathStartsWith(resolved, baseResolved + path.sep)
+  ) {
+    throw new PermissionError('Invalid path: directory traversal detected', {
+      userPath,
+      baseDir,
+      resolved,
+      baseResolved,
+    })
   }
 
   return resolved
@@ -60,6 +68,7 @@ export function validatePath(
  */
 export function sanitizeString(input: string): string {
   // Remove null bytes and control characters
+  // eslint-disable-next-line no-control-regex
   return input
     .replace(/\0/g, '')
     .replace(/[\x00-\x1F\x7F]/g, '')
@@ -82,7 +91,9 @@ export function validateProjectPath(projectPath: string): string {
     sanitized.includes('../') ||
     sanitized.includes('..\\')
   ) {
-    throw new PermissionError('Invalid project path: contains parent directory reference')
+    throw new PermissionError(
+      'Invalid project path: contains parent directory reference'
+    )
   }
 
   // Validate path doesn't contain system directories
@@ -95,13 +106,15 @@ export function validateProjectPath(projectPath: string): string {
     '/sys',
     '/proc',
     'C:\\Windows',
-    'C:\\System32'
+    'C:\\System32',
   ]
 
   const lowerPath = sanitized.toLowerCase()
   for (const dangerous of dangerousPaths) {
     if (lowerPath.includes(dangerous.toLowerCase())) {
-      throw new PermissionError(`Invalid project path: cannot use system directory`)
+      throw new PermissionError(
+        `Invalid project path: cannot use system directory`
+      )
     }
   }
 

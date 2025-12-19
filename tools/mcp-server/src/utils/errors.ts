@@ -146,23 +146,19 @@ export class ValidationError extends MCPError {
     details?: Record<string, unknown>,
     context?: ErrorContext
   ) {
-    super(
-      ErrorCode.VALIDATION_ERROR,
-      message,
-      details,
-      context,
-      [
-        {
-          action: 'Check input format',
-          description: 'Verify that all required fields are provided and have valid values',
-        },
-        {
-          action: 'Review documentation',
-          description: 'Check the tool/resource documentation for expected input format',
-          docsUrl: 'clarity://docs/api-reference',
-        },
-      ]
-    )
+    super(ErrorCode.VALIDATION_ERROR, message, details, context, [
+      {
+        action: 'Check input format',
+        description:
+          'Verify that all required fields are provided and have valid values',
+      },
+      {
+        action: 'Review documentation',
+        description:
+          'Check the tool/resource documentation for expected input format',
+        docsUrl: 'clarity://docs/api-reference',
+      },
+    ])
     this.name = 'ValidationError'
     Object.setPrototypeOf(this, ValidationError.prototype)
   }
@@ -198,7 +194,10 @@ export class ValidationError extends MCPError {
     ).addSuggestion({
       action: 'Fix field type',
       description: `Change "${field}" to be of type ${expected}`,
-      example: expected === 'string' ? `"${field}": "text"` : `"${field}": ${expected === 'number' ? '123' : expected === 'boolean' ? 'true' : '[]'}`,
+      example:
+        expected === 'string'
+          ? `"${field}": "text"`
+          : `"${field}": ${expected === 'number' ? '123' : expected === 'boolean' ? 'true' : '[]'}`,
     })
   }
 
@@ -302,22 +301,17 @@ export class PermissionError extends MCPError {
     details?: Record<string, unknown>,
     context?: ErrorContext
   ) {
-    super(
-      ErrorCode.PERMISSION_DENIED,
-      message,
-      details,
-      context,
-      [
-        {
-          action: 'Check permissions',
-          description: 'Verify you have the required permissions for this operation',
-        },
-        {
-          action: 'Check path validity',
-          description: 'Ensure the path is within allowed directories',
-        },
-      ]
-    )
+    super(ErrorCode.PERMISSION_DENIED, message, details, context, [
+      {
+        action: 'Check permissions',
+        description:
+          'Verify you have the required permissions for this operation',
+      },
+      {
+        action: 'Check path validity',
+        description: 'Ensure the path is within allowed directories',
+      },
+    ])
     this.name = 'PermissionError'
     Object.setPrototypeOf(this, PermissionError.prototype)
   }
@@ -353,7 +347,8 @@ export class RateLimitError extends MCPError {
         },
         {
           action: 'Use batch operations',
-          description: 'Combine multiple operations into single requests where possible',
+          description:
+            'Combine multiple operations into single requests where possible',
         },
       ]
     )
@@ -374,23 +369,17 @@ export class ConfigurationError extends MCPError {
     details?: Record<string, unknown>,
     context?: ErrorContext
   ) {
-    super(
-      ErrorCode.CONFIGURATION_ERROR,
-      message,
-      details,
-      context,
-      [
-        {
-          action: 'Check configuration',
-          description: 'Review your configuration file for errors',
-        },
-        {
-          action: 'Use validate_config',
-          description: 'Run the validate_config tool to identify issues',
-          example: 'validate_config({ projectPath: "./your-project" })',
-        },
-      ]
-    )
+    super(ErrorCode.CONFIGURATION_ERROR, message, details, context, [
+      {
+        action: 'Check configuration',
+        description: 'Review your configuration file for errors',
+      },
+      {
+        action: 'Use validate_config',
+        description: 'Run the validate_config tool to identify issues',
+        example: 'validate_config({ projectPath: "./your-project" })',
+      },
+    ])
     this.name = 'ConfigurationError'
     Object.setPrototypeOf(this, ConfigurationError.prototype)
   }
@@ -437,11 +426,7 @@ export class PluginError extends MCPError {
 export class TimeoutError extends MCPError {
   public readonly timeoutMs: number
 
-  constructor(
-    operation: string,
-    timeoutMs: number,
-    context?: ErrorContext
-  ) {
+  constructor(operation: string, timeoutMs: number, context?: ErrorContext) {
     super(
       ErrorCode.TIMEOUT,
       `Operation "${operation}" timed out after ${timeoutMs}ms`,
@@ -553,7 +538,6 @@ export async function withErrorHandling<T>(
     return await operation()
   } catch (error) {
     if (error instanceof MCPError) {
-      error.context?.requestId
       throw error
     }
 
@@ -606,7 +590,10 @@ export function getRetryDelay(error: unknown): number {
   if (error instanceof TimeoutError) {
     return 1000 // 1 second default
   }
-  if (error instanceof MCPError && error.code === ErrorCode.SERVICE_UNAVAILABLE) {
+  if (
+    error instanceof MCPError &&
+    error.code === ErrorCode.SERVICE_UNAVAILABLE
+  ) {
     return 5000 // 5 seconds for service unavailable
   }
   return 0
