@@ -102,7 +102,7 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
       // Load Mixpanel library
       const script = document.createElement('script')
       script.async = true
-      script.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js'
+      script.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min'
 
       await new Promise((resolve, reject) => {
         script.onload = resolve
@@ -161,8 +161,7 @@ export function createPostHogProvider(
       // Load PostHog library
       const script = document.createElement('script')
       script.async = true
-      script.src =
-        'https://cdn.jsdelivr.net/npm/posthog-js@1/dist/posthog.min.js'
+      script.src = 'https://cdn.jsdelivr.net/npm/posthog-js@1/dist/posthog.min'
 
       await new Promise((resolve, reject) => {
         script.onload = resolve
@@ -218,7 +217,7 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
       // Load Amplitude library
       const script = document.createElement('script')
       script.async = true
-      script.src = 'https://cdn.amplitude.com/libs/amplitude-8.21.4-min.gz.js'
+      script.src = 'https://cdn.amplitude.com/libs/amplitude-8.21.4-min.gz'
 
       await new Promise((resolve, reject) => {
         script.onload = resolve

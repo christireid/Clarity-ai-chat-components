@@ -79,8 +79,8 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        logger.error('Streaming error:', error)
-        controller.logger.error(error)
+        console.error('Streaming error:', error)
+        controller.console.error(error)
       }
     },
   })
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    logger.error('API error:', error)
+    console.error('API error:', error)
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import clsx from 'clsx'

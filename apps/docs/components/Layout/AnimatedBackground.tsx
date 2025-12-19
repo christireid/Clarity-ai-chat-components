@@ -17,13 +17,12 @@ import {
 
 // Dynamically import Particles to reduce initial bundle size
 // This is a heavy library that's only needed for the background animation
-// @tsparticles/react exports Particles as both default and named export
+// Next.js dynamic requires the returned module to have a `default` export
 const Particles = dynamic(
   () =>
-    import('@tsparticles/react').then((mod) => {
-      // Handle both default and named exports for maximum compatibility
-      return mod.default || mod.Particles
-    }),
+    import('@tsparticles/react').then((mod) => ({
+      default: mod.default || mod.Particles,
+    })),
   {
     ssr: false,
     loading: () => null, // Render nothing while loading
@@ -36,7 +35,7 @@ interface AnimatedBackgroundProps {
 
 /**
  * AnimatedBackground Component
- * 
+ *
  * Provides an animated particle background for the home page.
  * Features:
  * - Theme-aware particle colors (dark/light mode)
@@ -44,9 +43,9 @@ interface AnimatedBackgroundProps {
  * - High-performance with 60fps target
  * - Non-intrusive (behind content, pointer-events: none)
  * - Uses React concurrent features (useDeferredValue) for smooth theme transitions
- * 
+ *
  * @param className - Optional additional CSS classes
- * 
+ *
  * @example
  * ```tsx
  * <AnimatedBackground className="custom-class" />
@@ -57,7 +56,7 @@ export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
   const prefersReducedMotion = usePrefersReducedMotion()
   const { isInitialized, hasError } = useParticlesEngine()
   const isDarkRaw = useIsDark()
-  
+
   // Use deferred value for theme to prevent blocking renders during theme transitions
   const isDark = useDeferredValue(isDarkRaw)
 

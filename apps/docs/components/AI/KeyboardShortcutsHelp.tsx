@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Command } from 'lucide-react'
@@ -14,11 +15,16 @@ interface KeyboardShortcut {
 const SHORTCUTS: KeyboardShortcut[] = [
   // Navigation
   {
-    keys: ['Cmd/Ctrl', 'A'],
+    keys: ['Cmd/Ctrl', '.'],
     description: 'Open/close assistant',
     category: 'navigation',
   },
   { keys: ['Esc'], description: 'Close assistant', category: 'navigation' },
+  {
+    keys: ['Cmd/Ctrl', 'K'],
+    description: 'Toggle message search',
+    category: 'navigation',
+  },
   { keys: ['Tab'], description: 'Navigate forward', category: 'navigation' },
   {
     keys: ['Shift', 'Tab'],

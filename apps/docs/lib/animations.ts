@@ -183,7 +183,7 @@ export const iconHover = {
 export const shake: Variants = {
   animate: {
     x: [0, -10, 10, -10, 10, 0],
-    transition: { duration: 0.4 },
+    transition: { duration: durations.slow },
   },
 }
 
@@ -195,7 +195,7 @@ export const pulse: Variants = {
     scale: [1, 1.05, 1],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -314,7 +314,7 @@ export const shimmer = {
   animate: {
     backgroundPosition: ['0% 0%', '100% 0%'],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -333,7 +333,7 @@ export const glow: Variants = {
       '0 0 0 0 rgba(59, 130, 246, 0)',
     ],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -415,6 +415,50 @@ export const createViewport = (
   margin,
   amount,
 })
+
+/**
+ * Create a fade animation variant with customizable duration
+ */
+export const createFadeVariant = (
+  duration: keyof typeof durations = 'normal'
+): Variants => ({
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: { duration: durations[duration] },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: durations[duration] },
+  },
+})
+
+/**
+ * Create a slide animation variant with customizable direction and duration
+ */
+export const createSlideVariant = (
+  direction: 'up' | 'down' | 'left' | 'right' = 'up',
+  distance: number = 20,
+  duration: keyof typeof durations = 'normal'
+): Variants => {
+  const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
+  const value =
+    direction === 'down' || direction === 'right' ? distance : -distance
+
+  return {
+    initial: { opacity: 0, [axis]: value },
+    animate: {
+      opacity: 1,
+      [axis]: 0,
+      transition: { duration: durations[duration], ease: easings.easeOut },
+    },
+    exit: {
+      opacity: 0,
+      [axis]: -value,
+      transition: { duration: durations[duration], ease: easings.easeOut },
+    },
+  }
+}
 
 // =============================================================================
 // PRESETS FOR COMMON COMPONENTS
@@ -508,4 +552,8 @@ export default {
   getAccessibleVariants,
   createViewport,
   confettiParticles,
+
+  // Animation factories
+  createFadeVariant,
+  createSlideVariant,
 }

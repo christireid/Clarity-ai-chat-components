@@ -251,7 +251,7 @@ Object.defineProperty(global, 'navigator', {
       writeText: vi.fn(() => Promise.resolve()),
       readText: vi.fn(() => Promise.resolve('')),
     },
-    userAgent: 'node.js',
+    userAgent: 'node',
     language: 'en-US',
     languages: ['en-US'],
     onLine: true,

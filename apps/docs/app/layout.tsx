@@ -24,7 +24,7 @@ const DocsAssistant = dynamic(() =>
 // Lazy load scroll progress for better initial bundle
 const ScrollProgress = dynamic(() =>
   import('@/components/UI/ScrollProgress').then((mod) => ({
-    ScrollProgress: mod.ScrollProgress,
+    default: mod.ScrollProgress,
   }))
 )
 

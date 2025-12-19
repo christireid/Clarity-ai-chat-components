@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import Link from 'next/link'
 import { ExternalLink, BookOpen, Github, Twitter, Youtube } from 'lucide-react'
 import { motion } from 'framer-motion'

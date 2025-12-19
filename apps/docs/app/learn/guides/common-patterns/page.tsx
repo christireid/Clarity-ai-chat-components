@@ -1,5 +1,3 @@
-'use client'
-
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -314,7 +312,10 @@ function SidebarFallback() {
       <section className="my-12">
         <h2 id="streaming-patterns">Streaming Patterns</h2>
 
-        <p>Handle streaming responses with proper loading states and cancellation:</p>
+        <p>
+          Handle streaming responses with proper loading states and
+          cancellation:
+        </p>
 
         <EnhancedCodeBlock
           code={`import { useClarityChat, StreamingMessage } from '@clarity-chat/react'
@@ -396,7 +397,9 @@ function StreamingChat() {
       <section className="my-12">
         <h2 id="state-persistence">State Persistence</h2>
 
-        <p>Persist chat state across sessions with localStorage or IndexedDB:</p>
+        <p>
+          Persist chat state across sessions with localStorage or IndexedDB:
+        </p>
 
         <EnhancedCodeBlock
           code={`import { useClarityChat, useIndexedDB } from '@clarity-chat/react'
@@ -486,9 +489,7 @@ function SimplePersistence() {
       <section className="my-12">
         <h2 id="optimistic-updates">Optimistic Updates</h2>
 
-        <p>
-          Show user messages immediately for better perceived performance:
-        </p>
+        <p>Show user messages immediately for better perceived performance:</p>
 
         <EnhancedCodeBlock
           code={`import { useClarityChat, type Message } from '@clarity-chat/react'
@@ -566,9 +567,7 @@ function OptimisticChat() {
       <section className="my-12">
         <h2 id="conditional-rendering">Conditional Feature Loading</h2>
 
-        <p>
-          Load features only when needed to reduce bundle size:
-        </p>
+        <p>Load features only when needed to reduce bundle size:</p>
 
         <EnhancedCodeBlock
           code={`import { lazy, Suspense } from 'react'
@@ -625,9 +624,7 @@ function AutoLoadingChat() {
       <section className="my-12">
         <h2 id="testing-patterns">Testing Patterns</h2>
 
-        <p>
-          Test chat components with mock providers and utilities:
-        </p>
+        <p>Test chat components with mock providers and utilities:</p>
 
         <EnhancedCodeBlock
           code={`import { render, screen, waitFor } from '@testing-library/react'

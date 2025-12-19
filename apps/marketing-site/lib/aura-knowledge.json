@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-12-19T13:27:03.998Z",
+  "lastUpdated": "2025-12-19T21:16:46.327Z",
   "documentCount": 756,
   "chunkCount": 5979,
   "chunks": [
@@ -29835,22 +29835,22 @@
     },
     {
       "title": "README.md > **💰 Token Optimization Suite** → _Save 60-90% on AI costs_",
-      "content": "### **💰 Token Optimization Suite** → _Save 60-90% on AI costs_\n\n```tsx\nimport { useTokenOptimizationEnhanced } from '@clarity-chat/react'\n\nconst { optimizeData, calculateCost } = useTokenOptimizationEnhanced({\n  enableTOON: true, // 30-60% token savings\n  enableCaching: true, // 50-90% with prompt caching\n  enableCompression: true, // 20-35% additional savings\n})\n\n// Result: $0.05 instead of $0.12 per request\n```",
+      "content": "### **💰 Token Optimization Suite** → _Save 60-90% on AI costs_\n\n```tsx\nimport { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/react'\n\n// Wrap your app with TokenBudgetProvider for automatic optimization\n;<TokenBudgetProvider maxTokens={4000}>\n  <ClarityChat api=\"/api/chat\" />\n</TokenBudgetProvider>\n\n// Or use the hook for custom control\nconst { remaining, usage, isNearLimit } = useTokenBudget()\n// Result: $0.05 instead of $0.12 per request\n```",
       "sourcePath": "README.md"
     },
     {
       "title": "README.md > **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_",
-      "content": "### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_\n\n```tsx\nimport { useSecureChat } from '@clarity-chat/react'\n\nconst { sendMessage } = useSecureChat({\n  config: {\n    promptInjection: { enabled: true }, // 90%+ detection rate\n    pii: { enabled: true }, // GDPR/HIPAA compliant\n    jailbreakPrevention: { enabled: true }, // 99% prevention\n  },\n})\n```",
+      "content": "### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_\n\n```tsx\nimport { ClarityChatPresets } from '@clarity-chat/react'\n\n// Enterprise preset includes security by default\n;<ClarityChatPresets.Enterprise\n  api=\"/api/chat\"\n  enableSafety // Prompt injection detection (90%+)\n  enableAnalytics // Full observability\n/>\n\n// Security features: prompt injection detection, PII masking, jailbreak prevention\n```",
       "sourcePath": "README.md"
     },
     {
       "title": "README.md > **🎨 Beautiful Design System** → _13 themes, 150+ animations_",
-      "content": "### **🎨 Beautiful Design System** → _13 themes, 150+ animations_\n\n```tsx\nimport { ThemeProvider, themes } from '@clarity-chat/react'\n\n<ThemeProvider theme={themes.glassmorphism}>  // ✨ Modern glass effect\n<ThemeProvider theme={themes.ocean}>           // 🌊 Ocean vibes\n<ThemeProvider theme={themes.neon}>            // 💜 Cyberpunk neon\n// ... and 10 more!\n```",
+      "content": "### **🎨 Beautiful Design System** → _13 themes, 150+ animations_\n\n```tsx\nimport { ThemeProvider, ClarityChat } from '@clarity-chat/react'\n\n<ThemeProvider theme=\"glassmorphism\">  {/* ✨ Modern glass effect */}\n<ThemeProvider theme=\"ocean\">           {/* 🌊 Ocean vibes */}\n<ThemeProvider theme=\"neon\">            {/* 💜 Cyberpunk neon */}\n  <ClarityChat api=\"/api/chat\" />\n</ThemeProvider>\n// Also: default, midnight, sunset, forest, rose, slate, emerald, amber + 2 more!\n```",
       "sourcePath": "README.md"
     },
     {
       "title": "README.md > **⚡ Streaming & Real-Time** → _SSE & WebSocket support_",
-      "content": "### **⚡ Streaming & Real-Time** → _SSE & WebSocket support_\n\n```tsx\nimport { useStreamingSSE } from '@clarity-chat/react'\n\nconst { streamMessage, isStreaming } = useStreamingSSE({\n  endpoint: '/api/chat/stream',\n  autoReconnect: true, // Exponential backoff\n  reconnectDelay: 1000,\n})\n```\n\n<br />\n\n---\n\n<br />",
+      "content": "### **⚡ Streaming & Real-Time** → _SSE & WebSocket support_\n\n```tsx\nimport { ClarityChat, useClarityChat } from '@clarity-chat/react'\n\n// Streaming is enabled by default - just works!\n;<ClarityChat api=\"/api/chat\" />\n\n// Or control streaming with the hook\nconst { messages, isStreaming, stop } = useClarityChat({\n  api: '/api/chat',\n  // Auto-reconnect and exponential backoff built-in\n})\n```\n\n<br />\n\n---\n\n<br />",
       "sourcePath": "README.md"
     },
     {
@@ -29860,7 +29860,7 @@
     },
     {
       "title": "README.md > Quick Patterns",
-      "content": "### Quick Patterns\n\n<details>\n<summary><strong>🧠 Chat with Memory</strong></summary>\n\n```tsx\nimport { ClarityChatPresets } from '@clarity-chat/react'\n\n;<ClarityChatPresets.WithMemory api=\"/api/chat\" memoryStrategy=\"sliding-window\" maxTokens={4000} />\n```\n\n</details>\n\n<details>\n<summary><strong>🏢 Enterprise Chat</strong></summary>\n\n```tsx\nimport { ClarityChatPresets } from '@clarity-chat/react'\n\n;<ClarityChatPresets.Enterprise api=\"/api/chat\" enableRAG enableSafety enableAnalytics />\n```\n\n</details>\n\n<details>\n<summary><strong>🎨 Custom Theme</strong></summary>\n\n```tsx\nimport { ThemeProvider, ClarityChat } from '@clarity-chat/react'\n\n;<ThemeProvider theme=\"ocean\">\n  <ClarityChat api=\"/api/chat\" />\n</ThemeProvider>\n```\n\n</details>\n\n<br />\n\n---\n\n<br />",
+      "content": "### Quick Patterns\n\n<details>\n<summary><strong>🧠 Chat with Memory</strong></summary>\n\n```tsx\nimport { ClarityChatPresets } from '@clarity-chat/react'\n;<ClarityChatPresets.WithMemory api=\"/api/chat\" memoryStrategy=\"sliding-window\" maxTokens={4000} />\n```\n\n</details>\n\n<details>\n<summary><strong>🏢 Enterprise Chat</strong></summary>\n\n```tsx\nimport { ClarityChatPresets } from '@clarity-chat/react'\n;<ClarityChatPresets.Enterprise api=\"/api/chat\" enableRAG enableSafety enableAnalytics />\n```\n\n</details>\n\n<details>\n<summary><strong>🎨 Custom Theme</strong></summary>\n\n```tsx\nimport { ThemeProvider, ClarityChat } from '@clarity-chat/react'\n;<ThemeProvider theme=\"ocean\">\n  <ClarityChat api=\"/api/chat\" />\n</ThemeProvider>\n```\n\n</details>\n\n<br />\n\n---\n\n<br />",
       "sourcePath": "README.md"
     },
     {
