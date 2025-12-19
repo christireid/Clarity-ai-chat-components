@@ -170,6 +170,7 @@ Enterprise features for production applications with compliance requirements:
 - [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
 - [Dev Tools](https://clarity-chat.dev/tools/dev-tools): API inspector, mock providers, performance profiler
 - [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
+- [ROI Calculator](https://clarity-chat.dev/tools/roi-calculator): Estimate cost savings from TOON format, prompt caching, and token optimization
 
 ## AI-Optimized APIs
 

@@ -441,11 +441,11 @@ The documentation site has been remediated and is ready for commercial launch:
 
 **Concerns** (Status):
 
-- No ROI calculator → ⏳ Future enhancement
+- No ROI calculator → ✅ ROI Calculator at /tools/roi-calculator
 - No comparison with competitors → ✅ "Why Clarity" page at /learn/why-clarity
 - Trial/onboarding not smooth → ✅ Quick Start improved with "Fastest Start"
 
-**All critical concerns addressed. ROI calculator is a future enhancement.**
+**All concerns addressed.**
 
 ---
 
@@ -470,10 +470,10 @@ Available but not in primary navigation (specialized topics)
 | Task                          | Status    | Notes                                                           |
 | ----------------------------- | --------- | --------------------------------------------------------------- |
 | "Why Clarity" comparison page | ✅ Done   | /learn/why-clarity with feature comparison, benefits, use cases |
-| ROI calculator tool           | ⏳ Future | Low priority - Complex feature requiring calculation logic      |
+| ROI calculator tool           | ✅ Done   | /tools/roi-calculator with interactive cost savings calculator  |
 | Interactive demos             | ⏳ Future | Low priority - Already have /demos section with 11 demos        |
 
-**All actionable Phase 8 items complete.** ROI calculator is a future enhancement.
+**All actionable Phase 8 items complete.**
 
 ### Phase 9: Continuous Improvement
 
@@ -672,12 +672,12 @@ high-priority, and commercial gaps.
 
 - ✅ "Why Clarity" comparison page with feature matrix, benefits, and use cases
 - ✅ Navigation and llms.txt updated with comparison page
+- ✅ ROI Calculator tool at /tools/roi-calculator
 
 ### Remaining Future Work (Phase 9)
 
 | Priority | Task                         | Effort    |
 | -------- | ---------------------------- | --------- |
-| Low      | ROI calculator               | 1 week    |
 | Low      | Automated example validation | 1-2 weeks |
 
 **Documentation Readiness**: Production Ready **Commercial Readiness**: Ready for Launch
@@ -695,6 +695,8 @@ documentation site is now production-ready with:
 - **Enterprise documentation** (RBAC, SSO, Multi-tenancy, Audit Logging)
 - **AI-optimized APIs** (28 components, 23+ hooks in curated AI endpoints)
 - **"Why Clarity" comparison page** for commercial positioning
+- **ROI Calculator** for cost savings estimation
+- **TOON Format utilities** documentation for token optimization
 - **llms.txt** for LLM-friendly documentation access
 - **MCP server** for AI assistant integration
 
