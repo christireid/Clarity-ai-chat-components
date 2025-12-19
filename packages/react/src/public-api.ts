@@ -80,6 +80,10 @@ export {
 // ============================================================================
 
 export { ChatWindow } from './components/chat/chat-window'
+export {
+  FloatingChatWidget,
+  type FloatingChatWidgetProps,
+} from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
 export { default as MessageList } from './components/chat/virtualized-message-list'
 export { StreamingMessage } from './components/message/streaming-message'
