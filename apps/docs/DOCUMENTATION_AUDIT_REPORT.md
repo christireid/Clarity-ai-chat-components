@@ -82,7 +82,7 @@ The documentation site has been remediated and is ready for commercial launch:
 | useClarityChatWithTools | ✅ Complete | ✅ Yes | Good |
 | useClarityObject | ✅ Complete | ✅ Yes | Zod validation examples added (Phase 3) |
 | useChatHandlers | ✅ Complete | ✅ Yes | Good |
-| useChatEnhanced | ⚠️ Partial | ⚠️ Partial | Naming confusion with useChat |
+| useChatEnhanced | ✅ Complete | ✅ Yes | Hook selector wizard guides users to correct hook |
 | useChat | ✅ Complete | ✅ Yes | Deprecation notice added pointing to useClarityChat |
 | useStreamingSSE | ✅ Complete | ✅ Yes | Good |
 | useStreamingWebSocket | ✅ Complete | ✅ Yes | Comprehensive docs (940 lines) |
@@ -98,8 +98,8 @@ The documentation site has been remediated and is ready for commercial launch:
 | `lazyLoad*` functions | Utility | Medium | ✅ Documented (Bundle Size guide) |
 | TOON format utilities | Utility | Medium | ⏳ Future work |
 | Prompt caching utilities | Utility | High | ✅ Documented (Prompt Caching guide) |
-| Vector store integrations | Feature | High | ⚠️ Partial (RAG guide exists) |
-| Agent orchestration | Feature | High | ⚠️ Partial (Agents guide exists) |
+| Vector store integrations | Feature | High | ✅ Complete (RAG guide with vector store pipeline) |
+| Agent orchestration | Feature | High | ✅ Complete (Agents guide with ReAct pattern) |
 | FAQ Page | Help | High | ✅ Created (Phase 2) |
 | Common Patterns guide | Guide | High | ✅ Created (Phase 4) |
 | createMemoryStore utility | Utility | High | ✅ Created (Phase 4) |
@@ -115,7 +115,7 @@ The documentation site has been remediated and is ready for commercial launch:
 | Export | Category | File Location | Priority | Status |
 |--------|----------|---------------|----------|--------|
 | `createMemoryStore` | Memory | core.ts | High | ✅ Documented (Phase 4) |
-| `useChatWithOperations` | Hook | core.ts | High | ⚠️ Deprecated → useClarityChat |
+| `useChatWithOperations` | Hook | core.ts | High | ✅ Deprecated (redirects to useClarityChat) |
 | `useChatSimple` | Hook | core.ts | Medium | ⏳ Internal/Low priority |
 | `ChatWithErrorBoundary` | Component | core.ts | Medium | ⏳ Internal/Low priority |
 | `ClarityChatSimple` | Component | core.ts | Medium | ⏳ Internal/Low priority |
@@ -140,7 +140,7 @@ The documentation site has been remediated and is ready for commercial launch:
 |------|-------|----------|--------|
 | Quick Start | Uses `Message` type but references old interface | Medium | ✅ Fixed - proper Message interface used |
 | API Reference | Some props documented don't match implementation | Medium | ✅ Fixed - onMessageFeedback type corrected |
-| Hook Comparison | Missing newer hooks | Low | ⚠️ Low priority |
+| Hook Comparison | Missing newer hooks | Low | ✅ Hook selector wizard covers all hooks |
 
 #### Documentation Accuracy Issues
 
@@ -154,26 +154,30 @@ The documentation site has been remediated and is ready for commercial launch:
 
 ## Phase 3: Information Architecture & Learning Flow
 
-### Current Navigation Structure
+### Current Navigation Structure ✅ UPDATED (Phase 7)
 
 ```
 ├── Learn (Getting Started)
 │   ├── Quick Start ✅
 │   ├── Installation ✅
+│   ├── Why Clarity ✅ (NEW)
 │   ├── Tutorial ✅
 │   ├── Playground ✅
 │   └── What's New ✅
 ├── Concepts
 │   ├── Components ✅
-│   ├── Hooks ⚠️
+│   ├── Hooks ✅ (with selector wizard)
 │   ├── Theming ✅
-│   └── Animations ⚠️
-├── Guides (63 pages!)
-│   └── [Too many undifferentiated guides]
+│   └── Animations ✅
+├── Guides (Reorganized into tiers)
+│   ├── Basic (6 guides) ✅
+│   ├── Intermediate (9 guides) ✅
+│   ├── Advanced (11 guides) ✅
+│   └── Enterprise (7 guides) ✅
 ├── Reference
 │   ├── Components (~70 pages) ✅
-│   ├── Hooks (~45 pages) ✅
-│   └── API ⚠️
+│   ├── Hooks (~45 pages + selector) ✅
+│   └── API ✅
 ├── Cookbook (20+ recipes) ✅
 ├── Examples (15+ examples) ✅
 └── Enterprise ✅
@@ -329,7 +333,7 @@ The documentation site has been remediated and is ready for commercial launch:
 | Deprecation notices on legacy hooks | ✅ Done | useChat page has deprecation notice |
 | Complete useClarityObject docs | ✅ Done | Zod runtime validation example added |
 | Complete useStreamingWebSocket docs | ✅ Done | Already comprehensive (940 lines) |
-| Document useChatWithOperations | ⚠️ N/A | Deprecated - points to useClarityChat with enableOperations |
+| Document useChatWithOperations | ✅ N/A | Deprecated - useClarityChat with enableOperations is the replacement |
 
 ### Phase 5.3: Information Architecture Refactor ✅ COMPLETE
 
