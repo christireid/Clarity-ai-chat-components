@@ -114,6 +114,34 @@ export default function App() {
 > **Note:** The `'use client'` directive is only needed for Next.js App Router. For Vite, Remix, or
 > other frameworks, you can omit it.
 
+### Option C: Headless Mode (Logic Only)
+
+For maximum control, use the headless hook directly. This allows you to build your own UI components
+from scratch while leveraging Clarity's logic (state management, streaming, etc.) without the
+memory/opinionated overhead.
+
+```tsx
+import { useHeadlessChat } from '@clarity-chat/react'
+
+export default function CustomChat() {
+  const { messages, append, isLoading } = useHeadlessChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      {/* Your custom input */}
+    </div>
+  )
+}
+```
+
+> **Why Headless?** Perfect for when you need complete control over the DOM structure, or when
+> integrating with an existing design system like Radix UI or Ariakit.
+
 ---
 
 ## Initialization Options
@@ -329,7 +357,6 @@ Enable context-aware conversations:
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-
 ;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
@@ -339,7 +366,6 @@ Choose from 11 built-in themes:
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
-
 ;<ThemeProvider theme="glassmorphism">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>
@@ -353,7 +379,6 @@ Gate features based on license plan:
 
 ```tsx
 import { LicenseGate } from '@clarity-chat/react'
-
 ;<LicenseGate plan="pro" fallback={<UpgradePrompt />}>
   <AdvancedFeatures />
 </LicenseGate>

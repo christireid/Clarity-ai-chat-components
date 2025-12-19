@@ -30,64 +30,74 @@
     "email": "hello@codeandclarity.com",
     "url": "https://codeandclarity.com"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./core": {
       "types": "./dist/core.d.ts",
-      "import": "./dist/core.mjs",
-      "require": "./dist/core.js"
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
     },
     "./core-minimal": {
       "types": "./dist/core-minimal.d.ts",
-      "import": "./dist/core-minimal.mjs",
-      "require": "./dist/core-minimal.js"
+      "import": "./dist/core-minimal.js",
+      "require": "./dist/core-minimal.cjs"
     },
     "./animations": {
       "types": "./dist/animations/index.d.ts",
-      "import": "./dist/animations/index.mjs",
-      "require": "./dist/animations/index.js"
+      "import": "./dist/animations/index.js",
+      "require": "./dist/animations/index.cjs"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
     },
     "./prompt": {
       "types": "./dist/prompt/index.d.ts",
-      "import": "./dist/prompt/index.mjs",
-      "require": "./dist/prompt/index.js"
+      "import": "./dist/prompt/index.js",
+      "require": "./dist/prompt/index.cjs"
     },
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
-      "import": "./dist/analytics/index.mjs",
-      "require": "./dist/analytics/index.js"
+      "import": "./dist/analytics/index.js",
+      "require": "./dist/analytics/index.cjs"
     },
     "./memory": {
       "types": "./dist/memory/index.d.ts",
-      "import": "./dist/memory/index.mjs",
-      "require": "./dist/memory/index.js"
+      "import": "./dist/memory/index.js",
+      "require": "./dist/memory/index.cjs"
     },
     "./adapters": {
       "types": "./dist/adapters/index.d.ts",
-      "import": "./dist/adapters/index.mjs",
-      "require": "./dist/adapters/index.js"
+      "import": "./dist/adapters/index.js",
+      "require": "./dist/adapters/index.cjs"
     },
     "./test-utils": {
       "types": "./dist/test-utils.d.ts",
-      "import": "./dist/test-utils.mjs",
-      "require": "./dist/test-utils.js"
+      "import": "./dist/test-utils.js",
+      "require": "./dist/test-utils.cjs"
     },
     "./internal": {
       "types": "./dist/internal.d.ts",
-      "import": "./dist/internal.mjs",
-      "require": "./dist/internal.js"
+      "import": "./dist/internal.js",
+      "require": "./dist/internal.cjs"
+    },
+    "./slim": {
+      "types": "./dist/slim.d.ts",
+      "import": "./dist/slim.js",
+      "require": "./dist/slim.cjs"
+    },
+    "./namespaced": {
+      "types": "./dist/namespaced.d.ts",
+      "import": "./dist/namespaced.js",
+      "require": "./dist/namespaced.cjs"
     },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css"
@@ -111,8 +121,8 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "node scripts/build-production.cjs",
-    "build:sequential": "node scripts/build-sequential.js",
+    "build": "node scripts/build-sequential.mjs",
+    "build:production": "node scripts/build-production.cjs",
     "build:parallel": "tsup",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "dev": "tsup --watch",

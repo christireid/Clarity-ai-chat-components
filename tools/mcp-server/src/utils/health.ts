@@ -7,8 +7,13 @@
  * @module utils/health
  */
 
-import { logger } from './logger.js'
-import { Cache, projectCache, modelCache, exampleCache } from './cache.js'
+import { logger as _logger } from './logger.js'
+import {
+  Cache as _Cache,
+  projectCache,
+  modelCache,
+  exampleCache,
+} from './cache.js'
 
 // =============================================================================
 // Health Check Types
@@ -113,12 +118,14 @@ class MetricsCollector {
   /**
    * Enforce map size limits by removing least-used entries
    */
-  private enforceMapLimit<K, V extends number>(map: Map<K, V>, limit: number): void {
+  private enforceMapLimit<K, V extends number>(
+    map: Map<K, V>,
+    limit: number
+  ): void {
     if (map.size <= limit) return
 
     // Sort by count (ascending) and remove lowest entries
-    const entries = Array.from(map.entries())
-      .sort(([, a], [, b]) => a - b)
+    const entries = Array.from(map.entries()).sort(([, a], [, b]) => a - b)
 
     const toRemove = map.size - limit
     for (let i = 0; i < toRemove; i++) {
@@ -162,7 +169,10 @@ class MetricsCollector {
    */
   recordResourceRead(uri: string): void {
     if (!this.resourceReads.has(uri)) {
-      this.enforceMapLimit(this.resourceReads, METRICS_LIMITS.maxResourceEntries - 1)
+      this.enforceMapLimit(
+        this.resourceReads,
+        METRICS_LIMITS.maxResourceEntries - 1
+      )
     }
     this.resourceReads.set(uri, (this.resourceReads.get(uri) || 0) + 1)
   }
@@ -285,8 +295,7 @@ class HealthChecker {
         results.push({
           name,
           status: HealthStatus.UNHEALTHY,
-          message:
-            error instanceof Error ? error.message : 'Unknown error',
+          message: error instanceof Error ? error.message : 'Unknown error',
           duration: Date.now() - startTime,
         })
       }

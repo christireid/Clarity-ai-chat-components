@@ -6,6 +6,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { Citation } from '@clarity-chat/react'
 
 // Disable static optimization
 export const dynamic = 'force-dynamic'
@@ -422,17 +423,15 @@ export default function RAGWorkbenchPage() {
                               <p className="text-xs font-semibold mb-2">
                                 📚 Sources:
                               </p>
-                              {message.sources.map((source, idx) => (
-                                <details key={idx} className="text-xs mb-1">
-                                  <summary className="cursor-pointer hover:underline">
-                                    {source.documentName} (score:{' '}
-                                    {source.relevanceScore.toFixed(1)})
-                                  </summary>
-                                  <p className="mt-1 pl-3 text-gray-600">
-                                    {source.text}
-                                  </p>
-                                </details>
-                              ))}
+                              <div className="flex flex-col gap-2">
+                                {message.sources.map((source, idx) => (
+                                  <Citation
+                                    key={idx}
+                                    source={source}
+                                    index={idx + 1}
+                                  />
+                                ))}
+                              </div>
                             </div>
                           )}
 

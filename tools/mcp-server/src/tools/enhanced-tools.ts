@@ -20,9 +20,16 @@ import {
 } from '../utils/health.js'
 import { globalRateLimiter, toolRateLimiter } from '../utils/rate-limiter.js'
 import { projectCache, modelCache, exampleCache } from '../utils/cache.js'
-import { searchComponents, searchHooks, getComponent, getHook, COMPONENTS, HOOKS } from '../data/component-registry.js'
+import {
+  searchComponents,
+  searchHooks,
+  getComponent,
+  getHook,
+  COMPONENTS,
+  HOOKS as _HOOKS,
+} from '../data/component-registry.js'
 import { getAllModels } from '../data/model-registry.js'
-import { z } from 'zod'
+import { z as _z } from 'zod'
 
 // =============================================================================
 // Version and Counts Configuration
@@ -72,7 +79,8 @@ Example output:
       properties: {
         verbose: {
           type: 'boolean',
-          description: 'Include detailed metrics and diagnostics (default: false)',
+          description:
+            'Include detailed metrics and diagnostics (default: false)',
         },
       },
       required: [],
@@ -121,7 +129,8 @@ Example:
         items: {
           type: 'array',
           items: { type: 'string' },
-          description: 'List of component or hook names to get documentation for',
+          description:
+            'List of component or hook names to get documentation for',
         },
         type: {
           type: 'string',
@@ -300,7 +309,10 @@ Returns: Search results with scores and match highlights.`,
         },
         types: {
           type: 'array',
-          items: { type: 'string', enum: ['component', 'hook', 'example', 'model'] },
+          items: {
+            type: 'string',
+            enum: ['component', 'hook', 'example', 'model'],
+          },
           description: 'Types to search (default: all)',
         },
         limit: {
@@ -447,7 +459,9 @@ export async function handleEnhancedToolCall(
       return handleFeatureMatrix(args)
 
     default:
-      throw new ValidationError(`Unknown enhanced tool: ${name}`, { tool: name })
+      throw new ValidationError(`Unknown enhanced tool: ${name}`, {
+        tool: name,
+      })
   }
 }
 
@@ -566,7 +580,12 @@ function handleBatchGetDocs(args: Record<string, unknown>) {
     throw new ValidationError('Maximum 20 items allowed per batch request')
   }
 
-  const results: Array<{ name: string; found: boolean; docs?: unknown; error?: string }> = []
+  const results: Array<{
+    name: string
+    found: boolean
+    docs?: unknown
+    error?: string
+  }> = []
 
   for (const name of items) {
     try {
@@ -728,10 +747,19 @@ function handleSmartSuggest(args: Record<string, unknown>) {
   }
 
   // Suggest components based on matched keywords
-  const componentSuggestions: Record<string, { name: string; reason: string }[]> = {
+  const componentSuggestions: Record<
+    string,
+    { name: string; reason: string }[]
+  > = {
     streaming: [
-      { name: 'StreamingMessage', reason: 'Displays streaming responses with animation' },
-      { name: 'TypingIndicator', reason: 'Shows when AI is generating response' },
+      {
+        name: 'StreamingMessage',
+        reason: 'Displays streaming responses with animation',
+      },
+      {
+        name: 'TypingIndicator',
+        reason: 'Shows when AI is generating response',
+      },
     ],
     voice: [
       { name: 'VoiceInput', reason: 'Enables voice-to-text input' },
@@ -747,7 +775,10 @@ function handleSmartSuggest(args: Record<string, unknown>) {
     ],
     error: [
       { name: 'ErrorState', reason: 'Displays error messages with retry' },
-      { name: 'RetryButton', reason: 'Allows users to retry failed operations' },
+      {
+        name: 'RetryButton',
+        reason: 'Allows users to retry failed operations',
+      },
     ],
     loading: [
       { name: 'LoadingSpinner', reason: 'Shows loading state' },
@@ -786,7 +817,10 @@ function handleSmartSuggest(args: Record<string, unknown>) {
   // Always suggest core components if not present
   const coreComponents = ['ClarityChat', 'ChatInput', 'MessageList']
   for (const core of coreComponents) {
-    if (!currentComponents.includes(core) && !suggestions.find((s) => s.name === core)) {
+    if (
+      !currentComponents.includes(core) &&
+      !suggestions.find((s) => s.name === core)
+    ) {
       suggestions.push({
         type: 'component',
         name: core,
@@ -803,9 +837,10 @@ function handleSmartSuggest(args: Record<string, unknown>) {
     context,
     matchedKeywords,
     suggestions: suggestions.slice(0, 10),
-    tip: matchedKeywords.length > 0
-      ? `Based on your context, we found features related to: ${matchedKeywords.join(', ')}`
-      : 'Try being more specific about what features you need',
+    tip:
+      matchedKeywords.length > 0
+        ? `Based on your context, we found features related to: ${matchedKeywords.join(', ')}`
+        : 'Try being more specific about what features you need',
   }
 }
 
@@ -945,7 +980,10 @@ function handleAdvancedSearch(args: Record<string, unknown>) {
     throw new ValidationError('Query is required')
   }
 
-  const results: Record<string, Array<{ name: string; score: number; description: string }>> = {}
+  const results: Record<
+    string,
+    Array<{ name: string; score: number; description: string }>
+  > = {}
 
   if (types.includes('component')) {
     const components = searchComponents(query, { limit })
@@ -983,16 +1021,20 @@ function handleAdvancedSearch(args: Record<string, unknown>) {
     }))
   }
 
-  const totalResults = Object.values(results).reduce((sum, arr) => sum + arr.length, 0)
+  const totalResults = Object.values(results).reduce(
+    (sum, arr) => sum + arr.length,
+    0
+  )
 
   return {
     query,
     totalResults,
     fuzzyEnabled: fuzzy,
     results,
-    suggestion: totalResults === 0
-      ? `No results found for "${query}". Try broader terms.`
-      : undefined,
+    suggestion:
+      totalResults === 0
+        ? `No results found for "${query}". Try broader terms.`
+        : undefined,
   }
 }
 
@@ -1006,7 +1048,11 @@ function handleComponentTree(args: Record<string, unknown>) {
     children: TreeNode[]
   }
 
-  function buildTree(componentName: string, depth: number, visited: Set<string>): TreeNode | null {
+  function buildTree(
+    componentName: string,
+    depth: number,
+    visited: Set<string>
+  ): TreeNode | null {
     if (depth > maxDepth || visited.has(componentName)) {
       return null
     }
@@ -1050,7 +1096,9 @@ function handleCompareComponents(args: Record<string, unknown>) {
   const componentNames = args.components as string[]
 
   if (!componentNames || componentNames.length < 2) {
-    throw new ValidationError('At least 2 components are required for comparison')
+    throw new ValidationError(
+      'At least 2 components are required for comparison'
+    )
   }
 
   if (componentNames.length > 5) {
@@ -1121,7 +1169,7 @@ function handleFeatureMatrix(args: Record<string, unknown>) {
   }
 
   // Define feature detection rules
-  const featureRules: Record<string, (c: typeof COMPONENTS[0]) => boolean> = {
+  const featureRules: Record<string, (c: (typeof COMPONENTS)[0]) => boolean> = {
     streaming: (c) =>
       c.name.includes('Streaming') ||
       c.tags.includes('streaming') ||
@@ -1137,10 +1185,11 @@ function handleFeatureMatrix(args: Record<string, unknown>) {
     accessibility: (c) =>
       c.accessibility.wcagLevel === 'AA' || c.accessibility.wcagLevel === 'AAA',
     'keyboard-support': (c) => c.accessibility.keyboardSupport.length >= 3,
-    typescript: (c) => true, // All components support TypeScript
+    typescript: (_c) => true, // All components support TypeScript
     theming: (c) =>
       c.props.some(
-        (p) => p.name === 'theme' || p.name === 'className' || p.name === 'style'
+        (p) =>
+          p.name === 'theme' || p.name === 'className' || p.name === 'style'
       ),
   }
 
@@ -1172,8 +1221,12 @@ function handleFeatureMatrix(args: Record<string, unknown>) {
     matrix,
     coverage,
     summary: {
-      mostCommonFeature: Object.entries(coverage).sort(([, a], [, b]) => b - a)[0]?.[0],
-      leastCommonFeature: Object.entries(coverage).sort(([, a], [, b]) => a - b)[0]?.[0],
+      mostCommonFeature: Object.entries(coverage).sort(
+        ([, a], [, b]) => b - a
+      )[0]?.[0],
+      leastCommonFeature: Object.entries(coverage).sort(
+        ([, a], [, b]) => a - b
+      )[0]?.[0],
     },
   }
 }
