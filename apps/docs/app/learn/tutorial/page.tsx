@@ -6,7 +6,7 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
-import { TutorialProgress } from '@/components/Enhanced/TutorialProgress'
+import { TutorialProgressWrapper } from '@/components/Enhanced/TutorialProgressWrapper'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
@@ -57,12 +57,8 @@ export default function TutorialPage() {
         </div>
       </Callout>
 
-      {/* Progress Indicator */}
-      <TutorialProgress
-        currentStep={1}
-        totalSteps={tutorialSteps.length}
-        steps={tutorialSteps}
-      />
+      {/* Dynamic Progress Indicator - updates based on scroll position */}
+      <TutorialProgressWrapper steps={tutorialSteps} />
 
       <YouWillLearn
         items={[

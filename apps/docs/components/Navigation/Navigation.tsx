@@ -13,6 +13,14 @@ import {
   Search,
   ExternalLink,
   BookOpen,
+  Play,
+  GraduationCap,
+  Map,
+  Library,
+  ChefHat,
+  Code2,
+  GitCompare,
+  Newspaper,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import { AccessibilityButton } from '../Layout/AccessibilityMenu'
@@ -21,14 +29,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
 
 const navigation = [
-  { name: 'Demos', href: '/demos' },
-  { name: 'Learn', href: '/learn/quick-start' },
-  { name: 'Guides', href: '/guides' },
-  { name: 'Reference', href: '/reference/components' },
-  { name: 'Cookbook', href: '/cookbook' },
-  { name: 'Examples', href: '/examples' },
-  { name: 'Compare', href: '/compare' },
-  { name: 'Blog', href: '/blog' },
+  { name: 'Demos', href: '/demos', icon: Play },
+  { name: 'Learn', href: '/learn/quick-start', icon: GraduationCap },
+  { name: 'Guides', href: '/guides', icon: Map },
+  { name: 'Reference', href: '/reference/components', icon: Library },
+  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
+  { name: 'Examples', href: '/examples', icon: Code2 },
+  { name: 'Compare', href: '/compare', icon: GitCompare },
+  { name: 'Blog', href: '/blog', icon: Newspaper },
 ]
 
 export function Navigation() {
@@ -280,29 +288,33 @@ export function Navigation() {
                   }}
                   className="flex flex-col gap-2 py-4"
                 >
-                  {navigation.map((item) => (
-                    <motion.div
-                      key={item.name}
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        show: { opacity: 1, x: 0 },
-                      }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={clsx(
-                          'block px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-                          pathname?.startsWith(item.href)
-                            ? 'bg-bg-tertiary text-brand-500'
-                            : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
-                        )}
+                  {navigation.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <motion.div
+                        key={item.name}
+                        variants={{
+                          hidden: { opacity: 0, x: -20 },
+                          show: { opacity: 1, x: 0 },
+                        }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        {item.name}
-                      </Link>
-                    </motion.div>
-                  ))}
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={clsx(
+                            'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+                            pathname?.startsWith(item.href)
+                              ? 'bg-bg-tertiary text-brand-500'
+                              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {item.name}
+                        </Link>
+                      </motion.div>
+                    )
+                  })}
                 </motion.div>
               </motion.div>
             )}
