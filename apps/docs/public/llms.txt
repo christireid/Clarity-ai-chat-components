@@ -18,6 +18,7 @@ Three bundle options for different needs:
 - [Installation](https://clarity-chat.dev/learn/installation): Install via npm: `npm install @clarity-chat/react`
 - [Quick Start Guide](https://clarity-chat.dev/learn/quick-start): Build your first chat interface in 5 minutes
 - [Interactive Playground](https://clarity-chat.dev/playground): Try components live in the browser
+- [Why Clarity?](https://clarity-chat.dev/learn/why-clarity): Feature comparison and benefits vs alternatives
 
 ## Core Concepts
 

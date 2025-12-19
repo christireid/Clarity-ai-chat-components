@@ -35,6 +35,7 @@ export const learnNavigation: NavItem[] = [
       { title: '🎮 Interactive Playground', href: '/playground' },
       { title: 'Playground Guide', href: '/playground/guide' },
       { title: "🆕 What's New", href: '/learn/whats-new' },
+      { title: '⚡ Why Clarity?', href: '/learn/why-clarity' },
     ],
   },
   {

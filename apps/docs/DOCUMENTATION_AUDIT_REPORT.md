@@ -2,7 +2,7 @@
 
 **Date**: December 2024
 **Auditor**: Documentation & Commercial Readiness Review
-**Status**: Phase 7 Complete - Guide Navigation Restructured
+**Status**: Phase 8 In Progress - Commercial Enhancements
 
 ---
 
@@ -419,10 +419,10 @@ The documentation site has been remediated and is ready for commercial launch:
 
 **Concerns** (Status):
 - No ROI calculator → ⏳ Future enhancement
-- No comparison with competitors → ⏳ Future enhancement
+- No comparison with competitors → ✅ "Why Clarity" page at /learn/why-clarity
 - Trial/onboarding not smooth → ✅ Quick Start improved with "Fastest Start"
 
-**Critical concerns addressed. ROI calculator and comparison pages are future enhancements.**
+**All critical concerns addressed. ROI calculator is a future enhancement.**
 
 ---
 
@@ -442,10 +442,13 @@ Navigation reorganized with tiered structure:
 **Total in navigation:** 33 organized guides (down from 36 flat list)
 **Remaining guides:** Available but not in primary navigation (specialized topics)
 
-### Phase 8: Commercial Enhancements (Future)
-- ROI calculator tool
-- "Why Clarity" comparison page
-- Interactive demos for key features
+### Phase 8: Commercial Enhancements ✅ PARTIAL
+
+| Task | Status | Notes |
+|------|--------|-------|
+| "Why Clarity" comparison page | ✅ Done | /learn/why-clarity with feature comparison, benefits, use cases |
+| ROI calculator tool | ⏳ Future | Complex feature requiring calculation logic |
+| Interactive demos | ⏳ Future | Already have /demos section with 11 demos |
 
 ### Phase 9: Continuous Improvement
 - Automated example validation in CI/CD
@@ -624,12 +627,14 @@ The Clarity Chat documentation audit has been completed through Phase 7, address
 - ✅ Navigation reorganized with tiered structure (Basic, Intermediate, Advanced, Enterprise)
 - ✅ 33 organized guides in navigation (down from 36 flat list)
 
-### Remaining Future Work (Phases 8-9)
+**Phase 8: Commercial Enhancements**
+- ✅ "Why Clarity" comparison page with feature matrix, benefits, and use cases
+
+### Remaining Future Work (Phase 9)
 
 | Priority | Task | Effort |
 |----------|------|--------|
 | Low | ROI calculator | 1 week |
-| Low | "Why Clarity" comparison page | 1 week |
 | Low | Automated example validation | 1-2 weeks |
 
 **Documentation Readiness**: Production Ready
