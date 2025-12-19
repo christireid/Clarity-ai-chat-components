@@ -11,6 +11,9 @@ import {
   getStableTimestamp,
 } from '@/lib/ai/types'
 import { mergeHookData, getDataSourceInfo } from '@/lib/ai/merge-component-data'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-hooks-api')
 
 /**
  * AI-Optimized Hooks API
@@ -845,8 +848,7 @@ function ReliableChat() {
     description:
       'Access and manage AI conversation memory within the MemoryProvider context. Add, query, update, and delete memories.',
     category: 'memory',
-    signature:
-      'useMemoryContext(): UseMemoryContextReturn',
+    signature: 'useMemoryContext(): UseMemoryContextReturn',
     parameters: [],
     returns: {
       type: 'UseMemoryContextReturn',
@@ -953,7 +955,8 @@ function ChatWithMemory() {
       ],
     },
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
+    docsUrl:
+      'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
     examples: [
       `import { useClarityChatWithTools } from "@clarity-chat/react";
 

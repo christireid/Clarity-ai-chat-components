@@ -14,6 +14,9 @@ import {
   mergeComponentData,
   getDataSourceInfo,
 } from '@/lib/ai/merge-component-data'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-components-api')
 
 /**
  * AI-Optimized Components API
@@ -916,7 +919,8 @@ const curatedComponents: ComponentInfo[] = [
       },
     ],
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/components/tool-invocation-card',
+    docsUrl:
+      'https://clarity-chat.dev/reference/components/tool-invocation-card',
     examples: [
       'import { ToolInvocationCard } from "@clarity-chat/react";\n\n<ToolInvocationCard\n  toolCall={{\n    id: "call_123",\n    name: "search_web",\n    arguments: { query: "weather NYC" },\n    result: { temperature: 72, condition: "sunny" }\n  }}\n  status="success"\n/>',
     ],
@@ -1002,7 +1006,10 @@ const curatedComponents: ComponentInfo[] = [
       'TokenOptimizationDashboard',
       'useDashboardData',
     ],
-    accessibility: ['Chart alternatives for screen readers', 'Keyboard navigation'],
+    accessibility: [
+      'Chart alternatives for screen readers',
+      'Keyboard navigation',
+    ],
     version: '0.1.0',
   },
   {
@@ -1209,7 +1216,8 @@ const curatedComponents: ComponentInfo[] = [
       },
     ],
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/components/auth-tenant-dashboard',
+    docsUrl:
+      'https://clarity-chat.dev/reference/components/auth-tenant-dashboard',
     examples: [
       'import { AuthTenantDashboard } from "@clarity-chat/react";\n\n<AuthTenantDashboard\n  tenantId="acme-corp"\n  onUserInvite={handleInvite}\n  onRoleChange={handleRoleChange}\n/>',
     ],

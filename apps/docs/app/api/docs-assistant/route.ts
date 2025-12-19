@@ -36,6 +36,9 @@ import {
   type SessionMessage,
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('docs-assistant-api')
 
 export const runtime = 'nodejs' // Use Node.js runtime for fs/crypto access
 export const dynamic = 'force-dynamic'
