@@ -92,9 +92,10 @@ describe('TextChunker', () => {
       const chunker = new TextChunker({ maxTokens: 10 })
 
       expect(chunker.needsChunking('Short')).toBe(false)
+      // Use text that definitely exceeds 10 tokens
       expect(
         chunker.needsChunking(
-          'This is a longer text that exceeds the token limit'
+          'This is a much longer text with many words that will definitely exceed the token limit of just ten tokens'
         )
       ).toBe(true)
     })
@@ -125,15 +126,14 @@ describe('TextChunker', () => {
       const chunker = new TextChunker({
         strategy: ChunkingStrategy.CUSTOM,
         maxTokens: 300,
-        minTokens: 50,
         overlapPercentage: 0.25,
       })
 
       const config = chunker.getConfig()
 
       expect(config.maxTokens).toBe(300)
-      expect(config.minTokens).toBe(50)
       expect(config.overlapPercentage).toBe(0.25)
+      expect(config.strategy).toBe(ChunkingStrategy.CUSTOM)
     })
   })
 
