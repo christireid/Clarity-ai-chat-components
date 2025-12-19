@@ -119,6 +119,7 @@ export default function Header() {
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
+          /* eslint-disable-next-line clarity-animations/require-reduced-motion -- Interactive menu animation */
           <motion.div
             id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}

@@ -1,13 +1,15 @@
 /**
  * Type declarations to fix lucide-react compatibility with TypeScript 5.x + React 18
- * 
+ *
  * This file resolves TS2786 errors when using lucide-react icons as JSX components.
  */
 
 declare module 'lucide-react' {
   import type { SVGProps, FC } from 'react'
 
-  export interface LucideProps extends Partial<Omit<SVGProps<SVGSVGElement>, 'ref'>> {
+  export interface LucideProps extends Partial<
+    Omit<SVGProps<SVGSVGElement>, 'ref'>
+  > {
     size?: string | number
     absoluteStrokeWidth?: boolean
   }
@@ -16,7 +18,7 @@ declare module 'lucide-react' {
 
   // Export all icons as proper React components
   export const ArrowLeft: LucideIcon
-  export const ArrowRight: LucideIcon  
+  export const ArrowRight: LucideIcon
   export const ShoppingCart: LucideIcon
   export const Code: LucideIcon
   export const Code2: LucideIcon
@@ -256,4 +258,34 @@ declare module 'lucide-react' {
   export const Wrench: LucideIcon
   export const TestTube: LucideIcon
   export const Share2: LucideIcon
+  // Additional icons needed for demos and components
+  export const Trees: LucideIcon
+  export const BrainCircuit: LucideIcon
+  export const MousePointer2: LucideIcon
+  export const Scale: LucideIcon
+  export const Calculator: LucideIcon
+  export const Trophy: LucideIcon
+  export const History: LucideIcon
+  export const TrendingDown: LucideIcon
+  export const Pointer: LucideIcon
+  export const TreeDeciduous: LucideIcon
+  export const Brain: LucideIcon
+  export const ArrowDown: LucideIcon
+  export const ArrowUp: LucideIcon
+  export const ChefHat: LucideIcon
+  export const CornerDownLeft: LucideIcon
+  export const GitCompare: LucideIcon
+  export const GitFork: LucideIcon
+  export const Github: LucideIcon
+  export const GripVertical: LucideIcon
+  export const Library: LucideIcon
+  export const Linkedin: LucideIcon
+  export const Newspaper: LucideIcon
+  export const PanelLeftClose: LucideIcon
+  export const Sliders: LucideIcon
+  export const SplitSquareHorizontal: LucideIcon
+  export const Twitter: LucideIcon
+  export const Wand2: LucideIcon
+  export const Youtube: LucideIcon
+  export const ZapOff: LucideIcon
 }
