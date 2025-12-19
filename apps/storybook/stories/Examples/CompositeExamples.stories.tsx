@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatWindow, ModelSelector, KeyboardHint } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react'
 import {
+  ModelSelector,
+  KeyboardHint,
   UsageDashboard,
   FollowUpSuggestions,
 } from '@clarity-chat/react/internal'

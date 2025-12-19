@@ -18,8 +18,8 @@ import {
   ApiTokenManager,
   SSOConfigWizard,
   SeatInviteDialog,
+  SparklesIcon,
 } from '@clarity-chat/react/internal'
-import { SparklesIcon } from '@clarity-chat/react/components/icons'
 
 const meta = {
   title: 'Examples/AiExperience',

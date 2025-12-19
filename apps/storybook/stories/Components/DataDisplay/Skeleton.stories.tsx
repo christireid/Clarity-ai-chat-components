@@ -6,7 +6,7 @@ import {
   SkeletonCard,
   SkeletonAvatar,
   SkeletonButton,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { expect, within } from 'storybook/test'
 
 /**

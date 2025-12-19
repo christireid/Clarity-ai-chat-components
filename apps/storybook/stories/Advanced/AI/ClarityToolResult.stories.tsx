@@ -225,13 +225,13 @@ export const SearchTool: Story = {
         query: 'React hooks',
         results: [
           {
-            title: 'Advanced/AI/ClarityToolResult',
+            title: 'React Hooks - React',
             url: 'https://react.dev/reference/react',
             snippet:
               'Hooks let you use state and other React features without writing a class.',
           },
           {
-            title: 'Advanced/AI/ClarityToolResult',
+            title: 'useState - React',
             url: 'https://react.dev/reference/react/useState',
             snippet:
               'useState is a React Hook that lets you add a state variable to your component.',
@@ -415,7 +415,7 @@ export const MultipleTools: Story = {
           query: 'TypeScript',
           results: [
             {
-              title: 'Advanced/AI/ClarityToolResult',
+              title: 'TypeScript Documentation',
               url: 'https://www.typescriptlang.org/docs/',
               snippet:
                 'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.',

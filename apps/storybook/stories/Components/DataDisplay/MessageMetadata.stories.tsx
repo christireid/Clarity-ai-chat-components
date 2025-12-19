@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MessageMetadata } from '@clarity-chat/react'
+import { MessageMetadata } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 /**
  * **MessageMetadata Component**
- * 
+ *
  * Component for displaying message metadata including tokens,
  * cost, response time, model, confidence, and sources.
- * 
+ *
  * **Key Features:**
  * - Token usage display (input/output)
  * - Cost calculation
@@ -17,7 +17,7 @@ import type { Message } from '@clarity-chat/types'
  * - Source citations
  * - Expandable details
  * - Accessible with ARIA labels
- * 
+ *
  * **Use Cases:**
  * - Token usage tracking
  * - Cost monitoring
@@ -102,8 +102,16 @@ const messageWithMetadata: Message = {
     model: 'gpt-4',
     confidence: 0.87,
     sources: [
-      { id: '1', title: 'Components/DataDisplay/MessageMetadata', url: 'https://example.com' },
-      { id: '2', title: 'Components/DataDisplay/MessageMetadata', url: 'https://example.com' },
+      {
+        id: '1',
+        title: 'Components/DataDisplay/MessageMetadata',
+        url: 'https://example.com',
+      },
+      {
+        id: '2',
+        title: 'Components/DataDisplay/MessageMetadata',
+        url: 'https://example.com',
+      },
     ],
   },
 } as any

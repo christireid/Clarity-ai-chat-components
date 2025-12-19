@@ -7,9 +7,14 @@ import {
   SlidePresence,
   ScalePresence,
   ConditionalPresence,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
-const demoItems = ['Define success metrics', 'Sync with product', 'Review transcripts', 'Ship updates']
+const demoItems = [
+  'Define success metrics',
+  'Sync with product',
+  'Review transcripts',
+  'Ship updates',
+]
 
 const meta = {
   title: 'Components/DataDisplay/AnimatedList',
@@ -74,7 +79,9 @@ export const TaskQueue: Story = {
                 </span>
                 <div>
                   <p className="text-sm font-medium text-foreground">{item}</p>
-                  <p className="text-xs text-muted-foreground">Sequenced with {index % 2 === 0 ? 'slide' : 'fade'} motion</p>
+                  <p className="text-xs text-muted-foreground">
+                    Sequenced with {index % 2 === 0 ? 'slide' : 'fade'} motion
+                  </p>
                 </div>
               </div>
             </AnimatedListItem>
@@ -86,10 +93,7 @@ export const TaskQueue: Story = {
             type="button"
             className="rounded-lg border border-border bg-background px-3 py-1 text-sm hover:bg-accent"
             onClick={() =>
-              setItems((prev) => [
-                `New insight ${prev.length + 1}`,
-                ...prev,
-              ])
+              setItems((prev) => [`New insight ${prev.length + 1}`, ...prev])
             }
           >
             Prepend Item
@@ -119,7 +123,9 @@ export const TaskQueue: Story = {
 export const PresencePatterns: Story = {
   name: 'Presence Wrappers',
   render: () => {
-    const [active, setActive] = React.useState<'fade' | 'slide' | 'scale'>('fade')
+    const [active, setActive] = React.useState<'fade' | 'slide' | 'scale'>(
+      'fade'
+    )
     const [showDetails, setShowDetails] = React.useState(true)
 
     return (
@@ -154,7 +160,11 @@ export const PresencePatterns: Story = {
           <FadePresence className="rounded-xl border border-border bg-card p-6 text-center shadow-sm">
             <div>
               <h3 className="mb-2 text-sm font-semibold">FadePresence</h3>
-              {showDetails && <p className="text-xs text-muted-foreground">Use for low-affordance UI such as toolbars.</p>}
+              {showDetails && (
+                <p className="text-xs text-muted-foreground">
+                  Use for low-affordance UI such as toolbars.
+                </p>
+              )}
             </div>
           </FadePresence>
           <SlidePresence
@@ -164,7 +174,9 @@ export const PresencePatterns: Story = {
             <div>
               <h3 className="mb-2 text-sm font-semibold">SlidePresence</h3>
               {showDetails && (
-                <p className="text-xs text-muted-foreground">Ideal for banners, toasts, and drawers.</p>
+                <p className="text-xs text-muted-foreground">
+                  Ideal for banners, toasts, and drawers.
+                </p>
               )}
             </div>
           </SlidePresence>
@@ -172,7 +184,9 @@ export const PresencePatterns: Story = {
             <div>
               <h3 className="mb-2 text-sm font-semibold">ScalePresence</h3>
               {showDetails && (
-                <p className="text-xs text-muted-foreground">Use sparingly for celebratory UI moments.</p>
+                <p className="text-xs text-muted-foreground">
+                  Use sparingly for celebratory UI moments.
+                </p>
               )}
             </div>
           </ScalePresence>
@@ -184,7 +198,8 @@ export const PresencePatterns: Story = {
           className="rounded-xl border border-dashed border-border bg-muted/50 p-6 text-center"
         >
           <p className="text-sm text-muted-foreground">
-            Conditional presence ensures exit transitions respect accessibility preferences and user intent.
+            Conditional presence ensures exit transitions respect accessibility
+            preferences and user intent.
           </p>
         </ConditionalPresence>
       </div>

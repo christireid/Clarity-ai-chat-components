@@ -95,28 +95,28 @@ type Story = StoryObj<typeof FollowUpSuggestions>
 const mockSuggestions: FollowUpSuggestion[] = [
   {
     id: '1',
-    title: 'Advanced/AI/FollowUpSuggestions',
+    title: 'How do I use React hooks?',
     description: 'Learn about useState, useEffect, and more',
     keywords: ['hooks', 'react', 'state'],
     confidence: 0.95,
   },
   {
     id: '2',
-    title: 'Advanced/AI/FollowUpSuggestions',
+    title: 'Show me code examples',
     description: 'See practical examples in action',
     keywords: ['examples', 'code', 'tutorial'],
     confidence: 0.88,
   },
   {
     id: '3',
-    title: 'Advanced/AI/FollowUpSuggestions',
+    title: 'Explain TypeScript types',
     description: 'Deep dive into type system',
     keywords: ['typescript', 'types', 'explanation'],
     confidence: 0.82,
   },
   {
     id: '4',
-    title: 'Advanced/AI/FollowUpSuggestions',
+    title: 'Best practices guide',
     description: 'Learn industry standards',
     keywords: ['best practices', 'guide', 'patterns'],
     confidence: 0.75,
@@ -189,8 +189,8 @@ export const Loading: Story = {
 export const CustomTitle: Story = {
   args: {
     suggestions: mockSuggestions,
-    title: 'Advanced/AI/FollowUpSuggestions',
-    subtitle: 'Advanced/AI/FollowUpSuggestions',
+    title: 'What would you like to know?',
+    subtitle: 'Pick a suggestion to continue the conversation',
     onSelect: (suggestion) => console.log('Selected:', suggestion),
   },
 }

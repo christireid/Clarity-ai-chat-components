@@ -52,19 +52,19 @@ const sampleInsights = [
   {
     id: '1',
     type: 'success' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Performance Improved',
     description: 'Average response time decreased by 20% this week',
   },
   {
     id: '2',
     type: 'info' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Feature Adoption',
     description: '45% of users are using the new voice input feature',
   },
   {
     id: '3',
     type: 'warning' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Usage Pattern',
     description: 'Peak usage hours are between 2-4 PM',
   },
 ]
@@ -128,7 +128,7 @@ export const CustomTitle: Story = {
     leaderboard: sampleLeaderboard,
     insights: sampleInsights,
     recentActivities: sampleActivities,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
-    subtitle: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Team Analytics Dashboard',
+    subtitle: 'Real-time metrics and activity feed',
   },
 }

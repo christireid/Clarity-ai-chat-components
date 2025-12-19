@@ -219,17 +219,17 @@ export const SearchTool: Story = {
     status: 'success',
     result: [
       {
-        title: 'Advanced/AI/ToolInvocationCard',
+        title: 'useState - React',
         url: 'https://react.dev/reference/react/useState',
         relevance: 0.95,
       },
       {
-        title: 'Advanced/AI/ToolInvocationCard',
+        title: 'useEffect - React',
         url: 'https://react.dev/reference/react/useEffect',
         relevance: 0.92,
       },
       {
-        title: 'Advanced/AI/ToolInvocationCard',
+        title: 'Reusing Logic with Custom Hooks',
         url: 'https://react.dev/learn/reusing-logic-with-custom-hooks',
         relevance: 0.88,
       },
@@ -493,7 +493,7 @@ export const VeryLongArguments: Story = {
       function: {
         name: 'generate_report',
         arguments: JSON.stringify({
-          title: 'Advanced/AI/ToolInvocationCard',
+          title: 'Quarterly Financial Report Q4 2024',
           sections: [
             'Executive Summary',
             'Revenue Analysis',

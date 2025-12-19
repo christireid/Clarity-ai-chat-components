@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConversationTimeline } from '@clarity-chat/react'
-import type { ConversationTimelineEvent } from '@clarity-chat/react'
+import { ConversationTimeline } from '@clarity-chat/react/internal'
+import type { ConversationTimelineEvent } from '@clarity-chat/react/internal'
 
 /**
  * **ConversationTimeline Component**

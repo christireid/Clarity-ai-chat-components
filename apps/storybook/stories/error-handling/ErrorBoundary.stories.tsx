@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ErrorBoundary } from '@clarity-chat/error-handling'
-import { ConfigurationError, APIError } from '@clarity-chat/error-handling'
+import {
+  ErrorBoundary,
+  ConfigurationError,
+  APIError,
+} from '@clarity-chat/error-handling'
 import { useState } from 'react'
 
 const meta: Meta<typeof ErrorBoundary> = {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ProjectSidebar } from '@clarity-chat/react'
+import { ProjectSidebar } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ProjectSidebar> = {
   title: 'Components/Layout/ProjectSidebar',
@@ -12,10 +12,24 @@ export default meta
 type Story = StoryObj<typeof ProjectSidebar>
 
 const mockProjects = [
-  { id: '1', name: 'React Tutorial', conversationCount: 5, lastActive: Date.now() - 3600000 },
-  { id: '2', name: 'TypeScript Guide', conversationCount: 3, lastActive: Date.now() - 7200000 },
+  {
+    id: '1',
+    name: 'React Tutorial',
+    conversationCount: 5,
+    lastActive: Date.now() - 3600000,
+  },
+  {
+    id: '2',
+    name: 'TypeScript Guide',
+    conversationCount: 3,
+    lastActive: Date.now() - 7200000,
+  },
 ]
 
 export const Default: Story = {
-  args: { projects: mockProjects, activeProjectId: '1', onProjectSelect: (id) => console.log(id) },
+  args: {
+    projects: mockProjects,
+    activeProjectId: '1',
+    onProjectSelect: (id) => console.log(id),
+  },
 }

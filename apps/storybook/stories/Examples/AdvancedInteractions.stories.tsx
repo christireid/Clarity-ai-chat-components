@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
+import { useTheme } from '@clarity-chat/react'
 import {
   CommandPalette,
   KeyboardHint,
@@ -7,12 +8,8 @@ import {
   DropZone,
   ContextMenu,
   ThemeSwitcher,
-  useTheme,
-  // useUndoRedo,
-  // useUndoRedoShortcuts,
-  // useHaptic,
   useKeyboardShortcuts,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // ============================================================================
 // Command Palette Stories

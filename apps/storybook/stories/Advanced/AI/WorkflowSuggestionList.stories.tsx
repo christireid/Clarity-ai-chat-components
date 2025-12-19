@@ -118,7 +118,7 @@ export const ManyWorkflows: Story = {
 export const CustomTitle: Story = {
   args: {
     workflows: mockWorkflows,
-    title: 'Advanced/AI/WorkflowSuggestionList',
-    subtitle: 'Advanced/AI/WorkflowSuggestionList',
+    title: 'Suggested Workflows',
+    subtitle: 'Choose a workflow to get started quickly',
   },
 }

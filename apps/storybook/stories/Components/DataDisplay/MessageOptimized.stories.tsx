@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { MessageOptimized } from '@clarity-chat/react'
+import { MessageOptimized } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 const baseAssistantMessage: Message = {
@@ -100,7 +100,8 @@ export const UserMessage: Story = {
       id: 'user-1',
       chatId: 'storybook',
       role: 'user',
-      content: 'Can you summarise the key risks and draft an update for leadership? Include timelines.',
+      content:
+        'Can you summarise the key risks and draft an update for leadership? Include timelines.',
       createdAt: new Date(),
       status: 'sent',
     },

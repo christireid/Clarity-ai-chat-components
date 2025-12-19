@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatWindow, ChatInput, Message, ThinkingIndicator } from '@clarity-chat/react'
+import {
+  ChatWindow,
+  ChatInput,
+  Message,
+  ThinkingIndicator,
+} from '@clarity-chat/react'
 import { StatusBadge } from '../../../.storybook/blocks'
 import React, { useState } from 'react'
 
@@ -50,7 +55,8 @@ export const Basic: Story = {
       {
         id: '1',
         role: 'assistant' as const,
-        content: 'Hello! I can help you with questions about our product. What would you like to know?',
+        content:
+          'Hello! I can help you with questions about our product. What would you like to know?',
         timestamp: new Date(Date.now() - 120000),
       },
     ])
@@ -90,10 +96,11 @@ export const Basic: Story = {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-2xl font-bold">Basic Multi-turn Chat</h2>
-            <StatusBadge status="stable\" />
+            <StatusBadge status="stable" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            A simple multi-turn conversation that maintains context. Try asking follow-up questions to see context awareness.
+            A simple multi-turn conversation that maintains context. Try asking
+            follow-up questions to see context awareness.
           </p>
         </div>
 
@@ -119,7 +126,7 @@ export const Basic: Story = {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onSubmit={handleSubmit}
-                  placeholder="Ask a follow-up question...\"
+                  placeholder="Ask a follow-up question..."
                   disabled={isLoading}
                 />
               </div>
@@ -149,10 +156,10 @@ export const Basic: Story = {
           <div className="p-6 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-800">
             <h3 className="text-lg font-semibold mb-3">Try These</h3>
             <ul className="space-y-2 text-sm">
-              <li>\"What are your pricing plans?\"</li>
-              <li>\"How does the Enterprise plan differ?\"</li>
-              <li>\"Can I switch plans later?\"</li>
-              <li>\"What about annual discounts?\"</li>
+              <li>"What are your pricing plans?"</li>
+              <li>"How does the Enterprise plan differ?"</li>
+              <li>"Can I switch plans later?"</li>
+              <li>"What about annual discounts?"</li>
             </ul>
           </div>
         </div>
@@ -162,7 +169,8 @@ export const Basic: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic multi-turn conversation with context management and loading states.',
+        story:
+          'Basic multi-turn conversation with context management and loading states.',
       },
     },
   },
@@ -174,7 +182,8 @@ export const WithMessageOperations: Story = {
       {
         id: '1',
         role: 'assistant' as const,
-        content: 'I can help you with code, explanations, or debugging. What would you like to work on?',
+        content:
+          'I can help you with code, explanations, or debugging. What would you like to work on?',
         timestamp: new Date(Date.now() - 180000),
       },
       {
@@ -186,13 +195,16 @@ export const WithMessageOperations: Story = {
       {
         id: '3',
         role: 'assistant' as const,
-        content: 'Async/await is syntactic sugar for working with Promises. It makes asynchronous code look and behave more like synchronous code, making it easier to read and maintain.',
+        content:
+          'Async/await is syntactic sugar for working with Promises. It makes asynchronous code look and behave more like synchronous code, making it easier to read and maintain.',
         timestamp: new Date(Date.now() - 60000),
       },
     ])
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(
+      null
+    )
 
     const handleSubmit = async () => {
       if (!input.trim() || isLoading) return
@@ -233,7 +245,7 @@ export const WithMessageOperations: Story = {
         const aiMessage = {
           id: Date.now().toString(),
           role: 'assistant' as const,
-          content: 'Here\'s an alternative explanation...',
+          content: "Here's an alternative explanation...",
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, aiMessage])
@@ -250,10 +262,11 @@ export const WithMessageOperations: Story = {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-2xl font-bold">With Message Operations</h2>
-            <StatusBadge status="stable\" />
+            <StatusBadge status="stable" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Multi-turn chat with message operations: retry, edit, and delete. Hover over messages to see actions.
+            Multi-turn chat with message operations: retry, edit, and delete.
+            Hover over messages to see actions.
           </p>
         </div>
 
@@ -268,14 +281,14 @@ export const WithMessageOperations: Story = {
                       {message.role === 'assistant' && (
                         <button
                           onClick={() => handleRetry(message.id)}
-                          className="px-3 py-1 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700\"
+                          className="px-3 py-1 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                           Retry
                         </button>
                       )}
                       <button
                         onClick={() => handleDelete(message.id)}
-                        className="px-3 py-1 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600\"
+                        className="px-3 py-1 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600"
                       >
                         Delete
                       </button>
@@ -297,7 +310,7 @@ export const WithMessageOperations: Story = {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onSubmit={handleSubmit}
-                  placeholder="Type a message...\"
+                  placeholder="Type a message..."
                   disabled={isLoading}
                 />
               </div>
@@ -334,18 +347,26 @@ export const WithMessageOperations: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Advanced pattern with retry, edit, and delete operations on messages.',
+        story:
+          'Advanced pattern with retry, edit, and delete operations on messages.',
       },
     },
   },
 }
 
 // Helper function to generate contextual responses
-function generateContextualResponse(messages: any[], userInput: string): string {
+function generateContextualResponse(
+  messages: any[],
+  userInput: string
+): string {
   const lowerInput = userInput.toLowerCase()
 
   // Pricing questions
-  if (lowerInput.includes('pricing') || lowerInput.includes('plan') || lowerInput.includes('cost')) {
+  if (
+    lowerInput.includes('pricing') ||
+    lowerInput.includes('plan') ||
+    lowerInput.includes('cost')
+  ) {
     if (lowerInput.includes('enterprise')) {
       return 'Our Enterprise plan includes unlimited users, priority support, SSO, custom integrations, and a dedicated account manager. Pricing starts at $500/month with volume discounts available.'
     }
