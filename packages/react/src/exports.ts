@@ -366,14 +366,15 @@ export * from './webhooks'
 // =============================================================================
 
 // Tier 1: Drop-in Ready
-export {
-  createBasicChatConfig,
-  createMemoryChatConfig,
-  createStreamingChatConfig,
-  createEnterpriseChatConfig,
-  isValidApiEndpoint,
-  getApiEndpoint,
-} from './utils/message/clarity-chat-helpers'
+// TODO: Re-enable after fixing clarity-chat-helpers module dependencies
+// export {
+//   createBasicChatConfig,
+//   createMemoryChatConfig,
+//   createStreamingChatConfig,
+//   createEnterpriseChatConfig,
+//   isValidApiEndpoint,
+//   getApiEndpoint,
+// } from './utils/message/clarity-chat-helpers'
 
 // Tier 2: Composable
 export {
@@ -482,19 +483,20 @@ export {
   MessageSearchWithSuspense,
   highlightSearchMatch,
 } from './components/search/message-search'
-export {
-  AdvancedMessageSearch,
-  type SearchFilters,
-  type SavedSearch,
-  type SortOption,
-  type FilterPreset,
-} from './components/search/advanced-message-search'
-export {
-  SemanticMessageSearch,
-  type SemanticSearchConfig,
-  type SemanticSearchResult,
-  type EmbeddingProvider,
-} from './components/search/advanced-message-search-semantic'
+// TODO: Re-enable after fixing search component types
+// export {
+//   AdvancedMessageSearch,
+//   type SearchFilters,
+//   type SavedSearch,
+//   type SortOption,
+//   type FilterPreset,
+// } from './components/search/advanced-message-search'
+// export {
+//   SemanticMessageSearch,
+//   type SemanticSearchConfig,
+//   type SemanticSearchResult,
+//   type EmbeddingProvider,
+// } from './components/search/advanced-message-search-semantic'
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'

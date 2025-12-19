@@ -18,6 +18,7 @@ import {
 import {
   advancedCompressor,
   compressWithAdvanced,
+  type AdvancedCompressionStrategy,
 } from './advanced-compression.js'
 import { semanticCache, getCachedTokenCount } from './intelligent-caching.js'
 
@@ -383,7 +384,7 @@ export class TokenOptimizationMiddleware {
 
     const compressedText = await compressWithAdvanced(
       text,
-      'budget-controlled',
+      'adaptive',
       compressionRatio,
       config.qualityThreshold || 0.7 // Lower quality for budget
     )
@@ -428,7 +429,7 @@ export class TokenOptimizationMiddleware {
   private selectCompressionStrategy(
     text: string,
     context: OptimizationContext
-  ): string {
+  ): AdvancedCompressionStrategy {
     if (context.contextType === 'code') return 'structural'
     if (context.complexity === 'high') return 'semantic_pruning'
     if (text.length > 5000) return 'llmlingua'
@@ -521,7 +522,9 @@ export class TokenOptimizationMiddleware {
     // Limit cache size
     if (this.optimizationCache.size > 1000) {
       const firstKey = this.optimizationCache.keys().next().value
-      this.optimizationCache.delete(firstKey)
+      if (firstKey !== undefined) {
+        this.optimizationCache.delete(firstKey)
+      }
     }
   }
 

@@ -54,6 +54,8 @@
     "src/components/chat/floating-chat-widget.tsx",
     "src/hooks/chat/use-agent.ts",
     "src/hooks/chat/use-rag-pipeline.ts",
+    "src/hooks/chat/use-chat-unified.ts",
+    "src/hooks/streaming/use-streaming-chat.ts",
     "src/hooks/keyboard/use-command-palette-commands.ts",
     "src/hooks/performance/**/*",
     "src/hooks/input/use-realistic-typing.ts",
