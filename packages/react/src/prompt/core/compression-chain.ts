@@ -5,7 +5,7 @@
  * preserving semantic meaning.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { Tokenizer } from './tokenizer'
 import { estimateMessageTokens, estimateSingleMessageTokens } from './tokenizer'
 
@@ -28,7 +28,10 @@ export interface CompressionOptions {
   /** Strategies to apply (in order) */
   strategies?: CompressionStrategy[]
   /** Summarization function */
-  summarizeFn?: (messages: CoreMessage[], context?: string) => Promise<string> | string
+  summarizeFn?: (
+    messages: CoreMessage[],
+    context?: string
+  ) => Promise<string> | string
   /** Minimum messages to keep before summarizing */
   keepRecentMessages?: number
   /** Maximum tokens for tool outputs before condensing */
@@ -71,7 +74,11 @@ export async function compressContext(
   const {
     targetTokens,
     tokenizer,
-    strategies = ['semantic-grouping', 'tool-condensing', 'intent-summarization'],
+    strategies = [
+      'semantic-grouping',
+      'tool-condensing',
+      'intent-summarization',
+    ],
     summarizeFn,
     keepRecentMessages = 3,
     maxToolOutputTokens = 500,
@@ -183,7 +190,10 @@ function applySemanticGrouping(
 /**
  * Merge multiple messages into one
  */
-function mergeMessages(messages: CoreMessage[], _tokenizer: Tokenizer): CoreMessage {
+function mergeMessages(
+  messages: CoreMessage[],
+  _tokenizer: Tokenizer
+): CoreMessage {
   if (messages.length === 1) return messages[0]
 
   const role = messages[0].role
@@ -266,7 +276,15 @@ function condenseToolOutput(content: string, maxTokens: number): string {
     if (typeof parsed === 'object' && parsed !== null) {
       // For objects, keep most important keys
       const keys = Object.keys(parsed)
-      const importantKeys = ['id', 'name', 'title', 'status', 'result', 'error', 'message']
+      const importantKeys = [
+        'id',
+        'name',
+        'title',
+        'status',
+        'result',
+        'error',
+        'message',
+      ]
       const keptKeys = keys.filter(
         (k) => importantKeys.includes(k.toLowerCase()) || keys.indexOf(k) < 5
       )
@@ -277,7 +295,8 @@ function condenseToolOutput(content: string, maxTokens: number): string {
       }
 
       if (keys.length > keptKeys.length) {
-        condensedObj['_note'] = `${keys.length - keptKeys.length} fields omitted`
+        condensedObj['_note'] =
+          `${keys.length - keptKeys.length} fields omitted`
       }
 
       const result = JSON.stringify(condensedObj, null, 0)
@@ -297,7 +316,10 @@ function condenseToolOutput(content: string, maxTokens: number): string {
 async function applyIntentSummarization(
   messages: CoreMessage[],
   tokenizer: Tokenizer,
-  summarizeFn: (messages: CoreMessage[], context?: string) => Promise<string> | string,
+  summarizeFn: (
+    messages: CoreMessage[],
+    context?: string
+  ) => Promise<string> | string,
   keepRecentMessages: number
 ): Promise<CoreMessage[]> {
   if (messages.length <= keepRecentMessages + 1) {
@@ -341,7 +363,7 @@ export function extractKeyPoints(messages: CoreMessage[]): string[] {
     // Extract questions
     const questions = content.match(/[^.!?]*\?/g)
     if (questions) {
-      keyPoints.push(...questions.map((q) => `Q: ${q.trim()}`))
+      keyPoints.push(...questions.map((q: string) => `Q: ${q.trim()}`))
     }
 
     // Extract statements with key indicators
