@@ -11,163 +11,43 @@
  * - Use with any design system (Tailwind, MUI, Chakra, etc.)
  * - Zero library styling lock-in
  * - Smaller bundle - only import what you need
+ *
+ * This page uses hooks from the ./hooks directory that you can
+ * copy directly into your own project.
  */
 
+import React from 'react'
 import type { FormEvent, ChangeEvent } from 'react'
-import { useState, useCallback, useRef, useEffect } from 'react'
 
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  tokens?: number
-}
-
-// Simple token estimation (4 chars ≈ 1 token)
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
-}
-
-// Cost estimation for GPT-4 Turbo
-function estimateCost(inputTokens: number, outputTokens: number): number {
-  const inputCost = (inputTokens / 1000) * 0.01 // $0.01/1K input
-  const outputCost = (outputTokens / 1000) * 0.03 // $0.03/1K output
-  return inputCost + outputCost
-}
-
-// Custom hook for auto-scroll behavior
-function useAutoScroll(messagesLength: number) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [isNearBottom, setIsNearBottom] = useState(true)
-
-  const scrollToBottom = useCallback(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [])
-
-  const handleScroll = useCallback(() => {
-    if (!scrollRef.current) return
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
-    setIsNearBottom(scrollHeight - scrollTop - clientHeight < 100)
-  }, [])
-
-  useEffect(() => {
-    if (isNearBottom) {
-      scrollToBottom()
-    }
-  }, [messagesLength, isNearBottom, scrollToBottom])
-
-  return { scrollRef, scrollToBottom, isNearBottom, handleScroll }
-}
+// Import copy-paste hooks from the hooks directory
+import { useAutoScroll } from '../hooks/useAutoScroll'
+import { useTokenTracker, estimateTokens } from '../hooks/useTokenTracker'
+import { useStreamingChat, type Message } from '../hooks/useStreamingChat'
 
 export default function HeadlessModePage(): JSX.Element {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-  const [totalTokens, setTotalTokens] = useState({ input: 0, output: 0 })
+  // Use our copy-paste hooks
+  const { estimatedCost, trackTokens, total } = useTokenTracker('gpt-4-turbo')
+
+  const { messages, sendMessage, isLoading, error } = useStreamingChat({
+    api: '/api/chat',
+    onFinish: (content) => {
+      // Track output tokens when response completes
+      const outputTokens = estimateTokens(content)
+      trackTokens(outputTokens, 'output')
+    },
+  })
 
   const { scrollRef, scrollToBottom, isNearBottom, handleScroll } =
     useAutoScroll(messages.length)
 
-  const handleSend = useCallback(async () => {
-    if (!input.trim() || isLoading) return
+  const handleSend = async (input: string) => {
+    // Track input tokens
+    const inputTokens = estimateTokens(input)
+    trackTokens(inputTokens, 'input')
 
-    const userTokens = estimateTokens(input.trim())
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-      tokens: userTokens,
-    }
-
-    setMessages((prev) => [...prev, userMessage])
-    setTotalTokens((prev) => ({ ...prev, input: prev.input + userTokens }))
-    setInput('')
-    setIsLoading(true)
-    setError(null)
-
-    // Add placeholder for assistant response
-    const assistantId = (Date.now() + 1).toString()
-    setMessages((prev) => [
-      ...prev,
-      { id: assistantId, role: 'assistant', content: '' },
-    ])
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      })
-
-      if (!response.ok) throw new Error('Failed to send message')
-
-      // Handle streaming response
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-      let assistantContent = ''
-
-      while (reader) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6)
-            if (data === '[DONE]') continue
-
-            try {
-              const parsed = JSON.parse(data)
-              if (parsed.type === 'text-delta' && parsed.content) {
-                assistantContent += parsed.content
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantId
-                      ? { ...m, content: assistantContent }
-                      : m
-                  )
-                )
-              }
-            } catch {
-              // Skip invalid JSON
-            }
-          }
-        }
-      }
-
-      // Track output tokens
-      const outputTokens = estimateTokens(assistantContent)
-      setTotalTokens((prev) => ({
-        ...prev,
-        output: prev.output + outputTokens,
-      }))
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId ? { ...m, tokens: outputTokens } : m
-        )
-      )
-    } catch (err) {
-      console.error('Send error:', err)
-      setError(err instanceof Error ? err : new Error('Unknown error'))
-      // Remove the placeholder message on error
-      setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-    } finally {
-      setIsLoading(false)
-    }
-  }, [input, isLoading, messages])
-
-  const estimatedCost = estimateCost(totalTokens.input, totalTokens.output)
+    // Send the message
+    await sendMessage(input)
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -182,8 +62,7 @@ export default function HeadlessModePage(): JSX.Element {
           </div>
           <div className="flex items-center gap-4 text-sm">
             <div className="bg-white/20 rounded-lg px-3 py-1">
-              Tokens:{' '}
-              {(totalTokens.input + totalTokens.output).toLocaleString()}
+              Tokens: {total.toLocaleString()}
             </div>
             <div className="bg-white/20 rounded-lg px-3 py-1">
               Cost: ${estimatedCost.toFixed(4)}
@@ -235,7 +114,7 @@ export default function HeadlessModePage(): JSX.Element {
             </div>
           )}
 
-          {messages.map((message) => (
+          {messages.map((message: Message) => (
             <div
               key={message.id}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -257,17 +136,6 @@ export default function HeadlessModePage(): JSX.Element {
                     </div>
                   )}
                 <div className="whitespace-pre-wrap">{message.content}</div>
-                {message.tokens && (
-                  <div
-                    className={`text-xs mt-1 ${
-                      message.role === 'user'
-                        ? 'text-violet-200'
-                        : 'text-gray-400'
-                    }`}
-                  >
-                    ~{message.tokens} tokens
-                  </div>
-                )}
               </div>
             </div>
           ))}
@@ -303,64 +171,82 @@ export default function HeadlessModePage(): JSX.Element {
       )}
 
       {/* Input - YOUR design */}
-      <footer className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-4">
-        <div className="max-w-4xl mx-auto">
-          <form
-            onSubmit={(e: FormEvent<HTMLFormElement>) => {
-              e.preventDefault()
-              handleSend()
-            }}
-            className="flex gap-3"
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setInput(e.target.value)
-              }
-              placeholder="Type a message... (this is your custom input)"
-              className="flex-1 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className="px-6 py-3 bg-violet-600 text-white rounded-xl font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="w-4 h-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  Sending
-                </>
-              ) : (
-                'Send'
-              )}
-            </button>
-          </form>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-            This input, the message bubbles, the header - all custom. Zero
-            library components.
-          </p>
-        </div>
-      </footer>
+      <ChatInput onSend={handleSend} isLoading={isLoading} />
     </div>
+  )
+}
+
+/**
+ * Custom chat input component - demonstrates your own UI design
+ */
+function ChatInput({
+  onSend,
+  isLoading,
+}: {
+  onSend: (message: string) => void
+  isLoading: boolean
+}) {
+  const [input, setInput] = React.useState('')
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+    onSend(input.trim())
+    setInput('')
+  }
+
+  return (
+    <footer className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-4">
+      <div className="max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="flex gap-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setInput(e.target.value)
+            }
+            placeholder="Type a message... (this is your custom input)"
+            className="flex-1 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !input.trim()}
+            className="px-6 py-3 bg-violet-600 text-white rounded-xl font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Sending
+              </>
+            ) : (
+              'Send'
+            )}
+          </button>
+        </form>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+          This input, the message bubbles, the header - all custom. Zero library
+          components.
+        </p>
+      </div>
+    </footer>
   )
 }
