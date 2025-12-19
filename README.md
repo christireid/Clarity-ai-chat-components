@@ -167,51 +167,58 @@ export default function App() {
 ### **💰 Token Optimization Suite** → _Save 60-90% on AI costs_
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/react'
 
-const { optimizeData, calculateCost } = useTokenOptimizationEnhanced({
-  enableTOON: true, // 30-60% token savings
-  enableCaching: true, // 50-90% with prompt caching
-  enableCompression: true, // 20-35% additional savings
-})
+// Wrap your app with TokenBudgetProvider for automatic optimization
+;<TokenBudgetProvider maxTokens={4000}>
+  <ClarityChat api="/api/chat" />
+</TokenBudgetProvider>
 
+// Or use the hook for custom control
+const { remaining, usage, isNearLimit } = useTokenBudget()
 // Result: $0.05 instead of $0.12 per request
 ```
 
 ### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_
 
 ```tsx
-import { useSecureChat } from '@clarity-chat/react'
+import { ClarityChatPresets } from '@clarity-chat/react'
 
-const { sendMessage } = useSecureChat({
-  config: {
-    promptInjection: { enabled: true }, // 90%+ detection rate
-    pii: { enabled: true }, // GDPR/HIPAA compliant
-    jailbreakPrevention: { enabled: true }, // 99% prevention
-  },
-})
+// Enterprise preset includes security by default
+;<ClarityChatPresets.Enterprise
+  api="/api/chat"
+  enableSafety // Prompt injection detection (90%+)
+  enableAnalytics // Full observability
+/>
+
+// Security features: prompt injection detection, PII masking, jailbreak prevention
 ```
 
 ### **🎨 Beautiful Design System** → _13 themes, 150+ animations_
 
 ```tsx
-import { ThemeProvider, themes } from '@clarity-chat/react'
+import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 
-<ThemeProvider theme={themes.glassmorphism}>  // ✨ Modern glass effect
-<ThemeProvider theme={themes.ocean}>           // 🌊 Ocean vibes
-<ThemeProvider theme={themes.neon}>            // 💜 Cyberpunk neon
-// ... and 10 more!
+<ThemeProvider theme="glassmorphism">  {/* ✨ Modern glass effect */}
+<ThemeProvider theme="ocean">           {/* 🌊 Ocean vibes */}
+<ThemeProvider theme="neon">            {/* 💜 Cyberpunk neon */}
+  <ClarityChat api="/api/chat" />
+</ThemeProvider>
+// Also: default, midnight, sunset, forest, rose, slate, emerald, amber + 2 more!
 ```
 
 ### **⚡ Streaming & Real-Time** → _SSE & WebSocket support_
 
 ```tsx
-import { useStreamingSSE } from '@clarity-chat/react'
+import { ClarityChat, useClarityChat } from '@clarity-chat/react'
 
-const { streamMessage, isStreaming } = useStreamingSSE({
-  endpoint: '/api/chat/stream',
-  autoReconnect: true, // Exponential backoff
-  reconnectDelay: 1000,
+// Streaming is enabled by default - just works!
+;<ClarityChat api="/api/chat" />
+
+// Or control streaming with the hook
+const { messages, isStreaming, stop } = useClarityChat({
+  api: '/api/chat',
+  // Auto-reconnect and exponential backoff built-in
 })
 ```
 
@@ -255,7 +262,6 @@ bun add @clarity-chat/react
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-
 ;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
@@ -266,7 +272,6 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-
 ;<ClarityChatPresets.Enterprise api="/api/chat" enableRAG enableSafety enableAnalytics />
 ```
 
@@ -277,7 +282,6 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
-
 ;<ThemeProvider theme="ocean">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>

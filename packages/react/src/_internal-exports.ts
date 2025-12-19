@@ -1,51 +1,21 @@
 'use client'
 
 /**
- * Structured API Reference - @clarity-chat/react
+ * INTERNAL REFERENCE FILE - NOT A PUBLIC ENTRY POINT
  *
- * This file documents and exports the public API surface organized by domain.
- * It serves as both documentation and a complete re-export of the library.
+ * This file is used internally for:
+ * - Demo/docs site components
+ * - Testing utilities
+ * - Build verification
  *
- * ## API Architecture
+ * DO NOT IMPORT FROM THIS FILE DIRECTLY.
  *
- * The library follows a 3-tier architecture:
+ * For the public API, use:
+ * - `@clarity-chat/react` (main entry, recommended)
+ * - `@clarity-chat/react/core` (minimal bundle)
+ * - `@clarity-chat/react/internal` (advanced/internal APIs)
  *
- * ```
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  TIER 1: DROP-IN READY                                          │
- * │  Complete solutions that work out of the box                    │
- * │  <ClarityChat> useClarityChat() <ChatComplete>                 │
- * └─────────────────────────────────────────────────────────────────┘
- *                              ↓
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  TIER 2: COMPOSABLE                                             │
- * │  Building blocks for custom implementations                     │
- * │  <ChatWindow> <ChatInput> useChatEnhanced() useStreamingSSE()  │
- * └─────────────────────────────────────────────────────────────────┘
- *                              ↓
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  TIER 3: PRIMITIVES                                             │
- * │  Low-level utilities, types, and helpers                        │
- * │  convertMessages() createUserMessage() MessageRole             │
- * └─────────────────────────────────────────────────────────────────┘
- * ```
- *
- * ## Import Strategies
- *
- * ```tsx
- * // Full library (everything)
- * import { ClarityChat } from '@clarity-chat/react'
- *
- * // Core only (minimal bundle)
- * import { ClarityChat } from '@clarity-chat/react/core'
- *
- * // Feature-specific (tree-shakeable)
- * import { useStreamingSSE } from '@clarity-chat/react/hooks'
- * import { ChatWindow } from '@clarity-chat/react/components'
- * import { SecurityManager } from '@clarity-chat/react/enterprise'
- * import type { Message } from '@clarity-chat/react/types'
- * ```
- *
+ * @internal
  * @packageDocumentation
  */
 
