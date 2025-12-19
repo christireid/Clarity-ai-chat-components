@@ -26,7 +26,8 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
-import { useClipboard, useToast, useReducedMotion } from '@clarity-chat/react'
+import { useClipboard, useReducedMotion } from '@clarity-chat/react'
+import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { createFadeVariant, createSlideVariant } from '@/lib/animations'
 
@@ -174,7 +175,6 @@ const MermaidDiagram = memo(function MermaidDiagram({
   const [error, setError] = useState<string | null>(null)
   const [rendered, setRendered] = useState(false)
   const { copy, copied } = useClipboard({ timeout: 2000 })
-  const toast = useToast()
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -444,7 +444,6 @@ const CodeExampleRenderer = memo(function CodeExampleRenderer({
   result: CodeExampleResult
 }) {
   const { copy, copied } = useClipboard({ timeout: 2000 })
-  const toast = useToast()
 
   const handleCopy = async () => {
     await copy(result.code)

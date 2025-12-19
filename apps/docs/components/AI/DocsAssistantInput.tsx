@@ -13,7 +13,8 @@
 import { useState, useRef, useCallback, memo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button } from '@clarity-chat/primitives'
-import { useReducedMotion, useToast } from '@clarity-chat/react'
+import { useReducedMotion } from '@clarity-chat/react'
+import { toast } from '@/lib/toast'
 import { Send, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DURATION_SECONDS as durations } from '@/lib/animations'
@@ -49,7 +50,6 @@ export const DocsAssistantInput = memo(function DocsAssistantInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
-  const toast = useToast()
 
   // Command menu state
   const {
