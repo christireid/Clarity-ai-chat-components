@@ -22,72 +22,72 @@ import SpotlightCard from '../ui/SpotlightCard'
 
 const features = [
   {
-    name: 'Never Locked In',
+    name: 'Multi-Provider Support',
     description:
-      'Switch between OpenAI, Claude, and Gemini in one line of code. No vendor lock-in, no rewrites.',
+      'OpenAI, Anthropic, and Google AI adapters included. Switch providers with a single prop change.',
     icon: Globe,
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/20',
   },
   {
-    name: 'Users Love It',
+    name: 'Streaming Built-In',
     description:
-      'Real-time streaming responses that feel instant. No loading spinners, no waiting.',
+      'Real-time token streaming with SSE support. Responses appear as they generate.',
     icon: Zap,
     color: 'text-yellow-400',
     bgColor: 'bg-yellow-500/10',
     borderColor: 'border-yellow-500/20',
   },
   {
-    name: 'Conversations That Remember',
+    name: 'Context Management',
     description:
-      'Your AI remembers context without blowing up your token budget. Smart memory that just works.',
+      'Memory hooks for conversation context. Window, summary, and vector memory strategies included.',
     icon: Brain,
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/10',
     borderColor: 'border-purple-500/20',
   },
   {
-    name: 'Cut API Bills 40%',
+    name: 'Token Tracking',
     description:
-      'Stop overpaying for tokens. Our KV-cache optimization saves you money on every message.',
+      'Built-in cost tracking and budget management. useTokenBudget hook exposes usage and savings.',
     icon: Coins,
     color: 'text-green-400',
     bgColor: 'bg-green-500/10',
     borderColor: 'border-green-500/20',
   },
   {
-    name: 'Build Any Chat UI',
+    name: '170+ Components',
     description:
-      'Mix and match 50+ components. From simple chatbots to complex multi-agent dashboards.',
+      'Chat windows, message lists, inputs, code blocks, file viewers, and more. All customizable.',
     icon: Puzzle,
     color: 'text-pink-400',
     bgColor: 'bg-pink-500/10',
     borderColor: 'border-pink-500/20',
   },
   {
-    name: 'Ship With Confidence',
+    name: 'TypeScript Strict',
     description:
-      'Full TypeScript strict mode. Catch bugs at compile time, not in production.',
+      'Full strict mode with zero any types. IntelliSense support and compile-time error checking.',
     icon: Cpu,
     color: 'text-cyan-400',
     bgColor: 'bg-cyan-500/10',
     borderColor: 'border-cyan-500/20',
   },
   {
-    name: 'Let AI Do More',
+    name: 'Tool Use Support',
     description:
-      'Function calling, tool use, and multi-agent workflows built in. Extend what your AI can do.',
+      'Function calling and tool use patterns for structured AI interactions. Build agentic workflows.',
     icon: Users,
     color: 'text-orange-400',
     bgColor: 'bg-orange-500/10',
     borderColor: 'border-orange-500/20',
   },
   {
-    name: 'Blazing Fast',
+    name: '27KB Gzipped',
     description:
-      '27KB gzipped. Edge-ready with sub-50ms cold starts. Your users will notice the speed.',
+      'Tree-shakeable exports. Only bundle what you use. No bloat, no unnecessary dependencies.',
     icon: Gauge,
     color: 'text-red-400',
     bgColor: 'bg-red-500/10',
@@ -97,23 +97,23 @@ const features = [
 
 const highlights = [
   {
-    title: 'Ship 10x Faster',
+    title: 'Ship Faster',
     description:
-      'Stop reinventing chat wheels. Intuitive APIs and copy-paste examples get you from zero to production in hours.',
+      'Pre-built components mean less code to write. Copy examples from docs, customize, and deploy.',
     icon: Sparkles,
     gradient: 'from-clarity-500 to-cosmic-500',
   },
   {
-    title: 'Sleep Soundly',
+    title: 'Tested & Typed',
     description:
-      'Battle-tested by real companies processing millions of messages. Strict TypeScript. Full test coverage.',
+      'Full TypeScript strict mode with comprehensive test coverage. Catch issues at compile time.',
     icon: Shield,
     gradient: 'from-cosmic-500 to-pink-500',
   },
   {
-    title: 'Scale Without Fear',
+    title: 'Enterprise Features',
     description:
-      'SSO, RBAC, audit logging, and SOC 2 compliance support. Everything enterprises demand, built in.',
+      'SSO, RBAC, and audit logging components available in the Enterprise tier for larger teams.',
     icon: Lock,
     gradient: 'from-pink-500 to-clarity-500',
   },

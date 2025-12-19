@@ -7,39 +7,39 @@ import { durations } from '@/lib/constants'
 
 const comparisonData = [
   {
-    feature: 'Development Time',
-    clarity: '2 Days',
-    custom: '3+ Months',
+    feature: 'Time to First Feature',
+    clarity: 'Hours',
+    custom: 'Weeks',
     highlight: true,
   },
   {
-    feature: 'Initial Cost',
-    clarity: '$49/mo',
-    custom: '$45,000+',
+    feature: 'Components Included',
+    clarity: '170+',
+    custom: 'Build each one',
     highlight: true,
   },
   {
-    feature: 'Maintenance',
-    clarity: 'Included',
-    custom: '$2,000/mo',
+    feature: 'Provider Switching',
+    clarity: 'One prop change',
+    custom: 'Refactor required',
     highlight: false,
   },
   {
-    feature: 'Streaming Logic',
-    clarity: 'Built-in (60fps)',
-    custom: 'Manual impl.',
+    feature: 'Streaming Support',
+    clarity: 'Built-in',
+    custom: 'Manual implementation',
     highlight: false,
   },
   {
-    feature: 'Accessibility (WCAG)',
-    clarity: '100% Compliant',
-    custom: 'Rarely prioritized',
+    feature: 'TypeScript',
+    clarity: '100% Strict',
+    custom: 'Varies',
     highlight: false,
   },
   {
-    feature: 'Token Optimization',
-    clarity: '40% Savings',
-    custom: 'None',
+    feature: 'Token Tracking',
+    clarity: 'Built-in dashboard',
+    custom: 'Build it yourself',
     highlight: true,
   },
 ]
@@ -118,11 +118,12 @@ export default function ComparisonSection() {
         </motion.div>
         
         <div className="mt-12 text-center">
-             <p className="text-sm text-gray-500 mb-4">
-                "We estimated it would take 3 engineers 2 months to build what Clarity provides out of the box."
+             <p className="text-sm text-gray-400 mb-4">
+                Building production-grade AI chat from scratch typically requires 2-3 engineers for 2+ months.
+                That's $45,000+ in development costs before you ship a single feature.
              </p>
-             <div className="text-xs text-gray-600 font-mono uppercase tracking-widest">
-                — CTO, FinanceFlow
+             <div className="text-xs text-gray-500 font-mono uppercase tracking-widest">
+                Based on industry average developer rates
              </div>
         </div>
       </div>

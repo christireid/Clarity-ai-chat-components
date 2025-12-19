@@ -23,13 +23,11 @@ const trustBadges = [
   { icon: Zap, label: '27KB gzipped' },
 ]
 
-// Company logos for social proof - using text-based logos for reliability
-const companyLogos = [
-  { name: 'TechCorp', color: 'text-blue-400' },
-  { name: 'HealthAI', color: 'text-green-400' },
-  { name: 'ShopSmart', color: 'text-purple-400' },
-  { name: 'FinanceFlow', color: 'text-cyan-400' },
-  { name: 'EduTech', color: 'text-pink-400' },
+// Trust indicators - verifiable claims only
+const trustIndicators = [
+  { label: 'MIT Licensed', icon: 'shield' },
+  { label: 'TypeScript Strict', icon: 'code' },
+  { label: 'Open Source', icon: 'github' },
 ]
 
 import MagneticButton from '../ui/MagneticButton'
@@ -61,31 +59,16 @@ export default function HeroSection() {
             transition={{ duration: durations.slow }}
             className="text-center lg:text-left"
           >
-            {/* Badge with company logos */}
+            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: durations.moderate }}
               className="mb-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
-                <span>Ship AI Chat in Days, Not Months</span>
-              </div>
-
-              {/* Company logos row */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-4">
-                <span className="text-xs text-gray-500 uppercase tracking-wider">
-                  Trusted by
-                </span>
-                {companyLogos.map((company) => (
-                  <span
-                    key={company.name}
-                    className={`text-sm font-semibold ${company.color} opacity-70 hover:opacity-100 transition-opacity`}
-                  >
-                    {company.name}
-                  </span>
-                ))}
+                <span>170+ Components &middot; MIT Licensed &middot; TypeScript Strict</span>
               </div>
             </motion.div>
 
@@ -107,8 +90,8 @@ export default function HeroSection() {
               transition={{ delay: 0.3, duration: durations.slow }}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              50+ production-ready React components for AI chat. Switch
-              providers in one line. Cut token costs 40%. Launch this weekend.
+              170+ production-ready React components for AI chat. OpenAI, Anthropic,
+              and Google AI in one library. Token optimization built in.
             </motion.p>
 
             {/* CTAs */}
@@ -167,7 +150,7 @@ export default function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Stats bar - User-focused metrics */}
+        {/* Stats bar - Verifiable metrics only */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -176,9 +159,9 @@ export default function HeroSection() {
         >
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
-              50+
+              170+
             </div>
-            <div className="text-sm text-gray-400">Ready Components</div>
+            <div className="text-sm text-gray-400">React Components</div>
           </div>
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
@@ -188,15 +171,15 @@ export default function HeroSection() {
           </div>
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
-              40%
+              100%
             </div>
-            <div className="text-sm text-gray-400">Token Savings</div>
+            <div className="text-sm text-gray-400">TypeScript Strict</div>
           </div>
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
-              $400K+
+              27KB
             </div>
-            <div className="text-sm text-gray-400">Dev Costs Saved</div>
+            <div className="text-sm text-gray-400">Gzipped Bundle</div>
           </div>
         </motion.div>
       </div>
