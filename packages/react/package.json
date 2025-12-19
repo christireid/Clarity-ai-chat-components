@@ -107,7 +107,7 @@
   },
   "scripts": {
     "build": "node scripts/build-production.cjs",
-    "build:sequential": "node scripts/build-sequential.js",
+    "build:sequential": "node scripts/build-sequential.mjs",
     "build:parallel": "tsup",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "dev": "tsup --watch",
