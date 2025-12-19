@@ -45,6 +45,13 @@ export {
   type UseClarityChatReturn,
 } from './hooks/chat/use-clarity-chat'
 
+// Headless hook - for custom implementations (100% logic, 0% magic)
+export {
+  useChat as useHeadlessChat,
+  type UseChatOptions as UseHeadlessChatOptions,
+  type UseChatReturn as UseHeadlessChatReturn,
+} from './hooks/chat/use-chat-enhanced'
+
 // Structured output hook
 export {
   useClarityObject,
@@ -58,6 +65,11 @@ export {
   type UseClarityChatWithToolsOptions,
   type UseClarityChatWithToolsReturn,
 } from './hooks/chat/use-clarity-chat-with-tools'
+
+// ============================================================================
+// AI COMPONENTS (Citations, Suggestions, etc.)
+// ============================================================================
+export { Citation, type CitationProps, type CitationSource } from './components/ai/citation'
 
 // ============================================================================
 // COMPOSABLE UI COMPONENTS (For custom layouts)
