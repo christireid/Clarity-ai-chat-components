@@ -3,17 +3,7 @@
 import { useState, useEffect, useRef, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useChat } from 'ai/react'
-import {
-  Sparkles,
-  Key,
-  X,
-  Bot,
-  User,
-  Loader2,
-  Send,
-  ChevronDown,
-  MessageCircle,
-} from 'lucide-react'
+import { Sparkles, Shield, X, ArrowRight, ChevronRight } from 'lucide-react'
 
 interface MarketingAssistantProps {
   apiEndpoint?: string
@@ -21,6 +11,50 @@ interface MarketingAssistantProps {
   title?: string
   subtitle?: string
 }
+
+// Inline SVG icons for compatibility with lucide-react 0.400.0
+const MessageCircleIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+  </svg>
+)
+
+const UserIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="8" r="5" />
+    <path d="M20 21a8 8 0 1 0-16 0" />
+  </svg>
+)
+
+const ChevronDownIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+)
 
 export default function MarketingAssistant({
   apiEndpoint = '/api/chat',
@@ -105,7 +139,7 @@ export default function MarketingAssistant({
                   title="Enter API Key"
                   aria-label="Enter API Key"
                 >
-                  <Key className="w-4 h-4" />
+                  <Shield className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
@@ -158,7 +192,7 @@ export default function MarketingAssistant({
                 >
                   {msg.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-4 h-4 text-brand-500" />
+                      <Sparkles className="w-4 h-4 text-brand-500" />
                     </div>
                   )}
                   <div
@@ -172,7 +206,7 @@ export default function MarketingAssistant({
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-8 h-8 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-surface-400" />
+                      <UserIcon className="w-4 h-4 text-surface-400" />
                     </div>
                   )}
                 </motion.div>
@@ -196,7 +230,7 @@ export default function MarketingAssistant({
               {isLoading && (
                 <div className="flex gap-3 justify-start">
                   <div className="w-8 h-8 rounded-full bg-surface-800 border border-surface-700 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-4 h-4 text-brand-500" />
+                    <Sparkles className="w-4 h-4 text-brand-500" />
                   </div>
                   <div className="bg-surface-800 border border-surface-700 rounded-2xl rounded-bl-none p-3 flex gap-1 items-center">
                     <div
@@ -235,9 +269,9 @@ export default function MarketingAssistant({
                   aria-label="Send message"
                 >
                   {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4" />
                   )}
                 </button>
               </form>
@@ -262,9 +296,9 @@ export default function MarketingAssistant({
         )}
 
         {isOpen ? (
-          <ChevronDown className="w-6 h-6" />
+          <ChevronDownIcon className="w-6 h-6" />
         ) : (
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircleIcon className="w-6 h-6" />
         )}
 
         {/* Tooltip */}
