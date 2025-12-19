@@ -37,6 +37,9 @@
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
 
+// Re-export MessageRole for modules that import from this file
+export type { MessageRole }
+
 // Simple ID generator (inline to avoid primitives utils export issue)
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`

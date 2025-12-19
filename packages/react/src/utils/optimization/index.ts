@@ -136,9 +136,60 @@ export {
   type SchemaWarmingResult,
 } from './structured-output-cache'
 
-// Token Optimization
-export * from './token-optimization'
+// Token Optimization (explicit exports to avoid conflicts with named exports above)
+export {
+  shortenPrompt,
+  estimateTokens,
+  calculateTokenSavings,
+  limitHistorySlidingWindow,
+  limitHistoryFIFO,
+  limitHistorySmart,
+  limitHistory,
+  createCache,
+  generateCacheKey,
+  createThrottler,
+  classifyQueryComplexity,
+  routeToModel,
+  estimateRoutingSavings,
+  shouldUseReference,
+  createReference,
+  enforceOutputLimit,
+  createBatcher,
+  calculateSimilarity,
+  findSimilarCached,
+  type TokenOptimizationConfig,
+  type PromptShorteningOptions,
+  type HistoryLimitingOptions,
+  type CacheOptions as TokenCacheOptions,
+  type SimilarityCacheOptions,
+  type ThrottlingOptions,
+  type ModelRoutingOptions,
+  type ReferenceOptions,
+  type OutputLimitOptions as TokenOutputLimitOptions,
+  type BatchingOptions,
+} from './token-optimization'
 
-// Performance
-export * from './performance'
-export * from './performance-optimization'
+// Performance (explicit exports to avoid conflicts)
+export {
+  throttle,
+  debounce,
+  Batcher,
+  measurePerformance,
+  PerformanceMonitor,
+  lazyLoad,
+  optimizeArray,
+} from './performance'
+
+export {
+  calculateVisibleRange,
+  createDebouncedFunction,
+  createThrottledFunction,
+  MemoryManager,
+  calculateMessageDiff,
+  BatchProcessor,
+  PerformanceTracker,
+  checkPerformanceTarget,
+  type VirtualScrollConfig,
+  type DebounceConfig,
+  type ThrottleConfig,
+} from './performance-optimization'

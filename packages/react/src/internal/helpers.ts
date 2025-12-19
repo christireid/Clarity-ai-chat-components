@@ -233,3 +233,14 @@ export function cancellable<T>(promise: Promise<T>): {
     },
   }
 }
+
+/**
+ * Check if code is running in a browser environment
+ */
+export const isBrowser =
+  typeof window !== 'undefined' && typeof window.document !== 'undefined'
+
+/**
+ * Check if code is running in a server environment
+ */
+export const isServer = !isBrowser

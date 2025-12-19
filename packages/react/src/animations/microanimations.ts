@@ -14,6 +14,7 @@ const durations = {
   faster: ANIMATION_DURATION.faster / 1000,
   fast: ANIMATION_DURATION.fast / 1000,
   normal: ANIMATION_DURATION.normal / 1000,
+  moderate: 0.25, // Between normal (0.2s) and slow (0.3s)
   slow: ANIMATION_DURATION.slow / 1000,
   slower: ANIMATION_DURATION.slower / 1000,
 }
