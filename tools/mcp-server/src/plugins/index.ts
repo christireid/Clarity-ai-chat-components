@@ -18,7 +18,9 @@ import { z } from 'zod'
 // =============================================================================
 
 /** Timeout for plugin lifecycle hooks (in ms) */
-const LIFECYCLE_HOOK_TIMEOUT_MS = parseInt(process.env.MCP_PLUGIN_HOOK_TIMEOUT || '5000')
+const LIFECYCLE_HOOK_TIMEOUT_MS = parseInt(
+  process.env.MCP_PLUGIN_HOOK_TIMEOUT || '5000'
+)
 
 /**
  * Execute a lifecycle hook with timeout protection
@@ -35,13 +37,21 @@ async function withLifecycleTimeout<T>(
       Promise.resolve(hook()),
       new Promise<never>((_, reject) =>
         setTimeout(
-          () => reject(new Error(`Plugin ${hookName} hook timed out after ${LIFECYCLE_HOOK_TIMEOUT_MS}ms`)),
+          () =>
+            reject(
+              new Error(
+                `Plugin ${hookName} hook timed out after ${LIFECYCLE_HOOK_TIMEOUT_MS}ms`
+              )
+            ),
           LIFECYCLE_HOOK_TIMEOUT_MS
         )
       ),
     ])
   } catch (error) {
-    logger.error(`Plugin ${hookName} hook failed: ${pluginId}`, error instanceof Error ? error : undefined)
+    logger.error(
+      `Plugin ${hookName} hook failed: ${pluginId}`,
+      error instanceof Error ? error : undefined
+    )
     // Don't re-throw - log and continue for lifecycle hooks
   }
 }
@@ -232,6 +242,7 @@ const PLUGIN_LIMITS = {
  */
 function sanitizeName(name: string): string {
   // Remove control characters and limit length
+  // eslint-disable-next-line no-control-regex
   return name
     .replace(/[\x00-\x1F\x7F]/g, '')
     .slice(0, PLUGIN_LIMITS.maxNameLength)
@@ -249,13 +260,17 @@ function validateItemName(name: string, type: string): void {
   }
 
   if (sanitized.length > PLUGIN_LIMITS.maxNameLength) {
-    throw new ValidationError(`${type} name exceeds maximum length of ${PLUGIN_LIMITS.maxNameLength}`)
+    throw new ValidationError(
+      `${type} name exceeds maximum length of ${PLUGIN_LIMITS.maxNameLength}`
+    )
   }
 
   // Check for reserved prefixes
   for (const prefix of PLUGIN_LIMITS.reservedPrefixes) {
     if (sanitized.toLowerCase().startsWith(prefix)) {
-      throw new ValidationError(`${type} name cannot start with reserved prefix "${prefix}"`)
+      throw new ValidationError(
+        `${type} name cannot start with reserved prefix "${prefix}"`
+      )
     }
   }
 }
@@ -269,16 +284,28 @@ function validateItemName(name: string, type: string): void {
  */
 class PluginRegistry {
   private plugins = new Map<string, RegisteredPlugin>()
-  private toolHandlers = new Map<string, { pluginId: string; handler: ToolHandler }>()
-  private resourceHandlers = new Map<string, { pluginId: string; handler: ResourceHandler }>()
-  private promptHandlers = new Map<string, { pluginId: string; handler: PromptHandler }>()
+  private toolHandlers = new Map<
+    string,
+    { pluginId: string; handler: ToolHandler }
+  >()
+  private resourceHandlers = new Map<
+    string,
+    { pluginId: string; handler: ResourceHandler }
+  >()
+  private promptHandlers = new Map<
+    string,
+    { pluginId: string; handler: PromptHandler }
+  >()
   private events = new EventEmitter()
   private registrationQueue: Promise<void> = Promise.resolve()
 
   /**
    * Register a new plugin
    */
-  async register(plugin: Plugin, config?: Partial<PluginConfig>): Promise<void> {
+  async register(
+    plugin: Plugin,
+    config?: Partial<PluginConfig>
+  ): Promise<void> {
     // Chain registrations to prevent race conditions
     const previousRegistration = this.registrationQueue
     let resolveRegistration: () => void = () => {}
@@ -318,19 +345,28 @@ class PluginRegistry {
       }
 
       // Validate tool/resource/prompt counts
-      if (plugin.tools && plugin.tools.length > PLUGIN_LIMITS.maxToolsPerPlugin) {
+      if (
+        plugin.tools &&
+        plugin.tools.length > PLUGIN_LIMITS.maxToolsPerPlugin
+      ) {
         throw new ValidationError(
           `Plugin exceeds maximum tools limit (${PLUGIN_LIMITS.maxToolsPerPlugin})`,
           { toolCount: plugin.tools.length }
         )
       }
-      if (plugin.resources && plugin.resources.length > PLUGIN_LIMITS.maxResourcesPerPlugin) {
+      if (
+        plugin.resources &&
+        plugin.resources.length > PLUGIN_LIMITS.maxResourcesPerPlugin
+      ) {
         throw new ValidationError(
           `Plugin exceeds maximum resources limit (${PLUGIN_LIMITS.maxResourcesPerPlugin})`,
           { resourceCount: plugin.resources.length }
         )
       }
-      if (plugin.prompts && plugin.prompts.length > PLUGIN_LIMITS.maxPromptsPerPlugin) {
+      if (
+        plugin.prompts &&
+        plugin.prompts.length > PLUGIN_LIMITS.maxPromptsPerPlugin
+      ) {
         throw new ValidationError(
           `Plugin exceeds maximum prompts limit (${PLUGIN_LIMITS.maxPromptsPerPlugin})`,
           { promptCount: plugin.prompts.length }
@@ -372,7 +408,11 @@ class PluginRegistry {
       this.plugins.set(pluginId, registered)
 
       // Call lifecycle hook with timeout protection
-      await withLifecycleTimeout(plugin.lifecycle?.onRegister, 'onRegister', pluginId)
+      await withLifecycleTimeout(
+        plugin.lifecycle?.onRegister,
+        'onRegister',
+        pluginId
+      )
 
       // Auto-enable if configured
       if (finalConfig.enabled) {
@@ -446,7 +486,11 @@ class PluginRegistry {
       }
 
       // Call lifecycle hook with timeout protection
-      await withLifecycleTimeout(plugin.lifecycle?.onEnable, 'onEnable', pluginId)
+      await withLifecycleTimeout(
+        plugin.lifecycle?.onEnable,
+        'onEnable',
+        pluginId
+      )
 
       registered.state = 'enabled'
       registered.enabledAt = new Date()
@@ -455,7 +499,8 @@ class PluginRegistry {
       this.events.emit('plugin:enabled', { pluginId, plugin })
     } catch (error) {
       registered.state = 'error'
-      registered.error = error instanceof Error ? error : new Error(String(error))
+      registered.error =
+        error instanceof Error ? error : new Error(String(error))
       throw error
     }
   }
@@ -491,7 +536,11 @@ class PluginRegistry {
     }
 
     // Call lifecycle hook with timeout protection
-    await withLifecycleTimeout(plugin.lifecycle?.onDisable, 'onDisable', pluginId)
+    await withLifecycleTimeout(
+      plugin.lifecycle?.onDisable,
+      'onDisable',
+      pluginId
+    )
 
     registered.state = 'disabled'
     logger.info(`Plugin disabled: ${plugin.metadata.name}`, { pluginId })
@@ -513,7 +562,11 @@ class PluginRegistry {
     }
 
     // Call lifecycle hook with timeout protection
-    await withLifecycleTimeout(registered.plugin.lifecycle?.onUnregister, 'onUnregister', pluginId)
+    await withLifecycleTimeout(
+      registered.plugin.lifecycle?.onUnregister,
+      'onUnregister',
+      pluginId
+    )
 
     this.plugins.delete(pluginId)
     logger.info(`Plugin unregistered: ${registered.plugin.metadata.name}`, {

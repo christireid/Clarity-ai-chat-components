@@ -352,7 +352,6 @@ Enable context-aware conversations:
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-
 ;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
@@ -362,7 +361,6 @@ Choose from 11 built-in themes:
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
-
 ;<ThemeProvider theme="glassmorphism">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>
@@ -376,7 +374,6 @@ Gate features based on license plan:
 
 ```tsx
 import { LicenseGate } from '@clarity-chat/react'
-
 ;<LicenseGate plan="pro" fallback={<UpgradePrompt />}>
   <AdvancedFeatures />
 </LicenseGate>

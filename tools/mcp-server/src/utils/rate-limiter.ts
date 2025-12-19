@@ -280,7 +280,7 @@ export class RateLimiter {
    * Consume a request (call after successful check)
    * Note: check() already increments, this is for explicit consumption
    */
-  consume(context: RequestContext, tokens = 1): boolean {
+  consume(context: RequestContext, _tokens = 1): boolean {
     const result = this.check(context)
     return result.allowed
   }
@@ -350,15 +350,19 @@ export class RateLimiter {
     if (count <= 0) return
 
     // Sort entries by windowStart (oldest first)
-    const sorted = Array.from(this.entries.entries())
-      .sort(([, a], [, b]) => a.windowStart - b.windowStart)
+    const sorted = Array.from(this.entries.entries()).sort(
+      ([, a], [, b]) => a.windowStart - b.windowStart
+    )
 
     // Delete the oldest entries
     for (let i = 0; i < Math.min(count, sorted.length); i++) {
       this.entries.delete(sorted[i][0])
     }
 
-    logger.debug('Evicted rate limit entries', { evicted: count, remaining: this.entries.size })
+    logger.debug('Evicted rate limit entries', {
+      evicted: count,
+      remaining: this.entries.size,
+    })
   }
 
   /**
@@ -413,7 +417,10 @@ export class RateLimiter {
 // Environment-based Configuration
 // =============================================================================
 
-const parseEnvInt = (value: string | undefined, defaultValue: number): number => {
+const parseEnvInt = (
+  value: string | undefined,
+  defaultValue: number
+): number => {
   if (!value) return defaultValue
   const parsed = parseInt(value, 10)
   return isNaN(parsed) ? defaultValue : parsed

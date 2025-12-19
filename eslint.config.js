@@ -215,11 +215,14 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+        React: 'readonly',
+        JSX: 'readonly',
         describe: 'readonly',
         it: 'readonly',
         test: 'readonly',
         expect: 'readonly',
         vi: 'readonly',
+        jest: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
         beforeAll: 'readonly',
@@ -233,9 +236,12 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       ...sharedRules,
+      'no-undef': 'off', // TypeScript handles this
+      'no-unexpected-multiline': 'off', // TypeScript handles this
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
 

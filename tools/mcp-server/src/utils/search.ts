@@ -148,7 +148,11 @@ function fuzzyMatch(
   let consecutiveMatches = 0
   let maxConsecutive = 0
 
-  for (let i = 0; i < searchText.length && queryIndex < searchQuery.length; i++) {
+  for (
+    let i = 0;
+    i < searchText.length && queryIndex < searchQuery.length;
+    i++
+  ) {
     if (searchText[i] === searchQuery[queryIndex]) {
       if (lastMatchIndex === i - 1) {
         consecutiveMatches++
@@ -157,10 +161,7 @@ function fuzzyMatch(
         consecutiveMatches = 1
       }
 
-      if (
-        indices.length > 0 &&
-        indices[indices.length - 1][1] === i - 1
-      ) {
+      if (indices.length > 0 && indices[indices.length - 1][1] === i - 1) {
         indices[indices.length - 1][1] = i
       } else {
         indices.push([i, i])
@@ -183,7 +184,7 @@ function fuzzyMatch(
   const consecutiveBonus = maxConsecutive / searchQuery.length
   const positionBonus = 1 - (indices[0]?.[0] ?? 0) / searchText.length
 
-  const score = (coverage * 0.3 + consecutiveBonus * 0.5 + positionBonus * 0.2)
+  const score = coverage * 0.3 + consecutiveBonus * 0.5 + positionBonus * 0.2
 
   return { matched: true, indices, score }
 }
@@ -242,7 +243,13 @@ export class SearchEngine<T> {
    */
   search(query: string, options?: Partial<SearchOptions>): SearchResult<T>[] {
     const opts = { ...this.defaultOptions, ...options }
-    const { threshold, limit, fields, fieldBoosts, caseSensitive } = opts
+    const {
+      threshold,
+      limit,
+      fields,
+      fieldBoosts,
+      caseSensitive: _caseSensitive,
+    } = opts
 
     if (!query || query.trim().length === 0) {
       return this.items.slice(0, limit).map((item) => ({
@@ -390,10 +397,7 @@ export class SearchEngine<T> {
   /**
    * Get search suggestions based on partial query
    */
-  getSuggestions(
-    query: string,
-    options?: Partial<SearchOptions>
-  ): string[] {
+  getSuggestions(query: string, options?: Partial<SearchOptions>): string[] {
     const results = this.search(query, { ...options, limit: 5 })
     const suggestions: string[] = []
 

@@ -33,3 +33,10 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Template files (Handlebars)
+*.hbs
+
+# Commercial content with special formatting
+apps/docs/app/commercial/SALES_DECK_OUTLINE.md
+apps/docs/content/commercial/SALES_DECK_OUTLINE.md
