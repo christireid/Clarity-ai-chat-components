@@ -127,17 +127,18 @@ export function validateApiEndpoint(
   }
 
   // Security Check: Detect if user accidentally passed an API key
-  const isLikelyApiKey = 
+  const isLikelyApiKey =
     api.startsWith('sk-') || // OpenAI, Anthropic (sk-ant)
     api.startsWith('AIza') || // Google
-    api.startsWith('xox') ||  // Slack
-    api.length > 100 && !api.includes('/') // Long string without slashes
+    api.startsWith('xox') || // Slack
+    (api.length > 100 && !api.includes('/')) // Long string without slashes
 
   if (isLikelyApiKey) {
     throw new ComponentError({
       code: 'SECURITY_RISK',
       component: 'useClarityChat',
-      message: 'Security Alert: It looks like you passed an API Key as the "api" endpoint.',
+      message:
+        'Security Alert: It looks like you passed an API Key as the "api" endpoint.',
       expected: 'A URL path (e.g., "/api/chat")',
       example: 'Do NOT pass keys to the client. Use a server-side API route.',
       docsPath: '/security/client-side-keys',

@@ -1,14 +1,22 @@
-import React from 'react'
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
+import { TutorialProgressWrapper } from '@/components/Enhanced/TutorialProgressWrapper'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
+import { RelatedPages } from '@/components/Enhanced/RelatedPages'
+
+const tutorialSteps = [
+  { id: 'setup', title: 'Project Setup', href: '#setup' },
+  { id: 'basic-chat', title: 'Basic Chat', href: '#basic-chat' },
+  { id: 'avatars', title: 'Add Avatars', href: '#avatars' },
+  { id: 'typing', title: 'Typing Indicator', href: '#typing-indicator' },
+  { id: 'reactions', title: 'Reactions', href: '#reactions' },
+  { id: 'dark-mode', title: 'Dark Mode', href: '#dark-mode' },
+]
 
 export const metadata: Metadata = {
   title: 'Tutorial: Build a Complete Chat App',
@@ -46,6 +54,9 @@ export default function TutorialPage() {
           </div>
         </div>
       </Callout>
+
+      {/* Dynamic Progress Indicator - updates based on scroll position */}
+      <TutorialProgressWrapper steps={tutorialSteps} />
 
       <YouWillLearn
         items={[
@@ -121,18 +132,19 @@ export default function TutorialPage() {
         </div>
       </div>
 
-      <TutorialStep
-        step={1}
-        title="Project Setup"
-        nextStepHref="#basic-chat"
-        nextStepTitle="Basic Chat Interface"
-      >
-        <p className="text-text-secondary mb-4">
-          Create a new React project with Vite and install Clarity Chat:
-        </p>
+      <div id="setup">
+        <TutorialStep
+          step={1}
+          title="Project Setup"
+          nextStepHref="#basic-chat"
+          nextStepTitle="Basic Chat Interface"
+        >
+          <p className="text-text-secondary mb-4">
+            Create a new React project with Vite and install Clarity Chat:
+          </p>
 
-        <EnhancedCodeBlock
-          code={`# Create new project
+          <EnhancedCodeBlock
+            code={`# Create new project
 npm create vite@latest my-chat-app -- --template react-ts
 
 # Navigate to project
@@ -143,44 +155,46 @@ npm install
 
 # Install Clarity Chat
 npm install @clarity-chat/react`}
-          language="bash"
-          filename="Terminal"
-          showCopyButton
-        />
+            language="bash"
+            filename="Terminal"
+            showCopyButton
+          />
 
-        <Callout type="tip" className="mt-4">
-          <p>
-            <strong>Alternative:</strong> You can also use Next.js, Remix, or
-            any other React framework. See the{' '}
-            <a
-              href="/learn/installation"
-              className="text-brand-500 hover:underline"
-            >
-              Installation Guide
-            </a>{' '}
-            for framework-specific instructions.
-          </p>
-        </Callout>
-      </TutorialStep>
+          <Callout type="tip" className="mt-4">
+            <p>
+              <strong>Alternative:</strong> You can also use Next.js, Remix, or
+              any other React framework. See the{' '}
+              <a
+                href="/learn/installation"
+                className="text-brand-500 hover:underline"
+              >
+                Installation Guide
+              </a>{' '}
+              for framework-specific instructions.
+            </p>
+          </Callout>
+        </TutorialStep>
+      </div>
 
       <UseChatFlowAnimation />
 
-      <TutorialStep
-        step={2}
-        title="Basic Chat Interface"
-        nextStepHref="#enhancements"
-        nextStepTitle="Adding Enhancements"
-      >
-        <p className="text-text-secondary mb-4">
-          Replace the contents of{' '}
-          <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-            src/App.tsx
-          </code>
-          :
-        </p>
+      <div id="basic-chat">
+        <TutorialStep
+          step={2}
+          title="Basic Chat Interface"
+          nextStepHref="#enhancements"
+          nextStepTitle="Adding Enhancements"
+        >
+          <p className="text-text-secondary mb-4">
+            Replace the contents of{' '}
+            <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+              src/App.tsx
+            </code>
+            :
+          </p>
 
-        <EnhancedCodeBlock
-          code={`import { useState } from 'react'
+          <EnhancedCodeBlock
+            code={`import { useState } from 'react'
 import { ChatWindow, Message } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 import './App.css'
@@ -231,29 +245,31 @@ function App() {
 }
 
 export default App`}
-          language="tsx"
-          title="src/App.tsx"
-          showLineNumbers
-        />
+            language="tsx"
+            title="src/App.tsx"
+            showLineNumbers
+          />
 
-        <p>Run your app:</p>
+          <p>Run your app:</p>
 
-        <EnhancedCodeBlock code="npm run dev" language="bash" />
+          <EnhancedCodeBlock code="npm run dev" language="bash" />
 
-        <Callout type="success">
-          <p>
-            <strong>You did it!</strong> You now have a working chat interface.
-            Let's add more features.
-          </p>
-        </Callout>
-      </TutorialStep>
+          <Callout type="success">
+            <p>
+              <strong>You did it!</strong> You now have a working chat
+              interface. Let's add more features.
+            </p>
+          </Callout>
+        </TutorialStep>
+      </div>
 
-      <h2 id="avatars">Step 3: Add Avatars</h2>
+      <div id="avatars">
+        <h2>Step 3: Add Avatars</h2>
 
-      <p>Enhance messages with user avatars:</p>
+        <p>Enhance messages with user avatars:</p>
 
-      <EnhancedCodeBlock
-        code={`const [messages, setMessages] = useState<Message[]>([
+        <EnhancedCodeBlock
+          code={`const [messages, setMessages] = useState<Message[]>([
   {
     id: '1',
     text: 'Welcome to your new chat app! 👋',
@@ -293,16 +309,18 @@ const handleSendMessage = (text: string) => {
     setMessages((prev) => [...prev, botMessage])
   }, 1000)
 }`}
-        language="tsx"
-        highlightLines={[7, 8, 9, 10, 18, 19, 20, 21, 30, 31, 32, 33]}
-      />
+          language="tsx"
+          highlightLines={[7, 8, 9, 10, 18, 19, 20, 21, 30, 31, 32, 33]}
+        />
+      </div>
 
-      <h2 id="typing-indicator">Step 4: Typing Indicator</h2>
+      <div id="typing-indicator">
+        <h2>Step 4: Typing Indicator</h2>
 
-      <p>Show when the bot is "typing":</p>
+        <p>Show when the bot is "typing":</p>
 
-      <EnhancedCodeBlock
-        code={`import { useState } from 'react'
+        <EnhancedCodeBlock
+          code={`import { useState } from 'react'
 import { ChatWindow, Message, useTyping } from '@clarity-chat/react'
 
 function App() {
@@ -342,16 +360,18 @@ function App() {
     />
   )
 }`}
-        language="tsx"
-        highlightLines={[2, 6, 18, 20, 21, 35]}
-      />
+          language="tsx"
+          highlightLines={[2, 6, 18, 20, 21, 35]}
+        />
+      </div>
 
-      <h2 id="reactions">Step 5: Message Reactions</h2>
+      <div id="reactions">
+        <h2>Step 5: Message Reactions</h2>
 
-      <p>Allow users to react to messages:</p>
+        <p>Allow users to react to messages:</p>
 
-      <EnhancedCodeBlock
-        code={`const handleReaction = (messageId: string, emoji: string) => {
+        <EnhancedCodeBlock
+          code={`const handleReaction = (messageId: string, emoji: string) => {
   setMessages((prev) =>
     prev.map((msg) =>
       msg.id === messageId
@@ -376,15 +396,17 @@ return (
     enableReactions
   />
 )`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </div>
 
-      <h2 id="dark-mode">Step 6: Dark Mode</h2>
+      <div id="dark-mode">
+        <h2>Step 6: Dark Mode</h2>
 
-      <p>Add theme switching:</p>
+        <p>Add theme switching:</p>
 
-      <EnhancedCodeBlock
-        code={`import { useState } from 'react'
+        <EnhancedCodeBlock
+          code={`import { useState } from 'react'
 import { ChatWindow, ThemeProvider } from '@clarity-chat/react'
 
 function App() {
@@ -407,9 +429,10 @@ function App() {
     </ThemeProvider>
   )
 }`}
-        language="tsx"
-        highlightLines={[2, 5, 8, 11, 12, 13, 20]}
-      />
+          language="tsx"
+          highlightLines={[2, 5, 8, 11, 12, 13, 20]}
+        />
+      </div>
 
       <h2 id="next-steps">What's Next?</h2>
 
@@ -543,6 +566,38 @@ export default App`}
         language="tsx"
         title="src/App.tsx (Complete)"
         showLineNumbers
+      />
+
+      <RelatedPages
+        title="Continue Learning"
+        pages={[
+          {
+            title: 'Streaming Guide',
+            description: 'Add real-time streaming for instant AI responses',
+            href: '/guides/streaming',
+            type: 'guide',
+          },
+          {
+            title: 'Memory & Context',
+            description:
+              'Implement conversation memory with different strategies',
+            href: '/guides/memory',
+            type: 'guide',
+          },
+          {
+            title: 'Tool Calling',
+            description: 'Let AI execute functions and interact with your app',
+            href: '/cookbook/tool-calling',
+            type: 'cookbook',
+          },
+          {
+            title: 'Multi-Provider Example',
+            description:
+              'See a complete app with OpenAI, Anthropic, and Google',
+            href: '/examples/multi-provider',
+            type: 'example',
+          },
+        ]}
       />
 
       <Pagination

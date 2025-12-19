@@ -28,8 +28,8 @@ export interface SearchResult {
 
 export interface RAGQuery {
   query: string
-  documentIds?: string[]  // Filter to specific documents
-  topK?: number           // Number of chunks to retrieve
+  documentIds?: string[] // Filter to specific documents
+  topK?: number // Number of chunks to retrieve
   model: string
   provider: 'openai' | 'anthropic' | 'google'
   temperature?: number
@@ -58,9 +58,9 @@ export interface Source {
 }
 
 export interface RAGConfig {
-  chunkSize: number        // tokens per chunk
-  overlap: number          // overlap between chunks
-  topK: number            // default chunks to retrieve
+  chunkSize: number // tokens per chunk
+  overlap: number // overlap between chunks
+  topK: number // default chunks to retrieve
   maxContextTokens: number // max context size
-  temperature: number      // default temperature
+  temperature: number // default temperature
 }
