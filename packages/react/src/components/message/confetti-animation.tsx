@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface ConfettiAnimationProps {
   show: boolean

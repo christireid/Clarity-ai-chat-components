@@ -1,6 +1,6 @@
 /**
  * Glassmorphism Theme Preset
- * 
+ *
  * Modern glassmorphism design with frosted glass effects,
  * transparency, and depth. Perfect for AI chat interfaces
  * that need a sophisticated, premium feel.
@@ -13,22 +13,22 @@ import { createPreset } from './base'
  * Glassmorphism light theme
  * Clean, transparent interface with glass effects
  */
-export const glassmorphismLightTheme: CompleteThemeConfig = {
+export const glassmorphismLightTheme = {
   name: 'glassmorphism-light',
   displayName: 'Glass Light',
   mode: 'light',
-  
+
   colors: {
     // Base glass colors
     background: '0 0% 100%',
     foreground: '222 47% 11%',
-    
+
     // Glass surfaces
     card: '0 0% 100%',
     cardForeground: '222 47% 11%',
     popover: '0 0% 100%',
     popoverForeground: '222 47% 11%',
-    
+
     // Primary with glass effect
     primary: '221 83% 53%',
     primaryForeground: '0 0% 100%',
@@ -36,7 +36,7 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
     secondaryForeground: '222 47% 11%',
     accent: '221 83% 53%',
     accentForeground: '0 0% 100%',
-    
+
     // State colors with subtle glass
     destructive: '0 84% 60%',
     destructiveForeground: '0 0% 100%',
@@ -46,27 +46,27 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
     warningForeground: '222 47% 11%',
     info: '221 83% 53%',
     infoForeground: '0 0% 100%',
-    
+
     // Glass UI colors
     muted: '240 5% 65%',
     mutedForeground: '240 4% 46%',
     border: '240 6% 90%',
     input: '0 0% 100%',
     ring: '221 83% 53%',
-    
+
     // Extended glass surfaces
     surfaceMuted: '240 5% 98%',
     surfaceElevated: '0 0% 100%',
     surfaceOverlay: '0 0% 100%',
   },
-  
+
   spacing: {
     scale: 'rem',
     base: 0.25,
     ratio: 1.5,
     unit: 'rem',
   },
-  
+
   radius: {
     none: '0',
     sm: '0.375rem',
@@ -77,10 +77,11 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
     '2xl': '1.5rem',
     full: '9999px',
   },
-  
+
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    DEFAULT: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    DEFAULT:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     md: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     lg: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     xl: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -88,7 +89,7 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
     inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
     glass: '0 8px 32px rgba(0, 0, 0, 0.1)',
   },
-  
+
   typography: {
     fontFamily: {
       sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -112,7 +113,7 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
       bold: 700,
     },
   },
-  
+
   animations: {
     duration: {
       instant: '0ms',
@@ -129,7 +130,7 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
       glass: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     },
   },
-  
+
   components: {
     button: {
       padding: '0.75rem 1.5rem',
@@ -161,7 +162,7 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
       border: '1px solid rgba(255, 255, 255, 0.2)',
     },
   },
-  
+
   custom: {
     glass: {
       background: 'rgba(255, 255, 255, 0.1)',
@@ -187,22 +188,22 @@ export const glassmorphismLightTheme: CompleteThemeConfig = {
  * Glassmorphism dark theme
  * Deep, sophisticated dark theme with glass effects
  */
-export const glassmorphismDarkTheme: CompleteThemeConfig = {
+export const glassmorphismDarkTheme = {
   name: 'glassmorphism-dark',
   displayName: 'Glass Dark',
   mode: 'dark',
-  
+
   colors: {
     // Deep glass background
     background: '222 47% 11%',
     foreground: '0 0% 95%',
-    
+
     // Dark glass surfaces
     card: '222 35% 15%',
     cardForeground: '0 0% 95%',
     popover: '222 25% 20%',
     popoverForeground: '0 0% 95%',
-    
+
     // Primary with enhanced contrast
     primary: '221 83% 64%',
     primaryForeground: '0 0% 100%',
@@ -210,7 +211,7 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
     secondaryForeground: '0 0% 95%',
     accent: '221 83% 64%',
     accentForeground: '0 0% 100%',
-    
+
     // State colors with enhanced visibility
     destructive: '0 84% 70%',
     destructiveForeground: '0 0% 100%',
@@ -220,27 +221,27 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
     warningForeground: '222 47% 11%',
     info: '221 83% 64%',
     infoForeground: '0 0% 100%',
-    
+
     // Glass UI colors for dark mode
     muted: '240 5% 35%',
     mutedForeground: '240 4% 65%',
     border: '240 6% 25%',
     input: '222 47% 15%',
     ring: '221 83% 64%',
-    
+
     // Extended dark glass surfaces
     surfaceMuted: '222 25% 18%',
     surfaceElevated: '222 35% 20%',
     surfaceOverlay: '222 15% 25%',
   },
-  
+
   spacing: {
     scale: 'rem',
     base: 0.25,
     ratio: 1.5,
     unit: 'rem',
   },
-  
+
   radius: {
     none: '0',
     sm: '0.375rem',
@@ -251,10 +252,11 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
     '2xl': '1.5rem',
     full: '9999px',
   },
-  
+
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
-    DEFAULT: '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+    DEFAULT:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
     md: '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
     lg: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
     xl: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
@@ -262,7 +264,7 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
     inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)',
     glass: '0 8px 32px rgba(0, 0, 0, 0.4)',
   },
-  
+
   typography: {
     fontFamily: {
       sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -286,7 +288,7 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
       bold: 700,
     },
   },
-  
+
   animations: {
     duration: {
       instant: '0ms',
@@ -303,7 +305,7 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
       glass: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     },
   },
-  
+
   components: {
     button: {
       padding: '0.75rem 1.5rem',
@@ -335,7 +337,7 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
       border: '1px solid rgba(255, 255, 255, 0.1)',
     },
   },
-  
+
   custom: {
     glass: {
       background: 'rgba(0, 0, 0, 0.2)',
@@ -363,7 +365,8 @@ export const glassmorphismDarkTheme: CompleteThemeConfig = {
 export const glassmorphismThemeMetadata: ThemeMetadata = {
   name: 'glassmorphism',
   displayName: 'Glassmorphism',
-  description: 'Modern glass design with frosted glass effects and transparency',
+  description:
+    'Modern glass design with frosted glass effects and transparency',
   category: 'modern',
   tags: ['glass', 'transparent', 'frosted', 'modern', 'premium'],
   popularity: 95,

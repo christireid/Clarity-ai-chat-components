@@ -1,16 +1,20 @@
 /**
  * useOptimizedChatContext Hook
- * 
+ *
  * Hook that integrates with useClarityChat to automatically optimize
  * chat context for token budgets.
  */
 
 import { useMemo, useCallback, useEffect, useState } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ModelMetadata } from '../core/tokenizer'
 import type { OptimizationStrategy } from '../core/optimizer'
 import { buildModelPrompt } from '../core/builder'
-import { estimateMessageTokens, getTokenizerForModel, MODEL_PRESETS } from '../core/tokenizer'
+import {
+  estimateMessageTokens,
+  getTokenizerForModel,
+  MODEL_PRESETS,
+} from '../core/tokenizer'
 
 /**
  * Options for useOptimizedChatContext
@@ -82,16 +86,19 @@ export function useOptimizedChatContext(
     if (!modelMetadataOption) return MODEL_PRESETS['gpt-4']
 
     if (typeof modelMetadataOption === 'string') {
-      return MODEL_PRESETS[modelMetadataOption] || {
-        model: modelMetadataOption,
-        maxTokens: 8192,
-      }
+      return (
+        MODEL_PRESETS[modelMetadataOption] || {
+          model: modelMetadataOption,
+          maxTokens: 8192,
+        }
+      )
     }
 
     return modelMetadataOption
   }, [modelMetadataOption])
 
-  const [optimizedMessages, setOptimizedMessages] = useState<CoreMessage[]>(messages)
+  const [optimizedMessages, setOptimizedMessages] =
+    useState<CoreMessage[]>(messages)
   const [lastOptimizationReason, setLastOptimizationReason] = useState<string>()
   const [wasOptimized, setWasOptimized] = useState(false)
 
@@ -120,9 +127,8 @@ export function useOptimizedChatContext(
       })
 
       // Merge with original messages structure
-      const finalMessages = result.messages.length > 0
-        ? result.messages
-        : messages
+      const finalMessages =
+        result.messages.length > 0 ? result.messages : messages
 
       setOptimizedMessages(finalMessages)
       setWasOptimized(result.optimizationDiagnostics !== undefined)
@@ -131,10 +137,14 @@ export function useOptimizedChatContext(
         const diag = result.optimizationDiagnostics
         const reasons: string[] = []
         if (diag.messagesRemoved > 0) {
-          reasons.push(`dropped ${diag.messagesRemoved} message${diag.messagesRemoved > 1 ? 's' : ''}`)
+          reasons.push(
+            `dropped ${diag.messagesRemoved} message${diag.messagesRemoved > 1 ? 's' : ''}`
+          )
         }
         if (diag.messagesSummarized > 0) {
-          reasons.push(`summarized ${diag.messagesSummarized} message${diag.messagesSummarized > 1 ? 's' : ''}`)
+          reasons.push(
+            `summarized ${diag.messagesSummarized} message${diag.messagesSummarized > 1 ? 's' : ''}`
+          )
         }
         setLastOptimizationReason(reasons.join(', ') || 'optimized')
       } else {

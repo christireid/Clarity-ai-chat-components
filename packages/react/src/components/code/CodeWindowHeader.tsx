@@ -62,7 +62,7 @@ export function CodeWindowHeader({
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } catch (err) {
-      logger.logger.error('Failed to download code:', err)
+      console.error('Failed to download code:', err)
     }
   }
 

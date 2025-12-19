@@ -1,16 +1,20 @@
 /**
  * usePromptOptimizer Hook
- * 
+ *
  * Wraps the prompt optimization engine for React components.
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from '../core/toon'
 import type { ModelProfile } from '../core/model-profiles'
 import type { OptimizationStrategy } from '../core/optimizer'
 import type { CompressionStrategy } from '../core/compression-chain'
-import { optimizePrompt, type OptimizePromptOptions, type OptimizePromptResult } from '../core/engine/prompt-optimizer'
+import {
+  optimizePrompt,
+  type OptimizePromptOptions,
+  type OptimizePromptResult,
+} from '../core/engine/prompt-optimizer'
 
 /**
  * Options for usePromptOptimizer
@@ -35,7 +39,10 @@ export interface UsePromptOptimizerOptions {
   /** Whether to apply style transformation */
   applyStyleTransformation?: boolean
   /** Summarization function */
-  summarizeFn?: (messages: CoreMessage[], context?: string) => Promise<string> | string
+  summarizeFn?: (
+    messages: CoreMessage[],
+    context?: string
+  ) => Promise<string> | string
   /** Embedding function */
   getEmbedding?: (text: string) => Promise<number[]> | number[]
   /** Debug mode */

@@ -5,7 +5,7 @@
  * Contains typography, spacing, borders, shadows, and animations.
  */
 
-import type { CompleteThemeConfig } from '../theme-config'
+import type { CompleteThemeConfig, ThemeMetadata } from '../theme-config'
 import { fontFamilyTokens, fontWeightTokens } from '../tokens/typography'
 import { radiusTokens } from '../tokens/radius'
 import { lightShadows } from '../tokens/shadows'
@@ -94,18 +94,61 @@ export const baseThemeConfig: Omit<
 }
 
 /**
+ * Theme preset bundle containing light/dark themes and metadata
+ */
+export interface ThemePreset {
+  light: Record<string, unknown>
+  dark: Record<string, unknown>
+  metadata: ThemeMetadata
+}
+
+/**
  * Create a complete theme by merging colors with base config
+ * @overload Takes name, mode, colors, and optional overrides
  */
 export function createPreset(
   name: string,
   mode: 'light' | 'dark',
   colors: CompleteThemeConfig['colors'],
   overrides?: Partial<Omit<CompleteThemeConfig, 'name' | 'mode' | 'colors'>>
-): CompleteThemeConfig {
+): CompleteThemeConfig
+
+/**
+ * Create a theme preset bundle from light/dark themes and metadata
+ * @overload Takes an object with light, dark, and metadata properties
+ */
+export function createPreset(config: {
+  light: Record<string, unknown>
+  dark: Record<string, unknown>
+  metadata: ThemeMetadata
+}): ThemePreset
+
+export function createPreset(
+  nameOrConfig:
+    | string
+    | {
+        light: Record<string, unknown>
+        dark: Record<string, unknown>
+        metadata: ThemeMetadata
+      },
+  mode?: 'light' | 'dark',
+  colors?: CompleteThemeConfig['colors'],
+  overrides?: Partial<Omit<CompleteThemeConfig, 'name' | 'mode' | 'colors'>>
+): CompleteThemeConfig | ThemePreset {
+  // Handle object-based preset bundle creation
+  if (typeof nameOrConfig === 'object') {
+    return {
+      light: nameOrConfig.light,
+      dark: nameOrConfig.dark,
+      metadata: nameOrConfig.metadata,
+    }
+  }
+
+  // Handle traditional preset creation
   return {
-    name,
-    mode,
-    colors,
+    name: nameOrConfig,
+    mode: mode!,
+    colors: colors!,
     ...baseThemeConfig,
     ...overrides,
   }

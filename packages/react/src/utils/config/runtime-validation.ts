@@ -5,7 +5,7 @@
  * These are development-time helpers to catch common mistakes.
  */
 
-import type { Tool } from '../agents/types'
+import type { Tool } from '../../agents/types'
 
 /**
  * Validate a model identifier

@@ -1,11 +1,11 @@
 /**
  * usePromptRecipe Hook
- * 
+ *
  * React hook for building prompts from recipes using the toon DSL.
  */
 
 import { useMemo, useCallback } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { PromptRecipe } from '../core/recipe'
 import type { ToonNode } from '../core/toon'
 import { buildMessagesFromRecipe } from '../core/recipe'
@@ -45,7 +45,9 @@ export interface UsePromptRecipeReturn {
 /**
  * Hook for building prompts from recipes
  */
-export function usePromptRecipe(options: UsePromptRecipeOptions = {}): UsePromptRecipeReturn {
+export function usePromptRecipe(
+  options: UsePromptRecipeOptions = {}
+): UsePromptRecipeReturn {
   const { recipe, toonNodes, variables = {}, debug = false } = options
 
   const buildPrompt = useCallback(
@@ -91,7 +93,12 @@ export function usePromptRecipe(options: UsePromptRecipeOptions = {}): UsePrompt
     const mergedVariables = { ...variables }
 
     return {
-      rendered: messages.map(m => `${m.role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`).join('\n\n'),
+      rendered: messages
+        .map(
+          (m) =>
+            `${m.role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`
+        )
+        .join('\n\n'),
       variables: mergedVariables,
       messages,
     }

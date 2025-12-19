@@ -48,7 +48,9 @@ export class SmartTokenCounter {
           !context.isCode,
         count: (text, context) => {
           const words = text.split(/\s+/).filter((word) => word.length > 0)
-          const avgTokensPerWord = this.getTokensPerWord(context.language)
+          const avgTokensPerWord = this.getTokensPerWord(
+            context.language || 'en'
+          )
           return Math.ceil(words.length * avgTokensPerWord)
         },
       },
@@ -95,7 +97,7 @@ export class SmartTokenCounter {
       {
         name: 'streaming-optimized',
         shouldUse: (text, context) =>
-          context.isStreaming && context.textLength < 1000,
+          context.isStreaming === true && context.textLength < 1000,
         count: (text, context) => {
           // For streaming, we need fast estimation
           const chunks = text.split(/\s+/)
@@ -119,9 +121,11 @@ export class SmartTokenCounter {
     } = {}
   ): number {
     try {
-      // First try the primary TokenCounter
+      let primaryCount = 0
+
+      // First try the primary TokenCounter (synchronous estimate)
       if (options.strategy === 'tiktoken' || !options.strategy) {
-        const primaryCount = TokenCounter.count(text)
+        primaryCount = Math.ceil(text.length / 4) // Simple estimate
         if (this.isValidCount(primaryCount, text, options)) {
           return primaryCount
         }

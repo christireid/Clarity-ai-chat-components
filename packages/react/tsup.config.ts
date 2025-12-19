@@ -107,6 +107,13 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
   },
+  // Internal entry (advanced users)
+  {
+    entry: { internal: 'src/internal.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
   // Slim entry (minimal bundle ~200KB)
   {
     entry: { slim: 'src/slim.ts' },

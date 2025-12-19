@@ -3,14 +3,8 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
-import {
-  Avatar,
-  Button,
-  Badge,
-  cn,
-  formatRelativeTime,
-  useA11y,
-} from '@clarity-chat/primitives'
+import { Avatar, Button, Badge, cn, useA11y } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../internal/helpers'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
@@ -568,7 +562,7 @@ export function Message({
         )}
 
         {/* Metadata */}
-        <MessageMetadata metadata={message.metadata} />
+        <MessageMetadata message={message} />
       </div>
     </motion.div>
   )

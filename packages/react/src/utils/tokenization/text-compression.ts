@@ -43,11 +43,9 @@ export interface CompressionResult {
 
 // Semantic compression using token importance scoring
 export class SemanticCompressor {
-  private tokenCounter: TokenCounter
   private cache: Map<string, CompressionResult>
 
   constructor() {
-    this.tokenCounter = new TokenCounter()
     this.cache = new Map()
   }
 
@@ -64,7 +62,7 @@ export class SemanticCompressor {
       return this.cache.get(cacheKey)!
     }
 
-    const originalTokens = await this.tokenCounter.count(text)
+    const originalTokens = await TokenCounter.count(text)
     const targetTokens =
       config.budgetTokens ||
       Math.floor(originalTokens * (config.targetRatio || 0.5))
@@ -82,7 +80,7 @@ export class SemanticCompressor {
     )
 
     const compressedText = this.reconstructText(selectedTokens)
-    const compressedTokens = await this.tokenCounter.count(compressedText)
+    const compressedTokens = await TokenCounter.count(compressedText)
     const compressionRatio = compressedTokens / originalTokens
 
     const result: CompressionResult = {
@@ -108,7 +106,7 @@ export class SemanticCompressor {
     text: string,
     config: CompressionConfig
   ): Promise<CompressionResult> {
-    const originalTokens = await this.tokenCounter.count(text)
+    const originalTokens = await TokenCounter.count(text)
 
     // Extract keyphrases using multiple algorithms
     const keyphrases = await this.extractKeyphrases(text)
@@ -118,7 +116,7 @@ export class SemanticCompressor {
     const sentenceScores = sentences.map((sentence) => ({
       sentence,
       score: this.scoreSentenceByKeyphrases(sentence, keyphrases),
-      tokens: this.tokenCounter.count(sentence),
+      tokens: TokenCounter.count(sentence),
     }))
 
     // Select sentences to meet target token count
@@ -131,7 +129,7 @@ export class SemanticCompressor {
     )
 
     const compressedText = selectedSentences.join(' ')
-    const compressedTokens = await this.tokenCounter.count(compressedText)
+    const compressedTokens = await TokenCounter.count(compressedText)
 
     return {
       originalText: text,
@@ -153,7 +151,7 @@ export class SemanticCompressor {
    * Lossless compression using advanced techniques
    */
   compressLossless(text: string): CompressionResult {
-    const originalTokens = this.tokenCounter.count(text)
+    const originalTokens = TokenCounter.count(text)
 
     // Apply multiple lossless compression techniques
     let compressed = text
@@ -170,7 +168,7 @@ export class SemanticCompressor {
     // Remove unnecessary punctuation
     compressed = this.optimizePunctuation(compressed)
 
-    const compressedTokens = this.tokenCounter.count(compressed)
+    const compressedTokens = TokenCounter.count(compressed)
 
     return {
       originalText: text,
@@ -210,7 +208,7 @@ export class SemanticCompressor {
 
       // Combine results
       const finalTokens = semanticResult.compressedTokens
-      const originalTokens = await this.tokenCounter.count(text)
+      const originalTokens = await TokenCounter.count(text)
 
       return {
         ...semanticResult,
@@ -235,7 +233,7 @@ export class SemanticCompressor {
     budgetTokens: number,
     config: CompressionConfig
   ): Promise<CompressionResult> {
-    const originalTokens = await this.tokenCounter.count(text)
+    const originalTokens = await TokenCounter.count(text)
 
     if (originalTokens <= budgetTokens) {
       return {
@@ -432,7 +430,7 @@ export class SemanticCompressor {
     scoredSentences: Array<{
       sentence: string
       score: number
-      tokens: Promise<number>
+      tokens: number | Promise<number>
     }>,
     targetTokens: number
   ): string[] {

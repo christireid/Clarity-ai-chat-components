@@ -9,14 +9,18 @@
  * 5. Emission - Final optimized prompt
  */
 
-import type { CoreMessage } from '../../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from '../toon'
 import type { ModelProfile } from '../model-profiles'
 import type { OptimizationStrategy } from '../optimizer'
 import type { CompressionStrategy } from '../compression-chain'
 import { toonToMessages } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'
-import { estimateMessageTokens, getTokenizerForModel, estimateCost } from '../tokenizer'
+import {
+  estimateMessageTokens,
+  getTokenizerForModel,
+  estimateCost,
+} from '../tokenizer'
 import { optimizeMessagesForBudget } from '../optimizer'
 import { compressContext } from '../compression-chain'
 import { chooseOptimizationStrategy } from '../strategy-router'
@@ -75,7 +79,10 @@ export interface OptimizePromptOptions {
   /** Apply style transformation based on model */
   applyStyleTransformation?: boolean
   /** Summarization function */
-  summarizeFn?: (messages: CoreMessage[], context?: string) => Promise<string> | string
+  summarizeFn?: (
+    messages: CoreMessage[],
+    context?: string
+  ) => Promise<string> | string
   /** Embedding function for semantic matching */
   getEmbedding?: (text: string) => Promise<number[]> | number[]
   /** Debug mode */
@@ -138,9 +145,13 @@ export async function optimizePrompt(
       ? getModelProfileOrDefault(modelProfileInput)
       : modelProfileInput
 
-  const tokenizer = getTokenizerForModel(modelProfile.name, modelProfile.tokenizer)
+  const tokenizer = getTokenizerForModel(
+    modelProfile.name,
+    modelProfile.tokenizer
+  )
   const targetTokens =
-    targetTokensInput ?? Math.floor(modelProfile.maxTokens * modelProfile.compressionThreshold)
+    targetTokensInput ??
+    Math.floor(modelProfile.maxTokens * modelProfile.compressionThreshold)
 
   const stages: OptimizationStage[] = []
 
@@ -156,7 +167,9 @@ export async function optimizePrompt(
   let currentTokens = originalTokens
 
   if (debug) {
-    console.log(`[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`)
+    console.log(
+      `[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`
+    )
   }
 
   // Check if optimization is needed
@@ -181,7 +194,9 @@ export async function optimizePrompt(
   )
 
   if (debug) {
-    console.log(`[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`)
+    console.log(
+      `[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`
+    )
   }
 
   // Stage 2: Structuring - Apply style transformation
@@ -196,7 +211,9 @@ export async function optimizePrompt(
         tokensBefore: beforeTokens,
         tokensAfter: currentTokens,
         tokensSaved: beforeTokens - currentTokens,
-        details: [`Applied ${modelProfile.optimalPromptStyle} style transformation`],
+        details: [
+          `Applied ${modelProfile.optimalPromptStyle} style transformation`,
+        ],
       })
     }
 
@@ -217,7 +234,12 @@ export async function optimizePrompt(
   // Stage 3: Analysis - Semantic prioritization (if embedding function provided)
   if (getEmbedding && userIntent) {
     const beforeTokens = currentTokens
-    messages = await analysisStage(messages, userIntent, getEmbedding, tokenizer)
+    messages = await analysisStage(
+      messages,
+      userIntent,
+      getEmbedding,
+      tokenizer
+    )
     currentTokens = estimateMessageTokens(messages, tokenizer)
 
     if (currentTokens < beforeTokens) {
@@ -357,7 +379,9 @@ async function structuringStage(
     if (msg.role !== 'system' && msg.role !== 'user') return msg
 
     const content =
-      typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+      typeof msg.content === 'string'
+        ? msg.content
+        : JSON.stringify(msg.content)
 
     let transformedContent = content
 
@@ -376,7 +400,7 @@ async function structuringStage(
         // Merge short lines
         transformedContent = content
           .split('\n')
-          .filter((line) => line.trim().length > 0)
+          .filter((line: string) => line.trim().length > 0)
           .join(' ')
           .replace(/\s+/g, ' ')
           .trim()
@@ -426,10 +450,12 @@ async function analysisStage(
 
   const scoredMessages: ScoredMessage[] = messages.map((msg) => {
     const content =
-      typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+      typeof msg.content === 'string'
+        ? msg.content
+        : JSON.stringify(msg.content)
 
     const words = content.toLowerCase().split(/\W+/)
-    const matchCount = words.filter((w) => intentWords.has(w)).length
+    const matchCount = words.filter((w: string) => intentWords.has(w)).length
     const score = matchCount / Math.max(1, words.length)
 
     return {
@@ -470,16 +496,12 @@ function createResult(
 
   // Calculate cost estimate
   const estimatedOutputTokens = Math.floor(finalTokens * 0.3)
-  const costEstimate = estimateCost(
-    finalTokens,
-    estimatedOutputTokens,
-    {
-      model: modelProfile.name,
-      maxTokens: modelProfile.maxTokens,
-      inputPricePer1K: modelProfile.costPer1K,
-      outputPricePer1K: modelProfile.outputCostPer1K,
-    }
-  )
+  const costEstimate = estimateCost(finalTokens, estimatedOutputTokens, {
+    model: modelProfile.name,
+    maxTokens: modelProfile.maxTokens,
+    inputPricePer1K: modelProfile.costPer1K,
+    outputPricePer1K: modelProfile.outputCostPer1K,
+  })
 
   return {
     optimizedMessages: messages,

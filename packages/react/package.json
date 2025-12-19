@@ -84,6 +84,11 @@
       "import": "./dist/test-utils.mjs",
       "require": "./dist/test-utils.js"
     },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "import": "./dist/internal.mjs",
+      "require": "./dist/internal.js"
+    },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css"
   },
@@ -97,8 +102,8 @@
     "*.css"
   ],
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",

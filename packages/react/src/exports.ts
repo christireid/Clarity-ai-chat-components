@@ -82,22 +82,6 @@ export { CitationCard } from './components/message/citation-card'
 export { CopyButton } from './components/message/copy-button'
 export { FileUpload } from './components/input/file-upload'
 
-// Tier 2: Composable
-export {
-  ChatWindow,
-  ChatInput,
-  ChatLayout,
-  ChatWithErrorBoundary,
-  VirtualizedMessageList,
-  MessageList,
-  MobileOptimizedMessage,
-  MobileChatWindow,
-  TouchFriendlyButton,
-  useMobileOptimization,
-  OfflineChatSync,
-  useOfflineChat,
-} from './components/chat'
-
 // =============================================================================
 // DOMAIN 2: CHAT STATE
 // Hooks for managing chat state and interactions
@@ -169,12 +153,6 @@ export {
 } from './hooks/storage/use-memory-store'
 
 export {
-  useRAGPipeline,
-  type UseRAGPipelineOptions,
-  type UseRAGPipelineReturn,
-} from './hooks/chat/use-rag-pipeline'
-
-export {
   useChatHistory,
   type ChatHistoryOptions,
   type UseChatHistoryReturn,
@@ -202,9 +180,6 @@ export type {
 // Vector Stores
 export * from './vector-stores'
 
-// Embeddings
-export * from './embeddings'
-
 // =============================================================================
 // DOMAIN 4: STREAMING & TRANSPORT
 // Real-time streaming and transport protocols
@@ -228,12 +203,6 @@ export {
   type UseClarityObjectOptions,
   type UseClarityObjectReturn,
 } from './hooks/chat/use-clarity-object'
-
-export {
-  useAgent,
-  type UseAgentOptions,
-  type UseAgentReturn,
-} from './hooks/chat/use-agent'
 
 // Tier 2: Composable
 export * from './agents/tool-ui-registry'
@@ -288,8 +257,6 @@ export {
 export * from './hooks/token'
 
 // Tier 3: Primitives
-export * from './utils/tokenization'
-
 export {
   calculateCost,
   calculateCacheSavings,
@@ -300,8 +267,6 @@ export {
   type ModelPricing,
   type CostCalculation,
 } from './utils/tokenization/model-pricing'
-
-export * from './utils/optimization'
 
 export {
   jsonToToon,
@@ -343,30 +308,15 @@ export * from './observability'
 export * from './quotas'
 export * from './rbac'
 export * from './multi-tenancy'
-export * from './security'
 
 // Compliance & Audit
 export * from './audit'
 export * from './webhooks'
-export * from './safety'
-
-// Enterprise Components
-export * from './components/enterprise'
 
 // =============================================================================
 // DOMAIN 9: DEVELOPER EXPERIENCE
 // Configuration helpers and utilities
 // =============================================================================
-
-// Tier 1: Drop-in Ready
-export {
-  createBasicChatConfig,
-  createMemoryChatConfig,
-  createStreamingChatConfig,
-  createEnterpriseChatConfig,
-  isValidApiEndpoint,
-  getApiEndpoint,
-} from './utils/message/clarity-chat-helpers'
 
 // Tier 2: Composable
 export {
@@ -390,29 +340,16 @@ export {
 // Supporting systems and utilities
 // =============================================================================
 
-// Model Adapters
-export * from './adapters'
-
-// Prompt Engineering
-export * from './prompts'
-export * from './prompt'
-
 // Document Processing
-export * from './document-loaders'
 export * from './reranking'
 
-// Plugin & Extension Systems
-export * from './plugins'
-export * from './extensions'
-
 // Theme System
-export * from './theme'
-
-// Animation System
-export * from './animations'
-
-// Accessibility
-export * from './accessibility'
+export {
+  ThemeProvider,
+  useTheme,
+  type ThemeContextValue,
+  type ThemeProviderProps,
+} from './theme'
 
 // Additional Components (organized by feature)
 export { ModelSelector } from './components/ai/model-selector'
@@ -462,19 +399,6 @@ export {
   MessageSearchWithSuspense,
   highlightSearchMatch,
 } from './components/search/message-search'
-export {
-  AdvancedMessageSearch,
-  type SearchFilters,
-  type SavedSearch,
-  type SortOption,
-  type FilterPreset,
-} from './components/search/advanced-message-search'
-export {
-  SemanticMessageSearch,
-  type SemanticSearchConfig,
-  type SemanticSearchResult,
-  type EmbeddingProvider,
-} from './components/search/advanced-message-search-semantic'
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
@@ -493,8 +417,6 @@ export { SessionSummaryCard } from './components/ai/session-summary-card'
 export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
 // AI-Ops components (exported from directory)
 export * from './components/ai-ops'
-// Enterprise components (exported from directory)
-export * from './components/enterprise'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 
 // Error Handling Components
@@ -518,9 +440,6 @@ export { ConversationBranchVisualizer } from './components/conversation/conversa
 
 // Markdown & Rendering
 export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
-
-// Search Components
-export * from './components/search'
 
 // Dashboard Components
 export * from './components/dashboards'
@@ -548,9 +467,6 @@ export * from './components/ui'
 
 // AI Components
 export * from './components/ai'
-
-// Prompt Components
-export * from './components/prompt'
 
 // Context Components
 export * from './components/context'
@@ -580,9 +496,6 @@ export * from './hooks/storage'
 // Theme Hooks
 export * from './hooks/theme'
 
-// Performance Hooks
-export * from './hooks/performance'
-
 // Dashboard Hooks
 export * from './hooks/dashboard'
 
@@ -597,9 +510,6 @@ export * from './hooks/model'
 
 // Message Hooks
 export * from './hooks/message'
-
-// Security Hooks
-export * from './hooks/security'
 
 // =============================================================================
 // TYPES
@@ -625,15 +535,6 @@ export type {
   ChatAnalyticsConfig,
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
-
-// Helper hooks (legacy, consider deprecating)
-export {
-  useClarityChatWithWindow,
-  useClarityChatWithAnalytics,
-  useClarityChatWithPersistence,
-  useClarityChatWithDebounce,
-  useClarityChatWithAutoSave,
-} from './hooks/use-clarity-chat-helpers'
 
 // Testing utilities (for test files only)
 export {

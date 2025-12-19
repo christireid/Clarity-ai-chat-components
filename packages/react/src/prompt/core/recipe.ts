@@ -4,7 +4,7 @@
  * Reusable prompt templates that can be parameterized and composed.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from './toon'
 import { toonToMessages } from './toon'
 
@@ -55,8 +55,13 @@ export function buildMessagesFromRecipe(
 
   // Validate required variables
   for (const required of recipe.requiredVariables ?? []) {
-    if (!(required in mergedVariables) || mergedVariables[required] === undefined) {
-      throw new Error(`Required variable "${required}" is missing for recipe "${recipe.name}"`)
+    if (
+      !(required in mergedVariables) ||
+      mergedVariables[required] === undefined
+    ) {
+      throw new Error(
+        `Required variable "${required}" is missing for recipe "${recipe.name}"`
+      )
     }
   }
 

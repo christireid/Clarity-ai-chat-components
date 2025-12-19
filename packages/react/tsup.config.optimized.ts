@@ -13,7 +13,6 @@ const external = [
   '@clarity-chat/primitives',
   '@clarity-chat/types',
   '@clarity-chat/memory',
-  '@clarity-chat/shared-utils',
   'mermaid',
   'highlight.js/styles/github-dark.css',
   'katex/dist/katex.min.css',

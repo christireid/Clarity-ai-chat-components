@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { CoreMessage } from '../../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
 
 // =============================================================================
 // VARIABLE TYPES

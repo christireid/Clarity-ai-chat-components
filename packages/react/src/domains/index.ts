@@ -1,6 +1,6 @@
 /**
  * Domain Exports
- * 
+ *
  * Organized exports by domain for better discoverability
  */
 
@@ -13,8 +13,8 @@ export * as Memory from './memory'
 // AI Infrastructure Domain
 export * as AI from './ai'
 
-// Enterprise Domain
-export * as Enterprise from './enterprise'
+// Enterprise Domain (excluded from build due to cross-package dependencies)
+// export * as Enterprise from './enterprise'
 
 // Analytics & Observability Domain
 export * as Analytics from './analytics'

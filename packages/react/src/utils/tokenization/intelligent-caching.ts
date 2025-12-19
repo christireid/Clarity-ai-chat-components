@@ -69,7 +69,6 @@ export class IntelligentSemanticCache {
   private semanticIndex: Map<string, Set<string>>
   private contextIndex: Map<string, Set<string>>
   private accessPatterns: Map<string, number>
-  private tokenCounter: TokenCounter
   private config: CacheConfig
   private stats: CacheStats
   private preloadingQueue: string[]
@@ -79,7 +78,6 @@ export class IntelligentSemanticCache {
     this.semanticIndex = new Map()
     this.contextIndex = new Map()
     this.accessPatterns = new Map()
-    this.tokenCounter = new TokenCounter()
     this.config = config
     this.stats = this.initializeStats()
     this.preloadingQueue = []
@@ -100,12 +98,12 @@ export class IntelligentSemanticCache {
 
     // Try semantic matching if enabled
     if (!entry && this.config.strategy === 'semantic') {
-      entry = await this.findSemanticMatch(key)
+      entry = (await this.findSemanticMatch(key)) ?? undefined
     }
 
     // Try contextual matching if enabled
     if (!entry && context && this.config.strategy === 'contextual') {
-      entry = await this.findContextualMatch(key, context)
+      entry = (await this.findContextualMatch(key, context)) ?? undefined
     }
 
     if (entry) {
@@ -131,7 +129,7 @@ export class IntelligentSemanticCache {
     metadata?: any
   ): Promise<void> {
     const tokens =
-      value.tokens || (await this.tokenCounter.count(JSON.stringify(value)))
+      value.tokens || (await TokenCounter.count(JSON.stringify(value)))
 
     // Check cache size and evict if necessary
     if (this.cache.size >= this.config.maxSize) {
@@ -881,12 +879,10 @@ export class MultiLevelCacheManager {
  */
 export class IntelligentTokenCache {
   private cache: IntelligentSemanticCache
-  private tokenCounter: TokenCounter
   private compressionCache: Map<string, string>
 
   constructor(config: CacheConfig) {
     this.cache = new IntelligentSemanticCache(config)
-    this.tokenCounter = new TokenCounter()
     this.compressionCache = new Map()
   }
 
@@ -902,7 +898,7 @@ export class IntelligentTokenCache {
     }
 
     // Calculate and cache
-    const count = await this.tokenCounter.count(text)
+    const count = await TokenCounter.count(text)
     await this.cache.set(cacheKey, { count, text, model })
 
     return count

@@ -1,0 +1,134 @@
+name: Publish to GitHub Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no actual publish)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write # Required for provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Run tests
+        run: pnpm test --passWithNoTests
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Publish (dry run)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: |
+          echo "🔍 Dry run mode - checking what would be published..."
+          pnpm -r publish --dry-run --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          echo "📦 Publishing packages to GitHub Packages..."
+          pnpm -r publish --access restricted --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release notes
+        if: ${{ github.event.inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            ## Installation
+
+            ```bash
+            # Configure npm for GitHub Packages (one-time)
+            npm config set @clarity-chat:registry https://npm.pkg.github.com
+            npm config set //npm.pkg.github.com/:_authToken YOUR_TOKEN
+
+            # Install
+            npm install @clarity-chat/react
+            ```
+
+            ## Quick Start
+
+            ```tsx
+            import { initializeClarity, ClarityChat } from '@clarity-chat/react'
+
+            initializeClarity({ license: process.env.CLARITY_LICENSE })
+
+            <ClarityChat api="/api/chat" />
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verify:
+    needs: publish
+    if: ${{ github.event.inputs.dry_run != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Create test project
+        run: |
+          mkdir test-install
+          cd test-install
+          npm init -y
+          cat > .npmrc << EOF
+          @clarity-chat:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}
+          EOF
+
+      - name: Verify installation
+        working-directory: test-install
+        run: |
+          npm install @clarity-chat/react@latest
+          echo "✅ Package installed successfully"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify imports
+        working-directory: test-install
+        run: |
+          cat > test.mjs << 'EOF'
+          import { ClarityChat, initializeClarity, useClarityChat } from '@clarity-chat/react';
+          console.log('✅ Main exports work:', typeof ClarityChat, typeof initializeClarity, typeof useClarityChat);
+          EOF
+          node test.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

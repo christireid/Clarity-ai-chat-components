@@ -10,9 +10,13 @@
 import type {
   CoreMessage,
   CoreMessageContent,
-} from '../hooks/chat/use-chat-enhanced'
+} from '../../hooks/chat/use-chat-enhanced'
 import type { Message, MessageRole } from '@clarity-chat/types'
-import { generateId } from '@clarity-chat/primitives'
+
+// Simple ID generator (inline to avoid circular deps)
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
 
 /**
  * Extract text content from CoreMessageContent
@@ -106,34 +110,3 @@ export function convertMessagesToCoreMessages(
 ): CoreMessage[] {
   return messages.map(convertMessageToCoreMessage)
 }
-
-// ============================================================================
-// Backward Compatibility Aliases
-// ============================================================================
-// These aliases maintain backward compatibility with older code that used
-// the message-converter.ts file. New code should use the "convert" prefixed
-// versions above.
-
-/**
- * @deprecated Use convertCoreMessageToMessage instead
- * @alias convertCoreMessageToMessage
- */
-export const coreMessageToMessage = convertCoreMessageToMessage
-
-/**
- * @deprecated Use convertCoreMessagesToMessages instead
- * @alias convertCoreMessagesToMessages
- */
-export const coreMessagesToMessages = convertCoreMessagesToMessages
-
-/**
- * @deprecated Use convertMessageToCoreMessage instead
- * @alias convertMessageToCoreMessage
- */
-export const messageToCoreMessage = convertMessageToCoreMessage
-
-/**
- * @deprecated Use convertMessagesToCoreMessages instead
- * @alias convertMessagesToCoreMessages
- */
-export const messagesToCoreMessages = convertMessagesToCoreMessages

@@ -19,7 +19,7 @@ import {
 import {
   createToolUIRegistry,
   type ToolComponentRegistry,
-} from '../agents/tool-ui-registry'
+} from '../../agents/tool-ui-registry'
 import {
   Card,
   CardContent,

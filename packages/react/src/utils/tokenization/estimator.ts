@@ -9,7 +9,11 @@
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
 import { InputValidator } from './input-validator.js'
-import { errorHandler, ErrorCategory, ErrorSeverity } from './enhanced-error-handling.js'
+import {
+  errorHandler,
+  ErrorCategory,
+  ErrorSeverity,
+} from './enhanced-error-handling.js'
 import type { ModelName } from './accurate-counter'
 
 /**
@@ -140,32 +144,31 @@ export function estimateTokens(
 ): number {
   try {
     // Validate input
-    const validation = InputValidator.validateTextInput(text, { allowEmpty: true });
+    const validation = InputValidator.validateTextInput(text, {
+      allowEmpty: true,
+    })
     if (!validation.valid) {
-      throw errorHandler.createError(
-        `Invalid input: ${validation.errors.join(', ')}`,
-        'INVALID_INPUT',
-        ErrorCategory.VALIDATION,
-        ErrorSeverity.LOW,
-        { operation: 'estimateTokens', input: text }
-      );
+      // Return fallback estimate for invalid input
+      return Math.ceil((text?.length || 0) / DEFAULT_CHARS_PER_TOKEN)
     }
 
-    const validText = validation.sanitized || '';
-    if (!validText) return 0;
+    const validText = validation.sanitized || ''
+    if (!validText) return 0
 
-    // Use the new TokenCounter for accurate token counting
-    return TokenCounter.count(validText);
-  } catch (error) {
-    // Handle errors with recovery
-    return errorHandler.handleError(
-      error,
-      { operation: 'estimateTokens', input: text },
-      { 
-        attemptRecovery: true,
-        fallbackValue: Math.ceil((text?.length || 0) / DEFAULT_CHARS_PER_TOKEN)
-      }
-    );
+    // Calculate using model-specific ratio for synchronous operation
+    const ratio = model
+      ? MODEL_CHAR_RATIOS[model] || DEFAULT_CHARS_PER_TOKEN
+      : DEFAULT_CHARS_PER_TOKEN
+
+    // Handle CJK text
+    if (containsCJK(validText)) {
+      return Math.ceil(getEffectiveCharCount(validText) / ratio)
+    }
+
+    return Math.ceil(validText.length / ratio)
+  } catch {
+    // Return fallback estimate on error
+    return Math.ceil((text?.length || 0) / DEFAULT_CHARS_PER_TOKEN)
   }
 }
 

@@ -9,8 +9,8 @@
  */
 
 import type { ModelAdapter } from './types'
-import { fetchWithTimeout } from '../utils/fetch-with-timeout'
-import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
+import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
   validateApiKey,
   extractSystemMessage,
@@ -184,7 +184,7 @@ export const anthropicAdapter: ModelAdapter = {
               }
             }
           } catch (e) {
-            logger.logger.error('Failed to parse streaming chunk:', e)
+            console.error('Failed to parse streaming chunk:', e)
           }
         }
       }

@@ -1,7 +1,5 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger'
-
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import {
@@ -17,6 +15,7 @@ import {
   Input,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { ExportOptions, ExportFormat } from '@clarity-chat/types'
 
 export interface ExportDialogProps {
@@ -107,7 +106,7 @@ export function ExportDialog({
         setProgress(0)
       }, 500)
     } catch (error) {
-      logger.error('Export failed:', error)
+      console.error('Export failed:', error)
       alert('Export failed. Please try again.')
     } finally {
       setExporting(false)

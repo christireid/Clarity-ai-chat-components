@@ -981,9 +981,11 @@ export function ThemeCustomizer({
                       .map((name) => (
                         <ThemePreviewCard
                           key={name}
-                          name={name}
+                          name={name as ModernThemePresetName}
                           isSelected={currentPreset === name}
-                          onClick={() => handlePresetSelect(name)}
+                          onClick={() =>
+                            handlePresetSelect(name as ModernThemePresetName)
+                          }
                         />
                       ))}
                   </div>

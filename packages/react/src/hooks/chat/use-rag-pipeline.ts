@@ -98,7 +98,7 @@ export function useRAGPipeline(
       validateEmbeddingProvider(embeddingProvider)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useRAGPipeline] Validation error:', error)
+        console.error('[useRAGPipeline] Validation error:', error)
         throw error
       }
     }
@@ -136,7 +136,7 @@ export function useRAGPipeline(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('RAG retrieval failed')
-        logger.logger.error('[useRAGPipeline] Retrieval failed:', error)
+        console.error('[useRAGPipeline] Retrieval failed:', error)
         // Return empty array on error (fail gracefully)
         return []
       }

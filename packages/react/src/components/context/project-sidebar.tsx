@@ -2,13 +2,8 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Button,
-  Input,
-  ScrollArea,
-  cn,
-  formatRelativeTime,
-} from '@clarity-chat/primitives'
+import { Button, Input, ScrollArea, cn } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../internal/helpers'
 import type { Project } from '@clarity-chat/types'
 
 export interface ProjectSidebarProps {

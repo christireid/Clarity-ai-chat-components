@@ -1,7 +1,5 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger'
-
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -14,6 +12,7 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -581,7 +580,7 @@ export function ConversationAnalyticsDashboard({
       setAnalytics(result)
       onAnalyticsGenerated?.(result)
     } catch (err) {
-      logger.error('Analytics generation error:', err)
+      console.error('Analytics generation error:', err)
       setError(
         err instanceof Error ? err.message : 'Failed to generate analytics'
       )

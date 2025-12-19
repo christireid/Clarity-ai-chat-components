@@ -16,12 +16,12 @@ function isDev(): boolean {
 function safeDevLog(...args: unknown[]): void {
   if (!isDev()) return
   // Keep dev-only logs minimal and never include secrets.
-  logger.debug(...args)
+  console.debug(...args)
 }
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  logger.logger.error(...args)
+  console.error(...args)
 }
 
 function hasLocalStorage(): boolean {
@@ -415,33 +415,33 @@ export function createConsoleErrorProvider(): ErrorProvider {
         font-weight: bold;
       `
 
-      logger.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
+      console.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
 
       if (report.stack) {
-        logger.logger.error('Stack:', report.stack)
+        console.error('Stack:', report.stack)
       }
 
       if (report.componentStack) {
-        logger.logger.error('Component Stack:', report.componentStack)
+        console.error('Component Stack:', report.componentStack)
       }
 
       if (report.context) {
-        logger.debug('Context:', report.context)
+        console.debug('Context:', report.context)
       }
 
       if (report.environment) {
-        logger.debug('Environment:', report.environment)
+        console.debug('Environment:', report.environment)
       }
 
       if (report.tags) {
-        logger.debug('Tags:', report.tags)
+        console.debug('Tags:', report.tags)
       }
 
       if (report.userFeedback) {
-        logger.debug('User Feedback:', report.userFeedback)
+        console.debug('User Feedback:', report.userFeedback)
       }
 
-      logger.debug()
+      console.debug()
     },
 
     setUser: (
@@ -449,15 +449,19 @@ export function createConsoleErrorProvider(): ErrorProvider {
       email?: string,
       userData?: Record<string, any>
     ) => {
-      logger.debug('[Error Reporter] Set user:', { userId, email, ...userData })
+      console.debug('[Error Reporter] Set user:', {
+        userId,
+        email,
+        ...userData,
+      })
     },
 
     setContext: (context: Record<string, any>) => {
-      logger.debug('[Error Reporter] Set context:', context)
+      console.debug('[Error Reporter] Set context:', context)
     },
 
     addBreadcrumb: (message: string, data?: Record<string, any>) => {
-      logger.debug('[Error Reporter] Breadcrumb:', message, data)
+      console.debug('[Error Reporter] Breadcrumb:', message, data)
     },
   }
 }

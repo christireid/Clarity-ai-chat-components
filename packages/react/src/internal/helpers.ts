@@ -1,4 +1,3 @@
-import { formatBytes } from '@clarity-chat/primitives'
 /**
  * Internal Helper Functions
  *
@@ -232,4 +231,56 @@ export function cancellable<T>(promise: Promise<T>): {
       isCancelled = true
     },
   }
+}
+
+/**
+ * Check if code is running in a browser environment
+ */
+export const isBrowser =
+  typeof window !== 'undefined' && typeof window.document !== 'undefined'
+
+/**
+ * Check if code is running in a server environment
+ */
+export const isServer = !isBrowser
+
+/**
+ * Format a date/timestamp as relative time (e.g., "2h ago", "Just now")
+ */
+export function formatRelativeTime(date: Date | number | undefined): string {
+  if (!date) return ''
+
+  const timestamp = date instanceof Date ? date.getTime() : date
+  const now = Date.now()
+  const diff = now - timestamp
+  const seconds = Math.floor(diff / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if (days > 0) return `${days}d ago`
+  if (hours > 0) return `${hours}h ago`
+  if (minutes > 0) return `${minutes}m ago`
+  return 'Just now'
+}
+
+/**
+ * Alias for formatBytes - formats file size in human-readable format
+ */
+export const formatFileSize = formatBytes
+
+/**
+ * Truncate a string to a maximum length with ellipsis
+ */
+export function truncate(str: string, maxLength: number): string {
+  if (str.length <= maxLength) return str
+  return str.slice(0, maxLength - 3) + '...'
+}
+
+/**
+ * Calculate percentage
+ */
+export function calculatePercentage(value: number, total: number): number {
+  if (total === 0) return 0
+  return Math.round((value / total) * 100)
 }

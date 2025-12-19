@@ -20,8 +20,8 @@
   ],
   "sideEffects": false,
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "dev": "vite",

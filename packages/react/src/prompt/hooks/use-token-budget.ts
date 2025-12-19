@@ -1,14 +1,18 @@
 /**
  * useTokenBudget Hook
- * 
+ *
  * React hook for managing token budgets and optimization.
  */
 
 import { useMemo, useCallback } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ModelMetadata } from '../core/tokenizer'
 import type { OptimizationStrategy, MessagePriority } from '../core/optimizer'
-import { estimateMessageTokens, getTokenizerForModel, MODEL_PRESETS } from '../core/tokenizer'
+import {
+  estimateMessageTokens,
+  getTokenizerForModel,
+  MODEL_PRESETS,
+} from '../core/tokenizer'
 import { optimizeMessagesForBudget } from '../core/optimizer'
 
 /**
@@ -67,7 +71,9 @@ export interface UseTokenBudgetReturn {
 /**
  * Hook for managing token budgets
  */
-export function useTokenBudget(options: UseTokenBudgetOptions): UseTokenBudgetReturn {
+export function useTokenBudget(
+  options: UseTokenBudgetOptions
+): UseTokenBudgetReturn {
   const {
     messages,
     modelMetadata: modelMetadataOption,
@@ -82,10 +88,12 @@ export function useTokenBudget(options: UseTokenBudgetOptions): UseTokenBudgetRe
     if (!modelMetadataOption) return undefined
 
     if (typeof modelMetadataOption === 'string') {
-      return MODEL_PRESETS[modelMetadataOption] || {
-        model: modelMetadataOption,
-        maxTokens: 8192,
-      }
+      return (
+        MODEL_PRESETS[modelMetadataOption] || {
+          model: modelMetadataOption,
+          maxTokens: 8192,
+        }
+      )
     }
 
     return modelMetadataOption
@@ -99,7 +107,9 @@ export function useTokenBudget(options: UseTokenBudgetOptions): UseTokenBudgetRe
 
     if (targetBudgetDollars !== undefined && modelMetadata?.inputPricePer1K) {
       // Convert dollars to tokens
-      return Math.floor((targetBudgetDollars / modelMetadata.inputPricePer1K) * 1000)
+      return Math.floor(
+        (targetBudgetDollars / modelMetadata.inputPricePer1K) * 1000
+      )
     }
 
     return modelMetadata?.maxTokens ?? 8192

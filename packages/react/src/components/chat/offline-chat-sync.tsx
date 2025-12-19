@@ -101,7 +101,7 @@ export function OfflineChatSync({
         const request = indexedDB.open(config.dbName, 1)
 
         request.onerror = () => {
-          logger.error('Failed to open IndexedDB')
+          console.error('Failed to open IndexedDB')
         }
 
         request.onsuccess = () => {
@@ -132,7 +132,7 @@ export function OfflineChatSync({
           }
         }
       } catch (error) {
-        logger.error('IndexedDB initialization error:', error)
+        console.error('IndexedDB initialization error:', error)
       }
     }
 
@@ -209,7 +209,7 @@ export function OfflineChatSync({
         transaction.onabort = () => reject(new Error('Transaction aborted'))
       })
     } catch (error) {
-      logger.error('Failed to save messages:', error)
+      console.error('Failed to save messages:', error)
     }
   }
 
@@ -230,7 +230,7 @@ export function OfflineChatSync({
         request.onerror = () => resolve([])
       })
     } catch (error) {
-      logger.error('Failed to load messages:', error)
+      console.error('Failed to load messages:', error)
       return []
     }
   }
@@ -246,7 +246,7 @@ export function OfflineChatSync({
 
       setPendingOps((prev) => [...prev, op])
     } catch (error) {
-      logger.error('Failed to save pending operation:', error)
+      console.error('Failed to save pending operation:', error)
     }
   }
 
@@ -263,7 +263,7 @@ export function OfflineChatSync({
         setPendingOps(request.result)
       }
     } catch (error) {
-      logger.error('Failed to load pending operations:', error)
+      console.error('Failed to load pending operations:', error)
     }
   }
 
@@ -319,7 +319,7 @@ export function OfflineChatSync({
 
       setPendingOps((prev) => prev.filter((op) => op.id !== id))
     } catch (error) {
-      logger.error('Failed to remove pending operation:', error)
+      console.error('Failed to remove pending operation:', error)
     }
   }
 
@@ -334,7 +334,7 @@ export function OfflineChatSync({
 
       setPendingOps((prev) => prev.map((o) => (o.id === op.id ? op : o)))
     } catch (error) {
-      logger.error('Failed to update pending operation:', error)
+      console.error('Failed to update pending operation:', error)
     }
   }
 
@@ -487,7 +487,7 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
           }
         }
       } catch (error) {
-        logger.error('Failed to initialize IndexedDB:', error)
+        console.error('Failed to initialize IndexedDB:', error)
       }
     }
 
@@ -523,7 +523,7 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
 
       setMessages((prev) => [...prev, message])
     } catch (error) {
-      logger.error('Failed to save message:', error)
+      console.error('Failed to save message:', error)
     }
   }
 
@@ -546,7 +546,7 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
 
       setPendingOps((prev) => [...prev, operation])
     } catch (error) {
-      logger.error('Failed to queue operation:', error)
+      console.error('Failed to queue operation:', error)
     }
   }
 
@@ -563,7 +563,7 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
 
       setMessages([])
     } catch (error) {
-      logger.error('Failed to clear cache:', error)
+      console.error('Failed to clear cache:', error)
     }
   }
 

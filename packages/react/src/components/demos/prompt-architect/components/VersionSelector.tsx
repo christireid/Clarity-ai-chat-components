@@ -7,7 +7,8 @@
  */
 
 import * as React from 'react'
-import { cn, formatRelativeTime } from '@clarity-chat/primitives'
+import { cn } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../../../internal/helpers'
 import type { PromptVersion } from '../types'
 
 export interface VersionSelectorProps {

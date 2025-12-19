@@ -1,6 +1,6 @@
 /**
  * Built-in Analytics Providers
- * 
+ *
  * Pre-configured providers for popular analytics services
  */
 
@@ -13,55 +13,55 @@ export function createConsoleProvider(): AnalyticsProvider {
   return {
     name: 'console',
     track: (event) => {
-      logger.debug('[Analytics] Event:', event)
+      console.debug('[Analytics] Event:', event)
     },
     identify: (user) => {
-      logger.debug('[Analytics] User identified:', user)
+      console.debug('[Analytics] User identified:', user)
     },
     page: (pageView) => {
-      logger.debug('[Analytics] Page view:', pageView)
+      console.debug('[Analytics] Page view:', pageView)
     },
     reset: () => {
-      logger.debug('[Analytics] Reset')
+      console.debug('[Analytics] Reset')
     },
   }
 }
 
 /**
  * Google Analytics 4 Provider
- * 
+ *
  * @example
  * ```tsx
  * const gaProvider = createGoogleAnalyticsProvider('G-XXXXXXXXXX')
  * ```
  */
-export function createGoogleAnalyticsProvider(measurementId: string): AnalyticsProvider {
+export function createGoogleAnalyticsProvider(
+  measurementId: string
+): AnalyticsProvider {
   return {
     name: 'google-analytics',
     init: () => {
       // Load GA4 script
       if (typeof window === 'undefined') return
-      
+
       // Check if already loaded
       if ((window as any).gtag) return
-      
+
       const script = document.createElement('script')
       script.async = true
       script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
       document.head.appendChild(script)
-      
       ;(window as any).dataLayer = (window as any).dataLayer || []
       function gtag(...args: any[]) {
         ;(window as any).dataLayer.push(args)
       }
       ;(window as any).gtag = gtag
-      
+
       gtag('js', new Date())
       gtag('config', measurementId)
     },
     track: (event) => {
       if (typeof window === 'undefined' || !(window as any).gtag) return
-      
       ;(window as any).gtag('event', event.name, {
         ...event.properties,
         user_id: event.userId,
@@ -69,7 +69,6 @@ export function createGoogleAnalyticsProvider(measurementId: string): AnalyticsP
     },
     identify: (user) => {
       if (typeof window === 'undefined' || !(window as any).gtag) return
-      
       ;(window as any).gtag('config', measurementId, {
         user_id: user.id,
         user_properties: user.properties,
@@ -77,7 +76,6 @@ export function createGoogleAnalyticsProvider(measurementId: string): AnalyticsP
     },
     page: (pageView) => {
       if (typeof window === 'undefined' || !(window as any).gtag) return
-      
       ;(window as any).gtag('config', measurementId, {
         page_path: pageView.path,
         page_title: pageView.title,
@@ -88,7 +86,7 @@ export function createGoogleAnalyticsProvider(measurementId: string): AnalyticsP
 
 /**
  * Mixpanel Provider
- * 
+ *
  * @example
  * ```tsx
  * const mixpanelProvider = createMixpanelProvider('YOUR_TOKEN')
@@ -100,28 +98,25 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
     init: async () => {
       if (typeof window === 'undefined') return
       if ((window as any).mixpanel) return
-      
+
       // Load Mixpanel library
       const script = document.createElement('script')
       script.async = true
       script.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js'
-      
+
       await new Promise((resolve, reject) => {
         script.onload = resolve
         script.onerror = reject
         document.head.appendChild(script)
       })
-      
       ;(window as any).mixpanel.init(token)
     },
     track: (event) => {
       if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      
       ;(window as any).mixpanel.track(event.name, event.properties)
     },
     identify: (user) => {
       if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      
       ;(window as any).mixpanel.identify(user.id)
       if (user.properties) {
         ;(window as any).mixpanel.people.set(user.properties)
@@ -129,7 +124,6 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
     },
     page: (pageView) => {
       if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      
       ;(window as any).mixpanel.track('Page View', {
         path: pageView.path,
         title: pageView.title,
@@ -146,7 +140,7 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
 
 /**
  * PostHog Provider
- * 
+ *
  * @example
  * ```tsx
  * const posthogProvider = createPostHogProvider('YOUR_API_KEY', {
@@ -163,18 +157,18 @@ export function createPostHogProvider(
     init: async () => {
       if (typeof window === 'undefined') return
       if ((window as any).posthog) return
-      
+
       // Load PostHog library
       const script = document.createElement('script')
       script.async = true
-      script.src = 'https://cdn.jsdelivr.net/npm/posthog-js@1/dist/posthog.min.js'
-      
+      script.src =
+        'https://cdn.jsdelivr.net/npm/posthog-js@1/dist/posthog.min.js'
+
       await new Promise((resolve, reject) => {
         script.onload = resolve
         script.onerror = reject
         document.head.appendChild(script)
       })
-      
       ;(window as any).posthog.init(apiKey, {
         api_host: options?.api_host || 'https://app.posthog.com',
         loaded: (posthog: any) => {
@@ -184,17 +178,14 @@ export function createPostHogProvider(
     },
     track: (event) => {
       if (typeof window === 'undefined' || !(window as any).posthog) return
-      
       ;(window as any).posthog.capture(event.name, event.properties)
     },
     identify: (user) => {
       if (typeof window === 'undefined' || !(window as any).posthog) return
-      
       ;(window as any).posthog.identify(user.id, user.properties)
     },
     page: (pageView) => {
       if (typeof window === 'undefined' || !(window as any).posthog) return
-      
       ;(window as any).posthog.capture('$pageview', {
         $current_url: window.location.href,
         path: pageView.path,
@@ -211,7 +202,7 @@ export function createPostHogProvider(
 
 /**
  * Amplitude Provider
- * 
+ *
  * @example
  * ```tsx
  * const amplitudeProvider = createAmplitudeProvider('YOUR_API_KEY')
@@ -223,28 +214,27 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
     init: async () => {
       if (typeof window === 'undefined') return
       if ((window as any).amplitude) return
-      
+
       // Load Amplitude library
       const script = document.createElement('script')
       script.async = true
       script.src = 'https://cdn.amplitude.com/libs/amplitude-8.21.4-min.gz.js'
-      
+
       await new Promise((resolve, reject) => {
         script.onload = resolve
         script.onerror = reject
         document.head.appendChild(script)
       })
-      
       ;(window as any).amplitude.getInstance().init(apiKey)
     },
     track: (event) => {
       if (typeof window === 'undefined' || !(window as any).amplitude) return
-      
-      ;(window as any).amplitude.getInstance().logEvent(event.name, event.properties)
+      ;(window as any).amplitude
+        .getInstance()
+        .logEvent(event.name, event.properties)
     },
     identify: (user) => {
       if (typeof window === 'undefined' || !(window as any).amplitude) return
-      
       ;(window as any).amplitude.getInstance().setUserId(user.id)
       if (user.properties) {
         const identify = new (window as any).amplitude.Identify()
@@ -256,7 +246,6 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
     },
     page: (pageView) => {
       if (typeof window === 'undefined' || !(window as any).amplitude) return
-      
       ;(window as any).amplitude.getInstance().logEvent('Page View', {
         path: pageView.path,
         title: pageView.title,
@@ -274,9 +263,9 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
 
 /**
  * Custom API Provider
- * 
+ *
  * Send events to your own API endpoint
- * 
+ *
  * @example
  * ```tsx
  * const customProvider = createCustomApiProvider({
@@ -293,8 +282,10 @@ export function createCustomApiProvider(config: {
   return {
     name: 'custom-api',
     track: async (event) => {
-      const payload = config.transformEvent ? config.transformEvent(event) : event
-      
+      const payload = config.transformEvent
+        ? config.transformEvent(event)
+        : event
+
       try {
         await fetch(config.endpoint, {
           method: 'POST',
@@ -305,7 +296,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(payload),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to send event to custom API:', error)
+        console.error('[Analytics] Failed to send event to custom API:', error)
       }
     },
     identify: async (user) => {
@@ -319,7 +310,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(user),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to identify user:', error)
+        console.error('[Analytics] Failed to identify user:', error)
       }
     },
     page: async (pageView) => {
@@ -333,7 +324,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(pageView),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to track page view:', error)
+        console.error('[Analytics] Failed to track page view:', error)
       }
     },
   }
@@ -341,46 +332,48 @@ export function createCustomApiProvider(config: {
 
 /**
  * LocalStorage Provider (for testing/offline)
- * 
+ *
  * Stores events in localStorage for debugging
  */
-export function createLocalStorageProvider(storageKey: string = 'analytics_events'): AnalyticsProvider {
+export function createLocalStorageProvider(
+  storageKey: string = 'analytics_events'
+): AnalyticsProvider {
   return {
     name: 'localStorage',
     track: (event) => {
       if (typeof window === 'undefined') return
-      
+
       try {
         const events = JSON.parse(localStorage.getItem(storageKey) || '[]')
         events.push(event)
-        
+
         // Keep only last 100 events
         if (events.length > 100) {
           events.shift()
         }
-        
+
         localStorage.setItem(storageKey, JSON.stringify(events))
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to store event:', error)
+        console.error('[Analytics] Failed to store event:', error)
       }
     },
     identify: (user) => {
       if (typeof window === 'undefined') return
-      
+
       try {
         localStorage.setItem(`${storageKey}_user`, JSON.stringify(user))
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to store user:', error)
+        console.error('[Analytics] Failed to store user:', error)
       }
     },
     reset: () => {
       if (typeof window === 'undefined') return
-      
+
       try {
         localStorage.removeItem(storageKey)
         localStorage.removeItem(`${storageKey}_user`)
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to reset:', error)
+        console.error('[Analytics] Failed to reset:', error)
       }
     },
   }

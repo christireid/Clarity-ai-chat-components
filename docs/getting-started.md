@@ -6,16 +6,33 @@ Build a production-ready AI chat interface in under 5 minutes.
 
 ## Prerequisites
 
-| Requirement | Version |
-|-------------|---------|
-| React | 18+ or 19 |
-| Node.js | 18+ |
+| Requirement | Version                                                       |
+| ----------- | ------------------------------------------------------------- |
+| React       | 18+ or 19                                                     |
+| Node.js     | 20+                                                           |
+| License Key | [Get one at claritychat.dev](https://claritychat.dev/pricing) |
 
 ---
 
 ## Installation
 
-Choose your package manager:
+Clarity Chat is distributed via GitHub Packages. You'll need to configure npm once, then install
+normally.
+
+### Step 1: Configure npm for GitHub Packages (One-time)
+
+```bash
+# Set the registry for @clarity-chat scope
+npm config set @clarity-chat:registry https://npm.pkg.github.com
+
+# Set your access token (provided with your license)
+npm config set //npm.pkg.github.com/:_authToken YOUR_ACCESS_TOKEN
+```
+
+> **Note:** Your access token is provided when you purchase a license. Keep it secure and never
+> commit it to version control.
+
+### Step 2: Install the package
 
 ```bash
 # npm
@@ -26,9 +43,15 @@ pnpm add @clarity-chat/react
 
 # yarn
 yarn add @clarity-chat/react
+```
 
-# bun
-bun add @clarity-chat/react
+### Step 3: Set your license key
+
+Add your license key to your environment:
+
+```bash
+# .env.local (Next.js) or .env (other frameworks)
+CLARITY_LICENSE=CC-1-eyJ...your-license-key...
 ```
 
 ---
@@ -40,28 +63,39 @@ bun add @clarity-chat/react
 ```tsx
 'use client' // Required for Next.js App Router
 
-import { ClarityChat } from '@clarity-chat/react'
+import { initializeClarity, ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
+
+// Initialize once at app startup
+initializeClarity({
+  license: process.env.CLARITY_LICENSE,
+})
 
 export default function App() {
   return <ClarityChat api="/api/chat" />
 }
 ```
 
-That's it! You have a fully-featured chat with streaming, error handling, and accessibility built-in.
+That's it! You have a fully-featured chat with streaming, error handling, and accessibility
+built-in.
 
 ### Option B: With Hooks (More Control)
 
 ```tsx
 'use client' // Required for Next.js App Router
 
-import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import { initializeClarity, useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
+
+// Initialize once at app startup
+initializeClarity({
+  license: process.env.CLARITY_LICENSE,
+})
 
 export default function App() {
   const { messages, append, isLoading, error } = useClarityChat({
     api: '/api/chat',
-    stream: true,  // Enable streaming responses
+    stream: true, // Enable streaming responses
   })
 
   return (
@@ -77,15 +111,42 @@ export default function App() {
 }
 ```
 
-> **Note:** The `'use client'` directive is only needed for Next.js App Router. For Vite, Remix, or other frameworks, you can omit it.
+> **Note:** The `'use client'` directive is only needed for Next.js App Router. For Vite, Remix, or
+> other frameworks, you can omit it.
+
+---
+
+## Initialization Options
+
+The `initializeClarity` function accepts these options:
+
+```tsx
+initializeClarity({
+  // License key (required in production)
+  license: process.env.CLARITY_LICENSE,
+
+  // Environment mode (defaults to NODE_ENV)
+  env: 'production', // or 'development'
+
+  // Suppress console warnings
+  silent: false,
+})
+```
+
+**Behavior by environment:**
+
+- **Development**: Warning in console, watermark displayed
+- **Production**: Watermark displayed if no valid license
 
 ---
 
 ## API Route Setup
 
-Your chat needs a backend API to communicate with AI providers. The API route runs server-side, keeping your API keys secure.
+Your chat needs a backend API to communicate with AI providers. The API route runs server-side,
+keeping your API keys secure.
 
-> **Security Note:** Never expose your AI provider API keys in client-side code. Always use environment variables and server-side routes.
+> **Security Note:** Never expose your AI provider API keys in client-side code. Always use
+> environment variables and server-side routes.
 
 ### Next.js (App Router)
 
@@ -117,7 +178,7 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'gpt-4',
@@ -140,7 +201,7 @@ export async function POST(req: Request) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     })
   } catch (error) {
@@ -163,7 +224,7 @@ import express from 'express'
 import OpenAI from 'openai'
 
 const app = express()
-app.use(express.json()) // Required to parse JSON body
+app.use(express.json())
 
 const openai = new OpenAI() // Uses OPENAI_API_KEY env var
 
@@ -171,7 +232,6 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body
 
-    // Validate input
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'Invalid messages format' })
     }
@@ -210,13 +270,12 @@ import { streamSSE } from 'hono/streaming'
 import OpenAI from 'openai'
 
 const app = new Hono()
-const openai = new OpenAI() // Uses OPENAI_API_KEY env var
+const openai = new OpenAI()
 
 app.post('/api/chat', async (c) => {
   try {
     const { messages } = await c.req.json()
 
-    // Validate input
     if (!messages || !Array.isArray(messages)) {
       return c.json({ error: 'Invalid messages format' }, 400)
     }
@@ -244,22 +303,33 @@ app.post('/api/chat', async (c) => {
 
 ---
 
+## License Plans
+
+| Feature          | Community | Pro | Enterprise |
+| ---------------- | --------- | --- | ---------- |
+| Core Components  | Yes       | Yes | Yes        |
+| Streaming        | Yes       | Yes | Yes        |
+| Memory System    | -         | Yes | Yes        |
+| Analytics        | -         | Yes | Yes        |
+| Multi-tenancy    | -         | -   | Yes        |
+| Custom Branding  | -         | Yes | Yes        |
+| Priority Support | -         | Yes | Yes        |
+
+[Compare plans](https://claritychat.dev/pricing)
+
+---
+
 ## Next Steps
 
 Now that you have a basic chat working, here are recommended enhancements:
 
-### Add Memory (Recommended)
+### Add Memory (Pro+)
 
 Enable context-aware conversations:
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-
-<ClarityChatPresets.WithMemory
-  api="/api/chat"
-  memoryStrategy="sliding-window"
-  maxTokens={4000}
-/>
+;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
 ### Add a Theme
@@ -268,81 +338,73 @@ Choose from 11 built-in themes:
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
-
-<ThemeProvider theme="glassmorphism">
+;<ThemeProvider theme="glassmorphism">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>
 
 // Available: dark, ocean, sunset, forest, neon, minimal, warm, cool, corporate, glassmorphism
 ```
 
-### Add Error Handling
+### Feature Gating
 
-Built-in error recovery with retry:
+Gate features based on license plan:
 
 ```tsx
-const { messages, error, retry, isLoading } = useClarityChat({
-  api: '/api/chat',
-  onError: (error) => {
-    console.error('Chat error:', error)
-    // Optionally notify user
-  },
-})
-
-// ChatWindow automatically shows error UI with retry button
-<ChatWindow
-  messages={messages}
-  error={error}
-  onRetry={retry}
-  isLoading={isLoading}
-/>
+import { LicenseGate } from '@clarity-chat/react'
+;<LicenseGate plan="pro" fallback={<UpgradePrompt />}>
+  <AdvancedFeatures />
+</LicenseGate>
 ```
 
 ---
 
 ## Common Issues & Solutions
 
-| Problem | Solution |
-|---------|----------|
-| **"Failed to fetch"** | Check your API route is running and CORS is configured |
-| **Streaming not working** | Ensure your API returns `Content-Type: text/event-stream` |
-| **Styles not loading** | Make sure you imported `@clarity-chat/react/styles.css` |
-| **TypeScript errors** | Update to TypeScript 5.0+ and restart your IDE |
+| Problem                               | Solution                                                  |
+| ------------------------------------- | --------------------------------------------------------- |
+| **"401 Unauthorized" during install** | Check your npm token is set correctly in `.npmrc`         |
+| **"Failed to fetch"**                 | Check your API route is running and CORS is configured    |
+| **Watermark showing**                 | Verify your license key is set in environment variables   |
+| **Streaming not working**             | Ensure your API returns `Content-Type: text/event-stream` |
+| **Styles not loading**                | Make sure you imported `@clarity-chat/react/styles.css`   |
+| **TypeScript errors**                 | Update to TypeScript 5.0+ and restart your IDE            |
 
 ---
 
 ## Examples by Use Case
 
-| I want to... | Example |
-|-------------|---------|
-| Start simple | [basic-chat](../apps/examples/basic-chat) |
-| Add streaming | [streaming-chat](../apps/examples/streaming-chat) |
-| Build a code assistant | [code-assistant](../apps/examples/code-assistant) |
-| Create an e-commerce bot | [ecommerce-assistant](../apps/examples/ecommerce-assistant) |
-| Build enterprise features | [enterprise-ai-ops](../apps/examples/enterprise-ai-ops) |
-| Customize the design | [theme-builder](../apps/examples/theme-builder) |
+| I want to...              | Example                                                |
+| ------------------------- | ------------------------------------------------------ |
+| Start simple              | [basic-chat](../examples/basic-chat)                   |
+| Add streaming             | [streaming-chat](../examples/streaming-chat)           |
+| Build a code assistant    | [code-assistant](../examples/code-assistant)           |
+| Create an e-commerce bot  | [ecommerce-assistant](../examples/ecommerce-assistant) |
+| Build enterprise features | [enterprise-ai-ops](../examples/enterprise-ai-ops)     |
+| Customize the design      | [custom-theming](../examples/custom-theming)           |
 
-**[Browse all 30+ examples](../apps/examples)**
+**[Browse all examples](../examples)**
 
 ---
 
 ## Learn More
 
-| Topic | Link |
-|-------|------|
-| API Reference | [Components & Hooks](./api-reference.md) |
+| Topic          | Link                                       |
+| -------------- | ------------------------------------------ |
+| API Reference  | [Components & Hooks](./api-reference.md)   |
 | Best Practices | [Production Patterns](./best-practices.md) |
-| Architecture | [System Design](./architecture.md) |
-| FAQ | [Common Questions](./FAQ.md) |
+| Architecture   | [System Design](./architecture.md)         |
+| FAQ            | [Common Questions](./FAQ.md)               |
 
 ---
 
 ## Get Help
 
-- **Discord**: [Join our community](https://discord.gg/clarity-chat) for real-time help
+- **Support**: [support@claritychat.dev](mailto:support@claritychat.dev)
 - **GitHub Issues**: [Report bugs](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- **Discussions**: [Ask questions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
+- **Discussions**:
+  [Ask questions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ---
 
-**Ready to build something amazing?** Check out our [examples](../apps/examples) or explore components in [Storybook](../apps/storybook)!
+**Ready to build something amazing?** Check out our [examples](../examples) or explore components in
+[Storybook](../apps/storybook)!

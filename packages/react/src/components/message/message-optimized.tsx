@@ -13,13 +13,8 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
-import {
-  Avatar,
-  Button,
-  Badge,
-  cn,
-  formatRelativeTime,
-} from '@clarity-chat/primitives'
+import { Avatar, Button, Badge, cn } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../internal/helpers'
 import { CopyButton } from './copy-button'
 import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from '../ui/icons'
 import {

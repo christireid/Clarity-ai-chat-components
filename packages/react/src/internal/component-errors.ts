@@ -319,14 +319,14 @@ export function createErrorHandler(
   return (error: Error, errorInfo: ErrorInfo) => {
     // Enhance error with component context if not already a ComponentError
     if (!(error instanceof ComponentError)) {
-      logger.logger.error(
+      console.error(
         `[Clarity Chat] ${component} encountered an error:`,
         error,
         '\n\nComponent Stack:',
         errorInfo.componentStack
       )
     } else {
-      logger.logger.error(error.message)
+      console.error(error.message)
     }
 
     // Call additional handler if provided

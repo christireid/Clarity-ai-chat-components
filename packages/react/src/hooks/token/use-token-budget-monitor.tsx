@@ -655,7 +655,7 @@ export function formatTokenUsage(usage: TokenUsage): string {
  */
 export type BudgetMonitorModel =
   // OpenAI GPT-4 Family
-  | 'gpt-4'
+  | 'gpt-4o'
   | 'gpt-4-turbo'
   | 'gpt-4o'
   | 'gpt-4o-mini'
@@ -692,7 +692,7 @@ export type BudgetMonitorModel =
  * Set of valid budget monitor models for runtime validation
  */
 const VALID_BUDGET_MONITOR_MODELS = new Set<string>([
-  'gpt-4',
+  'gpt-4o',
   'gpt-4-turbo',
   'gpt-4o',
   'gpt-4o-mini',
@@ -753,9 +753,8 @@ function toModelName(model: BudgetMonitorModel): ModelName | undefined {
   // All BudgetMonitorModel values are currently valid ModelName values
   // This explicit mapping ensures type safety at runtime
   const modelNameMapping: Record<BudgetMonitorModel, ModelName> = {
-    'gpt-4': 'gpt-4',
-    'gpt-4-turbo': 'gpt-4-turbo',
     'gpt-4o': 'gpt-4o',
+    'gpt-4-turbo': 'gpt-4-turbo',
     'gpt-4o-mini': 'gpt-4o-mini',
     'gpt-4.1': 'gpt-4.1',
     'gpt-4.1-mini': 'gpt-4.1-mini',

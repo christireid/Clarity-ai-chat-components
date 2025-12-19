@@ -1,6 +1,6 @@
 /**
  * Model Selector Component
- * 
+ *
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
@@ -9,7 +9,7 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Button, cn } from '@clarity-chat/primitives'
-import type { ModelConfig, ModelInfo } from '../adapters/types'
+import type { ModelConfig, ModelInfo } from '../../adapters/types'
 
 export interface ModelSelectorProps {
   /** Available models */
@@ -35,48 +35,64 @@ export function ModelSelector({
   className = '',
   showMetrics = true,
   disabled = false,
-  showDescription = true
+  showDescription = true,
 }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
-  
+
   const handleToggle = React.useCallback(() => setIsOpen(!isOpen), [isOpen])
   const handleBackdropClick = React.useCallback(() => setIsOpen(false), [])
-  
+
   // Memoize selected model lookup
   const selectedModel = React.useMemo(
-    () => models.find(m => m.id === value),
+    () => models.find((m) => m.id === value),
     [models, value]
   )
-  
+
   // Memoize select handler
-  const handleSelect = React.useCallback((model: ModelInfo) => {
-    onChange(model.id, {
-      provider: model.provider,
-      model: model.id
-    })
-    setIsOpen(false)
-  }, [onChange])
-  
+  const handleSelect = React.useCallback(
+    (model: ModelInfo) => {
+      onChange(model.id, {
+        provider: model.provider,
+        model: model.id,
+      })
+      setIsOpen(false)
+    },
+    [onChange]
+  )
+
   // Memoize badge props getter
-  const getBadgeProps = React.useCallback((type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
-    switch (type) {
-      case 'speed':
-        if (value === 'fast') return { variant: 'success', label: 'Fast' }
-        if (value === 'medium') return { variant: 'warning', label: 'Moderate' }
-        return { variant: 'destructive', label: 'Slow' }
-      case 'cost':
-        if (value === 'low') return { variant: 'success', label: 'Low cost' }
-        if (value === 'medium') return { variant: 'warning', label: 'Medium cost' }
-        return { variant: 'destructive', label: 'High cost' }
-      case 'quality':
-        if (value === 'best') return { variant: 'success', label: 'Best quality' }
-        if (value === 'excellent') return { variant: 'info', label: 'Excellent' }
-        return { variant: 'secondary', label: 'Good' }
-      default:
-        return { variant: 'secondary', label: value }
-    }
-  }, [])
+  const getBadgeProps = React.useCallback(
+    (
+      type: 'speed' | 'cost' | 'quality',
+      value: string
+    ): {
+      variant: React.ComponentProps<typeof Badge>['variant']
+      label: string
+    } => {
+      switch (type) {
+        case 'speed':
+          if (value === 'fast') return { variant: 'success', label: 'Fast' }
+          if (value === 'medium')
+            return { variant: 'warning', label: 'Moderate' }
+          return { variant: 'destructive', label: 'Slow' }
+        case 'cost':
+          if (value === 'low') return { variant: 'success', label: 'Low cost' }
+          if (value === 'medium')
+            return { variant: 'warning', label: 'Medium cost' }
+          return { variant: 'destructive', label: 'High cost' }
+        case 'quality':
+          if (value === 'best')
+            return { variant: 'success', label: 'Best quality' }
+          if (value === 'excellent')
+            return { variant: 'info', label: 'Excellent' }
+          return { variant: 'secondary', label: 'Good' }
+        default:
+          return { variant: 'secondary', label: value }
+      }
+    },
+    []
+  )
 
   return (
     <div ref={containerRef} className={cn('relative', className)}>
@@ -96,8 +112,14 @@ export function ModelSelector({
           {showMetrics && selectedModel && (
             <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/90">
               {(['speed', 'cost'] as const).map((type) => {
-                const { variant, label } = getBadgeProps(type, selectedModel[type])
-                const displayValue = type === 'cost' ? `$${selectedModel[type]}` : selectedModel[type]
+                const { variant, label } = getBadgeProps(
+                  type,
+                  selectedModel[type]
+                )
+                const displayValue =
+                  type === 'cost'
+                    ? `$${selectedModel[type]}`
+                    : selectedModel[type]
                 return (
                   <Badge
                     key={type}
@@ -113,15 +135,23 @@ export function ModelSelector({
           )}
         </div>
         <svg
-          className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
+          className={cn(
+            'h-4 w-4 text-muted-foreground transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </Button>
-      
+
       {isOpen && (
         <>
           <div
@@ -133,7 +163,7 @@ export function ModelSelector({
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ 
+            transition={{
               // Framer Motion 12: Spring dropdown menu
               type: 'spring',
               damping: 24,
@@ -164,7 +194,10 @@ export function ModelSelector({
                     {showMetrics && (
                       <div className="flex flex-wrap gap-1.5">
                         {(['speed', 'quality', 'cost'] as const).map((type) => {
-                          const { variant, label } = getBadgeProps(type, model[type])
+                          const { variant, label } = getBadgeProps(
+                            type,
+                            model[type]
+                          )
                           const displayValue =
                             type === 'cost' ? `$${model[type]}` : model[type]
                           return (
