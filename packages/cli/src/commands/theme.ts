@@ -1,5 +1,7 @@
 import { Command } from 'commander'
-import { logger } from '../utils/logger'
+import { getLogger } from '../utils/logger'
+
+const logger = getLogger('theme')
 
 export const themeCommand = new Command()
   .name('theme')
