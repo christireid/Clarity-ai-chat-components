@@ -6,6 +6,7 @@ import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Copy, Check, ArrowRight, Zap } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import { useReducedMotion } from '@/lib/animations'
 import NewsletterSignup from '../ui/NewsletterSignup'
 
 export default function CTASection() {
@@ -71,8 +72,8 @@ export default function CTASection() {
           transition={{ duration: durations.slow, delay: 0.2 }}
           className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto"
         >
-          One command. 170+ components. MIT licensed.
-          Start building your AI chat interface now.
+          One command. 170+ components. MIT licensed. Start building your AI
+          chat interface now.
         </motion.p>
 
         {/* Install command */}
@@ -154,7 +155,7 @@ export default function CTASection() {
           transition={{ duration: durations.slow, delay: 0.6 }}
           className="mt-20 max-w-3xl mx-auto text-left"
         >
-            <NewsletterSignup />
+          <NewsletterSignup />
         </motion.div>
       </div>
     </section>

@@ -6,6 +6,7 @@ import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Check, ArrowRight, Sparkles, Globe, Code } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import { useReducedMotion } from '@/lib/animations'
 import TiltCard from '../ui/TiltCard'
 
 const tiers = [

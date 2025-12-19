@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Check, X, ArrowRight, ChevronRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import { useReducedMotion } from '@/lib/animations'
 
 const comparisonData = [
   {

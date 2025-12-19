@@ -4,6 +4,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useReducedMotion } from '@/lib/animations'
 
 interface ButtonProps {
   children: React.ReactNode
