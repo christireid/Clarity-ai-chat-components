@@ -134,12 +134,13 @@ export default function TutorialPage() {
         </div>
       </div>
 
-      <TutorialStep
-        step={1}
-        title="Project Setup"
-        nextStepHref="#basic-chat"
-        nextStepTitle="Basic Chat Interface"
-      >
+      <div id="setup">
+        <TutorialStep
+          step={1}
+          title="Project Setup"
+          nextStepHref="#basic-chat"
+          nextStepTitle="Basic Chat Interface"
+        >
         <p className="text-text-secondary mb-4">
           Create a new React project with Vite and install Clarity Chat:
         </p>
@@ -174,16 +175,18 @@ npm install @clarity-chat/react`}
             for framework-specific instructions.
           </p>
         </Callout>
-      </TutorialStep>
+        </TutorialStep>
+      </div>
 
       <UseChatFlowAnimation />
 
-      <TutorialStep
-        step={2}
-        title="Basic Chat Interface"
-        nextStepHref="#enhancements"
-        nextStepTitle="Adding Enhancements"
-      >
+      <div id="basic-chat">
+        <TutorialStep
+          step={2}
+          title="Basic Chat Interface"
+          nextStepHref="#enhancements"
+          nextStepTitle="Adding Enhancements"
+        >
         <p className="text-text-secondary mb-4">
           Replace the contents of{' '}
           <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
@@ -260,8 +263,10 @@ export default App`}
           </p>
         </Callout>
       </TutorialStep>
+      </div>
 
-      <h2 id="avatars">Step 3: Add Avatars</h2>
+      <div id="avatars">
+      <h2>Step 3: Add Avatars</h2>
 
       <p>Enhance messages with user avatars:</p>
 
@@ -309,8 +314,10 @@ const handleSendMessage = (text: string) => {
         language="tsx"
         highlightLines={[7, 8, 9, 10, 18, 19, 20, 21, 30, 31, 32, 33]}
       />
+      </div>
 
-      <h2 id="typing-indicator">Step 4: Typing Indicator</h2>
+      <div id="typing-indicator">
+      <h2>Step 4: Typing Indicator</h2>
 
       <p>Show when the bot is "typing":</p>
 
@@ -358,8 +365,10 @@ function App() {
         language="tsx"
         highlightLines={[2, 6, 18, 20, 21, 35]}
       />
+      </div>
 
-      <h2 id="reactions">Step 5: Message Reactions</h2>
+      <div id="reactions">
+      <h2>Step 5: Message Reactions</h2>
 
       <p>Allow users to react to messages:</p>
 
@@ -391,8 +400,10 @@ return (
 )`}
         language="tsx"
       />
+      </div>
 
-      <h2 id="dark-mode">Step 6: Dark Mode</h2>
+      <div id="dark-mode">
+      <h2>Step 6: Dark Mode</h2>
 
       <p>Add theme switching:</p>
 
@@ -423,6 +434,7 @@ function App() {
         language="tsx"
         highlightLines={[2, 5, 8, 11, 12, 13, 20]}
       />
+      </div>
 
       <h2 id="next-steps">What's Next?</h2>
 
