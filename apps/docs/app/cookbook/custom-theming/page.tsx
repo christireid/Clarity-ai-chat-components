@@ -130,8 +130,6 @@ import { brandTheme } from './themes/brand-theme'
 npm install next-themes
 
 // app/providers.tsx
-'use client'
-
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { ThemeProvider } from '@clarity-chat/react'
 import { brandTheme, brandDarkTheme } from '@/themes'

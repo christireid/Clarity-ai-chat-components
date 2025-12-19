@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { motion } from 'framer-motion'
 import { MessageSquare } from 'lucide-react'
 import Image from 'next/image'

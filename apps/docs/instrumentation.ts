@@ -14,7 +14,9 @@
 export async function register() {
   // Only run on server
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    logger.debug('[Instrumentation] Node.js runtime initialized')
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[Instrumentation] Node.js runtime initialized')
+    }
 
     // Example: Initialize monitoring in production
     if (process.env.NODE_ENV === 'production') {
@@ -28,7 +30,9 @@ export async function register() {
 
   // Edge runtime specific initialization
   if (process.env.NEXT_RUNTIME === 'edge') {
-    logger.debug('[Instrumentation] Edge runtime initialized')
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[Instrumentation] Edge runtime initialized')
+    }
   }
 }
 

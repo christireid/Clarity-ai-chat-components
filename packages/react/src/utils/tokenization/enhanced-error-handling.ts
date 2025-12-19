@@ -4,8 +4,8 @@
  * Provides structured error handling with recovery strategies
  */
 
-import { InputValidator } from './input-validator.js'
-import { smartCountTokens } from './smart-fallback.js'
+import { InputValidator } from './input-validator'
+import { smartCountTokens } from './smart-fallback'
 
 export enum ErrorSeverity {
   LOW = 'low',

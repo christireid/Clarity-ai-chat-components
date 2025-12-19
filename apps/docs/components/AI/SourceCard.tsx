@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState } from 'react'
 import {
   ExternalLink,

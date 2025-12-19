@@ -1398,7 +1398,7 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logger.error('[AI Components API] Error:', error)
+    console.error('[AI Components API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

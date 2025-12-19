@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Star, Users, Download, TrendingUp, GitFork, Eye } from 'lucide-react'

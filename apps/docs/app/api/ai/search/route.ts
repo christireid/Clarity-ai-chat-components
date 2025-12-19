@@ -629,7 +629,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    logger.error('[AI Search API] Error:', error)
+    console.error('[AI Search API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+// Local skeleton components for docs site
 import {
   Skeleton,
   SkeletonText,
@@ -10,7 +11,7 @@ import {
   SkeletonList,
   SkeletonAvatar,
   SkeletonButton,
-} from '@clarity-chat/react'
+} from '@/components/UI/Skeleton'
 import { Badge } from '@clarity-chat/primitives'
 import {
   PageSkeleton,

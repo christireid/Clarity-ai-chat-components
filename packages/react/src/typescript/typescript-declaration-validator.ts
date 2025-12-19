@@ -188,9 +188,9 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
 
   constructor(config: Partial<DeclarationValidatorConfig> = {}) {
     super()
-    
+
     this.currentDir = dirname(fileURLToPath(import.meta.url))
-    
+
     this.config = {
       enabled: true,
       projectPath: resolve(this.currentDir, '../../../'),
@@ -201,7 +201,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
       validationTimeout: 30000, // 30 seconds
       maxRetries: 3,
       retryDelay: 1000, // 1 second
-      ...config
+      ...config,
     }
 
     this.analyzeMemoryConstraints()
@@ -214,26 +214,31 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
     const isDevMode = process.env.NODE_ENV === 'development'
     const currentMemory = process.memoryUsage().heapUsed / 1024 / 1024 // MB
     const memoryLimit = this.config.memoryLimit
-    const declarationGeneration = currentMemory > memoryLimit * 0.8 ? 'disabled' : 'enabled'
+    const declarationGeneration =
+      currentMemory > memoryLimit * 0.8 ? 'disabled' : 'enabled'
 
     const optimizationStrategies = [
       'Use incremental compilation',
       'Enable skipLibCheck',
       'Split large declaration files',
       'Use project references',
-      'Optimize memory usage in development'
+      'Optimize memory usage in development',
     ]
 
     const recommendations = [
       'Consider increasing memory limit for development',
       'Use production builds for full declaration generation',
       'Implement memory monitoring and alerts',
-      'Optimize TypeScript configuration'
+      'Optimize TypeScript configuration',
     ]
 
     if (declarationGeneration === 'disabled') {
-      recommendations.push('TypeScript declarations are disabled due to memory constraints')
-      recommendations.push('Consider using a build server for declaration generation')
+      recommendations.push(
+        'TypeScript declarations are disabled due to memory constraints'
+      )
+      recommendations.push(
+        'Consider using a build server for declaration generation'
+      )
     }
 
     this.memoryConstraints = {
@@ -242,7 +247,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
       currentUsage: currentMemory,
       declarationGeneration,
       optimizationStrategies,
-      recommendations
+      recommendations,
     }
 
     this.emit('memory-analysis-complete', this.memoryConstraints)
@@ -260,7 +265,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         recommendations: ['Validation is disabled'],
         score: 100,
         grade: 'A',
-        timestamp: new Date()
+        timestamp: new Date(),
       }
     }
 
@@ -269,52 +274,63 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
 
       // Check TypeScript configuration
       const tsConfig = await this.validateTypeScriptConfig()
-      
+
       // Analyze bundle size and composition
       const bundleAnalysis = await this.analyzeBundle()
-      
+
       // Analyze memory constraints
       const memoryAnalysis = this.analyzeMemoryConstraints()
-      
+
       // Generate validation issues
-      const issues = this.generateIssues(bundleAnalysis, tsConfig, memoryAnalysis)
-      
+      const issues = this.generateIssues(
+        bundleAnalysis,
+        tsConfig,
+        memoryAnalysis
+      )
+
       // Generate recommendations
-      const recommendations = this.generateRecommendations(bundleAnalysis, tsConfig, memoryAnalysis)
-      
+      const recommendations = this.generateRecommendations(
+        bundleAnalysis,
+        tsConfig,
+        memoryAnalysis
+      )
+
       // Calculate score and grade
       const score = this.calculateScore(bundleAnalysis, issues)
       const grade = this.calculateGrade(score)
-      
+
       const result: ValidationResult = {
-        success: issues.filter(i => i.severity === 'critical').length === 0,
+        success: issues.filter((i) => i.severity === 'critical').length === 0,
         bundleAnalysis,
         issues,
         recommendations,
         score,
         grade,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       this.emit('validation-completed', result)
       return result
-
     } catch (error) {
-      const validationError = new Error(`TypeScript validation failed: ${error}`)
+      const validationError = new Error(
+        `TypeScript validation failed: ${error}`
+      )
       this.emit('validation-failed', validationError)
-      
+
       return {
         success: false,
         bundleAnalysis: this.createEmptyBundleAnalysis(),
-        issues: [{
-          type: 'declaration',
-          severity: 'critical',
-          message: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-        }],
+        issues: [
+          {
+            type: 'declaration',
+            severity: 'critical',
+            message: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          },
+        ],
         recommendations: ['Check TypeScript configuration and build process'],
         score: 0,
         grade: 'F',
-        timestamp: new Date()
+        timestamp: new Date(),
       }
     }
   }
@@ -324,35 +340,38 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
    */
   private async validateTypeScriptConfig(): Promise<TypeScriptConfigValidation> {
     const configPath = join(this.config.projectPath, 'tsconfig.json')
-    
+
     if (!existsSync(configPath)) {
       return {
         configPath,
         isValid: false,
         errors: [`TypeScript configuration file not found: ${configPath}`],
         warnings: [],
-        suggestions: ['Create a tsconfig.json file with proper declaration settings'],
+        suggestions: [
+          'Create a tsconfig.json file with proper declaration settings',
+        ],
         declarationSettings: {
           declaration: false,
           declarationMap: false,
           outDir: '',
           stripInternal: false,
-          emitDeclarationOnly: false
-        }
+          emitDeclarationOnly: false,
+        },
       }
     }
 
     try {
       const configContent = readFileSync(configPath, 'utf-8')
       const config = JSON.parse(configContent)
-      
+
       const declarationSettings: DeclarationSettings = {
         declaration: config.compilerOptions?.declaration ?? false,
         declarationMap: config.compilerOptions?.declarationMap ?? false,
         outDir: config.compilerOptions?.outDir ?? '',
         declarationDir: config.compilerOptions?.declarationDir,
         stripInternal: config.compilerOptions?.stripInternal ?? false,
-        emitDeclarationOnly: config.compilerOptions?.emitDeclarationOnly ?? false
+        emitDeclarationOnly:
+          config.compilerOptions?.emitDeclarationOnly ?? false,
       }
 
       const errors: string[] = []
@@ -361,7 +380,9 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
 
       // Check declaration settings
       if (!declarationSettings.declaration) {
-        errors.push('Declaration generation is disabled in TypeScript configuration')
+        errors.push(
+          'Declaration generation is disabled in TypeScript configuration'
+        )
       }
 
       if (!declarationSettings.outDir) {
@@ -369,12 +390,16 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
       }
 
       if (!declarationSettings.declarationMap) {
-        suggestions.push('Consider enabling declaration maps for better debugging experience')
+        suggestions.push(
+          'Consider enabling declaration maps for better debugging experience'
+        )
       }
 
       // Check for potential issues
       if (declarationSettings.emitDeclarationOnly) {
-        warnings.push('emitDeclarationOnly is enabled - this will only generate declarations')
+        warnings.push(
+          'emitDeclarationOnly is enabled - this will only generate declarations'
+        )
       }
 
       return {
@@ -383,9 +408,8 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         errors,
         warnings,
         suggestions,
-        declarationSettings
+        declarationSettings,
       }
-
     } catch (error) {
       return {
         configPath,
@@ -398,8 +422,8 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
           declarationMap: false,
           outDir: '',
           stripInternal: false,
-          emitDeclarationOnly: false
-        }
+          emitDeclarationOnly: false,
+        },
       }
     }
   }
@@ -409,12 +433,12 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
    */
   private async analyzeBundle(): Promise<BundleAnalysis> {
     const startTime = Date.now()
-    
+
     try {
       // Simulate bundle analysis (in real implementation, would use webpack stats)
       const totalSize = 450 * 1024 // 450KB
       const gzippedSize = 150 * 1024 // 150KB
-      
+
       const declarationFiles: DeclarationFile[] = [
         {
           path: 'index.d.ts',
@@ -423,7 +447,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
           imports: ['EventEmitter', 'z', 'DOMPurify'],
           complexity: 3,
           errors: [],
-          warnings: ['Large declaration file']
+          warnings: ['Large declaration file'],
         },
         {
           path: 'types.d.ts',
@@ -432,21 +456,21 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
           imports: [],
           complexity: 2,
           errors: [],
-          warnings: []
-        }
+          warnings: [],
+        },
       ]
 
       const dependencies: DependencyAnalysis = {
         totalDependencies: 15,
         sizeByDependency: {
-          'react': 45056,
-          'zod': 20480,
-          'dompurify': 15360,
-          'rate-limiter-flexible': 10240
+          react: 45056,
+          zod: 20480,
+          dompurify: 15360,
+          'rate-limiter-flexible': 10240,
         },
         unusedDependencies: ['lodash-es'],
         circularDependencies: [],
-        duplicateDependencies: []
+        duplicateDependencies: [],
       }
 
       const treeShaking: TreeShakingAnalysis = {
@@ -454,7 +478,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         removedModules: ['unused-utils', 'deprecated-api'],
         retainedModules: ['core-service', 'validation', 'sanitization'],
         potentialSavings: 25 * 1024, // 25KB
-        issues: ['Some modules cannot be tree-shaken due to side effects']
+        issues: ['Some modules cannot be tree-shaken due to side effects'],
       }
 
       const codeSplitting: CodeSplittingAnalysis = {
@@ -465,7 +489,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
             dependencies: ['vendor'],
             isEntry: true,
             isAsync: false,
-            loadPriority: 1
+            loadPriority: 1,
           },
           {
             name: 'vendor',
@@ -473,16 +497,16 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
             dependencies: [],
             isEntry: false,
             isAsync: false,
-            loadPriority: 2
-          }
+            loadPriority: 2,
+          },
         ],
         splittingEffectiveness: 90, // 90%
         loadTimeImprovement: 40, // 40%
         bundleOverlap: 10 * 1024, // 10KB
         recommendations: [
           'Consider splitting vendor chunk further',
-          'Optimize chunk loading order'
-        ]
+          'Optimize chunk loading order',
+        ],
       }
 
       const memoryUsage: MemoryUsage = {
@@ -490,7 +514,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         average: 180, // 180MB
         current: 200, // 200MB
         limit: this.config.memoryLimit,
-        exceeded: false
+        exceeded: false,
       }
 
       const performance: PerformanceMetrics = {
@@ -498,7 +522,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         declarationTime: 5000, // 5 seconds
         memoryUsage,
         cpuUsage: 45, // 45%
-        diskUsage: totalSize
+        diskUsage: totalSize,
       }
 
       return {
@@ -508,9 +532,8 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         dependencies,
         treeShaking,
         codeSplitting,
-        performance
+        performance,
       }
-
     } catch (error) {
       throw new Error(`Bundle analysis failed: ${error}`)
     }
@@ -520,7 +543,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
    * Generate validation issues
    */
   private generateIssues(
-    bundleAnalysis: BundleAnalysis, 
+    bundleAnalysis: BundleAnalysis,
     tsConfig: TypeScriptConfigValidation,
     memoryAnalysis: MemoryConstraintAnalysis
   ): ValidationIssue[] {
@@ -533,7 +556,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         severity: 'critical',
         message: 'TypeScript configuration is invalid',
         details: { errors: tsConfig.errors },
-        suggestion: 'Fix TypeScript configuration errors'
+        suggestion: 'Fix TypeScript configuration errors',
       })
     }
 
@@ -544,12 +567,13 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         type: 'bundle-size',
         severity: 'high',
         message: `Bundle size (${totalSizeKB.toFixed(1)}KB) exceeds limit (${this.config.bundleSizeLimit}KB)`,
-        details: { 
-          actual: totalSizeKB, 
+        details: {
+          actual: totalSizeKB,
           limit: this.config.bundleSizeLimit,
-          excess: totalSizeKB - this.config.bundleSizeLimit
+          excess: totalSizeKB - this.config.bundleSizeLimit,
         },
-        suggestion: 'Optimize bundle size through code splitting and tree shaking'
+        suggestion:
+          'Optimize bundle size through code splitting and tree shaking',
       })
     }
 
@@ -558,12 +582,13 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
       issues.push({
         type: 'memory',
         severity: 'high',
-        message: 'TypeScript declarations are disabled due to memory constraints',
-        details: { 
+        message:
+          'TypeScript declarations are disabled due to memory constraints',
+        details: {
           currentUsage: memoryAnalysis.currentUsage,
-          limit: memoryAnalysis.memoryLimit
+          limit: memoryAnalysis.memoryLimit,
         },
-        suggestion: 'Increase memory limit or optimize memory usage'
+        suggestion: 'Increase memory limit or optimize memory usage',
       })
     }
 
@@ -574,19 +599,19 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         severity: 'medium',
         message: `Tree shaking effectiveness is low (${bundleAnalysis.treeShaking.effectiveness}%)`,
         details: { effectiveness: bundleAnalysis.treeShaking.effectiveness },
-        suggestion: 'Review module structure and remove side effects'
+        suggestion: 'Review module structure and remove side effects',
       })
     }
 
     // Declaration file issues
-    bundleAnalysis.declarationFiles.forEach(file => {
+    bundleAnalysis.declarationFiles.forEach((file) => {
       if (file.errors.length > 0) {
         issues.push({
           type: 'declaration',
           severity: 'medium',
           message: `Declaration file ${file.path} has errors`,
           details: { file: file.path, errors: file.errors },
-          suggestion: 'Fix declaration file generation errors'
+          suggestion: 'Fix declaration file generation errors',
         })
       }
 
@@ -596,7 +621,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
           severity: 'low',
           message: `Declaration file ${file.path} has warnings`,
           details: { file: file.path, warnings: file.warnings },
-          suggestion: 'Review declaration file warnings'
+          suggestion: 'Review declaration file warnings',
         })
       }
     })
@@ -608,7 +633,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
    * Generate recommendations
    */
   private generateRecommendations(
-    bundleAnalysis: BundleAnalysis, 
+    bundleAnalysis: BundleAnalysis,
     tsConfig: TypeScriptConfigValidation,
     memoryAnalysis: MemoryConstraintAnalysis
   ): string[] {
@@ -616,7 +641,9 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
 
     // Memory optimization recommendations
     if (memoryAnalysis.declarationGeneration === 'disabled') {
-      recommendations.push('Consider using a build server for declaration generation')
+      recommendations.push(
+        'Consider using a build server for declaration generation'
+      )
       recommendations.push('Optimize TypeScript configuration for memory usage')
       recommendations.push('Use incremental compilation to reduce memory usage')
     }
@@ -630,11 +657,15 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
 
     // TypeScript configuration recommendations
     if (!tsConfig.declarationSettings.declarationMap) {
-      recommendations.push('Enable declaration maps for better debugging experience')
+      recommendations.push(
+        'Enable declaration maps for better debugging experience'
+      )
     }
 
     if (!tsConfig.declarationSettings.stripInternal) {
-      recommendations.push('Consider enabling stripInternal to reduce declaration size')
+      recommendations.push(
+        'Consider enabling stripInternal to reduce declaration size'
+      )
     }
 
     // Performance recommendations
@@ -652,23 +683,36 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
   /**
    * Calculate validation score
    */
-  private calculateScore(bundleAnalysis: BundleAnalysis, issues: ValidationIssue[]): number {
+  private calculateScore(
+    bundleAnalysis: BundleAnalysis,
+    issues: ValidationIssue[]
+  ): number {
     let score = 100
 
     // Deduct points for issues
-    issues.forEach(issue => {
+    issues.forEach((issue) => {
       switch (issue.severity) {
-        case 'critical': score -= 25; break
-        case 'high': score -= 15; break
-        case 'medium': score -= 8; break
-        case 'low': score -= 3; break
+        case 'critical':
+          score -= 25
+          break
+        case 'high':
+          score -= 15
+          break
+        case 'medium':
+          score -= 8
+          break
+        case 'low':
+          score -= 3
+          break
       }
     })
 
     // Deduct points for bundle size
     const totalSizeKB = bundleAnalysis.totalSize / 1024
     if (totalSizeKB > this.config.bundleSizeLimit) {
-      const excessRatio = (totalSizeKB - this.config.bundleSizeLimit) / this.config.bundleSizeLimit
+      const excessRatio =
+        (totalSizeKB - this.config.bundleSizeLimit) /
+        this.config.bundleSizeLimit
       score -= Math.min(excessRatio * 20, 30) // Max 30 point deduction
     }
 
@@ -704,21 +748,21 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
         sizeByDependency: {},
         unusedDependencies: [],
         circularDependencies: [],
-        duplicateDependencies: []
+        duplicateDependencies: [],
       },
       treeShaking: {
         effectiveness: 0,
         removedModules: [],
         retainedModules: [],
         potentialSavings: 0,
-        issues: []
+        issues: [],
       },
       codeSplitting: {
         chunks: [],
         splittingEffectiveness: 0,
         loadTimeImprovement: 0,
         bundleOverlap: 0,
-        recommendations: []
+        recommendations: [],
       },
       performance: {
         buildTime: 0,
@@ -728,11 +772,11 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
           average: 0,
           current: 0,
           limit: this.config.memoryLimit,
-          exceeded: false
+          exceeded: false,
         },
         cpuUsage: 0,
-        diskUsage: 0
-      }
+        diskUsage: 0,
+      },
     }
   }
 
@@ -781,26 +825,29 @@ export class DeclarationGenerator extends EventEmitter {
   /**
    * Generate TypeScript declarations with memory optimization
    */
-  async generateDeclarations(projectPath: string, outputPath: string): Promise<void> {
+  async generateDeclarations(
+    projectPath: string,
+    outputPath: string
+  ): Promise<void> {
     this.emit('generation-started', { projectPath, outputPath })
 
     try {
       // Monitor memory usage
       const initialMemory = process.memoryUsage()
-      
+
       // Generate declarations using TypeScript compiler API
       const result = await this.runTypeScriptCompiler(projectPath, outputPath)
-      
+
       const finalMemory = process.memoryUsage()
-      const memoryIncrease = (finalMemory.heapUsed - initialMemory.heapUsed) / 1024 / 1024 // MB
-      
+      const memoryIncrease =
+        (finalMemory.heapUsed - initialMemory.heapUsed) / 1024 / 1024 // MB
+
       this.emit('generation-completed', {
         projectPath,
         outputPath,
         memoryIncrease,
-        success: result.success
+        success: result.success,
       })
-
     } catch (error) {
       this.emit('generation-failed', error)
       throw error
@@ -810,19 +857,22 @@ export class DeclarationGenerator extends EventEmitter {
   /**
    * Run TypeScript compiler
    */
-  private async runTypeScriptCompiler(projectPath: string, outputPath: string): Promise<{ success: boolean }> {
+  private async runTypeScriptCompiler(
+    projectPath: string,
+    outputPath: string
+  ): Promise<{ success: boolean }> {
     try {
       // In a real implementation, this would use the TypeScript compiler API
       // For now, we'll simulate the compilation process
-      
+
       const startTime = Date.now()
-      
+
       // Simulate compilation time
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
       // Simulate memory usage
       const largeArray = new Array(1000000).fill('declaration content')
-      
+
       // Simulate output
       const declarationContent = `
 export interface MemoryService {
@@ -840,20 +890,19 @@ export interface MemoryItem {
 
 export type MemoryType = 'episodic' | 'semantic' | 'procedural' | 'working';
 `
-      
+
       // Write declaration file
       const declarationPath = join(outputPath, 'index.d.ts')
       writeFileSync(declarationPath, declarationContent)
-      
-      const endTime = Date.now()
-      
-      return {
-        success: true
-      }
 
+      const endTime = Date.now()
+
+      return {
+        success: true,
+      }
     } catch (error) {
       return {
-        success: false
+        success: false,
       }
     }
   }
@@ -884,21 +933,21 @@ export class BundleSizeAnalyzer extends EventEmitter {
     try {
       const files: string[] = []
       let totalSize = 0
-      
+
       // Simulate bundle analysis
       const mockFiles = [
-        { name: 'index.js', size: 200 * 1024 }, // 200KB
-        { name: 'vendor.js', size: 150 * 1024 }, // 150KB
-        { name: 'styles.css', size: 50 * 1024 }  // 50KB
+        { name: 'index', size: 200 * 1024 }, // 200KB
+        { name: 'vendor', size: 150 * 1024 }, // 150KB
+        { name: 'styles.css', size: 50 * 1024 }, // 50KB
       ]
-      
-      mockFiles.forEach(file => {
+
+      mockFiles.forEach((file) => {
         files.push(file.name)
         totalSize += file.size
       })
-      
+
       const gzippedSize = Math.floor(totalSize * 0.3) // Simulate 70% compression
-      
+
       const analysis = `
 Bundle Analysis:
 - Total size: ${(totalSize / 1024).toFixed(1)}KB
@@ -916,16 +965,15 @@ ${totalSize > this.config.bundleSizeLimit * 1024 ? '- Bundle size exceeds limit 
         outputPath,
         totalSize,
         gzippedSize,
-        files
+        files,
       })
 
       return {
         totalSize,
         gzippedSize,
         files,
-        analysis
+        analysis,
       }
-
     } catch (error) {
       this.emit('analysis-failed', error)
       throw error
@@ -936,5 +984,5 @@ ${totalSize > this.config.bundleSizeLimit * 1024 ? '- Bundle size exceeds limit 
 export default {
   TypeScriptDeclarationValidator,
   DeclarationGenerator,
-  BundleSizeAnalyzer
+  BundleSizeAnalyzer,
 }

@@ -1,5 +1,3 @@
-'use client'
-
 import type { Metadata } from 'next'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'

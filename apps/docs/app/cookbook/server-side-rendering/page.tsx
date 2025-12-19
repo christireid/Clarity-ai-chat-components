@@ -52,8 +52,6 @@ export default async function ChatPage() {
 }
 
 // app/chat/chat-client.tsx (Client Component)
-'use client'
-
 import { ClarityChat } from '@clarity-chat/react'
 
 export function ChatClient({ initialMessages }: { initialMessages: Message[] }) {
@@ -89,8 +87,6 @@ export async function sendMessage(formData: FormData) {
 }
 
 // app/chat/page.tsx
-'use client'
-
 import { sendMessage } from '@/app/actions/chat'
 import { ChatInput } from '@clarity-chat/react'
 
@@ -125,8 +121,6 @@ export async function POST(req: Request) {
 }
 
 // Client component handles streaming
-'use client'
-
 import { useClarityChat } from '@clarity-chat/react'
 
 export function StreamingChat() {

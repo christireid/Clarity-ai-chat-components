@@ -220,7 +220,7 @@ export function migrateDirectory(
   dryRun = true
 ): MigrationResult[] {
   const results: MigrationResult[] = []
-  const extensions = ['.tsx', '.ts', '.jsx', '.js']
+  const extensions = ['.tsx', '.ts', '.jsx', '']
 
   function walkDir(dir: string) {
     const files = fs.readdirSync(dir)

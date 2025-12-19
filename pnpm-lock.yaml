@@ -195,6 +195,9 @@ importers:
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
+      mermaid:
+        specifier: ^11.12.2
+        version: 11.12.2
       next:
         specifier: ^16.0.7
         version: 16.0.7(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)

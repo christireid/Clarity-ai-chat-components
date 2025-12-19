@@ -100,8 +100,6 @@ export async function POST(req: Request) {
         <CodeBlock
           language="typescript"
           code={`// app/chat/page.tsx
-'use client'
-
 import { ChatWindow } from '@clarity-chat/react'
 import { useState } from 'react'
 
