@@ -1,6 +1,6 @@
 /**
  * useDynamicModelRouting Hook
- * 
+ *
  * Intelligently routes to different models based on:
  * - Token budget
  * - Cost budget
@@ -9,9 +9,12 @@
  */
 
 import { useMemo, useCallback } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ModelProfile } from '../core/model-profiles'
-import { getModelProfileOrDefault, MODEL_PROFILES } from '../core/model-profiles'
+import {
+  getModelProfileOrDefault,
+  MODEL_PROFILES,
+} from '../core/model-profiles'
 import { estimateMessageTokens } from '../core/tokenizer'
 import { shouldSwitchModelSync } from '../core/strategy-router'
 
@@ -72,11 +75,17 @@ export interface UseDynamicModelRoutingReturn {
   /** Routing decision */
   routingDecision: ModelRoutingDecision
   /** Choose model based on input and context */
-  chooseModel: (input: string, contextStats?: ContextStats) => ModelRoutingDecision
+  chooseModel: (
+    input: string,
+    contextStats?: ContextStats
+  ) => ModelRoutingDecision
   /** Get all available models */
   getAvailableModels: () => ModelProfile[]
   /** Get models within cost budget */
-  getModelsWithinBudget: (costBudget: number, estimatedTokens: number) => ModelProfile[]
+  getModelsWithinBudget: (
+    costBudget: number,
+    estimatedTokens: number
+  ) => ModelProfile[]
 }
 
 /**
@@ -86,15 +95,22 @@ function estimateComplexity(input: string, messageCount: number): number {
   // Simple heuristics
   const lengthScore = Math.min(1, input.length / 1000) // Longer = more complex
   const messageScore = Math.min(1, messageCount / 20) // More messages = more complex
-  
+
   // Check for complex patterns
   const hasCode = /```[\s\S]*```/.test(input)
   const hasMultipleQuestions = (input.match(/\?/g) || []).length > 1
-  const hasLists = input.split('\n').filter((l) => /^[-*•]\s/.test(l)).length > 3
-  
-  const patternScore = (hasCode ? 0.3 : 0) + (hasMultipleQuestions ? 0.2 : 0) + (hasLists ? 0.2 : 0)
-  
-  return Math.min(1, (lengthScore * 0.3 + messageScore * 0.3 + patternScore * 0.4))
+  const hasLists =
+    input.split('\n').filter((l) => /^[-*•]\s/.test(l)).length > 3
+
+  const patternScore =
+    (hasCode ? 0.3 : 0) +
+    (hasMultipleQuestions ? 0.2 : 0) +
+    (hasLists ? 0.2 : 0)
+
+  return Math.min(
+    1,
+    lengthScore * 0.3 + messageScore * 0.3 + patternScore * 0.4
+  )
 }
 
 /**
@@ -122,9 +138,12 @@ export function useDynamicModelRouting(
       return contextStats
     }
 
-    const currentTokens = estimateMessageTokens(messages, currentModelProfile.tokenizer)
+    const currentTokens = estimateMessageTokens(
+      messages,
+      currentModelProfile.tokenizer
+    )
     const messageCount = messages.length
-    
+
     // Estimate complexity from last user message
     const lastUserMessage = messages
       .slice()
@@ -135,9 +154,9 @@ export function useDynamicModelRouting(
         ? lastUserMessage.content
         : JSON.stringify(lastUserMessage.content)
       : ''
-    
+
     const complexity = estimateComplexity(input, messageCount)
-    
+
     return {
       currentTokens,
       messageCount,
@@ -156,11 +175,14 @@ export function useDynamicModelRouting(
     )
 
     if (switchDecision.shouldSwitch && switchDecision.recommendedModel) {
-      const recommendedProfile = getModelProfileOrDefault(switchDecision.recommendedModel)
-      
+      const recommendedProfile = getModelProfileOrDefault(
+        switchDecision.recommendedModel
+      )
+
       // Calculate improvements
       const costSavings =
-        costBudget && currentModelProfile.costPer1K > recommendedProfile.costPer1K
+        costBudget &&
+        currentModelProfile.costPer1K > recommendedProfile.costPer1K
           ? ((targetTokens ?? 0) / 1000) *
             (currentModelProfile.costPer1K - recommendedProfile.costPer1K)
           : undefined
@@ -189,7 +211,10 @@ export function useDynamicModelRouting(
   }, [currentModelProfile, targetTokens, costBudget])
 
   const chooseModel = useCallback(
-    (input: string, customContextStats?: ContextStats): ModelRoutingDecision => {
+    (
+      input: string,
+      customContextStats?: ContextStats
+    ): ModelRoutingDecision => {
       const stats = customContextStats ?? computedContextStats
       const complexity = estimateComplexity(input, stats.messageCount)
 
@@ -197,17 +222,21 @@ export function useDynamicModelRouting(
       if (complexity > 0.7 && currentModelProfile.maxTokens < 100000) {
         // Find larger model
         const largerModels = Object.values(MODEL_PROFILES).filter(
-          (p) => p.maxTokens >= 100000 && p.family === currentModelProfile.family
+          (p) =>
+            p.maxTokens >= 100000 && p.family === currentModelProfile.family
         )
 
         if (largerModels.length > 0) {
-          const bestModel = largerModels.sort((a, b) => b.maxTokens - a.maxTokens)[0]
+          const bestModel = largerModels.sort(
+            (a, b) => b.maxTokens - a.maxTokens
+          )[0]
           return {
             recommendedModel: bestModel.name,
             currentModel: currentModelProfile.name,
             shouldSwitch: true,
             reasoning: `High complexity request detected. Consider ${bestModel.name} for better handling.`,
-            tokenCapacityImprovement: bestModel.maxTokens - currentModelProfile.maxTokens,
+            tokenCapacityImprovement:
+              bestModel.maxTokens - currentModelProfile.maxTokens,
           }
         }
       }
@@ -221,8 +250,12 @@ export function useDynamicModelRouting(
         )
 
         if (cheaperModels.length > 0) {
-          const cheapest = cheaperModels.sort((a, b) => a.costPer1K - b.costPer1K)[0]
-          const costSavings = (stats.currentTokens / 1000) * (currentModelProfile.costPer1K - cheapest.costPer1K)
+          const cheapest = cheaperModels.sort(
+            (a, b) => a.costPer1K - b.costPer1K
+          )[0]
+          const costSavings =
+            (stats.currentTokens / 1000) *
+            (currentModelProfile.costPer1K - cheapest.costPer1K)
 
           return {
             recommendedModel: cheapest.name,

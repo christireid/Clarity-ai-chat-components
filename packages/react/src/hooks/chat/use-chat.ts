@@ -28,7 +28,7 @@
 
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { generateId } from '@clarity-chat/primitives'
+import { generateId } from '../../internal/helpers'
 
 export interface UseChatOptions {
   initialMessages?: Message[]
@@ -94,7 +94,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
   const [messages, setMessages] = React.useState<Message[]>(initialMessages)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState<Error | null>(null)
+  const [error, setError] = React.useState<Error | undefined>(undefined)
 
   const sendMessage = React.useCallback(
     async (content: string, options?: { signal?: AbortSignal }) => {
@@ -104,7 +104,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       }
 
       setIsLoading(true)
-      setError(null)
+      setError(undefined)
 
       const userMessage: Message = {
         id: generateId(),
@@ -137,7 +137,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     async (messageId: string, options?: { signal?: AbortSignal }) => {
       const message = messages.find((m) => m.id === messageId)
       if (!message || message.role !== 'user') {
-        console.warn('[useChat] Cannot retry: message not found or not a user message')
+        console.warn(
+          '[useChat] Cannot retry: message not found or not a user message'
+        )
         return
       }
 
@@ -155,7 +157,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
   const clear = React.useCallback(() => {
     setMessages([])
-    setError(null)
+    setError(undefined)
   }, [])
 
   return {

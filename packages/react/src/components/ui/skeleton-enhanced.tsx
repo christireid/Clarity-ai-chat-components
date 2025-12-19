@@ -9,6 +9,13 @@
 import * as React from 'react'
 import { cn } from '../../utils/cn'
 
+// Duration constants (local to avoid external dependencies)
+const durations = {
+  slower: 500,
+  normal: 300,
+  faster: 150,
+}
+
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
@@ -427,6 +434,7 @@ export const EnhancedSkeleton: React.FC<SkeletonProps> = ({
         console.log(`Skeleton ${performanceId} performance:`, metrics)
       }
     }
+    return undefined
   }, [performanceId])
 
   return (
@@ -920,11 +928,13 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
 
         return () => clearInterval(interval)
       }
+      return undefined
     } else {
       setProgress(100)
       setAnnouncement(loadedMessage)
 
       setTimeout(() => setAnnouncement(''), 3000)
+      return undefined
     }
   }, [isLoading, estimatedTime, loadingMessage, loadedMessage, showProgress])
 

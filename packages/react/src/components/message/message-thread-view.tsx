@@ -10,8 +10,8 @@ import {
   Badge,
   Button,
   cn,
-  formatRelativeTime,
 } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../internal/helpers'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -252,7 +252,8 @@ export function MessageThreadView({
         {participantCount > 1 && (
           <div className="flex items-center gap-1 mt-2">
             <span className="text-xs text-muted-foreground">
-              {participantCount} {participantCount === 1 ? 'participant' : 'participants'}
+              {participantCount}{' '}
+              {participantCount === 1 ? 'participant' : 'participants'}
             </span>
             {thread.participants.slice(0, 3).map((participant) => (
               <div
@@ -275,11 +276,20 @@ export function MessageThreadView({
 
     return (
       <motion.div
-        initial={{ opacity: 0, x: layout === 'sidebar' ? 300 : 0, y: layout === 'inline' ? 20 : 0 }}
+        initial={{
+          opacity: 0,
+          x: layout === 'sidebar' ? 300 : 0,
+          y: layout === 'inline' ? 20 : 0,
+        }}
         animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, x: layout === 'sidebar' ? 300 : 0, y: layout === 'inline' ? 20 : 0 }}
+        exit={{
+          opacity: 0,
+          x: layout === 'sidebar' ? 300 : 0,
+          y: layout === 'inline' ? 20 : 0,
+        }}
         className={cn(
-          layout === 'sidebar' && 'fixed right-0 top-0 bottom-0 w-96 bg-background border-l shadow-lg z-50 flex flex-col',
+          layout === 'sidebar' &&
+            'fixed right-0 top-0 bottom-0 w-96 bg-background border-l shadow-lg z-50 flex flex-col',
           layout === 'inline' && 'mt-4 border rounded-lg bg-accent/10'
         )}
       >
@@ -300,8 +310,18 @@ export function MessageThreadView({
                 className="h-8 w-8"
                 title="Archive thread"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                  />
                 </svg>
               </Button>
               <Button
@@ -329,7 +349,9 @@ export function MessageThreadView({
           {/* Participants */}
           {participantCount > 0 && (
             <div className="flex items-center gap-2 mt-3">
-              <span className="text-xs text-muted-foreground">Participants:</span>
+              <span className="text-xs text-muted-foreground">
+                Participants:
+              </span>
               <div className="flex -space-x-2">
                 {thread.participants.map((participant) => (
                   <div
@@ -346,7 +368,12 @@ export function MessageThreadView({
         </div>
 
         {/* Thread messages */}
-        <div className={cn('flex-1 overflow-y-auto p-4 space-y-3', layout === 'inline' && 'max-h-96')}>
+        <div
+          className={cn(
+            'flex-1 overflow-y-auto p-4 space-y-3',
+            layout === 'inline' && 'max-h-96'
+          )}
+        >
           <AnimatePresence>
             {isCollapsed ? (
               <Button
@@ -355,7 +382,8 @@ export function MessageThreadView({
                 onClick={() => setIsCollapsed(false)}
                 className="w-full"
               >
-                Show {messageCount - 2} more {messageCount - 2 === 1 ? 'message' : 'messages'}
+                Show {messageCount - 2} more{' '}
+                {messageCount - 2 === 1 ? 'message' : 'messages'}
               </Button>
             ) : (
               thread.messages.map((message, index) => (
@@ -367,15 +395,20 @@ export function MessageThreadView({
                   transition={{ delay: index * 0.05 }}
                   className={cn(
                     'p-3 rounded-lg',
-                    message.role === 'user' ? 'bg-primary/10 ml-4' : 'bg-muted mr-4'
+                    message.role === 'user'
+                      ? 'bg-primary/10 ml-4'
+                      : 'bg-muted mr-4'
                   )}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-medium">
-                      {thread.participants.find(p => p.role === message.role)?.name || message.role}
+                      {thread.participants.find((p) => p.role === message.role)
+                        ?.name || message.role}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {formatRelativeTime(Date.now() - (thread.messages.length - index) * 60000)}
+                      {formatRelativeTime(
+                        Date.now() - (thread.messages.length - index) * 60000
+                      )}
                     </span>
                   </div>
                   <div className="text-sm">{message.content}</div>
@@ -436,8 +469,18 @@ export function MessageThreadView({
               onClick={handleCreateThread}
               className="mt-2 text-xs"
             >
-              <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <svg
+                className="h-4 w-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
               </svg>
               Reply in thread
             </Button>
@@ -484,7 +527,9 @@ export function ThreadList({
   const config = { ...defaultConfig, ...userConfig }
 
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [sortBy, setSortBy] = React.useState<'activity' | 'unread' | 'participants'>('activity')
+  const [sortBy, setSortBy] = React.useState<
+    'activity' | 'unread' | 'participants'
+  >('activity')
 
   // Filter and sort threads
   const processedThreads = React.useMemo(() => {
@@ -492,17 +537,17 @@ export function ThreadList({
 
     // Filter by archived status
     if (!showArchived) {
-      filtered = filtered.filter(t => !t.isArchived)
+      filtered = filtered.filter((t) => !t.isArchived)
     }
 
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(thread => {
+      filtered = filtered.filter((thread) => {
         const parentMessage = parentMessages.get(thread.parentMessageId)
         return (
           parentMessage?.content.toLowerCase().includes(query) ||
-          thread.messages.some(m => m.content.toLowerCase().includes(query))
+          thread.messages.some((m) => m.content.toLowerCase().includes(query))
         )
       })
     }
@@ -533,7 +578,8 @@ export function ThreadList({
             <div>
               <CardTitle className="text-base">Threads</CardTitle>
               <p className="text-xs text-muted-foreground mt-1">
-                {processedThreads.length} active {processedThreads.length === 1 ? 'thread' : 'threads'}
+                {processedThreads.length} active{' '}
+                {processedThreads.length === 1 ? 'thread' : 'threads'}
               </p>
             </div>
             <div className="flex gap-2">
@@ -591,8 +637,11 @@ export function ThreadList({
                           {parentMessage.content}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {thread.messages[thread.messages.length - 1]?.content.slice(0, 60)}
-                          {thread.messages[thread.messages.length - 1]?.content.length > 60 && '...'}
+                          {thread.messages[
+                            thread.messages.length - 1
+                          ]?.content.slice(0, 60)}
+                          {thread.messages[thread.messages.length - 1]?.content
+                            .length > 60 && '...'}
                         </div>
                       </div>
                       {thread.unreadCount > 0 && (

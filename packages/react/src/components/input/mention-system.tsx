@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Mentionable user

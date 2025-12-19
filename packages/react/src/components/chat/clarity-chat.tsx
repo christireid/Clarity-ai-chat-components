@@ -191,8 +191,8 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.error('Failed to send message:', error)
-          toast?.logger.error('Failed to send message. Please try again.')
+          console.error('Failed to send message:', error)
+          toast?.error('Failed to send message. Please try again.')
         }
       }
     },
@@ -272,7 +272,7 @@ export function ClarityChat({
       // Validate content - reject empty or whitespace-only
       const trimmedContent = newContent.trim()
       if (!trimmedContent) {
-        toast?.logger.error('Message cannot be empty')
+        toast?.error('Message cannot be empty')
         return
       }
 
@@ -288,7 +288,7 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          toast?.logger.error('Message not found')
+          toast?.error('Message not found')
           return
         }
 
@@ -325,8 +325,8 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.error('Failed to update message:', error)
-          toast?.logger.error('Failed to update message. Please try again.')
+          console.error('Failed to update message:', error)
+          toast?.error('Failed to update message. Please try again.')
         }
       }
     },
@@ -355,8 +355,8 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          logger.warn('Cannot regenerate: message not found')
-          toast?.logger.error('Cannot regenerate: message not found')
+          console.warn('Cannot regenerate: message not found')
+          toast?.error('Cannot regenerate: message not found')
           return
         }
 
@@ -371,8 +371,8 @@ export function ClarityChat({
         }
 
         if (userMessageIndex === -1) {
-          logger.warn('Cannot regenerate: no preceding user message found')
-          toast?.logger.error('Cannot regenerate: no previous message to resend')
+          console.warn('Cannot regenerate: no preceding user message found')
+          toast?.error('Cannot regenerate: no previous message to resend')
           return
         }
 
@@ -402,8 +402,8 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.error('Failed to regenerate message:', error)
-          toast?.logger.error('Failed to regenerate response. Please try again.')
+          console.error('Failed to regenerate message:', error)
+          toast?.error('Failed to regenerate response. Please try again.')
         }
       }
     },

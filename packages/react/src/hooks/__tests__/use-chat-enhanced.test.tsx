@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
-import { useChat } from '../use-chat-enhanced'
+import { useChat } from '../chat/use-chat-enhanced'
 
 // Mock fetch
 global.fetch = vi.fn()
@@ -32,9 +32,7 @@ describe('useChat (Enhanced)', () => {
       { role: 'assistant' as const, content: 'Hi there!' },
     ]
 
-    const { result } = renderHook(() =>
-      useChat({ initialMessages })
-    )
+    const { result } = renderHook(() => useChat({ initialMessages }))
 
     expect(result.current.messages).toHaveLength(2)
     expect(result.current.messages[0].content).toBe('Hello')
@@ -45,7 +43,9 @@ describe('useChat (Enhanced)', () => {
       ok: true,
       body: new ReadableStream({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode('data: {"content":"Hello"}\n\n'))
+          controller.enqueue(
+            new TextEncoder().encode('data: {"content":"Hello"}\n\n')
+          )
           controller.close()
         },
       }),
@@ -72,7 +72,9 @@ describe('useChat (Enhanced)', () => {
       ok: true,
       body: new ReadableStream({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode('data: {"content":"Response"}\n\n'))
+          controller.enqueue(
+            new TextEncoder().encode('data: {"content":"Response"}\n\n')
+          )
           controller.close()
         },
       }),
@@ -103,9 +105,7 @@ describe('useChat (Enhanced)', () => {
 
     const onError = vi.fn()
 
-    const { result } = renderHook(() =>
-      useChat({ api: '/api/chat', onError })
-    )
+    const { result } = renderHook(() => useChat({ api: '/api/chat', onError }))
 
     await expect(
       result.current.append({
@@ -132,7 +132,9 @@ describe('useChat (Enhanced)', () => {
       ok: true,
       body: new ReadableStream({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode('data: {"content":"Reloaded"}\n\n'))
+          controller.enqueue(
+            new TextEncoder().encode('data: {"content":"Reloaded"}\n\n')
+          )
           controller.close()
         },
       }),

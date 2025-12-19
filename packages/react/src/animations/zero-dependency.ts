@@ -163,7 +163,7 @@ export const animationClasses = {
   fadeInScale: {
     animation: `fadeInScale ${durations.normal} ${easings.easeOut} both`,
   },
-  
+
   // Slide animations
   slideInLeft: {
     animation: `slideInLeft ${durations.normal} ${easings.easeOut} both`,
@@ -171,7 +171,7 @@ export const animationClasses = {
   slideInRight: {
     animation: `slideInRight ${durations.normal} ${easings.easeOut} both`,
   },
-  
+
   // Interactive
   buttonTap: {
     animation: `buttonTap 0.2s ${easings.spring} both`,
@@ -182,7 +182,7 @@ export const animationClasses = {
   iconHover: {
     animation: `iconHover 0.2s ${easings.springBouncy} both`,
   },
-  
+
   // Effects
   pulse: {
     animation: `pulse 2s ${easings.easeInOut} infinite`,
@@ -200,7 +200,8 @@ export const animationClasses = {
     animation: `glow 1.5s ${easings.easeInOut} infinite`,
   },
   shimmer: {
-    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+    background:
+      'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
     backgroundSize: '200% 100%',
     animation: `shimmer 2s ${easings.linear} infinite`,
   },
@@ -253,10 +254,10 @@ export const createAnimation = (
  * Create transition style
  */
 export const createTransition = (
-  properties = 'all',
-  duration = durations.normal,
-  easing = easings.easeOut,
-  delay = '0s'
+  properties: string = 'all',
+  duration: string = durations.normal,
+  easing: string = easings.easeOut,
+  delay: string = '0s'
 ): React.CSSProperties => ({
   transition: `${properties} ${duration} ${easing} ${delay}`,
 })
@@ -266,10 +267,10 @@ export const createTransition = (
  */
 export const injectKeyframes = (): void => {
   if (typeof document === 'undefined') return
-  
+
   // Check if already injected
   if (document.getElementById('clarity-chat-animations')) return
-  
+
   const style = document.createElement('style')
   style.id = 'clarity-chat-animations'
   style.textContent = cssKeyframes
@@ -306,21 +307,21 @@ import { useEffect, useState } from 'react'
  */
 export const useReducedMotion = (): boolean => {
   const [reducedMotion, setReducedMotion] = useState(false)
-  
+
   useEffect(() => {
     if (typeof window === 'undefined') return
-    
+
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(mediaQuery.matches)
-    
+
     const handleChange = (event: MediaQueryListEvent) => {
       setReducedMotion(event.matches)
     }
-    
+
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
-  
+
   return reducedMotion
 }
 

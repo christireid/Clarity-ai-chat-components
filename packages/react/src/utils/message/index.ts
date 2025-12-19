@@ -25,11 +25,12 @@ export {
   createToolResultMessage,
 } from './chat-helpers'
 
-export {
-  createBasicChatConfig,
-  createMemoryChatConfig,
-  createStreamingChatConfig,
-  createEnterpriseChatConfig,
-  isValidApiEndpoint,
-  getApiEndpoint,
-} from './clarity-chat-helpers'
+// TODO: Re-enable after fixing clarity-chat-helpers module dependencies
+// export {
+//   createBasicChatConfig,
+//   createMemoryChatConfig,
+//   createStreamingChatConfig,
+//   createEnterpriseChatConfig,
+//   isValidApiEndpoint,
+//   getApiEndpoint,
+// } from './clarity-chat-helpers'

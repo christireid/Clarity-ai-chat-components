@@ -10,6 +10,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface SessionSummaryHighlights {
   title: string

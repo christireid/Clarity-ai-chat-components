@@ -1,0 +1,176 @@
+'use client'
+
+/**
+ * @clarity-chat/react - Public API
+ *
+ * This file defines the intentional public API surface for Clarity Chat.
+ * Only exports in this file are considered stable and supported.
+ *
+ * For internal utilities, import from '@clarity-chat/react/internal' (not recommended).
+ *
+ * @packageDocumentation
+ */
+
+// ============================================================================
+// CORE COMPONENTS (The essentials - what 90% of users need)
+// ============================================================================
+
+// Primary drop-in component
+export { ClarityChat } from './components/chat/clarity-chat'
+export type { ClarityChatProps } from './components/chat/clarity-chat'
+
+// Preset configurations
+export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
+
+// Recipe components for common patterns
+export {
+  ChatComplete,
+  ChatWithMemory,
+  ChatWithAnalytics,
+  ChatWithPreset,
+  type ChatCompleteProps,
+  type ChatWithMemoryProps,
+  type ChatWithAnalyticsProps,
+  type ChatWithPresetProps,
+} from './components/chat/chat-recipes'
+
+// ============================================================================
+// CORE HOOKS (Primary state management)
+// ============================================================================
+
+// The main hook - covers 80% of use cases
+export {
+  useClarityChat,
+  type UseClarityChatOptions,
+  type UseClarityChatReturn,
+} from './hooks/chat/use-clarity-chat'
+
+// Structured output hook
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/chat/use-clarity-object'
+
+// Tool integration hook
+export {
+  useClarityChatWithTools,
+  type UseClarityChatWithToolsOptions,
+  type UseClarityChatWithToolsReturn,
+} from './hooks/chat/use-clarity-chat-with-tools'
+
+// ============================================================================
+// COMPOSABLE UI COMPONENTS (For custom layouts)
+// ============================================================================
+
+export { ChatWindow } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { default as MessageList } from './components/chat/virtualized-message-list'
+export { StreamingMessage } from './components/message/streaming-message'
+export { ThinkingIndicator } from './components/message/thinking-indicator'
+export { TypingIndicator } from './components/message/typing-indicator'
+
+// ============================================================================
+// MEMORY SYSTEM
+// ============================================================================
+
+export {
+  MemoryProvider,
+  useMemoryContext,
+  type MemoryProviderProps,
+  type UseMemoryContextReturn,
+} from './memory/memory-provider'
+
+// ============================================================================
+// TOKEN OPTIMIZATION
+// ============================================================================
+
+export {
+  TokenBudgetProvider,
+  useTokenBudget,
+  type TokenBudgetContextValue,
+  type TokenBudgetProviderProps,
+} from './context/token-budget-context'
+
+// ============================================================================
+// THEME SYSTEM
+// ============================================================================
+
+export { ThemeProvider, useTheme, type ThemeProviderProps } from './theme'
+
+// ============================================================================
+// LICENSE MANAGEMENT (Re-exported from @clarity-chat/license)
+// ============================================================================
+
+export {
+  // Core license utilities
+  LicenseInfo,
+  verifyLicense,
+  isLicenseValid,
+  // React hooks
+  useLicenseStatus,
+  useIsLicensed,
+  useHasPlan,
+  useLicenseInfo,
+  // Components
+  LicenseProvider,
+  LicenseGate,
+  Watermark,
+  // HOCs
+  withLicense,
+} from '@clarity-chat/license'
+
+export type {
+  LicensePlan,
+  LicenseStatus,
+  LicenseProviderProps,
+  LicenseGateProps,
+  WatermarkProps,
+} from '@clarity-chat/license'
+
+// ============================================================================
+// ESSENTIAL TYPES
+// ============================================================================
+
+// Message types - MessageContent and MessageRole are generic types that need CoreMessage
+export type { MessageContent, MessageRole } from './types/chat-types'
+
+// Core message type from the source
+export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
+
+export type {
+  // Configuration types
+  ClarityChatWithMemoryConfig,
+  ClarityChatWithoutMemoryConfig,
+  MemoryStrategy,
+  TransportType,
+} from './types/clarity-chat-types'
+
+// ============================================================================
+// UTILITY FUNCTIONS (Commonly needed helpers)
+// ============================================================================
+
+// CSS class utility
+export { cn } from './utils/cn'
+
+// Message helpers
+export {
+  createUserMessage,
+  createAssistantMessage,
+  createSystemMessage,
+} from './utils/message/chat-helpers'
+
+// Type guards
+export {
+  isUserMessage,
+  isAssistantMessage,
+  hasTextContent,
+  extractTextContent,
+} from './types/clarity-chat-types'
+
+// ============================================================================
+// INITIALIZATION (For license setup)
+// ============================================================================
+
+export { initializeClarity } from './initialization'
+export type { InitializeClarityOptions } from './initialization'

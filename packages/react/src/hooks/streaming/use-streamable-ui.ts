@@ -131,14 +131,14 @@ export function useStreamableUI<T>(
   const [status, setStatus] = React.useState<
     'idle' | 'streaming' | 'complete' | 'error'
   >('idle')
-  const [error, setError] = React.useState<Error | null>(null)
+  const [error, setError] = React.useState<Error | undefined>(undefined)
   const latestRef = React.useRef<T | null>(null)
 
   const reset = React.useCallback(() => {
     setValues([])
     setLatest(null)
     setStatus('idle')
-    setError(null)
+    setError(undefined)
     latestRef.current = null
   }, [])
 
@@ -199,7 +199,7 @@ export function useStreamableUI<T>(
 
     const beginStreaming = () => {
       setStatus('streaming')
-      setError(null)
+      setError(undefined)
       setValues([])
       setLatest(null)
       latestRef.current = null

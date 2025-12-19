@@ -19,24 +19,25 @@ export {
   type DashboardProgressProps,
   type CircularProgressProps,
 } from './dashboard-progress'
-export {
-  AnalyticsDashboardSkeleton,
-  UsageDashboardSkeleton,
-  TokenOptimizationDashboardSkeleton,
-  PerformanceDashboardSkeleton,
-  DashboardEmptyState,
-  MetricCardSkeleton,
-  ProgressWidgetSkeleton,
-  ListItemSkeleton,
-  ChartSkeleton,
-  DashboardStateTransition,
-  useLoadingAnnouncement,
-  LoadingAnnouncer,
-  type DashboardSkeletonProps,
-  type DashboardEmptyStateProps,
-  type DashboardStateTransitionProps,
-  type LoadingAnnouncerProps,
-} from './dashboard-skeleton'
+// NOTE: Commented out due to SkeletonProps type conflict
+// export {
+//   AnalyticsDashboardSkeleton,
+//   UsageDashboardSkeleton,
+//   TokenOptimizationDashboardSkeleton,
+//   PerformanceDashboardSkeleton,
+//   DashboardEmptyState,
+//   MetricCardSkeleton,
+//   ProgressWidgetSkeleton,
+//   ListItemSkeleton,
+//   ChartSkeleton,
+//   DashboardStateTransition,
+//   useLoadingAnnouncement,
+//   LoadingAnnouncer,
+//   type DashboardSkeletonProps,
+//   type DashboardEmptyStateProps,
+//   type DashboardStateTransitionProps,
+//   type LoadingAnnouncerProps,
+// } from './dashboard-skeleton'
 export { Draggable, DropZone } from './draggable'
 export {
   EmptyState,

@@ -484,9 +484,9 @@ export const ANIMATION_PRESETS = {
   /** Quantum animations for 2025 enhancements */
   quantum: {
     initial: { opacity: 0, scale: 0.9, filter: 'blur(2px)' },
-    animate: { 
-      opacity: 1, 
-      scale: 1, 
+    animate: {
+      opacity: 1,
+      scale: 1,
       filter: 'blur(0px)',
       transition: {
         type: 'spring',
@@ -499,8 +499,8 @@ export const ANIMATION_PRESETS = {
   /** Glassmorphism entrance animation */
   glassmorphism: {
     initial: { opacity: 0, backdropFilter: 'blur(0px)' },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       backdropFilter: 'blur(16px)',
       transition: {
         duration: DURATION_SECONDS.slow,
@@ -512,8 +512,8 @@ export const ANIMATION_PRESETS = {
   /** Aurora gradient animation */
   aurora: {
     initial: { opacity: 0, backgroundPosition: '0% 50%' },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       backgroundPosition: '100% 50%',
       transition: {
         duration: DURATION_SECONDS.slowest,
@@ -526,15 +526,22 @@ export const ANIMATION_PRESETS = {
   },
   /** Neumorphism press effect */
   neumorphism: {
-    initial: { boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)' },
-    animate: { 
-      boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.1), inset -1px -1px 3px rgba(255,255,255,0.7)',
+    initial: {
+      boxShadow:
+        'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)',
+    },
+    animate: {
+      boxShadow:
+        'inset 1px 1px 3px rgba(0,0,0,0.1), inset -1px -1px 3px rgba(255,255,255,0.7)',
       transition: {
         duration: DURATION_SECONDS.fast,
         ease: EASING_FRAMER.out,
       },
     },
-    exit: { boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)' },
+    exit: {
+      boxShadow:
+        'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)',
+    },
   },
 } as const
 
@@ -617,8 +624,9 @@ export const ANIMATION_PRESETS_REDUCED = {
 
 /**
  * Z-index layers for consistent stacking context
+ * Note: Named ANIMATION_Z_INDEX to avoid conflict with internal/constants Z_INDEX
  */
-export const Z_INDEX = {
+export const ANIMATION_Z_INDEX = {
   base: 0,
   dropdown: 1000,
   sticky: 1100,

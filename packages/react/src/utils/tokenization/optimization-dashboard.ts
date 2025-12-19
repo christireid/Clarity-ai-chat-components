@@ -116,7 +116,6 @@ export interface Alert {
 
 // Real-time token optimization monitor
 export class TokenOptimizationMonitor {
-  private tokenCounter: TokenCounter
   private metrics: DashboardMetrics
   private historicalData: TimeSeriesData[]
   private modelMetrics: Map<string, ModelMetrics>
@@ -125,7 +124,6 @@ export class TokenOptimizationMonitor {
   private startTime: number
 
   constructor() {
-    this.tokenCounter = new TokenCounter()
     this.metrics = this.initializeMetrics()
     this.historicalData = []
     this.modelMetrics = new Map()
@@ -211,8 +209,8 @@ export class TokenOptimizationMonitor {
     qualityScore: number,
     latency: number
   ): Promise<void> {
-    const originalTokens = await this.tokenCounter.count(originalText)
-    const optimizedTokens = await this.tokenCounter.count(optimizedText)
+    const originalTokens = await TokenCounter.count(originalText)
+    const optimizedTokens = await TokenCounter.count(optimizedText)
     const tokensSaved = originalTokens - optimizedTokens
     const compressionRatio = optimizedTokens / originalTokens
 
@@ -692,10 +690,10 @@ SUMMARY METRICS:
 - Cost Savings: $${data.costAnalysis.totalSaved}
 
 PERFORMANCE INSIGHTS:
-${data.insights.topOptimizations.map((opt) => `- ${opt}`).join('\n')}
+${data.insights.topOptimizations.map((opt: string) => `- ${opt}`).join('\n')}
 
 RECOMMENDATIONS:
-${data.insights.recommendations.map((rec) => `- ${rec}`).join('\n')}
+${data.insights.recommendations.map((rec: string) => `- ${rec}`).join('\n')}
     `
 
     return report

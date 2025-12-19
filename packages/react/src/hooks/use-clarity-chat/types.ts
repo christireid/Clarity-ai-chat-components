@@ -158,4 +158,4 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 }
 
 // Re-export CoreMessage for convenience
-export type { CoreMessage } from '../use-chat-enhanced'
+export type { CoreMessage } from '../chat/use-chat-enhanced'

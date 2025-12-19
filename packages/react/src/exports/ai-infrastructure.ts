@@ -53,5 +53,6 @@ export * from '../document-loaders'
 export * from '../reranking'
 
 // Prompt optimization
-export * from '../prompt'
-export * from '../prompts'
+// Note: prompt and prompts modules are excluded from build due to dependency issues
+// export * from '../prompt'
+// export * from '../prompts'

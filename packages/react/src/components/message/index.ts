@@ -7,7 +7,7 @@
 
 // Core Message Components
 export { Message } from './message'
-export { default as MessageList } from './message-list'
+export { MessageList } from './message-list'
 export { MessageMetadata } from './message-metadata'
 export { MessageOptimized } from './message-optimized'
 export { MessageThreadView, ThreadList } from './message-thread-view'

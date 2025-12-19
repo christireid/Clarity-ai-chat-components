@@ -261,7 +261,7 @@ ToastContainer.displayName = 'ToastContainer'
 /**
  * Toast Context
  */
-interface ToastContextValue {
+export interface ToastContextValue {
   toasts: Toast[]
   addToast: (toast: Omit<Toast, 'id'>) => string
   removeToast: (id: string) => void
@@ -407,7 +407,7 @@ export function useToast(): ToastContextValue {
       ;(globalThis as any).__clarityChatToastProviderWarned ??= false
       if (!(globalThis as any).__clarityChatToastProviderWarned) {
         ;(globalThis as any).__clarityChatToastProviderWarned = true
-        logger.warn(
+        console.warn(
           '[Clarity Chat] ToastProvider missing; falling back to no-op toasts.'
         )
       }
@@ -455,16 +455,24 @@ export function useToast(): ToastContextValue {
 
 export const toast = {
   success: (description: string, title?: string) => {
-    logger.debug('[Toast] Success:', title, description)
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[Toast] Success:', title, description)
+    }
     // Implementation would render toast outside React tree
   },
   error: (description: string, title?: string) => {
-    logger.debug('[Toast] Error:', title, description)
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[Toast] Error:', title, description)
+    }
   },
   info: (description: string, title?: string) => {
-    logger.debug('[Toast] Info:', title, description)
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[Toast] Info:', title, description)
+    }
   },
   warning: (description: string, title?: string) => {
-    logger.debug('[Toast] Warning:', title, description)
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[Toast] Warning:', title, description)
+    }
   },
 }

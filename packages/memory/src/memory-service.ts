@@ -66,7 +66,10 @@ interface TokenAllocation {
  * Simple token compressor interface for memory compression
  */
 interface MemoryCompressorAdapter {
-  compressMemory(memory: MemoryItem, ratio: number): {
+  compressMemory(
+    memory: MemoryItem,
+    ratio: number
+  ): {
     compressed: string
     compressedTokens: number
     compressionRatio: number
@@ -86,33 +89,112 @@ interface BudgetManagerAdapter {
 interface ContextOptimizerAdapter {
   getCompressor(): MemoryCompressorAdapter
   getBudgetManager(): BudgetManagerAdapter
+  optimizeContext(options: {
+    systemPrompt: string
+    userPreferences: Record<string, unknown>
+    recentMessages: string[]
+    semanticMemories: MemoryItem[]
+    episodicMemories: MemoryItem[]
+    context?: MemoryContext
+  }): {
+    optimized: {
+      systemPrompt: string
+      userPreferences: string
+      recentContext: string
+      semanticMemory: string
+      episodicMemory: string
+    }
+    stats: {
+      totalTokens: number
+      allocation: TokenAllocation
+      compressionRatio: number
+    }
+  }
 }
 
 /**
  * Default context optimizer implementation
  */
 function createDefaultOptimizer(_config?: unknown): ContextOptimizerAdapter {
+  const defaultAllocation: TokenAllocation = {
+    semantic: 2000,
+    episodic: 1500,
+    working: 500,
+    systemPrompt: 500,
+    userPreferences: 300,
+    recentContext: 800,
+    semanticMemory: 2000,
+    episodicMemory: 1500,
+    responseReserve: 400,
+  }
+
   return {
     getCompressor: () => ({
       compressMemory: (memory: MemoryItem, ratio: number) => ({
-        compressed: memory.content.slice(0, Math.floor(memory.content.length * ratio)),
+        compressed: memory.content.slice(
+          0,
+          Math.floor(memory.content.length * ratio)
+        ),
         compressedTokens: Math.floor((memory.tokens || 100) * ratio),
         compressionRatio: ratio,
       }),
     }),
     getBudgetManager: () => ({
-      getAllocation: () => ({
-        semantic: 2000,
-        episodic: 1500,
-        working: 500,
-        systemPrompt: 500,
-        userPreferences: 300,
-        recentContext: 800,
-        semanticMemory: 2000,
-        episodicMemory: 1500,
-        responseReserve: 400,
-      }),
+      getAllocation: () => defaultAllocation,
     }),
+    optimizeContext: (options) => {
+      // Simple default implementation that truncates content to fit allocations
+      const truncate = (text: string, maxTokens: number) => {
+        // Rough estimate: ~4 chars per token
+        const maxChars = maxTokens * 4
+        return text.slice(0, maxChars)
+      }
+
+      const systemPrompt = truncate(
+        options.systemPrompt,
+        defaultAllocation.systemPrompt
+      )
+      const userPreferences = truncate(
+        JSON.stringify(options.userPreferences),
+        defaultAllocation.userPreferences
+      )
+      const recentContext = truncate(
+        options.recentMessages.join('\n'),
+        defaultAllocation.recentContext
+      )
+      const semanticMemory = truncate(
+        options.semanticMemories.map((m) => m.content).join('\n'),
+        defaultAllocation.semanticMemory
+      )
+      const episodicMemory = truncate(
+        options.episodicMemories.map((m) => m.content).join('\n'),
+        defaultAllocation.episodicMemory
+      )
+
+      const totalTokens = Math.ceil(
+        (systemPrompt.length +
+          userPreferences.length +
+          recentContext.length +
+          semanticMemory.length +
+          episodicMemory.length) /
+          4
+      )
+
+      return {
+        optimized: {
+          systemPrompt,
+          userPreferences,
+          recentContext,
+          semanticMemory,
+          episodicMemory,
+        },
+        stats: {
+          totalTokens,
+          allocation: defaultAllocation,
+          compressionRatio: 1.0,
+        },
+      }
+    },
   }
 }
 

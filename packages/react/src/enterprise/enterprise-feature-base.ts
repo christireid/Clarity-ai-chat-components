@@ -1,20 +1,100 @@
 /**
  * Enhanced Enterprise Feature Base Class
- * Integrates with existing CLI error patterns and provides comprehensive enterprise functionality
+ * Provides comprehensive enterprise functionality with browser-compatible implementations
  */
 
 import { EventEmitter } from 'events'
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs'
-import { join, dirname } from 'path'
-import { CLIError, ExitCode } from '../../../cli/src/utils/errors.js'
-import { getLogger } from '../../../cli/src/utils/logger.js'
-import { 
-  formatBytes, 
-  formatTimestamp, 
-  ensureDirectories, 
-  calculatePercentage,
-  generateUniqueFilename 
-} from '../../../primitives/src/lib/enterprise-utils.js'
+import { formatBytes, calculatePercentage } from '../internal/helpers'
+
+/**
+ * Exit codes for enterprise errors
+ */
+export enum ExitCode {
+  SUCCESS = 0,
+  GENERAL_ERROR = 1,
+  CONFIG_ERROR = 2,
+  PERMISSION_ERROR = 3,
+  NOT_FOUND = 4,
+  VALIDATION_ERROR = 5,
+}
+
+/**
+ * Enterprise CLI error class
+ */
+export class CLIError extends Error {
+  code: ExitCode
+  suggestions: string[]
+
+  constructor(
+    message: string,
+    code: ExitCode = ExitCode.GENERAL_ERROR,
+    suggestions: string[] = []
+  ) {
+    super(message)
+    this.name = 'CLIError'
+    this.code = code
+    this.suggestions = suggestions
+  }
+}
+
+/**
+ * Simple logger implementation for enterprise features
+ */
+interface Logger {
+  debug: (message: string, ...args: unknown[]) => void
+  info: (message: string, ...args: unknown[]) => void
+  warn: (message: string, ...args: unknown[]) => void
+  error: (message: string, ...args: unknown[]) => void
+  setLevel: (level: 'debug' | 'info' | 'warn' | 'error') => void
+}
+
+function createLogger(namespace: string): Logger {
+  let currentLevel: 'debug' | 'info' | 'warn' | 'error' = 'info'
+  const levels = { debug: 0, info: 1, warn: 2, error: 3 }
+
+  const shouldLog = (level: keyof typeof levels): boolean => {
+    return levels[level] >= levels[currentLevel]
+  }
+
+  return {
+    debug: (message: string, ...args: unknown[]) => {
+      if (shouldLog('debug'))
+        console.debug(`[${namespace}] ${message}`, ...args)
+    },
+    info: (message: string, ...args: unknown[]) => {
+      if (shouldLog('info')) console.info(`[${namespace}] ${message}`, ...args)
+    },
+    warn: (message: string, ...args: unknown[]) => {
+      if (shouldLog('warn')) console.warn(`[${namespace}] ${message}`, ...args)
+    },
+    error: (message: string, ...args: unknown[]) => {
+      if (shouldLog('error'))
+        console.error(`[${namespace}] ${message}`, ...args)
+    },
+    setLevel: (level: 'debug' | 'info' | 'warn' | 'error') => {
+      currentLevel = level
+    },
+  }
+}
+
+/**
+ * Generate unique filename with timestamp
+ */
+function generateUniqueFilename(
+  prefix: string,
+  extension: string = 'json'
+): string {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  return `${prefix}-${timestamp}.${extension}`
+}
+
+/**
+ * Ensure directories exist (stub for browser compatibility)
+ */
+function ensureDirectories(_directories: string[]): void {
+  // In browser context, this is a no-op
+  // In Node.js context, this would create directories
+}
 
 /**
  * Enhanced base enterprise configuration
@@ -47,33 +127,37 @@ export interface EnterpriseProcessingResult<TData = any> {
 /**
  * Enhanced enterprise feature base class
  */
-export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnterpriseConfig, TInput, TOutput> 
-  extends EventEmitter 
-  implements EnterpriseFeatureInterface<TConfig, TInput, TOutput> {
-  
+export abstract class EnhancedEnterpriseFeature<
+  TConfig extends EnhancedBaseEnterpriseConfig,
+  TInput,
+  TOutput,
+>
+  extends EventEmitter
+  implements EnterpriseFeatureInterface<TConfig, TInput, TOutput>
+{
   protected config: TConfig
-  protected logger: ReturnType<typeof getLogger>
+  protected logger: Logger
   protected metrics: Map<string, any[]> = new Map()
   protected maxMetricsHistory = 100
   protected startTime: Date | null = null
 
   constructor(config: Partial<TConfig> = {}, namespace: string) {
     super()
-    
+
     // Initialize with enhanced default config
     this.config = this.mergeWithDefaults(config)
-    
+
     // Initialize logger with configured level
-    this.logger = getLogger(namespace)
+    this.logger = createLogger(namespace)
     this.logger.setLevel(this.config.logLevel)
-    
+
     // Setup feature
     this.setupFeature()
-    
-    this.logger.info('Enhanced enterprise feature initialized', { 
-      namespace, 
+
+    this.logger.info('Enhanced enterprise feature initialized', {
+      namespace,
       enabled: this.config.enabled,
-      outputDir: this.config.outputDir 
+      outputDir: this.config.outputDir,
     })
   }
 
@@ -98,7 +182,7 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
       generateReports: true,
       includeGzip: true,
       generateTrends: true,
-      logLevel: 'info'
+      logLevel: 'info',
     }
   }
 
@@ -109,20 +193,24 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     try {
       // Ensure directories exist
       this.ensureDirectories()
-      
+
       // Setup event handlers
       this.setupEventHandlers()
-      
+
       // Validate configuration
       this.validateConfig()
-      
+
       this.logger.debug('Feature setup completed')
     } catch (error) {
       this.logger.error('Feature setup failed', error)
       throw new CLIError(
         `Failed to setup enterprise feature: ${error instanceof Error ? error.message : String(error)}`,
         ExitCode.CONFIG_ERROR,
-        ['Check configuration values', 'Ensure output directory is writable', 'Verify dependencies are installed']
+        [
+          'Check configuration values',
+          'Ensure output directory is writable',
+          'Verify dependencies are installed',
+        ]
       )
     }
   }
@@ -154,16 +242,17 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
    */
   protected ensureDirectories(): void {
     if (!this.config.outputDir) return
-    
+
     const directories = [this.config.outputDir]
-    
+
     // Add format-specific directories
-    this.config.formats.forEach(format => {
-      if (format !== 'json') { // JSON goes to main output dir
+    this.config.formats.forEach((format) => {
+      if (format !== 'json') {
+        // JSON goes to main output dir
         directories.push(join(this.config.outputDir, format))
       }
     })
-    
+
     try {
       ensureDirectories(directories)
       this.logger.debug('Directories ensured', { directories })
@@ -171,7 +260,11 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
       throw new CLIError(
         `Failed to create directories: ${error instanceof Error ? error.message : String(error)}`,
         ExitCode.PERMISSION_ERROR,
-        ['Check directory permissions', 'Ensure parent directories exist', 'Verify disk space']
+        [
+          'Check directory permissions',
+          'Ensure parent directories exist',
+          'Verify disk space',
+        ]
       )
     }
   }
@@ -187,10 +280,13 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     })
 
     // Threshold handling
-    this.on('threshold-exceeded', (data: { metric: string; value: number; threshold: number }) => {
-      this.logger.warn('Threshold exceeded', data)
-      this.handleThresholdExceeded(data)
-    })
+    this.on(
+      'threshold-exceeded',
+      (data: { metric: string; value: number; threshold: number }) => {
+        this.logger.warn('Threshold exceeded', data)
+        this.handleThresholdExceeded(data)
+      }
+    )
 
     // Processing events
     this.on('processing-start', () => {
@@ -199,12 +295,14 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     })
 
     this.on('processing-complete', (result: EnterpriseProcessingResult) => {
-      const duration = this.startTime ? Date.now() - this.startTime.getTime() : 0
+      const duration = this.startTime
+        ? Date.now() - this.startTime.getTime()
+        : 0
       this.logger.info('Processing completed', {
         success: result.success,
         duration: `${duration}ms`,
         warnings: result.warnings.length,
-        errors: result.errors.length
+        errors: result.errors.length,
       })
       this.startTime = null
     })
@@ -226,12 +324,12 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
    */
   protected handleError(error: Error): void {
     const errorInfo = this.classifyError(error)
-    
+
     this.logger.error('Error handled', {
       message: error.message,
       type: errorInfo.type,
       severity: errorInfo.severity,
-      shouldExit: errorInfo.shouldExit
+      shouldExit: errorInfo.shouldExit,
     })
 
     if (errorInfo.shouldExit) {
@@ -251,25 +349,31 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
       return {
         type: error.constructor.name,
         severity: error.code === ExitCode.GENERAL_ERROR ? 'high' : 'medium',
-        shouldExit: true
+        shouldExit: true,
       }
     }
 
     // Configuration errors are high severity
-    if (error.message.includes('config') || error.message.includes('configuration')) {
+    if (
+      error.message.includes('config') ||
+      error.message.includes('configuration')
+    ) {
       return {
         type: 'ConfigurationError',
         severity: 'high',
-        shouldExit: true
+        shouldExit: true,
       }
     }
 
     // Processing errors are medium severity
-    if (error.message.includes('processing') || error.message.includes('process')) {
+    if (
+      error.message.includes('processing') ||
+      error.message.includes('process')
+    ) {
       return {
         type: 'ProcessingError',
         severity: 'medium',
-        shouldExit: false
+        shouldExit: false,
       }
     }
 
@@ -277,21 +381,25 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     return {
       type: 'UnknownError',
       severity: 'medium',
-      shouldExit: false
+      shouldExit: false,
     }
   }
 
   /**
    * Handle threshold exceeded events
    */
-  protected handleThresholdExceeded(data: { metric: string; value: number; threshold: number }): void {
+  protected handleThresholdExceeded(data: {
+    metric: string
+    value: number
+    threshold: number
+  }): void {
     const { metric, value, threshold } = data
-    
+
     this.logger.warn('Threshold exceeded', {
       metric,
       value: this.formatMetricValue(metric, value),
       threshold: this.formatMetricValue(metric, threshold),
-      percentage: calculatePercentage(value, threshold)
+      percentage: calculatePercentage(value, threshold),
     })
 
     if (this.config.failOnThreshold) {
@@ -301,7 +409,7 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
         [
           `Increase the ${metric} threshold`,
           'Review the current configuration',
-          'Check if the threshold is appropriate for your use case'
+          'Check if the threshold is appropriate for your use case',
         ]
       )
     }
@@ -312,33 +420,37 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
    */
   protected formatMetricValue(metric: string, value: number): string {
     const lowerMetric = metric.toLowerCase()
-    
+
     if (lowerMetric.includes('size') || lowerMetric.includes('bytes')) {
       return formatBytes(value)
     }
-    
+
     if (lowerMetric.includes('time') || lowerMetric.includes('duration')) {
       return `${value}ms`
     }
-    
+
     if (lowerMetric.includes('percentage') || lowerMetric.includes('pct')) {
       return `${value.toFixed(1)}%`
     }
-    
+
     return value.toString()
   }
 
   /**
    * Check thresholds with enhanced error handling
    */
-  protected checkThresholds(metric: string, value: number, threshold?: number): void {
+  protected checkThresholds(
+    metric: string,
+    value: number,
+    threshold?: number
+  ): void {
     try {
       const actualThreshold = threshold ?? this.config.thresholds[metric]
       if (actualThreshold !== undefined && value > actualThreshold) {
         this.emit('threshold-exceeded', {
           metric,
           value,
-          threshold: actualThreshold
+          threshold: actualThreshold,
         })
       }
     } catch (error) {
@@ -355,19 +467,22 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
       if (!this.metrics.has(metricName)) {
         this.metrics.set(metricName, [])
       }
-      
+
       const metricHistory = this.metrics.get(metricName)!
-      
+
       metricHistory.push({
         ...metricData,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
-      
+
       // Keep only recent metrics
       if (metricHistory.length > this.maxMetricsHistory) {
-        this.metrics.set(metricName, metricHistory.slice(-this.maxMetricsHistory))
+        this.metrics.set(
+          metricName,
+          metricHistory.slice(-this.maxMetricsHistory)
+        )
       }
-      
+
       this.emit('metrics-updated', { metricName, metricData })
     } catch (error) {
       this.logger.error('Error updating metrics', error)
@@ -381,11 +496,11 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     if (metricName) {
       return [...(this.metrics.get(metricName) || [])]
     }
-    
+
     // Return all metrics flattened
     const allMetrics: any[] = []
     for (const [name, history] of this.metrics.entries()) {
-      allMetrics.push(...history.map(m => ({ ...m, metricName: name })))
+      allMetrics.push(...history.map((m) => ({ ...m, metricName: name })))
     }
     return allMetrics
   }
@@ -403,21 +518,21 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
   updateConfig(newConfig: Partial<TConfig>): void {
     try {
       const oldConfig = { ...this.config }
-      
+
       // Validate new config before applying
       this.validatePartialConfig(newConfig)
-      
+
       this.config = { ...this.config, ...newConfig }
-      
+
       this.emit('config-updated', {
         oldConfig,
         newConfig: this.config,
-        changes: Object.keys(newConfig)
-      })
-      
-      this.logger.info('Configuration updated successfully', { 
         changes: Object.keys(newConfig),
-        logLevel: this.config.logLevel 
+      })
+
+      this.logger.info('Configuration updated successfully', {
+        changes: Object.keys(newConfig),
+        logLevel: this.config.logLevel,
       })
     } catch (error) {
       this.logger.error('Configuration update failed', error)
@@ -427,7 +542,7 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
         [
           'Check configuration values are valid',
           'Ensure all required fields are provided',
-          'Review configuration schema'
+          'Review configuration schema',
         ]
       )
     }
@@ -438,15 +553,21 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
    */
   protected validatePartialConfig(partialConfig: Partial<TConfig>): void {
     // Basic validation - subclasses can override for specific validation
-    if (partialConfig.thresholds && typeof partialConfig.thresholds !== 'object') {
+    if (
+      partialConfig.thresholds &&
+      typeof partialConfig.thresholds !== 'object'
+    ) {
       throw new Error('thresholds must be an object')
     }
-    
+
     if (partialConfig.formats && !Array.isArray(partialConfig.formats)) {
       throw new Error('formats must be an array')
     }
-    
-    if (partialConfig.logLevel && !['debug', 'info', 'warn', 'error'].includes(partialConfig.logLevel)) {
+
+    if (
+      partialConfig.logLevel &&
+      !['debug', 'info', 'warn', 'error'].includes(partialConfig.logLevel)
+    ) {
       throw new Error('logLevel must be one of: debug, info, warn, error')
     }
   }
@@ -486,85 +607,68 @@ export abstract class EnhancedEnterpriseFeature<TConfig extends EnhancedBaseEnte
     uptime: number | null
   } {
     const uptime = this.startTime ? Date.now() - this.startTime.getTime() : null
-    
+
     return {
       enabled: this.config.enabled,
       config: this.getConfig(),
       metricsCount: this.getMetrics().length,
-      uptime
+      uptime,
     }
   }
 
   /**
    * Generate unique filename for reports
    */
-  protected generateReportFilename(prefix: string, extension: string = 'json'): string {
+  protected generateReportFilename(
+    prefix: string,
+    extension: string = 'json'
+  ): string {
     return generateUniqueFilename(`${prefix}-report`, extension)
   }
 
   /**
-   * Save report to file
+   * Save report (browser-compatible stub - stores in memory)
+   * In a real implementation, this could use IndexedDB or localStorage
    */
-  protected saveReport(filename: string, data: any, format: 'json' | 'html' = 'json'): string {
-    const filepath = join(this.config.outputDir, filename)
-    
+  protected reportStorage: Map<string, { data: unknown; format: string }> =
+    new Map()
+
+  protected saveReport(
+    filename: string,
+    data: unknown,
+    format: 'json' | 'html' = 'json'
+  ): string {
     try {
-      // Ensure directory exists
-      const dir = dirname(filepath)
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true })
-      }
-      
-      // Save based on format
-      if (format === 'json') {
-        writeFileSync(filepath, JSON.stringify(data, null, 2))
-      } else {
-        writeFileSync(filepath, data)
-      }
-      
+      const filepath = `${this.config.outputDir}/${filename}`
+      this.reportStorage.set(filepath, { data, format })
       this.logger.info('Report saved', { filepath, format })
       return filepath
     } catch (error) {
       throw new CLIError(
         `Failed to save report: ${error instanceof Error ? error.message : String(error)}`,
         ExitCode.PERMISSION_ERROR,
-        [
-          'Check file permissions',
-          'Ensure disk space is available',
-          'Verify output directory exists'
-        ]
+        ['Check storage availability', 'Ensure quota is not exceeded']
       )
     }
   }
 
   /**
-   * Load report from file
+   * Load report (browser-compatible stub - loads from memory)
    */
-  protected loadReport(filename: string): any {
-    const filepath = join(this.config.outputDir, filename)
-    
+  protected loadReport(filename: string): unknown {
+    const filepath = `${this.config.outputDir}/${filename}`
+
     try {
-      if (!existsSync(filepath)) {
+      const stored = this.reportStorage.get(filepath)
+      if (!stored) {
         throw new Error(`Report file not found: ${filepath}`)
       }
-      
-      const content = readFileSync(filepath, 'utf-8')
-      
-      // Try to parse as JSON
-      try {
-        return JSON.parse(content)
-      } catch {
-        return content // Return as string if not valid JSON
-      }
+      return stored.data
     } catch (error) {
       throw new CLIError(
         `Failed to load report: ${error instanceof Error ? error.message : String(error)}`,
         ExitCode.NOT_FOUND,
-        [
-          'Check if the file exists',
-          'Verify file permissions',
-          'Ensure the file is not corrupted'
-        ]
+        ['Check if the report was saved', 'Verify the filename is correct']
       )
     }
   }

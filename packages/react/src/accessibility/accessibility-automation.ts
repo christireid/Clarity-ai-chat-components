@@ -112,11 +112,17 @@ export interface KeyboardHandlerConfig {
 const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
   button: {
     role: 'button',
-    ariaAttributes: ['aria-label', 'aria-describedby', 'aria-expanded', 'aria-haspopup', 'aria-pressed'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-describedby',
+      'aria-expanded',
+      'aria-haspopup',
+      'aria-pressed',
+    ],
     keyboardHandlers: ['Enter', 'Space'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   link: {
     role: 'link',
@@ -124,39 +130,63 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['Enter'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   input: {
     role: 'textbox',
-    ariaAttributes: ['aria-label', 'aria-describedby', 'aria-required', 'aria-invalid', 'aria-busy', 'aria-multiline'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-describedby',
+      'aria-required',
+      'aria-invalid',
+      'aria-busy',
+      'aria-multiline',
+    ],
     keyboardHandlers: ['Tab', 'Escape', 'Enter'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   checkbox: {
     role: 'checkbox',
-    ariaAttributes: ['aria-label', 'aria-describedby', 'aria-checked', 'aria-required'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-describedby',
+      'aria-checked',
+      'aria-required',
+    ],
     keyboardHandlers: ['Space', 'Enter'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   radio: {
     role: 'radio',
-    ariaAttributes: ['aria-label', 'aria-describedby', 'aria-checked', 'aria-required'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-describedby',
+      'aria-checked',
+      'aria-required',
+    ],
     keyboardHandlers: ['Space', 'Enter', 'ArrowLeft', 'ArrowRight'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   select: {
     role: 'combobox',
-    ariaAttributes: ['aria-label', 'aria-describedby', 'aria-expanded', 'aria-haspopup', 'aria-required', 'aria-activedescendant'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-describedby',
+      'aria-expanded',
+      'aria-haspopup',
+      'aria-required',
+      'aria-activedescendant',
+    ],
     keyboardHandlers: ['Space', 'Enter', 'Escape', 'ArrowUp', 'ArrowDown'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   modal: {
     role: 'dialog',
@@ -164,7 +194,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['Escape', 'Tab'],
     defaultTabIndex: -1,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   navigation: {
     role: 'navigation',
@@ -172,7 +202,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['Tab', 'ArrowLeft', 'ArrowRight'],
     defaultTabIndex: 0,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   menu: {
     role: 'menu',
@@ -180,7 +210,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   menuitem: {
     role: 'menuitem',
@@ -188,7 +218,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['Enter', 'Escape'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   heading: {
     role: 'heading',
@@ -196,7 +226,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   region: {
     role: 'region',
@@ -204,7 +234,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   status: {
     role: 'status',
@@ -212,7 +242,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   alert: {
     role: 'alert',
@@ -220,39 +250,67 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   progressbar: {
     role: 'progressbar',
-    ariaAttributes: ['aria-valuenow', 'aria-valuemin', 'aria-valuemax', 'aria-label'],
+    ariaAttributes: [
+      'aria-valuenow',
+      'aria-valuemin',
+      'aria-valuemax',
+      'aria-label',
+    ],
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   slider: {
     role: 'slider',
-    ariaAttributes: ['aria-valuenow', 'aria-valuemin', 'aria-valuemax', 'aria-label', 'aria-orientation'],
-    keyboardHandlers: ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'],
+    ariaAttributes: [
+      'aria-valuenow',
+      'aria-valuemin',
+      'aria-valuemax',
+      'aria-label',
+      'aria-orientation',
+    ],
+    keyboardHandlers: [
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End',
+    ],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   spinbutton: {
     role: 'spinbutton',
-    ariaAttributes: ['aria-valuenow', 'aria-valuemin', 'aria-valuemax', 'aria-label'],
+    ariaAttributes: [
+      'aria-valuenow',
+      'aria-valuemin',
+      'aria-valuemax',
+      'aria-label',
+    ],
     keyboardHandlers: ['ArrowUp', 'ArrowDown', 'Home', 'End'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   tab: {
     role: 'tab',
-    ariaAttributes: ['aria-label', 'aria-selected', 'aria-expanded', 'aria-controls'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-selected',
+      'aria-expanded',
+      'aria-controls',
+    ],
     keyboardHandlers: ['ArrowLeft', 'ArrowRight', 'Enter', 'Space'],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   tablist: {
     role: 'tablist',
@@ -260,7 +318,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['ArrowLeft', 'ArrowRight', 'Home', 'End'],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   tabpanel: {
     role: 'tabpanel',
@@ -268,7 +326,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   toolbar: {
     role: 'toolbar',
@@ -276,7 +334,7 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: ['ArrowLeft', 'ArrowRight', 'Tab'],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   tooltip: {
     role: 'tooltip',
@@ -284,24 +342,43 @@ const DEFAULT_COMPONENT_MAP: ComponentAccessibilityMap = {
     keyboardHandlers: [],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'content'
+    labelSource: 'content',
   },
   tree: {
     role: 'tree',
     ariaAttributes: ['aria-label', 'aria-multiselectable', 'aria-required'],
-    keyboardHandlers: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space'],
+    keyboardHandlers: [
+      'ArrowUp',
+      'ArrowDown',
+      'ArrowLeft',
+      'ArrowRight',
+      'Enter',
+      'Space',
+    ],
     defaultTabIndex: -1,
     focusable: false,
-    labelSource: 'aria-label'
+    labelSource: 'aria-label',
   },
   treeitem: {
     role: 'treeitem',
-    ariaAttributes: ['aria-label', 'aria-level', 'aria-expanded', 'aria-selected'],
-    keyboardHandlers: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space'],
+    ariaAttributes: [
+      'aria-label',
+      'aria-level',
+      'aria-expanded',
+      'aria-selected',
+    ],
+    keyboardHandlers: [
+      'ArrowUp',
+      'ArrowDown',
+      'ArrowLeft',
+      'ArrowRight',
+      'Enter',
+      'Space',
+    ],
     defaultTabIndex: 0,
     focusable: true,
-    labelSource: 'content'
-  }
+    labelSource: 'content',
+  },
 }
 
 /**
@@ -314,7 +391,7 @@ export function useAutoAccessibility(
 ): {
   accessibilityAttributes: GeneratedAccessibilityAttributes
   keyboardHandlers: KeyboardHandlerConfig
-  accessibilityReport: AccessibilityReport
+  accessibilityReport: AutomationAccessibilityReport
 } {
   const {
     componentType,
@@ -339,7 +416,7 @@ export function useAutoAccessibility(
     busy,
     live,
     atomic,
-    relevant
+    relevant,
   } = options
 
   const {
@@ -348,10 +425,12 @@ export function useAutoAccessibility(
     validateOnMount = true,
     announceChanges = true,
     keyboardNavigation = true,
-    focusManagement = true
+    focusManagement = true,
   } = config
 
-  const componentId = useRef<string>(`component-${Math.random().toString(36).substring(2, 9)}`)
+  const componentId = useRef<string>(
+    `component-${Math.random().toString(36).substring(2, 9)}`
+  )
   const [isValid, setIsValid] = useState<boolean>(true)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
 
@@ -411,7 +490,12 @@ export function useAutoAccessibility(
     }
 
     // Tab index
-    attributes.tabIndex = tabIndex !== undefined ? tabIndex : (disabled ? -1 : componentConfig.defaultTabIndex)
+    attributes.tabIndex =
+      tabIndex !== undefined
+        ? tabIndex
+        : disabled
+          ? -1
+          : componentConfig.defaultTabIndex
 
     // ID for reference
     if (autoGenerateIds) {
@@ -424,7 +508,33 @@ export function useAutoAccessibility(
     }
 
     return attributes
-  }, [componentType, content, ariaLabel, ariaLabelledBy, ariaDescribedBy, role, tabIndex, disabled, expanded, selected, checked, hasPopup, level, value, min, max, step, required, invalid, busy, live, atomic, relevant, componentMap, autoGenerateIds])
+  }, [
+    componentType,
+    content,
+    ariaLabel,
+    ariaLabelledBy,
+    ariaDescribedBy,
+    role,
+    tabIndex,
+    disabled,
+    expanded,
+    selected,
+    checked,
+    hasPopup,
+    level,
+    value,
+    min,
+    max,
+    step,
+    required,
+    invalid,
+    busy,
+    live,
+    atomic,
+    relevant,
+    componentMap,
+    autoGenerateIds,
+  ])
 
   // Generate keyboard handlers
   const keyboardHandlers = useMemo(() => {
@@ -552,11 +662,11 @@ export function useAutoAccessibility(
 
   // Validate accessibility
   const accessibilityReport = useMemo(() => {
-    const report: AccessibilityReport = {
+    const report: AutomationAccessibilityReport = {
       isValid: true,
       warnings: [],
       errors: [],
-      suggestions: []
+      suggestions: [],
     }
 
     const componentConfig = componentMap[componentType]
@@ -568,22 +678,37 @@ export function useAutoAccessibility(
     }
 
     // Check for required attributes
-    if (componentConfig.labelSource === 'aria-label' && !ariaLabel && !ariaLabelledBy) {
-      report.warnings.push('Component should have aria-label or aria-labelledby')
+    if (
+      componentConfig.labelSource === 'aria-label' &&
+      !ariaLabel &&
+      !ariaLabelledBy
+    ) {
+      report.warnings.push(
+        'Component should have aria-label or aria-labelledby'
+      )
     }
 
-    if (componentConfig.labelSource === 'content' && !content && !ariaLabel && !ariaLabelledBy) {
+    if (
+      componentConfig.labelSource === 'content' &&
+      !content &&
+      !ariaLabel &&
+      !ariaLabelledBy
+    ) {
       report.warnings.push('Component should have content for labeling')
     }
 
     // Check for interactive elements without proper keyboard support
     if (componentConfig.keyboardHandlers.length > 0 && !keyboardNavigation) {
-      report.suggestions.push('Consider enabling keyboard navigation for better accessibility')
+      report.suggestions.push(
+        'Consider enabling keyboard navigation for better accessibility'
+      )
     }
 
     // Check for focus management
     if (componentConfig.focusable && !focusManagement) {
-      report.suggestions.push('Consider enabling focus management for interactive elements')
+      report.suggestions.push(
+        'Consider enabling focus management for interactive elements'
+      )
     }
 
     // Check for live regions
@@ -594,7 +719,16 @@ export function useAutoAccessibility(
     }
 
     return report
-  }, [componentType, content, ariaLabel, ariaLabelledBy, componentMap, keyboardNavigation, focusManagement, live])
+  }, [
+    componentType,
+    content,
+    ariaLabel,
+    ariaLabelledBy,
+    componentMap,
+    keyboardNavigation,
+    focusManagement,
+    live,
+  ])
 
   // Validate on mount if requested
   useEffect(() => {
@@ -607,14 +741,14 @@ export function useAutoAccessibility(
   return {
     accessibilityAttributes,
     keyboardHandlers,
-    accessibilityReport
+    accessibilityReport,
   }
 }
 
 /**
  * Accessibility report
  */
-export interface AccessibilityReport {
+export interface AutomationAccessibilityReport {
   isValid: boolean
   warnings: string[]
   errors: string[]
@@ -628,12 +762,12 @@ export function validateAccessibility(
   element: HTMLElement,
   componentType: string,
   config: Partial<AccessibilityConfig> = {}
-): AccessibilityReport {
-  const report: AccessibilityReport = {
+): AutomationAccessibilityReport {
+  const report: AutomationAccessibilityReport = {
     isValid: true,
     warnings: [],
     errors: [],
-    suggestions: []
+    suggestions: [],
   }
 
   const componentMap = config.componentMap || DEFAULT_COMPONENT_MAP
@@ -656,11 +790,20 @@ export function validateAccessibility(
   const hasAriaLabelledBy = element.hasAttribute('aria-labelledby')
   const hasContent = element.textContent?.trim().length > 0
 
-  if (componentConfig.labelSource === 'aria-label' && !hasAriaLabel && !hasAriaLabelledBy) {
+  if (
+    componentConfig.labelSource === 'aria-label' &&
+    !hasAriaLabel &&
+    !hasAriaLabelledBy
+  ) {
     report.warnings.push('Component should have aria-label or aria-labelledby')
   }
 
-  if (componentConfig.labelSource === 'content' && !hasContent && !hasAriaLabel && !hasAriaLabelledBy) {
+  if (
+    componentConfig.labelSource === 'content' &&
+    !hasContent &&
+    !hasAriaLabel &&
+    !hasAriaLabelledBy
+  ) {
     report.warnings.push('Component should have content for labeling')
   }
 
@@ -696,7 +839,7 @@ export function useAccessibilityAnnouncement(
     announcement.style.width = '1px'
     announcement.style.height = '1px'
     announcement.style.overflow = 'hidden'
-    
+
     document.body.appendChild(announcement)
     announcement.textContent = message
 
@@ -712,9 +855,7 @@ export function useAccessibilityAnnouncement(
 /**
  * Focus management hook
  */
-export function useFocusManagement(
-  isEnabled: boolean = true
-): {
+export function useFocusManagement(isEnabled: boolean = true): {
   focusNext: () => void
   focusPrevious: () => void
   focusFirst: () => void
@@ -725,11 +866,13 @@ export function useFocusManagement(
     const focusableElements = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement as Element)
+    const currentIndex = Array.from(focusableElements).indexOf(
+      document.activeElement as Element
+    )
     const nextIndex = (currentIndex + 1) % focusableElements.length
-    
+
     if (focusableElements[nextIndex] instanceof HTMLElement) {
-      (focusableElements[nextIndex] as HTMLElement).focus()
+      ;(focusableElements[nextIndex] as HTMLElement).focus()
     }
   }, [])
 
@@ -737,11 +880,14 @@ export function useFocusManagement(
     const focusableElements = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement as Element)
-    const previousIndex = currentIndex === 0 ? focusableElements.length - 1 : currentIndex - 1
-    
+    const currentIndex = Array.from(focusableElements).indexOf(
+      document.activeElement as Element
+    )
+    const previousIndex =
+      currentIndex === 0 ? focusableElements.length - 1 : currentIndex - 1
+
     if (focusableElements[previousIndex] instanceof HTMLElement) {
-      (focusableElements[previousIndex] as HTMLElement).focus()
+      ;(focusableElements[previousIndex] as HTMLElement).focus()
     }
   }, [])
 
@@ -749,7 +895,7 @@ export function useFocusManagement(
     const focusableElements = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    
+
     if (focusableElements[0] instanceof HTMLElement) {
       focusableElements[0].focus()
     }
@@ -759,9 +905,11 @@ export function useFocusManagement(
     const focusableElements = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    
+
     if (focusableElements.length > 0) {
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement
       lastElement?.focus()
     }
   }, [])
@@ -770,9 +918,11 @@ export function useFocusManagement(
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    
+
     const firstElement = focusableElements[0] as HTMLElement
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
@@ -791,7 +941,7 @@ export function useFocusManagement(
     }
 
     container.addEventListener('keydown', handleKeyDown)
-    
+
     return () => {
       container.removeEventListener('keydown', handleKeyDown)
     }
@@ -802,6 +952,6 @@ export function useFocusManagement(
     focusPrevious: isEnabled ? focusPrevious : () => {},
     focusFirst: isEnabled ? focusFirst : () => {},
     focusLast: isEnabled ? focusLast : () => {},
-    trapFocus: isEnabled ? trapFocus : () => () => {}
+    trapFocus: isEnabled ? trapFocus : () => () => {},
   }
 }

@@ -503,7 +503,7 @@ export function useTokenOptimizationEnhanced(
   const presetConfig = getPresetConfig(options.preset)
 
   const {
-    model = 'gpt-4',
+    model = 'gpt-4o',
     enableToon = presetConfig.enableToon ?? true,
     toonMinSavings = 20,
     enableAccurateTokenization = true,

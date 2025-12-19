@@ -43,4 +43,5 @@ export {
 } from './use-chat-keyboard-navigation'
 
 export * from './use-command-palette'
-export * from './use-command-palette-commands'
+// NOTE: Commented out due to missing dependencies
+// export * from './use-command-palette-commands'

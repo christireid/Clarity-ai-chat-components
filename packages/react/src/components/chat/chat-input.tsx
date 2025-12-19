@@ -152,7 +152,7 @@ export function ChatInput({
   // Development-only runtime validation (removed from production for performance)
   if (process.env.NODE_ENV === 'development') {
     if (typeof value !== 'string') {
-      logger.error(
+      console.error(
         'ChatInput: "value" prop must be a string.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
@@ -161,7 +161,7 @@ export function ChatInput({
     }
 
     if (typeof onChange !== 'function') {
-      logger.error(
+      console.error(
         'ChatInput: "onChange" prop must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
@@ -170,7 +170,7 @@ export function ChatInput({
     }
 
     if (typeof onSubmit !== 'function') {
-      logger.error(
+      console.error(
         'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
@@ -260,7 +260,7 @@ export function ChatInput({
         return
       }
       setButtonState('error')
-      logger.error('[ChatInput] Submit error:', error)
+      console.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }

@@ -11,8 +11,8 @@ import {
   Badge,
   Button,
   cn,
-  formatBytes,
 } from '@clarity-chat/primitives'
+import { formatBytes } from '../../internal/helpers'
 import { DURATION_SECONDS } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
@@ -229,7 +229,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
         }
         return undefined
       } catch (error) {
-        logger.warn('Failed to collect Web Vitals:', error)
+        console.warn('Failed to collect Web Vitals:', error)
         return undefined
       }
     }
@@ -309,7 +309,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
  *   showMemoryUsage
  *   showFPS
  *   onDataUpdate={(data) => {
- *     logger.debug('Performance:', data)
+ *     console.debug('Performance:', data)
  *   }}
  * />
  * ```

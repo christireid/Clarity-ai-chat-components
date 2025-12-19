@@ -1,6 +1,6 @@
 /**
  * usePromptDebugger Hook
- * 
+ *
  * Dev tool hook that provides:
  * - Step-by-step optimization history
  * - Before/after token counts per stage
@@ -10,7 +10,7 @@
  */
 
 import { useMemo } from 'react'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { OptimizationStage, OptimizationDiagnostics } from '../core'
 import type { ModelRoutingDecision } from './use-dynamic-model-routing'
 
@@ -210,7 +210,9 @@ export function usePromptDebugger(
             : JSON.stringify(beforeMsg.content)
           : ''
         const after =
-          typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+          typeof msg.content === 'string'
+            ? msg.content
+            : JSON.stringify(msg.content)
 
         transformations.push({
           type: 'style',

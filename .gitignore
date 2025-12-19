@@ -171,3 +171,6 @@ archive/documentation-overhaul/
 # Environment files
 *.env
 *.env.*
+
+# Build reports
+build-report.json

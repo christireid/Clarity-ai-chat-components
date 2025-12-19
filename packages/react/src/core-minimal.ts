@@ -19,12 +19,7 @@ export { useChat } from './hooks/chat/use-chat'
 export { useAutoScroll } from './hooks/ui/use-auto-scroll'
 
 // Essential Types
-export type {
-  Message as MessageType,
-  ChatConfig,
-  ChatOptions,
-  ChatResponse,
-} from '@clarity-chat/types'
+export type { Message as MessageType } from '@clarity-chat/types'
 
 // Lazy Loading Utilities for Enterprise Features
 export const lazyLoadRAG = () =>
@@ -37,25 +32,21 @@ export const lazyLoadAnalytics = () =>
   import('./analytics').then((m) => ({
     AnalyticsProvider: m.AnalyticsProvider,
     useAnalytics: m.useAnalytics,
-    useTrackEvent: m.useTrackEvent,
   }))
 
 export const lazyLoadTokenOptimization = () =>
   import('./memory/token-optimizer').then((m) => ({
-    TokenOptimizer: m.TokenOptimizer,
-    useTokenOptimization: m.useTokenOptimization,
+    TokenCounter: m.TokenCounter,
+    ContextOptimizer: m.ContextOptimizer,
   }))
 
 export const lazyLoadVectorStores = () =>
   import('./vector-stores').then((m) => ({
     useVectorStore: m.useVectorStore,
-    PineconeStore: m.PineconeStore,
-    QdrantStore: m.QdrantStore,
   }))
 
 export const lazyLoadAgents = () =>
   import('./agents').then((m) => ({
-    useAgentOrchestration: m.useAgentOrchestration,
     ReactAgent: m.ReactAgent,
   }))
 
@@ -63,7 +54,7 @@ export const lazyLoadMemory = () =>
   import('./memory').then((m) => ({
     MemoryProvider: m.MemoryProvider,
     useMemory: m.useMemory,
-    useMemoryService: m.useMemoryService,
+    MemoryService: m.MemoryService,
   }))
 
 /**

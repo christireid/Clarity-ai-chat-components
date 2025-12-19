@@ -31,6 +31,8 @@ export type ContextType =
   | 'technical' // Technical documentation
   | 'creative' // Creative writing
   | 'analytical' // Analysis/reports
+  | 'general' // General purpose
+  | 'academic' // Academic content
 
 // Optimization strategies based on model and context
 export type OptimizationStrategy =
@@ -103,12 +105,10 @@ export interface HistoricalData {
 
 // Dynamic optimizer that adapts based on model and context
 export class DynamicOptimizer {
-  private tokenCounter: TokenCounter
   private historicalData: HistoricalData[]
   private modelRegistry: Map<string, ModelContext>
 
   constructor() {
-    this.tokenCounter = new TokenCounter()
     this.historicalData = []
     this.modelRegistry = new Map()
     this.initializeModelRegistry()
@@ -273,8 +273,8 @@ export class DynamicOptimizer {
     )
 
     // Calculate results
-    const originalTokens = await this.tokenCounter.count(text)
-    const optimizedTokens = await this.tokenCounter.count(optimizedText)
+    const originalTokens = await TokenCounter.count(text)
+    const optimizedTokens = await TokenCounter.count(optimizedText)
     const compressionRatio = optimizedTokens / originalTokens
     const costSavings = this.calculateCostSavings(
       originalTokens,
@@ -335,7 +335,7 @@ export class DynamicOptimizer {
     modelContext: ModelContext,
     contentContext: ContentContext
   ): Promise<any> {
-    const tokens = await this.tokenCounter.count(text)
+    const tokens = await TokenCounter.count(text)
     const words = text.split(/\s+/).length
     const sentences = text.split(/[.!?]+/).length
 
@@ -431,18 +431,11 @@ export class DynamicOptimizer {
 
     // Smart truncation
     const targetRatio = config.targetReduction || 0.2 // 80% reduction
-    const maxTokens = Math.floor(
-      (await this.tokenCounter.count(text)) * targetRatio
-    )
+    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
 
     // Use extractive summarization for aggressive reduction
     const { truncateText } = await import('./smart-truncation.js')
-    optimized = await truncateText(
-      optimized,
-      maxTokens,
-      'extractive',
-      contentContext.type
-    )
+    optimized = await truncateText(optimized, maxTokens, 'extractive')
 
     return optimized
   }
@@ -456,9 +449,7 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     const targetRatio = config.targetReduction || 0.5 // 50% reduction
-    const maxTokens = Math.floor(
-      (await this.tokenCounter.count(text)) * targetRatio
-    )
+    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
 
     // Use semantic compression for moderate reduction
     const { compressText } = await import('./text-compression.js')
@@ -546,10 +537,9 @@ export class DynamicOptimizer {
     )
 
     // If still over budget, apply gentle semantic compression
-    const currentTokens = await this.tokenCounter.count(optimized)
+    const currentTokens = await TokenCounter.count(optimized)
     const targetTokens =
-      config.budgetTokens ||
-      Math.floor((await this.tokenCounter.count(text)) * 0.8)
+      config.budgetTokens || Math.floor((await TokenCounter.count(text)) * 0.8)
 
     if (currentTokens > targetTokens) {
       const { compressText } = await import('./text-compression.js')
@@ -916,7 +906,7 @@ export async function optimizeForCost(
     throw new Error(`Unknown model: ${modelName}`)
   }
 
-  const tokens = await new TokenCounter().count(text)
+  const tokens = await TokenCounter.count(text)
   const currentCost = (tokens / 1000) * modelContext.inputTokenCost
   const targetRatio = targetCost / currentCost
 

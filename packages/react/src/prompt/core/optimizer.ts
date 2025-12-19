@@ -4,7 +4,7 @@
  * Strategies for optimizing message arrays to fit within token budgets.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { Tokenizer, ModelMetadata } from './tokenizer'
 import {
   estimateMessageTokens,
@@ -88,11 +88,13 @@ export async function optimizeMessagesForBudget(
   } = options
 
   // Resolve tokenizer
-  const tokenizer = customTokenizer ?? getTokenizerForModel(
-    typeof modelMetadata === 'string'
-      ? modelMetadata
-      : modelMetadata?.model ?? 'gpt-4'
-  )
+  const tokenizer =
+    customTokenizer ??
+    getTokenizerForModel(
+      typeof modelMetadata === 'string'
+        ? modelMetadata
+        : (modelMetadata?.model ?? 'gpt-4')
+    )
 
   const originalTokens = estimateMessageTokens(messages, tokenizer)
   const details: string[] = []
@@ -118,7 +120,7 @@ export async function optimizeMessagesForBudget(
 
   switch (strategy) {
     case 'sliding-window':
-      ({ optimizedMessages, messagesRemoved } = applySlidingWindow(
+      ;({ optimizedMessages, messagesRemoved } = applySlidingWindow(
         messages,
         targetTokens,
         tokenizer,
@@ -129,7 +131,7 @@ export async function optimizeMessagesForBudget(
 
     case 'summarize-old':
       if (summarizeFn) {
-        ({ optimizedMessages, messagesSummarized } = await applySummarization(
+        ;({ optimizedMessages, messagesSummarized } = await applySummarization(
           messages,
           targetTokens,
           tokenizer,
@@ -151,7 +153,7 @@ export async function optimizeMessagesForBudget(
       break
 
     case 'drop-low-priority':
-      ({ optimizedMessages, messagesRemoved } = applyPriorityDropping(
+      ;({ optimizedMessages, messagesRemoved } = applyPriorityDropping(
         messages,
         targetTokens,
         tokenizer,
@@ -163,7 +165,7 @@ export async function optimizeMessagesForBudget(
 
     case 'hybrid':
     default:
-      ({ optimizedMessages, messagesRemoved, messagesSummarized } =
+      ;({ optimizedMessages, messagesRemoved, messagesSummarized } =
         await applyHybridStrategy(
           messages,
           targetTokens,
@@ -319,10 +321,8 @@ function applyPriorityDropping(
 
   // Sort by priority (lower priority = drop first), but never drop system or recent
   const sortedMessages = [...messagesWithPriority].sort((a, b) => {
-    const aProtected =
-      a.message.role === 'system' || recentIndices.has(a.index)
-    const bProtected =
-      b.message.role === 'system' || recentIndices.has(b.index)
+    const aProtected = a.message.role === 'system' || recentIndices.has(a.index)
+    const bProtected = b.message.role === 'system' || recentIndices.has(b.index)
 
     if (aProtected && !bProtected) return -1
     if (!aProtected && bProtected) return 1
@@ -346,7 +346,9 @@ function applyPriorityDropping(
 
   // Restore original order
   const originalOrder = new Map(messages.map((m, i) => [m, i]))
-  result.sort((a, b) => (originalOrder.get(a) ?? 0) - (originalOrder.get(b) ?? 0))
+  result.sort(
+    (a, b) => (originalOrder.get(a) ?? 0) - (originalOrder.get(b) ?? 0)
+  )
 
   return { optimizedMessages: result, messagesRemoved }
 }

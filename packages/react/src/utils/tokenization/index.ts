@@ -219,11 +219,16 @@ export {
   countTokens,
   countConversationTokens,
   truncateToTokenBudget,
+  type ModelName,
+  type TokenCount,
 } from './accurate-counter.js'
 
 // Export validation utilities for convenience
 export { InputValidator } from './input-validator.js'
-export type { ValidationResult, InputConstraints } from './input-validator.js'
+export type {
+  ValidationResult as TokenValidationResult,
+  InputConstraints,
+} from './input-validator.js'
 
 // Export error handling utilities
 export {
@@ -246,114 +251,3 @@ export {
   useAutoTokenPerformance,
 } from './use-token-performance.js'
 export type { TokenPerformanceMetrics } from './use-token-performance.js'
-
-// Default export for easy importing
-export default {
-  // Core functionality
-  TokenCounter,
-
-  // Smart counting
-  smartCountTokens,
-  smartTokenCounter,
-
-  // Robust counting
-  countTokensRobust,
-  robustTokenCounter,
-
-  // Budget validation
-  validateTokenBudget,
-  createTokenBudget,
-  tokenBudgetValidator,
-
-  // Performance optimization
-  countTokensOptimized,
-  countTokensBatchOptimized,
-  benchmarkTokenCounter,
-  optimizedTokenCounter,
-
-  // Text compression
-  compressText,
-  compressForBudget,
-  compressForRatio,
-  compressSemanticOnly,
-  compressMultiStrategy,
-  SemanticCompressor,
-
-  // Advanced compression
-  LLMLinguaCompressor,
-  AdvancedCompressionOrchestrator,
-  compressWithLLMLingua,
-  compressWithSelectiveContext,
-  compressAdaptive,
-  compressEnsemble,
-  compressIncremental,
-  advancedCompressor,
-  compressionOrchestrator,
-  compressWithAdvanced,
-
-  // Adaptive optimization
-
-  // Intelligent caching
-  IntelligentSemanticCache,
-  MultiLevelCacheManager,
-  IntelligentTokenCache,
-  semanticCache,
-  multiLevelCache,
-  tokenCache,
-  getCachedTokenCount,
-  getCachedCompression,
-  setCachedCompression,
-  getCacheAnalytics,
-
-  // Smart truncation
-  SmartTruncator,
-  SmartSummarizer,
-  truncateText,
-  summarizeText,
-  truncateConversation,
-
-  // Dynamic optimization
-  DynamicOptimizer,
-  optimizeForModel,
-  optimizeForBudget,
-  optimizeForCost,
-
-  // Optimization middleware
-  TokenOptimizationMiddleware,
-  TokenOptimizationInterceptor,
-  TokenOptimizedAPI,
-  tokenMiddleware,
-  tokenInterceptor,
-  tokenOptimizedAPI,
-  getOptimizationMetrics,
-  getOptimizationHistory,
-  configureMiddleware,
-
-  // Response optimization
-  ResponseLengthPredictor,
-  ResponseOptimizer,
-  responseLengthPredictor,
-  responseOptimizer,
-  predictResponseLength,
-  controlResponseBudget,
-  getResponsePredictionAccuracy,
-
-  // Dashboard and monitoring
-  TokenOptimizationMonitor,
-  TokenOptimizationAnalytics,
-  createTokenMonitor,
-  createTokenAnalytics,
-
-  // Analytics
-  recordTokenUsage: recordTokenUsage,
-  getTokenAnalytics,
-  getTokenMetrics,
-  tokenAnalyticsMonitor,
-
-  // Migration
-  analyzeTokenMigration,
-  generateMigrationReport,
-  autoFixTokenMigration,
-  manualMigrateTokens,
-  tokenMigrationAssistant,
-}

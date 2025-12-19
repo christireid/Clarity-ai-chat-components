@@ -388,7 +388,7 @@ export function validateThemeWithWarnings(
   if (process.env.NODE_ENV !== 'production') {
     // Log warnings
     if (result.warnings.length > 0) {
-      logger.warn(
+      console.warn(
         '[Clarity Chat] Theme validation warnings:\n' +
           result.warnings
             .map(
@@ -400,7 +400,7 @@ export function validateThemeWithWarnings(
 
     // Log errors
     if (result.errors.length > 0) {
-      logger.logger.error(
+      console.error(
         '[Clarity Chat] Theme validation errors:\n' +
           result.errors
             .map(

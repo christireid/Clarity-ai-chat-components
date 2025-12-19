@@ -9,8 +9,8 @@
     "clarity-codemod": "./dist/cli.js"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",

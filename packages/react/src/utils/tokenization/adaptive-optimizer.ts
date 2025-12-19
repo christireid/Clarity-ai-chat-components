@@ -245,7 +245,7 @@ export class AdaptiveTokenOptimizer {
 
     return {
       optimizedText: optimizedResult.compressedText,
-      originalTokens: await this.tokenCounter.count(text),
+      originalTokens: await TokenCounter.count(text),
       optimizedTokens: optimizedResult.compressedTokens,
       reductionRatio: optimizedResult.compressionRatio,
       estimatedQuality: optimizedResult.estimatedQuality,
@@ -270,7 +270,7 @@ export class AdaptiveTokenOptimizer {
     const words = text.split(/\s+/).length
     const characters = text.length
     const tokenDensity =
-      (await this.tokenCounter.count(text)) / Math.max(characters, 1)
+      (await TokenCounter.count(text)) / Math.max(characters, 1)
 
     const domain = this.detectDomain(text)
     const complexity = this.assessComplexity(text)
@@ -436,8 +436,8 @@ export class AdaptiveTokenOptimizer {
     costSavings: number
     performanceScore: number
   }> {
-    const originalTokens = await this.tokenCounter.count(originalText)
-    const optimizedTokens = await this.tokenCounter.count(optimizedText)
+    const originalTokens = await TokenCounter.count(originalText)
+    const optimizedTokens = await TokenCounter.count(optimizedText)
 
     const inputCost = (originalTokens / 1000) * modelProfile.costPerInputToken
     const optimizedInputCost =
@@ -566,7 +566,7 @@ export class AdaptiveTokenOptimizer {
           strategy.qualityThreshold
         )
 
-        const tokens = await this.tokenCounter.count(compressedText)
+        const tokens = await TokenCounter.count(compressedText)
         const cost = (tokens / 1000) * modelProfile.costPerInputToken
 
         return {

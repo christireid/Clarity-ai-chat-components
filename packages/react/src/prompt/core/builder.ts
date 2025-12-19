@@ -5,7 +5,7 @@
  * Integrates recipes, memory, user input, and optimization.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from './toon'
 import type { PromptRecipe } from './recipe'
 import type { ModelMetadata } from './tokenizer'
@@ -13,7 +13,12 @@ import type { OptimizationStrategy, MessagePriority } from './optimizer'
 import type { ModelProfile } from './model-profiles'
 import { toonToMessages } from './toon'
 import { buildMessagesFromRecipe } from './recipe'
-import { estimateMessageTokens, getTokenizerForModel, MODEL_PRESETS, estimateCost } from './tokenizer'
+import {
+  estimateMessageTokens,
+  getTokenizerForModel,
+  MODEL_PRESETS,
+  estimateCost,
+} from './tokenizer'
 import { optimizeMessagesForBudget } from './optimizer'
 import { getModelProfileOrDefault } from './model-profiles'
 
@@ -180,7 +185,11 @@ export async function buildModelPrompt(
   if (resolvedMetadata?.inputPricePer1K) {
     // Estimate output as 30% of input for cost calculation
     const estimatedOutputTokens = Math.floor(inputTokens * 0.3)
-    costEstimate = estimateCost(inputTokens, estimatedOutputTokens, resolvedMetadata)
+    costEstimate = estimateCost(
+      inputTokens,
+      estimatedOutputTokens,
+      resolvedMetadata
+    )
   }
 
   return {
