@@ -35,6 +35,8 @@
     "src/prompts/**/*",
     "src/components/prompt/**/*",
     "src/components/TokenCountingDemo.tsx",
+    "src/components/chat/floating-chat-widget.tsx",
+    "src/components/structured-input/**/*",
     "src/utils/tokenization/**/*",
     "src/enterprise/**/*",
     "src/bundle-analyzer/**/*",

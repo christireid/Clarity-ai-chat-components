@@ -12,13 +12,13 @@ import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,
-  'onClick' | 'state'
+  'onClick' | 'state' | 'onError'
 > {
   text: string
   /** Callback fired after successful copy */
   onCopy?: () => void
   /** Callback fired when copy fails */
-  onError?: (error: Error) => void
+  onCopyError?: (error: Error) => void
   /** Show icon only (no text) */
   iconOnly?: boolean
   /** Custom copy text */
@@ -46,7 +46,7 @@ export interface CopyButtonProps extends Omit<
  * @param props - CopyButton configuration
  * @param props.text - The text to copy to clipboard (required)
  * @param props.onCopy - Callback fired after successful copy
- * @param props.onError - Callback fired when copy fails
+ * @param props.onCopyError - Callback fired when copy fails
  * @param props.iconOnly - Show only the icon, no text label (default: false)
  * @param props.copyText - Label shown in idle state (default: "Copy")
  * @param props.copiedText - Label shown after copying (default: "Copied!")
@@ -82,7 +82,7 @@ export interface CopyButtonProps extends Omit<
 export function CopyButton({
   text,
   onCopy,
-  onError,
+  onCopyError,
   iconOnly = false,
   copyText = 'Copy',
   copiedText = 'Copied!',
@@ -105,7 +105,7 @@ export function CopyButton({
       }
     },
     onError: (error) => {
-      onError?.(error)
+      onCopyError?.(error)
       if (showToast && toast) {
         toast.error(errorToastMessage)
       }
