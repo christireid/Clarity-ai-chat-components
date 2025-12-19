@@ -82,6 +82,7 @@ Three main bundle options for different needs:
 
 - [Token Optimization Guide](https://clarity-chat.dev/guides/token-optimization): Reduce API costs by up to 70%
 - [Prompt Caching Guide](https://clarity-chat.dev/guides/prompt-caching): Save 50-90% on repeated prompts with provider caching
+- [TOON Format Utilities](https://clarity-chat.dev/reference/utilities/toon-format): Token-Oriented Object Notation for 30-60% token savings on structured data (jsonToToon, toonToJson, autoOptimize)
 - [TokenOptimizationDashboard](https://clarity-chat.dev/reference/components/token-optimization-dashboard): Visual optimization controls
 - [ContextVisualizer](https://clarity-chat.dev/reference/components/context-visualizer): See what's in your context window
 
@@ -132,6 +133,7 @@ Three main bundle options for different needs:
 - [Hooks API](https://clarity-chat.dev/reference/hooks): Hook signatures and return types
 - [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
 - [createMemoryStore](https://clarity-chat.dev/reference/utilities/create-memory-store): Factory for memory stores (non-React contexts)
+- [TOON Format](https://clarity-chat.dev/reference/utilities/toon-format): JSON ↔ TOON conversion utilities for token optimization
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
 
 ## Enterprise
