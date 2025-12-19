@@ -20,6 +20,8 @@
  * ```
  */
 
+import { logger } from '@/lib/logger'
+
 export interface ChatInteractionMetrics {
   /** Length of the user's message */
   messageLength: number

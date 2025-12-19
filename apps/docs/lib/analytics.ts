@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { logger } from '@/lib/logger'
 
 interface PerformanceMetrics {
   pageLoadTime?: number

@@ -1,5 +1,6 @@
+import { getLogger } from '@/lib/logger'
 
-const logger = getLogger('secure');
+const logger = getLogger('secure')
 
 /**
  * Secure logging utility for production environments
@@ -7,25 +8,25 @@ const logger = getLogger('secure');
  */
 export class SecureLogger {
   static debug(message: string, ...args: any[]) {
-    logger.debug(message, ...args);
+    logger.debug(message, ...args)
   }
 
   static info(message: string, ...args: any[]) {
-    logger.info(message, ...args);
+    logger.info(message, ...args)
   }
 
   static warn(message: string, ...args: any[]) {
-    logger.warn(message, ...args);
+    logger.warn(message, ...args)
   }
 
   static error(message: string, ...args: any[]) {
-    logger.error(message, ...args);
+    logger.error(message, ...args)
   }
 
   static getInstance() {
-    return SecureLogger;
+    return SecureLogger
   }
 }
 
-export const loggerInstance = SecureLogger;
-export { loggerInstance as logger };
+export const loggerInstance = SecureLogger
+export { loggerInstance as logger }

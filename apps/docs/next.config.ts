@@ -25,10 +25,6 @@ const nextConfig: NextConfig = {
         loaders: ['@svgr/webpack'],
         as: '*.js',
       },
-      '*.wasm': {
-        loaders: ['@vercel/turbopack-wasm'],
-        as: '*.wasm',
-      },
     },
   },
 

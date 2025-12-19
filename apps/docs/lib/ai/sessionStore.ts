@@ -7,6 +7,7 @@
 
 import { Redis } from '@upstash/redis'
 import { v4 as uuidv4 } from 'uuid'
+import { logger } from '@/lib/logger'
 
 export interface SessionMessage {
   role: 'user' | 'assistant' | 'system'
@@ -66,7 +67,7 @@ export class RedisSessionStore implements SessionStore {
     if (!url || !token) {
       throw new Error(
         'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set. ' +
-        'Get them from https://console.upstash.com/'
+          'Get them from https://console.upstash.com/'
       )
     }
 

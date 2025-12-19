@@ -7,7 +7,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
-import { PropTable, type Prop } from '@/components/API/PropTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
 const testUtilsExports: Prop[] = [
@@ -593,12 +593,12 @@ describe('VoiceInput', () => {
                     </code>
                     :
                   </p>
-                  <PropTable props={testUtilsExports} />
+                  <PropsTable props={testUtilsExports} />
                 </div>
 
                 <div>
                   <h3 className="text-xl font-semibold mb-4">Mock Providers</h3>
-                  <PropTable props={mockProviders} />
+                  <PropsTable props={mockProviders} />
                 </div>
 
                 <div>
@@ -608,7 +608,7 @@ describe('VoiceInput', () => {
                   <p className="text-text-secondary mb-4">
                     Specialized utilities for testing chat functionality:
                   </p>
-                  <PropTable props={chatTestUtilsExports} />
+                  <PropsTable props={chatTestUtilsExports} />
                 </div>
               </div>
             </section>

@@ -9,6 +9,7 @@ import type { SearchResult } from './vectorStore'
 import { generateEmbedding } from './embeddings'
 import { getVectorStore } from './vectorStore'
 import { rerankResults } from './rag'
+import { logger } from '@/lib/logger'
 
 export interface ConversationMessage {
   role: 'user' | 'assistant'
@@ -56,15 +57,15 @@ export function isFollowUpQuestion(
 
   // Pronouns that suggest reference to previous context
   const pronouns = ['it', 'this', 'that', 'these', 'those', 'them', 'they']
-  const startsWithPronoun = pronouns.some(p =>
-    lowerQuery.startsWith(p + ' ') || lowerQuery.startsWith(p + '?')
+  const startsWithPronoun = pronouns.some(
+    (p) => lowerQuery.startsWith(p + ' ') || lowerQuery.startsWith(p + '?')
   )
 
   // Very short questions are often follow-ups
   const isVeryShort = query.split(/\s+/).length <= 3
 
   return (
-    followUpPatterns.some(pattern => pattern.test(query)) ||
+    followUpPatterns.some((pattern) => pattern.test(query)) ||
     startsWithPronoun ||
     (isVeryShort && conversationHistory.length > 0)
   )
@@ -170,8 +171,8 @@ export function enhanceQueryWithContext(
 
   // Get the last user question and assistant response
   const lastMessages = context.recentMessages.slice(-2)
-  const lastUserMessage = lastMessages.find(m => m.role === 'user')
-  const lastAssistantMessage = lastMessages.find(m => m.role === 'assistant')
+  const lastUserMessage = lastMessages.find((m) => m.role === 'user')
+  const lastAssistantMessage = lastMessages.find((m) => m.role === 'assistant')
 
   // Build enhanced query
   let enhancedQuery = query
@@ -211,37 +212,39 @@ export function rerankWithConversationContext(
 
   // Boost sources related to current topic
   if (context.currentTopic) {
-    reranked = reranked.map(result => ({
+    reranked = reranked.map((result) => ({
       ...result,
-      score: result.category === context.currentTopic
-        ? Math.min(result.score + 0.1, 1.0)
-        : result.score
+      score:
+        result.category === context.currentTopic
+          ? Math.min(result.score + 0.1, 1.0)
+          : result.score,
     }))
   }
 
   // Boost sources that were previously cited (continuation of topic)
-  const citedUrls = new Set(context.citedSources.map(s => s.url))
-  reranked = reranked.map(result => ({
+  const citedUrls = new Set(context.citedSources.map((s) => s.url))
+  reranked = reranked.map((result) => ({
     ...result,
     score: citedUrls.has(result.url)
       ? Math.min(result.score + 0.05, 1.0)
-      : result.score
+      : result.score,
   }))
 
   // De-boost exact duplicates of recently cited sources
   // (avoid repetition unless score is very high)
   const recentlyShownUrls = new Set(
     context.recentMessages
-      .flatMap(m => m.sources || [])
+      .flatMap((m) => m.sources || [])
       .slice(-5) // Last 5 sources
-      .map(s => s.url)
+      .map((s) => s.url)
   )
 
-  reranked = reranked.map(result => ({
+  reranked = reranked.map((result) => ({
     ...result,
-    score: recentlyShownUrls.has(result.url) && result.score < 0.9
-      ? result.score * 0.9 // Slight penalty for repetition
-      : result.score
+    score:
+      recentlyShownUrls.has(result.url) && result.score < 0.9
+        ? result.score * 0.9 // Slight penalty for repetition
+        : result.score,
   }))
 
   // Re-sort by adjusted scores
@@ -265,11 +268,7 @@ export async function retrieveWithContext(
   isFollowUp: boolean
   context: ConversationContext
 }> {
-  const {
-    topK = 5,
-    minScore = 0.7,
-    maxMessages = 5,
-  } = options
+  const { topK = 5, minScore = 0.7, maxMessages = 5 } = options
 
   // Build conversation context
   const context = buildConversationContext(conversationHistory, maxMessages)
@@ -294,7 +293,7 @@ export async function retrieveWithContext(
   let results = await vectorStore.search(queryEmbedding, topK * 2) // Get more for reranking
 
   // Filter by minimum score
-  results = results.filter(result => result.score >= minScore)
+  results = results.filter((result) => result.score >= minScore)
 
   // Re-rank with conversation context
   results = rerankWithConversationContext(query, results, context)
@@ -334,8 +333,10 @@ export function generateContextualSystemPrompt(
   }
 
   contextualPrompt += '\n**Important:** This is a follow-up question. '
-  contextualPrompt += 'Reference the previous conversation context when relevant. '
-  contextualPrompt += 'Use phrases like "as I mentioned earlier" or "building on that" when appropriate.\n'
+  contextualPrompt +=
+    'Reference the previous conversation context when relevant. '
+  contextualPrompt +=
+    'Use phrases like "as I mentioned earlier" or "building on that" when appropriate.\n'
 
   return contextualPrompt
 }
@@ -358,7 +359,8 @@ export function formatConversationHistory(
   for (let i = messages.length - 1; i >= 0; i--) {
     const msg = messages[i]
     const role = msg.role === 'user' ? 'User' : 'Assistant'
-    const snippet = msg.content.slice(0, 200) + (msg.content.length > 200 ? '...' : '')
+    const snippet =
+      msg.content.slice(0, 200) + (msg.content.length > 200 ? '...' : '')
     const entry = `**${role}:** ${snippet}\n\n`
 
     if (currentLength + entry.length > maxLength) {
@@ -389,9 +391,7 @@ export function detectTopicShift(
   }
 
   const context = buildConversationContext(conversationHistory)
-  const currentTopics = extractTopics([
-    { role: 'user', content: currentQuery }
-  ])
+  const currentTopics = extractTopics([{ role: 'user', content: currentQuery }])
 
   // No shift if same topic
   if (currentTopics.length > 0 && currentTopics[0] === context.currentTopic) {
@@ -399,11 +399,15 @@ export function detectTopicShift(
   }
 
   // Topic shift detected
-  if (context.currentTopic && currentTopics.length > 0 && currentTopics[0] !== context.currentTopic) {
+  if (
+    context.currentTopic &&
+    currentTopics.length > 0 &&
+    currentTopics[0] !== context.currentTopic
+  ) {
     return {
       hasShifted: true,
       previousTopic: context.currentTopic,
-      newTopic: currentTopics[0]
+      newTopic: currentTopics[0],
     }
   }
 

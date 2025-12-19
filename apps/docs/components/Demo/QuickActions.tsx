@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Copy, Check, ExternalLink, Download, Share2, Zap } from 'lucide-react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
+import { logger } from '@/lib/logger'
 
 interface QuickActionsProps {
   code: string
@@ -71,7 +72,7 @@ export function QuickActions({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className={clsx('space-y-3', className)}
     >
       <motion.div
@@ -111,7 +112,7 @@ export function QuickActions({
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0, rotate: 180 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: durations.normal }}
                 className="flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
@@ -123,7 +124,7 @@ export function QuickActions({
                 initial={{ scale: 0, rotate: 180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0, rotate: -180 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: durations.normal }}
                 className="flex items-center gap-2"
               >
                 <Copy className="w-4 h-4" />
@@ -173,7 +174,7 @@ export function QuickActions({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
+        transition={{ duration: durations.moderate, delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-2"
       >
         <motion.div
@@ -183,7 +184,9 @@ export function QuickActions({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 mb-1">Install command</p>
-              <code className="text-sm text-green-400 font-mono">{installCommand}</code>
+              <code className="text-sm text-green-400 font-mono">
+                {installCommand}
+              </code>
             </div>
             <motion.button
               onClick={handleCopyInstall}
@@ -199,7 +202,7 @@ export function QuickActions({
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: 180 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durations.normal }}
                   >
                     <Check className="w-4 h-4 text-green-400" />
                   </motion.div>
@@ -209,7 +212,7 @@ export function QuickActions({
                     initial={{ scale: 0, rotate: 180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: -180 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durations.normal }}
                   >
                     <Copy className="w-4 h-4 text-gray-400" />
                   </motion.div>
@@ -227,7 +230,9 @@ export function QuickActions({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 mb-1">Import statement</p>
-                <code className="text-sm text-blue-400 font-mono">{importStatement}</code>
+                <code className="text-sm text-blue-400 font-mono">
+                  {importStatement}
+                </code>
               </div>
               <motion.button
                 onClick={handleCopyImport}
@@ -243,7 +248,7 @@ export function QuickActions({
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     >
                       <Check className="w-4 h-4 text-green-400" />
                     </motion.div>
@@ -253,7 +258,7 @@ export function QuickActions({
                       initial={{ scale: 0, rotate: 180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: -180 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     >
                       <Copy className="w-4 h-4 text-gray-400" />
                     </motion.div>
@@ -268,7 +273,7 @@ export function QuickActions({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
+        transition={{ duration: durations.moderate, delay: 0.3 }}
         className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-gray-700"
       >
         <motion.button
