@@ -242,9 +242,8 @@ const PLUGIN_LIMITS = {
  */
 function sanitizeName(name: string): string {
   // Remove control characters and limit length
-  // eslint-disable-next-line no-control-regex
   return name
-    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/[\x00-\x1F\x7F]/g, '') // eslint-disable-line no-control-regex
     .slice(0, PLUGIN_LIMITS.maxNameLength)
     .trim()
 }

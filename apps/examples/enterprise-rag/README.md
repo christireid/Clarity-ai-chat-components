@@ -2,7 +2,9 @@
 
 **Document Q&A with Retrieval Augmented Generation**
 
-A demonstration application showcasing how to build a RAG (Retrieval Augmented Generation) system using Clarity Chat. Upload documents, ask questions, and get AI-powered answers with source citations.
+A demonstration application showcasing how to build a RAG (Retrieval Augmented Generation) system
+using Clarity Chat. Upload documents, ask questions, and get AI-powered answers with source
+citations.
 
 ## 🎯 What This Demonstrates
 
@@ -16,12 +18,14 @@ A demonstration application showcasing how to build a RAG (Retrieval Augmented G
 ## 🚀 Features
 
 ### 1. Document Management
+
 - Upload .txt, .md, .pdf files (text extraction)
 - View uploaded documents
 - Delete documents
 - Chunk documents into searchable segments
 
 ### 2. RAG Pipeline
+
 - **Chunking**: Split documents into 500-token segments
 - **Search**: Find relevant chunks based on query
 - **Context Building**: Inject top-N chunks into prompt
@@ -31,12 +35,14 @@ A demonstration application showcasing how to build a RAG (Retrieval Augmented G
 - **RLHF Feedback**: Built-in thumbs up/down for user feedback on citations
 
 ### 3. AI Integration
+
 - OpenAI (GPT-4, GPT-3.5)
 - Anthropic (Claude 3 models)
 - Google AI (Gemini Pro)
 - Real-time streaming responses
 
 ### 4. Analytics & Feedback
+
 - Tokens used per query (context + response)
 - Cost estimation
 - Response time tracking
@@ -128,7 +134,7 @@ formData.append('file', file)
 
 const response = await fetch('/api/documents', {
   method: 'POST',
-  body: formData
+  body: formData,
 })
 
 const { documentId, chunks } = await response.json()
@@ -142,11 +148,11 @@ const response = await fetch('/api/chat', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    query: "What are the main findings?",
+    query: 'What are the main findings?',
     documentIds: [documentId],
-    model: "gpt-4-turbo",
-    topK: 3  // Number of chunks to retrieve
-  })
+    model: 'gpt-4-turbo',
+    topK: 3, // Number of chunks to retrieve
+  }),
 })
 
 // Stream response
@@ -182,24 +188,28 @@ const reader = response.body.getReader()
 ## 🎨 UI Components
 
 ### Document Manager
+
 - Drag-and-drop upload
 - Document list with metadata
 - Delete confirmation
 - Upload progress indicator
 
 ### Query Interface
+
 - Question input
 - Model selector
 - Document filter (which docs to search)
 - Top-K chunks selector
 
 ### Response Display
+
 - Streaming AI response
 - Source citations (expandable)
 - Token usage stats
 - Cost breakdown
 
 ### Analytics Dashboard
+
 - Total documents uploaded
 - Total queries processed
 - Average response time
@@ -252,21 +262,21 @@ curl -X POST http://localhost:3002/api/chat \
 
 ```typescript
 // Simple overlap chunking
-const chunkSize = 500  // tokens
-const overlap = 50     // overlap between chunks
+const chunkSize = 500 // tokens
+const overlap = 50 // overlap between chunks
 
 function chunkDocument(text: string): Chunk[] {
   const tokens = tokenize(text)
   const chunks = []
-  
+
   for (let i = 0; i < tokens.length; i += chunkSize - overlap) {
     chunks.push({
       text: tokens.slice(i, i + chunkSize).join(''),
       startToken: i,
-      endToken: Math.min(i + chunkSize, tokens.length)
+      endToken: Math.min(i + chunkSize, tokens.length),
     })
   }
-  
+
   return chunks
 }
 ```
@@ -277,18 +287,18 @@ function chunkDocument(text: string): Chunk[] {
 // Keyword-based search (production would use embeddings)
 function searchChunks(query: string, chunks: Chunk[], topK: number): Chunk[] {
   const queryTerms = query.toLowerCase().split(' ')
-  
+
   // Score each chunk
-  const scored = chunks.map(chunk => ({
+  const scored = chunks.map((chunk) => ({
     chunk,
-    score: calculateScore(queryTerms, chunk.text.toLowerCase())
+    score: calculateScore(queryTerms, chunk.text.toLowerCase()),
   }))
-  
+
   // Return top K
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, topK)
-    .map(s => s.chunk)
+    .map((s) => s.chunk)
 }
 ```
 
@@ -356,31 +366,35 @@ Adjust in `src/lib/rag.ts`:
 
 ```typescript
 export const RAG_CONFIG = {
-  chunkSize: 500,        // tokens per chunk
-  overlap: 50,           // overlap between chunks
-  topK: 3,               // chunks to retrieve
+  chunkSize: 500, // tokens per chunk
+  overlap: 50, // overlap between chunks
+  topK: 3, // chunks to retrieve
   maxContextTokens: 3000, // max context size
-  temperature: 0.3,       // lower for factual responses
+  temperature: 0.3, // lower for factual responses
 }
 ```
 
 ## 🐛 Troubleshooting
 
 **Document upload fails**
+
 - Check file size limit (default: 10MB)
 - Verify file encoding (UTF-8)
 
 **No relevant chunks found**
+
 - Try different search terms
 - Check if document was properly chunked
 - Reduce topK value
 
 **Context too large error**
+
 - Reduce chunkSize or topK
 - Use smaller documents
 - Filter to specific documents
 
 **Hallucination issues**
+
 - Lower temperature (0.0-0.3)
 - Add "only answer from context" to prompt
 - Use Claude models (better at staying grounded)

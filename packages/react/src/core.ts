@@ -34,10 +34,9 @@
  *
  * @example
  * ```tsx
- * // Combine with feature-specific imports for tree-shaking
+ * // Start minimal, add features as needed from main package
  * import { ClarityChat } from '@clarity-chat/react/core'
- * import { useStreamingSSE } from '@clarity-chat/react/hooks'
- * import { TokenCounter } from '@clarity-chat/react/components'
+ * import { TokenBudgetProvider } from '@clarity-chat/react'
  * ```
  *
  * @packageDocumentation
@@ -100,19 +99,6 @@ export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
 } from './components/chat/chat-with-error-boundary'
-
-// =============================================================================
-// COMPOSED HOOKS
-// =============================================================================
-
-/**
- * Simplified chat hook for basic use cases
- */
-export {
-  useChatSimple,
-  type UseChatSimpleOptions,
-  type UseChatSimpleReturn,
-} from './hooks/chat/use-chat-simple'
 
 // =============================================================================
 // MEMORY

@@ -425,7 +425,11 @@ export default function RAGWorkbenchPage() {
                               </p>
                               <div className="flex flex-col gap-2">
                                 {message.sources.map((source, idx) => (
-                                  <Citation key={idx} source={source} index={idx + 1} />
+                                  <Citation
+                                    key={idx}
+                                    source={source}
+                                    index={idx + 1}
+                                  />
                                 ))}
                               </div>
                             </div>

@@ -28,15 +28,15 @@ export function Citation({
     source.relevanceScore > 0.8
       ? 'High'
       : source.relevanceScore > 0.5
-      ? 'Medium'
-      : 'Low'
+        ? 'Medium'
+        : 'Low'
 
   const confidenceColor =
     confidence === 'High'
       ? 'bg-green-100 text-green-700 border-green-200'
       : confidence === 'Medium'
-      ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      : 'bg-red-100 text-red-700 border-red-200'
+        ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+        : 'bg-red-100 text-red-700 border-red-200'
 
   if (compact) {
     return (
@@ -69,7 +69,10 @@ export function Citation({
           <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-xs font-medium border border-blue-100">
             {index ?? 1}
           </span>
-          <span className="font-medium text-sm text-gray-900 truncate" title={source.documentName}>
+          <span
+            className="font-medium text-sm text-gray-900 truncate"
+            title={source.documentName}
+          >
             {source.documentName}
           </span>
         </div>
@@ -82,7 +85,7 @@ export function Citation({
           {confidence}
         </span>
       </div>
-      
+
       <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
         {source.text}
       </p>
@@ -90,12 +93,14 @@ export function Citation({
       {(source.page || source.url) && (
         <div className="flex items-center gap-2 mt-1">
           {source.page && (
-            <span className="text-[10px] text-gray-400">Page {source.page}</span>
+            <span className="text-[10px] text-gray-400">
+              Page {source.page}
+            </span>
           )}
           {source.url && (
-            <a 
+            <a
               href={source.url}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
               className="text-[10px] text-blue-500 hover:underline flex items-center gap-1"
             >

@@ -69,7 +69,11 @@ export {
 // ============================================================================
 // AI COMPONENTS (Citations, Suggestions, etc.)
 // ============================================================================
-export { Citation, type CitationProps, type CitationSource } from './components/ai/citation'
+export {
+  Citation,
+  type CitationProps,
+  type CitationSource,
+} from './components/ai/citation'
 
 // ============================================================================
 // COMPOSABLE UI COMPONENTS (For custom layouts)

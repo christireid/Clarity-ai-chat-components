@@ -116,7 +116,9 @@ export default function App() {
 
 ### Option C: Headless Mode (Logic Only)
 
-For maximum control, use the headless hook directly. This allows you to build your own UI components from scratch while leveraging Clarity's logic (state management, streaming, etc.) without the memory/opinionated overhead.
+For maximum control, use the headless hook directly. This allows you to build your own UI components
+from scratch while leveraging Clarity's logic (state management, streaming, etc.) without the
+memory/opinionated overhead.
 
 ```tsx
 import { useHeadlessChat } from '@clarity-chat/react'
@@ -128,14 +130,17 @@ export default function CustomChat() {
 
   return (
     <div>
-      {messages.map(m => <div key={m.id}>{m.content}</div>)}
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
       {/* Your custom input */}
     </div>
   )
 }
 ```
 
-> **Why Headless?** Perfect for when you need complete control over the DOM structure, or when integrating with an existing design system like Radix UI or Ariakit.
+> **Why Headless?** Perfect for when you need complete control over the DOM structure, or when
+> integrating with an existing design system like Radix UI or Ariakit.
 
 ---
 
@@ -355,6 +360,51 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 ;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
+### Add Tool Calling (Pro+)
+
+Enable AI to use tools (functions) with automatic UI rendering:
+
+```tsx
+import { useClarityChatWithTools, ClarityToolResult } from '@clarity-chat/react'
+import { z } from 'zod'
+
+// 1. Define your tool
+const weatherTool = {
+  name: 'getWeather',
+  description: 'Get current weather for a location',
+  parameters: z.object({
+    location: z.string().describe('City name'),
+  }),
+  execute: async ({ location }) => {
+    // Your API call here
+    return { temp: 72, condition: 'sunny' }
+  },
+}
+
+// 2. Use in component
+function ChatWithTools() {
+  const { messages, toolCalls, sendMessage } = useClarityChatWithTools({
+    api: '/api/chat',
+    tools: [weatherTool],
+  })
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      {/* 3. Render tool results automatically */}
+      {toolCalls.map((call) => (
+        <ClarityToolResult key={call.id} toolCall={call} />
+      ))}
+    </div>
+  )
+}
+```
+
+> **Tip:** Use `ToolInvocationCard` for a pre-styled tool result display, or build your own UI with
+> the raw tool call data.
+
 ### Add a Theme
 
 Choose from 11 built-in themes:
@@ -377,6 +427,34 @@ import { LicenseGate } from '@clarity-chat/react'
 ;<LicenseGate plan="pro" fallback={<UpgradePrompt />}>
   <AdvancedFeatures />
 </LicenseGate>
+```
+
+### Error Handling & Retries
+
+ClarityChat includes built-in error handling with automatic retries:
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+;<ClarityChat
+  api="/api/chat"
+  onError={(error) => {
+    console.error('Chat error:', error)
+    // Optionally show a toast or custom error UI
+  }}
+/>
+```
+
+The component automatically:
+
+- Retries failed requests with exponential backoff
+- Shows user-friendly error messages
+- Provides a retry button for manual recovery
+
+For enterprise features (analytics, rate limiting, audit logs), use:
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+;<ClarityChatPresets.Enterprise api="/api/chat" enableAnalytics enableSafety />
 ```
 
 ---

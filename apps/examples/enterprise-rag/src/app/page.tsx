@@ -41,22 +41,32 @@ function FeedbackButtons({ documentName }: { documentName: string }) {
 
   return (
     <div className="flex gap-1">
-      <button 
+      <button
         className={`p-1 rounded transition-colors ${feedback === 'up' ? 'bg-green-100 text-green-600' : 'hover:bg-gray-200 text-gray-400 hover:text-green-600'}`}
         title="Helpful citation"
         onClick={() => {
           setFeedback(feedback === 'up' ? null : 'up')
-          console.log('Feedback:', feedback === 'up' ? 'removed' : 'up', 'for', documentName)
+          console.log(
+            'Feedback:',
+            feedback === 'up' ? 'removed' : 'up',
+            'for',
+            documentName
+          )
         }}
       >
         👍
       </button>
-      <button 
+      <button
         className={`p-1 rounded transition-colors ${feedback === 'down' ? 'bg-red-100 text-red-600' : 'hover:bg-gray-200 text-gray-400 hover:text-red-600'}`}
         title="Not helpful"
         onClick={() => {
           setFeedback(feedback === 'down' ? null : 'down')
-          console.log('Feedback:', feedback === 'down' ? 'removed' : 'down', 'for', documentName)
+          console.log(
+            'Feedback:',
+            feedback === 'down' ? 'removed' : 'down',
+            'for',
+            documentName
+          )
         }}
       >
         👎
@@ -68,7 +78,7 @@ function FeedbackButtons({ documentName }: { documentName: string }) {
 function ConfidenceBadge({ score }: { score: number }) {
   let color = 'bg-red-100 text-red-800'
   let label = 'Low Confidence'
-  
+
   if (score > 0.7) {
     color = 'bg-green-100 text-green-800'
     label = 'High Confidence'
@@ -78,7 +88,9 @@ function ConfidenceBadge({ score }: { score: number }) {
   }
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${color}`}>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${color}`}
+    >
       {label} ({Math.round(score * 100)}%)
     </span>
   )
@@ -473,10 +485,17 @@ export default function RAGWorkbenchPage() {
                               </p>
                               <div className="flex flex-col gap-2">
                                 {message.sources.map((source, idx) => (
-                                  <div key={idx} className="flex flex-col gap-1">
+                                  <div
+                                    key={idx}
+                                    className="flex flex-col gap-1"
+                                  >
                                     <div className="flex justify-end items-center gap-2">
-                                      <ConfidenceBadge score={source.relevanceScore} />
-                                      <FeedbackButtons documentName={source.documentName} />
+                                      <ConfidenceBadge
+                                        score={source.relevanceScore}
+                                      />
+                                      <FeedbackButtons
+                                        documentName={source.documentName}
+                                      />
                                     </div>
                                     <Citation source={source} index={idx + 1} />
                                   </div>
