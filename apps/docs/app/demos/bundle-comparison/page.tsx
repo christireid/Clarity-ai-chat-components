@@ -13,6 +13,7 @@ import {
   Trees,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { trackDemoViewed } from '@/lib/demos/analytics'
 

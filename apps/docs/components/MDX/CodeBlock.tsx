@@ -14,6 +14,7 @@ import {
 import clsx from 'clsx'
 import { useToast } from '@clarity-chat/react/internal'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 
 interface CodeBlockProps {
   code: string

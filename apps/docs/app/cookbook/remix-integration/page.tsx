@@ -136,7 +136,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 // Client component
-'use client'
+
 
 import { useStreaming } from '@clarity-chat/react/internal'
 

@@ -15,6 +15,7 @@ import {
   MessageSquare,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useCopyToClipboard } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackCodeCopied } from '@/lib/demos/analytics'

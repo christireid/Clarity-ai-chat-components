@@ -9,6 +9,7 @@
 
 import { useState, useMemo, useCallback, useEffect, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import {
   TrendingUp,
   ChevronDown,

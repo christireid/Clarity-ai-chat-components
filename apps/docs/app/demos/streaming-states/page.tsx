@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'

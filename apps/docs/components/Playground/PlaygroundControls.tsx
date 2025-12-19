@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Share2, Download, Code2, ExternalLink, Check, X } from 'lucide-react'
 import { useToast } from '@clarity-chat/react/internal'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 interface PlaygroundControlsProps {
   code: string

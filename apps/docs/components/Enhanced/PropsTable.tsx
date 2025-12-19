@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useClipboard } from '@clarity-chat/react/internal'
+import { durations } from '@/lib/animations'
 import { getTypeLink, getTypeDefinition } from '@/lib/type-registry'
 
 /** Minimum number of props before showing the filter input */
