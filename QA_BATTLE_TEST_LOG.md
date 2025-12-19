@@ -229,8 +229,105 @@ warnings only **Fix:** Optional - update config to Next.js 16 conventions
 
 ---
 
+## Phase 5: Visual Testing Setup
+
+### Overview
+
+Visual testing infrastructure has been set up using Playwright for automated screenshot capture and
+visual regression testing of the DocsAssistant chatbot and documentation site.
+
+### Files Created
+
+- `/apps/docs/tests/visual/docs-assistant.spec.ts` - Visual test suite
+- `/apps/docs/playwright.config.ts` - Playwright configuration
+
+### Test Coverage
+
+The visual test suite includes:
+
+1. **Homepage Tests**
+   - Full page screenshot
+   - Title verification
+
+2. **DocsAssistant Tests**
+   - Empty chat state
+   - Chat input with message
+   - Chat response display
+   - Assistant open/close states
+
+3. **Responsive Design Tests**
+   - Mobile viewport (375x812)
+   - Tablet viewport (768x1024)
+
+4. **Dark Mode Tests**
+   - Homepage in dark mode
+   - Assistant in dark mode
+
+5. **Accessibility Tests**
+   - Landmark detection
+   - Heading hierarchy
+
+6. **Documentation Pages**
+   - Cookbook, Quick Start, Playground
+   - Reference, Components, Hooks
+
+### Running Visual Tests
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install chromium
+
+# Run all visual tests
+cd apps/docs
+npx playwright test
+
+# Run tests with browser UI
+npx playwright test --ui
+
+# Run with headed browser (visible)
+npx playwright test --headed
+
+# View test report
+npx playwright show-report
+```
+
+### Using MCP for Visual Testing
+
+For advanced visual testing with AI assistance, you can use the official Playwright MCP server:
+
+```bash
+# Add Playwright MCP to Claude Code
+claude mcp add playwright npx @playwright/mcp@latest
+
+# Or use with vision capabilities
+claude mcp add playwright npx @playwright/mcp@latest --caps vision
+```
+
+Alternative MCP servers for visual testing:
+
+- **@playwright/mcp** - Official Playwright MCP with browser automation
+- **Screenshot MCP Server** - Localhost screenshot capture
+- **@modelcontextprotocol/inspector** - MCP server inspector/debugger
+
+### Screenshots Output
+
+Visual test screenshots are saved to:
+
+- `apps/docs/test-results/screenshots/`
+
+### Integration with CI
+
+The `playwright.config.ts` includes CI-friendly configuration:
+
+- Retries on failure in CI
+- Single worker in CI
+- HTML report generation
+- Video capture on failure
+
+---
+
 ## Conclusion
 
 The DocsAssistant chatbot and docs site are now fully functional. All server-side errors have been
-resolved, and all key documentation pages are accessible. The codebase is in a clean state ready for
-deployment.
+resolved, and all key documentation pages are accessible. Visual testing infrastructure is in place
+for ongoing quality assurance. The codebase is in a clean state ready for deployment.
