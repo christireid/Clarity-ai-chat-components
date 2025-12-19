@@ -90,43 +90,44 @@ const ATTACK_EXAMPLES = [
 ]
 
 export default function SecurityPlayground() {
-  const [security] = useState(
-    () =>
-      new SecurityManager({
-        promptInjection: {
-          enabled: true,
-          config: {
-            enableHeuristics: true,
-            enableSemanticAnalysis: true,
-            useAttackPatternDB: true,
-            enableMultiTurnDetection: true,
-            confidenceThreshold: 0.7,
-          },
+  const [security] = useState(() => {
+    // Only initialize on client side
+    if (typeof window === 'undefined') return null
+    return new SecurityManager({
+      promptInjection: {
+        enabled: true,
+        config: {
+          enableHeuristics: true,
+          enableSemanticAnalysis: true,
+          useAttackPatternDB: true,
+          enableMultiTurnDetection: true,
+          confidenceThreshold: 0.7,
         },
-        pii: {
-          enabled: true,
-          patterns: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD', 'IP_ADDRESS'],
-          redactionStrategy: 'synthetic',
+      },
+      pii: {
+        enabled: true,
+        patterns: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD', 'IP_ADDRESS'],
+        redactionStrategy: 'synthetic',
+      },
+      jailbreakPrevention: {
+        enabled: true,
+        config: {
+          protectSystemMessage: true,
+          bracketUserInput: true,
+          validateOutput: true,
+          monitorConversation: true,
         },
-        jailbreakPrevention: {
-          enabled: true,
-          config: {
-            protectSystemMessage: true,
-            bracketUserInput: true,
-            validateOutput: true,
-            monitorConversation: true,
-          },
-        },
-        contentModeration: {
-          enabled: true,
-        },
-        monitoring: {
-          enabled: true,
-          logEvents: true,
-          alertHandlers: [new ConsoleAlertHandler()],
-        },
-      })
-  )
+      },
+      contentModeration: {
+        enabled: true,
+      },
+      monitoring: {
+        enabled: true,
+        logEvents: true,
+        alertHandlers: [new ConsoleAlertHandler()],
+      },
+    })
+  })
 
   const [customInput, setCustomInput] = useState('')
   const [selectedExample, setSelectedExample] = useState<number | null>(null)
@@ -135,6 +136,7 @@ export default function SecurityPlayground() {
   const [metrics, setMetrics] = useState<SecurityMetrics | null>(null)
 
   const testMessage = async (text: string, exampleIndex?: number) => {
+    if (!security) return
     setIsValidating(true)
     setSelectedExample(exampleIndex ?? null)
     setCustomInput(text)
@@ -160,8 +162,17 @@ export default function SecurityPlayground() {
     setResult(null)
     setSelectedExample(null)
     setCustomInput('')
-    security.clearEvents()
+    security?.clearEvents()
     setMetrics(null)
+  }
+
+  // Show loading state during SSR
+  if (!security) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center py-12">Loading security playground...</div>
+      </div>
+    )
   }
 
   return (

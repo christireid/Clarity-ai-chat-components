@@ -5,6 +5,7 @@ import { Copy, Check, ExternalLink, Download, Share2, Zap } from 'lucide-react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { logger } from '@/lib/logger'
+import { durations } from '@/lib/animations'
 
 interface QuickActionsProps {
   code: string

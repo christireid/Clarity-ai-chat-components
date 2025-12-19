@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { CheckCircle2, Sparkles, ArrowRight, Trophy } from 'lucide-react'
 import Link from 'next/link'
+import { durations } from '@/lib/animations'
 
 interface SuccessCelebrationProps {
   title?: string
