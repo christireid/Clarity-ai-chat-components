@@ -1,18 +1,11 @@
 'use client'
 
-import type { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-
-export const metadata: Metadata = {
-  title: 'useRAGPipeline Hook | Clarity Chat',
-  description:
-    'Top-level hook for Retrieval-Augmented Generation with vector stores.',
-}
 
 const useRAGPipelineOptions: Prop[] = [
   {
