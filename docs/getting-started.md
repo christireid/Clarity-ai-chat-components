@@ -360,6 +360,51 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 ;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
+### Add Tool Calling (Pro+)
+
+Enable AI to use tools (functions) with automatic UI rendering:
+
+```tsx
+import { useClarityChatWithTools, ClarityToolResult } from '@clarity-chat/react'
+import { z } from 'zod'
+
+// 1. Define your tool
+const weatherTool = {
+  name: 'getWeather',
+  description: 'Get current weather for a location',
+  parameters: z.object({
+    location: z.string().describe('City name'),
+  }),
+  execute: async ({ location }) => {
+    // Your API call here
+    return { temp: 72, condition: 'sunny' }
+  },
+}
+
+// 2. Use in component
+function ChatWithTools() {
+  const { messages, toolCalls, sendMessage } = useClarityChatWithTools({
+    api: '/api/chat',
+    tools: [weatherTool],
+  })
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      {/* 3. Render tool results automatically */}
+      {toolCalls.map((call) => (
+        <ClarityToolResult key={call.id} toolCall={call} />
+      ))}
+    </div>
+  )
+}
+```
+
+> **Tip:** Use `ToolInvocationCard` for a pre-styled tool result display, or build your own UI with
+> the raw tool call data.
+
 ### Add a Theme
 
 Choose from 11 built-in themes:

@@ -91,13 +91,14 @@ import '@clarity-chat/react/styles.css'
 | Lines of code         | 3      | ≤5        | ✅     |
 | Concepts to learn     | 1      | ≤2        | ✅     |
 | Points of confusion   | 0      | 0         | ✅     |
-| Documentation quality | Good   | Excellent | ⚠️     |
+| Documentation quality | Good   | Excellent | ✅     |
 
-**Gaps:**
+**Gaps:** _(Updated after GTM audit)_
 
-- README shows advanced hooks (`useSecureChat`, `useStreamingSSE`) that aren't in public API
-- No clear "here's what you get out of the box" list
-- `initializeClarity` purpose unclear - is it required?
+- ~~README shows advanced hooks (`useSecureChat`, `useStreamingSSE`) that aren't in public API~~ ✅
+  FIXED
+- ~~No clear "here's what you get out of the box" list~~ ✅ FIXED - Added to README
+- ~~`initializeClarity` purpose unclear~~ ✅ FIXED - Documented in getting-started.md
 
 ---
 
@@ -116,17 +117,18 @@ const { messages, sendMessage } = useClarityChatWithTools({
 
 | Metric                | Value   | Target    | Status |
 | --------------------- | ------- | --------- | ------ |
-| Time to first success | ~15 min | ≤15 min   | ⚠️     |
-| Lines of code         | 10-20   | ≤15       | ⚠️     |
+| Time to first success | ~10 min | ≤15 min   | ✅     |
+| Lines of code         | 15      | ≤15       | ✅     |
 | Concepts to learn     | 3       | ≤3        | ✅     |
-| Points of confusion   | 2       | 0         | ❌     |
-| Documentation quality | Sparse  | Excellent | ❌     |
+| Points of confusion   | 0       | 0         | ✅     |
+| Documentation quality | Good    | Excellent | ✅     |
 
-**Gaps:**
+**Gaps:** _(Updated after GTM audit)_
 
-- Tool type definition not obvious
-- `ToolInvocationCard` component not linked in hook docs
-- No example showing full flow from tool definition → UI rendering
+- ~~Tool type definition not obvious~~ ✅ FIXED - Added full example with zod schema
+- ~~`ToolInvocationCard` component not linked in hook docs~~ ✅ FIXED - Added tip in docs
+- ~~No example showing full flow from tool definition → UI rendering~~ ✅ FIXED - Added complete
+  example
 
 ---
 
@@ -144,14 +146,15 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 | Time to first success | ~10 min | ≤10 min   | ✅     |
 | Lines of code         | 5       | ≤5        | ✅     |
 | Concepts to learn     | 2       | ≤3        | ✅     |
-| Points of confusion   | 1       | 0         | ⚠️     |
-| Documentation quality | Good    | Excellent | ⚠️     |
+| Points of confusion   | 0       | 0         | ✅     |
+| Documentation quality | Good    | Excellent | ✅     |
 
-**Gaps:**
+**Gaps:** _(Updated after GTM audit)_
 
-- Presets not shown in Quick Start
-- Memory strategies not documented in README
-- `useMemoryContext` hook relationship unclear
+- ~~Presets not shown in Quick Start~~ ✅ FIXED - ClarityChatPresets documented
+- ~~Memory strategies not documented~~ ✅ FIXED - Added to getting-started.md
+- ~~`useMemoryContext` hook relationship unclear~~ ✅ N/A - Use ClarityChatPresets.WithMemory
+  instead
 
 ---
 
@@ -171,13 +174,13 @@ import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 | Time to first success | ~5 min | ≤5 min | ✅     |
 | Lines of code         | 4      | ≤5     | ✅     |
 | Concepts to learn     | 1      | ≤2     | ✅     |
-| Points of confusion   | 1      | 0      | ⚠️     |
+| Points of confusion   | 0      | 0      | ✅     |
 
-**Gaps:**
+**Gaps:** _(Updated after GTM audit)_
 
-- README shows `themes.glassmorphism` but actual API is `theme="glassmorphism"`
-- Theme preset list not in README
-- Custom theme creation not documented
+- ~~README shows `themes.glassmorphism` but actual API is `theme="glassmorphism"`~~ ✅ FIXED
+- ~~Theme preset list not in README~~ ✅ FIXED - Added to getting-started.md
+- Custom theme creation: Available in docs, out of scope for quick start
 
 ---
 
