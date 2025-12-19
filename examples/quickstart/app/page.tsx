@@ -9,34 +9,6 @@ interface Message {
   content: string
 }
 
-// Demo messages to show the chat works immediately
-const _DEMO_RESPONSES: Record<string, string> = {
-  default: `I'm your AI assistant running in **demo mode**!
-
-This example works immediately without any API keys. Here's what you can try:
-
-- Ask me anything and I'll respond with a demo message
-- Add your OpenAI API key to \`.env.local\` for real AI responses
-- Check out the code in \`app/page.tsx\` to see how simple it is
-
-**Ready for production?** Just add:
-\`\`\`
-OPENAI_API_KEY=sk-your-key-here
-DEMO_MODE=false
-\`\`\``,
-  hello:
-    "Hello! I'm Clarity Chat. This is a demo response - add your OpenAI API key for real AI!",
-  help: `Here's how to upgrade from demo to production:
-
-1. Get an OpenAI API key from https://platform.openai.com
-2. Copy \`.env.example\` to \`.env.local\`
-3. Add your key: \`OPENAI_API_KEY=sk-...\`
-4. Set \`DEMO_MODE=false\`
-5. Restart the dev server
-
-That's it! You'll have real AI responses.`,
-}
-
 export default function QuickstartPage(): JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')

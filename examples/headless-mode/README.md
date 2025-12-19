@@ -1,6 +1,6 @@
 # Headless Mode
 
-> Use Clarity Chat's powerful hooks with your own custom UI - zero styling lock-in.
+> Build a complete chat UI with pure React - no library components, just patterns you can copy.
 
 ![Advanced](https://img.shields.io/badge/Difficulty-Advanced-red)
 ![Headless](https://img.shields.io/badge/Mode-Headless-purple)
@@ -8,23 +8,26 @@
 
 ## What You'll Learn
 
-- How to use core hooks without any pre-built components
-- Building a custom chat UI with full control
-- Integrating with any design system (Tailwind, MUI, Chakra, etc.)
+- Building a chat UI with pure React state and fetch
+- Handling SSE streaming responses
+- Token tracking and cost estimation
+- Auto-scroll behavior patterns
+- Integrating with any design system
 
 ## Why Headless?
 
-| Pre-built Components | Headless Mode |
-|---------------------|---------------|
-| Quick to start | Full UI control |
-| Opinionated styling | Your design system |
-| Larger bundle | Import only what you need |
-| Consistent look | Unique look |
+| Pre-built Components | Headless Mode      |
+| -------------------- | ------------------ |
+| Quick to start       | Full UI control    |
+| Opinionated styling  | Your design system |
+| Library dependency   | Zero dependencies  |
+| Consistent look      | Unique look        |
 
 **Choose headless when:**
+
 - You have an existing design system
 - You need pixel-perfect custom UI
-- You want minimal bundle size
+- You want zero library lock-in
 - You're building a white-label product
 
 ## Quick Start
@@ -32,82 +35,99 @@
 ```bash
 cd examples/headless-mode
 pnpm install
+cp .env.example .env.local  # Add your OpenAI API key
 pnpm dev
 ```
 
 Open [http://localhost:3010](http://localhost:3010)
 
-## Core Hooks Used
+## Patterns Demonstrated
+
+This example shows reusable patterns you can copy into your own projects:
+
+### Token Estimation
 
 ```typescript
-import {
-  useChat,           // Message sending, streaming, state
-  useTokenTracker,   // Token counting, cost estimation
-  useAutoScroll,     // Smart scroll behavior
-} from '@clarity-chat/react/core'
+// Simple token estimation (4 chars ≈ 1 token)
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4)
+}
+
+// Cost estimation for GPT-4 Turbo
+function estimateCost(inputTokens: number, outputTokens: number): number {
+  const inputCost = (inputTokens / 1000) * 0.01 // $0.01/1K input
+  const outputCost = (outputTokens / 1000) * 0.03 // $0.03/1K output
+  return inputCost + outputCost
+}
 ```
 
-### useChat
-
-The main hook for chat functionality:
+### Auto-Scroll Hook
 
 ```typescript
-const { sendMessage, isLoading, error } = useChat({
-  api: '/api/chat',
-  onMessage: (content) => {
-    // Handle each streamed chunk
-  },
-  onFinish: (message) => {
-    // Handle completion
-  },
+function useAutoScroll(messagesLength: number) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isNearBottom, setIsNearBottom] = useState(true)
+
+  const scrollToBottom = useCallback(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [])
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+    setIsNearBottom(scrollHeight - scrollTop - clientHeight < 100)
+  }, [])
+
+  useEffect(() => {
+    if (isNearBottom) scrollToBottom()
+  }, [messagesLength, isNearBottom, scrollToBottom])
+
+  return { scrollRef, scrollToBottom, isNearBottom, handleScroll }
+}
+```
+
+### SSE Streaming
+
+```typescript
+const response = await fetch('/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ messages }),
 })
+
+const reader = response.body?.getReader()
+const decoder = new TextDecoder()
+
+while (reader) {
+  const { done, value } = await reader.read()
+  if (done) break
+
+  const chunk = decoder.decode(value)
+  const lines = chunk.split('\n')
+
+  for (const line of lines) {
+    if (line.startsWith('data: ')) {
+      const data = line.slice(6)
+      if (data === '[DONE]') continue
+
+      const parsed = JSON.parse(data)
+      if (parsed.type === 'text-delta' && parsed.content) {
+        // Append content to your state
+      }
+    }
+  }
+}
 ```
-
-### useTokenTracker
-
-Track token usage and costs:
-
-```typescript
-const { totalTokens, estimatedCost, trackTokens } = useTokenTracker({
-  model: 'gpt-4-turbo-preview',
-})
-
-// Track usage manually
-trackTokens(100, 'input')
-trackTokens(50, 'output')
-```
-
-### useAutoScroll
-
-Smart scroll behavior for chat:
-
-```typescript
-const { scrollRef, scrollToBottom, isNearBottom } = useAutoScroll({
-  behavior: 'smooth',
-  threshold: 100, // pixels from bottom
-})
-
-// Attach to your container
-<div ref={scrollRef}>...</div>
-```
-
-## Available Core Hooks
-
-| Hook | Purpose |
-|------|---------|
-| `useChat` | Core messaging and streaming |
-| `useTokenTracker` | Token counting and cost tracking |
-| `useAutoScroll` | Smart scroll management |
-| `useMessageOperations` | Edit, delete, regenerate messages |
-| `useStreamingSSE` | Low-level SSE handling |
-| `useMemory` | Conversation memory/context |
 
 ## Production Considerations
 
-- **Bundle size**: Headless mode imports ~40% less code
 - **Accessibility**: You're responsible for ARIA labels, focus management
 - **Keyboard nav**: Implement your own keyboard shortcuts
-- **Error handling**: Build your own error UI
+- **Error handling**: Build your own error UI and retry logic
+- **Loading states**: Design your own loading indicators
 
 ## File Structure
 
@@ -125,6 +145,6 @@ headless-mode/
 
 ## Next Steps
 
-- **Add memory**: See [memory-examples](../memory-examples)
 - **Add tools**: Check [tool-calling](../tool-calling)
-- **Compare to styled**: Try [basic-chat](../basic-chat)
+- **Multiple providers**: See [multi-provider](../multi-provider)
+- **Compare to components**: Try [quickstart](../quickstart)

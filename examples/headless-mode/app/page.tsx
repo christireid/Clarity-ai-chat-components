@@ -3,25 +3,18 @@
 /**
  * Headless Mode Example
  *
- * This example demonstrates using Clarity Chat's core hooks WITHOUT
- * any pre-built UI components. You bring your own UI, we provide the logic.
+ * This example demonstrates building a custom chat UI WITHOUT
+ * any pre-built components - just React state and fetch calls.
  *
  * Key benefits:
  * - Full control over your UI/UX
  * - Use with any design system (Tailwind, MUI, Chakra, etc.)
- * - Same powerful features: streaming, token tracking, memory
+ * - Zero library styling lock-in
  * - Smaller bundle - only import what you need
  */
 
 import type { FormEvent, ChangeEvent } from 'react'
 import { useState, useCallback, useRef, useEffect } from 'react'
-
-// Import ONLY the hooks - no UI components
-import {
-  useChat,
-  useTokenTracker,
-  useAutoScroll,
-} from '@clarity-chat/react/core'
 
 interface Message {
   id: string
@@ -30,67 +23,71 @@ interface Message {
   tokens?: number
 }
 
-export default function HeadlessModePage(): JSX.Element {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+// Simple token estimation (4 chars ≈ 1 token)
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4)
+}
 
-  // Core hook for chat functionality
-  const { sendMessage, isLoading, error } = useChat({
-    api: '/api/chat',
-    onMessage: (content, metadata) => {
-      // You control exactly how messages are handled
-      setMessages((prev) => {
-        const lastMsg = prev[prev.length - 1]
-        if (
-          lastMsg?.role === 'assistant' &&
-          !lastMsg.content.endsWith(content)
-        ) {
-          return [
-            ...prev.slice(0, -1),
-            { ...lastMsg, content: lastMsg.content + content },
-          ]
-        }
-        return prev
-      })
-    },
-    onFinish: (message) => {
-      // Handle completion - add token count, log, etc.
-      console.log('Message complete:', message)
-    },
-  })
+// Cost estimation for GPT-4 Turbo
+function estimateCost(inputTokens: number, outputTokens: number): number {
+  const inputCost = (inputTokens / 1000) * 0.01 // $0.01/1K input
+  const outputCost = (outputTokens / 1000) * 0.03 // $0.03/1K output
+  return inputCost + outputCost
+}
 
-  // Token tracking hook - works independently
-  const { totalTokens, estimatedCost, trackTokens } = useTokenTracker({
-    model: 'gpt-4-turbo-preview',
-  })
+// Custom hook for auto-scroll behavior
+function useAutoScroll(messagesLength: number) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isNearBottom, setIsNearBottom] = useState(true)
 
-  // Auto-scroll hook - works with any scrollable container
-  const { scrollRef, scrollToBottom, isNearBottom } = useAutoScroll({
-    behavior: 'smooth',
-    threshold: 100,
-  })
+  const scrollToBottom = useCallback(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [])
 
-  // Scroll on new messages
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+    setIsNearBottom(scrollHeight - scrollTop - clientHeight < 100)
+  }, [])
+
   useEffect(() => {
     if (isNearBottom) {
       scrollToBottom()
     }
-  }, [messages, isNearBottom, scrollToBottom])
+  }, [messagesLength, isNearBottom, scrollToBottom])
+
+  return { scrollRef, scrollToBottom, isNearBottom, handleScroll }
+}
+
+export default function HeadlessModePage(): JSX.Element {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const [totalTokens, setTotalTokens] = useState({ input: 0, output: 0 })
+
+  const { scrollRef, scrollToBottom, isNearBottom, handleScroll } =
+    useAutoScroll(messages.length)
 
   const handleSend = useCallback(async () => {
     if (!input.trim() || isLoading) return
 
+    const userTokens = estimateTokens(input.trim())
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
-      tokens: Math.ceil(input.length / 4), // Rough estimate
+      tokens: userTokens,
     }
 
     setMessages((prev) => [...prev, userMessage])
-    trackTokens(userMessage.tokens || 0, 'input')
+    setTotalTokens((prev) => ({ ...prev, input: prev.input + userTokens }))
     setInput('')
+    setIsLoading(true)
+    setError(null)
 
     // Add placeholder for assistant response
     const assistantId = (Date.now() + 1).toString()
@@ -100,11 +97,77 @@ export default function HeadlessModePage(): JSX.Element {
     ])
 
     try {
-      await sendMessage(input.trim())
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to send message')
+
+      // Handle streaming response
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantContent = ''
+
+      while (reader) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') continue
+
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.type === 'text-delta' && parsed.content) {
+                assistantContent += parsed.content
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId
+                      ? { ...m, content: assistantContent }
+                      : m
+                  )
+                )
+              }
+            } catch {
+              // Skip invalid JSON
+            }
+          }
+        }
+      }
+
+      // Track output tokens
+      const outputTokens = estimateTokens(assistantContent)
+      setTotalTokens((prev) => ({
+        ...prev,
+        output: prev.output + outputTokens,
+      }))
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, tokens: outputTokens } : m
+        )
+      )
     } catch (err) {
       console.error('Send error:', err)
+      setError(err instanceof Error ? err : new Error('Unknown error'))
+      // Remove the placeholder message on error
+      setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+    } finally {
+      setIsLoading(false)
     }
-  }, [input, isLoading, sendMessage, trackTokens])
+  }, [input, isLoading, messages])
+
+  const estimatedCost = estimateCost(totalTokens.input, totalTokens.output)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -114,12 +177,13 @@ export default function HeadlessModePage(): JSX.Element {
           <div>
             <h1 className="text-2xl font-bold">Headless Mode</h1>
             <p className="text-violet-200 text-sm">
-              Core hooks + your own UI = unlimited flexibility
+              Pure React + fetch = unlimited flexibility
             </p>
           </div>
           <div className="flex items-center gap-4 text-sm">
             <div className="bg-white/20 rounded-lg px-3 py-1">
-              Tokens: {totalTokens.toLocaleString()}
+              Tokens:{' '}
+              {(totalTokens.input + totalTokens.output).toLocaleString()}
             </div>
             <div className="bg-white/20 rounded-lg px-3 py-1">
               Cost: ${estimatedCost.toFixed(4)}
@@ -131,28 +195,18 @@ export default function HeadlessModePage(): JSX.Element {
       {/* Info Banner */}
       <div className="bg-violet-50 dark:bg-violet-900/20 border-b border-violet-100 dark:border-violet-800 px-6 py-3">
         <div className="max-w-4xl mx-auto text-sm text-violet-800 dark:text-violet-200">
-          <strong>This UI is 100% custom.</strong> We're using{' '}
-          <code className="bg-violet-100 dark:bg-violet-800 px-1 rounded">
-            useChat
-          </code>
-          ,{' '}
-          <code className="bg-violet-100 dark:bg-violet-800 px-1 rounded">
-            useTokenTracker
-          </code>
-          , and{' '}
-          <code className="bg-violet-100 dark:bg-violet-800 px-1 rounded">
-            useAutoScroll
-          </code>{' '}
-          from{' '}
-          <code className="bg-violet-100 dark:bg-violet-800 px-1 rounded">
-            @clarity-chat/react/core
-          </code>
-          . No pre-built components.
+          <strong>This UI is 100% custom.</strong> No Clarity Chat components -
+          just React state, fetch, and SSE parsing. Your design system, your
+          rules.
         </div>
       </div>
 
       {/* Messages - YOUR design */}
-      <main ref={scrollRef} className="flex-1 overflow-y-auto">
+      <main
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto"
+      >
         <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
           {messages.length === 0 && (
             <div className="text-center py-16">
@@ -175,8 +229,8 @@ export default function HeadlessModePage(): JSX.Element {
                 Headless Mode Demo
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                This chat uses Clarity Chat's core hooks with a completely
-                custom UI. Try sending a message!
+                This chat is built with pure React - no Clarity Chat UI
+                components. Try sending a message!
               </p>
             </div>
           )}
@@ -203,8 +257,14 @@ export default function HeadlessModePage(): JSX.Element {
                     </div>
                   )}
                 <div className="whitespace-pre-wrap">{message.content}</div>
-                {message.tokens && message.role === 'user' && (
-                  <div className="text-xs text-violet-200 mt-1">
+                {message.tokens && (
+                  <div
+                    className={`text-xs mt-1 ${
+                      message.role === 'user'
+                        ? 'text-violet-200'
+                        : 'text-gray-400'
+                    }`}
+                  >
                     ~{message.tokens} tokens
                   </div>
                 )}
@@ -217,8 +277,6 @@ export default function HeadlessModePage(): JSX.Element {
               Error: {error.message}
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
       </main>
 
@@ -298,8 +356,8 @@ export default function HeadlessModePage(): JSX.Element {
             </button>
           </form>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-            This input, the message bubbles, the header - all custom. Hooks do
-            the heavy lifting.
+            This input, the message bubbles, the header - all custom. Zero
+            library components.
           </p>
         </div>
       </footer>
