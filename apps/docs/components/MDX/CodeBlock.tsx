@@ -3,9 +3,16 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Highlight, themes } from 'prism-react-renderer'
 import { useTheme } from 'next-themes'
-import { Check, Copy, Terminal, Download, Maximize2, Minimize2 } from 'lucide-react'
+import {
+  Check,
+  Copy,
+  Terminal,
+  Download,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react'
 import clsx from 'clsx'
-import { useToast } from '@clarity-chat/react'
+import { useToast } from '@clarity-chat/react/internal'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface CodeBlockProps {
@@ -115,7 +122,10 @@ export function CodeBlock({
   }, [theme])
 
   // Memoize highlight lines set for O(1) lookups
-  const highlightLinesSet = useMemo(() => new Set(highlightLines), [highlightLines])
+  const highlightLinesSet = useMemo(
+    () => new Set(highlightLines),
+    [highlightLines]
+  )
 
   // Check if code block is tall (more than 20 lines)
   const isTallCodeBlock = useMemo(() => {
@@ -127,7 +137,7 @@ export function CodeBlock({
       ref={codeBlockRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className={clsx(
         'group relative not-prose my-6 shadow-sm hover:shadow-md transition-shadow duration-200',
         className
@@ -143,7 +153,12 @@ export function CodeBlock({
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 15 }}
+                  transition={{
+                    delay: 0.1,
+                    type: 'spring',
+                    stiffness: 200,
+                    damping: 15,
+                  }}
                   className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"
                 >
                   <Terminal className="w-4 h-4 text-primary" />
@@ -213,7 +228,9 @@ export function CodeBlock({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-text-secondary hover:text-text-primary"
-                aria-label={isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'}
+                aria-label={
+                  isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'
+                }
               >
                 <AnimatePresence mode="wait">
                   {isExpanded ? (
@@ -253,9 +270,16 @@ export function CodeBlock({
         }) => (
           <motion.pre
             animate={{
-              maxHeight: isExpanded ? 'none' : isTallCodeBlock ? '600px' : 'none',
+              maxHeight: isExpanded
+                ? 'none'
+                : isTallCodeBlock
+                  ? '600px'
+                  : 'none',
             }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{
+              duration: durations.moderate,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className={clsx(
               highlightClassName,
               'overflow-x-auto p-8 text-sm leading-loose border-2 border-border relative',
@@ -320,7 +344,9 @@ export function CodeBlock({
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
-                    aria-label={isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'}
+                    aria-label={
+                      isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'
+                    }
                   >
                     <AnimatePresence mode="wait">
                       {isExpanded ? (
@@ -360,7 +386,10 @@ export function CodeBlock({
                     {...lineProps}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: lineIndex * 0.005, duration: 0.2 }}
+                    transition={{
+                      delay: lineIndex * 0.005,
+                      duration: durations.normal,
+                    }}
                     className={clsx(
                       lineProps.className,
                       isHighlighted &&

@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, useTokenBudgetMonitor } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  useTokenBudgetMonitor,
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -355,7 +358,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResult } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -367,7 +370,7 @@ import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResul
         <ComponentPreview
           title="Basic Token Budget Monitor"
           description="Monitor token usage with warnings and critical alerts"
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function BasicMonitor() {
@@ -413,7 +416,7 @@ function BasicMonitor() {
         <p>Automatically trim messages when critical threshold is reached:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 
 function AutoTrimMonitor() {
   const [messages, setMessages] = useState([])
@@ -459,7 +462,7 @@ function AutoTrimMonitor() {
         <p>Manually trigger trimming when needed:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 
 function ManualTrimMonitor() {
   const [messages, setMessages] = useState([])
@@ -510,7 +513,7 @@ function ManualTrimMonitor() {
         <p>Check if adding a message would exceed the budget:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 
 function CheckBeforeSend() {
   const [messages, setMessages] = useState([])
@@ -564,8 +567,8 @@ function CheckBeforeSend() {
         <p>Use status to show different UI states:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
-import { getStatusColor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
+import { getStatusColor } from '@clarity-chat/react/internal'
 
 function StatusIndicators() {
   const { usage, isWarning, isCritical, isExceeded } = useTokenBudgetMonitor({
@@ -681,8 +684,8 @@ function StatusIndicators() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { useTokenBudgetMonitor, getStatusColor, formatTokenUsage } from '@clarity-chat/react'
-import type { BudgetMessage } from '@clarity-chat/react'
+import { useTokenBudgetMonitor, getStatusColor, formatTokenUsage } from '@clarity-chat/react/internal'
+import type { BudgetMessage } from '@clarity-chat/react/internal'
 
 function CompleteBudgetMonitorExample() {
   const [messages, setMessages] = useState<BudgetMessage[]>([])

@@ -87,7 +87,7 @@ export default function UseRAGPipelinePage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react'
+          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
 
 function RAGChat() {
   const rag = useRAGPipeline({
@@ -118,7 +118,7 @@ function RAGChat() {
           Experiment with useRAGPipeline:
         </p>
         <CodePlayground
-          initialCode={`import { useRAGPipeline } from '@clarity-chat/react'
+          initialCode={`import { useRAGPipeline } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {
@@ -158,7 +158,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Reranking</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react'
+          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
 
 function RerankedRAG() {
   const rag = useRAGPipeline({
@@ -191,7 +191,7 @@ function RerankedRAG() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline, useClarityChat } from '@clarity-chat/react'
+          code={`import { useRAGPipeline, useClarityChat } from '@clarity-chat/react/internal'
 
 function RAGChat() {
   const rag = useRAGPipeline({
@@ -230,7 +230,7 @@ function RAGChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react'
+          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
 
 // Pinecone
 const pineconeRAG = useRAGPipeline({

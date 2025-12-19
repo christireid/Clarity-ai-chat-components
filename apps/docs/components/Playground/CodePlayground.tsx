@@ -3,8 +3,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
-import { Maximize2, Minimize2, ExternalLink, Copy, Check, RotateCcw } from 'lucide-react'
-import { useClipboard } from '@clarity-chat/react'
+import {
+  Maximize2,
+  Minimize2,
+  ExternalLink,
+  Copy,
+  Check,
+  RotateCcw,
+} from 'lucide-react'
+import { useClipboard } from '@clarity-chat/react/internal'
 import { openInCodeSandbox } from '@/lib/sandbox-export'
 
 // Dynamic import for code editor to avoid SSR issues
@@ -23,7 +30,7 @@ export function CodePlayground({
   title = 'Clarity Chat Example',
   dependencies = {},
   onCodeChange,
-  className
+  className,
 }: CodePlaygroundProps) {
   const [code, setCode] = useState(initialCode)
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
@@ -54,10 +61,13 @@ export function CodePlayground({
     }
   }, [isFullscreen])
 
-  const handleCodeChange = useCallback((newCode: string) => {
-    setCode(newCode)
-    onCodeChange?.(newCode)
-  }, [onCodeChange])
+  const handleCodeChange = useCallback(
+    (newCode: string) => {
+      setCode(newCode)
+      onCodeChange?.(newCode)
+    },
+    [onCodeChange]
+  )
 
   const handleCopyCode = useCallback(() => {
     copy(code)
@@ -77,7 +87,10 @@ export function CodePlayground({
   }
 
   // Load ClarityChat components dynamically on client only
-  const [clarityComponents, setClarityComponents] = useState<Record<string, unknown> | null>(null)
+  const [clarityComponents, setClarityComponents] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -91,34 +104,48 @@ export function CodePlayground({
     }
   }, [])
 
-  const scope = useMemo(() => ({
-    ...(clarityComponents || {}),
-    React,
-    useState: React.useState,
-    useEffect: React.useEffect,
-    useCallback: React.useCallback,
-    useMemo: React.useMemo,
-    useRef: React.useRef,
-    useContext: React.useContext,
-    createContext: React.createContext,
-    // Add render function for react-live
-    render: (component: React.ReactElement) => component,
-  }), [clarityComponents])
+  const scope = useMemo(
+    () => ({
+      ...(clarityComponents || {}),
+      React,
+      useState: React.useState,
+      useEffect: React.useEffect,
+      useCallback: React.useCallback,
+      useMemo: React.useMemo,
+      useRef: React.useRef,
+      useContext: React.useContext,
+      createContext: React.createContext,
+      // Add render function for react-live
+      render: (component: React.ReactElement) => component,
+    }),
+    [clarityComponents]
+  )
 
   // Transform code to work with react-live (remove imports, handle exports)
   const transformCode = (code: string) => {
     // Remove all import statements
-    let transformed = code.replace(/import\s+.*?from\s+['"].*?['"]\s*;?\n?/g, '')
+    let transformed = code.replace(
+      /import\s+.*?from\s+['"].*?['"]\s*;?\n?/g,
+      ''
+    )
 
     // Remove 'use client' directive
     transformed = transformed.replace(/'use client'\s*;?\n?/g, '')
 
     // Replace export default function with just function and render it
-    transformed = transformed.replace(/export\s+default\s+function\s+(\w+)\s*\(/g, 'function $1(')
+    transformed = transformed.replace(
+      /export\s+default\s+function\s+(\w+)\s*\(/g,
+      'function $1('
+    )
 
     // If there's a function definition, add a render call at the end
-    if (transformed.includes('function App(') || transformed.includes('function Home(')) {
-      const functionName = transformed.includes('function App(') ? 'App' : 'Home'
+    if (
+      transformed.includes('function App(') ||
+      transformed.includes('function Home(')
+    ) {
+      const functionName = transformed.includes('function App(')
+        ? 'App'
+        : 'Home'
       transformed += `\n\nrender(<${functionName} />)`
     }
 
@@ -230,11 +257,7 @@ export function CodePlayground({
       </div>
 
       {/* Editor and Preview */}
-      <LiveProvider
-        code={transformCode(code)}
-        scope={scope}
-        noInline={true}
-      >
+      <LiveProvider code={transformCode(code)} scope={scope} noInline={true}>
         <div
           className={`flex ${
             layout === 'horizontal' ? 'flex-row' : 'flex-col'
@@ -246,7 +269,7 @@ export function CodePlayground({
             className="border-r border-gray-200 dark:border-gray-700"
             style={{
               width: layout === 'horizontal' ? `${editorSize}%` : '100%',
-              height: layout === 'vertical' ? `${editorSize}%` : '100%'
+              height: layout === 'vertical' ? `${editorSize}%` : '100%',
             }}
           >
             <CodeEditor
@@ -259,7 +282,9 @@ export function CodePlayground({
           {/* Resize Handle */}
           <div
             className={`${
-              layout === 'horizontal' ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize'
+              layout === 'horizontal'
+                ? 'w-1 cursor-col-resize'
+                : 'h-1 cursor-row-resize'
             } bg-gray-200 dark:bg-gray-700 hover:bg-blue-500 transition-colors`}
             onMouseDown={(e) => {
               e.preventDefault()
@@ -273,7 +298,10 @@ export function CodePlayground({
                 const current = layout === 'horizontal' ? e.clientX : e.clientY
                 const delta = current - startPos
                 const deltaPercent = (delta / total) * 100
-                const newSize = Math.min(Math.max(startSize + deltaPercent, 20), 80)
+                const newSize = Math.min(
+                  Math.max(startSize + deltaPercent, 20),
+                  80
+                )
                 setEditorSize(newSize)
               }
 
@@ -292,7 +320,7 @@ export function CodePlayground({
             className="overflow-auto bg-white dark:bg-gray-900"
             style={{
               width: layout === 'horizontal' ? `${100 - editorSize}%` : '100%',
-              height: layout === 'vertical' ? `${100 - editorSize}%` : '100%'
+              height: layout === 'vertical' ? `${100 - editorSize}%` : '100%',
             }}
           >
             <div className="p-6 h-full">

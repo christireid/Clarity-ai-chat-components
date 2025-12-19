@@ -450,6 +450,21 @@ export * from './components/ab-testing'
 // Pro Components
 export * from './components/pro'
 
+// Input Components (VoiceInput, etc.)
+export * from './components/input'
+
+// Search Components (MessageSearch, etc.)
+export * from './components/search'
+
+// Accessibility utilities (useFocusTrap, useFocusRestoration, etc.)
+export * from './accessibility'
+
+// Animations (useReducedMotion, etc.)
+export * from './animations'
+
+// Prompt Components and Types
+export * from './components/prompt'
+
 // =============================================================================
 // HOOKS (All hook domains)
 // =============================================================================

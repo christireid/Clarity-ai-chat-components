@@ -7,7 +7,7 @@ export {
   smartTokenCounter,
   type FallbackStrategy,
   type FallbackContext,
-} from './smart-fallback.js'
+} from './smart-fallback'
 
 // Robust error handling
 export {
@@ -16,7 +16,7 @@ export {
   type TokenCounterError,
   type ErrorContext,
   type ErrorHandlingOptions,
-} from './robust-error-handling.js'
+} from './robust-error-handling'
 
 // Token budget validation
 export {
@@ -27,7 +27,7 @@ export {
   type TokenBudgetConfig,
   type TokenBudgetValidation,
   type TruncationOptions,
-} from './token-budget-validator.js'
+} from './token-budget-validator'
 
 // Performance optimization
 export {
@@ -38,7 +38,7 @@ export {
   type PerformanceMetrics,
   type PerformanceBenchmark,
   type CachingConfig,
-} from './performance-optimization.js'
+} from './performance-optimization'
 
 // Analytics and monitoring
 export {
@@ -50,7 +50,7 @@ export {
   type TokenAnalytics,
   type TokenMetrics,
   type TokenAlert,
-} from './token-analytics.js'
+} from './token-analytics'
 
 // Migration assistant
 export {
@@ -62,7 +62,7 @@ export {
   type MigrationRule,
   type MigrationAnalysis,
   type MigrationResult,
-} from './migration-assistant.js'
+} from './migration-assistant'
 
 // Text compression and preprocessing
 export {
@@ -75,7 +75,7 @@ export {
   type CompressionStrategy,
   type CompressionConfig,
   type CompressionResult,
-} from './text-compression.js'
+} from './text-compression'
 
 // Advanced compression techniques
 export {
@@ -93,7 +93,7 @@ export {
   type AdvancedCompressionConfig,
   type AdvancedCompressionResult,
   type CompressionQualityMetrics,
-} from './advanced-compression.js'
+} from './advanced-compression'
 
 // Adaptive optimization
 export {
@@ -107,7 +107,7 @@ export {
   type ConversationState,
   type AdaptiveOptimizationConfig,
   type AdaptiveOptimizationResult,
-} from './adaptive-optimizer.js'
+} from './adaptive-optimizer'
 
 // Intelligent caching
 export {
@@ -127,7 +127,7 @@ export {
   type CacheEntry,
   type CacheStats,
   type SemanticCacheConfig,
-} from './intelligent-caching.js'
+} from './intelligent-caching'
 
 // Smart truncation and summarization
 export {
@@ -141,7 +141,7 @@ export {
   type TruncationConfig,
   type TruncationResult,
   type SummarizationConfig,
-} from './smart-truncation.js'
+} from './smart-truncation'
 
 // Dynamic optimization
 export {
@@ -154,7 +154,7 @@ export {
   type ModelContext,
   type ContentContext,
   type DynamicOptimizationResult,
-} from './dynamic-optimization.js'
+} from './dynamic-optimization'
 
 // Optimization middleware
 export {
@@ -174,7 +174,7 @@ export {
   type OptimizationContext,
   type MiddlewareResult,
   type TokenUsageMetrics,
-} from './optimization-middleware.js'
+} from './optimization-middleware'
 
 // Response optimization
 export {
@@ -190,7 +190,7 @@ export {
   type ResponseMetrics,
   type ConversationContext,
   type ResponsePrediction,
-} from './response-optimization.js'
+} from './response-optimization'
 
 // Optimization dashboard and monitoring
 export {
@@ -203,10 +203,10 @@ export {
   type ModelMetrics,
   type AlertConfig,
   type Alert,
-} from './optimization-dashboard.js'
+} from './optimization-dashboard'
 
 // Re-export the comprehensive test utilities
-// export * from '../utils/__tests__/token-counter-comprehensive.test.js';
+// export * from '../utils/__tests__/token-counter-comprehensive.test';
 
 // Convenience re-exports from the original estimator and accurate-counter
 // These maintain backward compatibility while using the new TokenCounter internally
@@ -214,40 +214,37 @@ export {
   estimateTokens,
   estimateTokensByProvider,
   estimateMessagesTokens,
-} from './estimator.js'
+} from './estimator'
 export {
   countTokens,
   countConversationTokens,
   truncateToTokenBudget,
   type ModelName,
   type TokenCount,
-} from './accurate-counter.js'
+} from './accurate-counter'
 
 // Export validation utilities for convenience
-export { InputValidator } from './input-validator.js'
+export { InputValidator } from './input-validator'
 export type {
   ValidationResult as TokenValidationResult,
   InputConstraints,
-} from './input-validator.js'
+} from './input-validator'
 
 // Export error handling utilities
 export {
   errorHandler,
   ErrorCategory,
   ErrorSeverity,
-} from './enhanced-error-handling.js'
+} from './enhanced-error-handling'
 export type {
   TokenOptimizationError,
   ErrorRecoveryStrategy,
-} from './enhanced-error-handling.js'
+} from './enhanced-error-handling'
 
 // Export React hooks
-export {
-  useTokenValidator,
-  useAutoTokenValidator,
-} from './use-token-validator.js'
+export { useTokenValidator, useAutoTokenValidator } from './use-token-validator'
 export {
   useTokenPerformance,
   useAutoTokenPerformance,
-} from './use-token-performance.js'
-export type { TokenPerformanceMetrics } from './use-token-performance.js'
+} from './use-token-performance'
+export type { TokenPerformanceMetrics } from './use-token-performance'

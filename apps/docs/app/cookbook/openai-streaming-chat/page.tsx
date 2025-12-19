@@ -102,7 +102,7 @@ export async function POST(req: Request) {
           code={`// app/chat/page.tsx
 'use client'
 
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 export default function ChatPage() {

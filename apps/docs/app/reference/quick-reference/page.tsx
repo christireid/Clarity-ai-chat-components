@@ -33,19 +33,46 @@ function CopyButton({ text }: { text: string }) {
       aria-label={copied ? 'Copied!' : 'Copy import statement'}
     >
       {copied ? (
-        <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-4 h-4 text-green-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       ) : (
-        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        <svg
+          className="w-4 h-4 text-muted-foreground"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
         </svg>
       )}
     </button>
   )
 }
 
-const hookCategories: HookCategory[] = ['top-level', 'chat', 'memory', 'streaming', 'ui', 'utility']
+const hookCategories: HookCategory[] = [
+  'top-level',
+  'chat',
+  'memory',
+  'streaming',
+  'ui',
+  'utility',
+]
 const componentCategories: ComponentCategory[] = ['core', 'provider']
 
 export default function QuickReferencePage() {
@@ -57,7 +84,8 @@ export default function QuickReferencePage() {
           Scannable reference for all Clarity Chat hooks and components.
         </p>
         <p className="text-sm text-muted-foreground mt-2">
-          Click any item to view full documentation. Use the copy button to copy import statements.
+          Click any item to view full documentation. Use the copy button to copy
+          import statements.
         </p>
       </div>
 
@@ -82,9 +110,15 @@ export default function QuickReferencePage() {
                       href={hook.href}
                       className="flex items-start gap-4 p-3 hover:bg-muted transition-colors flex-1"
                     >
-                      <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                      <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
+                      <code className="font-mono font-semibold text-sm whitespace-nowrap">
+                        {hook.name}
+                      </code>
+                      <code className="text-xs text-muted-foreground flex-1 font-mono">
+                        {hook.signature}
+                      </code>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {hook.description}
+                      </span>
                     </Link>
                     <div className="pr-3">
                       <CopyButton text={hook.importStatement} />
@@ -118,9 +152,15 @@ export default function QuickReferencePage() {
                       href={comp.href}
                       className="flex items-start gap-4 p-3 hover:bg-muted transition-colors flex-1"
                     >
-                      <code className="font-mono font-semibold text-sm whitespace-nowrap">&lt;{comp.name}&gt;</code>
-                      <code className="text-xs text-muted-foreground flex-1 font-mono">{comp.props}</code>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">{comp.description}</span>
+                      <code className="font-mono font-semibold text-sm whitespace-nowrap">
+                        &lt;{comp.name}&gt;
+                      </code>
+                      <code className="text-xs text-muted-foreground flex-1 font-mono">
+                        {comp.props}
+                      </code>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {comp.description}
+                      </span>
                     </Link>
                     <div className="pr-3">
                       <CopyButton text={comp.importStatement} />
@@ -138,31 +178,42 @@ export default function QuickReferencePage() {
         <h2 className="text-xl font-bold mb-4">Minimal Setup</h2>
         <div className="relative">
           <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm">
-            <code>{`import { ClarityChat } from '@clarity-chat/react'
+            <code>{`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function App() {
   return <ClarityChat api="/api/chat" />
 }`}</code>
           </pre>
           <div className="absolute top-2 right-2">
-            <CopyButton text={`import { ClarityChat } from '@clarity-chat/react'
+            <CopyButton
+              text={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function App() {
   return <ClarityChat api="/api/chat" />
-}`} />
+}`}
+            />
           </div>
         </div>
       </section>
 
       {/* Footer Links */}
       <div className="flex gap-4 text-sm">
-        <Link href="/reference/hooks" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/hooks"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           All Hooks →
         </Link>
-        <Link href="/reference/components" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/components"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           All Components →
         </Link>
-        <Link href="/reference/hooks/selector" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/hooks/selector"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           Hook Selector →
         </Link>
       </div>

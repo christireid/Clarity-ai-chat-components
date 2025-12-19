@@ -183,7 +183,7 @@ export const iconHover = {
 export const shake: Variants = {
   animate: {
     x: [0, -10, 10, -10, 10, 0],
-    transition: { duration: 0.4 },
+    transition: { duration: durations.slow },
   },
 }
 
@@ -195,7 +195,7 @@ export const pulse: Variants = {
     scale: [1, 1.05, 1],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -314,7 +314,7 @@ export const shimmer = {
   animate: {
     backgroundPosition: ['0% 0%', '100% 0%'],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -333,7 +333,7 @@ export const glow: Variants = {
       '0 0 0 0 rgba(59, 130, 246, 0)',
     ],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'easeInOut',
     },
@@ -415,6 +415,58 @@ export const createViewport = (
   margin,
   amount,
 })
+
+/**
+ * Create a fade animation variant
+ */
+export const createFadeVariant = (options?: {
+  duration?: number
+  delay?: number
+  ease?: number[]
+}): Variants => {
+  const {
+    duration = durations.normal,
+    delay = 0,
+    ease = easings.easeOut,
+  } = options || {}
+  return {
+    initial: { opacity: 0 },
+    animate: {
+      opacity: 1,
+      transition: { duration, delay, ease },
+    },
+    exit: { opacity: 0, transition: { duration: duration / 2 } },
+  }
+}
+
+/**
+ * Create a slide animation variant
+ */
+export const createSlideVariant = (
+  direction: 'up' | 'down' | 'left' | 'right' = 'up',
+  distance = 20,
+  options?: { duration?: number; delay?: number; ease?: number[] }
+): Variants => {
+  const {
+    duration = durations.normal,
+    delay = 0,
+    ease = easings.easeOut,
+  } = options || {}
+
+  const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
+  const sign =
+    direction === 'down' || direction === 'right' ? -distance : distance
+
+  return {
+    initial: { opacity: 0, [axis]: sign },
+    animate: {
+      opacity: 1,
+      [axis]: 0,
+      transition: { duration, delay, ease },
+    },
+    exit: { opacity: 0, [axis]: -sign / 2 },
+  }
+}
 
 // =============================================================================
 // PRESETS FOR COMMON COMPONENTS

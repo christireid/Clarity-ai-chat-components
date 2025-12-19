@@ -1,6 +1,10 @@
 'use client'
 
-import { Skeleton, SkeletonText, SkeletonCard } from '@clarity-chat/react'
+import {
+  Skeleton,
+  SkeletonText,
+  SkeletonCard,
+} from '@clarity-chat/react/internal'
 
 /**
  * Page-level skeleton loader for documentation pages
@@ -76,7 +80,10 @@ export function ComponentPageSkeleton() {
         <Skeleton width={120} height={32} rounded="md" className="mb-4" />
         <div className="space-y-2">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+            <div
+              key={i}
+              className="flex items-center gap-4 p-4 border rounded-lg"
+            >
               <Skeleton width={120} height={20} />
               <Skeleton width={200} height={20} className="flex-1" />
               <Skeleton width={80} height={20} />

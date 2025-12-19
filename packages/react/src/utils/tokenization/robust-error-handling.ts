@@ -1,5 +1,5 @@
 import { TokenCounter } from '@clarity-chat/token-optimization'
-import { smartCountTokens } from './smart-fallback.js'
+import { smartCountTokens } from './smart-fallback'
 
 export interface TokenCounterError extends Error {
   code: string

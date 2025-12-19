@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ExternalLink, BookOpen, Github, Twitter, Youtube } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { durations } from '@/lib/animations'
 
 const footerNavigation = {
   learn: [

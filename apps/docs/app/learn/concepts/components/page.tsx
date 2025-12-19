@@ -259,7 +259,7 @@ export default function ComponentsConceptPage() {
   ContextVisualizer,
   UsageDashboard,
   useChat,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 export function CustomerSuccessWorkspace() {
   const chat = useChat({ id: 'customer-success', api: '/api/chat/cs' })

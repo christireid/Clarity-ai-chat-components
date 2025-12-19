@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+import { ToastProvider, ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -215,8 +215,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -231,8 +231,8 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Tool Card"
           description="Basic tool call display"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 
 function SimpleToolCard() {
   const toolCall: ToolCall = {
@@ -265,7 +265,7 @@ function SimpleToolCard() {
         <ComponentPreview
           title="With Approval Workflow"
           description="Tool call requiring user approval"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function ToolWithApproval() {
@@ -317,7 +317,7 @@ function ToolWithApproval() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 // Pending - awaiting approval
 <ToolInvocationCard
@@ -381,7 +381,7 @@ function ToolWithApproval() {
         <p>Show tool execution results in an expandable section:</p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 function ToolWithResult() {
   const toolCall: ToolCall = {
@@ -418,7 +418,7 @@ function ToolWithResult() {
         <p>Display error messages and provide retry functionality:</p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 function ToolWithError() {
   const toolCall: ToolCall = {
@@ -453,7 +453,7 @@ function ToolWithError() {
         <p>Control how arguments are displayed:</p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 // Formatted JSON (default)
 <ToolInvocationCard
@@ -497,8 +497,8 @@ function ToolWithError() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 
 function CompleteToolCard() {
   const [status, setStatus] = useState<'pending' | 'approved' | 'executing' | 'success' | 'error'>('pending')
@@ -582,8 +582,8 @@ function CompleteToolCard() {
         <p>ToolInvocationCard works seamlessly with streaming messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react'
-import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react/internal'
+import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function StreamingWithTools() {
   const { toolCalls, content } = useStreamingSSE({ api: '/api/stream' })

@@ -3,20 +3,20 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { BundleAnalyzer } from './bundle-analyzer.js'
-import { CLIError } from '../../../cli/src/utils/errors.js'
+import { BundleAnalyzer } from './bundle-analyzer'
+import { CLIError } from '../../../cli/src/utils/errors'
 
 // Mock logger
 const mockLogger = {
   info: vi.fn(),
   warn: vi.fn(),
   error: vi.fn(),
-  debug: vi.fn()
+  debug: vi.fn(),
 }
 
 // Mock getLogger
-vi.mock('../../../cli/src/utils/logger.js', () => ({
-  getLogger: vi.fn(() => mockLogger)
+vi.mock('../../../cli/src/utils/logger', () => ({
+  getLogger: vi.fn(() => mockLogger),
 }))
 
 describe('BundleAnalyzer', () => {
@@ -34,7 +34,7 @@ describe('BundleAnalyzer', () => {
   describe('Configuration', () => {
     it('should have correct default configuration', () => {
       const config = analyzer.getConfig()
-      
+
       expect(config.enabled).toBe(true)
       expect(config.outputDir).toBe('./bundle-analysis')
       expect(config.formats).toEqual(['json', 'html'])
@@ -46,7 +46,7 @@ describe('BundleAnalyzer', () => {
     it('should merge user configuration with defaults', () => {
       const customAnalyzer = new BundleAnalyzer({
         outputDir: './custom-output',
-        thresholds: { total: 1000000 }
+        thresholds: { total: 1000000 },
       })
 
       const config = customAnalyzer.getConfig()
@@ -58,7 +58,7 @@ describe('BundleAnalyzer', () => {
     it('should validate configuration', () => {
       expect(() => {
         new BundleAnalyzer({
-          thresholds: { total: -1 }
+          thresholds: { total: -1 },
         })
       }).toThrow(CLIError)
     })
@@ -69,34 +69,34 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'main.js',
+            name: 'main',
             size: 150 * 1024, // 150KB
             chunks: ['main'],
-            isOverSizeLimit: false
+            isOverSizeLimit: false,
           },
           {
-            name: 'vendor.js',
+            name: 'vendor',
             size: 250 * 1024, // 250KB
             chunks: ['vendor'],
-            isOverSizeLimit: false
-          }
+            isOverSizeLimit: false,
+          },
         ],
         chunks: [
           {
             id: 'main',
             size: 150 * 1024,
-            files: ['main.js'],
+            files: ['main'],
             modules: 50,
-            isOverSizeLimit: false
+            isOverSizeLimit: false,
           },
           {
             id: 'vendor',
             size: 250 * 1024,
-            files: ['vendor.js'],
+            files: ['vendor'],
             modules: 100,
-            isOverSizeLimit: false
-          }
-        ]
+            isOverSizeLimit: false,
+          },
+        ],
       }
 
       const result = await analyzer.process(mockWebpackStats)
@@ -120,13 +120,13 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'large-asset.js',
+            name: 'large-asset',
             size: 300 * 1024, // 300KB, exceeds perAsset threshold
             chunks: ['main'],
-            isOverSizeLimit: true
-          }
+            isOverSizeLimit: true,
+          },
         ],
-        chunks: []
+        chunks: [],
       }
 
       const result = await analyzer.process(mockWebpackStats)
@@ -141,21 +141,21 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'large-chunk.js',
+            name: 'large-chunk',
             size: 200 * 1024, // 200KB, exceeds perChunk threshold
             chunks: ['large-chunk'],
-            isOverSizeLimit: true
-          }
+            isOverSizeLimit: true,
+          },
         ],
         chunks: [
           {
             id: 'large-chunk',
             size: 200 * 1024,
-            files: ['large-chunk.js'],
+            files: ['large-chunk'],
             modules: 150,
-            isOverSizeLimit: true
-          }
-        ]
+            isOverSizeLimit: true,
+          },
+        ],
       }
 
       const result = await analyzer.process(mockWebpackStats)
@@ -163,28 +163,30 @@ describe('BundleAnalyzer', () => {
       expect(result.recommendations).toHaveLength(1)
       expect(result.recommendations[0].type).toBe('code-splitting')
       expect(result.recommendations[0].priority).toBe('high')
-      expect(result.recommendations[0].description).toContain('Split large chunk')
+      expect(result.recommendations[0].description).toContain(
+        'Split large chunk'
+      )
     })
 
     it('should calculate correct score and grade', async () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'main.js',
+            name: 'main',
             size: 100 * 1024,
             chunks: ['main'],
-            isOverSizeLimit: false
-          }
+            isOverSizeLimit: false,
+          },
         ],
         chunks: [
           {
             id: 'main',
             size: 100 * 1024,
-            files: ['main.js'],
+            files: ['main'],
             modules: 50,
-            isOverSizeLimit: false
-          }
-        ]
+            isOverSizeLimit: false,
+          },
+        ],
       }
 
       const result = await analyzer.process(mockWebpackStats)
@@ -198,11 +200,11 @@ describe('BundleAnalyzer', () => {
   describe('Asset Processing', () => {
     it('should correctly identify asset types', () => {
       const testCases = [
-        { filename: 'main.js', expected: 'javascript' },
+        { filename: 'main', expected: 'javascript' },
         { filename: 'styles.css', expected: 'stylesheet' },
         { filename: 'image.png', expected: 'image' },
         { filename: 'font.woff', expected: 'font' },
-        { filename: 'unknown.xyz', expected: 'unknown' }
+        { filename: 'unknown.xyz', expected: 'unknown' },
       ]
 
       testCases.forEach(({ filename, expected }) => {
@@ -214,11 +216,11 @@ describe('BundleAnalyzer', () => {
 
     it('should find correct asset group', () => {
       const testCases = [
-        { filename: 'node_modules/lodash/index.js', expected: 'vendor' },
+        { filename: 'node_modules/lodash/index', expected: 'vendor' },
         { filename: 'src/components/Button.tsx', expected: 'application' },
         { filename: 'styles/main.css', expected: 'styles' },
         { filename: 'assets/logo.png', expected: 'images' },
-        { filename: 'fonts/roboto.woff', expected: 'fonts' }
+        { filename: 'fonts/roboto.woff', expected: 'fonts' },
       ]
 
       testCases.forEach(({ filename, expected }) => {
@@ -230,7 +232,7 @@ describe('BundleAnalyzer', () => {
 
     it('should estimate compressed sizes correctly', () => {
       const originalSize = 1000
-      
+
       // @ts-ignore - accessing private method for testing
       const compressedSize = analyzer.estimateCompressedSize(originalSize)
       expect(compressedSize).toBeLessThan(originalSize)
@@ -241,31 +243,39 @@ describe('BundleAnalyzer', () => {
   describe('Report Generation', () => {
     it('should generate JSON report', async () => {
       const mockWebpackStats = {
-        assets: [{ name: 'main.js', size: 100 * 1024, chunks: ['main'] }],
-        chunks: [{ id: 'main', size: 100 * 1024, files: ['main.js'], modules: 50 }]
+        assets: [{ name: 'main', size: 100 * 1024, chunks: ['main'] }],
+        chunks: [
+          { id: 'main', size: 100 * 1024, files: ['main'], modules: 50 },
+        ],
       }
 
       await analyzer.process(mockWebpackStats)
-      
+
       // Check that logger was called for JSON report generation
       expect(mockLogger.info).toHaveBeenCalledWith(
         'JSON report generated',
-        expect.objectContaining({ filepath: expect.stringContaining('bundle-analysis') })
+        expect.objectContaining({
+          filepath: expect.stringContaining('bundle-analysis'),
+        })
       )
     })
 
     it('should generate HTML report', async () => {
       const mockWebpackStats = {
-        assets: [{ name: 'main.js', size: 100 * 1024, chunks: ['main'] }],
-        chunks: [{ id: 'main', size: 100 * 1024, files: ['main.js'], modules: 50 }]
+        assets: [{ name: 'main', size: 100 * 1024, chunks: ['main'] }],
+        chunks: [
+          { id: 'main', size: 100 * 1024, files: ['main'], modules: 50 },
+        ],
       }
 
       await analyzer.process(mockWebpackStats)
-      
+
       // Check that logger was called for HTML report generation
       expect(mockLogger.info).toHaveBeenCalledWith(
         'HTML report generated',
-        expect.objectContaining({ filepath: expect.stringContaining('bundle-analysis') })
+        expect.objectContaining({
+          filepath: expect.stringContaining('bundle-analysis'),
+        })
       )
     })
 
@@ -273,34 +283,34 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'main.js',
+            name: 'main',
             size: 150 * 1024,
             compressedSize: 100 * 1024,
             type: 'javascript',
-            isOverSizeLimit: false
-          }
+            isOverSizeLimit: false,
+          },
         ],
         chunks: [
           {
             id: 'main',
             size: 150 * 1024,
             modules: 50,
-            isOverSizeLimit: false
-          }
-        ]
+            isOverSizeLimit: false,
+          },
+        ],
       }
 
       const result = await analyzer.process(mockWebpackStats)
-      
+
       // Test HTML generation by checking it contains expected elements
       // @ts-ignore - accessing private method for testing
       const htmlContent = analyzer.generateHtmlContent(result)
-      
+
       expect(htmlContent).toContain('<!DOCTYPE html>')
       expect(htmlContent).toContain('Bundle Analysis Report')
       expect(htmlContent).toContain('150 KB') // total size
       expect(htmlContent).toContain('100 KB') // compressed size
-      expect(htmlContent).toContain('main.js')
+      expect(htmlContent).toContain('main')
     })
   })
 
@@ -309,26 +319,26 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'large.js',
+            name: 'large',
             size: 600 * 1024, // Exceeds total threshold
-            chunks: ['large']
-          }
+            chunks: ['large'],
+          },
         ],
         chunks: [
           {
             id: 'large',
             size: 600 * 1024,
-            files: ['large.js'],
-            modules: 100
-          }
-        ]
+            files: ['large'],
+            modules: 100,
+          },
+        ],
       }
 
       const result = await analyzer.process(mockWebpackStats)
-      
+
       // Should have warnings for exceeding thresholds
       expect(result.warnings.length).toBeGreaterThan(0)
-      expect(result.warnings.some(w => w.type === 'asset-size')).toBe(true)
+      expect(result.warnings.some((w) => w.type === 'asset-size')).toBe(true)
     })
   })
 
@@ -337,23 +347,23 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'main.js',
+            name: 'main',
             size: 150 * 1024,
-            chunks: ['main']
-          }
+            chunks: ['main'],
+          },
         ],
         chunks: [
           {
             id: 'main',
             size: 150 * 1024,
-            files: ['main.js'],
-            modules: 50
-          }
-        ]
+            files: ['main'],
+            modules: 50,
+          },
+        ],
       }
 
       await analyzer.process(mockWebpackStats)
-      
+
       const summary = analyzer.getSummary()
       expect(summary).toHaveProperty('totalSize')
       expect(summary).toHaveProperty('compressedSize')
@@ -376,23 +386,27 @@ describe('BundleAnalyzer', () => {
     it('should handle processing errors gracefully', async () => {
       // Create analyzer with invalid configuration to trigger error
       const invalidAnalyzer = new BundleAnalyzer({
-        thresholds: { total: -1 } // Invalid threshold
+        thresholds: { total: -1 }, // Invalid threshold
       })
 
       const mockWebpackStats = {
-        assets: [{ name: 'test.js', size: 100 }],
-        chunks: []
+        assets: [{ name: 'test', size: 100 }],
+        chunks: [],
       }
 
-      await expect(invalidAnalyzer.process(mockWebpackStats)).rejects.toThrow(CLIError)
+      await expect(invalidAnalyzer.process(mockWebpackStats)).rejects.toThrow(
+        CLIError
+      )
     })
   })
 
   describe('Event Handling', () => {
     it('should emit processing events', (done) => {
       const mockWebpackStats = {
-        assets: [{ name: 'main.js', size: 100 * 1024, chunks: ['main'] }],
-        chunks: [{ id: 'main', size: 100 * 1024, files: ['main.js'], modules: 50 }]
+        assets: [{ name: 'main', size: 100 * 1024, chunks: ['main'] }],
+        chunks: [
+          { id: 'main', size: 100 * 1024, files: ['main'], modules: 50 },
+        ],
       }
 
       analyzer.on('processing-complete', (result) => {
@@ -417,19 +431,19 @@ describe('BundleAnalyzer', () => {
       const mockWebpackStats = {
         assets: [
           {
-            name: 'large.js',
+            name: 'large',
             size: 600 * 1024, // Exceeds threshold
-            chunks: ['large']
-          }
+            chunks: ['large'],
+          },
         ],
         chunks: [
           {
             id: 'large',
             size: 600 * 1024,
-            files: ['large.js'],
-            modules: 100
-          }
-        ]
+            files: ['large'],
+            modules: 100,
+          },
+        ],
       }
 
       analyzer.process(mockWebpackStats)
@@ -459,19 +473,24 @@ describe('BundleAnalyzer', () => {
         { score: 85, expected: 'B' },
         { score: 75, expected: 'C' },
         { score: 65, expected: 'D' },
-        { score: 55, expected: 'F' }
+        { score: 55, expected: 'F' },
       ]
 
       testCases.forEach(({ score, expected }) => {
         const mockWebpackStats = {
-          assets: [{ name: 'test.js', size: 100 * 1024, chunks: ['test'] }],
-          chunks: [{ id: 'test', size: 100 * 1024, files: ['test.js'], modules: 50 }]
+          assets: [{ name: 'test', size: 100 * 1024, chunks: ['test'] }],
+          chunks: [
+            { id: 'test', size: 100 * 1024, files: ['test'], modules: 50 },
+          ],
         }
 
         // Mock the score calculation to return specific score
-        vi.spyOn(analyzer as any, 'calculateScore').mockReturnValue({ score, grade: expected })
-        
-        analyzer.process(mockWebpackStats).then(result => {
+        vi.spyOn(analyzer as any, 'calculateScore').mockReturnValue({
+          score,
+          grade: expected,
+        })
+
+        analyzer.process(mockWebpackStats).then((result) => {
           expect(result.grade).toBe(expected)
         })
       })

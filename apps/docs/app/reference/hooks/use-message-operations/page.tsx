@@ -156,7 +156,7 @@ export default function UseMessageOperationsPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react'
+          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 
 function Chat() {
   const {
@@ -198,7 +198,7 @@ function Chat() {
           Experiment with useMessageOperations:
         </p>
         <CodePlayground
-          initialCode={`import { useMessageOperations } from '@clarity-chat/react'
+          initialCode={`import { useMessageOperations } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {
@@ -247,7 +247,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Message Editing</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react'
+          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 
 function EditableChat() {
   const {
@@ -288,7 +288,7 @@ function EditableChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react'
+          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 
 function BranchingChat() {
   const {
@@ -331,7 +331,7 @@ function BranchingChat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Undo/Redo</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react'
+          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 
 function UndoableChat() {
   const {
@@ -368,7 +368,7 @@ function UndoableChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react'
+          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 
 function RegeneratableChat() {
   const {

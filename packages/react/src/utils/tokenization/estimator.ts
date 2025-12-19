@@ -8,12 +8,12 @@
  */
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
-import { InputValidator } from './input-validator.js'
+import { InputValidator } from './input-validator'
 import {
   errorHandler,
   ErrorCategory,
   ErrorSeverity,
-} from './enhanced-error-handling.js'
+} from './enhanced-error-handling'
 import type { ModelName } from './accurate-counter'
 
 /**

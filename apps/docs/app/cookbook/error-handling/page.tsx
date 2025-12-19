@@ -40,7 +40,7 @@ export default function ErrorHandlingPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -66,7 +66,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Network Errors</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function Chat() {
   return (
@@ -86,7 +86,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Rate Limit Errors</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function Chat() {
   return (
@@ -108,7 +108,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function Chat() {
   return (
@@ -134,7 +134,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append, error, isLoading } = useClarityChat({
@@ -180,7 +180,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useCallback } from 'react'
 
 function Chat() {
@@ -225,8 +225,8 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ErrorBoundary } from '@clarity-chat/react'
-import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ErrorBoundary } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react/internal'
 
 function ChatApp() {
   return (
@@ -310,7 +310,7 @@ function ChatApp() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function Chat() {
   return (

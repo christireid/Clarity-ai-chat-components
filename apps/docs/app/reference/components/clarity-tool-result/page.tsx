@@ -5,8 +5,8 @@ import {
   ToastProvider,
   ClarityToolResult,
   createToolUIRegistry,
-} from '@clarity-chat/react'
-import type { CoreMessage } from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
+import type { CoreMessage } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -247,8 +247,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
-import type { CoreMessage, ToolComponentProps } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
+import type { CoreMessage, ToolComponentProps } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -263,8 +263,8 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Tool Result"
           description="Custom UI for weather tool results"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
-import type { ToolComponentProps } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
+import type { ToolComponentProps } from '@clarity-chat/react/internal'
 
 // Custom component for weather tool
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -315,8 +315,8 @@ function ToolResultExample() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { createToolUIRegistry } from '@clarity-chat/react'
-import type { ToolComponentProps } from '@clarity-chat/react'
+          code={`import { createToolUIRegistry } from '@clarity-chat/react/internal'
+import type { ToolComponentProps } from '@clarity-chat/react/internal'
 
 // Define your tool result components
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -374,7 +374,7 @@ export { toolRegistry }`}
         <ComponentPreview
           title="Multiple Tool Results"
           description="Registry with multiple tool components"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
 
 // Weather tool component
 function WeatherResult({ data }: ToolComponentProps) {
@@ -433,7 +433,7 @@ const registry = createToolUIRegistry({
         <ComponentPreview
           title="Unregistered Tool Fallback"
           description="Default JSON display for unregistered tools"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
 
 const registry = createToolUIRegistry({
   weather: WeatherResult,
@@ -467,7 +467,7 @@ function UnregisteredTool() {
         <p>Provide a custom fallback component for unregistered tools:</p>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
 
 function CustomFallback({ toolCall, result }: { toolCall: ToolCall; result: unknown }) {
   return (
@@ -505,7 +505,7 @@ const registry = createToolUIRegistry({
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
 
 function ErrorProneTool({ data }: ToolComponentProps) {
   // This might throw an error
@@ -546,8 +546,8 @@ function CustomErrorFallback({ error, toolCall }: { error: Error; toolCall: Tool
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
-import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
+import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react/internal'
 
 function ContextAwareTool({ data, messages, toolCall }: ToolComponentProps) {
   // Access conversation context
@@ -586,8 +586,8 @@ const registry = createToolUIRegistry({
         <h2 id="complete-example">Complete Example</h2>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
-import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
+import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react/internal'
 
 // Weather tool component
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -692,8 +692,8 @@ function App() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry, StreamingMessage } from '@clarity-chat/react'
-import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { ClarityToolResult, createToolUIRegistry, StreamingMessage } from '@clarity-chat/react/internal'
+import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function StreamingWithToolResults() {
   const registry = createToolUIRegistry({

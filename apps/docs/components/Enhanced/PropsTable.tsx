@@ -5,11 +5,8 @@ import { Check, Copy, ChevronDown, ExternalLink } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useClipboard } from '@clarity-chat/react'
-import {
-  getTypeLink,
-  getTypeDefinition,
-} from '@/lib/type-registry'
+import { useClipboard } from '@clarity-chat/react/internal'
+import { getTypeLink, getTypeDefinition } from '@/lib/type-registry'
 
 /** Minimum number of props before showing the filter input */
 const FILTER_THRESHOLD = 5
@@ -40,7 +37,7 @@ const tableVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: durations.slow,
       ease: [0.25, 0.1, 0.25, 1],
       staggerChildren: 0.05,
     },
@@ -53,19 +50,23 @@ const rowVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: [0.25, 0.1, 0.25, 1],
     },
   },
 }
 
-export function PropsTable({ props, title = 'Props', className }: PropsTableProps) {
+export function PropsTable({
+  props,
+  title = 'Props',
+  className,
+}: PropsTableProps) {
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set())
   const [filterText, setFilterText] = useState('')
   const { copy, copied, value: copiedValue } = useClipboard({ timeout: 2000 })
 
   const toggleTypeExpansion = useCallback((propName: string) => {
-    setExpandedTypes(prev => {
+    setExpandedTypes((prev) => {
       const next = new Set(prev)
       if (next.has(propName)) {
         next.delete(propName)
@@ -79,7 +80,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
   // Filter props based on search
   const filteredProps = filterText
     ? props.filter(
-        prop =>
+        (prop) =>
           prop.name.toLowerCase().includes(filterText.toLowerCase()) ||
           prop.type.toLowerCase().includes(filterText.toLowerCase()) ||
           prop.description?.toLowerCase().includes(filterText.toLowerCase())
@@ -104,7 +105,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: durations.moderate }}
             className="text-2xl font-bold text-text-primary"
           >
             {title}
@@ -117,7 +118,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: durations.moderate }}
           >
             <input
               type="text"
@@ -137,10 +138,18 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-bg-secondary border-b border-border">
-              <th className="text-left p-4 font-semibold text-text-primary">Name</th>
-              <th className="text-left p-4 font-semibold text-text-primary">Type</th>
-              <th className="text-left p-4 font-semibold text-text-primary">Default</th>
-              <th className="text-left p-4 font-semibold text-text-primary">Description</th>
+              <th className="text-left p-4 font-semibold text-text-primary">
+                Name
+              </th>
+              <th className="text-left p-4 font-semibold text-text-primary">
+                Type
+              </th>
+              <th className="text-left p-4 font-semibold text-text-primary">
+                Default
+              </th>
+              <th className="text-left p-4 font-semibold text-text-primary">
+                Description
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -149,9 +158,10 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                 key={prop.name}
                 variants={rowVariants}
                 whileHover={{
-                  backgroundColor: 'rgba(var(--color-bg-secondary-rgb, 241 245 249) / 0.5)',
+                  backgroundColor:
+                    'rgba(var(--color-bg-secondary-rgb, 241 245 249) / 0.5)',
                   scale: 1.002,
-                  transition: { duration: 0.2 },
+                  transition: { duration: durations.normal },
                 }}
                 className={clsx(
                   'border-b border-border last:border-b-0',
@@ -163,7 +173,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                   <div className="flex items-center gap-2">
                     <motion.code
                       whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                       className="text-sm font-mono font-semibold text-text-primary bg-bg-tertiary px-2 py-1 rounded"
                     >
                       {prop.name}
@@ -173,7 +183,11 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ scale: 1.1 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 200,
+                          damping: 15,
+                        }}
                         className="text-xs font-medium text-red-500 dark:text-red-400 px-2 py-0.5 bg-red-500/10 rounded-full"
                       >
                         required
@@ -184,7 +198,11 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ scale: 1.1 }}
-                        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 200,
+                          damping: 15,
+                        }}
                         className="text-xs font-medium text-orange-500 dark:text-orange-400 px-2 py-0.5 bg-orange-500/10 rounded-full"
                       >
                         deprecated
@@ -204,7 +222,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, rotate: 180 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: durations.normal }}
                           >
                             <Check className="w-3 h-3 text-green-500" />
                           </motion.div>
@@ -214,7 +232,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                             initial={{ scale: 0, rotate: 180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, rotate: -180 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: durations.normal }}
                           >
                             <Copy className="w-3 h-3 text-text-secondary" />
                           </motion.div>
@@ -226,7 +244,8 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                 <td className="p-4">
                   {(() => {
                     const typeLink = prop.typeLink || getTypeLink(prop.type)
-                    const typeDef = prop.typeDefinition || getTypeDefinition(prop.type)
+                    const typeDef =
+                      prop.typeDefinition || getTypeDefinition(prop.type)
                     const isExpanded = expandedTypes.has(prop.name)
                     const isExternal = typeLink?.startsWith('http')
 
@@ -264,12 +283,16 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               className="p-1 rounded hover:bg-bg-tertiary transition-colors"
-                              aria-label={isExpanded ? 'Collapse type definition' : 'Expand type definition'}
+                              aria-label={
+                                isExpanded
+                                  ? 'Collapse type definition'
+                                  : 'Expand type definition'
+                              }
                               aria-expanded={isExpanded}
                             >
                               <motion.div
                                 animate={{ rotate: isExpanded ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
+                                transition={{ duration: durations.normal }}
                               >
                                 <ChevronDown className="w-4 h-4 text-text-tertiary" />
                               </motion.div>
@@ -284,11 +307,13 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.2 }}
+                              transition={{ duration: durations.normal }}
                               className="overflow-hidden"
                             >
                               <pre className="text-xs font-mono bg-bg-tertiary p-3 rounded-lg overflow-x-auto border border-border">
-                                <code className="text-text-secondary">{typeDef}</code>
+                                <code className="text-text-secondary">
+                                  {typeDef}
+                                </code>
                               </pre>
                             </motion.div>
                           )}
@@ -301,7 +326,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                   {prop.default ? (
                     <motion.code
                       whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                       className="text-sm font-mono text-text-secondary bg-bg-tertiary px-2 py-1 rounded inline-block"
                     >
                       {prop.default}
@@ -316,18 +341,28 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                       {prop.deprecated && prop.deprecatedMessage && (
                         <motion.div
                           initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                          animate={{ opacity: 1, height: 'auto', marginBottom: 8 }}
+                          animate={{
+                            opacity: 1,
+                            height: 'auto',
+                            marginBottom: 8,
+                          }}
                           exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                          transition={{
+                            duration: durations.moderate,
+                            ease: [0.25, 0.1, 0.25, 1],
+                          }}
                           className="overflow-hidden"
                         >
                           <div className="p-2 bg-orange-500/10 border border-orange-500/20 rounded text-orange-600 dark:text-orange-400">
-                            <strong>Deprecated:</strong> {prop.deprecatedMessage}
+                            <strong>Deprecated:</strong>{' '}
+                            {prop.deprecatedMessage}
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    {prop.description || <span className="text-text-tertiary">—</span>}
+                    {prop.description || (
+                      <span className="text-text-tertiary">—</span>
+                    )}
                   </div>
                 </td>
               </motion.tr>

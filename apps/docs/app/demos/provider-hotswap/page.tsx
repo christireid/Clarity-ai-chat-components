@@ -11,14 +11,19 @@ import {
   User,
   Send,
   ArrowRight,
-  Code2
+  Code2,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
+import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
-import { trackDemoViewed, trackCodeCopied, trackProviderSwitched, trackMessageSent } from '@/lib/demos/analytics'
+import {
+  trackDemoViewed,
+  trackCodeCopied,
+  trackProviderSwitched,
+  trackMessageSent,
+} from '@/lib/demos/analytics'
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 interface Provider {
@@ -63,19 +68,28 @@ const providers: Provider[] = [
 
 const providerResponses: Record<string, Record<string, string>> = {
   openai: {
-    greeting: "Hello! I'm GPT-4o from OpenAI. I excel at coding, math, and structured reasoning. Try asking me a technical question!",
-    capabilities: "As GPT-4o, I'm optimized for: 🔧 Code generation & debugging, 📊 Data analysis, 🧮 Mathematical reasoning, 💡 Creative solutions. I have a 128K context window and support function calling.",
-    default: "I'm GPT-4o. I noticed you switched providers mid-conversation - Clarity Chat makes this seamless! Your conversation history is preserved across provider switches.",
+    greeting:
+      "Hello! I'm GPT-4o from OpenAI. I excel at coding, math, and structured reasoning. Try asking me a technical question!",
+    capabilities:
+      "As GPT-4o, I'm optimized for: 🔧 Code generation & debugging, 📊 Data analysis, 🧮 Mathematical reasoning, 💡 Creative solutions. I have a 128K context window and support function calling.",
+    default:
+      "I'm GPT-4o. I noticed you switched providers mid-conversation - Clarity Chat makes this seamless! Your conversation history is preserved across provider switches.",
   },
   anthropic: {
-    greeting: "Hello! I'm Claude 3.5 from Anthropic. I specialize in nuanced analysis, writing, and careful reasoning. What can I help you explore?",
-    capabilities: "As Claude 3.5, I'm particularly good at: 📝 Long-form writing, 🔍 Nuanced analysis, 🤔 Ethical reasoning, 📚 Research synthesis. I have a 200K context window and strong safety features.",
-    default: "I'm Claude 3.5. Notice how the conversation continued seamlessly when you switched from another provider? That's Clarity Chat's provider abstraction at work!",
+    greeting:
+      "Hello! I'm Claude 3.5 from Anthropic. I specialize in nuanced analysis, writing, and careful reasoning. What can I help you explore?",
+    capabilities:
+      "As Claude 3.5, I'm particularly good at: 📝 Long-form writing, 🔍 Nuanced analysis, 🤔 Ethical reasoning, 📚 Research synthesis. I have a 200K context window and strong safety features.",
+    default:
+      "I'm Claude 3.5. Notice how the conversation continued seamlessly when you switched from another provider? That's Clarity Chat's provider abstraction at work!",
   },
   google: {
-    greeting: "Hello! I'm Gemini Pro from Google. I'm great with multimodal content, research, and real-time information. How can I assist you?",
-    capabilities: "As Gemini Pro, my strengths include: 🖼️ Multimodal understanding, 🔎 Research & search integration, 🌐 Real-time information, 📱 Mobile optimization. I support images, video, and audio inputs.",
-    default: "I'm Gemini Pro. The fact that you can switch between AI providers without any code changes demonstrates the power of Clarity Chat's unified API!",
+    greeting:
+      "Hello! I'm Gemini Pro from Google. I'm great with multimodal content, research, and real-time information. How can I assist you?",
+    capabilities:
+      'As Gemini Pro, my strengths include: 🖼️ Multimodal understanding, 🔎 Research & search integration, 🌐 Real-time information, 📱 Mobile optimization. I support images, video, and audio inputs.',
+    default:
+      "I'm Gemini Pro. The fact that you can switch between AI providers without any code changes demonstrates the power of Clarity Chat's unified API!",
   },
 }
 
@@ -103,7 +117,7 @@ export async function POST(req: Request) {
 }`
 
 const clientCode = `// components/Chat.tsx
-import { ClarityChat } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react/internal'
 
 export function Chat({ provider }) {
   return (
@@ -151,12 +165,12 @@ export default function ProviderHotswapDemo() {
   const handleProviderSwitch = (providerId: string) => {
     if (providerId === activeProvider) return
 
-    const provider = providers.find(p => p.id === providerId)
+    const provider = providers.find((p) => p.id === providerId)
     if (!provider) return
 
     trackProviderSwitched('provider-hotswap', activeProvider, providerId)
     setActiveProvider(providerId)
-    setSwitchCount(prev => prev + 1)
+    setSwitchCount((prev) => prev + 1)
 
     // Add a system message about the switch
     const switchMessage: Message = {
@@ -166,7 +180,7 @@ export default function ProviderHotswapDemo() {
       provider: providerId,
       timestamp: new Date(),
     }
-    setMessages(prev => [...prev, switchMessage])
+    setMessages((prev) => [...prev, switchMessage])
     scrollToBottom()
   }
 
@@ -177,17 +191,21 @@ export default function ProviderHotswapDemo() {
     for (let i = 0; i < words.length; i++) {
       if (!isMountedRef.current) return
       currentText += (i > 0 ? ' ' : '') + words[i]
-      setMessages(prev => prev.map(msg =>
-        msg.id === messageId ? { ...msg, text: currentText } : msg
-      ))
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, text: currentText } : msg
+        )
+      )
       scrollToBottom()
       await sleep(25 + Math.random() * 25)
     }
 
     if (!isMountedRef.current) return
-    setMessages(prev => prev.map(msg =>
-      msg.id === messageId ? { ...msg, isStreaming: false } : msg
-    ))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId ? { ...msg, isStreaming: false } : msg
+      )
+    )
   }
 
   const handleSend = async () => {
@@ -203,7 +221,7 @@ export default function ProviderHotswapDemo() {
     }
 
     const userInput = input.toLowerCase()
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
     scrollToBottom()
@@ -213,27 +231,39 @@ export default function ProviderHotswapDemo() {
     const responses = providerResponses[activeProvider]
     let responseText = responses.default
 
-    if (userInput.includes('hello') || userInput.includes('hi') || userInput.includes('hey')) {
+    if (
+      userInput.includes('hello') ||
+      userInput.includes('hi') ||
+      userInput.includes('hey')
+    ) {
       responseText = responses.greeting
-    } else if (userInput.includes('what can') || userInput.includes('capabilities') || userInput.includes('good at')) {
+    } else if (
+      userInput.includes('what can') ||
+      userInput.includes('capabilities') ||
+      userInput.includes('good at')
+    ) {
       responseText = responses.capabilities
     }
 
     const botMessageId = generateId()
-    setMessages(prev => [...prev, {
-      id: botMessageId,
-      text: '',
-      sender: 'bot',
-      provider: activeProvider,
-      timestamp: new Date(),
-      isStreaming: true,
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: botMessageId,
+        text: '',
+        sender: 'bot',
+        provider: activeProvider,
+        timestamp: new Date(),
+        isStreaming: true,
+      },
+    ])
     setIsTyping(false)
 
     await simulateStream(responseText, botMessageId)
   }
 
-  const currentProvider = providers.find(p => p.id === activeProvider) ?? providers[0]
+  const currentProvider =
+    providers.find((p) => p.id === activeProvider) ?? providers[0]
 
   return (
     <div className="container-docs py-12">
@@ -259,8 +289,8 @@ export default function ProviderHotswapDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              Switch between OpenAI, Claude, and Gemini mid-conversation.
-              Same code, same conversation, different providers.
+              Switch between OpenAI, Claude, and Gemini mid-conversation. Same
+              code, same conversation, different providers.
             </p>
           </div>
         </ScrollReveal>
@@ -272,7 +302,9 @@ export default function ProviderHotswapDemo() {
               {/* Provider Selector */}
               <div className="p-4 bg-bg-secondary border-b border-border">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-text-secondary">Select Provider</span>
+                  <span className="text-sm font-medium text-text-secondary">
+                    Select Provider
+                  </span>
                   <span className="text-xs text-text-secondary">
                     Switches: {switchCount}
                   </span>
@@ -290,7 +322,9 @@ export default function ProviderHotswapDemo() {
                     >
                       <div className="text-2xl mb-1">{provider.logo}</div>
                       <div className="text-xs font-medium">{provider.name}</div>
-                      <div className="text-[10px] text-text-secondary">{provider.model}</div>
+                      <div className="text-[10px] text-text-secondary">
+                        {provider.model}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -318,7 +352,7 @@ export default function ProviderHotswapDemo() {
               >
                 {messages.map((message) => {
                   const msgProvider = message.provider
-                    ? providers.find(p => p.id === message.provider)
+                    ? providers.find((p) => p.id === message.provider)
                     : undefined
 
                   return (
@@ -330,22 +364,29 @@ export default function ProviderHotswapDemo() {
                         message.sender === 'user' ? 'flex-row-reverse' : ''
                       }`}
                     >
-                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.sender === 'bot'
-                          ? msgProvider?.bgColor || 'bg-gray-100 dark:bg-gray-800'
-                          : 'bg-purple-100 dark:bg-purple-900'
-                      }`}>
+                      <div
+                        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          message.sender === 'bot'
+                            ? msgProvider?.bgColor ||
+                              'bg-gray-100 dark:bg-gray-800'
+                            : 'bg-purple-100 dark:bg-purple-900'
+                        }`}
+                      >
                         {message.sender === 'bot' ? (
-                          <span className="text-lg">{msgProvider?.logo || '🤖'}</span>
+                          <span className="text-lg">
+                            {msgProvider?.logo || '🤖'}
+                          </span>
                         ) : (
                           <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         )}
                       </div>
-                      <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${
-                        message.sender === 'bot'
-                          ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                          : 'bg-brand-500 text-white rounded-tr-sm'
-                      }`}>
+                      <div
+                        className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                          message.sender === 'bot'
+                            ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
+                            : 'bg-brand-500 text-white rounded-tr-sm'
+                        }`}
+                      >
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
                           {message.text}
                           {message.isStreaming && (
@@ -403,7 +444,9 @@ export default function ProviderHotswapDemo() {
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700">
                   <div className="flex items-center gap-2">
                     <Code2 className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-300 font-medium">API Route (Server)</span>
+                    <span className="text-sm text-gray-300 font-medium">
+                      API Route (Server)
+                    </span>
                   </div>
                   <button
                     onClick={() => copyCode(apiRouteCode, 'api')}
@@ -416,7 +459,10 @@ export default function ProviderHotswapDemo() {
                       <Copy className="w-4 h-4 text-gray-400" />
                     )}
                   </button>
-                  <CopyFullExampleButton demoId="provider-hotswap" variant="compact" />
+                  <CopyFullExampleButton
+                    demoId="provider-hotswap"
+                    variant="compact"
+                  />
                 </div>
                 <pre className="p-4 text-sm font-mono text-gray-300 overflow-x-auto">
                   <code>{apiRouteCode}</code>
@@ -428,7 +474,9 @@ export default function ProviderHotswapDemo() {
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700">
                   <div className="flex items-center gap-2">
                     <Code2 className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-300 font-medium">Client Component</span>
+                    <span className="text-sm text-gray-300 font-medium">
+                      Client Component
+                    </span>
                   </div>
                   <button
                     onClick={() => copyCode(clientCode, 'client')}
@@ -456,19 +504,31 @@ export default function ProviderHotswapDemo() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span><strong>No vendor lock-in:</strong> Switch providers without changing code</span>
+                    <span>
+                      <strong>No vendor lock-in:</strong> Switch providers
+                      without changing code
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span><strong>Cost optimization:</strong> Route to cheaper models for simple queries</span>
+                    <span>
+                      <strong>Cost optimization:</strong> Route to cheaper
+                      models for simple queries
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span><strong>Fallback support:</strong> Auto-switch when a provider is down</span>
+                    <span>
+                      <strong>Fallback support:</strong> Auto-switch when a
+                      provider is down
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span><strong>A/B testing:</strong> Compare model quality side-by-side</span>
+                    <span>
+                      <strong>A/B testing:</strong> Compare model quality
+                      side-by-side
+                    </span>
                   </li>
                 </ul>
               </div>

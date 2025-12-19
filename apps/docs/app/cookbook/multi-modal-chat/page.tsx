@@ -41,7 +41,7 @@ export default function MultiModalChatPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat, FileUpload } from '@clarity-chat/react'
+          code={`import { ClarityChat, FileUpload } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function MultiModalChat() {
@@ -77,7 +77,7 @@ function MultiModalChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow, FileUpload } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow, FileUpload } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function MultiModalChat() {
@@ -152,7 +152,7 @@ function MultiModalChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { AdvancedChatInput } from '@clarity-chat/react'
+          code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
 
 function ImageChat() {
   const [message, setMessage] = useState('')

@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -19,7 +19,7 @@ const testUtilsExports: Prop[] = [
   },
   {
     name: 'renderWithTheme',
-    type: "(ui: ReactElement, themeName?: string, options?: RenderOptions) => RenderResult",
+    type: '(ui: ReactElement, themeName?: string, options?: RenderOptions) => RenderResult',
     description: 'Render with a specific theme applied',
   },
   {
@@ -172,8 +172,11 @@ export default function TestingGuidePage() {
             </h1>
             <p className="text-xl text-text-secondary leading-relaxed">
               Comprehensive testing utilities for Clarity Chat components. Use
-              the dedicated <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">@clarity-chat/react/test-utils</code> entry
-              point for optimized testing workflows.
+              the dedicated{' '}
+              <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                @clarity-chat/react/test-utils
+              </code>{' '}
+              entry point for optimized testing workflows.
             </p>
           </div>
         </ScrollReveal>
@@ -204,8 +207,9 @@ export default function TestingGuidePage() {
           <ScrollReveal delay={0.3}>
             <TutorialStep step={1} title="Installation & Setup">
               <p className="text-text-secondary mb-4">
-                The test utilities are included with <code>@clarity-chat/react</code>.
-                No additional packages needed. Configure your test environment:
+                The test utilities are included with{' '}
+                <code>@clarity-chat/react</code>. No additional packages needed.
+                Configure your test environment:
               </p>
 
               <EnhancedCodeBlock
@@ -267,7 +271,7 @@ import {
   createMockMessage,
   createMockMessages,
 } from '@clarity-chat/react/test-utils'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 describe('ChatWindow', () => {
   it('renders messages correctly', () => {
@@ -326,15 +330,15 @@ describe('ChatWindow', () => {
           <ScrollReveal delay={0.5}>
             <TutorialStep step={3} title="Testing with Themes">
               <p className="text-text-secondary mb-4">
-                Use <code>renderWithTheme</code> to test components with specific
-                themes applied:
+                Use <code>renderWithTheme</code> to test components with
+                specific themes applied:
               </p>
 
               <EnhancedCodeBlock
                 code={`import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import { renderWithTheme } from '@clarity-chat/react/test-utils'
-import { Message } from '@clarity-chat/react'
+import { Message } from '@clarity-chat/react/internal'
 
 describe('Message theming', () => {
   const mockMessage = {
@@ -389,7 +393,7 @@ import {
   createMockReadableStream,
   mockFetch,
 } from '@clarity-chat/react/test-utils'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 describe('Streaming', () => {
   it('displays streaming text progressively', async () => {
@@ -447,7 +451,7 @@ import {
   assertChatState,
   waitForChatUpdate,
 } from '@clarity-chat/react/test-utils'
-import { useClarityChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react/internal'
 
 // Mock the hook module
 vi.mock('@clarity-chat/react', async () => {
@@ -539,7 +543,7 @@ import {
   renderWithProviders,
   mockSpeechRecognition,
 } from '@clarity-chat/react/test-utils'
-import { VoiceInput } from '@clarity-chat/react'
+import { VoiceInput } from '@clarity-chat/react/internal'
 
 describe('VoiceInput', () => {
   beforeEach(() => {
@@ -573,7 +577,9 @@ describe('VoiceInput', () => {
 
           <ScrollReveal delay={0.9}>
             <section className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Test Utilities Reference</h2>
+              <h2 className="text-2xl font-bold mb-6">
+                Test Utilities Reference
+              </h2>
 
               <div className="space-y-8">
                 <div>
@@ -581,7 +587,11 @@ describe('VoiceInput', () => {
                     Core Test Utilities
                   </h3>
                   <p className="text-text-secondary mb-4">
-                    Import from <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">@clarity-chat/react/test-utils</code>:
+                    Import from{' '}
+                    <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                      @clarity-chat/react/test-utils
+                    </code>
+                    :
                   </p>
                   <PropTable props={testUtilsExports} />
                 </div>
@@ -615,8 +625,9 @@ describe('VoiceInput', () => {
                     Use Test Entry Point
                   </h4>
                   <p className="text-sm text-text-secondary">
-                    Always import from <code>@clarity-chat/react/test-utils</code>{' '}
-                    to keep test code out of production bundles.
+                    Always import from{' '}
+                    <code>@clarity-chat/react/test-utils</code> to keep test
+                    code out of production bundles.
                   </p>
                 </div>
 
@@ -626,8 +637,8 @@ describe('VoiceInput', () => {
                     Setup Browser Mocks Early
                   </h4>
                   <p className="text-sm text-text-secondary">
-                    Call <code>mockIntersectionObserver()</code> and similar mocks
-                    in <code>beforeAll</code> to avoid flaky tests.
+                    Call <code>mockIntersectionObserver()</code> and similar
+                    mocks in <code>beforeAll</code> to avoid flaky tests.
                   </p>
                 </div>
 
@@ -659,8 +670,8 @@ describe('VoiceInput', () => {
                     Avoid Implementation Details
                   </h4>
                   <p className="text-sm text-text-secondary">
-                    Test behavior, not implementation. Query by role/text, not by
-                    className or test IDs when possible.
+                    Test behavior, not implementation. Query by role/text, not
+                    by className or test IDs when possible.
                   </p>
                 </div>
 

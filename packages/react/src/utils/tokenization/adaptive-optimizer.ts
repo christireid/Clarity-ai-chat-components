@@ -16,7 +16,7 @@ import { TokenCounter } from '@clarity-chat/token-optimization'
 import {
   AdvancedCompressionOrchestrator,
   compressWithAdvanced,
-} from './advanced-compression.js'
+} from './advanced-compression'
 
 // Enhanced model characteristics with token efficiency data
 export interface ModelEfficiencyProfile {

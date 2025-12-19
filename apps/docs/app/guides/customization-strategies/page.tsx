@@ -36,7 +36,7 @@ export default function CustomizationStrategiesPage() {
         <h2>Theming</h2>
         <p>Customize themes and colors:</p>
         <CodePlayground
-          initialCode={`import { ThemeProvider } from '@clarity-chat/react'
+          initialCode={`import { ThemeProvider } from '@clarity-chat/react/internal'
 
 // Custom theme
 const customTheme = {
@@ -73,7 +73,7 @@ function CustomThemedChat() {
         <h2>Style Overrides</h2>
         <p>Override component styles:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 import './custom-chat.css'
 
 // custom-chat.css
@@ -108,7 +108,7 @@ function TailwindChat() {
         <h2>Custom Components</h2>
         <p>Create custom components:</p>
         <CodePlayground
-          initialCode={`import { Message, MessageProps } from '@clarity-chat/react'
+          initialCode={`import { Message, MessageProps } from '@clarity-chat/react/internal'
 
 // Custom message component
 function CustomMessage({ message, ...props }: MessageProps) {
@@ -145,7 +145,7 @@ function CustomChat() {
   ChatInput,
   MessageList,
   StreamingMessage,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function CustomChatInterface() {
   const [messages, setMessages] = useState([])
@@ -178,7 +178,7 @@ function CustomChatInterface() {
         <p>Integrate with your design system:</p>
         <CodePlayground
           initialCode={`import { Button, Input } from '@your-design-system/ui'
-import { ChatInput } from '@clarity-chat/react'
+import { ChatInput } from '@clarity-chat/react/internal'
 
 // Wrap components with design system
 function DesignSystemChat() {

@@ -103,7 +103,7 @@ export async function POST(req: Request) {
 'use client'
 
 import { useSession, signIn } from 'next-auth/react'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 export default function ChatPage() {
   const { data: session, status } = useSession()

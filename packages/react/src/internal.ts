@@ -16,6 +16,9 @@
 // Re-export everything from public API
 export * from './public-api'
 
+// Re-export all internal components and hooks
+export * from './_internal-exports'
+
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================

@@ -42,7 +42,8 @@ const optionsProps: Prop[] = [
   {
     name: 'service',
     type: 'MemoryService',
-    description: 'Custom MemoryService instance to use instead of creating one.',
+    description:
+      'Custom MemoryService instance to use instead of creating one.',
   },
 ]
 
@@ -95,9 +96,13 @@ export default function CreateMemoryStorePage() {
       <Callout type="info">
         <p>
           For React components, use{' '}
-          <Link href="/reference/components/memory-provider">MemoryProvider</Link>{' '}
+          <Link href="/reference/components/memory-provider">
+            MemoryProvider
+          </Link>{' '}
           and{' '}
-          <Link href="/reference/hooks/use-memory-context">useMemoryContext</Link>{' '}
+          <Link href="/reference/hooks/use-memory-context">
+            useMemoryContext
+          </Link>{' '}
           instead. <code>createMemoryStore</code> is for non-React contexts,
           server-side usage, or when you need to share a memory store across
           providers.
@@ -108,7 +113,7 @@ export default function CreateMemoryStorePage() {
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react'
+          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
 import type { CreateMemoryStoreOptions, MemoryStore } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -120,7 +125,7 @@ import type { CreateMemoryStoreOptions, MemoryStore } from '@clarity-chat/react'
         <p>Create a memory store and use it to store and query memories:</p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react'
+          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
 
 // Create a memory store with defaults
 const memoryStore = createMemoryStore()
@@ -147,7 +152,7 @@ await memoryStore.clear()`}
         <p>Configure memory strategy and token limits:</p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react'
+          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
 
 // Vector store for semantic search
 const vectorMemory = createMemoryStore({
@@ -177,11 +182,12 @@ const topicMemory = createMemoryStore({
         <h2 id="with-provider">With React Provider</h2>
 
         <p>
-          Share a memory store across components using <code>MemoryProvider</code>:
+          Share a memory store across components using{' '}
+          <code>MemoryProvider</code>:
         </p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore, MemoryProvider } from '@clarity-chat/react'
+          code={`import { createMemoryStore, MemoryProvider } from '@clarity-chat/react/internal'
 
 // Create shared memory store
 const sharedMemory = createMemoryStore({
@@ -209,7 +215,7 @@ function App() {
 
         <EnhancedCodeBlock
           code={`// app/api/chat/route.ts
-import { createMemoryStore } from '@clarity-chat/react'
+import { createMemoryStore } from '@clarity-chat/react/internal'
 
 // Create per-request memory store
 export async function POST(request: Request) {
@@ -386,16 +392,16 @@ type MemoryScope = 'session' | 'thread' | 'global'`}
           <li className="flex gap-3">
             <span className="text-green-500">✓</span>
             <div>
-              <strong>Use appropriate scopes</strong>: Use session for
-              temporary context, thread for conversation persistence, global
-              for user preferences.
+              <strong>Use appropriate scopes</strong>: Use session for temporary
+              context, thread for conversation persistence, global for user
+              preferences.
             </div>
           </li>
           <li className="flex gap-3">
             <span className="text-green-500">✓</span>
             <div>
-              <strong>Add metadata</strong>: Include timestamps, categories,
-              and user IDs for better organization and filtering.
+              <strong>Add metadata</strong>: Include timestamps, categories, and
+              user IDs for better organization and filtering.
             </div>
           </li>
           <li className="flex gap-3">
@@ -409,7 +415,8 @@ type MemoryScope = 'session' | 'thread' | 'global'`}
             <span className="text-amber-500">⚠</span>
             <div>
               <strong>Don't store sensitive data</strong>: Avoid storing PII or
-              credentials in memory. Use secure storage for sensitive information.
+              credentials in memory. Use secure storage for sensitive
+              information.
             </div>
           </li>
         </ul>
@@ -420,11 +427,15 @@ type MemoryScope = 'session' | 'thread' | 'global'`}
 
         <ul>
           <li>
-            <Link href="/reference/components/memory-provider">MemoryProvider</Link>{' '}
+            <Link href="/reference/components/memory-provider">
+              MemoryProvider
+            </Link>{' '}
             - React context provider for memory
           </li>
           <li>
-            <Link href="/reference/hooks/use-memory-context">useMemoryContext</Link>{' '}
+            <Link href="/reference/hooks/use-memory-context">
+              useMemoryContext
+            </Link>{' '}
             - React hook for memory access
           </li>
           <li>

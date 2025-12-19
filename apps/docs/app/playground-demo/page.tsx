@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Try out Clarity Chat components with live code editing',
 }
 
-const exampleCode = `import { Button, Badge, ToastProvider, useToast } from '@clarity-chat/react'
+const exampleCode = `import { Button, Badge, ToastProvider, useToast } from '@clarity-chat/react/internal'
 import { Send } from 'lucide-react'
 
 function App() {

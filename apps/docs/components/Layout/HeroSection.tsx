@@ -13,6 +13,7 @@ import {
   Terminal,
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { durations } from '@/lib/animations'
 import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
 import { CardSkeleton } from './Skeletons'
 

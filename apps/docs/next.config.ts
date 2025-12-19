@@ -15,12 +15,19 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
+  // Server-side external packages (tiktoken uses WASM)
+  serverExternalPackages: ['tiktoken', '@clarity-chat/token-optimization'],
+
   // Turbopack configuration (Next.js 16 - stable)
   turbopack: {
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],
         as: '*.js',
+      },
+      '*.wasm': {
+        loaders: ['@vercel/turbopack-wasm'],
+        as: '*.wasm',
       },
     },
   },

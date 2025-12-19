@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 export interface Source {
   url: string

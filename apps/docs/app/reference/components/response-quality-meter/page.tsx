@@ -217,7 +217,7 @@ render(<RAGQualityDashboard />)`}
         <h2>Integration Example</h2>
         <pre>
           <code>{`// Integrate with LangSmith evaluation
-import { ResponseQualityMeter } from '@clarity-chat/react'
+import { ResponseQualityMeter } from '@clarity-chat/react/internal'
 import { evaluate } from 'langsmith'
 
 async function evaluateResponse(response: string, context: string) {

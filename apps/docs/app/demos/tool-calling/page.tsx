@@ -15,11 +15,11 @@ import {
   ArrowRight,
   Loader2,
   ExternalLink,
-  Check
+  Check,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react'
+import { useAutoScroll } from '@clarity-chat/react/internal'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackToolExecuted } from '@/lib/demos/analytics'
@@ -33,10 +33,34 @@ interface Tool {
 }
 
 const tools: Tool[] = [
-  { id: 'search', name: 'Web Search', icon: Search, color: 'bg-blue-500', description: 'Search the web for information' },
-  { id: 'image', name: 'Image Generation', icon: Image, color: 'bg-purple-500', description: 'Generate images from descriptions' },
-  { id: 'calendar', name: 'Calendar', icon: Calendar, color: 'bg-green-500', description: 'Create and manage calendar events' },
-  { id: 'code', name: 'Code Execution', icon: Code, color: 'bg-orange-500', description: 'Execute code in a sandbox' },
+  {
+    id: 'search',
+    name: 'Web Search',
+    icon: Search,
+    color: 'bg-blue-500',
+    description: 'Search the web for information',
+  },
+  {
+    id: 'image',
+    name: 'Image Generation',
+    icon: Image,
+    color: 'bg-purple-500',
+    description: 'Generate images from descriptions',
+  },
+  {
+    id: 'calendar',
+    name: 'Calendar',
+    icon: Calendar,
+    color: 'bg-green-500',
+    description: 'Create and manage calendar events',
+  },
+  {
+    id: 'code',
+    name: 'Code Execution',
+    icon: Code,
+    color: 'bg-orange-500',
+    description: 'Execute code in a sandbox',
+  },
 ]
 
 interface ToolInvocation {
@@ -54,23 +78,39 @@ interface Message {
   timestamp: Date
 }
 
-const toolDemos: Record<string, { prompt: string; input: string; output: any; delay: number }> = {
+const toolDemos: Record<
+  string,
+  { prompt: string; input: string; output: any; delay: number }
+> = {
   search: {
     prompt: 'Search for the latest news about AI',
     input: 'query: "latest AI news 2024"',
     output: {
       type: 'search',
       results: [
-        { title: 'OpenAI Announces GPT-5', url: 'https://example.com/1', snippet: 'OpenAI has announced the development of GPT-5...' },
-        { title: 'Google DeepMind Breakthrough', url: 'https://example.com/2', snippet: 'New research from DeepMind shows promising results...' },
-        { title: 'AI in Healthcare 2024', url: 'https://example.com/3', snippet: 'How AI is transforming healthcare this year...' },
+        {
+          title: 'OpenAI Announces GPT-5',
+          url: 'https://example.com/1',
+          snippet: 'OpenAI has announced the development of GPT-5...',
+        },
+        {
+          title: 'Google DeepMind Breakthrough',
+          url: 'https://example.com/2',
+          snippet: 'New research from DeepMind shows promising results...',
+        },
+        {
+          title: 'AI in Healthcare 2024',
+          url: 'https://example.com/3',
+          snippet: 'How AI is transforming healthcare this year...',
+        },
       ],
     },
     delay: 1500,
   },
   image: {
     prompt: 'Generate an image of a sunset over mountains',
-    input: 'prompt: "A beautiful sunset over snow-capped mountains, digital art"',
+    input:
+      'prompt: "A beautiful sunset over snow-capped mountains, digital art"',
     output: {
       type: 'image',
       url: 'https://picsum.photos/400/300',
@@ -80,7 +120,8 @@ const toolDemos: Record<string, { prompt: string; input: string; output: any; de
   },
   calendar: {
     prompt: 'Create a meeting for tomorrow at 3pm',
-    input: 'event: { title: "Team Meeting", date: "tomorrow", time: "3:00 PM" }',
+    input:
+      'event: { title: "Team Meeting", date: "tomorrow", time: "3:00 PM" }',
     output: {
       type: 'calendar',
       event: {
@@ -95,7 +136,8 @@ const toolDemos: Record<string, { prompt: string; input: string; output: any; de
   },
   code: {
     prompt: 'Calculate fibonacci sequence up to 10',
-    input: 'code: `function fib(n) { return n <= 1 ? n : fib(n-1) + fib(n-2); }`',
+    input:
+      'code: `function fib(n) { return n <= 1 ? n : fib(n-1) + fib(n-2); }`',
     output: {
       type: 'code',
       language: 'javascript',
@@ -135,7 +177,7 @@ export default function ToolCallingDemo() {
     trackToolExecuted('tool-calling', toolId)
 
     const demo = toolDemos[toolId]
-    const tool = tools.find(t => t.id === toolId)
+    const tool = tools.find((t) => t.id === toolId)
     if (!tool) {
       setIsExecuting(false)
       return
@@ -148,7 +190,7 @@ export default function ToolCallingDemo() {
       sender: 'user',
       timestamp: new Date(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     scrollToBottom()
 
     // Add bot message with tool invocation starting
@@ -169,7 +211,7 @@ export default function ToolCallingDemo() {
       },
       timestamp: new Date(),
     }
-    setMessages(prev => [...prev, botMessage])
+    setMessages((prev) => [...prev, botMessage])
     scrollToBottom()
 
     // Update to running
@@ -178,11 +220,16 @@ export default function ToolCallingDemo() {
       setIsExecuting(false)
       return
     }
-    setMessages(prev => prev.map(msg =>
-      msg.id === botMessageId && msg.toolInvocation
-        ? { ...msg, toolInvocation: { ...msg.toolInvocation, status: 'running' } }
-        : msg
-    ))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === botMessageId && msg.toolInvocation
+          ? {
+              ...msg,
+              toolInvocation: { ...msg.toolInvocation, status: 'running' },
+            }
+          : msg
+      )
+    )
 
     // Wait for "execution"
     await sleep(demo.delay)
@@ -192,11 +239,20 @@ export default function ToolCallingDemo() {
     }
 
     // Update to complete
-    setMessages(prev => prev.map(msg =>
-      msg.id === botMessageId && msg.toolInvocation
-        ? { ...msg, toolInvocation: { ...msg.toolInvocation, status: 'complete', output: demo.output } }
-        : msg
-    ))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === botMessageId && msg.toolInvocation
+          ? {
+              ...msg,
+              toolInvocation: {
+                ...msg.toolInvocation,
+                status: 'complete',
+                output: demo.output,
+              },
+            }
+          : msg
+      )
+    )
 
     setIsExecuting(false)
   }
@@ -215,7 +271,9 @@ export default function ToolCallingDemo() {
       return (
         <div className="flex items-center gap-2 text-text-secondary">
           <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="text-sm">Executing {tools.find(t => t.id === invocation.toolId)?.name}...</span>
+          <span className="text-sm">
+            Executing {tools.find((t) => t.id === invocation.toolId)?.name}...
+          </span>
         </div>
       )
     }
@@ -227,7 +285,9 @@ export default function ToolCallingDemo() {
       if (output.type === 'search') {
         return (
           <div className="space-y-3 mt-3">
-            <div className="text-sm font-medium text-text-secondary">Search Results:</div>
+            <div className="text-sm font-medium text-text-secondary">
+              Search Results:
+            </div>
             {output.results.map((result: any, idx: number) => (
               <motion.a
                 key={idx}
@@ -242,8 +302,12 @@ export default function ToolCallingDemo() {
                 <div className="flex items-start gap-2">
                   <ExternalLink className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <div className="font-medium text-sm text-brand-600 dark:text-brand-400">{result.title}</div>
-                    <div className="text-xs text-text-secondary mt-1">{result.snippet}</div>
+                    <div className="font-medium text-sm text-brand-600 dark:text-brand-400">
+                      {result.title}
+                    </div>
+                    <div className="text-xs text-text-secondary mt-1">
+                      {result.snippet}
+                    </div>
                   </div>
                 </div>
               </motion.a>
@@ -264,7 +328,9 @@ export default function ToolCallingDemo() {
               <div className="h-48 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 flex items-center justify-center">
                 <div className="text-center">
                   <Image className="w-12 h-12 text-purple-500 mx-auto mb-2" />
-                  <span className="text-sm text-purple-700 dark:text-purple-300">{output.description}</span>
+                  <span className="text-sm text-purple-700 dark:text-purple-300">
+                    {output.description}
+                  </span>
                 </div>
               </div>
             </div>
@@ -285,9 +351,12 @@ export default function ToolCallingDemo() {
                 <Check className="w-5 h-5 text-white" />
               </div>
               <div>
-                <div className="font-medium text-green-700 dark:text-green-300">Event Created</div>
+                <div className="font-medium text-green-700 dark:text-green-300">
+                  Event Created
+                </div>
                 <div className="text-sm text-green-600 dark:text-green-400">
-                  {output.event.title} - {output.event.date} at {output.event.time}
+                  {output.event.title} - {output.event.date} at{' '}
+                  {output.event.time}
                 </div>
               </div>
             </div>
@@ -305,11 +374,17 @@ export default function ToolCallingDemo() {
           >
             <div className="rounded-lg overflow-hidden border border-border">
               <div className="px-4 py-2 bg-gray-800 flex items-center justify-between">
-                <span className="text-xs text-gray-400 font-mono">{output.language}</span>
-                <span className="text-xs text-green-400">✓ Executed in {output.executionTime}</span>
+                <span className="text-xs text-gray-400 font-mono">
+                  {output.language}
+                </span>
+                <span className="text-xs text-green-400">
+                  ✓ Executed in {output.executionTime}
+                </span>
               </div>
               <div className="p-4 bg-gray-900">
-                <pre className="text-sm font-mono text-green-400">{output.result}</pre>
+                <pre className="text-sm font-mono text-green-400">
+                  {output.result}
+                </pre>
               </div>
             </div>
           </motion.div>
@@ -344,8 +419,8 @@ export default function ToolCallingDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              Watch AI agents execute tools with custom UI rendering. Search the web,
-              generate images, create events, and run code.
+              Watch AI agents execute tools with custom UI rendering. Search the
+              web, generate images, create events, and run code.
             </p>
           </div>
         </ScrollReveal>
@@ -353,7 +428,9 @@ export default function ToolCallingDemo() {
         {/* Tool Selector */}
         <ScrollReveal delay={0.1}>
           <div className="mb-8">
-            <h3 className="text-lg font-bold mb-4 text-center">Select a Tool to Demo</h3>
+            <h3 className="text-lg font-bold mb-4 text-center">
+              Select a Tool to Demo
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {tools.map((tool) => {
                 const Icon = tool.icon
@@ -370,11 +447,15 @@ export default function ToolCallingDemo() {
                         : 'border-border hover:border-brand-300 bg-bg-secondary'
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-lg ${tool.color} flex items-center justify-center mb-3`}>
+                    <div
+                      className={`w-10 h-10 rounded-lg ${tool.color} flex items-center justify-center mb-3`}
+                    >
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <div className="font-medium">{tool.name}</div>
-                    <div className="text-xs text-text-secondary mt-1">{tool.description}</div>
+                    <div className="text-xs text-text-secondary mt-1">
+                      {tool.description}
+                    </div>
                   </button>
                 )
               })}
@@ -414,38 +495,54 @@ export default function ToolCallingDemo() {
                     message.sender === 'user' ? 'flex-row-reverse' : ''
                   }`}
                 >
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.sender === 'bot'
-                      ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400'
-                      : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
-                  }`}>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.sender === 'bot'
+                        ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400'
+                        : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                    }`}
+                  >
                     {message.sender === 'bot' ? (
                       <Bot className="w-5 h-5" />
                     ) : (
                       <User className="w-5 h-5" />
                     )}
                   </div>
-                  <div className={`max-w-[80%] ${message.sender === 'user' ? '' : ''}`}>
-                    <div className={`rounded-2xl px-4 py-3 ${
-                      message.sender === 'bot'
-                        ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                        : 'bg-brand-500 text-white rounded-tr-sm'
-                    }`}>
+                  <div
+                    className={`max-w-[80%] ${message.sender === 'user' ? '' : ''}`}
+                  >
+                    <div
+                      className={`rounded-2xl px-4 py-3 ${
+                        message.sender === 'bot'
+                          ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
+                          : 'bg-brand-500 text-white rounded-tr-sm'
+                      }`}
+                    >
                       <p className="text-sm leading-relaxed">{message.text}</p>
 
                       {/* Tool Invocation UI */}
                       {message.toolInvocation && (
                         <div className="mt-3 pt-3 border-t border-border/50">
                           <div className="flex items-center gap-2 text-xs text-text-secondary mb-2">
-                            <div className={`w-5 h-5 rounded flex items-center justify-center ${
-                              tools.find(t => t.id === message.toolInvocation!.toolId)?.color
-                            }`}>
+                            <div
+                              className={`w-5 h-5 rounded flex items-center justify-center ${
+                                tools.find(
+                                  (t) => t.id === message.toolInvocation!.toolId
+                                )?.color
+                              }`}
+                            >
                               {(() => {
-                                const Icon = tools.find(t => t.id === message.toolInvocation!.toolId)?.icon || Wrench
+                                const Icon =
+                                  tools.find(
+                                    (t) =>
+                                      t.id === message.toolInvocation!.toolId
+                                  )?.icon || Wrench
                                 return <Icon className="w-3 h-3 text-white" />
                               })()}
                             </div>
-                            <span className="font-mono">{message.toolInvocation.input}</span>
+                            <span className="font-mono">
+                              {message.toolInvocation.input}
+                            </span>
                           </div>
                           {renderToolOutput(message.toolInvocation)}
                         </div>
@@ -459,7 +556,11 @@ export default function ToolCallingDemo() {
             {/* Tool Registry Info */}
             <div className="border-t border-border p-4 bg-bg-secondary">
               <div className="text-sm text-text-secondary text-center">
-                💡 Each tool has a custom <code className="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">ToolUIRegistry</code> component for rendering its output
+                💡 Each tool has a custom{' '}
+                <code className="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+                  ToolUIRegistry
+                </code>{' '}
+                component for rendering its output
               </div>
             </div>
           </div>

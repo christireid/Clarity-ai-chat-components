@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Theme Preview Component | Clarity Chat',
-  description: 'Interactive theme preview and live editor for testing and customizing theme colors with real-time visual feedback.',
+  description:
+    'Interactive theme preview and live editor for testing and customizing theme colors with real-time visual feedback.',
   keywords: [
     'theme preview',
     'theme editor',
@@ -22,25 +23,32 @@ export default function ThemePreviewPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Theme Preview</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        An interactive theme preview and live editor component for testing and customizing 
-        theme colors with real-time visual feedback across all UI elements.
+        An interactive theme preview and live editor component for testing and
+        customizing theme colors with real-time visual feedback across all UI
+        elements.
       </p>
 
       {/* Overview Section */}
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Overview</h2>
         <p className="text-muted-foreground mb-4">
-          The Theme Preview component provides a comprehensive live preview of theme appearance 
-          with sample UI elements including buttons, cards, inputs, and status messages. It 
-          includes an optional interactive editor for customizing colors with color pickers, 
-          hex value inputs, theme validation, and export functionality. The component also 
+          The Theme Preview component provides a comprehensive live preview of
+          theme appearance with sample UI elements including buttons, cards,
+          inputs, and status messages. It includes an optional interactive
+          editor for customizing colors with color pickers, hex value inputs,
+          theme validation, and export functionality. The component also
           supports side-by-side theme comparison.
         </p>
-        
+
         <h3 className="text-xl font-semibold mb-3 mt-6">Key Features</h3>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Live preview panel with sample UI components (buttons, cards, inputs, status messages)</li>
-          <li>Interactive color editor with color pickers and hex value inputs</li>
+          <li>
+            Live preview panel with sample UI components (buttons, cards,
+            inputs, status messages)
+          </li>
+          <li>
+            Interactive color editor with color pickers and hex value inputs
+          </li>
           <li>Real-time theme updates with immediate visual feedback</li>
           <li>Theme validation to check color contrast and accessibility</li>
           <li>Export functionality to copy theme JSON to clipboard</li>
@@ -56,9 +64,7 @@ export default function ThemePreviewPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Installation</h2>
         <div className="bg-muted p-4 rounded-lg">
-          <code className="text-sm">
-            npm install @clarity-chat/react
-          </code>
+          <code className="text-sm">npm install @clarity-chat/react</code>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
           Requires ThemeProvider wrapper and theme configuration.
@@ -70,7 +76,7 @@ export default function ThemePreviewPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 
 function App() {
@@ -96,7 +102,7 @@ function App() {
       {/* Props API Section */}
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Props API</h2>
-        
+
         <h3 className="text-xl font-semibold mb-3">ThemePreview</h3>
         <div className="overflow-x-auto mb-6">
           <table className="w-full border-collapse">
@@ -113,7 +119,9 @@ function App() {
                 <td className="p-2 font-mono text-sm">showEditor</td>
                 <td className="p-2 font-mono text-sm">boolean</td>
                 <td className="p-2 font-mono text-sm">false</td>
-                <td className="p-2">Show interactive color editor with controls</td>
+                <td className="p-2">
+                  Show interactive color editor with controls
+                </td>
               </tr>
               <tr className="border-b">
                 <td className="p-2 font-mono text-sm">onThemeChange</td>
@@ -249,7 +257,7 @@ interface CompleteThemeConfig {
         <h2 className="text-3xl font-semibold mb-4">Theme Builder Example</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -346,7 +354,7 @@ function ThemeBuilder() {
         <h2 className="text-3xl font-semibold mb-4">Settings Page Example</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { useTheme } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -406,10 +414,12 @@ function ThemeSettings() {
 
       {/* Theme Comparison Example Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Theme Comparison Example</h2>
+        <h2 className="text-3xl font-semibold mb-4">
+          Theme Comparison Example
+        </h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemeComparison } from '@clarity-chat/react'
+            <code>{`import { ThemeComparison } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -495,10 +505,12 @@ function ThemeShowcase() {
 
       {/* Custom Theme Import Example Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Custom Theme Import Example</h2>
+        <h2 className="text-3xl font-semibold mb-4">
+          Custom Theme Import Example
+        </h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -605,7 +617,8 @@ function ThemeImporter() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">TypeScript Support</h2>
         <p className="text-muted-foreground mb-4">
-          The component is fully typed with comprehensive TypeScript definitions:
+          The component is fully typed with comprehensive TypeScript
+          definitions:
         </p>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
@@ -613,8 +626,8 @@ function ThemeImporter() {
   ThemePreviewProps,
   ThemeComparisonProps,
   CompleteThemeConfig
-} from '@clarity-chat/react'
-import { ThemePreview, ThemeComparison } from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
+import { ThemePreview, ThemeComparison } from '@clarity-chat/react/internal'
 
 // Type-safe theme preview
 const preview Props: ThemePreviewProps = {
@@ -652,13 +665,33 @@ function TypedThemePreview() {
           The Theme Preview component implements accessibility features:
         </p>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><strong>Semantic HTML:</strong> Proper heading hierarchy and labeled form controls</li>
-          <li><strong>Color Pickers:</strong> Native input type="color" with keyboard support</li>
-          <li><strong>Text Inputs:</strong> Hex values editable via text input for precise control</li>
-          <li><strong>Validation:</strong> Built-in theme validation for color contrast issues</li>
-          <li><strong>Focus Management:</strong> Keyboard navigation through editor controls</li>
-          <li><strong>Labels:</strong> All color inputs have descriptive labels</li>
-          <li><strong>Preview Samples:</strong> Sample UI shows real accessibility impact</li>
+          <li>
+            <strong>Semantic HTML:</strong> Proper heading hierarchy and labeled
+            form controls
+          </li>
+          <li>
+            <strong>Color Pickers:</strong> Native input type="color" with
+            keyboard support
+          </li>
+          <li>
+            <strong>Text Inputs:</strong> Hex values editable via text input for
+            precise control
+          </li>
+          <li>
+            <strong>Validation:</strong> Built-in theme validation for color
+            contrast issues
+          </li>
+          <li>
+            <strong>Focus Management:</strong> Keyboard navigation through
+            editor controls
+          </li>
+          <li>
+            <strong>Labels:</strong> All color inputs have descriptive labels
+          </li>
+          <li>
+            <strong>Preview Samples:</strong> Sample UI shows real accessibility
+            impact
+          </li>
         </ul>
       </section>
 
@@ -670,7 +703,7 @@ function TypedThemePreview() {
         </p>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 
 function StyledThemePreview() {
   return (
@@ -716,10 +749,19 @@ function StyledThemePreview() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Related Components</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><strong>Theme Selector:</strong> Dropdown for choosing theme presets</li>
-          <li><strong>Theme Switcher:</strong> Toggle between light and dark themes</li>
-          <li><strong>Settings Panel:</strong> Configure application preferences</li>
-          <li><strong>Color Picker:</strong> Standalone color selection component</li>
+          <li>
+            <strong>Theme Selector:</strong> Dropdown for choosing theme presets
+          </li>
+          <li>
+            <strong>Theme Switcher:</strong> Toggle between light and dark
+            themes
+          </li>
+          <li>
+            <strong>Settings Panel:</strong> Configure application preferences
+          </li>
+          <li>
+            <strong>Color Picker:</strong> Standalone color selection component
+          </li>
         </ul>
       </section>
 
@@ -727,13 +769,30 @@ function StyledThemePreview() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Always validate themes before saving to ensure color contrast compliance</li>
-          <li>Provide export functionality so users can backup their custom themes</li>
-          <li>Show sample UI elements that represent your actual application components</li>
-          <li>Include status messages in preview to test warning/error/success colors</li>
-          <li>Use onThemeChange callback to auto-save changes or mark as unsaved</li>
-          <li>Implement theme comparison to help users choose between options</li>
-          <li>Test custom themes with different content lengths and edge cases</li>
+          <li>
+            Always validate themes before saving to ensure color contrast
+            compliance
+          </li>
+          <li>
+            Provide export functionality so users can backup their custom themes
+          </li>
+          <li>
+            Show sample UI elements that represent your actual application
+            components
+          </li>
+          <li>
+            Include status messages in preview to test warning/error/success
+            colors
+          </li>
+          <li>
+            Use onThemeChange callback to auto-save changes or mark as unsaved
+          </li>
+          <li>
+            Implement theme comparison to help users choose between options
+          </li>
+          <li>
+            Test custom themes with different content lengths and edge cases
+          </li>
           <li>Store custom themes in user preferences or local storage</li>
           <li>Provide preset themes as starting points for customization</li>
           <li>Show theme metadata (name, author, version) in preview</li>
@@ -743,45 +802,47 @@ function StyledThemePreview() {
       {/* Use Cases Section */}
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Use Cases</h2>
-        
+
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-semibold mb-2">Theme Builder Tool</h3>
             <p className="text-muted-foreground">
-              Create a dedicated theme builder page where users can create, customize, 
-              and export custom themes with live preview of all changes.
+              Create a dedicated theme builder page where users can create,
+              customize, and export custom themes with live preview of all
+              changes.
             </p>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Settings Panel</h3>
             <p className="text-muted-foreground">
-              Include theme preview in application settings to let users test and 
-              customize appearance before applying changes.
+              Include theme preview in application settings to let users test
+              and customize appearance before applying changes.
             </p>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Documentation Site</h3>
             <p className="text-muted-foreground">
-              Show theme preview on documentation pages to demonstrate theme system 
-              capabilities and help developers test integration.
+              Show theme preview on documentation pages to demonstrate theme
+              system capabilities and help developers test integration.
             </p>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Brand Customization</h3>
             <p className="text-muted-foreground">
-              Allow enterprise clients to create branded themes matching their corporate 
-              identity with live preview of brand colors.
+              Allow enterprise clients to create branded themes matching their
+              corporate identity with live preview of brand colors.
             </p>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Theme Marketplace</h3>
             <p className="text-muted-foreground">
-              Use theme comparison to showcase different theme options in a marketplace, 
-              helping users choose themes that fit their preferences.
+              Use theme comparison to showcase different theme options in a
+              marketplace, helping users choose themes that fit their
+              preferences.
             </p>
           </div>
         </div>
@@ -791,7 +852,9 @@ function StyledThemePreview() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Performance Tips</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Use React.memo to prevent unnecessary re-renders of preview samples</li>
+          <li>
+            Use React.memo to prevent unnecessary re-renders of preview samples
+          </li>
           <li>Debounce theme change callbacks to avoid excessive API calls</li>
           <li>Memoize color conversion functions (hexToHsl, hslToHex)</li>
           <li>Lazy load the theme editor panel only when showEditor is true</li>
@@ -805,10 +868,16 @@ function StyledThemePreview() {
       {/* Footer Navigation */}
       <footer className="mt-16 pt-8 border-t">
         <div className="flex justify-between items-center">
-          <a href="/reference/components" className="text-primary hover:underline">
+          <a
+            href="/reference/components"
+            className="text-primary hover:underline"
+          >
             ← Back to Components
           </a>
-          <a href="/reference/components/theme-selector" className="text-primary hover:underline">
+          <a
+            href="/reference/components/theme-selector"
+            className="text-primary hover:underline"
+          >
             Next: Theme Selector →
           </a>
         </div>

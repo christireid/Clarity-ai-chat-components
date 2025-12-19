@@ -40,7 +40,7 @@ export default function StreamingSetupPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -292,7 +292,7 @@ app.listen(3000, () => {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append, isLoading } = useClarityChat({
@@ -322,7 +322,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { StreamingMessage } from '@clarity-chat/react'
+          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 
 function Chat() {
   const [content, setContent] = useState('')

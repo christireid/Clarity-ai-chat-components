@@ -26,7 +26,7 @@ export default function CustomThemingPage() {
         <h2>Quick Start: Use Built-in Themes</h2>
         <CodeBlock
           language="typescript"
-          code={`import { ThemeProvider, defaultLightTheme, defaultDarkTheme } from '@clarity-chat/react'
+          code={`import { ThemeProvider, defaultLightTheme, defaultDarkTheme } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function App() {
@@ -49,7 +49,7 @@ function App() {
         <CodeBlock
           language="typescript"
           code={`// themes/brand-theme.ts
-import { Theme } from '@clarity-chat/react'
+import { Theme } from '@clarity-chat/react/internal'
 
 export const brandTheme: Theme = {
   name: 'Brand Theme',
@@ -113,7 +113,7 @@ export const brandTheme: Theme = {
 }
 
 // Usage
-import { ThemeProvider } from '@clarity-chat/react'
+import { ThemeProvider } from '@clarity-chat/react/internal'
 import { brandTheme } from './themes/brand-theme'
 
 <ThemeProvider theme={brandTheme}>
@@ -133,7 +133,7 @@ npm install next-themes
 'use client'
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import { ThemeProvider } from '@clarity-chat/react'
+import { ThemeProvider } from '@clarity-chat/react/internal'
 import { brandTheme, brandDarkTheme } from '@/themes'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -158,7 +158,7 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
 }
 
 // Add theme toggle
-import { ThemeSwitcher } from '@clarity-chat/react'
+import { ThemeSwitcher } from '@clarity-chat/react/internal'
 
 <ThemeSwitcher />`}
         />

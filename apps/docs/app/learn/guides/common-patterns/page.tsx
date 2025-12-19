@@ -100,7 +100,7 @@ export default function CommonPatternsPage() {
   MemoryProvider,
   ErrorBoundary,
   ToastProvider,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function App() {
   return (
@@ -158,7 +158,7 @@ function ErrorFallback() {
   useTokenTracker,
   useMemoryContext,
   useTheme,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function useEnhancedChat(options: { api: string }) {
   // Core chat functionality
@@ -245,7 +245,7 @@ function Chat() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ErrorBoundary, useToast } from '@clarity-chat/react'
+          code={`import { ErrorBoundary, useToast } from '@clarity-chat/react/internal'
 
 // Granular error boundaries for different failure modes
 function ChatApp() {
@@ -314,10 +314,13 @@ function SidebarFallback() {
       <section className="my-12">
         <h2 id="streaming-patterns">Streaming Patterns</h2>
 
-        <p>Handle streaming responses with proper loading states and cancellation:</p>
+        <p>
+          Handle streaming responses with proper loading states and
+          cancellation:
+        </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, StreamingMessage } from '@clarity-chat/react'
+          code={`import { useClarityChat, StreamingMessage } from '@clarity-chat/react/internal'
 import { useRef, useCallback } from 'react'
 
 function StreamingChat() {
@@ -396,10 +399,12 @@ function StreamingChat() {
       <section className="my-12">
         <h2 id="state-persistence">State Persistence</h2>
 
-        <p>Persist chat state across sessions with localStorage or IndexedDB:</p>
+        <p>
+          Persist chat state across sessions with localStorage or IndexedDB:
+        </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, useIndexedDB } from '@clarity-chat/react'
+          code={`import { useClarityChat, useIndexedDB } from '@clarity-chat/react/internal'
 import { useEffect, useCallback } from 'react'
 
 function PersistentChat() {
@@ -486,12 +491,10 @@ function SimplePersistence() {
       <section className="my-12">
         <h2 id="optimistic-updates">Optimistic Updates</h2>
 
-        <p>
-          Show user messages immediately for better perceived performance:
-        </p>
+        <p>Show user messages immediately for better perceived performance:</p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, type Message } from '@clarity-chat/react'
+          code={`import { useClarityChat, type Message } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function OptimisticChat() {
@@ -566,13 +569,11 @@ function OptimisticChat() {
       <section className="my-12">
         <h2 id="conditional-rendering">Conditional Feature Loading</h2>
 
-        <p>
-          Load features only when needed to reduce bundle size:
-        </p>
+        <p>Load features only when needed to reduce bundle size:</p>
 
         <EnhancedCodeBlock
           code={`import { lazy, Suspense } from 'react'
-import { ClarityChat, FeatureLoader } from '@clarity-chat/react'
+import { ClarityChat, FeatureLoader } from '@clarity-chat/react/internal'
 
 // Lazy load heavy features
 const VoiceInput = lazy(() => import('@clarity-chat/react/voice'))
@@ -625,9 +626,7 @@ function AutoLoadingChat() {
       <section className="my-12">
         <h2 id="testing-patterns">Testing Patterns</h2>
 
-        <p>
-          Test chat components with mock providers and utilities:
-        </p>
+        <p>Test chat components with mock providers and utilities:</p>
 
         <EnhancedCodeBlock
           code={`import { render, screen, waitFor } from '@testing-library/react'

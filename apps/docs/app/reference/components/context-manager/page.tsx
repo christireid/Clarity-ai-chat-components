@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Context Manager | Clarity Chat',
-  description: 'Manage conversation context with file uploads, filtering, and activation controls.'
+  description:
+    'Manage conversation context with file uploads, filtering, and activation controls.',
 }
 
 export default function ContextManagerPage() {
@@ -10,14 +11,18 @@ export default function ContextManagerPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Context Manager</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Comprehensive context management component for handling files, documents, and other conversation context with filtering and activation controls.
+        Comprehensive context management component for handling files,
+        documents, and other conversation context with filtering and activation
+        controls.
       </p>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Features</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li>File upload with drag-and-drop support</li>
-          <li>Context filtering by type (document, image, video, link, text)</li>
+          <li>
+            Context filtering by type (document, image, video, link, text)
+          </li>
           <li>Active/inactive context toggle</li>
           <li>Context preview functionality</li>
           <li>Maximum context limits</li>
@@ -30,7 +35,7 @@ export default function ContextManagerPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { ContextManager } from '@clarity-chat/react'
+          <code>{`import { ContextManager } from '@clarity-chat/react/internal'
 import type { Context } from '@clarity-chat/types'
 
 function MyApp() {
@@ -132,18 +137,34 @@ function MyApp() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Context Types</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><strong className="text-foreground">document</strong> - PDF, Word, text files</li>
-          <li><strong className="text-foreground">image</strong> - JPG, PNG, GIF images</li>
-          <li><strong className="text-foreground">video</strong> - MP4, MOV videos</li>
-          <li><strong className="text-foreground">audio</strong> - MP3, WAV audio files</li>
-          <li><strong className="text-foreground">link</strong> - External URLs</li>
-          <li><strong className="text-foreground">text</strong> - Plain text snippets</li>
+          <li>
+            <strong className="text-foreground">document</strong> - PDF, Word,
+            text files
+          </li>
+          <li>
+            <strong className="text-foreground">image</strong> - JPG, PNG, GIF
+            images
+          </li>
+          <li>
+            <strong className="text-foreground">video</strong> - MP4, MOV videos
+          </li>
+          <li>
+            <strong className="text-foreground">audio</strong> - MP3, WAV audio
+            files
+          </li>
+          <li>
+            <strong className="text-foreground">link</strong> - External URLs
+          </li>
+          <li>
+            <strong className="text-foreground">text</strong> - Plain text
+            snippets
+          </li>
         </ul>
       </section>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Examples</h2>
-        
+
         <h3 className="text-2xl font-semibold mb-3">With Type Restrictions</h3>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-6">
           <code>{`<ContextManager
@@ -185,9 +206,33 @@ function MyApp() {
       <section>
         <h2 className="text-3xl font-semibold mb-4">Related Components</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><a href="/reference/components/context-card" className="text-primary hover:underline">Context Card</a> - Individual context display</li>
-          <li><a href="/reference/components/file-upload" className="text-primary hover:underline">File Upload</a> - Standalone file upload</li>
-          <li><a href="/reference/components/context-visualizer" className="text-primary hover:underline">Context Visualizer</a> - Visual context display</li>
+          <li>
+            <a
+              href="/reference/components/context-card"
+              className="text-primary hover:underline"
+            >
+              Context Card
+            </a>{' '}
+            - Individual context display
+          </li>
+          <li>
+            <a
+              href="/reference/components/file-upload"
+              className="text-primary hover:underline"
+            >
+              File Upload
+            </a>{' '}
+            - Standalone file upload
+          </li>
+          <li>
+            <a
+              href="/reference/components/context-visualizer"
+              className="text-primary hover:underline"
+            >
+              Context Visualizer
+            </a>{' '}
+            - Visual context display
+          </li>
         </ul>
       </section>
     </div>

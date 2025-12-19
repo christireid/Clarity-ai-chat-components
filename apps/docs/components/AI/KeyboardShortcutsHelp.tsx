@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Command } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 interface KeyboardShortcut {
   keys: string[]

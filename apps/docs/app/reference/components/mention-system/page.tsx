@@ -135,7 +135,7 @@ export default function MentionSystemPage() {
         <h2>Basic Usage</h2>
         <p>Add mention support to a chat input:</p>
         <CodePlayground
-          initialCode={`import { MentionInput } from '@clarity-chat/react'
+          initialCode={`import { MentionInput } from '@clarity-chat/react/internal'
 
 function ChatWithMentions() {
   const [value, setValue] = React.useState('')
@@ -172,7 +172,7 @@ render(<ChatWithMentions />)`}
         <h2>Fuzzy Search</h2>
         <p>Enable fuzzy search for better user discovery:</p>
         <CodePlayground
-          initialCode={`import { MentionInput } from '@clarity-chat/react'
+          initialCode={`import { MentionInput } from '@clarity-chat/react/internal'
 
 function FuzzyMentions() {
   return (
@@ -192,7 +192,7 @@ function FuzzyMentions() {
         <h2>Custom Mention Trigger</h2>
         <p>Use a custom trigger character:</p>
         <CodePlayground
-          initialCode={`import { MentionInput } from '@clarity-chat/react'
+          initialCode={`import { MentionInput } from '@clarity-chat/react/internal'
 
 function CustomTrigger() {
   return (
@@ -212,7 +212,7 @@ function CustomTrigger() {
         <h2>Mention List</h2>
         <p>Display all mentions with context:</p>
         <CodePlayground
-          initialCode={`import { MentionList } from '@clarity-chat/react'
+          initialCode={`import { MentionList } from '@clarity-chat/react/internal'
 
 function MentionsView({ mentions, messages, users }: { mentions: Mention[], messages: Map<string, any>, users: Map<string, any> }) {
   return (
@@ -239,7 +239,7 @@ function MentionsView({ mentions, messages, users }: { mentions: Mention[], mess
         <h2>Unread Mentions Only</h2>
         <p>Filter to show only unread mentions:</p>
         <CodePlayground
-          initialCode={`import { MentionList } from '@clarity-chat/react'
+          initialCode={`import { MentionList } from '@clarity-chat/react/internal'
 
 function UnreadMentions({ mentions, messages, users }: { mentions: Mention[], messages: Map<string, any>, users: Map<string, any> }) {
   return (

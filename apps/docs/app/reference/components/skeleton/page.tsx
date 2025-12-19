@@ -10,7 +10,7 @@ import {
   SkeletonList,
   SkeletonAvatar,
   SkeletonButton,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { Badge } from '@clarity-chat/primitives'
 import {
   PageSkeleton,

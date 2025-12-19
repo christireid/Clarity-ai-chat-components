@@ -12,7 +12,17 @@ import {
   type ComponentCategory,
 } from '@/lib/hook-metadata'
 
-const hookCategories: HookCategory[] = ['top-level', 'chat', 'memory', 'streaming', 'ui', 'utility', 'agent', 'storage', 'performance']
+const hookCategories: HookCategory[] = [
+  'top-level',
+  'chat',
+  'memory',
+  'streaming',
+  'ui',
+  'utility',
+  'agent',
+  'storage',
+  'performance',
+]
 const componentCategories: ComponentCategory[] = ['core', 'provider', 'input']
 
 export default function CheatSheetPage() {
@@ -26,7 +36,12 @@ export default function CheatSheetPage() {
       <style jsx global>{`
         @media print {
           /* Hide non-essential elements */
-          nav, header, footer, .no-print, [data-sidebar], [data-header] {
+          nav,
+          header,
+          footer,
+          .no-print,
+          [data-sidebar],
+          [data-header] {
             display: none !important;
           }
 
@@ -104,8 +119,18 @@ export default function CheatSheetPage() {
               onClick={handlePrint}
               className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors flex items-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                />
               </svg>
               Print Cheat Sheet
             </button>
@@ -117,7 +142,9 @@ export default function CheatSheetPage() {
 
         {/* Print Header */}
         <div className="hidden print:block mb-4">
-          <h1 className="cheat-sheet-header text-2xl font-bold">Clarity Chat API Cheat Sheet</h1>
+          <h1 className="cheat-sheet-header text-2xl font-bold">
+            Clarity Chat API Cheat Sheet
+          </h1>
           <p className="text-sm text-gray-600">docs.clarity-chat.com</p>
         </div>
 
@@ -125,9 +152,11 @@ export default function CheatSheetPage() {
         <div className="print-columns">
           {/* Quick Start */}
           <section className="cheat-sheet-section mb-8 print:mb-4">
-            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">Quick Start</h2>
+            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">
+              Quick Start
+            </h2>
             <pre className="cheat-sheet-code bg-muted p-3 rounded text-sm overflow-x-auto print:text-xs print:p-2">
-              <code>{`import { ClarityChat } from '@clarity-chat/react'
+              <code>{`import { ClarityChat } from '@clarity-chat/react/internal'
 
 <ClarityChat api="/api/chat" />`}</code>
             </pre>
@@ -140,8 +169,13 @@ export default function CheatSheetPage() {
             const config = categoryConfig[category]
 
             return (
-              <section key={category} className="cheat-sheet-section mb-6 print:mb-3">
-                <h2 className={`cheat-sheet-subheader font-semibold mb-2 ${config.colorClass} print:text-black`}>
+              <section
+                key={category}
+                className="cheat-sheet-section mb-6 print:mb-3"
+              >
+                <h2
+                  className={`cheat-sheet-subheader font-semibold mb-2 ${config.colorClass} print:text-black`}
+                >
                   {config.label}
                 </h2>
                 <div className="border rounded print:border-gray-300">
@@ -151,7 +185,9 @@ export default function CheatSheetPage() {
                       className={`cheat-sheet-item p-2 text-sm ${idx !== hooks.length - 1 ? 'border-b' : ''} print:p-1 print:text-xs`}
                     >
                       <div className="flex justify-between items-start gap-2">
-                        <code className="font-mono font-semibold text-xs">{hook.name}</code>
+                        <code className="font-mono font-semibold text-xs">
+                          {hook.name}
+                        </code>
                         <span className="text-xs text-muted-foreground print:text-gray-600 truncate">
                           {hook.description}
                         </span>
@@ -168,7 +204,9 @@ export default function CheatSheetPage() {
 
           {/* Components */}
           <section className="cheat-sheet-section mb-6 print:mb-3">
-            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">Components</h2>
+            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">
+              Components
+            </h2>
 
             {componentCategories.map((category) => {
               const components = getComponentsByCategory(category)
@@ -177,7 +215,9 @@ export default function CheatSheetPage() {
 
               return (
                 <div key={category} className="mb-4 print:mb-2">
-                  <h3 className={`cheat-sheet-subheader font-semibold mb-2 ${config.colorClass} print:text-black text-sm`}>
+                  <h3
+                    className={`cheat-sheet-subheader font-semibold mb-2 ${config.colorClass} print:text-black text-sm`}
+                  >
                     {config.label}
                   </h3>
                   <div className="border rounded print:border-gray-300">
@@ -187,7 +227,9 @@ export default function CheatSheetPage() {
                         className={`cheat-sheet-item p-2 text-sm ${idx !== components.length - 1 ? 'border-b' : ''} print:p-1 print:text-xs`}
                       >
                         <div className="flex justify-between items-start gap-2">
-                          <code className="font-mono font-semibold text-xs">&lt;{comp.name}&gt;</code>
+                          <code className="font-mono font-semibold text-xs">
+                            &lt;{comp.name}&gt;
+                          </code>
                           <span className="text-xs text-muted-foreground print:text-gray-600">
                             {comp.description}
                           </span>
@@ -205,7 +247,9 @@ export default function CheatSheetPage() {
 
           {/* Common Patterns */}
           <section className="cheat-sheet-section mb-6 print:mb-3">
-            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">Common Patterns</h2>
+            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">
+              Common Patterns
+            </h2>
 
             <div className="space-y-3 print:space-y-2">
               <div>
@@ -232,7 +276,9 @@ await memory?.addMemory(content, 'fact', 'user')`}</code>
               </div>
 
               <div>
-                <h3 className="font-semibold text-sm mb-1">Structured Output</h3>
+                <h3 className="font-semibold text-sm mb-1">
+                  Structured Output
+                </h3>
                 <pre className="cheat-sheet-code bg-muted p-2 rounded text-xs overflow-x-auto print:p-1">
                   <code>{`const { object } = useClarityObject<UserData>({
   api: '/api/extract',
@@ -253,7 +299,9 @@ setTheme('dark') // 'light' | 'dark' | 'system'`}</code>
 
           {/* Key Types */}
           <section className="cheat-sheet-section mb-6 print:mb-3">
-            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">Key Types</h2>
+            <h2 className="cheat-sheet-header text-xl font-bold mb-3 pb-2 border-b print:text-sm">
+              Key Types
+            </h2>
             <pre className="cheat-sheet-code bg-muted p-3 rounded text-xs overflow-x-auto print:p-2 print:text-[7pt]">
               <code>{`interface Message {
   id: string
@@ -283,13 +331,22 @@ interface MemoryItem {
 
         {/* Footer Links - hidden on print */}
         <div className="mt-8 pt-8 border-t flex gap-4 text-sm no-print">
-          <Link href="/reference/quick-reference" className="text-brand-600 dark:text-brand-400 hover:underline">
+          <Link
+            href="/reference/quick-reference"
+            className="text-brand-600 dark:text-brand-400 hover:underline"
+          >
             ← Quick Reference
           </Link>
-          <Link href="/reference/hooks" className="text-brand-600 dark:text-brand-400 hover:underline">
+          <Link
+            href="/reference/hooks"
+            className="text-brand-600 dark:text-brand-400 hover:underline"
+          >
             All Hooks →
           </Link>
-          <Link href="/reference/hooks/compare" className="text-brand-600 dark:text-brand-400 hover:underline">
+          <Link
+            href="/reference/hooks/compare"
+            className="text-brand-600 dark:text-brand-400 hover:underline"
+          >
             Compare Hooks →
           </Link>
         </div>

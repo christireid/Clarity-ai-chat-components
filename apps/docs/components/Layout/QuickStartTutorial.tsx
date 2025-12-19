@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 interface Step {
   id: number

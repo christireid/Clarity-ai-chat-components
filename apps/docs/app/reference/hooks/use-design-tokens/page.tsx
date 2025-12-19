@@ -55,7 +55,7 @@ export default function UseDesignTokensPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useDesignTokens } from '@clarity-chat/react'
+          code={`import { useDesignTokens } from '@clarity-chat/react/internal'
 
 function StyledCard() {
   const tokens = useDesignTokens()

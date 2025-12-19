@@ -5,12 +5,19 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 
 type FAQItem = {
   question: string
   answer: React.ReactNode
-  category: 'getting-started' | 'hooks' | 'components' | 'styling' | 'performance' | 'errors' | 'enterprise'
+  category:
+    | 'getting-started'
+    | 'hooks'
+    | 'components'
+    | 'styling'
+    | 'performance'
+    | 'errors'
+    | 'enterprise'
 }
 
 const faqItems: FAQItem[] = [
@@ -20,8 +27,9 @@ const faqItems: FAQItem[] = [
     question: 'What is the minimum React version required?',
     answer: (
       <p>
-        Clarity Chat requires <strong>React 18.0 or higher</strong>. React 19 is fully supported.
-        We use modern React features like automatic batching and concurrent rendering.
+        Clarity Chat requires <strong>React 18.0 or higher</strong>. React 19 is
+        fully supported. We use modern React features like automatic batching
+        and concurrent rendering.
       </p>
     ),
   },
@@ -31,13 +39,19 @@ const faqItems: FAQItem[] = [
     answer: (
       <div className="space-y-4">
         <p>
-          Most peer dependencies are optional. The only required peer dependency is <code>react</code> (18+).
-          Optional peer dependencies include:
+          Most peer dependencies are optional. The only required peer dependency
+          is <code>react</code> (18+). Optional peer dependencies include:
         </p>
         <ul className="list-disc pl-6 space-y-1">
-          <li><code>framer-motion</code> - For animations (auto-installed)</li>
-          <li><code>tailwindcss</code> - For styling (optional, works without it)</li>
-          <li>AI SDKs - Install only the ones you use (OpenAI, Anthropic, etc.)</li>
+          <li>
+            <code>framer-motion</code> - For animations (auto-installed)
+          </li>
+          <li>
+            <code>tailwindcss</code> - For styling (optional, works without it)
+          </li>
+          <li>
+            AI SDKs - Install only the ones you use (OpenAI, Anthropic, etc.)
+          </li>
         </ul>
       </div>
     ),
@@ -47,16 +61,15 @@ const faqItems: FAQItem[] = [
     question: 'Why are my styles not working?',
     answer: (
       <div className="space-y-4">
-        <p>
-          Make sure you import the CSS file in your app's entry point:
-        </p>
+        <p>Make sure you import the CSS file in your app's entry point:</p>
         <EnhancedCodeBlock
           code={`import '@clarity-chat/react/styles.css'`}
           language="tsx"
           showCopyButton
         />
         <p>
-          If you're using Tailwind CSS, also add Clarity Chat to your content config:
+          If you're using Tailwind CSS, also add Clarity Chat to your content
+          config:
         </p>
         <EnhancedCodeBlock
           code={`// tailwind.config.js
@@ -77,9 +90,12 @@ module.exports = {
     question: "What's the quickest way to get started?",
     answer: (
       <div className="space-y-4">
-        <p>Use the <code>ClarityChat</code> drop-in component with just an API endpoint:</p>
+        <p>
+          Use the <code>ClarityChat</code> drop-in component with just an API
+          endpoint:
+        </p>
         <EnhancedCodeBlock
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -89,8 +105,15 @@ function App() {
           showCopyButton
         />
         <p>
-          This gives you a complete chat interface with streaming, error handling, and memory support.
-          See the <Link href="/learn/quick-start" className="text-brand-500 hover:underline">Quick Start guide</Link> for more details.
+          This gives you a complete chat interface with streaming, error
+          handling, and memory support. See the{' '}
+          <Link
+            href="/learn/quick-start"
+            className="text-brand-500 hover:underline"
+          >
+            Quick Start guide
+          </Link>{' '}
+          for more details.
         </p>
       </div>
     ),
@@ -103,8 +126,9 @@ function App() {
     answer: (
       <div className="space-y-4">
         <p>
-          Use <code>useClarityChat</code> for most use cases. It's the recommended primary hook
-          that combines chat state, streaming, and optional memory support:
+          Use <code>useClarityChat</code> for most use cases. It's the
+          recommended primary hook that combines chat state, streaming, and
+          optional memory support:
         </p>
         <EnhancedCodeBlock
           code={`const { messages, input, setInput, handleSubmit, isLoading } = useClarityChat({
@@ -114,7 +138,14 @@ function App() {
           showCopyButton
         />
         <p>
-          Not sure? Try our <Link href="/reference/hooks/selector" className="text-brand-500 hover:underline">Hook Selector wizard</Link>.
+          Not sure? Try our{' '}
+          <Link
+            href="/reference/hooks/selector"
+            className="text-brand-500 hover:underline"
+          >
+            Hook Selector wizard
+          </Link>
+          .
         </p>
       </div>
     ),
@@ -125,7 +156,8 @@ function App() {
     answer: (
       <div className="space-y-4">
         <p>
-          <code>useClarityChat</code> is the recommended hook that extends <code>useChat</code> with:
+          <code>useClarityChat</code> is the recommended hook that extends{' '}
+          <code>useChat</code> with:
         </p>
         <ul className="list-disc pl-6 space-y-1">
           <li>Built-in memory/context management options</li>
@@ -134,8 +166,8 @@ function App() {
           <li>WebSocket and SSE streaming support</li>
         </ul>
         <p>
-          Use <code>useChat</code> directly only if you need a minimal implementation or are migrating
-          from another library.
+          Use <code>useChat</code> directly only if you need a minimal
+          implementation or are migrating from another library.
         </p>
       </div>
     ),
@@ -152,7 +184,7 @@ function App() {
         <EnhancedCodeBlock
           code={`'use client'
 
-import { useClarityChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react/internal'
 
 export function ChatComponent() {
   const { messages } = useClarityChat({ api: '/api/chat' })
@@ -162,7 +194,8 @@ export function ChatComponent() {
           showCopyButton
         />
         <p>
-          You can still use Server Components for the page layout and pass data as props.
+          You can still use Server Components for the page layout and pass data
+          as props.
         </p>
       </div>
     ),
@@ -200,7 +233,14 @@ export function ChatComponent() {
           </li>
         </ol>
         <p>
-          See the <Link href="/learn/concepts/theming" className="text-brand-500 hover:underline">Theming Guide</Link> for details.
+          See the{' '}
+          <Link
+            href="/learn/concepts/theming"
+            className="text-brand-500 hover:underline"
+          >
+            Theming Guide
+          </Link>{' '}
+          for details.
         </p>
       </div>
     ),
@@ -211,7 +251,8 @@ export function ChatComponent() {
     answer: (
       <div className="space-y-4">
         <p>
-          Use the <code>isLoading</code> prop on <code>ChatWindow</code> or <code>ClarityChat</code>:
+          Use the <code>isLoading</code> prop on <code>ChatWindow</code> or{' '}
+          <code>ClarityChat</code>:
         </p>
         <EnhancedCodeBlock
           code={`<ChatWindow
@@ -223,7 +264,8 @@ export function ChatComponent() {
           showCopyButton
         />
         <p>
-          The hook's <code>isLoading</code> state is automatically true during streaming.
+          The hook's <code>isLoading</code> state is automatically true during
+          streaming.
         </p>
       </div>
     ),
@@ -234,11 +276,12 @@ export function ChatComponent() {
     answer: (
       <div className="space-y-4">
         <p>
-          Markdown rendering is enabled by default. For advanced rendering (code blocks, math, diagrams),
-          use the <code>MarkdownRenderer</code> component:
+          Markdown rendering is enabled by default. For advanced rendering (code
+          blocks, math, diagrams), use the <code>MarkdownRenderer</code>{' '}
+          component:
         </p>
         <EnhancedCodeBlock
-          code={`import { MarkdownRenderer } from '@clarity-chat/react'
+          code={`import { MarkdownRenderer } from '@clarity-chat/react/internal'
 
 <MarkdownRenderer
   content={message.content}
@@ -259,8 +302,9 @@ export function ChatComponent() {
     question: 'Can I use Clarity Chat without Tailwind CSS?',
     answer: (
       <p>
-        Yes! The default CSS file (<code>@clarity-chat/react/styles.css</code>) includes all necessary
-        styles. Tailwind is optional and only needed if you want to use Tailwind classes for customization.
+        Yes! The default CSS file (<code>@clarity-chat/react/styles.css</code>)
+        includes all necessary styles. Tailwind is optional and only needed if
+        you want to use Tailwind classes for customization.
       </p>
     ),
   },
@@ -270,11 +314,11 @@ export function ChatComponent() {
     answer: (
       <div className="space-y-4">
         <p>
-          Dark mode is automatic if you use the <code>dark</code> class on your HTML element
-          (standard Tailwind approach). You can also force a theme:
+          Dark mode is automatic if you use the <code>dark</code> class on your
+          HTML element (standard Tailwind approach). You can also force a theme:
         </p>
         <EnhancedCodeBlock
-          code={`import { ThemeProvider } from '@clarity-chat/react'
+          code={`import { ThemeProvider } from '@clarity-chat/react/internal'
 
 <ThemeProvider defaultTheme="dark">
   <ClarityChat api="/api/chat" />
@@ -292,7 +336,10 @@ export function ChatComponent() {
     question: 'How do I reduce bundle size?',
     answer: (
       <div className="space-y-4">
-        <p>Use the <code>core-minimal</code> entry point for the smallest bundle (~30KB gzipped):</p>
+        <p>
+          Use the <code>core-minimal</code> entry point for the smallest bundle
+          (~30KB gzipped):
+        </p>
         <EnhancedCodeBlock
           code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react/core-minimal'`}
           language="tsx"
@@ -300,9 +347,13 @@ export function ChatComponent() {
         />
         <p>
           Then lazy-load features as needed. See the{' '}
-          <Link href="/learn/guides/bundle-size" className="text-brand-500 hover:underline">
+          <Link
+            href="/learn/guides/bundle-size"
+            className="text-brand-500 hover:underline"
+          >
             Bundle Size Guide
-          </Link>.
+          </Link>
+          .
         </p>
       </div>
     ),
@@ -323,7 +374,8 @@ export function ChatComponent() {
           showCopyButton
         />
         <p>
-          Also consider using token optimization to manage context window limits:
+          Also consider using token optimization to manage context window
+          limits:
         </p>
         <EnhancedCodeBlock
           code={`const { optimizedMessages } = useTokenOptimization({
@@ -347,9 +399,10 @@ export function ChatComponent() {
         <p>This usually means:</p>
         <ol className="list-decimal pl-6 space-y-2">
           <li>
-            <strong>Missing provider:</strong> Wrap your app with necessary providers
+            <strong>Missing provider:</strong> Wrap your app with necessary
+            providers
             <EnhancedCodeBlock
-              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react'
+              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react/internal'
 
 <ThemeProvider>
   <ToastProvider>
@@ -361,10 +414,12 @@ export function ChatComponent() {
             />
           </li>
           <li>
-            <strong>SSR issue:</strong> Use <code>'use client'</code> directive for client components
+            <strong>SSR issue:</strong> Use <code>'use client'</code> directive
+            for client components
           </li>
           <li>
-            <strong>Missing Message fields:</strong> Ensure messages have all required fields (id, role, content, createdAt, etc.)
+            <strong>Missing Message fields:</strong> Ensure messages have all
+            required fields (id, role, content, createdAt, etc.)
           </li>
         </ol>
       </div>
@@ -377,7 +432,10 @@ export function ChatComponent() {
       <div className="space-y-4">
         <p>Check these common issues:</p>
         <ol className="list-decimal pl-6 space-y-2">
-          <li>Your API endpoint must return a streaming response with proper headers</li>
+          <li>
+            Your API endpoint must return a streaming response with proper
+            headers
+          </li>
           <li>CORS headers must allow streaming</li>
           <li>
             The response format should match the expected format:
@@ -451,7 +509,11 @@ const message: Message = {
           <li>SOC 2 compliance ready</li>
         </ul>
         <p>
-          See the <Link href="/enterprise" className="text-brand-500 hover:underline">Enterprise documentation</Link> for details.
+          See the{' '}
+          <Link href="/enterprise" className="text-brand-500 hover:underline">
+            Enterprise documentation
+          </Link>{' '}
+          for details.
         </p>
       </div>
     ),
@@ -463,7 +525,7 @@ const message: Message = {
       <div className="space-y-4">
         <p>Use the token tracking hooks and components:</p>
         <EnhancedCodeBlock
-          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
+          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages } = useClarityChat({ api: '/api/chat' })
@@ -535,7 +597,10 @@ export default function FAQPage() {
       <Callout type="tip" className="mb-8">
         <p>
           Can't find what you're looking for? Check our{' '}
-          <Link href="/learn/troubleshooting" className="text-brand-500 hover:underline">
+          <Link
+            href="/learn/troubleshooting"
+            className="text-brand-500 hover:underline"
+          >
             Troubleshooting Guide
           </Link>{' '}
           or ask in{' '}
@@ -546,7 +611,8 @@ export default function FAQPage() {
             rel="noopener noreferrer"
           >
             GitHub Discussions
-          </a>.
+          </a>
+          .
         </p>
       </Callout>
 

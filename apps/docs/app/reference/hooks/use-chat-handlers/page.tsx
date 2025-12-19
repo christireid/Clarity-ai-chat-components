@@ -87,7 +87,7 @@ export default function UseChatHandlersPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -122,7 +122,7 @@ function Chat() {
           Experiment with the useChatHandlers hook:
         </p>
         <CodePlayground
-          initialCode={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
+          initialCode={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Example() {
@@ -149,7 +149,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Callbacks</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -184,7 +184,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -208,7 +208,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const chat = useClarityChat({ api: '/api/chat' })

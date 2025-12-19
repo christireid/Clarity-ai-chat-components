@@ -212,7 +212,7 @@ export default function UseChatEnhancedPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -241,7 +241,7 @@ function Chat() {
           Experiment with the useChatEnhanced hook:
         </p>
         <CodePlayground
-          initialCode={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
+          initialCode={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Example() {
@@ -272,7 +272,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Form Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react'
+          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, handleSubmit, input, setInput, isLoading } = useChatEnhanced({
@@ -298,7 +298,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Error Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append, error, isLoading } = useChatEnhanced({
@@ -327,7 +327,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react'
+          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append } = useChatEnhanced({
@@ -348,7 +348,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Custom Headers</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react'
+          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append } = useChatEnhanced({
@@ -366,7 +366,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Reload/Retry</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append, reload, isLoading } = useChatEnhanced({
@@ -451,7 +451,7 @@ const { messages, append, isLoading } = useChat({
 })
 
 // After (Clarity Chat)
-import { useChatEnhanced } from '@clarity-chat/react'
+import { useChatEnhanced } from '@clarity-chat/react/internal'
 
 const { messages, append, isLoading } = useChatEnhanced({
   api: '/api/chat',

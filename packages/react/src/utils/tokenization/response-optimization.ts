@@ -11,8 +11,8 @@
  */
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
-import { adaptiveOptimizer } from './adaptive-optimizer.js'
-import { semanticCache } from './intelligent-caching.js'
+import { adaptiveOptimizer } from './adaptive-optimizer'
+import { semanticCache } from './intelligent-caching'
 
 export type ResponseOptimizationStrategy =
   | 'length_control' // Control response length

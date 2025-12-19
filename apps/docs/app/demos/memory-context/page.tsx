@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react'
+import { useAutoScroll } from '@clarity-chat/react/internal'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'

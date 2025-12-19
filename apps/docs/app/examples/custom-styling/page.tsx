@@ -793,7 +793,7 @@ const theme = generateTheme('#3b82f6')
         <p>Use styled-components for type-safe, scoped styling:</p>
         <pre>
           <code>{`import styled from 'styled-components'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 const StyledChatWindow = styled(ChatWindow)\`
   background: \${props => props.theme.background};

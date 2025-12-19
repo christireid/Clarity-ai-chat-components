@@ -68,7 +68,7 @@ export default function CustomizationGuidePage() {
         </p>
 
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function MyChat() {
   return (
@@ -124,7 +124,7 @@ module.exports = {
         </p>
 
         <CodePlayground
-          code={`import { useDesignTokens } from '@clarity-chat/react'
+          code={`import { useDesignTokens } from '@clarity-chat/react/internal'
 import styled from 'styled-components'
 
 function CustomMessage({ content }) {
