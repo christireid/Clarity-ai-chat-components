@@ -1549,9 +1549,9 @@ export async function GET() {
         documentation: `${BASE_URL}/reference/hooks`,
       },
       dataSource: {
-        curated: curatedHooks.length,
-        generated: allHooks.length - curatedHooks.length,
         ...dataSourceInfo,
+        curated: curatedHooks.length,
+        generatedCount: allHooks.length - curatedHooks.length,
       },
     }
 

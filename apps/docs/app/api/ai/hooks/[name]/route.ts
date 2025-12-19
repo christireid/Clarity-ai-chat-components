@@ -8,6 +8,7 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { logger } from '@/lib/logger'
 
 /**
  * Single Hook Lookup API

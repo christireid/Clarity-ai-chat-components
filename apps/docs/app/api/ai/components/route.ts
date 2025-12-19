@@ -1386,9 +1386,9 @@ export async function GET() {
         documentation: BASE_URL,
       },
       dataSource: {
-        curated: curatedComponents.length,
-        generated: allComponents.length - curatedComponents.length,
         ...dataSourceInfo,
+        curated: curatedComponents.length,
+        generatedCount: allComponents.length - curatedComponents.length,
       },
     }
 

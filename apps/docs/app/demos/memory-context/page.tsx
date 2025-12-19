@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  Brain as BrainCircuit,
+  BrainCircuit,
   ChevronLeft,
   User,
   Bot,

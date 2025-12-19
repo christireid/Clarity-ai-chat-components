@@ -10,7 +10,7 @@ import {
   Sparkles,
   Download,
   Zap,
-  TreeDeciduous as Trees,
+  Trees,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { durations } from '@/lib/animations'

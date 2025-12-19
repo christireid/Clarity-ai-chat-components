@@ -6,7 +6,7 @@ import {
   RefreshCw,
   BarChart3,
   Play,
-  Brain as BrainCircuit,
+  BrainCircuit,
   Accessibility,
   Package,
   Wrench,

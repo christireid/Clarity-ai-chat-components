@@ -13,6 +13,7 @@ export interface SessionMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: string
+  metadata?: Record<string, unknown>
 }
 
 export interface Session {

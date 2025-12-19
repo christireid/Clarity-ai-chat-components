@@ -45,28 +45,50 @@ import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 // These are placeholder implementations for the optimized route
 
 interface CompressionResult {
+  compressed: string
   text: string
   originalTokens: number
   compressedTokens: number
   savings: number
-}
-
-interface RoutingDecision {
-  model: string
-  reasoning: string
-  confidence: number
+  savingsPercent: number
 }
 
 interface ModelInfo {
   id: string
   name: string
+  tier: string
   costPer1kTokens: number
+  provider: 'openai' | 'anthropic' | 'google'
+}
+
+interface RoutingDecision {
+  model: ModelInfo
+  reasoning: string
+  confidence: number
 }
 
 const COMMON_MODELS: ModelInfo[] = [
-  { id: 'gpt-4o-mini', name: 'GPT-4o Mini', costPer1kTokens: 0.00015 },
-  { id: 'gpt-4o', name: 'GPT-4o', costPer1kTokens: 0.005 },
-  { id: 'claude-3-haiku', name: 'Claude 3 Haiku', costPer1kTokens: 0.00025 },
+  {
+    id: 'gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    tier: 'economy',
+    costPer1kTokens: 0.00015,
+    provider: 'openai',
+  },
+  {
+    id: 'gpt-4o',
+    name: 'GPT-4o',
+    tier: 'standard',
+    costPer1kTokens: 0.005,
+    provider: 'openai',
+  },
+  {
+    id: 'claude-3-haiku',
+    name: 'Claude 3 Haiku',
+    tier: 'economy',
+    costPer1kTokens: 0.00025,
+    provider: 'anthropic',
+  },
 ]
 
 function compressPrompt(
@@ -75,7 +97,20 @@ function compressPrompt(
 ): CompressionResult {
   // Stub: return uncompressed for now
   const tokens = Math.ceil(text.length / 4)
-  return { text, originalTokens: tokens, compressedTokens: tokens, savings: 0 }
+  return {
+    compressed: text,
+    text,
+    originalTokens: tokens,
+    compressedTokens: tokens,
+    savings: 0,
+    savingsPercent: 0,
+  }
+}
+
+interface ConversationStats {
+  originalTokens: number
+  compressedTokens: number
+  savingsPercent: number
 }
 
 function compressConversation(
@@ -83,7 +118,7 @@ function compressConversation(
   _options?: Record<string, unknown>
 ): {
   messages: typeof messages
-  stats: { originalTokens: number; compressedTokens: number }
+  stats: ConversationStats
 } {
   const totalTokens = messages.reduce(
     (acc, m) => acc + Math.ceil(m.content.length / 4),
@@ -91,7 +126,11 @@ function compressConversation(
   )
   return {
     messages,
-    stats: { originalTokens: totalTokens, compressedTokens: totalTokens },
+    stats: {
+      originalTokens: totalTokens,
+      compressedTokens: totalTokens,
+      savingsPercent: 0,
+    },
   }
 }
 
@@ -99,7 +138,11 @@ function routeQuery(
   _query: string,
   _options?: Record<string, unknown>
 ): RoutingDecision {
-  return { model: 'gpt-4o-mini', reasoning: 'Default routing', confidence: 0.8 }
+  return {
+    model: COMMON_MODELS[0],
+    reasoning: 'Default routing',
+    confidence: 0.8,
+  }
 }
 
 function analyzeComplexity(_query: string): {
@@ -177,11 +220,11 @@ function compressConversationHistory(
   })
 
   return {
-    compressed: result.compressed,
+    compressed: result.messages as ChatMessage[],
     stats: {
-      originalTokens: result.originalTokens,
-      compressedTokens: result.compressedTokens,
-      savingsPercent: result.savingsPercent,
+      originalTokens: result.stats.originalTokens,
+      compressedTokens: result.stats.compressedTokens,
+      savingsPercent: result.stats.savingsPercent,
     },
   }
 }
