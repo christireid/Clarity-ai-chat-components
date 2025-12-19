@@ -15,12 +15,19 @@ pnpm dev
 
 ## Available Examples
 
+### Start Here
+
+| Example | Description | Time | API Key Required |
+|---------|-------------|------|------------------|
+| **[quickstart](./quickstart)** | **Works immediately - no API key needed!** | 5 min | No (demo mode) |
+
 ### Runnable Examples
 
 All examples below can be run with `pnpm dev`:
 
 | Example                                      | Description                               | Port | Complexity   |
 | -------------------------------------------- | ----------------------------------------- | ---- | ------------ |
+| [quickstart](./quickstart)                   | Zero-config demo mode, upgrade to production | 3000 | Beginner     |
 | [basic-chat](./basic-chat)                   | Simplest chat implementation              | 3000 | Beginner     |
 | [streaming-chat](./streaming-chat)           | Advanced SSE with token metrics           | 3001 | Intermediate |
 | [enterprise-ai-ops](./enterprise-ai-ops)     | Enterprise AI operations dashboard        | 3002 | Advanced     |
@@ -30,6 +37,7 @@ All examples below can be run with `pnpm dev`:
 | [advanced-features](./advanced-features)     | Battery-aware & performance features      | 3006 | Advanced     |
 | [security-examples](./security-examples)     | Security validation & PII redaction       | 3007 | Intermediate |
 | [multi-provider](./multi-provider)           | OpenAI, Anthropic, Google support         | 3008 | Intermediate |
+| [headless-mode](./headless-mode)             | Core hooks only, bring your own UI        | 3010 | Advanced     |
 
 ### Reference Implementations
 
