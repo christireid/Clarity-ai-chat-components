@@ -95,6 +95,10 @@ function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
   )
 }
 
+/**
+ * Three-step guide showing the developer journey from install to ship.
+ * Displays code examples for each step with animated cards.
+ */
 export default function HowItWorksSection() {
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })

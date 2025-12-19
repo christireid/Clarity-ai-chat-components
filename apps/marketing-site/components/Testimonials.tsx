@@ -154,6 +154,10 @@ function FeatureCard({
   )
 }
 
+/**
+ * Displays verifiable metrics and code examples instead of fake testimonials.
+ * All claims (170+ components, MIT license, TypeScript, bundle size) are checkable.
+ */
 export default function Testimonials() {
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
