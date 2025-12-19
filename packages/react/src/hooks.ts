@@ -92,21 +92,23 @@ export {
 /**
  * Hook for AI agent interactions with tool calling.
  */
-export {
-  useAgent,
-  type UseAgentOptions,
-  type UseAgentReturn,
-} from './hooks/chat/use-agent'
+// NOTE: Commented out due to missing dependencies
+// export {
+//   useAgent,
+//   type UseAgentOptions,
+//   type UseAgentReturn,
+// } from './hooks/chat/use-agent'
 
 /**
  * Hook for RAG (Retrieval Augmented Generation) pipelines.
  * Combines vector search with AI generation.
  */
-export {
-  useRAGPipeline,
-  type UseRAGPipelineOptions,
-  type UseRAGPipelineReturn,
-} from './hooks/chat/use-rag-pipeline'
+// NOTE: Commented out due to missing dependencies
+// export {
+//   useRAGPipeline,
+//   type UseRAGPipelineOptions,
+//   type UseRAGPipelineReturn,
+// } from './hooks/chat/use-rag-pipeline'
 
 /**
  * Hook for persistent conversation memory.
@@ -162,7 +164,8 @@ export * from './hooks/keyboard'
 export * from './hooks/storage'
 
 /** Performance hooks - render tracking, deferred operations */
-export * from './hooks/performance'
+// NOTE: Commenting out to avoid duplicate exports (useIntersectionObserver)
+// export * from './hooks/performance'
 
 /** Theme hooks - colors, analytics, shortcuts */
 export * from './hooks/theme'

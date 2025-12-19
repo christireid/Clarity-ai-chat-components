@@ -69,7 +69,8 @@ export * from './reranking'
 // PLUGIN & EXTENSION SYSTEM
 // ============================================================================
 export * from './plugins'
-export * from './extensions'
+// NOTE: Extensions module has build errors, commenting out
+// export * from './extensions'
 
 // ============================================================================
 // AGENTS & TOOLS

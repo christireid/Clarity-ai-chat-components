@@ -562,7 +562,7 @@ export function Message({
         )}
 
         {/* Metadata */}
-        <MessageMetadata metadata={message.metadata} />
+        <MessageMetadata message={message} />
       </div>
     </motion.div>
   )

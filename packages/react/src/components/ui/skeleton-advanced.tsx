@@ -239,23 +239,26 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     keyframes: 'shimmer-advanced',
     duration: '2s',
     easing: 'linear',
-    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+    background:
+      'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
   },
-  
+
   shimmerRainbow: {
     name: 'shimmer-rainbow',
     keyframes: 'shimmer-rainbow',
     duration: '3s',
     easing: 'ease-in-out',
-    background: 'linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080)',
+    background:
+      'linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080)',
   },
-  
+
   shimmerCircular: {
     name: 'shimmer-circular',
     keyframes: 'shimmer-circular',
     duration: '4s',
     easing: 'linear',
-    background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent)',
+    background:
+      'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent)',
   },
 
   // Physics-based animations
@@ -265,14 +268,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '0.6s',
     easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   },
-  
+
   physicsSpring: {
     name: 'physics-spring',
     keyframes: 'physics-spring',
     duration: '1s',
     easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   },
-  
+
   physicsWobble: {
     name: 'physics-wobble',
     keyframes: 'physics-wobble',
@@ -287,14 +290,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '2s',
     easing: 'ease-in-out',
   },
-  
+
   morphExpandContract: {
     name: 'morph-expand-contract',
     keyframes: 'morph-expand-contract',
     duration: '1.5s',
     easing: 'cubic-bezier(0.445, 0.05, 0.55, 0.95)',
   },
-  
+
   morphSquashStretch: {
     name: 'morph-squash-stretch',
     keyframes: 'morph-squash-stretch',
@@ -308,20 +311,22 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     keyframes: 'particle-float',
     duration: '3s',
     easing: 'ease-out',
-    pseudoElements: [{
-      content: '""',
-      position: 'absolute',
-      animation: 'particle-float 3s ease-out infinite',
-      style: {
-        width: '4px',
-        height: '4px',
-        backgroundColor: 'rgba(255,255,255,0.6)',
-        borderRadius: '50%',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      }
-    }]
+    pseudoElements: [
+      {
+        content: '""',
+        position: 'absolute',
+        animation: 'particle-float 3s ease-out infinite',
+        style: {
+          width: '4px',
+          height: '4px',
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          borderRadius: '50%',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        },
+      },
+    ],
   },
 
   // Wave animations
@@ -331,14 +336,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '2s',
     easing: 'ease-in-out',
   },
-  
+
   waveCosine: {
     name: 'wave-cosine',
     keyframes: 'wave-cosine',
     duration: '2.5s',
     easing: 'ease-in-out',
   },
-  
+
   waveComplex: {
     name: 'wave-complex',
     keyframes: 'wave-complex',
@@ -353,14 +358,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '1s',
     easing: 'ease-out',
   },
-  
+
   pulseRadial: {
     name: 'pulse-radial',
     keyframes: 'pulse-radial',
     duration: '2s',
     easing: 'ease-in-out',
   },
-  
+
   pulseHeartbeat: {
     name: 'pulse-heartbeat',
     keyframes: 'pulse-heartbeat',
@@ -375,14 +380,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '0.5s',
     easing: 'steps(2, end)',
   },
-  
+
   glitchVertical: {
     name: 'glitch-vertical',
     keyframes: 'glitch-vertical',
     duration: '0.4s',
     easing: 'steps(2, end)',
   },
-  
+
   glitchSkew: {
     name: 'glitch-skew',
     keyframes: 'glitch-skew',
@@ -397,14 +402,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '3s',
     easing: 'ease-in-out',
   },
-  
+
   organicSway: {
     name: 'organic-sway',
     keyframes: 'organic-sway',
     duration: '4s',
     easing: 'ease-in-out',
   },
-  
+
   organicGrow: {
     name: 'organic-grow',
     keyframes: 'organic-grow',
@@ -419,14 +424,14 @@ export const advancedVariants: Record<string, AdvancedSkeletonVariant> = {
     duration: '1.5s',
     easing: 'steps(1, end)',
   },
-  
+
   glowPulse: {
     name: 'glow-pulse',
     keyframes: 'glow-pulse',
     duration: '2s',
     easing: 'ease-in-out',
   },
-  
+
   glowRadiate: {
     name: 'glow-radiate',
     keyframes: 'glow-radiate',
@@ -473,7 +478,9 @@ export const createResponsiveSkeleton = ({
   }
 
   const styles = `
-    ${containerQueries ? `
+    ${
+      containerQueries
+        ? `
       @container (max-width: 320px) {
         width: ${sizes.xs}px;
         height: ${sizes.xs}px;
@@ -498,7 +505,8 @@ export const createResponsiveSkeleton = ({
         width: ${sizes['2xl']}px;
         height: ${sizes['2xl']}px;
       }
-    ` : `
+    `
+        : `
       @media (max-width: 320px) {
         width: ${sizes.xs}px;
         height: ${sizes.xs}px;
@@ -523,12 +531,17 @@ export const createResponsiveSkeleton = ({
         width: ${sizes['2xl']}px;
         height: ${sizes['2xl']}px;
       }
-    `}
+    `
+    }
 
-    ${fluid ? `
+    ${
+      fluid
+        ? `
       width: clamp(${sizes.xs}px, 10vw, ${sizes['2xl']}px);
       height: clamp(${sizes.xs}px, 10vw, ${sizes['2xl']}px);
-    ` : ''}
+    `
+        : ''
+    }
 
     ${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''}
   `
@@ -544,13 +557,16 @@ export const createResponsiveSkeleton = ({
  * Hook to detect the best animation variant based on device capabilities
  */
 export const useOptimalAnimation = (preferredVariant: string) => {
-  const [animationVariant, setAnimationVariant] = React.useState(preferredVariant)
+  const [animationVariant, setAnimationVariant] =
+    React.useState(preferredVariant)
 
   React.useEffect(() => {
     const checkDeviceCapabilities = () => {
       // Check for reduced motion preference
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches
+
       // Check for low-end device indicators
       const deviceMemory = (navigator as any).deviceMemory || 4
       const hardwareConcurrency = navigator.hardwareConcurrency || 2
@@ -579,14 +595,17 @@ export const useOptimalAnimation = (preferredVariant: string) => {
 /**
  * Hook to create responsive skeleton sizing
  */
-export const useResponsiveSize = (baseSize: number, responsive?: ResponsiveSize) => {
+export const useResponsiveSize = (
+  baseSize: number,
+  responsive?: ResponsiveSize
+) => {
   const [size, setSize] = React.useState(baseSize)
   const [containerWidth, setContainerWidth] = React.useState(0)
 
   React.useEffect(() => {
     const updateSize = () => {
       const viewportWidth = window.innerWidth
-      
+
       if (viewportWidth <= 320) {
         setSize(responsive?.xs || baseSize * 0.75)
       } else if (viewportWidth <= 640) {
@@ -614,11 +633,11 @@ export const useResponsiveSize = (baseSize: number, responsive?: ResponsiveSize)
 /**
  * Hook to monitor container size for container queries
  */
-export const useContainerSize = (ref: React.RefObject<HTMLElement>) => {
+export const useContainerSize = (ref: React.RefObject<HTMLElement | null>) => {
   const [size, setSize] = React.useState({ width: 0, height: 0 })
 
   React.useEffect(() => {
-    if (!ref.current) return
+    if (!ref.current) return undefined
 
     const updateSize = () => {
       if (ref.current) {
@@ -674,22 +693,27 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
   const responsiveSize = useResponsiveSize(size, responsive)
   const containerSize = useContainerSize(elementRef)
 
-  const animationVariant = advancedVariants[optimalVariant] || advancedVariants.shimmerAdvanced
+  const animationVariant =
+    advancedVariants[optimalVariant] || advancedVariants.shimmerAdvanced
 
   // Performance monitoring
   React.useEffect(() => {
     if (enablePerformanceMonitoring && typeof window !== 'undefined') {
       const startTime = performance.now()
-      
+
       return () => {
         const endTime = performance.now()
         const renderTime = endTime - startTime
-        
-        if (renderTime > 16) { // More than one frame
-          console.warn(`AdvancedSkeleton render took ${renderTime}ms (variant: ${variant})`)
+
+        if (renderTime > 16) {
+          // More than one frame
+          console.warn(
+            `AdvancedSkeleton render took ${renderTime}ms (variant: ${variant})`
+          )
         }
       }
     }
+    return undefined
   }, [variant, enablePerformanceMonitoring])
 
   const responsiveStyles = createResponsiveSkeleton({
@@ -700,7 +724,8 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
     aspectRatio,
   })
 
-  const microInteractionStyles = enableMicroInteractions ? `
+  const microInteractionStyles = enableMicroInteractions
+    ? `
     &:hover {
       transform: scale(1.02);
       transition: transform 0.2s ease-out;
@@ -710,7 +735,8 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
       transform: scale(0.98);
       transition: transform 0.1s ease-out;
     }
-  ` : ''
+  `
+    : ''
 
   return (
     <>
@@ -736,14 +762,22 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
           animation: ${animationVariant.keyframes} ${animationVariant.duration} ${animationVariant.easing} infinite;
         }
         
-        ${animationVariant.pseudoElements?.map((pseudo, index) => `
+        ${
+          animationVariant.pseudoElements
+            ?.map(
+              (pseudo, index) => `
           .advanced-skeleton::after {
             content: ${pseudo.content};
             position: ${pseudo.position};
             animation: ${pseudo.animation};
-            ${Object.entries(pseudo.style).map(([key, value]) => `${key}: ${value};`).join('\n')}
+            ${Object.entries(pseudo.style)
+              .map(([key, value]) => `${key}: ${value};`)
+              .join('\n')}
           }
-        `).join('\n') || ''}
+        `
+            )
+            .join('\n') || ''
+        }
       `}</style>
       <div
         ref={elementRef}
@@ -753,4 +787,3 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
     </>
   )
 }
-

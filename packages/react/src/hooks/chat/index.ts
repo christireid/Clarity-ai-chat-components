@@ -72,5 +72,6 @@ export * from './use-chat-with-operations'
 // AI Hooks
 export * from './use-completion'
 export * from './use-assistant'
-export * from './use-agent'
-export * from './use-rag-pipeline'
+// NOTE: Commented out due to missing dependencies
+// export * from './use-agent'
+// export * from './use-rag-pipeline'

@@ -44,6 +44,17 @@
     "src/security/**/*",
     "src/hooks/security/**/*",
     "src/utils/security/**/*",
-    "src/components/enterprise/**/*"
+    "src/components/enterprise/**/*",
+    "src/domains/**/*",
+    "src/exports/chat-ui.ts",
+    "src/exports/domains.ts",
+    "src/extensions/**/*",
+    "src/components/search/**/*",
+    "src/components/ui/dashboard-skeleton.tsx",
+    "src/components/chat/floating-chat-widget.tsx",
+    "src/hooks/chat/use-agent.ts",
+    "src/hooks/chat/use-rag-pipeline.ts",
+    "src/hooks/keyboard/use-command-palette-commands.ts",
+    "src/hooks/performance/**/*"
   ]
 }

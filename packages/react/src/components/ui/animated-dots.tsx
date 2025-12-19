@@ -205,7 +205,7 @@ export function AnimatedDots({
           duration: durations.slower,
           repeat: Infinity,
           delay: index * staggerDelay,
-          ease: 'easeInOut',
+          ease: 'easeInOut' as const,
         }
       }
       return {
