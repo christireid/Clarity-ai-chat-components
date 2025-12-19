@@ -9,6 +9,37 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+#### GTM-Driven API Cleanup
+
+- `docs/MIGRATION_GUIDE.md` - Comprehensive migration guide for breaking changes
+- `MASTER_CONTEXT.md` - GTM audit source of truth document
+
+### Changed
+
+#### API Surface Cleanup (Breaking)
+
+- **BREAKING**: `exports.ts` renamed to `_internal-exports.ts` - Direct imports from this file are
+  no longer supported. Use proper entry points (`@clarity-chat/react`, `/core`, `/internal`).
+- **BREAKING**: `FeatureLoader` class removed from `core-minimal` - Use `React.lazy()` for dynamic
+  imports instead.
+- **BREAKING**: `useChatSimple` removed from `/core` - Use `useClarityChat` instead (same API,
+  better naming).
+
+#### Documentation Alignment
+
+- README examples now use actual public API exports (TokenBudgetProvider, ClarityChatPresets,
+  ThemeProvider)
+- Example apps updated to use `useClarityChat` instead of internal hooks
+- Entry point documentation clarified (main → core → core-minimal → internal)
+
+### Fixed
+
+- Fixed README/API mismatch where non-existent exports were documented
+- Fixed `examples/basic-chat` to use public `useClarityChat` hook instead of internal `useChat`
+- Fixed theme syntax in README from `themes.ocean` to `theme="ocean"`
+
+### Added
+
 #### Public API Enhancements
 
 - `ClarityChatProps` type is now exported for TypeScript consumers
