@@ -51,7 +51,7 @@ export * from './webhooks'
 // ============================================================================
 export * from './components/dashboards'
 export * from './components/ai-ops'
-export * from './components/enterprise'
+// export * from './components/enterprise'
 export * from './components/ab-testing'
 export * from './components/pro'
 

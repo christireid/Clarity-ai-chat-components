@@ -1,8 +1,7 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger'
-
 import * as React from 'react'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Card,
@@ -613,7 +612,7 @@ export function SemanticMessageSearch({
         if (!isMountedRef.current) return
         if (err instanceof Error && err.name === 'AbortError') return
 
-        logger.error('Search error:', err)
+        console.error('Search error:', err)
         setError(err instanceof Error ? err.message : 'Search failed')
       } finally {
         if (isMountedRef.current) {

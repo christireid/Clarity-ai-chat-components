@@ -64,8 +64,8 @@ export * from './ui'
 // AI Components
 export * from './ai'
 
-// Prompt Components
-export * from './prompt'
+// Prompt Components (excluded from build due to missing primitives dependencies)
+// export * from './prompt'
 
 // Context Components
 export * from './context'
@@ -73,8 +73,8 @@ export * from './context'
 // Code Components
 export * from './code'
 
-// Enterprise Components
-export * from './enterprise'
+// Enterprise Components (excluded from build due to cross-package dependencies)
+// export * from './enterprise'
 
 // AI-Ops Components
 export * from './ai-ops'

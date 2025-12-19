@@ -242,6 +242,20 @@ export interface ThemeMetadata {
     secondaryColor: string
     backgroundColor: string
   }
+  // Extended metadata for modern themes
+  category?: string
+  tags?: string[]
+  popularity?: number
+  accessibility?: {
+    wcagRating?: string
+    contrastRatio?: number
+    colorBlindSafe?: boolean
+  }
+  features?: string[]
+  compatibility?: {
+    browsers?: string[]
+    features?: string[]
+  }
 }
 
 /**

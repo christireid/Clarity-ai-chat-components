@@ -1,21 +1,28 @@
 /**
  * Tool UI Component Examples
- * 
+ *
  * Reusable tool result components that can be registered in the tool UI registry.
  * These components demonstrate best practices for rendering different types of tool results.
  */
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@clarity-chat/primitives'
-import type { ToolComponentProps } from '../agents/tool-ui-registry'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
+import type { ToolComponentProps } from '../../agents/tool-ui-registry'
 
 /**
  * Weather Tool Result Component
- * 
+ *
  * Renders weather information in a visually appealing card.
  */
-export function WeatherToolResult({ 
-  data 
+export function WeatherToolResult({
+  data,
 }: ToolComponentProps<{
   location: string
   temperature: number
@@ -57,11 +64,11 @@ export function WeatherToolResult({
 
 /**
  * Search Tool Result Component
- * 
+ *
  * Renders search results with relevance scores.
  */
-export function SearchToolResult({ 
-  data 
+export function SearchToolResult({
+  data,
 }: ToolComponentProps<{
   query: string
   results: Array<{
@@ -86,8 +93,8 @@ export function SearchToolResult({
       </CardHeader>
       <CardContent className="space-y-3">
         {data.results.map((result, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="space-y-1 border-t pt-3 first:border-t-0 first:pt-0"
           >
             <div className="flex items-start justify-between gap-2">
@@ -117,11 +124,11 @@ export function SearchToolResult({
 
 /**
  * Calculator Tool Result Component
- * 
+ *
  * Renders calculation results with the expression.
  */
-export function CalculatorToolResult({ 
-  data 
+export function CalculatorToolResult({
+  data,
 }: ToolComponentProps<{
   expression: string
   result: number
@@ -143,9 +150,14 @@ export function CalculatorToolResult({
         </div>
         {data.steps && data.steps.length > 0 && (
           <div className="space-y-1 pt-2 border-t">
-            <div className="text-xs font-medium text-muted-foreground">Steps:</div>
+            <div className="text-xs font-medium text-muted-foreground">
+              Steps:
+            </div>
             {data.steps.map((step, idx) => (
-              <div key={idx} className="text-xs text-muted-foreground font-mono">
+              <div
+                key={idx}
+                className="text-xs text-muted-foreground font-mono"
+              >
                 {step}
               </div>
             ))}
@@ -158,19 +170,20 @@ export function CalculatorToolResult({
 
 /**
  * Database Query Tool Result Component
- * 
+ *
  * Renders database query results in a table format.
  */
-export function DatabaseQueryToolResult({ 
-  data 
+export function DatabaseQueryToolResult({
+  data,
 }: ToolComponentProps<{
   query: string
   rows: Record<string, any>[]
   rowCount: number
   columns?: string[]
 }>) {
-  const columns = data.columns || (data.rows.length > 0 ? Object.keys(data.rows[0]) : [])
-  
+  const columns =
+    data.columns || (data.rows.length > 0 ? Object.keys(data.rows[0]) : [])
+
   return (
     <Card className="border-orange-200 bg-orange-50/50">
       <CardHeader>
@@ -190,8 +203,8 @@ export function DatabaseQueryToolResult({
               <thead>
                 <tr className="border-b">
                   {columns.map((col) => (
-                    <th 
-                      key={col} 
+                    <th
+                      key={col}
                       className="text-left p-2 font-medium text-muted-foreground"
                     >
                       {col}
@@ -220,11 +233,11 @@ export function DatabaseQueryToolResult({
 
 /**
  * API Call Tool Result Component
- * 
+ *
  * Renders API response with status code and data.
  */
-export function APICallToolResult({ 
-  data 
+export function APICallToolResult({
+  data,
 }: ToolComponentProps<{
   url: string
   method: string
@@ -234,9 +247,11 @@ export function APICallToolResult({
   headers?: Record<string, string>
 }>) {
   const isSuccess = data.status >= 200 && data.status < 300
-  
+
   return (
-    <Card className={`border-${isSuccess ? 'green' : 'red'}-200 bg-${isSuccess ? 'green' : 'red'}-50/50`}>
+    <Card
+      className={`border-${isSuccess ? 'green' : 'red'}-200 bg-${isSuccess ? 'green' : 'red'}-50/50`}
+    >
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           🌐 API Response
@@ -252,14 +267,18 @@ export function APICallToolResult({
           </Badge>
         </div>
         <div className="space-y-1">
-          <div className="text-xs font-medium text-muted-foreground">Response:</div>
+          <div className="text-xs font-medium text-muted-foreground">
+            Response:
+          </div>
           <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto">
             <code>{JSON.stringify(data.data, null, 2)}</code>
           </pre>
         </div>
         {data.headers && Object.keys(data.headers).length > 0 && (
           <div className="space-y-1 pt-2 border-t">
-            <div className="text-xs font-medium text-muted-foreground">Headers:</div>
+            <div className="text-xs font-medium text-muted-foreground">
+              Headers:
+            </div>
             <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto">
               <code>{JSON.stringify(data.headers, null, 2)}</code>
             </pre>
@@ -272,11 +291,11 @@ export function APICallToolResult({
 
 /**
  * Code Execution Tool Result Component
- * 
+ *
  * Renders code execution results with output and errors.
  */
-export function CodeExecutionToolResult({ 
-  data 
+export function CodeExecutionToolResult({
+  data,
 }: ToolComponentProps<{
   code: string
   language: string
@@ -285,7 +304,9 @@ export function CodeExecutionToolResult({
   executionTime?: number
 }>) {
   return (
-    <Card className={`border-${data.error ? 'red' : 'blue'}-200 bg-${data.error ? 'red' : 'blue'}-50/50`}>
+    <Card
+      className={`border-${data.error ? 'red' : 'blue'}-200 bg-${data.error ? 'red' : 'blue'}-50/50`}
+    >
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           💻 Code Execution
@@ -318,7 +339,9 @@ export function CodeExecutionToolResult({
         ) : (
           data.output && (
             <div className="space-y-1">
-              <div className="text-xs font-medium text-muted-foreground">Output:</div>
+              <div className="text-xs font-medium text-muted-foreground">
+                Output:
+              </div>
               <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto">
                 <code>{data.output}</code>
               </pre>

@@ -13,7 +13,7 @@ import { ChatWindow } from '../components/chat-window'
 import { ChatInput } from '../components/chat-input'
 import { useChatEnhanced } from '../hooks/chat/use-chat-enhanced'
 import { useClarityChatWithTools } from '../hooks/use-clarity-chat-with-tools'
-import { createToolUIRegistry } from '../agents/tool-ui-registry'
+import { createToolUIRegistry } from '../../agents/tool-ui-registry'
 import { MemoryProvider, useMemoryContext } from '../memory/memory-provider'
 
 // ============================================================================

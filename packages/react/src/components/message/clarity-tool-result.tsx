@@ -25,7 +25,7 @@ import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type {
   ToolComponentRegistry,
   ToolComponentProps,
-} from '../agents/tool-ui-registry'
+} from '../../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
 import { ErrorBoundary } from '../feedback/error-boundary'
 

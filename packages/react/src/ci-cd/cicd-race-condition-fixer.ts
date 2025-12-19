@@ -5,7 +5,7 @@
 
 import { EventEmitter } from 'events'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
-import { join, resolve } from 'path'
+import { join, resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 /**
@@ -122,9 +122,9 @@ export class CIDCRaceConditionFixer extends EventEmitter {
 
   constructor(config: Partial<CICDConfig> = {}) {
     super()
-    
+
     this.currentDir = dirname(fileURLToPath(import.meta.url))
-    
+
     this.config = {
       buildTimeout: 300000, // 5 minutes
       testTimeout: 180000, // 3 minutes
@@ -135,7 +135,7 @@ export class CIDCRaceConditionFixer extends EventEmitter {
       cleanupTimeout: 30000, // 30 seconds
       healthCheckInterval: 10000, // 10 seconds
       dependencyTimeout: 120000, // 2 minutes
-      ...config
+      ...config,
     }
 
     this.raceDetector = this.createRaceDetector()
@@ -147,55 +147,70 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    */
   private createRaceDetector(): RaceConditionDetector {
     const detections: RaceConditionReport[] = []
-    
+
     return {
       detect: (resource: string, operation: string): boolean => {
-        const existing = detections.filter(d => 
-          d.resource === resource && 
-          d.operation === operation && 
-          d.resolution === 'pending'
+        const existing = detections.filter(
+          (d) =>
+            d.resource === resource &&
+            d.operation === operation &&
+            d.resolution === 'pending'
         )
-        
+
         if (existing.length > 0) {
           this.emit('race-condition-detected', {
             resource,
             operation,
-            existingDetections: existing
+            existingDetections: existing,
           })
           return true
         }
         return false
       },
-      
+
       report: (): RaceConditionReport[] => [...detections],
-      
+
       getStatistics: (): RaceStatistics => {
-        const resolved = detections.filter(d => d.resolution === 'resolved').length
-        const failed = detections.filter(d => d.resolution === 'failed').length
-        const pending = detections.filter(d => d.resolution === 'pending').length
-        
-        const resourceCounts = detections.reduce((acc, d) => {
-          acc[d.resource] = (acc[d.resource] || 0) + 1
-          return acc
-        }, {} as Record<string, number>)
-        
-        const mostCommonResource = Object.entries(resourceCounts)
-          .sort(([,a], [,b]) => b - a)[0]?.[0] || 'none'
-        
-        const severityDistribution = detections.reduce((acc, d) => {
-          acc[d.severity] = (acc[d.severity] || 0) + 1
-          return acc
-        }, {} as Record<string, number>)
-        
+        const resolved = detections.filter(
+          (d) => d.resolution === 'resolved'
+        ).length
+        const failed = detections.filter(
+          (d) => d.resolution === 'failed'
+        ).length
+        const pending = detections.filter(
+          (d) => d.resolution === 'pending'
+        ).length
+
+        const resourceCounts = detections.reduce(
+          (acc, d) => {
+            acc[d.resource] = (acc[d.resource] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>
+        )
+
+        const mostCommonResource =
+          Object.entries(resourceCounts).sort(
+            ([, a], [, b]) => b - a
+          )[0]?.[0] || 'none'
+
+        const severityDistribution = detections.reduce(
+          (acc, d) => {
+            acc[d.severity] = (acc[d.severity] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>
+        )
+
         return {
           totalDetections: detections.length,
           resolvedCount: resolved,
           failedCount: failed,
           averageResolutionTime: pending > 0 ? 0 : Math.random() * 1000,
           mostCommonResource,
-          severityDistribution
+          severityDistribution,
         }
-      }
+      },
     }
   }
 
@@ -203,14 +218,19 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    * Initialize health checks
    */
   private initializeHealthChecks(): void {
-    const services = ['build-server', 'test-runner', 'package-manager', 'deployment-agent']
-    
-    services.forEach(service => {
+    const services = [
+      'build-server',
+      'test-runner',
+      'package-manager',
+      'deployment-agent',
+    ]
+
+    services.forEach((service) => {
       this.healthChecks.set(service, {
         service,
         status: 'unknown',
         responseTime: 0,
-        lastCheck: new Date()
+        lastCheck: new Date(),
       })
     })
 
@@ -228,14 +248,14 @@ export class CIDCRaceConditionFixer extends EventEmitter {
           const startTime = Date.now()
           const isHealthy = await this.checkServiceHealth(service)
           const responseTime = Date.now() - startTime
-          
+
           this.healthChecks.set(service, {
             ...currentHealth,
             status: isHealthy ? 'healthy' : 'unhealthy',
             responseTime,
-            lastCheck: new Date()
+            lastCheck: new Date(),
           })
-          
+
           if (!isHealthy) {
             this.emit('service-unhealthy', { service, responseTime })
           }
@@ -245,9 +265,9 @@ export class CIDCRaceConditionFixer extends EventEmitter {
             status: 'unhealthy',
             responseTime: 0,
             lastCheck: new Date(),
-            error: error as Error
+            error: error as Error,
           })
-          
+
           this.emit('health-check-failed', { service, error })
         }
       }
@@ -261,9 +281,9 @@ export class CIDCRaceConditionFixer extends EventEmitter {
     // Simulate health check with some randomness
     const baseHealth = Math.random() > 0.1 // 90% healthy
     const loadFactor = this.getSystemLoad()
-    
+
     // Higher load increases chance of unhealthy status
-    const healthThreshold = 0.7 + (loadFactor * 0.2)
+    const healthThreshold = 0.7 + loadFactor * 0.2
     return baseHealth && Math.random() > healthThreshold
   }
 
@@ -271,14 +291,19 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    * Get system load indicator
    */
   private getSystemLoad(): number {
-    const activeBuilds = Array.from(this.builds.values()).filter(b => b.status === 'running').length
+    const activeBuilds = Array.from(this.builds.values()).filter(
+      (b) => b.status === 'running'
+    ).length
     return Math.min(activeBuilds / this.config.parallelJobs, 1)
   }
 
   /**
    * Execute build with race condition prevention
    */
-  async executeBuild(buildId: string, dependencies: string[] = []): Promise<BuildState> {
+  async executeBuild(
+    buildId: string,
+    dependencies: string[] = []
+  ): Promise<BuildState> {
     const buildState: BuildState = {
       id: buildId,
       status: 'pending',
@@ -287,7 +312,7 @@ export class CIDCRaceConditionFixer extends EventEmitter {
       dependencies,
       artifacts: [],
       logs: [],
-      retryCount: 0
+      retryCount: 0,
     }
 
     this.builds.set(buildId, buildState)
@@ -306,7 +331,10 @@ export class CIDCRaceConditionFixer extends EventEmitter {
       await this.waitForDependencies(buildId, dependencies)
 
       // Acquire build lock
-      const lockAcquired = await this.acquireLock(`build-${buildId}`, this.config.lockTimeout)
+      const lockAcquired = await this.acquireLock(
+        `build-${buildId}`,
+        this.config.lockTimeout
+      )
       if (!lockAcquired) {
         throw new Error(`Failed to acquire lock for build ${buildId}`)
       }
@@ -320,22 +348,21 @@ export class CIDCRaceConditionFixer extends EventEmitter {
       buildState.status = 'completed'
       buildState.endTime = new Date()
       this.emit('build-completed', buildState)
-
     } catch (error) {
       buildState.status = 'failed'
       buildState.error = error as Error
       buildState.endTime = new Date()
-      
+
       this.emit('build-failed', buildState)
-      
+
       // Retry logic
       if (buildState.retryCount < this.config.maxRetries) {
         buildState.retryCount++
         this.emit('build-retry', buildState)
-        
+
         // Wait before retry
         await this.delay(this.config.retryDelay * buildState.retryCount)
-        
+
         // Retry the build
         return this.executeBuild(buildId, dependencies)
       }
@@ -349,16 +376,20 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    */
   private async executeBuildStages(buildState: BuildState): Promise<void> {
     const stages = ['install', 'build', 'test', 'package', 'deploy'] as const
-    
+
     for (const stage of stages) {
       buildState.stage = stage
       this.emit('build-stage-started', { buildId: buildState.id, stage })
-      
+
       try {
         await this.executeStage(buildState, stage)
         this.emit('build-stage-completed', { buildId: buildState.id, stage })
       } catch (error) {
-        this.emit('build-stage-failed', { buildId: buildState.id, stage, error })
+        this.emit('build-stage-failed', {
+          buildId: buildState.id,
+          stage,
+          error,
+        })
         throw error
       }
     }
@@ -367,10 +398,14 @@ export class CIDCRaceConditionFixer extends EventEmitter {
   /**
    * Execute individual build stage
    */
-  private async executeStage(buildState: BuildState, stage: string): Promise<void> {
+  private async executeStage(
+    buildState: BuildState,
+    stage: string
+  ): Promise<void> {
     const startTime = Date.now()
-    const timeout = stage === 'test' ? this.config.testTimeout : this.config.buildTimeout
-    
+    const timeout =
+      stage === 'test' ? this.config.testTimeout : this.config.buildTimeout
+
     // Set up timeout
     const timeoutId = setTimeout(() => {
       this.emit('build-stage-timeout', { buildId: buildState.id, stage })
@@ -380,10 +415,9 @@ export class CIDCRaceConditionFixer extends EventEmitter {
     try {
       // Simulate stage execution
       await this.simulateStageExecution(stage)
-      
+
       const duration = Date.now() - startTime
       buildState.logs.push(`Stage ${stage} completed in ${duration}ms`)
-      
     } finally {
       clearTimeout(timeoutId)
     }
@@ -394,21 +428,23 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    */
   private async simulateStageExecution(stage: string): Promise<void> {
     // Add some randomness to simulate real execution times
-    const baseTime = {
-      install: 10000,
-      build: 20000,
-      test: 15000,
-      package: 5000,
-      deploy: 8000
-    }[stage] || 10000
-    
+    const baseTime =
+      {
+        install: 10000,
+        build: 20000,
+        test: 15000,
+        package: 5000,
+        deploy: 8000,
+      }[stage] || 10000
+
     const variation = Math.random() * 5000 // ±5 seconds
     const executionTime = baseTime + variation
-    
+
     await this.delay(executionTime)
-    
+
     // Simulate occasional failures
-    if (Math.random() < 0.05) { // 5% failure rate
+    if (Math.random() < 0.05) {
+      // 5% failure rate
       throw new Error(`Simulated failure in stage ${stage}`)
     }
   }
@@ -416,7 +452,10 @@ export class CIDCRaceConditionFixer extends EventEmitter {
   /**
    * Wait for dependencies to complete
    */
-  private async waitForDependencies(buildId: string, dependencies: string[]): Promise<void> {
+  private async waitForDependencies(
+    buildId: string,
+    dependencies: string[]
+  ): Promise<void> {
     if (dependencies.length === 0) return
 
     this.emit('waiting-for-dependencies', { buildId, dependencies })
@@ -425,14 +464,17 @@ export class CIDCRaceConditionFixer extends EventEmitter {
     const timeout = this.config.dependencyTimeout
 
     while (Date.now() - startTime < timeout) {
-      const allCompleted = dependencies.every(dep => {
+      const allCompleted = dependencies.every((dep) => {
         const depBuild = this.builds.get(dep)
-        return depBuild && (depBuild.status === 'completed' || depBuild.status === 'failed')
+        return (
+          depBuild &&
+          (depBuild.status === 'completed' || depBuild.status === 'failed')
+        )
       })
 
       if (allCompleted) {
         // Check if any dependencies failed
-        const failedDeps = dependencies.filter(dep => {
+        const failedDeps = dependencies.filter((dep) => {
           const depBuild = this.builds.get(dep)
           return depBuild?.status === 'failed'
         })
@@ -448,26 +490,31 @@ export class CIDCRaceConditionFixer extends EventEmitter {
       await this.delay(1000) // Check every second
     }
 
-    throw new Error(`Timeout waiting for dependencies: ${dependencies.join(', ')}`)
+    throw new Error(
+      `Timeout waiting for dependencies: ${dependencies.join(', ')}`
+    )
   }
 
   /**
    * Acquire lock with timeout
    */
-  private async acquireLock(resource: string, timeout: number): Promise<boolean> {
+  private async acquireLock(
+    resource: string,
+    timeout: number
+  ): Promise<boolean> {
     const startTime = Date.now()
-    
+
     while (Date.now() - startTime < timeout) {
       if (!this.locks.has(resource)) {
         this.locks.set(resource, resource)
         this.emit('lock-acquired', { resource })
         return true
       }
-      
+
       // Wait a bit before retrying
       await this.delay(100)
     }
-    
+
     this.emit('lock-timeout', { resource, timeout })
     return false
   }
@@ -487,13 +534,13 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    */
   async cleanup(): Promise<void> {
     this.emit('cleanup-started')
-    
+
     try {
       // Release all locks
       for (const [resource] of this.locks) {
         await this.releaseLock(resource)
       }
-      
+
       // Cancel pending builds
       for (const [buildId, build] of this.builds) {
         if (build.status === 'pending') {
@@ -502,10 +549,10 @@ export class CIDCRaceConditionFixer extends EventEmitter {
           this.emit('build-cancelled', build)
         }
       }
-      
+
       // Wait for cleanup timeout
       await this.delay(this.config.cleanupTimeout)
-      
+
       this.emit('cleanup-completed')
     } catch (error) {
       this.emit('cleanup-failed', error)
@@ -570,7 +617,7 @@ export class CIDCRaceConditionFixer extends EventEmitter {
    * Delay execution
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
 
@@ -612,16 +659,16 @@ export class BuildOrchestrator extends EventEmitter {
   addBuild(buildId: string, dependencies: string[] = []): void {
     if (!this.buildQueue.includes(buildId)) {
       this.buildQueue.push(buildId)
-      
+
       // Create dependency node
       this.buildGraph.set(buildId, {
         name: buildId,
         dependencies,
         priority: 1,
         estimatedDuration: 60000, // 1 minute
-        maxParallel: 1
+        maxParallel: 1,
       })
-      
+
       this.emit('build-queued', { buildId, dependencies })
       this.processQueue()
     }
@@ -632,17 +679,17 @@ export class BuildOrchestrator extends EventEmitter {
    */
   private async processQueue(): Promise<void> {
     // Find builds that can be executed (dependencies satisfied)
-    const executableBuilds = this.buildQueue.filter(buildId => {
+    const executableBuilds = this.buildQueue.filter((buildId) => {
       const node = this.buildGraph.get(buildId)
       if (!node) return false
-      
+
       // Check if dependencies are completed
-      const allDepsCompleted = node.dependencies.every(dep => {
+      const allDepsCompleted = node.dependencies.every((dep) => {
         const depBuild = this.fixer.getBuildState(dep)
         return depBuild && depBuild.status === 'completed'
       })
-      
-      return allDepsDepsCompleted && !this.activeBuilds.has(buildId)
+
+      return allDepsCompleted && !this.activeBuilds.has(buildId)
     })
 
     // Execute builds up to parallel limit
@@ -660,7 +707,10 @@ export class BuildOrchestrator extends EventEmitter {
   /**
    * Execute build
    */
-  private async executeBuild(buildId: string, dependencies: string[]): Promise<void> {
+  private async executeBuild(
+    buildId: string,
+    dependencies: string[]
+  ): Promise<void> {
     try {
       await this.fixer.executeBuild(buildId, dependencies)
     } catch (error) {
@@ -675,7 +725,7 @@ export class BuildOrchestrator extends EventEmitter {
     return {
       queued: this.buildQueue.length,
       active: this.activeBuilds.size,
-      total: this.buildGraph.size
+      total: this.buildGraph.size,
     }
   }
 }
@@ -700,38 +750,49 @@ export class CIDMonitor extends EventEmitter {
 
     this.fixer.on('build-completed', () => {
       completedBuilds++
-      this.updateMetric('build-completion-rate', (completedBuilds / (completedBuilds + failedBuilds)) * 100)
+      this.updateMetric(
+        'build-completion-rate',
+        (completedBuilds / (completedBuilds + failedBuilds)) * 100
+      )
     })
 
     this.fixer.on('build-failed', () => {
       failedBuilds++
-      this.updateMetric('build-completion-rate', (completedBuilds / (completedBuilds + failedBuilds)) * 100)
+      this.updateMetric(
+        'build-completion-rate',
+        (completedBuilds / (completedBuilds + failedBuilds)) * 100
+      )
     })
 
     // Monitor race conditions
     this.fixer.on('race-condition-detected', (data) => {
-      this.updateMetric('race-conditions', (this.metrics.get('race-conditions') || 0) + 1)
+      this.updateMetric(
+        'race-conditions',
+        (this.metrics.get('race-conditions') || 0) + 1
+      )
       this.emit('alert', {
         type: 'race-condition',
         severity: 'high',
         message: `Race condition detected: ${data.resource}/${data.operation}`,
-        data
+        data,
       })
     })
 
     // Monitor service health
     setInterval(() => {
       const healthChecks = this.fixer.getHealthChecks()
-      const unhealthyServices = healthChecks.filter(h => h.status === 'unhealthy').length
-      
+      const unhealthyServices = healthChecks.filter(
+        (h) => h.status === 'unhealthy'
+      ).length
+
       this.updateMetric('unhealthy-services', unhealthyServices)
-      
+
       if (unhealthyServices > 0) {
         this.emit('alert', {
           type: 'service-health',
           severity: unhealthyServices > 2 ? 'high' : 'medium',
           message: `${unhealthyServices} services are unhealthy`,
-          data: { unhealthyServices }
+          data: { unhealthyServices },
         })
       }
     }, 30000) // Check every 30 seconds
@@ -763,5 +824,5 @@ export class CIDMonitor extends EventEmitter {
 export default {
   CIDCRaceConditionFixer,
   BuildOrchestrator,
-  CIDMonitor
+  CIDMonitor,
 }

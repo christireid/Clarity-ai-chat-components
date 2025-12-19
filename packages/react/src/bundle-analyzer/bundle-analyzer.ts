@@ -5,18 +5,27 @@
 
 import {
   EnhancedEnterpriseFeature,
-  EnhancedBaseEnterpriseConfig,
-  EnterpriseProcessingResult,
-} from '../enterprise/enterprise-feature-base.js'
-import { CLIError, ExitCode } from '../../../cli/src/utils/errors.js'
+  CLIError,
+  ExitCode,
+  type EnhancedBaseEnterpriseConfig,
+  type EnterpriseProcessingResult,
+} from '../enterprise/enterprise-feature-base'
 import {
   formatBytes,
   calculatePercentage,
   deepMerge,
 } from '../internal/helpers'
-import { generateUniqueFilename } from '../../../primitives/src/lib/enterprise-utils.js'
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs'
-import { join, dirname } from 'path'
+
+/**
+ * Generate unique filename with timestamp
+ */
+function generateUniqueFilename(
+  prefix: string,
+  extension: string = 'json'
+): string {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  return `${prefix}-${timestamp}.${extension}`
+}
 
 /**
  * Bundle analyzer configuration

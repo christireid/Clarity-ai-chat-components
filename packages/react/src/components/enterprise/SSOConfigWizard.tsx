@@ -133,7 +133,7 @@ const CopyableInput: React.FC<{
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      logger.console.error('Failed to copy:', err)
+      console.error('Failed to copy:', err)
     }
   }
 

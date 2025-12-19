@@ -343,7 +343,7 @@ export * from './observability'
 export * from './quotas'
 export * from './rbac'
 export * from './multi-tenancy'
-export * from './security'
+// export * from './security'
 
 // Compliance & Audit
 export * from './audit'
@@ -351,7 +351,7 @@ export * from './webhooks'
 export * from './safety'
 
 // Enterprise Components
-export * from './components/enterprise'
+// export * from './components/enterprise'
 
 // =============================================================================
 // DOMAIN 9: DEVELOPER EXPERIENCE
@@ -494,7 +494,7 @@ export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list
 // AI-Ops components (exported from directory)
 export * from './components/ai-ops'
 // Enterprise components (exported from directory)
-export * from './components/enterprise'
+// export * from './components/enterprise'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 
 // Error Handling Components
@@ -599,7 +599,7 @@ export * from './hooks/model'
 export * from './hooks/message'
 
 // Security Hooks
-export * from './hooks/security'
+// export * from './hooks/security'
 
 // =============================================================================
 // TYPES

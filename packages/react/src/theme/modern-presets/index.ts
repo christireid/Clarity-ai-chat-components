@@ -196,12 +196,42 @@ export const modernThemes = {
   // Neumorphism theme - Soft extruded UI with tactile realism
   neumorphism: neumorphismLightTheme,
   'neumorphism-dark': neumorphismDarkTheme,
-} as const
+} as unknown as Record<string, CompleteThemeConfig>
 
 /**
  * Modern theme preset name type
  */
-export type ModernThemePresetName = keyof typeof modernThemes
+export type ModernThemePresetName =
+  | 'default'
+  | 'default-dark'
+  | 'neutral'
+  | 'neutral-dark'
+  | 'vibrant'
+  | 'vibrant-dark'
+  | 'high-contrast'
+  | 'high-contrast-dark'
+  | 'ocean'
+  | 'ocean-dark'
+  | 'sunset'
+  | 'sunset-dark'
+  | 'forest'
+  | 'forest-dark'
+  | 'rose'
+  | 'rose-dark'
+  | 'midnight'
+  | 'midnight-dark'
+  | 'slate'
+  | 'slate-dark'
+  | 'emerald'
+  | 'emerald-dark'
+  | 'amber'
+  | 'amber-dark'
+  | 'glassmorphism'
+  | 'glassmorphism-dark'
+  | 'aurora'
+  | 'aurora-dark'
+  | 'neumorphism'
+  | 'neumorphism-dark'
 
 /**
  * Theme metadata for modern presets

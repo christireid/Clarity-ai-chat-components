@@ -11,7 +11,7 @@ import React from 'react'
 import { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary'
 import { ErrorFeedback } from '../../error/ErrorFeedback'
 import { useErrorReporter } from '../../error/ErrorReporter'
-import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
+import type { ErrorFeedback as ErrorFeedbackData } from '../../error/types'
 
 /**
  * Enhanced Error Boundary Props

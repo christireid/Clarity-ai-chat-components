@@ -23,6 +23,8 @@
     "node_modules",
     "dist",
     "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
     "src/examples/**",
     "src/**/*.stories.ts",
     "src/**/*.stories.tsx",
@@ -30,7 +32,16 @@
     "src/**/*.example.tsx",
     "src/**/*.example.ts",
     "src/prompt/**/*",
+    "src/prompts/**/*",
+    "src/components/prompt/**/*",
+    "src/components/TokenCountingDemo.tsx",
     "src/utils/tokenization/**/*",
-    "src/enterprise/**/*"
+    "src/enterprise/**/*",
+    "src/bundle-analyzer/**/*",
+    "src/ci-cd/**/*",
+    "src/security/**/*",
+    "src/hooks/security/**/*",
+    "src/utils/security/**/*",
+    "src/components/enterprise/**/*"
   ]
 }
