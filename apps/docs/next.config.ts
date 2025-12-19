@@ -126,12 +126,27 @@ const nextConfig: NextConfig = {
   },
 
   // Webpack configuration for non-Turbopack builds
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Handle SVG imports
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     })
+
+    // Handle WASM for tiktoken
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    }
+
+    // Add fallback for tiktoken WASM files
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      }
+    }
 
     // Optimize module resolution
     config.resolve.extensionAlias = {

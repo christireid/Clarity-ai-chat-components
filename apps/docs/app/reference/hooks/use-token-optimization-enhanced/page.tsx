@@ -186,7 +186,7 @@ function OptimizedChat() {
       {stats && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
           <p>Total Tokens Saved: {stats.overall.totalTokensSaved}</p>
-          <p>Total Cost Saved: ${stats.overall.totalCostSaved.toFixed(2)}</p>
+          <p>Total Cost Saved: \${stats.overall.totalCostSaved.toFixed(2)}</p>
           <p>Average Savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
         </div>
       )}
@@ -418,12 +418,12 @@ function CostTrackedChat() {
       {stats && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
           <h3>Cost Breakdown</h3>
-          <p>Total Cost: ${stats.costs.totalCost.toFixed(4)}</p>
-          <p>Input Cost: ${stats.costs.inputCost.toFixed(4)}</p>
-          <p>Output Cost: ${stats.costs.outputCost.toFixed(4)}</p>
-          <p>Cached Cost: ${stats.costs.cachedCost.toFixed(4)}</p>
+          <p>Total Cost: \${stats.costs.totalCost.toFixed(4)}</p>
+          <p>Input Cost: \${stats.costs.inputCost.toFixed(4)}</p>
+          <p>Output Cost: \${stats.costs.outputCost.toFixed(4)}</p>
+          <p>Cached Cost: \${stats.costs.cachedCost.toFixed(4)}</p>
           <p className="text-green-600">
-            Savings: ${stats.costs.savingsFromOptimization.toFixed(4)}
+            Savings: \${stats.costs.savingsFromOptimization.toFixed(4)}
           </p>
         </div>
       )}

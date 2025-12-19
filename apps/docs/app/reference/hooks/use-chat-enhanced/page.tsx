@@ -1,5 +1,3 @@
-'use client'
-
 import type { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
