@@ -13,6 +13,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "validate:hooks": "tsx scripts/validate-hook-metadata.ts",
+    "validate:examples": "tsx scripts/validate-examples.ts",
     "perf:lighthouse": "lhci autorun",
     "perf:bundle": "size-limit",
     "perf:analyze": "cross-env ANALYZE=true next build",

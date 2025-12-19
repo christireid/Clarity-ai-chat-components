@@ -65,6 +65,8 @@ import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
 import { HistorySidebar } from './HistorySidebar'
+import { ToolResultRenderer, ToolUseIndicator } from './ToolResultRenderer'
+import { DocsAssistantInput } from './DocsAssistantInput'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
 
@@ -117,6 +119,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     isOnline,
     messageQueue,
     suggestedFollowUps,
+    currentToolUse,
+    toolResults,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,
@@ -330,6 +334,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     [handleSendMessage]
   )
 
+  // Get tool results for the current conversation
+  const messageToolResults = useMemo(() => {
+    const results: Array<{
+      messageId: string
+      result: { tool_name: string; tool_use_id: string; tool_result: unknown }
+    }> = []
+    toolResults.forEach((result, key) => {
+      const [messageId] = key.split(':')
+      results.push({ messageId, result })
+    })
+    return results
+  }, [toolResults])
+
   // Animation variants
   const dialogVariants = useMemo(
     () =>
@@ -504,83 +521,115 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               </div>
             )}
 
-            <ChatWindow
-              messages={messages}
-              isLoading={isLoading}
-              aiStatus={aiStatus}
-              onSendMessage={handleSendMessage}
-              onMessageCopy={handleMessageCopy}
-              onMessageRetry={handleMessageRetry}
-              onMessageFeedback={handleFeedback}
-              showHeader
-              sessionTitle="Documentation Assistant"
-              sessionSubtitle="Powered by Clarity Chat"
-              showMessageCount
-              onExport={
-                messages.length > 0 ? handleOpenExportDialog : undefined
-              }
-              onClear={messages.length > 0 ? handleClear : undefined}
-              headerActions={
-                <div className="flex items-center gap-2">
-                  {/* AI Mode Selector */}
-                  <CompactPromptSelector
-                    value={selectedPrompt.id}
-                    onChange={setSelectedPrompt}
-                  />
+            {/* Wrapper to hide ChatWindow's internal input - we use our own with command support */}
+            <div className="flex-1 min-h-0 [&_.docs-assistant-chat-window>div:last-child]:hidden">
+              <ChatWindow
+                messages={messages}
+                isLoading={isLoading}
+                aiStatus={aiStatus}
+                onSendMessage={handleSendMessage}
+                onMessageCopy={handleMessageCopy}
+                onMessageRetry={handleMessageRetry}
+                onMessageFeedback={handleFeedback}
+                showHeader
+                sessionTitle="Documentation Assistant"
+                sessionSubtitle="Powered by Clarity Chat"
+                showMessageCount
+                onExport={
+                  messages.length > 0 ? handleOpenExportDialog : undefined
+                }
+                onClear={messages.length > 0 ? handleClear : undefined}
+                headerActions={
+                  <div className="flex items-center gap-2">
+                    {/* AI Mode Selector */}
+                    <CompactPromptSelector
+                      value={selectedPrompt.id}
+                      onChange={setSelectedPrompt}
+                    />
 
-                  {/* Playground button - only when code is available */}
-                  {messagesWithPlaygroundCode.size > 0 && (
-                    <button
-                      onClick={() => {
-                        const lastWithCode = [...messages]
-                          .reverse()
-                          .find(
-                            (m) =>
-                              m.role === 'assistant' &&
-                              messagesWithPlaygroundCode.has(m.id)
-                          )
-                        if (lastWithCode) {
-                          handleOpenInPlayground(lastWithCode.id)
-                        }
-                      }}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
-                      title="Open code in playground"
-                      aria-label="Open code in CodeSandbox playground"
-                    >
-                      <Terminal className="w-3.5 h-3.5" />
-                      Try{' '}
-                      {messagesWithPlaygroundCode.get(
-                        [...messages]
-                          .reverse()
-                          .find(
-                            (m) =>
-                              m.role === 'assistant' &&
-                              messagesWithPlaygroundCode.has(m.id)
-                          )?.id || ''
-                      ) || 'Code'}
-                    </button>
-                  )}
-                </div>
-              }
-              emptyState={
-                <EmptyChatState
-                  suggestions={DOCS_STARTER_PROMPTS}
-                  onSuggestionSelect={handleSelectSuggestion}
-                  showSuggestions
-                />
-              }
-              className="h-full flex flex-col"
-            >
-              {/* Follow-up Suggestions at bottom of chat */}
-              {suggestedFollowUps.length > 0 && !isLoading && (
-                <div className="px-4 pb-4">
-                  <FollowUpSuggestions
-                    suggestions={suggestedFollowUps}
-                    onSelect={handleSelectFollowUp}
+                    {/* Playground button - only when code is available */}
+                    {messagesWithPlaygroundCode.size > 0 && (
+                      <button
+                        onClick={() => {
+                          const lastWithCode = [...messages]
+                            .reverse()
+                            .find(
+                              (m) =>
+                                m.role === 'assistant' &&
+                                messagesWithPlaygroundCode.has(m.id)
+                            )
+                          if (lastWithCode) {
+                            handleOpenInPlayground(lastWithCode.id)
+                          }
+                        }}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                        title="Open code in playground"
+                        aria-label="Open code in CodeSandbox playground"
+                      >
+                        <Terminal className="w-3.5 h-3.5" />
+                        Try{' '}
+                        {messagesWithPlaygroundCode.get(
+                          [...messages]
+                            .reverse()
+                            .find(
+                              (m) =>
+                                m.role === 'assistant' &&
+                                messagesWithPlaygroundCode.has(m.id)
+                            )?.id || ''
+                        ) || 'Code'}
+                      </button>
+                    )}
+                  </div>
+                }
+                emptyState={
+                  <EmptyChatState
+                    suggestions={DOCS_STARTER_PROMPTS}
+                    onSuggestionSelect={handleSelectSuggestion}
+                    showSuggestions
                   />
-                </div>
-              )}
-            </ChatWindow>
+                }
+                className="h-full flex flex-col docs-assistant-chat-window"
+              >
+                {/* Tool Use Progress Indicator */}
+                <AnimatePresence>
+                  {currentToolUse && (
+                    <div className="px-4 py-2">
+                      <ToolUseIndicator toolUse={currentToolUse} />
+                    </div>
+                  )}
+                </AnimatePresence>
+
+                {/* Tool Results - rendered inline after messages */}
+                {messageToolResults.length > 0 && (
+                  <div className="px-4 space-y-2">
+                    {messageToolResults.map(({ result }) => (
+                      <ToolResultRenderer
+                        key={result.tool_use_id}
+                        result={result}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Follow-up Suggestions at bottom of chat */}
+                {suggestedFollowUps.length > 0 && !isLoading && (
+                  <div className="px-4 pb-4">
+                    <FollowUpSuggestions
+                      suggestions={suggestedFollowUps}
+                      onSelect={handleSelectFollowUp}
+                    />
+                  </div>
+                )}
+              </ChatWindow>
+            </div>
+
+            {/* Custom Input with Slash/@ Commands */}
+            <DocsAssistantInput
+              onSendMessage={handleSendMessage}
+              onClear={handleClear}
+              onExport={handleOpenExportDialog}
+              disabled={isLoading}
+            />
 
             {/* Citations Panel */}
             <AnimatePresence>

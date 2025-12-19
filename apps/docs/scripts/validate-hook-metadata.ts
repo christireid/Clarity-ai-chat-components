@@ -36,7 +36,8 @@ function parseHookMetadata(): {
   const hookRegex =
     /{\s*name:\s*['"]([^'"]+)['"],\s*href:\s*['"]([^'"]+)['"][\s\S]*?(?:relatedHooks:\s*\[([\s\S]*?)\])?[\s\S]*?}/g
 
-  const hooks: Array<{ name: string; href: string; relatedHooks?: string[] }> = []
+  const hooks: Array<{ name: string; href: string; relatedHooks?: string[] }> =
+    []
   let match
 
   while ((match = hookRegex.exec(content)) !== null) {
@@ -99,9 +100,16 @@ function validateMetadata(): ValidationResult {
   for (const hook of hooks) {
     if (!existingPages.includes(hook.href)) {
       // Check if it's a special page that doesn't follow the pattern
-      const pagePath = path.join(DOCS_ROOT, 'app', hook.href.slice(1), 'page.tsx')
+      const pagePath = path.join(
+        DOCS_ROOT,
+        'app',
+        hook.href.slice(1),
+        'page.tsx'
+      )
       if (!fs.existsSync(pagePath)) {
-        result.warnings.push(`Hook "${hook.name}" has href "${hook.href}" but no page exists`)
+        result.warnings.push(
+          `Hook "${hook.name}" has href "${hook.href}" but no page exists`
+        )
       }
     }
   }
@@ -113,7 +121,9 @@ function validateMetadata(): ValidationResult {
       if (pagePath.includes('selector') || pagePath.includes('compare')) {
         continue
       }
-      result.warnings.push(`Page "${pagePath}" exists but has no metadata entry`)
+      result.warnings.push(
+        `Page "${pagePath}" exists but has no metadata entry`
+      )
     }
   }
 
@@ -132,11 +142,14 @@ function validateMetadata(): ValidationResult {
   }
 
   // Check 4: Verify import statement format
-  const importRegex = /import\s*{\s*\w+\s*}\s*from\s*['"]@clarity-chat\/react['"]/
+  const importRegex =
+    /import\s*{\s*\w+\s*}\s*from\s*['"]@clarity-chat\/react['"]/
   for (const hook of hooks) {
     // This is a simplified check - in reality you'd parse the actual import statements
     if (!hook.name.startsWith('use')) {
-      result.warnings.push(`Hook "${hook.name}" doesn't follow naming convention (should start with "use")`)
+      result.warnings.push(
+        `Hook "${hook.name}" doesn't follow naming convention (should start with "use")`
+      )
     }
   }
 
@@ -149,37 +162,39 @@ function validateMetadata(): ValidationResult {
 }
 
 function main() {
-  logger.debug('========================================')
-  logger.debug('Hook Metadata Validation')
-  logger.debug('========================================\n')
+  console.log('========================================')
+  console.log('Hook Metadata Validation')
+  console.log('========================================\n')
 
   const result = validateMetadata()
 
   // Print info
   if (result.info.length > 0) {
-    logger.debug('INFO:')
-    result.info.forEach((msg) => logger.debug(`  - ${msg}`))
-    logger.debug()
+    console.log('INFO:')
+    result.info.forEach((msg) => console.log(`  ℹ️  ${msg}`))
+    console.log()
   }
 
   // Print warnings
   if (result.warnings.length > 0) {
-    logger.debug('WARNINGS:')
-    result.warnings.forEach((msg) => logger.debug(`  ⚠️  ${msg}`))
-    logger.debug()
+    console.log('WARNINGS:')
+    result.warnings.forEach((msg) => console.log(`  ⚠️  ${msg}`))
+    console.log()
   }
 
   // Print errors
   if (result.errors.length > 0) {
-    logger.debug('ERRORS:')
-    result.errors.forEach((msg) => logger.debug(`  ❌ ${msg}`))
-    logger.debug()
+    console.log('ERRORS:')
+    result.errors.forEach((msg) => console.log(`  ❌ ${msg}`))
+    console.log()
   }
 
   // Summary
-  logger.debug('========================================')
-  logger.debug(`Summary: ${result.errors.length} errors, ${result.warnings.length} warnings`)
-  logger.debug('========================================')
+  console.log('========================================')
+  console.log(
+    `Summary: ${result.errors.length} errors, ${result.warnings.length} warnings`
+  )
+  console.log('========================================')
 
   // Exit with error code if there are errors
   if (result.errors.length > 0) {

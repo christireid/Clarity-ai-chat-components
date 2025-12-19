@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'useChat Hook | Clarity Chat',
@@ -17,6 +18,19 @@ export default function UseChatPage() {
         Core React hook for building chat interfaces with message management,
         streaming responses, and AI model integration.
       </p>
+
+      <Callout type="warning" className="mb-8">
+        <p>
+          <strong>Prefer useClarityChat:</strong> The <code>useChat</code> hook
+          is a low-level primitive. For most use cases, we recommend using{' '}
+          <a href="/reference/hooks/use-clarity-chat" className="text-brand-500 hover:underline font-semibold">
+            useClarityChat
+          </a>{' '}
+          instead, which provides memory integration, token optimization, and a
+          simpler API. Use <code>useChat</code> only when you need direct
+          control over message management without the higher-level features.
+        </p>
+      </Callout>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Key Features</h2>
