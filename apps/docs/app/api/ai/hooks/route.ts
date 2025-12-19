@@ -1552,7 +1552,7 @@ export async function GET() {
       },
       dataSource: {
         curated: curatedHooks.length,
-        generated: allHooks.length - curatedHooks.length,
+        generatedCount: allHooks.length - curatedHooks.length,
         ...dataSourceInfo,
       },
     }

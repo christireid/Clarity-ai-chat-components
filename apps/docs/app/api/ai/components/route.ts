@@ -1389,7 +1389,7 @@ export async function GET() {
       },
       dataSource: {
         curated: curatedComponents.length,
-        generated: allComponents.length - curatedComponents.length,
+        generatedCount: allComponents.length - curatedComponents.length,
         ...dataSourceInfo,
       },
     }

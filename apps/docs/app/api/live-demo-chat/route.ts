@@ -83,7 +83,7 @@ function createPlainTextStream(
         controller.close()
       } catch (error) {
         logger.error('Streaming error:', error)
-        controller.logger.error(error)
+        controller.error(error)
       }
     },
   })
