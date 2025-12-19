@@ -67,13 +67,20 @@ export {
 } from './hooks/chat/use-clarity-chat-with-tools'
 
 // ============================================================================
-// AI COMPONENTS (Citations, Suggestions, etc.)
+// AI COMPONENTS (Citations, Suggestions, Markdown, etc.)
 // ============================================================================
 export {
   Citation,
   type CitationProps,
   type CitationSource,
 } from './components/ai/citation'
+
+export {
+  MarkdownRendererEnhanced,
+  type MarkdownRendererProps,
+} from './components/ai/markdown-renderer-enhanced'
+
+export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
 
 // ============================================================================
 // COMPOSABLE UI COMPONENTS (For custom layouts)
@@ -248,11 +255,21 @@ export {
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
 
+// Command Palette
+export { useCommandPalette } from './hooks/keyboard/use-command-palette'
+export { useCommandPaletteCommands } from './hooks/keyboard/use-command-palette-commands'
+
 // Clipboard
 export { useClipboard } from './hooks/ui/use-clipboard'
 
 // Local storage
 export { useLocalStorage } from './hooks/storage/use-local-storage'
+
+// Resilience
+export { useRetryWithBackoff } from './hooks/resilience/use-retry-with-backoff'
+
+// Input (voice, etc.)
+export { useVoiceInput } from './hooks/input/use-voice-input'
 
 // Throttle utilities
 export { useThrottledCallback } from './hooks/ui/use-throttle'
