@@ -27,6 +27,7 @@ const navigation = [
   { name: 'Reference', href: '/reference/components' },
   { name: 'Cookbook', href: '/cookbook' },
   { name: 'Examples', href: '/examples' },
+  { name: 'Compare', href: '/compare' },
 ]
 
 export function Navigation() {

@@ -6,9 +6,19 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
+import { TutorialProgress } from '@/components/Enhanced/TutorialProgress'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
+
+const tutorialSteps = [
+  { id: 'setup', title: 'Project Setup', href: '#setup' },
+  { id: 'basic-chat', title: 'Basic Chat', href: '#basic-chat' },
+  { id: 'avatars', title: 'Add Avatars', href: '#avatars' },
+  { id: 'typing', title: 'Typing Indicator', href: '#typing-indicator' },
+  { id: 'reactions', title: 'Reactions', href: '#reactions' },
+  { id: 'dark-mode', title: 'Dark Mode', href: '#dark-mode' },
+]
 
 export const metadata: Metadata = {
   title: 'Tutorial: Build a Complete Chat App',
@@ -46,6 +56,13 @@ export default function TutorialPage() {
           </div>
         </div>
       </Callout>
+
+      {/* Progress Indicator */}
+      <TutorialProgress
+        currentStep={1}
+        totalSteps={tutorialSteps.length}
+        steps={tutorialSteps}
+      />
 
       <YouWillLearn
         items={[
