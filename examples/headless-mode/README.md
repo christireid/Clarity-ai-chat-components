@@ -41,6 +41,23 @@ pnpm dev
 
 Open [http://localhost:3010](http://localhost:3010)
 
+## Copy-Paste Hooks
+
+This example includes ready-to-use hooks in the `hooks/` directory. Copy them directly into your
+project:
+
+```typescript
+import { useAutoScroll } from './hooks/useAutoScroll'
+import { useTokenTracker, estimateTokens } from './hooks/useTokenTracker'
+import { useStreamingChat } from './hooks/useStreamingChat'
+```
+
+| Hook               | Purpose                                                            |
+| ------------------ | ------------------------------------------------------------------ |
+| `useAutoScroll`    | Smart scroll behavior - only auto-scrolls when user is near bottom |
+| `useTokenTracker`  | Track token usage and estimate costs for any model                 |
+| `useStreamingChat` | Complete SSE streaming with cancellation support                   |
+
 ## Patterns Demonstrated
 
 This example shows reusable patterns you can copy into your own projects:
@@ -134,10 +151,15 @@ while (reader) {
 ```
 headless-mode/
 ├── app/
-│   ├── api/chat/route.ts    # API endpoint
+│   ├── api/chat/route.ts    # API endpoint with demo mode
 │   ├── globals.css          # Your styles
 │   ├── layout.tsx           # Layout
 │   └── page.tsx             # Custom chat UI
+├── hooks/
+│   ├── index.ts             # Hook exports
+│   ├── useAutoScroll.ts     # Smart scroll behavior
+│   ├── useTokenTracker.ts   # Token/cost tracking
+│   └── useStreamingChat.ts  # SSE streaming
 ├── .env.example
 ├── package.json
 └── README.md
