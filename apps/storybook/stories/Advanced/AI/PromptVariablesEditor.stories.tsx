@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import { PromptVariablesEditor } from '@clarity-chat/react'
-import type { PromptVariable } from '@clarity-chat/react'
+import { PromptVariablesEditor } from '@clarity-chat/react/internal'
+import type { PromptVariable } from '@clarity-chat/react/internal'
 
 /**
  * PromptVariablesEditor provides an interface for managing prompt template variables.
@@ -101,7 +101,8 @@ const sampleVariables: PromptVariable[] = [
  */
 export const Default: Story = {
   render: () => {
-    const [variables, setVariables] = React.useState<PromptVariable[]>(sampleVariables)
+    const [variables, setVariables] =
+      React.useState<PromptVariable[]>(sampleVariables)
 
     return (
       <PromptVariablesEditor
@@ -194,7 +195,8 @@ export const ReadOnly: Story = {
  */
 export const SimplifiedEditor: Story = {
   render: () => {
-    const [variables, setVariables] = React.useState<PromptVariable[]>(sampleVariables)
+    const [variables, setVariables] =
+      React.useState<PromptVariable[]>(sampleVariables)
 
     return (
       <PromptVariablesEditor
@@ -214,7 +216,8 @@ export const SimplifiedEditor: Story = {
  */
 export const Interactive: Story = {
   render: () => {
-    const [variables, setVariables] = React.useState<PromptVariable[]>(sampleVariables)
+    const [variables, setVariables] =
+      React.useState<PromptVariable[]>(sampleVariables)
 
     return (
       <div className="space-y-4">
@@ -245,7 +248,8 @@ export const PartialDetection: Story = {
     const [variables, setVariables] = React.useState<PromptVariable[]>([
       { name: 'name', type: 'string', required: true },
     ])
-    const template = 'Hello {{name}}, your code in {{language}} has {{errorCount}} errors.'
+    const template =
+      'Hello {{name}}, your code in {{language}} has {{errorCount}} errors.'
 
     return (
       <div className="space-y-4">
@@ -254,7 +258,8 @@ export const PartialDetection: Story = {
           <pre className="text-xs">{template}</pre>
         </div>
         <p className="text-sm text-muted-foreground">
-          Only &quot;name&quot; is defined. Other variables will be auto-detected.
+          Only &quot;name&quot; is defined. Other variables will be
+          auto-detected.
         </p>
         <PromptVariablesEditor
           variables={variables}

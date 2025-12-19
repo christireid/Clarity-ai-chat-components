@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PromptSuggestions, type PromptSuggestion } from '@clarity-chat/react'
+import {
+  PromptSuggestions,
+  type PromptSuggestion,
+} from '@clarity-chat/react/internal'
 import {
   SparklesIcon,
   CodeIcon,

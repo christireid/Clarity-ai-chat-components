@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MultiModalPreview } from '@clarity-chat/react'
-import type { AttachmentPreview } from '@clarity-chat/react'
+import { MultiModalPreview } from '@clarity-chat/react/internal'
+import type { AttachmentPreview } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof MultiModalPreview> = {
   title: 'Components/DataDisplay/MultiModalPreview',

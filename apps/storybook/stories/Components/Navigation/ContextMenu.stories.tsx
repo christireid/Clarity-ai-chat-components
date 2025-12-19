@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ContextMenu } from '@clarity-chat/react'
-import type { ContextMenuItem } from '@clarity-chat/react'
+import { ContextMenu } from '@clarity-chat/react/internal'
+import type { ContextMenuItem } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ContextMenu> = {
   title: 'Components/Navigation/ContextMenu',
@@ -106,7 +106,11 @@ export const WithSubmenu: Story = {
         icon: <span>➕</span>,
         submenu: [
           { id: 'file', label: 'File', onSelect: () => alert('New File') },
-          { id: 'folder', label: 'Folder', onSelect: () => alert('New Folder') },
+          {
+            id: 'folder',
+            label: 'Folder',
+            onSelect: () => alert('New Folder'),
+          },
         ],
       },
       {

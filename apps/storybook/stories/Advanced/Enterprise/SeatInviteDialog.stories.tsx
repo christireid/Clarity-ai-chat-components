@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { SeatInviteDialog } from '@clarity-chat/react'
+import { SeatInviteDialog } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Enterprise/SeatInviteDialog',
@@ -41,7 +41,9 @@ Dialog component for inviting team members to your organization with role-based 
     roles: {
       control: 'object',
       description: 'Available roles for selection',
-      table: { defaultValue: { summary: "['Administrator', 'Editor', 'Viewer']" } },
+      table: {
+        defaultValue: { summary: "['Administrator', 'Editor', 'Viewer']" },
+      },
     },
     defaultRole: {
       control: 'text',
@@ -107,12 +109,21 @@ export const SingleRole: Story = {
 export const WithTeamList: Story = {
   render: () => {
     const [team, setTeam] = React.useState([
-      { id: 1, email: 'john@company.com', role: 'Administrator', status: 'active' },
+      {
+        id: 1,
+        email: 'john@company.com',
+        role: 'Administrator',
+        status: 'active',
+      },
       { id: 2, email: 'jane@company.com', role: 'Editor', status: 'active' },
       { id: 3, email: 'bob@company.com', role: 'Viewer', status: 'pending' },
     ])
 
-    const handleInvite = (invite: { email: string; role: string; sendWelcome: boolean }) => {
+    const handleInvite = (invite: {
+      email: string
+      role: string
+      sendWelcome: boolean
+    }) => {
       const newMember = {
         id: team.length + 1,
         email: invite.email,
@@ -137,10 +148,15 @@ export const WithTeamList: Story = {
 
         <div className="border rounded-lg divide-y">
           {team.map((member) => (
-            <div key={member.id} className="p-4 flex items-center justify-between">
+            <div
+              key={member.id}
+              className="p-4 flex items-center justify-between"
+            >
               <div className="flex-1">
                 <div className="font-medium">{member.email}</div>
-                <div className="text-sm text-muted-foreground">{member.role}</div>
+                <div className="text-sm text-muted-foreground">
+                  {member.role}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <span
@@ -175,10 +191,19 @@ export const WithTeamList: Story = {
 export const EnterpriseSetup: Story = {
   render: () => {
     const [invites, setInvites] = React.useState<
-      Array<{ email: string; role: string; sendWelcome: boolean; timestamp: Date }>
+      Array<{
+        email: string
+        role: string
+        sendWelcome: boolean
+        timestamp: Date
+      }>
     >([])
 
-    const handleInvite = (invite: { email: string; role: string; sendWelcome: boolean }) => {
+    const handleInvite = (invite: {
+      email: string
+      role: string
+      sendWelcome: boolean
+    }) => {
       setInvites([...invites, { ...invite, timestamp: new Date() }])
     }
 
@@ -199,7 +224,9 @@ export const EnterpriseSetup: Story = {
             </div>
             <div className="p-4 border rounded-lg">
               <div className="text-2xl font-bold">23</div>
-              <div className="text-sm text-muted-foreground">Active Members</div>
+              <div className="text-sm text-muted-foreground">
+                Active Members
+              </div>
             </div>
             <div className="p-4 border rounded-lg">
               <div className="text-2xl font-bold">27</div>
@@ -220,7 +247,10 @@ export const EnterpriseSetup: Story = {
             <h4 className="font-semibold mb-4">Recent Invitations</h4>
             <div className="space-y-2">
               {invites.map((invite, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-muted rounded"
+                >
                   <div>
                     <div className="font-medium">{invite.email}</div>
                     <div className="text-sm text-muted-foreground">
@@ -228,7 +258,9 @@ export const EnterpriseSetup: Story = {
                     </div>
                   </div>
                   {invite.sendWelcome && (
-                    <span className="text-xs text-muted-foreground">✉️ Welcome email sent</span>
+                    <span className="text-xs text-muted-foreground">
+                      ✉️ Welcome email sent
+                    </span>
                   )}
                 </div>
               ))}
@@ -269,20 +301,24 @@ export const PermissionLevels: Story = {
         'View team analytics',
         'Create and manage projects',
       ],
-      'Member': [
+      Member: [
         'Access assigned projects',
         'Create and edit content',
         'Collaborate with team',
         'View team analytics',
       ],
-      'Guest': [
+      Guest: [
         'View shared projects',
         'Limited collaboration',
         'No administrative access',
       ],
     }
 
-    const handleInvite = (invite: { email: string; role: string; sendWelcome: boolean }) => {
+    const handleInvite = (invite: {
+      email: string
+      role: string
+      sendWelcome: boolean
+    }) => {
       console.log('Inviting with role:', invite)
       setSelectedRole(invite.role)
     }
@@ -301,12 +337,14 @@ export const PermissionLevels: Story = {
         <div className="border rounded-lg p-4">
           <h4 className="font-semibold mb-3">Permissions for {selectedRole}</h4>
           <ul className="space-y-2">
-            {rolePermissions[selectedRole as keyof typeof rolePermissions].map((permission, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <span className="text-success">✓</span>
-                <span className="text-sm">{permission}</span>
-              </li>
-            ))}
+            {rolePermissions[selectedRole as keyof typeof rolePermissions].map(
+              (permission, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-success">✓</span>
+                  <span className="text-sm">{permission}</span>
+                </li>
+              )
+            )}
           </ul>
         </div>
       </div>
@@ -337,7 +375,11 @@ export const InteractiveDemo: Story = {
       }>
     >([])
 
-    const handleInvite = (invite: { email: string; role: string; sendWelcome: boolean }) => {
+    const handleInvite = (invite: {
+      email: string
+      role: string
+      sendWelcome: boolean
+    }) => {
       const newInvitation = {
         ...invite,
         status: 'pending' as const,
@@ -346,7 +388,10 @@ export const InteractiveDemo: Story = {
       setInvitations([newInvitation, ...invitations])
     }
 
-    const updateStatus = (index: number, status: 'pending' | 'accepted' | 'expired') => {
+    const updateStatus = (
+      index: number,
+      status: 'pending' | 'accepted' | 'expired'
+    ) => {
       const updated = [...invitations]
       updated[index].status = status
       setInvitations(updated)
@@ -369,7 +414,9 @@ export const InteractiveDemo: Story = {
 
         {invitations.length === 0 ? (
           <div className="border-2 border-dashed rounded-lg p-8 text-center">
-            <p className="text-muted-foreground">No invitations yet. Click "Invite teammate" to get started.</p>
+            <p className="text-muted-foreground">
+              No invitations yet. Click "Invite teammate" to get started.
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -384,15 +431,16 @@ export const InteractiveDemo: Story = {
                           invitation.status === 'accepted'
                             ? 'bg-green-100 text-green-800'
                             : invitation.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
                         }`}
                       >
                         {invitation.status}
                       </span>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      {invitation.role} • Sent {invitation.sentAt.toLocaleString()}
+                      {invitation.role} • Sent{' '}
+                      {invitation.sentAt.toLocaleString()}
                       {invitation.sendWelcome && ' • Welcome email sent'}
                     </div>
                   </div>
@@ -425,7 +473,8 @@ export const InteractiveDemo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive demo with invitation tracking and status management.',
+        story:
+          'Interactive demo with invitation tracking and status management.',
       },
     },
   },

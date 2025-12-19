@@ -4,18 +4,16 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Textarea,
-  Button,
-  cn,
-  type ButtonState,
-} from '@clarity-chat/primitives'
+import { Textarea, Button, cn } from '@clarity-chat/primitives'
 import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,
   isDebouncedError,
 } from '../../hooks/resilience/use-request-deduplication'
 import { DURATION_SECONDS } from '../../animations/constants'
+
+/** Button state for submit button */
+type ButtonState = 'idle' | 'loading' | 'success' | 'error'
 
 export interface ChatInputProps {
   value: string

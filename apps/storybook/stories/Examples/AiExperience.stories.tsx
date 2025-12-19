@@ -18,8 +18,8 @@ import {
   ApiTokenManager,
   SSOConfigWizard,
   SeatInviteDialog,
-} from '@clarity-chat/react'
-import { SparklesIcon } from '@clarity-chat/react/components/icons'
+  SparklesIcon,
+} from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Examples/AiExperience',
@@ -31,7 +31,8 @@ const meta = {
 
 export default meta
 
-const eventTimestamp = (offsetMinutes: number) => new Date(Date.now() - offsetMinutes * 60_000)
+const eventTimestamp = (offsetMinutes: number) =>
+  new Date(Date.now() - offsetMinutes * 60_000)
 
 export const FollowUp: StoryObj = {
   render: () => (
@@ -41,7 +42,8 @@ export const FollowUp: StoryObj = {
           {
             id: '1',
             title: 'Examples/AiExperience',
-            description: 'Condense the latest updates into three bullet points.',
+            description:
+              'Condense the latest updates into three bullet points.',
             keywords: ['summary', 'executive'],
             confidence: 0.84,
             icon: <SparklesIcon size={16} />,
@@ -49,7 +51,8 @@ export const FollowUp: StoryObj = {
           {
             id: '2',
             title: 'Examples/AiExperience',
-            description: 'Highlight gaps in context that we should clarify next.',
+            description:
+              'Highlight gaps in context that we should clarify next.',
             keywords: ['gaps', 'follow-up'],
             confidence: 0.61,
           },
@@ -108,7 +111,8 @@ export const Timeline: StoryObj = {
             type: 'assistant',
             title: 'Examples/AiExperience',
             timestamp: eventTimestamp(20),
-            summary: 'Shared three-section outline for the announcement and asked for feedback.',
+            summary:
+              'Shared three-section outline for the announcement and asked for feedback.',
             status: 'complete',
           },
           {
@@ -182,8 +186,10 @@ export const Safety: StoryObj = {
             id: 's2',
             label: 'Safety policy',
             status: 'warn',
-            detail: 'Mentions embargoed launch. Ensure internal recipients only.',
-            remediation: 'Redact embargo details or confirm distribution list is private.',
+            detail:
+              'Mentions embargoed launch. Ensure internal recipients only.',
+            remediation:
+              'Redact embargo details or confirm distribution list is private.',
           },
         ]}
         lastReviewedAt={eventTimestamp(2)}
@@ -235,7 +241,8 @@ export const MultiModal: StoryObj = {
             type: 'image',
             title: 'Examples/AiExperience',
             description: 'Concept art mock shared by product marketing.',
-            thumbnailUrl: 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=160&q=80',
+            thumbnailUrl:
+              'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=160&q=80',
             status: 'ready',
             metadata: [{ label: 'Source', value: 'Assets drive' }],
           },
@@ -307,7 +314,11 @@ export const SessionSummary: StoryObj = {
             'Gathered three testimonial snippets to weave into copy.',
             'Identified open question about pricing tier availability.',
           ],
-          nextActions: ['Draft final announcement', 'Confirm embargo policy', 'Route to legal review'],
+          nextActions: [
+            'Draft final announcement',
+            'Confirm embargo policy',
+            'Route to legal review',
+          ],
         }}
         metrics={[
           { label: 'Messages exchanged', value: '18', trend: 'up' },
@@ -328,7 +339,8 @@ export const WorkflowList: StoryObj = {
           {
             id: 'wf-brief',
             name: 'Create campaign brief',
-            description: 'Compile background, goals, and deliverables into a single creative brief.',
+            description:
+              'Compile background, goals, and deliverables into a single creative brief.',
             estimatedTime: '~8 minutes',
             audience: 'Marketing',
             steps: [
@@ -341,7 +353,8 @@ export const WorkflowList: StoryObj = {
           {
             id: 'wf-hand-off',
             name: 'AI hand-off to support team',
-            description: 'Export chat summary plus key action items for human follow-up.',
+            description:
+              'Export chat summary plus key action items for human follow-up.',
             estimatedTime: '~3 minutes',
             audience: 'Customer success',
             steps: [
@@ -394,14 +407,48 @@ export const EvaluationBoard: StoryObj = {
     <div className="w-full max-w-5xl">
       <EvaluationDashboard
         metrics={[
-          { id: 'latency', label: 'Avg latency', value: '1.8s', trend: 'up', change: '+0.3s' },
-          { id: 'tokens', label: 'Tokens/completion', value: '412', trend: 'flat', change: '±0' },
-          { id: 'passrate', label: 'Test pass rate', value: '92%', trend: 'up', change: '+4%' },
-          { id: 'hallucination', label: 'Hallucination rate', value: '1.2%', trend: 'down', change: '-0.6%' },
+          {
+            id: 'latency',
+            label: 'Avg latency',
+            value: '1.8s',
+            trend: 'up',
+            change: '+0.3s',
+          },
+          {
+            id: 'tokens',
+            label: 'Tokens/completion',
+            value: '412',
+            trend: 'flat',
+            change: '±0',
+          },
+          {
+            id: 'passrate',
+            label: 'Test pass rate',
+            value: '92%',
+            trend: 'up',
+            change: '+4%',
+          },
+          {
+            id: 'hallucination',
+            label: 'Hallucination rate',
+            value: '1.2%',
+            trend: 'down',
+            change: '-0.6%',
+          },
         ]}
         sparklines={[
-          { id: 'cost', label: 'Cost per 1K tokens', percentage: 68, objective: 60 },
-          { id: 'coverage', label: 'Goal coverage', percentage: 84, objective: 90 },
+          {
+            id: 'cost',
+            label: 'Cost per 1K tokens',
+            percentage: 68,
+            objective: 60,
+          },
+          {
+            id: 'coverage',
+            label: 'Goal coverage',
+            percentage: 84,
+            objective: 90,
+          },
         ]}
         quality={{
           overallScore: 0.83,
@@ -428,7 +475,8 @@ export const SafetyConsole: StoryObj = {
             end: 52,
             category: 'PII',
             severity: 'high',
-            suggestion: 'Replace with masked identifier before sending externally.',
+            suggestion:
+              'Replace with masked identifier before sending externally.',
           },
           {
             id: 'flag-embargo',
@@ -436,7 +484,8 @@ export const SafetyConsole: StoryObj = {
             end: 90,
             category: 'Embargo mention',
             severity: 'medium',
-            suggestion: 'Confirm recipient is cleared before sharing embargo date.',
+            suggestion:
+              'Confirm recipient is cleared before sharing embargo date.',
           },
         ]}
       />
@@ -455,8 +504,16 @@ export const AuthDashboard: StoryObj = {
         seatUsage={{ label: 'Seats', used: 42, total: 60 }}
         apiUsage={{ label: 'Usage this month', value: '1.2M tokens' }}
         actions={[
-          { id: 'upgrade', label: 'Upgrade plan', onClick: () => alert('Upgrade flow') },
-          { id: 'manage', label: 'Manage invoices', onClick: () => alert('Billing portal') },
+          {
+            id: 'upgrade',
+            label: 'Upgrade plan',
+            onClick: () => alert('Upgrade flow'),
+          },
+          {
+            id: 'manage',
+            label: 'Manage invoices',
+            onClick: () => alert('Billing portal'),
+          },
         ]}
       />
     </div>
@@ -499,11 +556,29 @@ export const SsoWizard: StoryObj = {
       <SSOConfigWizard
         providerName="Okta"
         steps={[
-          { id: 'step1', title: 'Examples/AiExperience', description: 'Copy the ACS URL and Entity ID into your IdP.', status: 'complete' },
-          { id: 'step2', title: 'Examples/AiExperience', description: 'Attach the XML or paste the IdP certificate.', status: 'in-progress' },
-          { id: 'step3', title: 'Examples/AiExperience', description: 'Verify at least one admin can sign in via SSO.', status: 'pending' },
+          {
+            id: 'step1',
+            title: 'Examples/AiExperience',
+            description: 'Copy the ACS URL and Entity ID into your IdP.',
+            status: 'complete',
+          },
+          {
+            id: 'step2',
+            title: 'Examples/AiExperience',
+            description: 'Attach the XML or paste the IdP certificate.',
+            status: 'in-progress',
+          },
+          {
+            id: 'step3',
+            title: 'Examples/AiExperience',
+            description: 'Verify at least one admin can sign in via SSO.',
+            status: 'pending',
+          },
         ]}
-        metadata={{ acsUrl: 'https://phoenix.ai/sso/acs', entityId: 'urn:phoenix:enterprise' }}
+        metadata={{
+          acsUrl: 'https://phoenix.ai/sso/acs',
+          entityId: 'urn:phoenix:enterprise',
+        }}
         notes="Okta group `phoenix-admins` mapped to Administrator role."
         onDownloadMetadata={() => alert('Download metadata')}
         onSubmit={() => alert('Save configuration')}
@@ -517,9 +592,10 @@ export const InviteDialog: StoryObj = {
     <div className="flex w-full max-w-md justify-center">
       <SeatInviteDialog
         roles={['Administrator', 'Editor', 'Support']}
-        onInvite={(invite) => alert(`Invited ${invite.email} as ${invite.role}`)}
+        onInvite={(invite) =>
+          alert(`Invited ${invite.email} as ${invite.role}`)
+        }
       />
     </div>
   ),
 }
-

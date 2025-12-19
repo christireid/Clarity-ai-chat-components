@@ -68,29 +68,6 @@ export interface ToastProps extends Toast {
   onClose: (id: string) => void
 }
 
-// Icon mapping - reserved for future use
-// const TOAST_ICONS = {
-//   success: CheckCircleIcon,
-//   error: XCircleIcon,
-//   info: InfoIcon,
-//   warning: AlertCircleIcon,
-// } as const
-
-// Color classes - reserved for future use
-// const TOAST_COLOR_CLASSES = {
-//   success: 'bg-success/10 border-success/20 text-success-foreground',
-//   error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
-//   info: 'bg-info/10 border-info/20 text-info-foreground',
-//   warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
-// } as const
-
-// const TOAST_ICON_COLOR_CLASSES = {
-//   success: 'text-success',
-//   error: 'text-destructive',
-//   info: 'text-info',
-//   warning: 'text-warning',
-// } as const
-
 /**
  * Individual toast component
  */

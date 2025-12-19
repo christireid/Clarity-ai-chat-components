@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KnowledgeBaseViewer } from '@clarity-chat/react'
+import { KnowledgeBaseViewer } from '@clarity-chat/react/internal'
 import type { KnowledgeBase, KnowledgeBaseSection } from '@clarity-chat/types'
 
 const meta = {
@@ -22,7 +22,7 @@ type Story = StoryObj<typeof meta>
 const baseSections: KnowledgeBaseSection[] = [
   {
     id: 'kb-1',
-    title: 'Advanced/Memory/KnowledgeBaseViewer',
+    title: 'React Hooks Best Practices',
     content: `## useState
 - Always use functional updates when new state depends on old state
 - Initialize state with a function for expensive computations
@@ -50,7 +50,7 @@ const baseSections: KnowledgeBaseSection[] = [
   },
   {
     id: 'kb-2',
-    title: 'Advanced/Memory/KnowledgeBaseViewer',
+    title: 'TypeScript Best Practices',
     content: `## Type Safety
 - Use strict mode in tsconfig.json
 - Prefer interfaces over types for objects
@@ -74,7 +74,7 @@ const baseSections: KnowledgeBaseSection[] = [
   },
   {
     id: 'kb-3',
-    title: 'Advanced/Memory/KnowledgeBaseViewer',
+    title: 'API Design Guidelines',
     content: `## RESTful APIs
 - Use proper HTTP methods (GET, POST, PUT, DELETE)
 - Return appropriate status codes
@@ -144,7 +144,7 @@ export const ManySections: Story = {
         ...baseSections,
         {
           id: 'kb-4',
-          title: 'Advanced/Memory/KnowledgeBaseViewer',
+          title: 'CSS Theming Strategies',
           content: 'Use CSS custom properties for theming...',
           tags: ['css', 'styling'],
           confidence: 0.85,
@@ -154,7 +154,7 @@ export const ManySections: Story = {
         },
         {
           id: 'kb-5',
-          title: 'Advanced/Memory/KnowledgeBaseViewer',
+          title: 'Git Workflow Practices',
           content: 'Use feature branches and pull requests...',
           tags: ['git', 'version-control'],
           confidence: 0.92,
@@ -164,7 +164,7 @@ export const ManySections: Story = {
         },
         {
           id: 'kb-6',
-          title: 'Advanced/Memory/KnowledgeBaseViewer',
+          title: 'Testing Strategy Guide',
           content: 'Write unit tests, integration tests, and e2e tests...',
           tags: ['testing', 'quality'],
           confidence: 0.78,

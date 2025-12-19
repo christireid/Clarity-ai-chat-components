@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { WorkflowSuggestionList } from '@clarity-chat/react'
-import type { WorkflowSuggestion } from '@clarity-chat/react'
+import { WorkflowSuggestionList } from '@clarity-chat/react/internal'
+import type { WorkflowSuggestion } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof WorkflowSuggestionList> = {
   title: 'Advanced/AI/WorkflowSuggestionList',
@@ -24,7 +24,8 @@ const mockWorkflows: WorkflowSuggestion[] = [
   {
     id: '1',
     name: 'Set Up New Project',
-    description: 'Initialize a new project with best practices and configuration',
+    description:
+      'Initialize a new project with best practices and configuration',
     steps: [
       'Create project structure',
       'Configure build tools',
@@ -81,7 +82,9 @@ export const WithActions: Story = {
     },
     onPreview: (workflow) => {
       console.log('Preview workflow:', workflow.name)
-      alert(`Previewing: ${workflow.name}\n\nSteps:\n${workflow.steps.join('\n')}`)
+      alert(
+        `Previewing: ${workflow.name}\n\nSteps:\n${workflow.steps.join('\n')}`
+      )
     },
   },
 }
@@ -115,7 +118,7 @@ export const ManyWorkflows: Story = {
 export const CustomTitle: Story = {
   args: {
     workflows: mockWorkflows,
-    title: 'Advanced/AI/WorkflowSuggestionList',
-    subtitle: 'Advanced/AI/WorkflowSuggestionList',
+    title: 'Suggested Workflows',
+    subtitle: 'Choose a workflow to get started quickly',
   },
 }

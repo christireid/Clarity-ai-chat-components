@@ -6,7 +6,7 @@ import {
   TokenOptimizationDashboard,
   type TokenOptimizationStats,
   type OptimizationMetrics,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof TokenOptimizationDashboard> = {
   title: 'Advanced/Analytics/TokenOptimization',
@@ -65,7 +65,8 @@ const TokenOptimizationPanelDemo: React.FC = () => {
         tokensSaved: prev.tokensSaved + Math.floor(Math.random() * 25),
         percentageSaved: prev.percentageSaved + Math.random() * 0.05,
         cacheHits: prev.cacheHits + Math.floor(Math.random() * 5),
-        requestsThrottled: prev.requestsThrottled + Math.floor(Math.random() * 2),
+        requestsThrottled:
+          prev.requestsThrottled + Math.floor(Math.random() * 2),
       }))
     }, 4000)
 
@@ -101,14 +102,16 @@ const TokenOptimizationPanelDemo: React.FC = () => {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Tip: Drive these numbers from `useTokenOptimization` to monitor production behaviour or surface cost savings to customers.
+        Tip: Drive these numbers from `useTokenOptimization` to monitor
+        production behaviour or surface cost savings to customers.
       </p>
     </div>
   )
 }
 
 const TokenOptimizationDashboardLive: React.FC = () => {
-  const [metrics, setMetrics] = React.useState<OptimizationMetrics>(sampleMetrics)
+  const [metrics, setMetrics] =
+    React.useState<OptimizationMetrics>(sampleMetrics)
   const [realTime, setRealTime] = React.useState(true)
 
   React.useEffect(() => {
@@ -126,16 +129,21 @@ const TokenOptimizationDashboardLive: React.FC = () => {
             ...prev.breakdown,
             promptCompression: {
               ...prev.breakdown.promptCompression,
-              tokens: prev.breakdown.promptCompression.tokens + Math.floor(Math.random() * 40),
+              tokens:
+                prev.breakdown.promptCompression.tokens +
+                Math.floor(Math.random() * 40),
             },
             caching: {
               ...prev.breakdown.caching,
               hits: prev.breakdown.caching.hits + Math.floor(Math.random() * 4),
-              savings: prev.breakdown.caching.savings + Math.floor(Math.random() * 70),
+              savings:
+                prev.breakdown.caching.savings + Math.floor(Math.random() * 70),
             },
             modelRouting: {
               ...prev.breakdown.modelRouting,
-              savings: prev.breakdown.modelRouting.savings + Math.floor(Math.random() * 60),
+              savings:
+                prev.breakdown.modelRouting.savings +
+                Math.floor(Math.random() * 60),
             },
           },
         }
@@ -202,9 +210,14 @@ export const Badge: Story = {
   render: () => (
     <div className="space-y-3">
       <TokenOptimizationBadge tokensSaved={14850} savingsPercent={34.2} />
-      <TokenOptimizationBadge tokensSaved={4250} savingsPercent={12.6} className="bg-success/5" />
+      <TokenOptimizationBadge
+        tokensSaved={4250}
+        savingsPercent={12.6}
+        className="bg-success/5"
+      />
       <p className="text-xs text-muted-foreground">
-        Pair the badge with messaging inside chat transcripts to communicate efficiency wins back to end users or stakeholders.
+        Pair the badge with messaging inside chat transcripts to communicate
+        efficiency wins back to end users or stakeholders.
       </p>
     </div>
   ),
@@ -212,7 +225,8 @@ export const Badge: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Lightweight badge for surfacing savings inline — e.g., after exporting transcripts or at the end of conversations.',
+        story:
+          'Lightweight badge for surfacing savings inline — e.g., after exporting transcripts or at the end of conversations.',
       },
     },
   },

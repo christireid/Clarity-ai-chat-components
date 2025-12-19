@@ -12,6 +12,12 @@ export interface SessionMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: string
+  metadata?: {
+    model?: string
+    tokenCount?: number
+    latency?: number
+    [key: string]: unknown
+  }
 }
 
 export interface Session {
@@ -66,7 +72,7 @@ export class RedisSessionStore implements SessionStore {
     if (!url || !token) {
       throw new Error(
         'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set. ' +
-        'Get them from https://console.upstash.com/'
+          'Get them from https://console.upstash.com/'
       )
     }
 

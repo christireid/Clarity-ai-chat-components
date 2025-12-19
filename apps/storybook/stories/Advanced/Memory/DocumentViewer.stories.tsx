@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DocumentViewer } from '@clarity-chat/react'
+import { DocumentViewer } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Memory/DocumentViewer',
@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Component for displaying document content with metadata and highlighting support.',
+        component:
+          'Component for displaying document content with metadata and highlighting support.',
       },
     },
   },
@@ -31,7 +32,8 @@ export const Default: Story = {
       id: '1',
       name: 'Sample Document',
       type: 'text/plain',
-      content: 'This is a sample document content. It can contain any text that needs to be displayed to the user.',
+      content:
+        'This is a sample document content. It can contain any text that needs to be displayed to the user.',
       summary: 'A sample document for demonstration purposes',
       metadata: {
         author: 'John Doe',
@@ -49,7 +51,8 @@ export const WithHighlighting: Story = {
       id: '2',
       name: 'Document with Highlighting',
       type: 'text/plain',
-      content: 'This document contains some important keywords that can be highlighted when searching. Keywords like "important" and "highlighted" will stand out.',
+      content:
+        'This document contains some important keywords that can be highlighted when searching. Keywords like "important" and "highlighted" will stand out.',
       summary: 'Document demonstrating search highlighting',
     },
     highlightQuery: 'important',
@@ -62,7 +65,8 @@ export const WithMetadata: Story = {
       id: '3',
       name: 'Research Paper',
       type: 'application/pdf',
-      content: 'This is a research paper about artificial intelligence and machine learning. It discusses various topics including neural networks, deep learning, and natural language processing.',
+      content:
+        'This is a research paper about artificial intelligence and machine learning. It discusses various topics including neural networks, deep learning, and natural language processing.',
       summary: 'A comprehensive research paper on AI/ML',
       metadata: {
         author: 'Jane Smith',

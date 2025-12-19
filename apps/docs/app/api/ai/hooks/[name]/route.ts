@@ -8,6 +8,9 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-hook-lookup-api')
 
 /**
  * Single Hook Lookup API

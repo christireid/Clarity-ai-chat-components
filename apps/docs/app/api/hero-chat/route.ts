@@ -11,6 +11,9 @@ import {
   SchemaType,
   type FunctionDeclaration,
 } from '@google/generative-ai'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('hero-chat')
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

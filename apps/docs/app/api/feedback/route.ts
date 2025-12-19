@@ -6,8 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedbackStore } from '@/lib/ai/feedbackStore'
+import { getLogger } from '@/lib/logging'
 
-// Logger disabled for now
+const logger = getLogger('feedback')
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'

@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { ConversationList, type Conversation } from '@clarity-chat/react'
+import {
+  ConversationList,
+  type Conversation,
+} from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ConversationList> = {
   title: 'Components/Layout/ConversationList',
@@ -40,14 +43,14 @@ const createMockConversations = (count: number): Conversation[] => {
   ]
 
   const previews = [
-    'Let\'s discuss the timeline for the upcoming release...',
+    "Let's discuss the timeline for the upcoming release...",
     'Found a few issues in the latest PR that need addressing...',
     'The new feature should include authentication and...',
     'Fixed the rendering bug in the chat component...',
     'The color palette looks great, but we should consider...',
     'Updated the REST API endpoints documentation...',
     'What went well this sprint and what can we improve?',
-    'Quick sync on today\'s priorities and blockers...',
+    "Quick sync on today's priorities and blockers...",
     'Customer reported an issue with file uploads...',
     'Brainstorming ideas for the Q4 campaign launch...',
   ]
@@ -131,7 +134,9 @@ export const WithFiltersAndSort: Story = {
 
 export const WithPinAndFavorite: Story = {
   render: () => {
-    const [conversations, setConversations] = React.useState(createMockConversations(10))
+    const [conversations, setConversations] = React.useState(
+      createMockConversations(10)
+    )
     const [activeId, setActiveId] = React.useState('conv-0')
 
     const handleTogglePin = (id: string) => {
@@ -162,7 +167,9 @@ export const WithPinAndFavorite: Story = {
 
 export const WithDelete: Story = {
   render: () => {
-    const [conversations, setConversations] = React.useState(createMockConversations(10))
+    const [conversations, setConversations] = React.useState(
+      createMockConversations(10)
+    )
     const [activeId, setActiveId] = React.useState('conv-0')
 
     const handleDelete = (id: string) => {
@@ -271,7 +278,9 @@ export const StaggeredEntry: Story = {
 
 export const DeleteAnimation: Story = {
   render: () => {
-    const [conversations, setConversations] = React.useState(createMockConversations(5))
+    const [conversations, setConversations] = React.useState(
+      createMockConversations(5)
+    )
     const [activeId, setActiveId] = React.useState('conv-0')
 
     const handleDelete = (id: string) => {
@@ -285,7 +294,8 @@ export const DeleteAnimation: Story = {
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Click delete buttons to see slide-out animation (50ms stagger between remaining items)
+          Click delete buttons to see slide-out animation (50ms stagger between
+          remaining items)
         </p>
         <div className="h-[600px] w-[400px] border rounded-lg">
           <ConversationList
@@ -343,7 +353,9 @@ export const EmptySearchResults: Story = {
 
 export const FullFeatured: Story = {
   render: () => {
-    const [conversations, setConversations] = React.useState(createMockConversations(20))
+    const [conversations, setConversations] = React.useState(
+      createMockConversations(20)
+    )
     const [activeId, setActiveId] = React.useState('conv-0')
     const [selectedIds, setSelectedIds] = React.useState<string[]>([])
     const [multiSelect, setMultiSelect] = React.useState(false)
@@ -371,8 +383,13 @@ export const FullFeatured: Story = {
     }
 
     const handleBulkDelete = () => {
-      if (selectedIds.length > 0 && confirm(`Delete ${selectedIds.length} conversations?`)) {
-        setConversations((prev) => prev.filter((c) => !selectedIds.includes(c.id)))
+      if (
+        selectedIds.length > 0 &&
+        confirm(`Delete ${selectedIds.length} conversations?`)
+      ) {
+        setConversations((prev) =>
+          prev.filter((c) => !selectedIds.includes(c.id))
+        )
         setSelectedIds([])
       }
     }

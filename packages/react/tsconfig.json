@@ -17,12 +17,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@clarity-chat/primitives": ["../primitives/dist"],
-      "@clarity-chat/types": ["../types/dist"],
-      "@clarity-chat/memory": ["../memory/dist"],
-      "@clarity-chat/token-optimization": ["../token-optimization/dist"],
-      "@clarity-chat/utils": ["../utils/dist"]
+      "@/*": ["./src/*"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },

@@ -11,6 +11,9 @@ import {
   getStableTimestamp,
 } from '@/lib/ai/types'
 import { mergeHookData, getDataSourceInfo } from '@/lib/ai/merge-component-data'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-hooks-api')
 
 /**
  * AI-Optimized Hooks API
@@ -1549,7 +1552,7 @@ export async function GET() {
       },
       dataSource: {
         curated: curatedHooks.length,
-        generated: allHooks.length - curatedHooks.length,
+        generatedCount: allHooks.length - curatedHooks.length,
         ...dataSourceInfo,
       },
     }

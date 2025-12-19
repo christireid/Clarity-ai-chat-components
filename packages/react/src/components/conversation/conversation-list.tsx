@@ -355,17 +355,6 @@ export function ConversationList({
     [multiSelect, onSelectionChange, selectedIds, onSelect]
   )
 
-  /**
-   * Get all unique tags (currently unused but available for tag filtering UI)
-   */
-  // const allTags = React.useMemo(() => {
-  //   const tags = new Set<string>()
-  //   conversations.forEach((c) => {
-  //     c.tags?.forEach((tag) => tags.add(tag))
-  //   })
-  //   return Array.from(tags)
-  // }, [conversations])
-
   return (
     <div
       className={`flex flex-col h-full bg-card border-r border-border ${className}`}

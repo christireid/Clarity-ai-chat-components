@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TokenCounter } from '@clarity-chat/react/components/token-counter'
+import { TokenCounter } from '@clarity-chat/react/internal'
 
 /**
  * **TokenCounter Component**
- * 
+ *
  * Component for displaying token usage with cost tracking
  * and limit warnings.
- * 
+ *
  * **Key Features:**
  * - Token count display
  * - Maximum token limit
@@ -14,7 +14,7 @@ import { TokenCounter } from '@clarity-chat/react/components/token-counter'
  * - Visual warnings when near/over limit
  * - Progress indicator
  * - Accessible with ARIA labels
- * 
+ *
  * **Use Cases:**
  * - Token usage tracking
  * - Cost monitoring

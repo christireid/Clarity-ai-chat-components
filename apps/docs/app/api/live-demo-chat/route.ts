@@ -20,6 +20,9 @@ import {
   type StreamChunk,
 } from '@/lib/ai/streaming'
 import { trackChatInteraction } from '@/lib/ai/chat-analytics'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('live-demo-chat')
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -79,8 +82,8 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        console.error('Streaming error:', error)
-        controller.console.error(error)
+        logger.error('Streaming error:', error)
+        controller.error(error)
       }
     },
   })

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useChatEnhanced as useChat } from '@clarity-chat/react'
+import { useChatEnhanced } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 
@@ -85,7 +85,7 @@ function BasicChatDemo() {
     setInput,
     error,
     stop,
-  } = useChat({
+  } = useChatEnhanced({
     initialMessages: [],
     onFinish: (message) => {
       console.log('Message finished:', message)
@@ -174,7 +174,7 @@ export const BasicUsage: Story = {
 
 function WithInitialMessagesDemo() {
   const { messages, append, isLoading, handleSubmit, input, setInput } =
-    useChat({
+    useChatEnhanced({
       initialMessages: [
         {
           id: '1',
@@ -258,7 +258,7 @@ export const WithInitialMessages: Story = {
 }
 
 function AppendMessageDemo() {
-  const { messages, append, isLoading, stop } = useChat({
+  const { messages, append, isLoading, stop } = useChatEnhanced({
     initialMessages: [],
   })
 
@@ -366,7 +366,7 @@ export const AppendMessage: Story = {
 }
 
 function ReloadDemo() {
-  const { messages, reload, isLoading, stop } = useChat({
+  const { messages, reload, isLoading, stop } = useChatEnhanced({
     initialMessages: [
       {
         id: '1',
@@ -445,7 +445,7 @@ export const Reload: Story = {
 }
 
 function ErrorHandlingDemo() {
-  const { messages, append, isLoading, error, stop } = useChat({
+  const { messages, append, isLoading, error, stop } = useChatEnhanced({
     initialMessages: [],
     onError: (error) => {
       console.error('Chat error:', error)

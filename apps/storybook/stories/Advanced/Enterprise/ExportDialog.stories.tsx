@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ExportDialog } from '@clarity-chat/react'
+import { ExportDialog } from '@clarity-chat/react/internal'
 import type { ExportFormat } from '@clarity-chat/types'
 
 const meta = {
@@ -108,7 +108,8 @@ export const LongResourceName: Story = {
   args: {
     isOpen: true,
     resourceType: 'project',
-    resourceName: 'Complete Enterprise Web Application Development Project with Multiple Features and Integrations',
+    resourceName:
+      'Complete Enterprise Web Application Development Project with Multiple Features and Integrations',
   },
 }
 
@@ -132,7 +133,8 @@ export const Exporting: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'This story shows the export dialog. In actual usage, clicking Export will show a progress bar that animates from 0% to 100% before auto-closing.',
+        story:
+          'This story shows the export dialog. In actual usage, clicking Export will show a progress bar that animates from 0% to 100% before auto-closing.',
       },
     },
   },

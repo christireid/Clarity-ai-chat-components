@@ -38,7 +38,7 @@ import {
   type OWASPVulnerability,
   type SecurityFinding,
   type DebtSeverity,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 /**
  * **Architect Framework**

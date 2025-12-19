@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { TokenOptimizationDashboard } from '@clarity-chat/react'
-import type { OptimizationMetrics } from '@clarity-chat/react'
+import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
+import type { OptimizationMetrics } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationDashboard',
@@ -109,7 +109,7 @@ const mockMetricsMedium: OptimizationMetrics = {
 const mockMetricsLarge: OptimizationMetrics = {
   totalTokens: 250000,
   tokensSaved: 90000,
-  costSaved: 2.70,
+  costSaved: 2.7,
   breakdown: {
     promptCompression: { tokens: 22000, percent: 24 },
     caching: { hits: 850, savings: 28000 },
@@ -125,7 +125,7 @@ const mockMetricsLarge: OptimizationMetrics = {
 const mockMetricsEnterprise: OptimizationMetrics = {
   totalTokens: 1000000,
   tokensSaved: 380000,
-  costSaved: 11.40,
+  costSaved: 11.4,
   breakdown: {
     promptCompression: { tokens: 95000, percent: 25 },
     caching: { hits: 4200, savings: 125000 },
@@ -225,48 +225,79 @@ export const EnterpriseScale: Story = {
 
 export const RealTimeMonitoring: Story = {
   render: () => {
-    const [metrics, setMetrics] = React.useState<OptimizationMetrics>(mockMetricsMedium)
+    const [metrics, setMetrics] =
+      React.useState<OptimizationMetrics>(mockMetricsMedium)
 
     React.useEffect(() => {
       const interval = setInterval(() => {
         setMetrics((prev) => {
           const additionalTokens = Math.floor(Math.random() * 1000) + 500
           const additionalSavings = Math.floor(Math.random() * 300) + 150
-          
+
           return {
             totalTokens: prev.totalTokens + additionalTokens,
             tokensSaved: prev.tokensSaved + additionalSavings,
-            costSaved: prev.costSaved + (additionalSavings * 0.000003),
+            costSaved: prev.costSaved + additionalSavings * 0.000003,
             breakdown: {
               promptCompression: {
-                tokens: prev.breakdown.promptCompression.tokens + Math.floor(Math.random() * 80) + 20,
+                tokens:
+                  prev.breakdown.promptCompression.tokens +
+                  Math.floor(Math.random() * 80) +
+                  20,
                 percent: prev.breakdown.promptCompression.percent,
               },
               caching: {
-                hits: prev.breakdown.caching.hits + Math.floor(Math.random() * 3) + 1,
-                savings: prev.breakdown.caching.savings + Math.floor(Math.random() * 100) + 50,
+                hits:
+                  prev.breakdown.caching.hits +
+                  Math.floor(Math.random() * 3) +
+                  1,
+                savings:
+                  prev.breakdown.caching.savings +
+                  Math.floor(Math.random() * 100) +
+                  50,
               },
               modelRouting: {
-                savings: prev.breakdown.modelRouting.savings + Math.floor(Math.random() * 80) + 30,
+                savings:
+                  prev.breakdown.modelRouting.savings +
+                  Math.floor(Math.random() * 80) +
+                  30,
                 percent: prev.breakdown.modelRouting.percent,
               },
               responseLimiting: {
-                tokens: prev.breakdown.responseLimiting.tokens + Math.floor(Math.random() * 50) + 20,
+                tokens:
+                  prev.breakdown.responseLimiting.tokens +
+                  Math.floor(Math.random() * 50) +
+                  20,
                 percent: prev.breakdown.responseLimiting.percent,
               },
               batching: {
-                requests: prev.breakdown.batching.requests + Math.floor(Math.random() * 2),
-                savings: prev.breakdown.batching.savings + Math.floor(Math.random() * 30) + 10,
+                requests:
+                  prev.breakdown.batching.requests +
+                  Math.floor(Math.random() * 2),
+                savings:
+                  prev.breakdown.batching.savings +
+                  Math.floor(Math.random() * 30) +
+                  10,
               },
               throttling: {
-                callsSaved: prev.breakdown.throttling.callsSaved + Math.floor(Math.random() * 5) + 1,
+                callsSaved:
+                  prev.breakdown.throttling.callsSaved +
+                  Math.floor(Math.random() * 5) +
+                  1,
               },
               referencing: {
-                bytesSaved: prev.breakdown.referencing.bytesSaved + Math.floor(Math.random() * 1000) + 500,
+                bytesSaved:
+                  prev.breakdown.referencing.bytesSaved +
+                  Math.floor(Math.random() * 1000) +
+                  500,
                 percent: prev.breakdown.referencing.percent,
               },
             },
-            savingsPercent: Math.round((prev.tokensSaved + additionalSavings) / (prev.totalTokens + additionalTokens) * 100),
+            savingsPercent: Math.round(
+              ((prev.tokensSaved + additionalSavings) /
+                (prev.totalTokens + additionalTokens)) *
+                100
+            ),
           }
         })
       }, 3000)
@@ -348,48 +379,80 @@ export const BeforeAfterComparison: Story = {
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [metrics, setMetrics] = React.useState<OptimizationMetrics>(mockMetricsSmall)
+    const [metrics, setMetrics] =
+      React.useState<OptimizationMetrics>(mockMetricsSmall)
     const [showBreakdown, setShowBreakdown] = React.useState(true)
 
     const simulateUsage = () => {
       setMetrics((prev) => {
         const additionalTokens = Math.floor(Math.random() * 5000) + 2000
         const additionalSavings = Math.floor(Math.random() * 1500) + 600
-        
+
         return {
           totalTokens: prev.totalTokens + additionalTokens,
           tokensSaved: prev.tokensSaved + additionalSavings,
-          costSaved: prev.costSaved + (additionalSavings * 0.000003),
+          costSaved: prev.costSaved + additionalSavings * 0.000003,
           breakdown: {
             promptCompression: {
-              tokens: prev.breakdown.promptCompression.tokens + Math.floor(Math.random() * 400) + 100,
+              tokens:
+                prev.breakdown.promptCompression.tokens +
+                Math.floor(Math.random() * 400) +
+                100,
               percent: prev.breakdown.promptCompression.percent,
             },
             caching: {
-              hits: prev.breakdown.caching.hits + Math.floor(Math.random() * 15) + 5,
-              savings: prev.breakdown.caching.savings + Math.floor(Math.random() * 500) + 200,
+              hits:
+                prev.breakdown.caching.hits +
+                Math.floor(Math.random() * 15) +
+                5,
+              savings:
+                prev.breakdown.caching.savings +
+                Math.floor(Math.random() * 500) +
+                200,
             },
             modelRouting: {
-              savings: prev.breakdown.modelRouting.savings + Math.floor(Math.random() * 400) + 150,
+              savings:
+                prev.breakdown.modelRouting.savings +
+                Math.floor(Math.random() * 400) +
+                150,
               percent: prev.breakdown.modelRouting.percent,
             },
             responseLimiting: {
-              tokens: prev.breakdown.responseLimiting.tokens + Math.floor(Math.random() * 250) + 100,
+              tokens:
+                prev.breakdown.responseLimiting.tokens +
+                Math.floor(Math.random() * 250) +
+                100,
               percent: prev.breakdown.responseLimiting.percent,
             },
             batching: {
-              requests: prev.breakdown.batching.requests + Math.floor(Math.random() * 10) + 3,
-              savings: prev.breakdown.batching.savings + Math.floor(Math.random() * 150) + 50,
+              requests:
+                prev.breakdown.batching.requests +
+                Math.floor(Math.random() * 10) +
+                3,
+              savings:
+                prev.breakdown.batching.savings +
+                Math.floor(Math.random() * 150) +
+                50,
             },
             throttling: {
-              callsSaved: prev.breakdown.throttling.callsSaved + Math.floor(Math.random() * 25) + 10,
+              callsSaved:
+                prev.breakdown.throttling.callsSaved +
+                Math.floor(Math.random() * 25) +
+                10,
             },
             referencing: {
-              bytesSaved: prev.breakdown.referencing.bytesSaved + Math.floor(Math.random() * 5000) + 2000,
+              bytesSaved:
+                prev.breakdown.referencing.bytesSaved +
+                Math.floor(Math.random() * 5000) +
+                2000,
               percent: prev.breakdown.referencing.percent,
             },
           },
-          savingsPercent: Math.round((prev.tokensSaved + additionalSavings) / (prev.totalTokens + additionalTokens) * 100),
+          savingsPercent: Math.round(
+            ((prev.tokensSaved + additionalSavings) /
+              (prev.totalTokens + additionalTokens)) *
+              100
+          ),
         }
       })
     }
@@ -444,7 +507,8 @@ export const InteractiveDemo: Story = {
 
 export const FullPageDashboard: Story = {
   render: () => {
-    const [metrics, setMetrics] = React.useState<OptimizationMetrics>(mockMetricsMedium)
+    const [metrics, setMetrics] =
+      React.useState<OptimizationMetrics>(mockMetricsMedium)
     const [isRefreshing, setIsRefreshing] = React.useState(false)
 
     const refresh = async () => {
@@ -483,17 +547,23 @@ export const FullPageDashboard: Story = {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 border rounded-lg">
-              <h3 className="text-sm font-medium text-muted-foreground">Total Requests</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Total Requests
+              </h3>
               <p className="text-2xl font-bold mt-2">1,247</p>
               <p className="text-xs text-success mt-1">+12% from last week</p>
             </div>
             <div className="p-4 border rounded-lg">
-              <h3 className="text-sm font-medium text-muted-foreground">Avg Response Time</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Avg Response Time
+              </h3>
               <p className="text-2xl font-bold mt-2">324ms</p>
               <p className="text-xs text-success mt-1">-8% from last week</p>
             </div>
             <div className="p-4 border rounded-lg">
-              <h3 className="text-sm font-medium text-muted-foreground">Cache Hit Rate</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Cache Hit Rate
+              </h3>
               <p className="text-2xl font-bold mt-2">73%</p>
               <p className="text-xs text-success mt-1">+5% from last week</p>
             </div>

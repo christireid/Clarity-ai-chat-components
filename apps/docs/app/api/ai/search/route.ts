@@ -12,6 +12,9 @@ import {
   validateSearchParams,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-search-api')
 
 /**
  * AI-Optimized Search API (v2)

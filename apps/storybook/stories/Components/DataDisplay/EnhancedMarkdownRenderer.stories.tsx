@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
+import { EnhancedMarkdownRenderer } from '@clarity-chat/react/internal'
 
 /**
  * **EnhancedMarkdownRenderer Component**
- * 
+ *
  * Enhanced markdown renderer with LaTeX math support,
  * Mermaid diagrams, syntax highlighting, and more.
- * 
+ *
  * **Key Features:**
  * - Standard markdown rendering
  * - LaTeX math support (inline and block)
@@ -15,7 +15,7 @@ import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
  * - Table support
  * - Link handling
  * - Customizable styling
- * 
+ *
  * **Use Cases:**
  * - AI chat responses with markdown
  * - Documentation rendering
