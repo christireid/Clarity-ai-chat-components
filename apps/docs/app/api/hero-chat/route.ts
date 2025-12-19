@@ -11,6 +11,7 @@ import {
   SchemaType,
   type FunctionDeclaration,
 } from '@google/generative-ai'
+import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

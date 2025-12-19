@@ -12,18 +12,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getLogger } from '@/lib/logger'
 
 const logger = getLogger('docs-assistant')
 
 import {
   enhanceMessageWithRAG,
-
   formatCitations,
   shouldUseRAG,
 } from '@/lib/ai/rag'
 import {
   createSSEStream,
-
   getStreamingFunction,
   checkRateLimit,
   validateRequest,
@@ -32,31 +31,86 @@ import {
 } from '@/lib/ai/streaming'
 import {
   SYSTEM_PROMPT,
-
   ERROR_PROMPT,
   RATE_LIMIT_PROMPT,
 } from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
-
   updateSessionWithMessages,
   type SessionMessage,
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
+// Token optimization stubs (TODO: implement in @clarity-chat/react)
+// These are placeholder implementations for the optimized route
 
-// Token optimization imports from @clarity-chat/react
-import {
-  compressPrompt,
+interface CompressionResult {
+  text: string
+  originalTokens: number
+  compressedTokens: number
+  savings: number
+}
 
-  balancedCompress,
-  compressConversation,
-  routeQuery,
-  analyzeComplexity,
-  COMMON_MODELS,
-  type RoutingDecision,
-  type CompressionResult,
-} from '@clarity-chat/react'
+interface RoutingDecision {
+  model: string
+  reasoning: string
+  confidence: number
+}
+
+interface ModelInfo {
+  id: string
+  name: string
+  costPer1kTokens: number
+}
+
+const COMMON_MODELS: ModelInfo[] = [
+  { id: 'gpt-4o-mini', name: 'GPT-4o Mini', costPer1kTokens: 0.00015 },
+  { id: 'gpt-4o', name: 'GPT-4o', costPer1kTokens: 0.005 },
+  { id: 'claude-3-haiku', name: 'Claude 3 Haiku', costPer1kTokens: 0.00025 },
+]
+
+function compressPrompt(
+  text: string,
+  _options?: Record<string, unknown>
+): CompressionResult {
+  // Stub: return uncompressed for now
+  const tokens = Math.ceil(text.length / 4)
+  return { text, originalTokens: tokens, compressedTokens: tokens, savings: 0 }
+}
+
+function compressConversation(
+  messages: Array<{ role: string; content: string }>,
+  _options?: Record<string, unknown>
+): {
+  messages: typeof messages
+  stats: { originalTokens: number; compressedTokens: number }
+} {
+  const totalTokens = messages.reduce(
+    (acc, m) => acc + Math.ceil(m.content.length / 4),
+    0
+  )
+  return {
+    messages,
+    stats: { originalTokens: totalTokens, compressedTokens: totalTokens },
+  }
+}
+
+function routeQuery(
+  _query: string,
+  _options?: Record<string, unknown>
+): RoutingDecision {
+  return { model: 'gpt-4o-mini', reasoning: 'Default routing', confidence: 0.8 }
+}
+
+function analyzeComplexity(_query: string): {
+  score: number
+  factors: string[]
+} {
+  return { score: 0.5, factors: ['default'] }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const balancedCompress = compressPrompt
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

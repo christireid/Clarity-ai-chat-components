@@ -14,6 +14,7 @@ import {
   searchDocumentation,
   formatSearchResultsForRAG,
 } from '@/lib/ai/keywordSearch'
+import { logger } from '@/lib/logger'
 import {
   streamFromGemini,
   streamFromDemo,
@@ -80,7 +81,7 @@ function createPlainTextStream(
         controller.close()
       } catch (error) {
         logger.error('Streaming error:', error)
-        controller.logger.error(error)
+        controller.error(error)
       }
     },
   })

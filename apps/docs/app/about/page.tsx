@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Heart, Users, Zap, Target, BookOpen, Github } from 'lucide-react'
+import { Heart, Users, Zap, Target, BookOpen, ExternalLink } from 'lucide-react'
+
+// Github icon alias for ExternalLink (Github not available in lucide-react)
+const Github = ExternalLink
 
 export const metadata: Metadata = {
   title: 'About Clarity Chat',

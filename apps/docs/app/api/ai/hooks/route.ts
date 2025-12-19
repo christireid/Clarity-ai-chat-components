@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import {
   type HookInfo,
   type HooksAPIResponse,
@@ -845,8 +846,7 @@ function ReliableChat() {
     description:
       'Access and manage AI conversation memory within the MemoryProvider context. Add, query, update, and delete memories.',
     category: 'memory',
-    signature:
-      'useMemoryContext(): UseMemoryContextReturn',
+    signature: 'useMemoryContext(): UseMemoryContextReturn',
     parameters: [],
     returns: {
       type: 'UseMemoryContextReturn',
@@ -953,7 +953,8 @@ function ChatWithMemory() {
       ],
     },
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
+    docsUrl:
+      'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
     examples: [
       `import { useClarityChatWithTools } from "@clarity-chat/react";
 
