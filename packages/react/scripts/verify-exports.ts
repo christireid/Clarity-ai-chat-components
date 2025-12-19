@@ -34,10 +34,10 @@ interface VerificationResult {
 
 const ENTRY_POINTS = [
   'index.ts',
+  'public-api.ts',
   'core.ts',
-  'hooks.ts',
-  'types.ts',
-  'exports.ts',
+  'core-minimal.ts',
+  'internal.ts',
 ]
 
 /**

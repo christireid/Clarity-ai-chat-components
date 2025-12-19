@@ -10,6 +10,8 @@ import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
 import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
+import { SocialProof } from '@/components/Layout/SocialProof'
+import { Testimonials } from '@/components/Layout/Testimonials'
 
 // Lazy load the animated background to reduce initial bundle size
 // This component is decorative and can load after initial render
@@ -56,6 +58,9 @@ export default function HomePage() {
           href: '#demo',
         }}
       />
+
+      {/* Social Proof - Early trust signals */}
+      <SocialProof />
 
       {/* Quick Start Tutorial */}
       <QuickStartTutorial />
@@ -191,6 +196,9 @@ function App() {
           <FeatureMatrix />
         </div>
       </section>
+
+      {/* Testimonials - Developer social proof */}
+      <Testimonials />
 
       {/* CTA Section */}
       <section className="container-docs py-24">

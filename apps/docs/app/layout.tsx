@@ -35,6 +35,13 @@ const ToastManager = dynamic(() =>
   }))
 )
 
+// Lazy load mobile bottom nav
+const MobileBottomNav = dynamic(() =>
+  import('@/components/Navigation/MobileBottomNav').then((mod) => ({
+    default: mod.MobileBottomNav,
+  }))
+)
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-geist-sans',
@@ -134,6 +141,7 @@ export default function RootLayout({
             </main>
             <Footer />
             <DocsAssistant />
+            <MobileBottomNav />
           </div>
           <ToastManager />
         </Providers>

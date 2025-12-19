@@ -1,9 +1,7 @@
 'use client'
 
-import { Metadata } from 'next'
 import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
@@ -12,6 +10,8 @@ import { TutorialStep } from '@/components/Enhanced/TutorialStep'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+import { SuccessCelebration } from '@/components/Enhanced/SuccessCelebration'
+import { RelatedPages } from '@/components/Enhanced/RelatedPages'
 
 export default function QuickStartPage() {
   return (
@@ -45,6 +45,36 @@ export default function QuickStartPage() {
               'Add advanced features',
             ]}
           />
+        </ScrollReveal>
+
+        {/* Value Proposition - GTM Section */}
+        <ScrollReveal delay={0.15}>
+          <div className="my-8 p-6 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800">
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">💰</div>
+              <div>
+                <h3 className="font-semibold text-green-800 dark:text-green-300 mb-2">
+                  Built-in Token Optimization
+                </h3>
+                <p className="text-sm text-green-700 dark:text-green-400 mb-3">
+                  Clarity Chat includes smart token management that can{' '}
+                  <strong>reduce your AI costs by 60-90%</strong> through:
+                </p>
+                <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
+                  <li>• Semantic memory compression</li>
+                  <li>• Smart context windowing</li>
+                  <li>• Prompt caching support</li>
+                  <li>• Real-time token counting dashboard</li>
+                </ul>
+                <a
+                  href="/guides/token-optimization"
+                  className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-green-600 dark:text-green-400 hover:underline"
+                >
+                  Learn about token optimization →
+                </a>
+              </div>
+            </div>
+          </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
@@ -148,7 +178,11 @@ pnpm add @clarity-chat/react`}
               nextStepTitle="Manual Control"
             >
               <p className="text-text-secondary mb-4">
-                Use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ClarityChat</code> for the simplest integration - just provide an API endpoint:
+                Use{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  ClarityChat
+                </code>{' '}
+                for the simplest integration - just provide an API endpoint:
               </p>
 
               <EnhancedCodeBlock
@@ -168,9 +202,36 @@ export default App`}
 
               <Callout type="success" className="mt-6">
                 <p>
-                  <strong>That's it!</strong> ClarityChat handles all state management, streaming, error handling, and UI internally.
+                  <strong>That's it!</strong> ClarityChat handles all state
+                  management, streaming, error handling, and UI internally.
                 </p>
               </Callout>
+
+              {/* Success Celebration */}
+              <SuccessCelebration
+                title="Your first chat is ready!"
+                message="You've just created a production-ready AI chat interface. Here's what to explore next:"
+                nextSteps={[
+                  {
+                    title: 'Add Streaming',
+                    description: 'See responses in real-time',
+                    href: '/guides/streaming',
+                    icon: <span className="text-lg">⚡</span>,
+                  },
+                  {
+                    title: 'Customize Theme',
+                    description: 'Match your brand',
+                    href: '/learn/concepts/theming',
+                    icon: <span className="text-lg">🎨</span>,
+                  },
+                  {
+                    title: 'Add Memory',
+                    description: 'Remember context',
+                    href: '/guides/memory',
+                    icon: <span className="text-lg">🧠</span>,
+                  },
+                ]}
+              />
             </TutorialStep>
           </ScrollReveal>
 
@@ -182,7 +243,15 @@ export default App`}
               nextStepTitle="What's Included"
             >
               <p className="text-text-secondary mb-4">
-                For more control over state, use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ChatWindow</code> with the <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">useClarityChat</code> hook:
+                For more control over state, use{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  ChatWindow
+                </code>{' '}
+                with the{' '}
+                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                  useClarityChat
+                </code>{' '}
+                hook:
               </p>
 
               <EnhancedCodeBlock
@@ -504,6 +573,38 @@ export default App`}
             </div>
           </ScrollReveal>
         </div>
+
+        <RelatedPages
+          title="Dive Deeper"
+          pages={[
+            {
+              title: 'Streaming Responses',
+              description: 'Add real-time streaming for instant feedback',
+              href: '/guides/streaming',
+              type: 'guide',
+            },
+            {
+              title: 'Token Optimization',
+              description:
+                'Reduce AI costs by 60-90% with smart context management',
+              href: '/guides/token-optimization',
+              type: 'guide',
+            },
+            {
+              title: 'Enterprise RAG Integration',
+              description:
+                'Add document search with citations and confidence scores',
+              href: '/cookbook/enterprise-rag',
+              type: 'cookbook',
+            },
+            {
+              title: 'Multi-Provider Chat',
+              description: 'Switch between OpenAI, Anthropic, and Google',
+              href: '/examples/multi-provider',
+              type: 'example',
+            },
+          ]}
+        />
 
         <Pagination
           next={{

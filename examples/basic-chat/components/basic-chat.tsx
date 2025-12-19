@@ -5,7 +5,7 @@
  *
  * The simplest possible AI chat implementation using @clarity-chat/react.
  * This example demonstrates:
- * - Using the useChat hook from @clarity-chat/react
+ * - Using the useClarityChat hook from @clarity-chat/react
  * - Message rendering with proper styling
  * - Loading states and error handling
  * - Keyboard shortcuts (Enter to send, Shift+Enter for new line)
@@ -13,29 +13,35 @@
  * Total: ~120 lines of code with full functionality
  */
 
-import { useRef, useEffect, FormEvent } from 'react'
-import { useChat } from '@clarity-chat/react'
+import { useRef, useEffect, FormEvent, useCallback } from 'react'
+import { useClarityChat } from '@clarity-chat/react'
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
 export function BasicChat() {
-  const {
-    messages,
-    sendMessage,
-    isLoading,
-    error,
-    input,
-    setInput,
-    clearMessages,
-  } = useChat({
-    api: '/api/chat',
-    autoScroll: true,
-  })
+  const { messages, setMessages, append, isLoading, error, input, setInput } =
+    useClarityChat({
+      api: '/api/chat',
+    })
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // Clear messages helper
+  const clearMessages = useCallback(() => {
+    setMessages([])
+  }, [setMessages])
+
+  // Send message helper
+  const sendMessage = useCallback(
+    async (content: string) => {
+      await append({ role: 'user', content })
+      setInput('')
+    },
+    [append, setInput]
+  )
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {

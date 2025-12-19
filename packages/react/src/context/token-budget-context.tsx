@@ -34,7 +34,8 @@ export interface TokenStateContextValue extends TokenBudgetMonitorReturn {}
 /**
  * Combined context value (Legacy)
  */
-export interface TokenBudgetContextValue extends TokenStateContextValue, TokenConfigContextValue {}
+export interface TokenBudgetContextValue
+  extends TokenStateContextValue, TokenConfigContextValue {}
 
 /**
  * Props for the TokenBudgetProvider component
@@ -51,15 +52,19 @@ export interface TokenBudgetProviderProps {
 }
 
 // Split contexts to prevent re-renders
-const TokenConfigContext = React.createContext<TokenConfigContextValue | null>(null)
-const TokenStateContext = React.createContext<TokenStateContextValue | null>(null)
+const TokenConfigContext = React.createContext<TokenConfigContextValue | null>(
+  null
+)
+const TokenStateContext = React.createContext<TokenStateContextValue | null>(
+  null
+)
 
 /**
  * TokenBudgetProvider - Provides token budget state to child components
  *
  * Use this provider to share token budget state across multiple components
  * without prop drilling.
- * 
+ *
  * **Performance Note**: This provider splits state and configuration internally.
  * Use `useTokenConfig()` for stable setters and `useTokenState()` for volatile usage data.
  *
@@ -167,7 +172,9 @@ TokenBudgetProvider.displayName = 'TokenBudgetProvider'
 export function useTokenConfig(): TokenConfigContextValue {
   const context = React.useContext(TokenConfigContext)
   if (!context) {
-    throw new Error('[useTokenConfig] must be used within a TokenBudgetProvider')
+    throw new Error(
+      '[useTokenConfig] must be used within a TokenBudgetProvider'
+    )
   }
   return context
 }
@@ -193,10 +200,13 @@ export function useTokenBudget(): TokenBudgetContextValue {
   const config = useTokenConfig()
   const state = useTokenState()
 
-  return React.useMemo(() => ({
-    ...config,
-    ...state
-  }), [config, state])
+  return React.useMemo(
+    () => ({
+      ...config,
+      ...state,
+    }),
+    [config, state]
+  )
 }
 
 /**
