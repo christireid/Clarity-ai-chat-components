@@ -384,6 +384,34 @@ import { LicenseGate } from '@clarity-chat/react'
 </LicenseGate>
 ```
 
+### Error Handling & Retries
+
+ClarityChat includes built-in error handling with automatic retries:
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+;<ClarityChat
+  api="/api/chat"
+  onError={(error) => {
+    console.error('Chat error:', error)
+    // Optionally show a toast or custom error UI
+  }}
+/>
+```
+
+The component automatically:
+
+- Retries failed requests with exponential backoff
+- Shows user-friendly error messages
+- Provides a retry button for manual recovery
+
+For enterprise features (analytics, rate limiting, audit logs), use:
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+;<ClarityChatPresets.Enterprise api="/api/chat" enableAnalytics enableSafety />
+```
+
 ---
 
 ## Common Issues & Solutions

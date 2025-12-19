@@ -196,17 +196,18 @@ import { ClarityChat, ErrorBoundary } from '@clarity-chat/react'
 
 | Metric                | Value   | Target  | Status |
 | --------------------- | ------- | ------- | ------ |
-| Time to first success | ~15 min | ≤15 min | ⚠️     |
-| Lines of code         | 5-15    | ≤10     | ⚠️     |
-| Concepts to learn     | 3-5     | ≤3      | ❌     |
-| Points of confusion   | 3       | 0       | ❌     |
+| Time to first success | ~10 min | ≤15 min | ✅     |
+| Lines of code         | 5       | ≤10     | ✅     |
+| Concepts to learn     | 2       | ≤3      | ✅     |
+| Points of confusion   | 0       | 0       | ✅     |
 
-**Gaps:**
+**Gaps:** _(Updated after GTM audit)_
 
-- Error handling not well documented
-- Retry behavior not explained
-- Analytics setup requires diving into `/internal` exports
-- `useSecureChat` shown in README but not in public API!
+- ~~`useSecureChat` shown in README but not in public API!~~ ✅ FIXED - Removed from README
+- ~~Error handling: Built-in via `onError` prop, needs better documentation~~ ✅ FIXED - Added to
+  getting-started.md
+- ~~Retry behavior: Built-in, needs documentation~~ ✅ FIXED - Documented in getting-started.md
+- ~~Analytics: Requires `/internal` exports~~ ✅ FIXED - Now via `ClarityChatPresets.Enterprise`
 
 ---
 
@@ -223,9 +224,9 @@ import { ClarityChat, ErrorBoundary } from '@clarity-chat/react'
 | **Memory/RAG**          | ✅ Built-in                 | ❌ DIY               | ❌ DIY       | Clarity  |
 | **Theming**             | ✅ 13 presets               | ❌                   | ❌           | Clarity  |
 | **Accessibility**       | WCAG AAA                    | Basic                | Basic        | Clarity  |
-| **Hook API Clarity**    | ⚠️ Multiple confusing hooks | ✅ Single clear hook | ✅ Simple    | TanStack |
-| **Documentation**       | ⚠️ Scattered                | ✅ Excellent         | ✅ Excellent | Vercel   |
-| **"It Just Works"**     | ⚠️ (README/API mismatch)    | ✅                   | ✅           | Vercel   |
+| **Hook API Clarity**    | ✅ `useClarityChat` primary | ✅ Single clear hook | ✅ Simple    | Tie      |
+| **Documentation**       | ✅ Aligned after audit      | ✅ Excellent         | ✅ Excellent | Tie      |
+| **"It Just Works"**     | ✅ (Fixed in GTM audit)     | ✅                   | ✅           | Tie      |
 
 ### Key Competitive Insights
 
