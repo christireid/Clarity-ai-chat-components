@@ -65,6 +65,7 @@ import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
 import { HistorySidebar } from './HistorySidebar'
+import { ToolResultRenderer, ToolUseIndicator } from './ToolResultRenderer'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
 
@@ -117,6 +118,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     isOnline,
     messageQueue,
     suggestedFollowUps,
+    currentToolUse,
+    toolResults,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,
@@ -329,6 +332,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     },
     [handleSendMessage]
   )
+
+  // Get tool results for the current conversation
+  const messageToolResults = useMemo(() => {
+    const results: Array<{
+      messageId: string
+      result: { tool_name: string; tool_use_id: string; tool_result: unknown }
+    }> = []
+    toolResults.forEach((result, key) => {
+      const [messageId] = key.split(':')
+      results.push({ messageId, result })
+    })
+    return results
+  }, [toolResults])
 
   // Animation variants
   const dialogVariants = useMemo(
@@ -571,6 +587,27 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               }
               className="h-full flex flex-col"
             >
+              {/* Tool Use Progress Indicator */}
+              <AnimatePresence>
+                {currentToolUse && (
+                  <div className="px-4 py-2">
+                    <ToolUseIndicator toolUse={currentToolUse} />
+                  </div>
+                )}
+              </AnimatePresence>
+
+              {/* Tool Results - rendered inline after messages */}
+              {messageToolResults.length > 0 && (
+                <div className="px-4 space-y-2">
+                  {messageToolResults.map(({ result }) => (
+                    <ToolResultRenderer
+                      key={result.tool_use_id}
+                      result={result}
+                    />
+                  ))}
+                </div>
+              )}
+
               {/* Follow-up Suggestions at bottom of chat */}
               {suggestedFollowUps.length > 0 && !isLoading && (
                 <div className="px-4 pb-4">

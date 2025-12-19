@@ -47,3 +47,24 @@ export interface Source {
   chunkText?: string // Content preview from enhanced RAG
   score?: number
 }
+
+// ============================================================================
+// Tool Types
+// ============================================================================
+
+export interface ToolUseProgress {
+  tool_name: string
+  tool_use_id: string
+  tool_input?: unknown
+}
+
+export interface ToolResult {
+  tool_name: string
+  tool_use_id: string
+  tool_result: unknown
+}
+
+export interface MessageToolData {
+  toolUses: ToolUseProgress[]
+  toolResults: ToolResult[]
+}

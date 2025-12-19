@@ -10,9 +10,20 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export interface StreamChunk {
-  type: 'text' | 'error' | 'done' | 'sources' | 'thinking'
+  type:
+    | 'text'
+    | 'error'
+    | 'done'
+    | 'sources'
+    | 'thinking'
+    | 'tool_use'
+    | 'tool_result'
   content?: string
   data?: unknown
+  tool_name?: string
+  tool_use_id?: string
+  tool_input?: unknown
+  tool_result?: unknown
 }
 
 /**
@@ -165,6 +176,206 @@ export async function* streamFromClaude(
     }
   } catch (error) {
     console.error('Claude streaming error:', error)
+    throw error
+  }
+}
+
+/**
+ * Stream from Anthropic Claude API with tool support
+ *
+ * This function enables the docs assistant to use tools for enhanced responses:
+ * - generate_diagram: Create Mermaid diagrams
+ * - lookup_component: Look up component documentation
+ * - lookup_hook: Look up hook documentation
+ * - generate_code_example: Generate code examples
+ * - calculate_bundle_impact: Calculate bundle size impact
+ */
+export async function* streamFromClaudeWithTools(
+  messages: { role: string; content: string }[],
+  options: {
+    model?: string
+    temperature?: number
+    maxTokens?: number
+    tools?: Anthropic.Tool[]
+  } = {}
+): AsyncGenerator<StreamChunk> {
+  const {
+    model = 'claude-3-5-sonnet-20241022',
+    temperature = 0.7,
+    maxTokens = 4000,
+    tools = [],
+  } = options
+
+  const apiKey = process.env.ANTHROPIC_API_KEY
+
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY is not set')
+  }
+
+  const anthropic = new Anthropic({ apiKey })
+
+  // Import tool handlers dynamically to avoid circular deps
+  const { executeToolCall, TOOL_NAMES } = await import('./tools')
+
+  try {
+    // Extract system message if present
+    const systemMessage = messages.find((m) => m.role === 'system')?.content
+    const conversationMessages = messages.filter((m) => m.role !== 'system')
+
+    // Create the initial request with tools
+    let response = await anthropic.messages.create({
+      model,
+      max_tokens: maxTokens,
+      temperature,
+      system: systemMessage,
+      tools: tools.length > 0 ? tools : undefined,
+      messages: conversationMessages.map((m) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content,
+      })) as Anthropic.MessageParam[],
+    })
+
+    // Process response content blocks
+    const processContentBlocks = async function* (
+      contentBlocks: Anthropic.ContentBlock[]
+    ): AsyncGenerator<StreamChunk> {
+      for (const block of contentBlocks) {
+        if (block.type === 'text') {
+          // Stream text in chunks for natural UX
+          const words = block.text.split(' ')
+          let buffer = ''
+
+          for (let i = 0; i < words.length; i++) {
+            buffer += words[i] + (i < words.length - 1 ? ' ' : '')
+
+            // Yield chunks of ~5-10 words
+            if (buffer.split(' ').length >= 7 || i === words.length - 1) {
+              yield {
+                type: 'text',
+                content: buffer,
+              }
+              buffer = ''
+
+              // Small delay for natural streaming feel
+              await new Promise((resolve) => setTimeout(resolve, 15))
+            }
+          }
+        } else if (block.type === 'tool_use') {
+          // Emit tool use event for UI to show progress
+          yield {
+            type: 'tool_use',
+            tool_name: block.name,
+            tool_use_id: block.id,
+            tool_input: block.input,
+          }
+
+          // Execute the tool
+          try {
+            const toolResult = await executeToolCall(
+              block.name as keyof typeof TOOL_NAMES,
+              block.input as Record<string, unknown>
+            )
+
+            // Emit tool result for UI to render
+            yield {
+              type: 'tool_result',
+              tool_name: block.name,
+              tool_use_id: block.id,
+              tool_result: toolResult,
+            }
+          } catch (error) {
+            console.error(`Tool execution error for ${block.name}:`, error)
+            yield {
+              type: 'tool_result',
+              tool_name: block.name,
+              tool_use_id: block.id,
+              tool_result: {
+                success: false,
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Tool execution failed',
+              },
+            }
+          }
+        }
+      }
+    }
+
+    // Process initial response
+    yield* processContentBlocks(response.content)
+
+    // Handle tool use loop - continue until model is done
+    let loopCount = 0
+    const maxLoops = 5 // Prevent infinite loops
+
+    while (response.stop_reason === 'tool_use' && loopCount < maxLoops) {
+      loopCount++
+
+      // Collect tool results for the continuation
+      const toolResults: Anthropic.ToolResultBlockParam[] = []
+
+      for (const block of response.content) {
+        if (block.type === 'tool_use') {
+          try {
+            const result = await executeToolCall(
+              block.name as keyof typeof TOOL_NAMES,
+              block.input as Record<string, unknown>
+            )
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: JSON.stringify(result),
+            })
+          } catch (error) {
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: JSON.stringify({
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error',
+              }),
+              is_error: true,
+            })
+          }
+        }
+      }
+
+      // Continue the conversation with tool results
+      const continuationMessages: Anthropic.MessageParam[] = [
+        ...conversationMessages.map((m) => ({
+          role: (m.role === 'user' ? 'user' : 'assistant') as
+            | 'user'
+            | 'assistant',
+          content: m.content,
+        })),
+        {
+          role: 'assistant',
+          content: response.content,
+        },
+        {
+          role: 'user',
+          content: toolResults,
+        },
+      ]
+
+      response = await anthropic.messages.create({
+        model,
+        max_tokens: maxTokens,
+        temperature,
+        system: systemMessage,
+        tools: tools.length > 0 ? tools : undefined,
+        messages: continuationMessages,
+      })
+
+      // Process continuation response
+      yield* processContentBlocks(response.content)
+    }
+
+    // Emit done
+    yield { type: 'done' }
+  } catch (error) {
+    console.error('Claude with tools streaming error:', error)
     throw error
   }
 }

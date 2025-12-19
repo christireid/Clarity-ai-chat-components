@@ -21,12 +21,14 @@ import {
   createSSEStream,
   getStreamingFunction,
   getStreamingFunctionWithRouting,
+  streamFromClaudeWithTools,
   checkRateLimit,
   validateRequest,
   handleStreamError,
   type StreamChunk,
   type QueryClassification,
 } from '@/lib/ai/streaming'
+import { DOCS_ASSISTANT_TOOLS } from '@/lib/ai/tools'
 import { SYSTEM_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
@@ -43,6 +45,9 @@ const USE_ENHANCED_RAG = process.env.ENHANCED_RAG !== 'false' // Default: enable
 
 // Feature flag for smart model routing (routes queries to optimal models)
 const USE_SMART_ROUTING = process.env.SMART_MODEL_ROUTING !== 'false' // Default: enabled
+
+// Feature flag for tool use (diagrams, code examples, lookups, bundle calculator)
+const USE_TOOLS = process.env.DOCS_ASSISTANT_TOOLS !== 'false' // Default: enabled
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -200,29 +205,35 @@ export async function POST(request: NextRequest) {
       modelRouting = { model, classification }
     }
 
-    // Create streaming response - use enhanced RAG when enabled
-    const generator = useEnhancedRAG
-      ? streamWithEnhancedRAG(
-          body.message,
-          messages,
-          body.currentPath,
-          sessionId,
-          modelRouting?.model
-        )
-      : useLegacyRAG
-        ? streamWithRAG(
+    // Determine if we should use tools (requires Anthropic API)
+    const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
+    const useTools = USE_TOOLS && hasAnthropic
+
+    // Create streaming response - use tools when enabled, otherwise use RAG
+    const generator = useTools
+      ? streamWithTools(body.message, messages, body.currentPath, sessionId)
+      : useEnhancedRAG
+        ? streamWithEnhancedRAG(
             body.message,
             messages,
             body.currentPath,
             sessionId,
             modelRouting?.model
           )
-        : streamWithoutRAG(
-            body.message,
-            messages,
-            sessionId,
-            modelRouting?.model
-          )
+        : useLegacyRAG
+          ? streamWithRAG(
+              body.message,
+              messages,
+              body.currentPath,
+              sessionId,
+              modelRouting?.model
+            )
+          : streamWithoutRAG(
+              body.message,
+              messages,
+              sessionId,
+              modelRouting?.model
+            )
 
     return new Response(createSSEStream(generator), {
       headers: {
@@ -720,6 +731,126 @@ async function* streamWithoutRAG(
 }
 
 /**
+ * Stream response with Tools (Diagrams, Code Examples, Lookups)
+ *
+ * Uses Claude with tool support for enhanced responses including:
+ * - Mermaid diagrams for visual explanations
+ * - Component/hook lookups from the AI API
+ * - Code example generation
+ * - Bundle size calculations
+ */
+async function* streamWithTools(
+  userMessage: string,
+  messages: ChatMessage[],
+  currentPath?: string,
+  sessionId?: string
+): AsyncGenerator<StreamChunk> {
+  let assistantResponse = ''
+  const toolResults: Array<{ name: string; result: unknown }> = []
+
+  try {
+    // Enhance system prompt for tool usage
+    const toolSystemPrompt = `You are the Clarity Chat documentation assistant with access to specialized tools.
+
+AVAILABLE TOOLS:
+1. generate_diagram - Create Mermaid diagrams to visually explain architecture, data flow, or component relationships
+2. lookup_component - Look up detailed documentation for Clarity Chat components
+3. lookup_hook - Look up detailed documentation for Clarity Chat hooks
+4. generate_code_example - Generate complete, runnable code examples
+5. calculate_bundle_impact - Calculate bundle size impact and recommend entry points
+
+WHEN TO USE TOOLS:
+- Use generate_diagram when explaining how things work, showing relationships, or visualizing flow
+- Use lookup_component/lookup_hook when users ask about specific component/hook APIs
+- Use generate_code_example when users ask "how do I..." or want implementation examples
+- Use calculate_bundle_impact when users ask about bundle size, optimization, or entry points
+
+Always provide helpful context alongside tool results. Be concise but thorough.
+
+Current page: ${currentPath || 'unknown'}`
+
+    // Update messages with tool-aware system prompt
+    const updatedMessages = messages.map((msg) => {
+      if (msg.role === 'system') {
+        return { ...msg, content: toolSystemPrompt }
+      }
+      return msg
+    })
+
+    // If no system message exists, add one
+    if (!updatedMessages.find((m) => m.role === 'system')) {
+      updatedMessages.unshift({ role: 'system', content: toolSystemPrompt })
+    }
+
+    // Stream with tools
+    const stream = streamFromClaudeWithTools(updatedMessages, {
+      model: 'claude-3-5-sonnet-20241022',
+      maxTokens: 4000,
+      temperature: 0.7,
+      tools: DOCS_ASSISTANT_TOOLS,
+    })
+
+    for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
+      }
+
+      // Pass through tool_use and tool_result events for UI rendering
+      if (chunk.type === 'tool_use') {
+        yield {
+          type: 'tool_use',
+          tool_name: chunk.tool_name,
+          tool_use_id: chunk.tool_use_id,
+          tool_input: chunk.tool_input,
+        }
+      }
+
+      if (chunk.type === 'tool_result') {
+        toolResults.push({
+          name: chunk.tool_name || 'unknown',
+          result: chunk.tool_result,
+        })
+        yield {
+          type: 'tool_result',
+          tool_name: chunk.tool_name,
+          tool_use_id: chunk.tool_use_id,
+          tool_result: chunk.tool_result,
+        }
+      }
+
+      // Pass through text chunks
+      if (chunk.type === 'text') {
+        yield chunk
+      }
+    }
+
+    // Save messages to session
+    if (sessionId && (assistantResponse || toolResults.length > 0)) {
+      try {
+        await updateSessionWithMessages(sessionId, [
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+            metadata: toolResults.length > 0 ? { toolResults } : undefined,
+          },
+        ])
+      } catch (error) {
+        logger.error('Failed to save session:', error)
+      }
+    }
+  } catch (error) {
+    logger.error('Tool streaming error:', error)
+    yield handleStreamError(error)
+  }
+}
+
+/**
  * GET /api/docs-assistant
  *
  * Health check endpoint
@@ -742,11 +873,26 @@ export async function GET() {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
       enhancedRAG: USE_ENHANCED_RAG,
       smartRouting: USE_SMART_ROUTING,
+      tools: USE_TOOLS && !!process.env.ANTHROPIC_API_KEY,
       streaming: true,
       rateLimit: true,
       caching: true,
       feedback: true,
     },
+    tools:
+      USE_TOOLS && !!process.env.ANTHROPIC_API_KEY
+        ? {
+            available: [
+              'generate_diagram',
+              'lookup_component',
+              'lookup_hook',
+              'generate_code_example',
+              'calculate_bundle_impact',
+            ],
+            description:
+              'AI-powered tools for diagrams, lookups, code examples, and bundle analysis',
+          }
+        : null,
     models: {
       configured: process.env.AI_MODEL || 'gpt-4-turbo-preview',
       available: [
