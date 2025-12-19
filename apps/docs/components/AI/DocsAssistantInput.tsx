@@ -17,7 +17,12 @@ import { useReducedMotion } from '@clarity-chat/react'
 import { toast } from '@/lib/toast'
 import { Send, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { DURATION_SECONDS as durations } from '@/lib/animations'
+import {
+  DURATION_SECONDS as durations,
+  fadeIn,
+  fadeInScale,
+  fadeInDown,
+} from '@/lib/animations'
 import { CommandMenu, useSlashCommands, type Command } from './CommandMenu'
 
 // ============================================================================
@@ -253,20 +258,20 @@ export const DocsAssistantInput = memo(function DocsAssistantInput({
             {isSubmitting ? (
               <motion.div
                 key="loading"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: durations.fast }}
+                variants={fadeInScale}
+                initial="initial"
+                animate="animate"
+                exit="exit"
               >
                 <Loader2 className="w-4 h-4 animate-spin" />
               </motion.div>
             ) : (
               <motion.div
                 key="send"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: durations.fast }}
+                variants={fadeInScale}
+                initial="initial"
+                animate="animate"
+                exit="exit"
               >
                 <Send className="w-4 h-4" />
               </motion.div>
@@ -279,11 +284,10 @@ export const DocsAssistantInput = memo(function DocsAssistantInput({
       <AnimatePresence>
         {!hasContent && !isMenuOpen && (
           <motion.p
-            initial={
-              prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -5 }
-            }
-            animate={{ opacity: 1, y: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -5 }}
+            variants={prefersReducedMotion ? fadeIn : fadeInDown}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="text-[11px] text-muted-foreground/60 px-1"
           >
             Press{' '}

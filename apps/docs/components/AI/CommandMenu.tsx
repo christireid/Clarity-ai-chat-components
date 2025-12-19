@@ -605,7 +605,6 @@ export function useSlashCommands(
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [triggerType, setTriggerType] = useState<'/' | '@' | null>(null)
   const [filter, setFilter] = useState('')
-  const [triggerPosition, setTriggerPosition] = useState(0)
   const [menuPosition] = useState({ top: 0, left: 0 })
 
   const handleInputChange = useCallback(
@@ -615,7 +614,6 @@ export function useSlashCommands(
       // Find if we're in a command context
       // Look backwards from cursor for / or @ at start of line or after whitespace
       let foundTrigger: '/' | '@' | null = null
-      let triggerPos = -1
       let commandFilter = ''
 
       for (let i = cursor - 1; i >= 0; i--) {
@@ -631,7 +629,6 @@ export function useSlashCommands(
           // Verify it's at start of input or after whitespace
           if (i === 0 || value[i - 1] === ' ' || value[i - 1] === '\n') {
             foundTrigger = char as '/' | '@'
-            triggerPos = i
             commandFilter = value.slice(i + 1, cursor)
             break
           }
@@ -642,7 +639,6 @@ export function useSlashCommands(
         setIsMenuOpen(true)
         setTriggerType(foundTrigger)
         setFilter(commandFilter)
-        setTriggerPosition(triggerPos)
       } else {
         setIsMenuOpen(false)
         setTriggerType(null)

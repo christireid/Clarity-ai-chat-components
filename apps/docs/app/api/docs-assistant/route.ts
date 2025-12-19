@@ -841,11 +841,11 @@ Current page: ${currentPath || 'unknown'}`
           },
         ])
       } catch (error) {
-        logger.error('Failed to save session:', error)
+        console.error('Failed to save session:', error)
       }
     }
   } catch (error) {
-    logger.error('Tool streaming error:', error)
+    console.error('Tool streaming error:', error)
     yield handleStreamError(error)
   }
 }
