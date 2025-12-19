@@ -62,6 +62,13 @@
     "src/plugins/**/*",
     "src/safety/**/*",
     "src/templates/**/*",
-    "src/typescript/**/*"
+    "src/typescript/**/*",
+    "src/utils/memory/**/*",
+    "src/utils/config/runtime-validation.ts",
+    "src/utils/message/clarity-chat-helpers.ts",
+    "src/utils/optimization/**/*",
+    "src/utils/performance.ts",
+    "src/utils/security.ts",
+    "src/webhooks/**/*"
   ]
 }

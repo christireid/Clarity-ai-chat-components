@@ -1,6 +1,6 @@
 /**
  * Clarity Chat - Performance Optimization Utilities
- * 
+ *
  * Comprehensive performance layer providing:
  * - 60fps animation optimization
  * - <100ms render time targets
@@ -10,6 +10,17 @@
  */
 
 import * as React from 'react'
+
+// Extend Performance interface for Chrome-specific memory API
+declare global {
+  interface Performance {
+    memory?: {
+      usedJSHeapSize: number
+      totalJSHeapSize: number
+      jsHeapSizeLimit: number
+    }
+  }
+}
 
 /**
  * Performance configuration
@@ -86,7 +97,7 @@ export class AnimationFrame {
       const callbacks = Array.from(this.callbacks)
       this.callbacks.clear()
 
-      callbacks.forEach(callback => {
+      callbacks.forEach((callback) => {
         try {
           callback()
         } catch (error) {
@@ -166,7 +177,9 @@ export class PerformanceMonitor {
 
       // Update memory usage
       if (performance.memory) {
-        this.metrics.memoryUsage = Math.round((performance.memory.usedJSHeapSize || 0) / 1024 / 1024)
+        this.metrics.memoryUsage = Math.round(
+          (performance.memory.usedJSHeapSize || 0) / 1024 / 1024
+        )
       }
 
       animationFrame.schedule(measureFrame)
@@ -190,12 +203,14 @@ export class PerformanceMonitor {
     const start = performance.now()
     const result = renderFn()
     const end = performance.now()
-    
+
     const renderTime = end - start
     this.metrics.renderTime = renderTime
 
     if (renderTime > 100) {
-      console.warn(`Slow render detected: ${componentName} took ${renderTime.toFixed(2)}ms`)
+      console.warn(
+        `Slow render detected: ${componentName} took ${renderTime.toFixed(2)}ms`
+      )
     }
 
     return result
@@ -241,7 +256,7 @@ export class MemoryManager {
    * Perform memory cleanup
    */
   cleanup(): void {
-    this.cleanupCallbacks.forEach(callback => {
+    this.cleanupCallbacks.forEach((callback) => {
       try {
         callback()
       } catch (error) {
@@ -260,15 +275,21 @@ export class MemoryManager {
    */
   isMemoryUsageAcceptable(): boolean {
     if (!performance.memory) return true
-    
-    const usedMemory = Math.round((performance.memory.usedJSHeapSize || 0) / 1024 / 1024)
+
+    const usedMemory = Math.round(
+      (performance.memory.usedJSHeapSize || 0) / 1024 / 1024
+    )
     return usedMemory < this.maxMemoryUsage
   }
 
   /**
    * Create a memory-efficient object pool
    */
-  createObjectPool<T>(createFn: () => T, resetFn: (obj: T) => void, maxSize: number = 100): ObjectPool<T> {
+  createObjectPool<T>(
+    createFn: () => T,
+    resetFn: (obj: T) => void,
+    maxSize: number = 100
+  ): ObjectPool<T> {
     return new ObjectPool(createFn, resetFn, maxSize)
   }
 }
@@ -345,12 +366,15 @@ export class BundleOptimizer {
   /**
    * Optimize images for web
    */
-  static optimizeImage(src: string, options: {
-    width?: number
-    height?: number
-    quality?: number
-    format?: 'webp' | 'avif' | 'jpeg'
-  } = {}): string {
+  static optimizeImage(
+    src: string,
+    options: {
+      width?: number
+      height?: number
+      quality?: number
+      format?: 'webp' | 'avif' | 'jpeg'
+    } = {}
+  ): string {
     // In a real implementation, use an image optimization service
     // This is a placeholder that returns the original src
     return src
@@ -411,7 +435,9 @@ export const fpsOptimizer = new FPSOptimizer()
 /**
  * React hook for performance monitoring
  */
-export function usePerformanceMonitoring(config: Partial<PerformanceConfig> = {}) {
+export function usePerformanceMonitoring(
+  config: Partial<PerformanceConfig> = {}
+) {
   const [monitor] = React.useState(() => new PerformanceMonitor())
   const [memory] = React.useState(() => new MemoryManager())
   const [metrics, setMetrics] = React.useState<PerformanceMetrics>({
@@ -425,12 +451,12 @@ export function usePerformanceMonitoring(config: Partial<PerformanceConfig> = {}
 
   React.useEffect(() => {
     monitor.start()
-    
+
     const updateMetrics = () => {
       setMetrics(monitor.getMetrics())
       animationFrame.schedule(updateMetrics)
     }
-    
+
     updateMetrics()
 
     return () => {
@@ -438,9 +464,12 @@ export function usePerformanceMonitoring(config: Partial<PerformanceConfig> = {}
     }
   }, [monitor])
 
-  const measureRender = React.useCallback(<T,>(componentName: string, renderFn: () => T): T => {
-    return monitor.measureRenderTime(componentName, renderFn)
-  }, [monitor])
+  const measureRender = React.useCallback(
+    <T>(componentName: string, renderFn: () => T): T => {
+      return monitor.measureRenderTime(componentName, renderFn)
+    },
+    [monitor]
+  )
 
   const isPerformanceAcceptable = React.useCallback(() => {
     return monitor.isPerformanceAcceptable()
@@ -468,7 +497,7 @@ export function useRenderOptimization<T>(
   comparator?: (prev: T, next: T) => boolean
 ): T {
   const ref = React.useRef<T>(value)
-  
+
   const shouldUpdate = React.useMemo(() => {
     if (comparator) {
       return !comparator(ref.current, value)
@@ -490,16 +519,22 @@ export function use60FPSAnimation(enabled: boolean = true) {
   const [fpsOptimizer] = React.useState(() => new FPSOptimizer())
   const lastTimeRef = React.useRef<number>(0)
 
-  const animate = React.useCallback((callback: () => void) => {
-    if (!enabled) {
-      callback()
-      return
-    }
+  const animate = React.useCallback(
+    (callback: () => void) => {
+      if (!enabled) {
+        callback()
+        return
+      }
 
-    const currentTime = performance.now()
-    fpsOptimizer.optimizeAnimation(currentTime, callback)
-    lastTimeRef.current = currentTime
-  }, [enabled, fpsOptimizer])
+      const currentTime = performance.now()
+      fpsOptimizer.optimizeAnimation(currentTime, callback)
+      lastTimeRef.current = currentTime
+    },
+    [enabled, fpsOptimizer]
+  )
 
-  return { animate, getOptimalDuration: fpsOptimizer.getOptimalDuration.bind(fpsOptimizer) }
+  return {
+    animate,
+    getOptimalDuration: fpsOptimizer.getOptimalDuration.bind(fpsOptimizer),
+  }
 }

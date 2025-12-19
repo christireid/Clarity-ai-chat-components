@@ -93,7 +93,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       }
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useAgent] Validation error:', error)
+        console.error('[useAgent] Validation error:', error)
         throw error
       }
     }
@@ -150,7 +150,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         setError(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          logger.logger.error('[useAgent] Execution failed:', error)
+          console.error('[useAgent] Execution failed:', error)
         }
         throw error
       } finally {

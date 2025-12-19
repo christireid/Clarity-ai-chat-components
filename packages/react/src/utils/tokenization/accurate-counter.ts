@@ -7,9 +7,14 @@
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
 import { InputValidator } from './input-validator.js'
-import { errorHandler, ErrorCategory, ErrorSeverity } from './enhanced-error-handling.js'
+import {
+  errorHandler,
+  ErrorCategory,
+  ErrorSeverity,
+} from './enhanced-error-handling.js'
 
 export type ModelName =
+  | 'gpt-4'
   | 'gpt-4-turbo'
   | 'gpt-4o'
   | 'gpt-4o-mini'
@@ -60,8 +65,8 @@ export interface TokenCount {
   output?: number
   /** Model used for counting */
   model: string
-  /** Counting method (accurate or estimated) */
-  method: 'accurate' | 'estimated'
+  /** Counting method (accurate, estimated, or fallback) */
+  method: 'accurate' | 'estimated' | 'fallback'
 }
 
 export interface TokenizerOptions {
@@ -386,7 +391,7 @@ export async function countConversationTokens(
 
   try {
     // Validate inputs
-    const modelValidation = InputValidator.validateModel(model);
+    const modelValidation = InputValidator.validateModel(model)
     if (!modelValidation.valid) {
       throw errorHandler.createError(
         `Invalid model: ${modelValidation.errors.join(', ')}`,
@@ -394,10 +399,10 @@ export async function countConversationTokens(
         ErrorCategory.VALIDATION,
         ErrorSeverity.LOW,
         { operation: 'countConversationTokens', config: options }
-      );
+      )
     }
 
-    const validModel = modelValidation.sanitized || 'gpt-4';
+    const validModel = modelValidation.sanitized || 'gpt-4'
 
     // Validate messages
     if (!Array.isArray(messages)) {
@@ -407,7 +412,7 @@ export async function countConversationTokens(
         ErrorCategory.VALIDATION,
         ErrorSeverity.LOW,
         { operation: 'countConversationTokens', input: messages }
-      );
+      )
     }
 
     // Use the new TokenCounter for accurate counting
@@ -419,8 +424,8 @@ export async function countConversationTokens(
     let totalTokens = 0
 
     for (let i = 0; i < messages.length; i++) {
-      const message = messages[i];
-      
+      const message = messages[i]
+
       // Validate message structure
       if (!message || typeof message !== 'object') {
         throw errorHandler.createError(
@@ -429,7 +434,7 @@ export async function countConversationTokens(
           ErrorCategory.VALIDATION,
           ErrorSeverity.LOW,
           { operation: 'countConversationTokens', input: message }
-        );
+        )
       }
 
       if (typeof message.content !== 'string') {
@@ -439,11 +444,14 @@ export async function countConversationTokens(
           ErrorCategory.VALIDATION,
           ErrorSeverity.LOW,
           { operation: 'countConversationTokens', input: message.content }
-        );
+        )
       }
 
       // Validate content
-      const contentValidation = InputValidator.validateTextInput(message.content, { allowEmpty: true });
+      const contentValidation = InputValidator.validateTextInput(
+        message.content,
+        { allowEmpty: true }
+      )
       if (!contentValidation.valid) {
         throw errorHandler.createError(
           `Message content at index ${i} is invalid: ${contentValidation.errors.join(', ')}`,
@@ -451,17 +459,17 @@ export async function countConversationTokens(
           ErrorCategory.VALIDATION,
           ErrorSeverity.LOW,
           { operation: 'countConversationTokens', input: message.content }
-        );
+        )
       }
 
-      const validContent = contentValidation.sanitized || '';
-      const contentCount = TokenCounter.count(validContent);
-      totalTokens += contentCount;
-      totalTokens += TOKENS_PER_MESSAGE;
+      const validContent = contentValidation.sanitized || ''
+      const contentCount = TokenCounter.count(validContent)
+      totalTokens += contentCount
+      totalTokens += TOKENS_PER_MESSAGE
 
       // Add extra tokens if message has a name field
       if ('name' in message && message.name) {
-        totalTokens += TOKENS_PER_NAME;
+        totalTokens += TOKENS_PER_NAME
       }
     }
 
@@ -475,17 +483,23 @@ export async function countConversationTokens(
     }
   } catch (error) {
     return errorHandler.handleError(
-      error,
-      { operation: 'countConversationTokens', input: messages, config: options },
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        operation: 'countConversationTokens',
+        input: messages,
+        config: options,
+      },
       {
         attemptRecovery: true,
-        fallbackValue: { 
-          total: messages.reduce((sum, msg) => sum + (msg.content?.length || 0), 0) / 4,
+        fallbackValue: {
+          total:
+            messages.reduce((sum, msg) => sum + (msg.content?.length || 0), 0) /
+            4,
           model: model || 'gpt-4',
-          method: 'fallback'
-        }
+          method: 'fallback',
+        },
       }
-    );
+    )
   }
 }
 

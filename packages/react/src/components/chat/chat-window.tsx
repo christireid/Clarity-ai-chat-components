@@ -4,7 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
-import { duration, DURATION_SECONDS as durations } from '../../animations/constants'
+import {
+  duration,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 import { MessageList } from '../message/message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from '../message/thinking-indicator'
@@ -15,9 +18,15 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
-import { useUIEnhancements, getEnhancedClassName } from '../../contexts/ui-enhancements'
-import { useSecurity } from '../../utils/security'
-import { usePerformanceMonitoring, useRenderOptimization, use60FPSAnimation } from '../../utils/performance'
+import {
+  useUIEnhancements,
+  getEnhancedClassName,
+} from '../../contexts/ui-enhancements'
+import {
+  usePerformanceMonitoring,
+  useRenderOptimization,
+  use60FPSAnimation,
+} from '../../utils/performance'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
