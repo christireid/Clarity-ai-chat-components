@@ -1,6 +1,6 @@
 /**
  * Developer Experience Domain Exports
- * 
+ *
  * Top-level: Pre-configured setups
  * Mid-level: Feature composition
  * Low-level: Internal helpers
@@ -19,9 +19,6 @@ export {
   type ChatPreset,
   type HookPreset,
 } from '../presets/chat-presets'
-
-// Templates
-export * from '../templates'
 
 // ============================================================================
 // MID-LEVEL: Feature Composition

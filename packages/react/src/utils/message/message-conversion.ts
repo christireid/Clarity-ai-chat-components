@@ -110,34 +110,3 @@ export function convertMessagesToCoreMessages(
 ): CoreMessage[] {
   return messages.map(convertMessageToCoreMessage)
 }
-
-// ============================================================================
-// Backward Compatibility Aliases
-// ============================================================================
-// These aliases maintain backward compatibility with older code that used
-// the message-converter.ts file. New code should use the "convert" prefixed
-// versions above.
-
-/**
- * @deprecated Use convertCoreMessageToMessage instead
- * @alias convertCoreMessageToMessage
- */
-export const coreMessageToMessage = convertCoreMessageToMessage
-
-/**
- * @deprecated Use convertCoreMessagesToMessages instead
- * @alias convertCoreMessagesToMessages
- */
-export const coreMessagesToMessages = convertCoreMessagesToMessages
-
-/**
- * @deprecated Use convertMessageToCoreMessage instead
- * @alias convertMessageToCoreMessage
- */
-export const messageToCoreMessage = convertMessageToCoreMessage
-
-/**
- * @deprecated Use convertMessagesToCoreMessages instead
- * @alias convertMessagesToCoreMessages
- */
-export const messagesToCoreMessages = convertMessagesToCoreMessages

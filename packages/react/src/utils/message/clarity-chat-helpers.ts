@@ -4,17 +4,11 @@
  * Common utilities and helpers for working with Clarity Chat.
  * These make common patterns easier and reduce boilerplate.
  *
- * Note: For message creation helpers, prefer using the ones from './chat-helpers'
+ * Note: For message creation helpers, use the ones from './chat-helpers'
  * which provide more options (like custom IDs).
  */
 
-import type { UseClarityChatOptions } from '../hooks/chat/use-clarity-chat'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
-import {
-  createUserMessage as createUserMessageCanonical,
-  createAssistantMessage as createAssistantMessageCanonical,
-  createSystemMessage as createSystemMessageCanonical,
-} from './chat-helpers'
+import type { UseClarityChatOptions } from '../../hooks/chat/use-clarity-chat'
 
 /**
  * Create a basic chat configuration with sensible defaults
@@ -78,57 +72,6 @@ export function createEnterpriseChatConfig(api: string): UseClarityChatOptions {
     },
     transport: 'sse',
   }
-}
-
-/**
- * Helper to create a user message
- *
- * @deprecated Use the version from './chat-helpers' instead for consistency.
- * This is kept for backward compatibility only.
- *
- * @example
- * ```tsx
- * import { createUserMessage } from '@clarity-chat/react/utils/chat-helpers'
- * const message = createUserMessage('Hello!', { id: 'msg-1' })
- * ```
- */
-export function createUserMessage(content: string): CoreMessage {
-  // Re-export from canonical implementation (backward compatibility)
-  return createUserMessageCanonical(content)
-}
-
-/**
- * Helper to create an assistant message
- *
- * @deprecated Use the version from './chat-helpers' instead for consistency.
- * This is kept for backward compatibility only.
- *
- * @example
- * ```tsx
- * import { createAssistantMessage } from '@clarity-chat/react/utils/chat-helpers'
- * const message = createAssistantMessage('Hi there!', { id: 'msg-2' })
- * ```
- */
-export function createAssistantMessage(content: string): CoreMessage {
-  // Re-export from canonical implementation (backward compatibility)
-  return createAssistantMessageCanonical(content)
-}
-
-/**
- * Helper to create a system message
- *
- * @deprecated Use the version from './chat-helpers' instead for consistency.
- * This is kept for backward compatibility only.
- *
- * @example
- * ```tsx
- * import { createSystemMessage } from '@clarity-chat/react/utils/chat-helpers'
- * const message = createSystemMessage('You are a helpful assistant.', { id: 'msg-3' })
- * ```
- */
-export function createSystemMessage(content: string): CoreMessage {
-  // Re-export from canonical implementation (backward compatibility)
-  return createSystemMessageCanonical(content)
 }
 
 /**

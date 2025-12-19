@@ -59,19 +59,11 @@ export {
   type ChatHandlers,
 } from './use-chat-handlers'
 
-// Helpers
-export * from './use-clarity-chat-helpers'
-
 // Additional Chat Hooks
-export * from './use-chat-core'
 export * from './use-chat-simple'
 export * from './use-chat-composable'
 export * from './use-chat-history'
-export * from './use-chat-with-operations'
 
 // AI Hooks
 export * from './use-completion'
 export * from './use-assistant'
-// NOTE: Commented out due to missing dependencies
-// export * from './use-agent'
-// export * from './use-rag-pipeline'

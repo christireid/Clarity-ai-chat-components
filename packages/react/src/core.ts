@@ -106,15 +106,6 @@ export {
 // =============================================================================
 
 /**
- * Chat hook with common operations pre-configured
- */
-export {
-  useChatWithOperations,
-  type UseChatWithOperationsOptions,
-  type UseChatWithOperationsReturn,
-} from './hooks/chat/use-chat-with-operations'
-
-/**
  * Simplified chat hook for basic use cases
  */
 export {

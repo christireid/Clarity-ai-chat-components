@@ -9,11 +9,6 @@ export {
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-  // Backward compatibility aliases (deprecated)
-  coreMessageToMessage,
-  coreMessagesToMessages,
-  messageToCoreMessage,
-  messagesToCoreMessages,
 } from './message-conversion'
 
 export * from './message-grouping'
@@ -25,12 +20,11 @@ export {
   createToolResultMessage,
 } from './chat-helpers'
 
-// TODO: Re-enable after fixing clarity-chat-helpers module dependencies
-// export {
-//   createBasicChatConfig,
-//   createMemoryChatConfig,
-//   createStreamingChatConfig,
-//   createEnterpriseChatConfig,
-//   isValidApiEndpoint,
-//   getApiEndpoint,
-// } from './clarity-chat-helpers'
+export {
+  createBasicChatConfig,
+  createMemoryChatConfig,
+  createStreamingChatConfig,
+  createEnterpriseChatConfig,
+  isValidApiEndpoint,
+  getApiEndpoint,
+} from './clarity-chat-helpers'

@@ -1,6 +1,6 @@
 /**
  * Enterprise Platform Domain Exports
- * 
+ *
  * Top-level: Enterprise setup
  * Mid-level: Enterprise services
  * Low-level: Internal utilities
@@ -34,6 +34,3 @@ export * from '../observability'
 
 // Webhooks
 export * from '../webhooks'
-
-// Plugins
-export * from '../plugins'

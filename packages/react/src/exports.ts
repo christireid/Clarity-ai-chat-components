@@ -82,23 +82,6 @@ export { CitationCard } from './components/message/citation-card'
 export { CopyButton } from './components/message/copy-button'
 export { FileUpload } from './components/input/file-upload'
 
-// Tier 2: Composable
-// NOTE: These exports are already provided above or not available in current build
-// export {
-//   ChatWindow,
-//   ChatInput,
-//   ChatLayout,
-//   ChatWithErrorBoundary,
-//   VirtualizedMessageList,
-//   MessageList,
-//   MobileOptimizedMessage,
-//   MobileChatWindow,
-//   TouchFriendlyButton,
-//   useMobileOptimization,
-//   OfflineChatSync,
-//   useOfflineChat,
-// } from './components/chat'
-
 // =============================================================================
 // DOMAIN 2: CHAT STATE
 // Hooks for managing chat state and interactions
@@ -169,13 +152,6 @@ export {
   type UseMemoryStoreReturn,
 } from './hooks/storage/use-memory-store'
 
-// NOTE: Commented out due to missing dependencies
-// export {
-//   useRAGPipeline,
-//   type UseRAGPipelineOptions,
-//   type UseRAGPipelineReturn,
-// } from './hooks/chat/use-rag-pipeline'
-
 export {
   useChatHistory,
   type ChatHistoryOptions,
@@ -204,10 +180,6 @@ export type {
 // Vector Stores
 export * from './vector-stores'
 
-// Embeddings
-// NOTE: Commenting out to avoid duplicate exports
-// export * from './embeddings'
-
 // =============================================================================
 // DOMAIN 4: STREAMING & TRANSPORT
 // Real-time streaming and transport protocols
@@ -231,13 +203,6 @@ export {
   type UseClarityObjectOptions,
   type UseClarityObjectReturn,
 } from './hooks/chat/use-clarity-object'
-
-// NOTE: Commented out due to missing dependencies
-// export {
-//   useAgent,
-//   type UseAgentOptions,
-//   type UseAgentReturn,
-// } from './hooks/chat/use-agent'
 
 // Tier 2: Composable
 export * from './agents/tool-ui-registry'
@@ -292,9 +257,6 @@ export {
 export * from './hooks/token'
 
 // Tier 3: Primitives
-// NOTE: Commenting out to avoid duplicate exports with hooks/token
-// export * from './utils/tokenization'
-
 export {
   calculateCost,
   calculateCacheSavings,
@@ -305,9 +267,6 @@ export {
   type ModelPricing,
   type CostCalculation,
 } from './utils/tokenization/model-pricing'
-
-// NOTE: Commenting out to avoid duplicate exports
-// export * from './utils/optimization'
 
 export {
   jsonToToon,
@@ -349,32 +308,15 @@ export * from './observability'
 export * from './quotas'
 export * from './rbac'
 export * from './multi-tenancy'
-// export * from './security'
 
 // Compliance & Audit
 export * from './audit'
 export * from './webhooks'
-// NOTE: Safety module has build errors, commenting out
-// export * from './safety'
-
-// Enterprise Components
-// export * from './components/enterprise'
 
 // =============================================================================
 // DOMAIN 9: DEVELOPER EXPERIENCE
 // Configuration helpers and utilities
 // =============================================================================
-
-// Tier 1: Drop-in Ready
-// TODO: Re-enable after fixing clarity-chat-helpers module dependencies
-// export {
-//   createBasicChatConfig,
-//   createMemoryChatConfig,
-//   createStreamingChatConfig,
-//   createEnterpriseChatConfig,
-//   isValidApiEndpoint,
-//   getApiEndpoint,
-// } from './utils/message/clarity-chat-helpers'
 
 // Tier 2: Composable
 export {
@@ -398,42 +340,16 @@ export {
 // Supporting systems and utilities
 // =============================================================================
 
-// Model Adapters
-// NOTE: Commenting out to avoid duplicate exports (TokenUsage)
-// export * from './adapters'
-
-// Prompt Engineering
-// NOTE: Excluded from build
-// export * from './prompts'
-// export * from './prompt'
-
 // Document Processing
-// NOTE: Commenting out to avoid duplicate exports
-// export * from './document-loaders'
 export * from './reranking'
 
-// Plugin & Extension Systems
-// NOTE: Plugins module has build errors, commenting out
-// export * from './plugins'
-// NOTE: Extensions integrations excluded from build
-// export * from './extensions'
-
 // Theme System
-// NOTE: Export specific items to avoid duplicates (getContrastRatio, getDarkThemes, getLightThemes)
 export {
   ThemeProvider,
   useTheme,
   type ThemeContextValue,
   type ThemeProviderProps,
 } from './theme'
-
-// Animation System
-// NOTE: Commenting out to avoid duplicate exports (useReducedMotion)
-// export * from './animations'
-
-// Accessibility
-// NOTE: Commenting out to avoid duplicate exports (useKeyboardNavigation)
-// export * from './accessibility'
 
 // Additional Components (organized by feature)
 export { ModelSelector } from './components/ai/model-selector'
@@ -483,20 +399,6 @@ export {
   MessageSearchWithSuspense,
   highlightSearchMatch,
 } from './components/search/message-search'
-// TODO: Re-enable after fixing search component types
-// export {
-//   AdvancedMessageSearch,
-//   type SearchFilters,
-//   type SavedSearch,
-//   type SortOption,
-//   type FilterPreset,
-// } from './components/search/advanced-message-search'
-// export {
-//   SemanticMessageSearch,
-//   type SemanticSearchConfig,
-//   type SemanticSearchResult,
-//   type EmbeddingProvider,
-// } from './components/search/advanced-message-search-semantic'
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
@@ -515,8 +417,6 @@ export { SessionSummaryCard } from './components/ai/session-summary-card'
 export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
 // AI-Ops components (exported from directory)
 export * from './components/ai-ops'
-// Enterprise components (exported from directory)
-// export * from './components/enterprise'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 
 // Error Handling Components
@@ -540,10 +440,6 @@ export { ConversationBranchVisualizer } from './components/conversation/conversa
 
 // Markdown & Rendering
 export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
-
-// Search Components
-// NOTE: Excluded from build
-// export * from './components/search'
 
 // Dashboard Components
 export * from './components/dashboards'
@@ -571,10 +467,6 @@ export * from './components/ui'
 
 // AI Components
 export * from './components/ai'
-
-// Prompt Components
-// NOTE: Excluded from build
-// export * from './components/prompt'
 
 // Context Components
 export * from './components/context'
@@ -604,10 +496,6 @@ export * from './hooks/storage'
 // Theme Hooks
 export * from './hooks/theme'
 
-// Performance Hooks
-// NOTE: Commenting out to avoid duplicate exports (useIntersectionObserver)
-// export * from './hooks/performance'
-
 // Dashboard Hooks
 export * from './hooks/dashboard'
 
@@ -622,9 +510,6 @@ export * from './hooks/model'
 
 // Message Hooks
 export * from './hooks/message'
-
-// Security Hooks
-// export * from './hooks/security'
 
 // =============================================================================
 // TYPES
@@ -650,16 +535,6 @@ export type {
   ChatAnalyticsConfig,
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
-
-// Helper hooks (legacy, consider deprecating)
-// NOTE: Module not available in current build
-// export {
-//   useClarityChatWithWindow,
-//   useClarityChatWithAnalytics,
-//   useClarityChatWithPersistence,
-//   useClarityChatWithDebounce,
-//   useClarityChatWithAutoSave,
-// } from './hooks/use-clarity-chat-helpers'
 
 // Testing utilities (for test files only)
 export {
