@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext ts,tsx --ignore-pattern scripts --max-warnings 0",
