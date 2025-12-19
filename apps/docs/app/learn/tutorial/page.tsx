@@ -1,15 +1,13 @@
-import React from 'react'
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
 import { TutorialProgressWrapper } from '@/components/Enhanced/TutorialProgressWrapper'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
+import { RelatedPages } from '@/components/Enhanced/RelatedPages'
 
 const tutorialSteps = [
   { id: 'setup', title: 'Project Setup', href: '#setup' },
@@ -568,6 +566,36 @@ export default App`}
         language="tsx"
         title="src/App.tsx (Complete)"
         showLineNumbers
+      />
+
+      <RelatedPages
+        title="Continue Learning"
+        pages={[
+          {
+            title: 'Streaming Guide',
+            description: 'Add real-time streaming for instant AI responses',
+            href: '/guides/streaming',
+            type: 'guide',
+          },
+          {
+            title: 'Memory & Context',
+            description: 'Implement conversation memory with different strategies',
+            href: '/guides/memory',
+            type: 'guide',
+          },
+          {
+            title: 'Tool Calling',
+            description: 'Let AI execute functions and interact with your app',
+            href: '/cookbook/tool-calling',
+            type: 'cookbook',
+          },
+          {
+            title: 'Multi-Provider Example',
+            description: 'See a complete app with OpenAI, Anthropic, and Google',
+            href: '/examples/multi-provider',
+            type: 'example',
+          },
+        ]}
       />
 
       <Pagination

@@ -1,9 +1,7 @@
 'use client'
 
-import { Metadata } from 'next'
 import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
@@ -13,6 +11,7 @@ import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { SuccessCelebration } from '@/components/Enhanced/SuccessCelebration'
+import { RelatedPages } from '@/components/Enhanced/RelatedPages'
 
 export default function QuickStartPage() {
   return (
@@ -560,6 +559,36 @@ export default App`}
             </div>
           </ScrollReveal>
         </div>
+
+        <RelatedPages
+          title="Dive Deeper"
+          pages={[
+            {
+              title: 'Streaming Responses',
+              description: 'Add real-time streaming for instant feedback',
+              href: '/guides/streaming',
+              type: 'guide',
+            },
+            {
+              title: 'Token Optimization',
+              description: 'Reduce AI costs by 60-90% with smart context management',
+              href: '/guides/token-optimization',
+              type: 'guide',
+            },
+            {
+              title: 'Enterprise RAG Integration',
+              description: 'Add document search with citations and confidence scores',
+              href: '/cookbook/enterprise-rag',
+              type: 'cookbook',
+            },
+            {
+              title: 'Multi-Provider Chat',
+              description: 'Switch between OpenAI, Anthropic, and Google',
+              href: '/examples/multi-provider',
+              type: 'example',
+            },
+          ]}
+        />
 
         <Pagination
           next={{
