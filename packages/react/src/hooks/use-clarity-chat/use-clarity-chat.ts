@@ -59,7 +59,7 @@ import {
 } from './helpers'
 
 // Debug utilities
-import { debug } from '../../internal'
+import { debug } from '../../internal/debug'
 
 // Types
 import type {

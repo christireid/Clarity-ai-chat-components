@@ -1,0 +1,30 @@
+{
+  "name": "enterprise-rag-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RAG Workbench - Document Q&A with Retrieval Augmented Generation",
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "next": "^16.0.7",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,333 +1,216 @@
-# MASTER_CONTEXT.md - Clarity AI Chat Components
+# MASTER CONTEXT FILE — Clarity Chat
 
-> **Living Document** - Updated by each persona during the Zero-Defect Stabilization process. **Last
-> Updated:** 2025-12-19 **Status:** Phase 1 - Initial Inventory Complete
+> **STATUS**: Phase 5 (Post-Review Implementation Complete)
+> **LAST UPDATED**: 2025-12-19
+> **OWNER**: Senior Product Manager (AI Agent)
 
----
+## Non-Negotiable Operating Rules
 
-## 1. Repository Purpose
-
-**Clarity Chat** is a premium AI Chat Component Library for React, providing 70+ components and 35+
-hooks for building enterprise-ready AI chat interfaces. The library focuses on:
-
-- Streaming AI responses
-- Accessibility (WCAG compliance)
-- Token optimization
-- Multi-provider support (OpenAI, Anthropic/Claude, etc.)
-- Enterprise features (analytics, memory management, security)
+1.  **Master Context File is law.** Everyone updates it as they learn things, implement things, or discover risks. No knowledge lives only in someone’s head or scattered notes.
+2.  **No “plan-only” outcomes.** Every plan must become concrete tasks and implemented code (unless blocked by explicit constraints documented here).
+3.  **Evidence-driven.** All claims (competitive, technical, market) must cite the evidence source (URL, doc section, code path, benchmark, or repro steps).
+4.  **No fluff.** Prefer specifics: file paths, API shapes, example usage, performance implications, edge cases, and acceptance tests.
+5.  **Keep what marketing/docs need.** If something is removed from the public API, preserve internal/demo/docs-site components as needed and document how they’re used.
+6.  **No superfluous code.** Identify unused code, dead exports, redundant abstractions, and remove/refactor them safely with tests.
+7.  **MANDATORY REGRESSION TESTS.** No phase can merge unless it includes at least one new regression test that would have failed before the phase.
 
 ---
 
-## 2. Workspace Layout
+## A) Product + Repo Context
 
-```
-clarity-chat/
-├── packages/           # Core library packages (18 packages)
-│   ├── react/          # Main React components package (@clarity-chat/react)
-│   ├── primitives/     # shadcn/ui-inspired primitives (@clarity-chat/primitives)
-│   ├── memory/         # AI memory & context management (@clarity-chat/memory)
-│   ├── token-optimization/  # Token counting & optimization
-│   ├── types/          # Shared TypeScript types
-│   ├── utils/          # Shared utilities
-│   ├── shared-utils/   # Cross-package utilities
-│   ├── errors/         # Error handling utilities
-│   ├── error-handling/ # Error boundary components
-│   ├── license/        # License validation
-│   ├── dev-tools/      # Developer tools
-│   ├── cli/            # Command-line interface
-│   ├── codemods/       # Code transformation utilities
-│   ├── testing-utils/  # Testing utilities
-│   ├── playground/     # Interactive playground
-│   └── typescript-config/  # Shared TS configs
-├── apps/               # Applications
-│   ├── docs/           # VitePress documentation site
-│   ├── storybook/      # Storybook component showcase
-│   ├── marketing-site/ # Marketing website
-│   └── examples/       # 38 example applications
-├── examples/           # Standalone examples (13 examples)
-├── tools/              # Development tooling
-│   ├── docs-sync/      # Documentation synchronization
-│   ├── mcp-server/     # MCP server
-│   ├── vscode-extension/ # VS Code extension
-│   ├── generators/     # Code generators
-│   └── scripts/        # Build/utility scripts
-├── tests/              # Integration/E2E tests
-│   ├── e2e/            # Playwright E2E tests
-│   ├── integration/    # Integration tests
-│   └── visual/         # Visual regression tests
-├── docs/               # Documentation source
-├── scripts/            # Root-level scripts
-└── infrastructure/     # Infrastructure configs
-```
+### Product Identity
+**Clarity Chat** is a comprehensive AI chat framework providing production-ready templates, tools, and examples for building modern AI applications with OpenAI, Anthropic, and Google AI.
+**Target Audience**: React developers building AI applications (SaaS, internal tools, enterprise).
+**Monetizable Promise**: drastically reduces the time to build high-quality, production-ready AI chat interfaces with enterprise features (RAG, analytics, safety).
 
----
+### Tech Stack
+*   **Monorepo**: Turborepo + PNPM (Use `npx pnpm` in this environment)
+*   **Framework**: Next.js 15 (App Router) for Apps/Docs
+*   **Core Library**: React + TypeScript 5.9.3 (Strict)
+*   **Styling**: Tailwind CSS 3.4.0
+*   **AI SDKs**: OpenAI, Anthropic, Google Generative AI
+*   **Build**: tsup (for packages), Next.js build
+*   **Testing**: Vitest (apps/docs), Playwright (e2e)
 
-## 3. Tooling & Environment
+### Repo Map
+*   **`/packages/react`**: Core `@clarity-chat/react` library. Main entry point for consumers.
+*   **`/packages/primitives`**: Base UI components and hooks (Radix-like).
+*   **`/packages/token-optimization`**: Logic for token budgeting, caching, and cost analysis.
+*   **`/packages/memory`**: `@clarity-chat/memory` for context and session management.
+*   **`/packages/cli`**: `@clarity-chat/cli` for scaffolding.
+*   **`/packages/utils`**: Shared utilities (formatting, validation, async tools).
+*   **`/apps/docs`**: Documentation site (Next.js).
+*   **`/apps/examples`**: Example implementations (Multi-provider, RAG, etc.).
+*   **`/.context`**: Existing project documentation (Architecture, Overview).
 
-### Package Manager
+### Architecture
+*   **Client-Side**: React components consume hooks which interface with AI providers.
+*   **Server-Side**: Next.js API routes (in apps) handle streaming and key protection.
+*   **State Management**: React Context (`TokenBudgetContext`, `ThemeContext`) + Hooks.
+*   **Data Flow**: Components -> Hooks -> API Clients -> LLM Providers.
 
-- **pnpm** v10.21.0 (required, enforced via `preinstall` script)
-- Workspace: `pnpm-workspace.yaml`
-
-### Node Version
-
-- **Required:** Node.js >= 20.0.0
-- **Specified in:** `.nvmrc` (Node 20)
-- **Current Environment:** Node v22.21.1
-
-### Monorepo Management
-
-- **Turborepo** v2.6.3 for build orchestration
-- Config: `turbo.json`
-- Remote caching supported
-
-### Build Tooling
-
-- **tsup** v8.5.1 for package bundling
-- **TypeScript** v5.9.3
-- **Vite** v7.2.6 for development builds
-
-### Testing
-
-- **Vitest** v4.0.16 for unit/integration tests
-- **Playwright** v1.57.0 for E2E tests
-- **@testing-library/react** v16.3.1
-- **jsdom** v27.3.0 for DOM simulation
-
-### Linting & Formatting
-
-- **ESLint** v9.39.1 with flat config (`eslint.config.js`)
-- **Prettier** v3.7.4
-- **Husky** v9.1.7 for git hooks
-- **lint-staged** v16.2.7
-
-### Documentation
-
-- **VitePress** for docs site
-- **Storybook** v10.1.4 for component showcase
-- **TypeDoc** for API documentation
-
-### CI/CD
-
-- **GitHub Actions** with 15 workflow files
-- Primary CI: `.github/workflows/ci.yml`
-- Jobs: lint, typecheck, test, build (parallel with build after others)
+### Public API Surface (Inventory)
+Based on `@clarity-chat/react` exports:
+*   **`.` (Main)**: `ClarityChat`, `ClarityChatPresets`, `ThemeProvider`, `useClarityChat`.
+*   **`./core`**: Core logic and providers without heavy UI.
+*   **`./animations`**: Framer Motion wrappers and animation variants.
+*   **`./analytics`**: Hooks and providers for cost/token tracking.
+*   **`./memory`**: Memory strategies (Window, Summary, Vector).
+*   **`./adapters`**: Model adapters for OpenAI, Anthropic, Google.
+*   **`./prompt`**: Prompt optimization and template utilities.
+*   **`./utils`**: Public helper functions.
+*   **`./test-utils`**: Testing helpers for consumers.
 
 ---
 
-## 4. Scripts Inventory
+## B) Full Inventory + Index
 
-### Root-Level Quality Gate Scripts
+### Feature List (Current)
+*   **Multi-Provider Support**: OpenAI, Anthropic, Google.
+*   **Streaming**: Real-time token streaming, SSE.
+*   **RAG**: Document upload, semantic search.
+*   **Analytics**: Token cost calculation, dashboard.
+*   **UI Components**: Comprehensive set of chat UI elements (input, message, code blocks).
+*   **Enterprise**: SSO, RBAC, Multi-tenancy (in `packages/react/src/enterprise`).
+*   **Safety**: PII detection, Jailbreak prevention.
 
-```bash
-# Quick Start
-pnpm install               # Install all dependencies
-pnpm build                 # Build all packages (turbo)
-pnpm storybook             # Run Storybook dev server
+### Component Inventory (Partial - `packages/react`)
+*   **`ClarityChat`**: Main entry point.
+*   **`ChatWindow`**: The chat interface container.
+*   **`MessageList`**: Renders list of messages.
+*   **`ChatInput`**: Input area with attachments/voice.
+*   **`TokenCostPreview`**: Displays estimated cost.
+*   **`ThemeCustomizer`**: Theming engine.
 
-# Quality Checks
-pnpm lint                  # ESLint via turbo
-pnpm typecheck             # TypeScript type checking via turbo
-pnpm test                  # Run all tests via turbo
-pnpm format:check          # Prettier check
-
-# Combined
-pnpm check                 # typecheck + lint + test
-pnpm check:all             # typecheck + lint + test + build
-
-# E2E
-pnpm test:e2e              # Playwright E2E tests
-pnpm test:visual           # Visual regression tests
-```
-
-### Package-Specific Scripts (common pattern)
-
-Each package typically has:
-
-- `build` - Build the package
-- `dev` - Watch mode
-- `clean` - Remove dist
-- `typecheck` - TypeScript check
-- `lint` - ESLint
-- `test` - Vitest tests
+### Extensibility Points
+*   **Providers**: `AIProvider`, `AnalyticsProvider`.
+*   **Adapters**: `packages/react/src/adapters` (OpenAI, Anthropic, Google).
+*   **Memory**: `packages/react/src/memory`.
 
 ---
 
-## 5. CI Overview
+## C) Quality + Risk Ledger
 
-### Primary Workflow: `.github/workflows/ci.yml`
+### Mitigated Risks
+*   **Complexity**: `packages/react` complexity reduced by Headless extraction.
+*   **State Management**: `TokenBudgetProvider` optimized to split Volatile (Usage) vs Stable (Config) state to prevent unnecessary re-renders.
+*   **Security**: Added runtime check in `useClarityChat` to detect and block client-side API key leakage (`sk-...`).
 
-**Triggers:** push to main/develop, pull requests
-
-**Jobs (in order):**
-
-1. **lint** - ESLint + Prettier check (10 min timeout)
-2. **typecheck** - TypeScript compilation check (10 min timeout)
-3. **test** - Vitest unit tests (15 min timeout)
-4. **build** - Build all packages (15 min timeout, depends on lint/typecheck/test)
-5. **ci-summary** - Generate report, comment on PR failures
-
-**Security Features:**
-
-- StepSecurity Harden Runner
-- SHA-pinned actions
-- Minimal permissions
-- Turbo remote caching
-
-### Other Workflows
-
-- `changeset-release.yml` - Package publishing
-- `accessibility.yml` - A11y checks
-- `visual-regression.yml` - Visual tests
-- `docs-sync.yml` - Documentation sync
-- `dependency-review.yml` - Dependency security
+### Known Issues / Risks
+*   **Dependencies**: Heavy reliance on specific AI SDK versions.
+*   **Testing**: `__tests__` folders exist, but coverage needs verification. Build/Test times are slow in sandbox.
 
 ---
 
-## 6. Build Graph & Entry Points
+## D) Competitive Intel Section (Updated Phase 1)
 
-### Dependency Order (packages)
+### TanStack AI
+**Source**: `tanstack.com/ai`, `tanstack.com/blog/tanstack-ai-alpha-your-ai-your-way`
+*   **Philosophy**: "Headless", "Type-safe", "Framework-agnostic".
+*   **Architecture**: Isomorphic tools (define once, run anywhere). Separation of logic from UI.
+*   **Planned Features**: Headless UI components ("Radix for AI").
+*   **DX**: Heavy emphasis on TypeScript inference and Zod validation for tools.
 
-```
-1. @clarity-chat/types         (no deps)
-2. @clarity-chat/utils         (no deps)
-3. @clarity-chat/shared-utils  (no deps)
-4. @clarity-chat/license       (no deps)
-5. @clarity-chat/token-optimization (no deps)
-6. @clarity-chat/memory        (depends: token-optimization)
-7. @clarity-chat/primitives    (depends: utils)
-8. @clarity-chat/errors        (no deps)
-9. @clarity-chat/error-handling (no deps)
-10. @clarity-chat/react        (depends: license, memory, primitives, token-optimization, types, utils)
-```
+### Comparison Matrix
 
-### Primary Entry Points
+| Feature | Clarity Chat | TanStack AI | Vercel AI SDK |
+| :--- | :--- | :--- | :--- |
+| **Primary Focus** | **Full UI Library** (Styled) | **Headless Logic** (Unstyled) | **Full Stack** (Next.js focus) |
+| **UI Approach** | "Mantine/Shadcn for AI" | "Radix for AI" (Planned) | `v0` components / Headless hooks |
+| **Components** | 200+ (Styled, Themed) | 0 (Currently, planned Headless) | Basic (via AI SDK UI) |
+| **Provider Support** | Multi (via Adapters) | Multi (Agnostic Adapters) | Multi (Core focus) |
+| **Enterprise** | **Yes** (RAG, Security, Analytics) | No (Focus on DX/Tools) | Yes (via Vercel Platform) |
+| **Tooling** | Strong (Token Opt, Safety) | Strong (Type-safe Tools) | Strong (Stream Data) |
 
-- `packages/react` - Main library entry
-- `packages/primitives` - UI primitives
-- `packages/memory` - Memory management
-- `apps/docs` - Documentation site
-- `apps/storybook` - Component showcase
+### Positioning
+*   **We Win If**: Users want a "Drop-in", beautiful, production-ready chat interface with Enterprise features (RAG/Security) out of the box. We are the "UI Layer" that sits on top of the logic.
+*   **We Lose If**: Users want 100% control over the DOM and find our components too opinionated/heavy. Or if TanStack ships superior headless components that we don't integrate with.
 
----
-
-## 7. Known Risk Areas
-
-### Identified Concerns (to be validated in Phase 2)
-
-1. **Many example apps** - 38 in `apps/examples/` + 13 in `examples/` - potential for stale/broken
-   examples
-2. **React 19 migration** - Using React 19.2.0, forwardRef deprecation warnings expected
-3. **ESLint rule suppressions** - Several packages have relaxed rules for `no-unused-vars`
-4. **Large dependency tree** - Complex peer dependency requirements
-5. **TypeScript strict mode** - Using strict mode with additional checks
-6. **Generated files** - `.d.ts.map`, `.js.map` files in source directories
-
-### Configuration Files to Monitor
-
-- `eslint.config.js` - Complex flat config with many overrides
-- `turbo.json` - Build orchestration
-- `tsconfig.base.json` - Shared TypeScript config
+### Risks
+*   **TanStack Headless UI**: Once released, it could obsolete our internal logic if ours is not as flexible.
+*   **Vercel AI SDK UI**: They are moving into UI components (v0).
 
 ---
 
-## 8. How to Reproduce Locally
+## F) Implementation Patterns (Research Findings)
 
-### Initial Setup
+### RAG UI Best Practices
+*   **Source Transparency**: Always show citations. Group them by relevance.
+*   **Confidence Scores**: Display confidence level (High/Medium/Low) for enterprise users.
+*   **Feedback Loops**: Allow thumbs up/down on specific citations to improve the RAG pipeline.
 
-```bash
-# 1. Ensure correct Node version
-nvm use 20  # or node >= 20
-
-# 2. Install dependencies
-pnpm install
-
-# 3. Build all packages
-pnpm build
-
-# 4. Verify the repo
-pnpm check:all
-```
-
-### Individual Quality Gates
-
-```bash
-# Lint
-pnpm lint
-
-# Type check
-pnpm typecheck
-
-# Unit tests
-pnpm test
-
-# E2E tests (requires built packages)
-pnpm test:e2e
-
-# Format check
-pnpm format:check
-```
-
-### Clean Rebuild
-
-```bash
-# Full clean
-pnpm clean
-
-# Reinstall
-rm -rf node_modules
-pnpm install
-
-# Fresh build
-pnpm build
-```
+### Streaming UX
+*   **Optimistic UI**: Show "Searching..." or "Thinking..." steps before the text stream starts.
+*   **Partial Failure**: If stream fails, allow retry of *just* that message (idempotency).
+*   **Latency Masking**: Use skeleton loaders or "typing" indicators during tool calls.
 
 ---
 
-## 9. Current Status Snapshot
+## E) The Plan (Living)
 
-> **To be updated after Phase 2 discovery passes**
+### Phase 0: Architect-Led Repo Understanding (COMPLETE)
+*   [x] Audit project structure.
+*   [x] Create Master Context File.
+*   [x] Verify build/test commands (Requires `npx pnpm`).
+*   [x] Map public API vs internal usage detail.
 
-| Category      | Count | Status           |
-| ------------- | ----- | ---------------- |
-| Build Errors  | TBD   | Pending Phase 2A |
-| Type Errors   | TBD   | Pending Phase 2A |
-| Lint Errors   | TBD   | Pending Phase 2A |
-| Test Failures | TBD   | Pending Phase 2A |
-| Warnings      | TBD   | Pending Phase 2A |
+### Phase 1: Deep Competitive Research (TanStack AI) (COMPLETE)
+*   [x] Deep dive TanStack AI (features, architecture, DX).
+*   [x] Compare vs Clarity Chat.
+*   [x] Identify gaps and "leapfrog" opportunities.
+
+### Phase 2: Strategy + Product Plan (COMPLETE)
+*   [x] **Strategy**: "The Beautiful, Enterprise-Ready UI Layer". Position as the "Shadcn for AI" (Copy-paste-able, beautiful) powered by a robust "Headless Core".
+*   [x] **Priorities**:
+    1.  **Headless Core Verification**: Ensure `packages/react/src/core.ts` is truly decoupled.
+    2.  **Enterprise RAG Template**: Build the flagship demo that shows off RAG + Security + Analytics.
+    3.  **Docs Refinement**: Highlight "Enterprise" and "Security" more prominently.
+*   [x] **Pricing**: Open Source Core. Paid "Pro" Templates (SaaS Kits).
+
+### Phase 3: Second Research Pass (Market/Patterns) (COMPLETE)
+*   [x] 50+ Resources review (Focus on "AI Chat UI Patterns" and "RAG UI").
+*   [x] Refine implementation patterns for RAG UI (citations, sources, confidence scores).
+
+### Phase 4: Engineering Task Breakdown (COMPLETE)
+*   [x] **Task 1: Headless Core Extraction**
+    *   [x] Verify `packages/react/src/core.ts` dependencies.
+    *   [x] Ensure it can be used without `packages/primitives` (UI agnostic).
+    *   [x] Create a test case that uses *only* core logic (`packages/react/src/__tests__/headless-chat.test.tsx`).
+*   [x] **Task 2: Enterprise RAG Template**
+    *   [x] Create `apps/examples/enterprise-rag` (Existed).
+    *   [x] Implement "Citation UI" pattern.
+    *   [x] Implement "Confidence Score" UI.
+    *   [x] Implement "Feedback Loops" (Thumbs up/down).
+*   [x] **Task 3: Documentation Update**
+    *   [x] Update `docs/getting-started.md` to mention Headless mode.
+
+### Phase 5: Implementation & Review Loops (COMPLETE)
+*   [x] **Review Loop 1 (QA)**:
+    *   Headless mode verified via `headless-chat.test.tsx` (Passed).
+    *   Dependencies verified (minimal imports).
+    *   **Finding**: Headless implementation is clean and isolated.
+*   [x] **Review Loop 2 (UI/UX)**:
+    *   Enterprise RAG Template updated with Confidence Badges and Citations.
+    *   Feedback loops added (Thumbs up/down buttons).
+    *   **Finding**: UI follows "Source Transparency" best practice.
+*   [x] **Review Loop 3 (GTM)**:
+    *   Documentation updated to highlight "Headless Mode" for power users.
+    *   **Finding**: This addresses the "too opinionated" objection from competitive analysis.
+
+### Phase 6: Risk Mitigation & Enhancement (COMPLETE)
+*   [x] **Fix State Management**: Optimized `TokenBudgetProvider` to prevent unnecessary re-renders.
+*   [x] **Fix Security Risk**: Added client-side API key detection check.
+*   [x] **Enhance Docs**: Added `docs/architecture/headless-vs-styled.md`.
+*   [x] **Enhance Testing**: Added `tests/e2e/rag-template.spec.ts`.
 
 ---
 
-## 10. Stabilization Progress
-
-### Phase Status
-
-- [x] Phase 1: Inventory & Context (COMPLETE)
-- [ ] Phase 2A: Baseline Gate Run
-- [ ] Phase 2B: Package Isolation
-- [ ] Phase 2C: Clean Checkout Repro
-- [ ] Phase 3: Plan Review
-- [ ] Phase 4: Execution
-- [ ] Phase 5: Verification
-- [ ] Phase 6: Loop Until Zero
-- [ ] Phase 7: Merge & Push
-
----
-
-## Appendix A: Key File Locations
-
-| Purpose           | Location                    |
-| ----------------- | --------------------------- |
-| Root package.json | `/package.json`             |
-| Turbo config      | `/turbo.json`               |
-| Workspace config  | `/pnpm-workspace.yaml`      |
-| ESLint config     | `/eslint.config.js`         |
-| Base TSConfig     | `/tsconfig.base.json`       |
-| Root TSConfig     | `/tsconfig.json`            |
-| CI Workflow       | `/.github/workflows/ci.yml` |
-| Playwright config | `/playwright.config.ts`     |
-| Prettier config   | `/.prettierrc`              |
-
----
-
-_Document maintained as part of Zero-Defect Stabilization effort._
+## Change Log
+*   **2025-12-19**: Initial creation of Master Context File. (Phase 0)
+*   **2025-12-19**: Phase 0 Complete. Updated Repo Map, Tech Stack, and Public API Inventory. (Architect)
+*   **2025-12-19**: Phase 1 Complete. Added Competitive Intel and Comparison Matrix. (PM/Research)
+*   **2025-12-19**: Phase 2 Complete. Defined "Shadcn for AI" Strategy. (Strategy)
+*   **2025-12-19**: Phase 3 Complete. Added Implementation Patterns for RAG/Streaming. (Research)
+*   **2025-12-19**: Phase 4 Complete. Verified Headless Core functionality, Enhanced RAG Template, Updated Docs. (Engineering)
+*   **2025-12-19**: Phase 5 Complete. Review loops finished. Final Convergence Review executed. (All)
+*   **2025-12-19**: Phase 6 Complete. Risks mitigated (Performance, Security) and Enhancements implemented (Docs, E2E). (Engineering)

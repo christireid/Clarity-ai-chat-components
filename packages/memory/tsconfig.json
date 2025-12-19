@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": false,
@@ -11,7 +10,8 @@
     "noPropertyAccessFromIndexSignature": false,
     "noUncheckedIndexedAccess": false,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@clarity-chat/token-optimization": ["../token-optimization/src/index.ts"]
     }
   },
   "include": ["src/**/*"],

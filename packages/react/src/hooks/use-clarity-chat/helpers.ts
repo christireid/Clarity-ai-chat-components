@@ -9,12 +9,9 @@ import * as React from 'react'
 import { MemoryContext } from '../../memory/memory-provider'
 import type { MemoryContextValue } from '../../memory/memory-provider'
 import { classifyError as classifyErrorUtil } from '../../utils/resilience/error-handling'
-import {
-  devWarning,
-  performanceWarning,
-  debug,
-  ComponentError,
-} from '../../internal'
+import { devWarning, performanceWarning } from '../../internal/dev-warnings'
+import { debug } from '../../internal/debug'
+import { ComponentError } from '../../internal/component-errors'
 
 /**
  * Safe hook to get memory context without throwing
@@ -126,6 +123,24 @@ export function validateApiEndpoint(
         '// Or with full URL\n' +
         'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
       docsPath: '/hooks/use-clarity-chat#api',
+    })
+  }
+
+  // Security Check: Detect if user accidentally passed an API key
+  const isLikelyApiKey = 
+    api.startsWith('sk-') || // OpenAI, Anthropic (sk-ant)
+    api.startsWith('AIza') || // Google
+    api.startsWith('xox') ||  // Slack
+    api.length > 100 && !api.includes('/') // Long string without slashes
+
+  if (isLikelyApiKey) {
+    throw new ComponentError({
+      code: 'SECURITY_RISK',
+      component: 'useClarityChat',
+      message: 'Security Alert: It looks like you passed an API Key as the "api" endpoint.',
+      expected: 'A URL path (e.g., "/api/chat")',
+      example: 'Do NOT pass keys to the client. Use a server-side API route.',
+      docsPath: '/security/client-side-keys',
     })
   }
 

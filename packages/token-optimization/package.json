@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Advanced token optimization system with accurate counting, compression, and security",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
     "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src --ext ts,tsx",
+    "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -33,7 +33,10 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.1",
     "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
     "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.54.0",
     "tsup": "^8.0.1",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
