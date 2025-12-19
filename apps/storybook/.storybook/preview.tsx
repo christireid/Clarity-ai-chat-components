@@ -9,7 +9,10 @@ import './globals.css'
 if (typeof window !== 'undefined') {
   const originalOnError = window.onerror
   window.onerror = (message, source, lineno, colno, error) => {
-    if (error?.name === 'AbortError' || (typeof message === 'string' && message.includes('AbortError'))) {
+    if (
+      error?.name === 'AbortError' ||
+      (typeof message === 'string' && message.includes('AbortError'))
+    ) {
       return true // Suppress the error
     }
     return originalOnError?.(message, source, lineno, colno, error) ?? false
@@ -35,9 +38,10 @@ const themePresets = getAllThemes()
 
 const withTheme: Decorator = (Story, context) => {
   const mode = context.globals.themeMode ?? 'system'
-  const preset = context.globals.themePreset && context.globals.themePreset !== 'auto'
-    ? context.globals.themePreset
-    : undefined
+  const preset =
+    context.globals.themePreset && context.globals.themePreset !== 'auto'
+      ? context.globals.themePreset
+      : undefined
 
   return (
     <ThemeProvider
@@ -68,29 +72,54 @@ const preview: Preview = {
       storySort: {
         method: 'alphabetical',
         order: [
+          // Getting started
           'Welcome',
           ['Introduction', 'Getting Started', 'Playground', "What's New"],
+
+          // Design foundation
           'Foundation',
-          ['Overview', 'Colors & Themes', 'Typography', 'Spacing & Layout', 'Motion & Animation', 'Iconography'],
+          [
+            'Colors & Themes',
+            'Spacing & Layout',
+            'Motion & Animation',
+            'Iconography',
+            'Theme Playground',
+            'Theme Contrast Checker',
+          ],
+
+          // Core components
           'Components',
-          ['Inputs', 'Data Display', 'Feedback', 'Layout', 'Navigation'],
-          'Advanced Features',
-          ['AI & Agents', 'Memory & Context', 'Streaming & Real-time', 'Analytics & Monitoring', 'Enterprise'],
+          [
+            'Chat',
+            'Message',
+            'Input',
+            'Inputs',
+            'Data Display',
+            'Feedback',
+            'Layout',
+            'Navigation',
+            'Token',
+            'AI',
+            'Dashboards',
+          ],
+
+          // React hooks
           'Hooks',
-          ['Chat Hooks', 'Streaming', 'State Management', 'Performance', 'Utilities'],
+          ['Chat', 'Streaming', 'State', 'Performance', 'Utilities'],
+
+          // Common patterns
           'Patterns',
-          ['Chat Patterns', 'Form Patterns', 'Layout Patterns', 'AI Patterns'],
+          ['Chat', 'Forms', 'Layout', 'AI'],
+
+          // Advanced features
+          'Advanced',
+          ['AI', 'Streaming', 'Memory', 'Analytics', 'Enterprise'],
+
+          // Real-world examples
           'Examples',
-          ['Complete Applications', 'Integration Examples', 'Use Cases'],
-          'Resources',
-          ['Accessibility', 'Best Practices', 'Migration Guides', 'API Reference'],
-          // Legacy categories (backward compatibility during transition)
-          'Getting Started',
-          'Design Principles',
-          'Component Gallery',
-          ['Components', 'Primitives'],
-          'SDKs & Adapters',
-          'Utilities',
+
+          // Low-level primitives
+          'Primitives',
         ],
       },
     },
@@ -143,8 +172,11 @@ const preview: Preview = {
         system: { name: 'system', value: 'transparent' },
         light: { name: 'light', value: '#ffffff' },
         dark: { name: 'dark', value: '#111827' },
-        gradient: { name: 'gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
-      }
+        gradient: {
+          name: 'gradient',
+          value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        },
+      },
     },
     viewport: {
       options: {
@@ -224,9 +256,9 @@ const preview: Preview = {
 
   initialGlobals: {
     backgrounds: {
-      value: 'system'
-    }
-  }
+      value: 'system',
+    },
+  },
 }
 
 export default preview
