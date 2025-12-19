@@ -1,5 +1,7 @@
 import { Command } from 'commander'
-import { logger } from '../utils/logger'
+import { getLogger } from '../utils/logger'
+
+const logger = getLogger('theme')
 
 export const themeCommand = new Command()
   .name('theme')
@@ -21,5 +23,7 @@ themeCommand
   .argument('<theme>', 'Theme name to copy')
   .action(async (theme) => {
     logger.info(`Copying theme "${theme}" to your project...`)
-    logger.warn('Theme copying is coming in v1.1. For now, please visit https://clarity-chat.dev/themes to copy CSS variables.')
+    logger.warn(
+      'Theme copying is coming in v1.1. For now, please visit https://clarity-chat.dev/themes to copy CSS variables.'
+    )
   })

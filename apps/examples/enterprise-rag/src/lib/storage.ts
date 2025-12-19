@@ -17,13 +17,13 @@ export function addDocument(document: Document): void {
 }
 
 export function removeDocument(documentId: string): boolean {
-  const index = documents.findIndex(doc => doc.id === documentId)
+  const index = documents.findIndex((doc) => doc.id === documentId)
   if (index === -1) return false
-  
+
   documents.splice(index, 1)
   return true
 }
 
 export function getDocumentById(documentId: string): Document | undefined {
-  return documents.find(doc => doc.id === documentId)
+  return documents.find((doc) => doc.id === documentId)
 }

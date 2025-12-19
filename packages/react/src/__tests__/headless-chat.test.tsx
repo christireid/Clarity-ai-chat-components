@@ -14,7 +14,7 @@ describe('Headless Chat Verification', () => {
 
   it('should initialize with default state', () => {
     const { result } = renderHook(() => useHeadlessChat({ api: '/api/chat' }))
-    
+
     expect(result.current.messages).toEqual([])
     expect(result.current.input).toBe('')
     expect(result.current.isLoading).toBe(false)
@@ -27,9 +27,9 @@ describe('Headless Chat Verification', () => {
         const encoder = new TextEncoder()
         controller.enqueue(encoder.encode('Hello'))
         controller.close()
-      }
+      },
     })
-    
+
     ;(global.fetch as any).mockResolvedValue({
       ok: true,
       body: mockStream,
@@ -37,7 +37,7 @@ describe('Headless Chat Verification', () => {
     })
 
     const { result } = renderHook(() => useHeadlessChat({ api: '/api/chat' }))
-    
+
     // Send a message
     await act(async () => {
       await result.current.append({ role: 'user', content: 'Hi' })
@@ -59,7 +59,7 @@ describe('Headless Chat Verification', () => {
     })
 
     const { result } = renderHook(() => useHeadlessChat({ api: '/api/chat' }))
-    
+
     // Send a message
     await act(async () => {
       try {

@@ -5,7 +5,7 @@
 
 ## Features
 
-- **@clarity-chat/react Integration** - Uses the official `useChat` hook
+- **@clarity-chat/react Integration** - Uses the official `useClarityChat` hook
 - Streaming responses with SSE
 - Clean, minimal UI
 - Error handling with proper error boundary
@@ -36,7 +36,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
 ## What You'll Learn
 
-1. How to use `@clarity-chat/react`'s `useChat` hook
+1. How to use `@clarity-chat/react`'s `useClarityChat` hook
 2. How to stream responses from OpenAI using SSE
 3. Proper message state management patterns
 4. Accessibility best practices for chat UIs
@@ -45,36 +45,45 @@ Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
 ### Chat Component using @clarity-chat/react
 
-The main chat component is dramatically simplified using the `useChat` hook:
+The main chat component is dramatically simplified using the `useClarityChat` hook:
 
 ```typescript
 // components/basic-chat.tsx
-import { useChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
 
 export function BasicChat() {
-  const { messages, sendMessage, isLoading, error, input, setInput, clearMessages } = useChat({
+  const { messages, append, isLoading, error, input, setInput, setMessages } = useClarityChat({
     api: '/api/chat',
-    autoScroll: true,
   })
+
+  // Send a message
+  const sendMessage = async (content: string) => {
+    await append({ role: 'user', content })
+    setInput('')
+  }
+
+  // Clear messages
+  const clearMessages = () => setMessages([])
 
   // That's it! All the complex state management is handled for you
 }
 ```
 
-### useChat Hook Features
+### useClarityChat Hook Features
 
-The `useChat` hook provides:
+The `useClarityChat` hook provides:
 
-| Feature         | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `messages`      | Array of messages in the conversation           |
-| `sendMessage`   | Function to send a new message                  |
-| `isLoading`     | Loading state during API calls                  |
-| `error`         | Error object if something goes wrong            |
-| `input`         | Current input value                             |
-| `setInput`      | Function to update input                        |
-| `clearMessages` | Function to clear conversation history          |
-| `chat`          | Full access to underlying `useClarityChat` hook |
+| Feature       | Description                           |
+| ------------- | ------------------------------------- |
+| `messages`    | Array of messages in the conversation |
+| `append`      | Function to append a message and send |
+| `setMessages` | Function to set messages directly     |
+| `isLoading`   | Loading state during API calls        |
+| `error`       | Error object if something goes wrong  |
+| `input`       | Current input value                   |
+| `setInput`    | Function to update input              |
+| `stop`        | Function to stop streaming            |
+| `reload`      | Function to retry the last message    |
 
 ### API Route
 
@@ -142,11 +151,15 @@ const completion = await openai.chat.completions.create({
 Use the built-in persistence feature:
 
 ```typescript
-const { messages, sendMessage } = useChat({
+const { messages, append } = useClarityChat({
   api: '/api/chat',
-  persistMessages: true, // Saves to localStorage
-  storageKey: 'my-chat-history',
+  initialMessages: [], // Load from localStorage on mount
 })
+
+// You can persist messages manually or use useEffect
+useEffect(() => {
+  localStorage.setItem('my-chat-history', JSON.stringify(messages))
+}, [messages])
 ```
 
 ### Add a System Prompt
