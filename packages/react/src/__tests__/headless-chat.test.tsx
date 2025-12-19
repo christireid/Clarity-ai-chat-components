@@ -49,4 +49,29 @@ describe('Headless Chat Verification', () => {
     expect(result.current.messages[0].role).toBe('user')
     expect(result.current.messages[1].role).toBe('assistant')
   })
+
+  it('should handle API errors correctly', async () => {
+    // Mock error response
+    ;(global.fetch as any).mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+    })
+
+    const { result } = renderHook(() => useHeadlessChat({ api: '/api/chat' }))
+    
+    // Send a message
+    await act(async () => {
+      try {
+        await result.current.append({ role: 'user', content: 'Trigger Error' })
+      } catch (e) {
+        // Expected error
+      }
+    })
+
+    // Should have error state
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.error).toBeDefined()
+    expect(result.current.error?.message).toContain('HTTP error')
+  })
 })

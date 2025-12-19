@@ -58,10 +58,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@clarity-chat/types': path.resolve(__dirname, '../types/src'),
-      '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src'),
+      '@clarity-chat/types': path.resolve(__dirname, '../types/src/index.ts'),
+      '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src/index.ts'),
       '@/lib/utils': path.resolve(__dirname, '../primitives/src/lib/utils'),
       '@': path.resolve(__dirname, '../primitives/src'),
+      '@clarity-chat/memory': path.resolve(__dirname, '../memory/src/index.ts'),
+      '@clarity-chat/token-optimization': path.resolve(__dirname, '../token-optimization/src/index.ts'),
+      '@clarity-chat/utils': path.resolve(__dirname, '../utils/src/index.ts'),
     },
   },
 })
