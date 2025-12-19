@@ -34,7 +34,7 @@ for (let i = 0; i < entries.length; i++) {
     const cleanFlag = isFirst ? '--clean' : ''
     const dtsFlag = '--dts --dts-resolve'
 
-    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} --sourcemap false --minify false --splitting false --treeshake false`
+    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} --no-sourcemap --no-minify --no-splitting --no-treeshake`
 
     execSync(cmd, {
       cwd: resolve(__dirname, '..'),
