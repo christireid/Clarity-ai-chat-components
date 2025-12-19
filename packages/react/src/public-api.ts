@@ -82,6 +82,12 @@ export {
 
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
 
+// Code blocks
+export { CodeBlock, type CodeBlockProps } from './components/code/CodeBlock'
+
+export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
+export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+
 // ============================================================================
 // COMPOSABLE UI COMPONENTS (For custom layouts)
 // ============================================================================
