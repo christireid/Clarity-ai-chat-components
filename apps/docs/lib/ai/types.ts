@@ -74,6 +74,9 @@ export type ComponentCategory =
   | 'enterprise'
   | 'layout'
   | 'general'
+  | 'provider'
+  | 'interactive'
+  | 'utility'
 
 export interface ComponentsAPIResponse {
   name: string
@@ -141,7 +144,10 @@ export type HookCategory =
   | 'streaming'
   | 'optimization'
   | 'persistence'
+  | 'enterprise'
   | 'general'
+  | 'memory'
+  | 'rag'
 
 export interface HooksAPIResponse {
   name: string

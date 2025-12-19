@@ -140,16 +140,49 @@ pnpm add @clarity-chat/react`}
             </TutorialStep>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.6}>
+          <ScrollReveal delay={0.55}>
             <TutorialStep
               step={3}
-              title="Basic Usage"
+              title="Fastest Start (Recommended)"
+              nextStepHref="#manual-control"
+              nextStepTitle="Manual Control"
+            >
+              <p className="text-text-secondary mb-4">
+                Use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ClarityChat</code> for the simplest integration - just provide an API endpoint:
+              </p>
+
+              <EnhancedCodeBlock
+                code={`import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  return <ClarityChat api="/api/chat" />
+}
+
+export default App`}
+                language="tsx"
+                filename="App.tsx"
+                showLineNumbers
+                showCopyButton
+              />
+
+              <Callout type="success" className="mt-6">
+                <p>
+                  <strong>That's it!</strong> ClarityChat handles all state management, streaming, error handling, and UI internally.
+                </p>
+              </Callout>
+            </TutorialStep>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.6}>
+            <TutorialStep
+              step={4}
+              title="Manual Control (Optional)"
               nextStepHref="#whats-included"
               nextStepTitle="What's Included"
             >
               <p className="text-text-secondary mb-4">
-                Import and use the ChatWindow component in your React
-                application. Here's a complete example:
+                For more control over state, use <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ChatWindow</code> with the <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">useClarityChat</code> hook:
               </p>
 
               <EnhancedCodeBlock
@@ -242,7 +275,7 @@ export default App`}
           </ScrollReveal>
 
           <ScrollReveal delay={0.7}>
-            <TutorialStep step={4} title="What's Included">
+            <TutorialStep step={5} title="What's Included">
               <p className="text-text-secondary mb-6">
                 The basic ChatWindow component includes everything you need for
                 a production-ready chat interface:
@@ -312,7 +345,7 @@ export default App`}
 
           <ScrollReveal delay={0.8}>
             <TutorialStep
-              step={5}
+              step={6}
               title="Quick Customization"
               nextStepHref="#next-steps"
               nextStepTitle="Next Steps"

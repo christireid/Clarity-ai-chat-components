@@ -666,6 +666,673 @@ const curatedComponents: ComponentInfo[] = [
     accessibility: ['Semantic HTML output', 'Heading hierarchy preserved'],
     version: '0.1.0',
   },
+  // Provider Components
+  {
+    name: 'MemoryProvider',
+    description:
+      'Context provider that enables conversation memory persistence. Wrap your app to enable automatic memory retrieval and storage for all chat components.',
+    category: 'provider',
+    props: [
+      {
+        name: 'children',
+        type: 'ReactNode',
+        required: true,
+        description: 'Child components that need memory access',
+      },
+      {
+        name: 'adapter',
+        type: "'indexeddb' | 'localStorage' | 'memory' | MemoryAdapter",
+        required: false,
+        default: 'indexeddb',
+        description: 'Storage adapter for memory persistence',
+      },
+      {
+        name: 'maxMemories',
+        type: 'number',
+        required: false,
+        default: '1000',
+        description: 'Maximum number of memories to retain',
+      },
+      {
+        name: 'contextWindowSize',
+        type: 'number',
+        required: false,
+        default: '10',
+        description: 'Number of relevant memories to inject',
+      },
+      {
+        name: 'embeddingProvider',
+        type: "'openai' | 'local'",
+        required: false,
+        default: 'local',
+        description: 'Provider for generating embeddings',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/memory-provider',
+    examples: [
+      'import { MemoryProvider, ClarityChat } from "@clarity-chat/react";\n\nfunction App() {\n  return (\n    <MemoryProvider adapter="indexeddb" maxMemories={500}>\n      <ClarityChat messages={messages} onSend={handleSend} />\n    </MemoryProvider>\n  );\n}',
+    ],
+    relatedComponents: ['ClarityChat', 'useMemoryContext'],
+    accessibility: ['No visual component', 'Manages context only'],
+    version: '0.1.0',
+  },
+  {
+    name: 'ThemeProvider',
+    description:
+      'Context provider for theming all Clarity Chat components. Supports light/dark mode, custom themes, and CSS variable customization.',
+    category: 'provider',
+    props: [
+      {
+        name: 'children',
+        type: 'ReactNode',
+        required: true,
+        description: 'Child components to theme',
+      },
+      {
+        name: 'defaultTheme',
+        type: 'Theme',
+        required: false,
+        default: 'default',
+        description: 'Initial theme to apply',
+      },
+      {
+        name: 'storageKey',
+        type: 'string',
+        required: false,
+        default: 'clarity-theme',
+        description: 'localStorage key for persisting theme',
+      },
+      {
+        name: 'disableTransitionOnChange',
+        type: 'boolean',
+        required: false,
+        default: 'false',
+        description: 'Disable CSS transitions during theme changes',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/learn/concepts/theming',
+    examples: [
+      'import { ThemeProvider, ClarityChat } from "@clarity-chat/react";\n\nfunction App() {\n  return (\n    <ThemeProvider defaultTheme={myCustomTheme}>\n      <ClarityChat messages={messages} onSend={handleSend} />\n    </ThemeProvider>\n  );\n}',
+    ],
+    relatedComponents: ['useTheme', 'useDesignTokens'],
+    accessibility: ['Respects prefers-color-scheme', 'High contrast support'],
+    version: '0.1.0',
+  },
+  // Interactive Components
+  {
+    name: 'FileUpload',
+    description:
+      'Drag-and-drop file upload component with preview, progress indicators, and validation. Supports images, documents, and custom file types.',
+    category: 'input',
+    props: [
+      {
+        name: 'onUpload',
+        type: '(files: File[]) => void | Promise<void>',
+        required: true,
+        description: 'Callback when files are selected or dropped',
+      },
+      {
+        name: 'accept',
+        type: 'string | string[]',
+        required: false,
+        description: 'Accepted file types (e.g., "image/*", ".pdf")',
+      },
+      {
+        name: 'maxSize',
+        type: 'number',
+        required: false,
+        default: '10485760',
+        description: 'Maximum file size in bytes (default 10MB)',
+      },
+      {
+        name: 'maxFiles',
+        type: 'number',
+        required: false,
+        default: '5',
+        description: 'Maximum number of files',
+      },
+      {
+        name: 'showPreview',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Show thumbnail previews for images',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        required: false,
+        default: 'false',
+        description: 'Disable file upload',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/file-upload',
+    examples: [
+      'import { FileUpload } from "@clarity-chat/react";\n\n<FileUpload\n  onUpload={handleFiles}\n  accept={["image/*", ".pdf"]}\n  maxSize={5 * 1024 * 1024}\n  maxFiles={3}\n/>',
+    ],
+    relatedComponents: ['ChatInput', 'AdvancedChatInput', 'ImagePreview'],
+    accessibility: [
+      'Keyboard accessible drop zone',
+      'Screen reader announcements for uploads',
+      'Progress announced',
+    ],
+    version: '0.1.0',
+  },
+  {
+    name: 'CommandPalette',
+    description:
+      'Keyboard-navigable command palette (Cmd+K) for quick actions. Supports fuzzy search, categories, and keyboard shortcuts.',
+    category: 'interactive',
+    props: [
+      {
+        name: 'commands',
+        type: 'Command[]',
+        required: true,
+        description: 'Array of available commands',
+      },
+      {
+        name: 'onSelect',
+        type: '(command: Command) => void',
+        required: true,
+        description: 'Callback when command is selected',
+      },
+      {
+        name: 'placeholder',
+        type: 'string',
+        required: false,
+        default: 'Search commands...',
+        description: 'Search input placeholder',
+      },
+      {
+        name: 'trigger',
+        type: 'string',
+        required: false,
+        default: 'cmd+k',
+        description: 'Keyboard shortcut to open',
+      },
+      {
+        name: 'groupByCategory',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Group commands by category',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/command-palette',
+    examples: [
+      'import { CommandPalette } from "@clarity-chat/react";\n\nconst commands = [\n  { id: "new-chat", label: "New Chat", category: "Chat", shortcut: "n" },\n  { id: "clear", label: "Clear Messages", category: "Chat" },\n];\n\n<CommandPalette commands={commands} onSelect={handleCommand} />',
+    ],
+    relatedComponents: ['useCommandPalette', 'KeyboardHint'],
+    accessibility: [
+      'Full keyboard navigation',
+      'ARIA combobox pattern',
+      'Focus management',
+    ],
+    version: '0.1.0',
+  },
+  {
+    name: 'ToolInvocationCard',
+    description:
+      'Displays AI tool/function calls with status, parameters, and results. Used for showing agent actions in chat.',
+    category: 'display',
+    props: [
+      {
+        name: 'toolCall',
+        type: 'ToolCall',
+        required: true,
+        description: 'Tool call data with name, arguments, and result',
+      },
+      {
+        name: 'status',
+        type: "'pending' | 'running' | 'success' | 'error'",
+        required: false,
+        default: 'pending',
+        description: 'Current execution status',
+      },
+      {
+        name: 'showArgs',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Show tool arguments',
+      },
+      {
+        name: 'showResult',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Show tool result when complete',
+      },
+      {
+        name: 'collapsible',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Allow collapsing/expanding details',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/tool-invocation-card',
+    examples: [
+      'import { ToolInvocationCard } from "@clarity-chat/react";\n\n<ToolInvocationCard\n  toolCall={{\n    id: "call_123",\n    name: "search_web",\n    arguments: { query: "weather NYC" },\n    result: { temperature: 72, condition: "sunny" }\n  }}\n  status="success"\n/>',
+    ],
+    relatedComponents: ['Message', 'StreamingMessage', 'useAgent'],
+    accessibility: ['Expandable regions', 'Status announced'],
+    version: '0.1.0',
+  },
+  {
+    name: 'ContextMenu',
+    description:
+      'Right-click context menu for message actions like copy, edit, regenerate, and delete.',
+    category: 'interactive',
+    props: [
+      {
+        name: 'items',
+        type: 'ContextMenuItem[]',
+        required: true,
+        description: 'Array of menu items',
+      },
+      {
+        name: 'onSelect',
+        type: '(item: ContextMenuItem) => void',
+        required: true,
+        description: 'Callback when item is selected',
+      },
+      {
+        name: 'trigger',
+        type: 'ReactNode',
+        required: true,
+        description: 'Element that triggers the context menu',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/context-menu',
+    examples: [
+      'import { ContextMenu } from "@clarity-chat/react";\n\n<ContextMenu\n  items={[\n    { id: "copy", label: "Copy", icon: CopyIcon },\n    { id: "edit", label: "Edit", icon: EditIcon },\n    { id: "delete", label: "Delete", icon: TrashIcon, variant: "destructive" },\n  ]}\n  onSelect={handleAction}\n  trigger={<Message message={msg} />}\n/>',
+    ],
+    relatedComponents: ['Message', 'MessageList', 'useMessageOperations'],
+    accessibility: ['Keyboard navigation', 'Focus trap', 'Escape to close'],
+    version: '0.1.0',
+  },
+  // Enterprise Components
+  {
+    name: 'UsageDashboard',
+    description:
+      'Analytics dashboard showing token usage, costs, and conversation metrics. Includes charts and export functionality.',
+    category: 'analytics',
+    props: [
+      {
+        name: 'data',
+        type: 'UsageData',
+        required: true,
+        description: 'Usage data to display',
+      },
+      {
+        name: 'dateRange',
+        type: '{ start: Date; end: Date }',
+        required: false,
+        description: 'Date range filter',
+      },
+      {
+        name: 'showCosts',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Display cost information',
+      },
+      {
+        name: 'exportFormats',
+        type: "('csv' | 'json' | 'pdf')[]",
+        required: false,
+        default: "['csv', 'json']",
+        description: 'Available export formats',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/usage-dashboard',
+    examples: [
+      'import { UsageDashboard } from "@clarity-chat/react";\n\n<UsageDashboard\n  data={usageData}\n  dateRange={{ start: startDate, end: endDate }}\n  showCosts\n/>',
+    ],
+    relatedComponents: [
+      'TokenCounter',
+      'TokenOptimizationDashboard',
+      'useDashboardData',
+    ],
+    accessibility: ['Chart alternatives for screen readers', 'Keyboard navigation'],
+    version: '0.1.0',
+  },
+  {
+    name: 'VirtualizedMessageList',
+    description:
+      'High-performance message list using virtualization for conversations with thousands of messages. Only renders visible items.',
+    category: 'core',
+    props: [
+      {
+        name: 'messages',
+        type: 'Message[]',
+        required: true,
+        description: 'Array of all messages',
+      },
+      {
+        name: 'height',
+        type: 'number | string',
+        required: true,
+        description: 'Container height',
+      },
+      {
+        name: 'estimatedItemSize',
+        type: 'number',
+        required: false,
+        default: '100',
+        description: 'Estimated height per message',
+      },
+      {
+        name: 'overscan',
+        type: 'number',
+        required: false,
+        default: '5',
+        description: 'Number of items to render outside visible area',
+      },
+      {
+        name: 'onEndReached',
+        type: '() => void',
+        required: false,
+        description: 'Callback when scrolled to end (for loading more)',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl:
+      'https://clarity-chat.dev/reference/components/virtualized-message-list',
+    examples: [
+      'import { VirtualizedMessageList } from "@clarity-chat/react";\n\n<VirtualizedMessageList\n  messages={largeMessageArray}\n  height={600}\n  overscan={3}\n  onEndReached={loadMoreMessages}\n/>',
+    ],
+    relatedComponents: ['MessageList', 'Message', 'InfiniteScroll'],
+    accessibility: [
+      'Maintains focus during scroll',
+      'ARIA live region for new messages',
+    ],
+    version: '0.1.0',
+  },
+  {
+    name: 'ErrorBoundary',
+    description:
+      'React error boundary with fallback UI for graceful error handling in chat components.',
+    category: 'utility',
+    props: [
+      {
+        name: 'children',
+        type: 'ReactNode',
+        required: true,
+        description: 'Components to wrap',
+      },
+      {
+        name: 'fallback',
+        type: 'ReactNode | ((error: Error) => ReactNode)',
+        required: false,
+        description: 'Fallback UI to render on error',
+      },
+      {
+        name: 'onError',
+        type: '(error: Error, errorInfo: ErrorInfo) => void',
+        required: false,
+        description: 'Callback for error logging',
+      },
+      {
+        name: 'resetKeys',
+        type: 'any[]',
+        required: false,
+        description: 'Keys that trigger error boundary reset when changed',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/error-handling',
+    examples: [
+      'import { ErrorBoundary, ClarityChat } from "@clarity-chat/react";\n\n<ErrorBoundary\n  fallback={<div>Something went wrong. Please refresh.</div>}\n  onError={(error) => logToService(error)}\n>\n  <ClarityChat messages={messages} onSend={handleSend} />\n</ErrorBoundary>',
+    ],
+    relatedComponents: ['useErrorReporter', 'ErrorReporterProvider'],
+    accessibility: ['Error message announced to screen readers'],
+    version: '0.1.0',
+  },
+  {
+    name: 'PromptSuggestions',
+    description:
+      'Displays clickable prompt suggestions to help users start conversations or explore capabilities.',
+    category: 'interactive',
+    props: [
+      {
+        name: 'suggestions',
+        type: 'string[] | PromptSuggestion[]',
+        required: true,
+        description: 'Array of suggestion strings or objects',
+      },
+      {
+        name: 'onSelect',
+        type: '(suggestion: string) => void',
+        required: true,
+        description: 'Callback when suggestion is clicked',
+      },
+      {
+        name: 'layout',
+        type: "'grid' | 'list' | 'chips'",
+        required: false,
+        default: 'chips',
+        description: 'Layout style for suggestions',
+      },
+      {
+        name: 'maxVisible',
+        type: 'number',
+        required: false,
+        default: '4',
+        description: 'Maximum suggestions to show before "show more"',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/prompt-suggestions',
+    examples: [
+      'import { PromptSuggestions } from "@clarity-chat/react";\n\n<PromptSuggestions\n  suggestions={[\n    "What can you help me with?",\n    "Tell me about your capabilities",\n    "Help me write an email",\n  ]}\n  onSelect={setInput}\n  layout="chips"\n/>',
+    ],
+    relatedComponents: ['ChatInput', 'PromptLibrary', 'EmptyState'],
+    accessibility: ['Button role', 'Keyboard navigation'],
+    version: '0.1.0',
+  },
+  {
+    name: 'NetworkStatus',
+    description:
+      'Displays current network connection status with offline/online indicators and reconnection UI.',
+    category: 'feedback',
+    props: [
+      {
+        name: 'showOnlineStatus',
+        type: 'boolean',
+        required: false,
+        default: 'false',
+        description: 'Show indicator when online (usually only show offline)',
+      },
+      {
+        name: 'position',
+        type: "'top' | 'bottom' | 'inline'",
+        required: false,
+        default: 'top',
+        description: 'Banner position',
+      },
+      {
+        name: 'onStatusChange',
+        type: '(isOnline: boolean) => void',
+        required: false,
+        description: 'Callback when network status changes',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/network-status',
+    examples: [
+      'import { NetworkStatus, ClarityChat } from "@clarity-chat/react";\n\n<>\n  <NetworkStatus position="top" />\n  <ClarityChat messages={messages} onSend={handleSend} />\n</>',
+    ],
+    relatedComponents: ['useOnlineStatus', 'ErrorBoundary'],
+    accessibility: ['Status announced to screen readers', 'ARIA live region'],
+    version: '0.1.0',
+  },
+  // Enterprise Components
+  {
+    name: 'AuthTenantDashboard',
+    description:
+      'Multi-tenant authentication dashboard for managing users, roles, and tenant settings in enterprise applications.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'tenantId',
+        type: 'string',
+        required: true,
+        description: 'Current tenant identifier',
+      },
+      {
+        name: 'onUserInvite',
+        type: '(email: string, role: string) => Promise<void>',
+        required: false,
+        description: 'Callback when inviting a new user',
+      },
+      {
+        name: 'onRoleChange',
+        type: '(userId: string, newRole: string) => Promise<void>',
+        required: false,
+        description: 'Callback when changing user role',
+      },
+      {
+        name: 'showUsageStats',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Display tenant usage statistics',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/auth-tenant-dashboard',
+    examples: [
+      'import { AuthTenantDashboard } from "@clarity-chat/react";\n\n<AuthTenantDashboard\n  tenantId="acme-corp"\n  onUserInvite={handleInvite}\n  onRoleChange={handleRoleChange}\n/>',
+    ],
+    relatedComponents: ['RBACProvider', 'SSOConfigWizard'],
+    accessibility: ['Keyboard accessible tables', 'ARIA labels for actions'],
+    version: '0.1.0',
+  },
+  {
+    name: 'SSOConfigWizard',
+    description:
+      'Step-by-step wizard for configuring Single Sign-On (SSO) with SAML or OIDC providers.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'provider',
+        type: "'saml' | 'oidc' | 'auto'",
+        required: false,
+        default: 'auto',
+        description: 'SSO protocol to configure',
+      },
+      {
+        name: 'onComplete',
+        type: '(config: SSOConfig) => Promise<void>',
+        required: true,
+        description: 'Callback when SSO configuration is complete',
+      },
+      {
+        name: 'onCancel',
+        type: '() => void',
+        required: false,
+        description: 'Callback when wizard is cancelled',
+      },
+      {
+        name: 'existingConfig',
+        type: 'Partial<SSOConfig>',
+        required: false,
+        description: 'Pre-fill wizard with existing configuration',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/sso-config-wizard',
+    examples: [
+      'import { SSOConfigWizard } from "@clarity-chat/react";\n\n<SSOConfigWizard\n  provider="saml"\n  onComplete={async (config) => {\n    await saveSSOConfig(config);\n  }}\n/>',
+    ],
+    relatedComponents: ['AuthTenantDashboard', 'RBACProvider'],
+    accessibility: ['Step indicators', 'Focus management between steps'],
+    version: '0.1.0',
+  },
+  {
+    name: 'AuditLogViewer',
+    description:
+      'Interactive viewer for audit logs with filtering, search, and export capabilities for compliance.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'logs',
+        type: 'AuditLogEntry[]',
+        required: true,
+        description: 'Array of audit log entries to display',
+      },
+      {
+        name: 'onFilter',
+        type: '(filters: AuditFilters) => void',
+        required: false,
+        description: 'Callback when filters change',
+      },
+      {
+        name: 'onExport',
+        type: '(format: "csv" | "json") => void',
+        required: false,
+        description: 'Callback to export logs',
+      },
+      {
+        name: 'showUserInfo',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Display user information in log entries',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/audit-logging',
+    examples: [
+      'import { AuditLogViewer } from "@clarity-chat/react";\n\n<AuditLogViewer\n  logs={auditLogs}\n  onFilter={handleFilter}\n  onExport={(format) => exportLogs(format)}\n/>',
+    ],
+    relatedComponents: ['AuditLogger', 'AuthTenantDashboard'],
+    accessibility: ['Sortable tables', 'Screen reader announcements'],
+    version: '0.1.0',
+  },
+  {
+    name: 'RBACProvider',
+    description:
+      'Context provider for Role-Based Access Control. Wraps your app to enable permission checks throughout.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'storage',
+        type: 'RBACStorage',
+        required: true,
+        description: 'Storage backend for roles and permissions',
+      },
+      {
+        name: 'userId',
+        type: 'string',
+        required: true,
+        description: 'Current user identifier for permission checks',
+      },
+      {
+        name: 'children',
+        type: 'ReactNode',
+        required: true,
+        description: 'Child components that need RBAC context',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/rbac',
+    examples: [
+      'import { RBACProvider, MemoryRBACStorage, CommonRoles } from "@clarity-chat/react";\n\nconst storage = new MemoryRBACStorage();\nstorage.addRole(CommonRoles.ADMIN);\nstorage.addRole(CommonRoles.USER);\n\n<RBACProvider storage={storage} userId={currentUser.id}>\n  <App />\n</RBACProvider>',
+    ],
+    relatedComponents: ['useRBAC', 'AuthTenantDashboard'],
+    accessibility: ['Provides context for permission-based UI'],
+    version: '0.1.0',
+  },
 ]
 
 /**

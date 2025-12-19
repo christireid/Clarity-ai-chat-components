@@ -9,6 +9,7 @@ import {
   Eye,
   GitBranch,
   Sparkles,
+  Calculator,
 } from 'lucide-react'
 
 export default function ToolsPage() {
@@ -292,6 +293,35 @@ export default function ToolsPage() {
                     </span>
                     <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
                       Reports
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* ROI Calculator */}
+          <Link href="/tools/roi-calculator" className="group block">
+            <div className="bg-bg border border-border rounded-xl p-6 hover:border-brand-500 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-brand-500/10 rounded-lg group-hover:bg-brand-500/20 transition-colors">
+                  <Calculator className="w-6 h-6 text-brand-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2">ROI Calculator</h3>
+                  <p className="text-text-secondary mb-4">
+                    Estimate potential cost savings from token optimization,
+                    prompt caching, and TOON format.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Cost savings
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Interactive
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Enterprise
                     </span>
                   </div>
                 </div>

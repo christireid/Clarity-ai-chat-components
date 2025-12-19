@@ -86,8 +86,9 @@ const clarityChatProps: Prop[] = [
   },
   {
     name: 'onMessageFeedback',
-    type: '(messageId: string, feedbackType: "positive" | "negative") => void',
-    description: 'Callback when user provides feedback on a message.',
+    type: "(messageId: string, type: 'up' | 'down') => void",
+    description:
+      'Callback when user provides thumbs up/down feedback on a message.',
   },
   {
     name: 'theme',

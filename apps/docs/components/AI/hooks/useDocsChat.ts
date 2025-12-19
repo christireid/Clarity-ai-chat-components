@@ -6,7 +6,13 @@ import {
   useTokenTracker,
 } from '@clarity-chat/react'
 import type { Message, AIStatus, Citation } from '@clarity-chat/types'
-import type { StreamingStatus, SavedConversation, Source } from '../types'
+import type {
+  StreamingStatus,
+  SavedConversation,
+  Source,
+  ToolUseProgress,
+  ToolResult,
+} from '../types'
 import {
   SESSION_ID_KEY,
   MESSAGES_KEY,
@@ -39,6 +45,12 @@ export function useDocsChat() {
   const [retryCount, setRetryCount] = useState(0)
   const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
   const [suggestedFollowUps, setSuggestedFollowUps] = useState<string[]>([])
+  const [currentToolUse, setCurrentToolUse] = useState<ToolUseProgress | null>(
+    null
+  )
+  const [toolResults, setToolResults] = useState<Map<string, ToolResult>>(
+    new Map()
+  )
 
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -311,6 +323,40 @@ export function useDocsChat() {
                     assistantMessage.id,
                     accumulatedContent
                   )
+                } else if (data.type === 'tool_use') {
+                  // Tool is being invoked - show progress
+                  const toolUse: ToolUseProgress = {
+                    tool_name: data.tool_name,
+                    tool_use_id: data.tool_use_id,
+                    tool_input: data.tool_input,
+                  }
+                  setCurrentToolUse(toolUse)
+                  setAiStatus({
+                    stage: 'generating',
+                    topic: `Using ${data.tool_name.replace('_', ' ')}...`,
+                    startedAt: new Date(),
+                  })
+                } else if (data.type === 'tool_result') {
+                  // Tool completed - store result and clear progress
+                  const toolResult: ToolResult = {
+                    tool_name: data.tool_name,
+                    tool_use_id: data.tool_use_id,
+                    tool_result: data.tool_result,
+                  }
+                  setToolResults((prev) => {
+                    const newMap = new Map(prev)
+                    newMap.set(
+                      assistantMessage.id + ':' + data.tool_use_id,
+                      toolResult
+                    )
+                    return newMap
+                  })
+                  setCurrentToolUse(null)
+                  setAiStatus({
+                    stage: 'generating',
+                    topic: 'Generating response',
+                    startedAt: new Date(),
+                  })
                 } else if (data.type === 'sources' && data.data?.sources) {
                   sources = data.data.sources
                   const citations: Citation[] = sources
@@ -639,6 +685,8 @@ export function useDocsChat() {
     tokenTracker.clear()
     setCurrentCitations([])
     setSuggestedFollowUps([])
+    setCurrentToolUse(null)
+    setToolResults(new Map())
     toast.info('Conversation cleared')
   }, [clearSavedConversation, tokenTracker, toast])
 
@@ -654,6 +702,8 @@ export function useDocsChat() {
     isOnline,
     messageQueue,
     suggestedFollowUps,
+    currentToolUse,
+    toolResults,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,
