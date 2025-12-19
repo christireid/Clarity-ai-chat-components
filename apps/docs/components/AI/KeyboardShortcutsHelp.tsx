@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Command } from 'lucide-react'

@@ -14,13 +14,13 @@ import { TokenCounter } from '@clarity-chat/token-optimization'
 import {
   adaptiveOptimizer,
   optimizeTokensAdaptively,
-} from './adaptive-optimizer.js'
+} from './adaptive-optimizer'
 import {
   advancedCompressor,
   compressWithAdvanced,
   type AdvancedCompressionStrategy,
-} from './advanced-compression.js'
-import { semanticCache, getCachedTokenCount } from './intelligent-caching.js'
+} from './advanced-compression'
+import { semanticCache, getCachedTokenCount } from './intelligent-caching'
 
 export type MiddlewareMode =
   | 'automatic'

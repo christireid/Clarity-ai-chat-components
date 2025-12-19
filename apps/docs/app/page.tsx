@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { QuickStartTutorial } from '@/components/Layout/QuickStartTutorial'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
@@ -12,18 +11,8 @@ import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
 import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
 import { SocialProof } from '@/components/Layout/SocialProof'
 import { Testimonials } from '@/components/Layout/Testimonials'
-
-// Lazy load the animated background to reduce initial bundle size
-// This component is decorative and can load after initial render
-const AnimatedBackground = dynamic(
-  () =>
-    import('@/components/Layout/AnimatedBackground').then(
-      (mod) => mod.AnimatedBackground
-    ),
-  {
-    ssr: false, // Particle animations require browser APIs
-  }
-)
+// AnimatedBackground is a 'use client' component with built-in lazy loading
+import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 import {
   Zap,
   Palette,

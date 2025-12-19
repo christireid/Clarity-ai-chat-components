@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { TokenCounter } from '@clarity-chat/token-optimization'
-import { getTokenizerStats, clearTokenCache } from './accurate-counter.js'
+import { getTokenizerStats, clearTokenCache } from './accurate-counter'
 
 /**
  * Performance metrics for token counting operations

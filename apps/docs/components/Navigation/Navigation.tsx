@@ -23,10 +23,14 @@ import {
   Newspaper,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
-import { AccessibilityButton } from '../Layout/AccessibilityMenu'
+import {
+  AccessibilityButton,
+  AccessibilityMenu,
+} from '../Layout/AccessibilityMenu'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
+import { durations } from '@/lib/animations'
 
 const navigation = [
   { name: 'Demos', href: '/demos', icon: Play },

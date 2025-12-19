@@ -190,3 +190,110 @@ export {
 
 export { initializeClarity } from './initialization'
 export type { InitializeClarityOptions } from './initialization'
+
+// ============================================================================
+// ADDITIONAL UI COMPONENTS (For DocsAssistant and similar use cases)
+// ============================================================================
+
+// Error and Feedback
+export { ErrorBoundary } from './components/feedback/error-boundary'
+export { NetworkStatus } from './components/feedback/network-status'
+
+// Token Management
+export { TokenCounter } from './components/token/token-counter'
+
+// Media and Export
+export { ExportDialog } from './components/media/export-dialog'
+
+// Search
+export {
+  MessageSearch,
+  MessageSearchWithSuspense,
+} from './components/search/message-search'
+
+// Prompts and Suggestions
+export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
+export { PromptSuggestions } from './components/prompt/prompt-suggestions'
+export type { PromptSuggestion } from './components/prompt/prompt-suggestions'
+
+// Message Components
+export { CitationCard } from './components/message/citation-card'
+
+// Input Components
+export { VoiceInput } from './components/input/voice-input'
+
+// Empty States
+export { EmptyChatState } from './components/ui/empty-state'
+
+// ============================================================================
+// ADDITIONAL HOOKS (For DocsAssistant and similar use cases)
+// ============================================================================
+
+// Toast notifications
+export {
+  useToast,
+  ToastProvider,
+  ToastContainer,
+  type ToastContextValue,
+  type ToastProviderProps,
+  type ToastType,
+  type ToastPosition,
+  type Toast,
+} from './components/ui/toast'
+
+// Keyboard shortcuts
+export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
+
+// Clipboard
+export { useClipboard } from './hooks/ui/use-clipboard'
+
+// Local storage
+export { useLocalStorage } from './hooks/storage/use-local-storage'
+
+// Throttle utilities
+export { useThrottledCallback } from './hooks/ui/use-throttle'
+
+// Token tracking
+export { useTokenTracker } from './hooks/token/use-token-tracker'
+
+// Streaming
+export { useStreaming } from './hooks/streaming/use-streaming'
+
+// Accessibility
+export { useReducedMotion } from './animations'
+export {
+  useFocusTrap,
+  useFocusRestoration,
+} from './accessibility/focus-management'
+
+// Auto-scroll
+export {
+  useAutoScroll,
+  type UseAutoScrollOptions,
+  type UseAutoScrollReturn,
+} from './hooks/ui/use-auto-scroll'
+
+// ============================================================================
+// ANIMATION UTILITIES (For custom animation implementations)
+// ============================================================================
+
+export {
+  createFadeVariant,
+  createSlideVariant,
+  createScaleVariant,
+  createStaggerContainerVariant,
+  createStaggerChildVariant,
+  createInteractionVariant,
+  createPulseAnimation,
+  createShimmerAnimation,
+  createSpinnerAnimation,
+  createDotsAnimation,
+  createBounceAnimation,
+  createShakeAnimation,
+  createSuccessAnimation,
+  createErrorAnimation,
+  mergeTransitions,
+  getDurationInSeconds,
+  getDurationInMs,
+  createTweenTransition,
+} from './animations/utils'

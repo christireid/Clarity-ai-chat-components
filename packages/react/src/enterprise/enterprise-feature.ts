@@ -4,13 +4,13 @@
  */
 
 import { EventEmitter } from 'events'
-import { getLogger, LogLevel } from '../cli/src/utils/logger.js'
-import { EnterpriseError, ThresholdExceededError } from './enterprise-errors.js'
+import { getLogger, LogLevel } from '../cli/src/utils/logger'
+import { EnterpriseError, ThresholdExceededError } from './enterprise-errors'
 import {
   formatBytes,
   formatTimestamp,
   ensureDirectories,
-} from '../primitives/src/lib/enterprise-utils.js'
+} from '../primitives/src/lib/enterprise-utils'
 
 /**
  * Base enterprise configuration

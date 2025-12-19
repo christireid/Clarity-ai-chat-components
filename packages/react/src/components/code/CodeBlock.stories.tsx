@@ -188,7 +188,7 @@ export const DiffView: Story = {
     showLineNumbers: true,
     addedLines: '3',
     removedLines: '2',
-    title: 'greet.js',
+    title: 'greet',
   },
   parameters: {
     docs: {

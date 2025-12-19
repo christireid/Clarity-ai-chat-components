@@ -25,11 +25,12 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // Typed routes for compile-time Link validation (Next.js 16 - moved from experimental)
+  typedRoutes: true,
+
   // Experimental features
   experimental: {
     mdxRs: true,
-    // Typed routes for compile-time Link validation (Next.js 16)
-    typedRoutes: true,
     // Optimize package imports for better tree-shaking (stable in Next.js 15.5+)
     optimizePackageImports: [
       '@clarity-chat/react',
@@ -39,7 +40,16 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
+  transpilePackages: [
+    '@clarity-chat/react',
+    '@clarity-chat/primitives',
+    '@clarity-chat/license',
+    '@clarity-chat/memory',
+    '@clarity-chat/token-optimization',
+    '@clarity-chat/error-handling',
+    '@clarity-chat/utils',
+    '@clarity-chat/types',
+  ],
 
   // TypeScript configuration
   typescript: {
@@ -47,11 +57,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // ESLint configuration
-  eslint: {
-    // Note: Consider enabling linting in CI/CD
-    ignoreDuringBuilds: true,
-  },
+  // Note: ESLint configuration moved to eslint.config.js (Next.js 16)
 
   // Production optimizations
   compress: true,

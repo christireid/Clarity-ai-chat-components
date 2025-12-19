@@ -7,13 +7,12 @@
  * @module tokenization/estimator
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
-import { InputValidator } from './input-validator.js'
+import { InputValidator } from './input-validator'
 import {
   errorHandler,
   ErrorCategory,
   ErrorSeverity,
-} from './enhanced-error-handling.js'
+} from './enhanced-error-handling'
 import type { ModelName } from './accurate-counter'
 
 /**
@@ -185,8 +184,15 @@ export function estimateTokensByProvider(
 ): number {
   if (!text) return 0
 
-  // Use the new TokenCounter for accurate token counting regardless of provider
-  return TokenCounter.count(text)
+  // Use provider-specific character-to-token ratio
+  const ratio = PROVIDER_CHAR_RATIOS[provider] ?? DEFAULT_CHARS_PER_TOKEN
+
+  // Handle CJK text
+  if (containsCJK(text)) {
+    return Math.ceil(getEffectiveCharCount(text) / ratio)
+  }
+
+  return Math.ceil(text.length / ratio)
 }
 
 /**
