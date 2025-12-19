@@ -171,3 +171,4 @@ archive/documentation-overhaul/
 # Environment files
 *.env
 *.env.*
+packages/react/build-report.json
