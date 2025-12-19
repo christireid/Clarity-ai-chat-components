@@ -28,6 +28,7 @@ const navigation = [
   { name: 'Cookbook', href: '/cookbook' },
   { name: 'Examples', href: '/examples' },
   { name: 'Compare', href: '/compare' },
+  { name: 'Blog', href: '/blog' },
 ]
 
 export function Navigation() {

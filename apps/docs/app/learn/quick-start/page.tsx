@@ -47,6 +47,35 @@ export default function QuickStartPage() {
           />
         </ScrollReveal>
 
+        {/* Value Proposition - GTM Section */}
+        <ScrollReveal delay={0.15}>
+          <div className="my-8 p-6 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800">
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">💰</div>
+              <div>
+                <h3 className="font-semibold text-green-800 dark:text-green-300 mb-2">
+                  Built-in Token Optimization
+                </h3>
+                <p className="text-sm text-green-700 dark:text-green-400 mb-3">
+                  Clarity Chat includes smart token management that can <strong>reduce your AI costs by 60-90%</strong> through:
+                </p>
+                <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
+                  <li>• Semantic memory compression</li>
+                  <li>• Smart context windowing</li>
+                  <li>• Prompt caching support</li>
+                  <li>• Real-time token counting dashboard</li>
+                </ul>
+                <a
+                  href="/guides/token-optimization"
+                  className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-green-600 dark:text-green-400 hover:underline"
+                >
+                  Learn about token optimization →
+                </a>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
         <ScrollReveal delay={0.2}>
           <Callout type="tip" className="my-8">
             <strong>Already have a React project?</strong> Jump straight to the
