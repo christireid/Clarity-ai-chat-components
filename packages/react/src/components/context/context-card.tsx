@@ -1,14 +1,8 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import {
-  Card,
-  CardContent,
-  Badge,
-  Button,
-  cn,
-  formatFileSize,
-  truncate,
-} from '@clarity-chat/primitives'
+import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
+import { formatFileSize, truncate } from '../../internal/helpers'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { Context } from '@clarity-chat/types'
 
 export interface ContextCardProps {

@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Badge, cn, formatFileSize } from '@clarity-chat/primitives'
+import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { formatFileSize } from '../../internal/helpers'
 import type { MessageAttachment } from '@clarity-chat/types'
 import {
   EASING_FRAMER,

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { formatRelativeTime } from '@clarity-chat/primitives'
+import { formatRelativeTime } from '../../internal/helpers'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,

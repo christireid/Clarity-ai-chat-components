@@ -229,7 +229,10 @@ export function ErrorBoundaryEnhanced({
         originalError: currentError,
       })
 
-      logger.debug('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
+      console.debug(
+        '[ErrorBoundaryEnhanced] User feedback submitted:',
+        feedback
+      )
     },
     [currentError, currentErrorInfo, errorReporter, errorContext, severity]
   )

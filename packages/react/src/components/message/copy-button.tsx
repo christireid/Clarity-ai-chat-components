@@ -165,7 +165,7 @@ export function CopyButton({
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{
-                duration: DURATION_SECONDS.moderate,
+                duration: durations.moderate,
                 ease: 'easeOut',
               }}
             >

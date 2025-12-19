@@ -27,6 +27,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { ToolCall } from '../adapters/types'
 
 export type ToolStatus =

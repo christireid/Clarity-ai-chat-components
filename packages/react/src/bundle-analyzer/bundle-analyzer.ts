@@ -3,13 +3,17 @@
  * Uses the enterprise feature base class for consistent patterns and reduced code duplication
  */
 
-import { 
-  EnhancedEnterpriseFeature, 
+import {
+  EnhancedEnterpriseFeature,
   EnhancedBaseEnterpriseConfig,
-  EnterpriseProcessingResult 
+  EnterpriseProcessingResult,
 } from '../enterprise/enterprise-feature-base.js'
 import { CLIError, ExitCode } from '../../../cli/src/utils/errors.js'
-import { formatBytes, calculatePercentage, deepMerge } from '@clarity-chat/primitives'
+import {
+  formatBytes,
+  calculatePercentage,
+  deepMerge,
+} from '../internal/helpers'
 import { generateUniqueFilename } from '../../../primitives/src/lib/enterprise-utils.js'
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
@@ -97,7 +101,12 @@ export interface ChunkInfo {
  * Bundle warning
  */
 export interface BundleWarning {
-  type: 'asset-size' | 'chunk-size' | 'duplicate-asset' | 'large-asset' | 'uncompressed'
+  type:
+    | 'asset-size'
+    | 'chunk-size'
+    | 'duplicate-asset'
+    | 'large-asset'
+    | 'uncompressed'
   severity: 'low' | 'medium' | 'high'
   message: string
   asset?: string
@@ -152,10 +161,9 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
   WebpackStats,
   BundleAnalysis
 > {
-
   constructor(config: Partial<BundleAnalyzerConfig> = {}) {
     super(config, 'bundle-analyzer')
-    
+
     // Validate configuration after setup
     this.validateEnhancedConfig()
   }
@@ -176,7 +184,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         application: 150 * 1024, // 150KB
         styles: 50 * 1024, // 50KB
         images: 100 * 1024, // 100KB
-        fonts: 30 * 1024 // 30KB
+        fonts: 30 * 1024, // 30KB
       },
       assetGroups: [
         {
@@ -184,36 +192,42 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
           patterns: ['node_modules/**', '**/vendor/**'],
           maxSize: 200 * 1024,
           priority: 'medium',
-          description: 'Third-party vendor libraries'
+          description: 'Third-party vendor libraries',
         },
         {
           name: 'application',
           patterns: ['src/**', 'app/**', 'components/**'],
           maxSize: 150 * 1024,
           priority: 'high',
-          description: 'Application code'
+          description: 'Application code',
         },
         {
           name: 'styles',
           patterns: ['**/*.css', '**/*.scss', '**/*.less'],
           maxSize: 50 * 1024,
           priority: 'medium',
-          description: 'Stylesheets'
+          description: 'Stylesheets',
         },
         {
           name: 'images',
-          patterns: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
+          patterns: [
+            '**/*.png',
+            '**/*.jpg',
+            '**/*.jpeg',
+            '**/*.gif',
+            '**/*.svg',
+          ],
           maxSize: 100 * 1024,
           priority: 'low',
-          description: 'Image assets'
+          description: 'Image assets',
         },
         {
           name: 'fonts',
           patterns: ['**/*.woff', '**/*.woff2', '**/*.ttf', '**/*.eot'],
           maxSize: 30 * 1024,
           priority: 'low',
-          description: 'Font files'
-        }
+          description: 'Font files',
+        },
       ],
       failOnThreshold: false,
       generateReports: true,
@@ -222,7 +236,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
       generateTreemap: true,
       generateReport: true,
       maxAssetSize: 244 * 1024, // 244KB
-      maxChunkSize: 250 * 1024 // 250KB
+      maxChunkSize: 250 * 1024, // 250KB
     }
   }
 
@@ -232,7 +246,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
   validateConfig(): void {
     // Validate thresholds
     const thresholds = this.config.thresholds
-    
+
     if (thresholds.total <= 0) {
       throw new CLIError(
         'Total threshold must be positive',
@@ -263,7 +277,10 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
       throw new CLIError(
         'Output directory is required',
         ExitCode.VALIDATION_ERROR,
-        ['Set output directory in configuration', 'Use default output directory']
+        [
+          'Set output directory in configuration',
+          'Use default output directory',
+        ]
       )
     }
 
@@ -278,7 +295,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
     if (this.config.includeGzip || this.config.includeBrotli) {
       this.logger.info('Compression analysis enabled', {
         gzip: this.config.includeGzip,
-        brotli: this.config.includeBrotli
+        brotli: this.config.includeBrotli,
       })
     }
 
@@ -296,12 +313,12 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    */
   async process(webpackStats: WebpackStats): Promise<BundleAnalysis> {
     this.emit('processing-start')
-    
+
     const startTime = Date.now()
-    
+
     try {
       this.logger.info('Starting bundle analysis')
-      
+
       // Validate input
       if (!webpackStats || typeof webpackStats !== 'object') {
         throw new CLIError(
@@ -313,32 +330,45 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
 
       // Process assets
       const assets = this.processAssets(webpackStats.assets || [])
-      
+
       // Process chunks
       const chunks = this.processChunks(webpackStats.chunks || [])
-      
+
       // Calculate totals
       const totalSize = assets.reduce((sum, asset) => sum + asset.size, 0)
-      const compressedSize = assets.reduce((sum, asset) => sum + asset.compressedSize, 0)
-      
+      const compressedSize = assets.reduce(
+        (sum, asset) => sum + asset.compressedSize,
+        0
+      )
+
       // Calculate compression sizes
-      const gzipSize = this.config.includeGzip ? 
-        assets.reduce((sum, asset) => sum + (asset.gzipSize || asset.compressedSize), 0) : 
-        compressedSize
-        
-      const brotliSize = this.config.includeBrotli ? 
-        assets.reduce((sum, asset) => sum + this.estimateBrotliSize(asset.size), 0) : 
-        compressedSize
+      const gzipSize = this.config.includeGzip
+        ? assets.reduce(
+            (sum, asset) => sum + (asset.gzipSize || asset.compressedSize),
+            0
+          )
+        : compressedSize
+
+      const brotliSize = this.config.includeBrotli
+        ? assets.reduce(
+            (sum, asset) => sum + this.estimateBrotliSize(asset.size),
+            0
+          )
+        : compressedSize
 
       // Generate warnings
       const warnings = this.generateWarnings(assets, chunks)
-      
+
       // Generate recommendations
-      const recommendations = this.generateRecommendations(assets, chunks, warnings)
-      
+      const recommendations = this.generateRecommendations(
+        assets,
+        chunks,
+        warnings
+      )
+
       // Calculate score and grade
       const { score, grade } = this.calculateScore(assets, chunks, warnings)
-      
+
       const analysis: BundleAnalysis = {
         totalSize,
         compressedSize,
@@ -350,26 +380,26 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         recommendations,
         score,
         grade,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       // Check thresholds
       this.checkAllThresholds(analysis)
-      
+
       // Update metrics
       this.updateAnalysisMetrics(analysis)
-      
+
       // Generate reports if enabled
       if (this.config.generateReports) {
         await this.generateReports(analysis)
       }
 
       const duration = Date.now() - startTime
-      
+
       const result: EnterpriseProcessingResult<BundleAnalysis> = {
         success: true,
         data: analysis,
-        warnings: warnings.map(w => w.message),
+        warnings: warnings.map((w) => w.message),
         errors: [],
         metrics: {
           totalSize,
@@ -377,29 +407,28 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
           score,
           warningCount: warnings.length,
           recommendationCount: recommendations.length,
-          duration
+          duration,
         },
         timestamp: new Date(),
-        duration
+        duration,
       }
 
       this.emit('processing-complete', result)
-      
+
       this.logger.info('Bundle analysis completed', {
         totalSize: formatBytes(totalSize),
         compressedSize: formatBytes(compressedSize),
         score,
         grade,
-        duration: `${duration}ms`
+        duration: `${duration}ms`,
       })
 
       return analysis
-      
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       this.logger.error('Bundle analysis failed', error)
-      
+
       const result: EnterpriseProcessingResult<BundleAnalysis> = {
         success: false,
         data: {} as BundleAnalysis,
@@ -407,11 +436,11 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         errors: [error instanceof Error ? error.message : String(error)],
         metrics: { duration },
         timestamp: new Date(),
-        duration
+        duration,
       }
 
       this.emit('processing-complete', result)
-      
+
       throw error
     }
   }
@@ -420,12 +449,14 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Process assets from webpack stats
    */
   private processAssets(webpackAssets: any[] = []): AssetInfo[] {
-    return webpackAssets.map(asset => {
+    return webpackAssets.map((asset) => {
       const assetGroup = this.findAssetGroup(asset.name)
       const size = asset.size || 0
       const compressedSize = this.estimateCompressedSize(size)
-      const gzipSize = this.config.includeGzip ? this.estimateGzipSize(size) : compressedSize
-      
+      const gzipSize = this.config.includeGzip
+        ? this.estimateGzipSize(size)
+        : compressedSize
+
       return {
         name: asset.name,
         size,
@@ -436,7 +467,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         chunk: asset.chunks?.[0],
         isEntry: asset.isEntry || false,
         isDynamic: asset.isDynamic || false,
-        isOverSizeLimit: asset.isOverSizeLimit || false
+        isOverSizeLimit: asset.isOverSizeLimit || false,
       }
     })
   }
@@ -445,13 +476,13 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Process chunks from webpack stats
    */
   private processChunks(webpackChunks: any[] = []): ChunkInfo[] {
-    return webpackChunks.map(chunk => ({
+    return webpackChunks.map((chunk) => ({
       id: chunk.id,
       size: chunk.size || 0,
       modules: chunk.modules || 0,
       files: chunk.files || [],
       isOverSizeLimit: chunk.isOverSizeLimit || false,
-      reasons: chunk.reasons || []
+      reasons: chunk.reasons || [],
     }))
   }
 
@@ -459,9 +490,11 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Find asset group for an asset
    */
   private findAssetGroup(assetName: string): AssetGroup | undefined {
-    return this.config.assetGroups.find(group => 
-      group.patterns.some(pattern => {
-        const regex = new RegExp(pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*'))
+    return this.config.assetGroups.find((group) =>
+      group.patterns.some((pattern) => {
+        const regex = new RegExp(
+          pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*')
+        )
         return regex.test(assetName)
       })
     )
@@ -472,26 +505,26 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    */
   private getAssetType(filename: string): string {
     const ext = filename.split('.').pop()?.toLowerCase()
-    
+
     const typeMap: Record<string, string> = {
-      'js': 'javascript',
-      'mjs': 'javascript',
-      'ts': 'typescript',
-      'css': 'stylesheet',
-      'scss': 'stylesheet',
-      'less': 'stylesheet',
-      'png': 'image',
-      'jpg': 'image',
-      'jpeg': 'image',
-      'gif': 'image',
-      'svg': 'image',
-      'webp': 'image',
-      'woff': 'font',
-      'woff2': 'font',
-      'ttf': 'font',
-      'eot': 'font'
+      js: 'javascript',
+      mjs: 'javascript',
+      ts: 'typescript',
+      css: 'stylesheet',
+      scss: 'stylesheet',
+      less: 'stylesheet',
+      png: 'image',
+      jpg: 'image',
+      jpeg: 'image',
+      gif: 'image',
+      svg: 'image',
+      webp: 'image',
+      woff: 'font',
+      woff2: 'font',
+      ttf: 'font',
+      eot: 'font',
     }
-    
+
     return typeMap[ext || ''] || 'unknown'
   }
 
@@ -524,14 +557,18 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
   /**
    * Generate warnings based on analysis
    */
-  private generateWarnings(assets: AssetInfo[], chunks: ChunkInfo[]): BundleWarning[] {
+  private generateWarnings(
+    assets: AssetInfo[],
+    chunks: ChunkInfo[]
+  ): BundleWarning[] {
     const warnings: BundleWarning[] = []
-    
+
     // Check asset sizes
-    assets.forEach(asset => {
+    assets.forEach((asset) => {
       const assetGroup = this.findAssetGroup(asset.name)
-      const groupMaxSize = assetGroup?.maxSize || this.config.thresholds.perAsset
-      
+      const groupMaxSize =
+        assetGroup?.maxSize || this.config.thresholds.perAsset
+
       if (asset.size > groupMaxSize) {
         warnings.push({
           type: 'asset-size',
@@ -540,10 +577,10 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
           asset: asset.name,
           actual: asset.size,
           threshold: groupMaxSize,
-          suggestion: `Consider optimizing or splitting the asset`
+          suggestion: `Consider optimizing or splitting the asset`,
         })
       }
-      
+
       if (asset.compressedSize > asset.size * 0.8) {
         warnings.push({
           type: 'uncompressed',
@@ -552,29 +589,34 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
           asset: asset.name,
           actual: asset.compressedSize,
           threshold: Math.floor(asset.size * 0.6),
-          suggestion: `Enable better compression in build configuration`
+          suggestion: `Enable better compression in build configuration`,
         })
       }
     })
-    
+
     // Check chunk sizes
-    chunks.forEach(chunk => {
+    chunks.forEach((chunk) => {
       if (chunk.size > this.config.thresholds.perChunk) {
         warnings.push({
           type: 'chunk-size',
-          severity: chunk.size > this.config.thresholds.perChunk * 1.5 ? 'high' : 'medium',
+          severity:
+            chunk.size > this.config.thresholds.perChunk * 1.5
+              ? 'high'
+              : 'medium',
           message: `Chunk "${chunk.id}" (${formatBytes(chunk.size)}) exceeds threshold (${formatBytes(this.config.thresholds.perChunk)})`,
           chunk: chunk.id,
           actual: chunk.size,
           threshold: this.config.thresholds.perChunk,
-          suggestion: `Consider code splitting for the chunk`
+          suggestion: `Consider code splitting for the chunk`,
         })
       }
     })
-    
+
     // Check for large assets
-    const largeAssets = assets.filter(asset => asset.size > this.config.maxAssetSize)
-    largeAssets.forEach(asset => {
+    const largeAssets = assets.filter(
+      (asset) => asset.size > this.config.maxAssetSize
+    )
+    largeAssets.forEach((asset) => {
       warnings.push({
         type: 'large-asset',
         severity: 'high',
@@ -582,10 +624,10 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         asset: asset.name,
         actual: asset.size,
         threshold: this.config.maxAssetSize,
-        suggestion: `Optimize or lazy load the asset`
+        suggestion: `Optimize or lazy load the asset`,
       })
     })
-    
+
     return warnings
   }
 
@@ -593,65 +635,70 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Generate recommendations based on analysis
    */
   private generateRecommendations(
-    assets: AssetInfo[], 
-    chunks: ChunkInfo[], 
+    assets: AssetInfo[],
+    chunks: ChunkInfo[],
     warnings: BundleWarning[]
   ): BundleRecommendation[] {
     const recommendations: BundleRecommendation[] = []
-    
+
     // Code splitting recommendations
-    const largeChunks = chunks.filter(chunk => chunk.size > this.config.thresholds.perChunk)
-    largeChunks.forEach(chunk => {
+    const largeChunks = chunks.filter(
+      (chunk) => chunk.size > this.config.thresholds.perChunk
+    )
+    largeChunks.forEach((chunk) => {
       recommendations.push({
         type: 'code-splitting',
         priority: 'high',
         description: `Split large chunk "${chunk.id}" (${formatBytes(chunk.size)}) for better loading performance`,
         estimatedSavings: Math.floor(chunk.size * 0.4),
         complexity: 'medium',
-        implementation: `Use dynamic imports or split chunks configuration`
+        implementation: `Use dynamic imports or split chunks configuration`,
       })
     })
-    
+
     // Compression recommendations
-    const uncompressedAssets = assets.filter(asset => 
-      asset.compressedSize > asset.size * 0.8 && asset.size > 10 * 1024
+    const uncompressedAssets = assets.filter(
+      (asset) =>
+        asset.compressedSize > asset.size * 0.8 && asset.size > 10 * 1024
     )
-    
+
     if (uncompressedAssets.length > 0) {
-      const totalSavings = uncompressedAssets.reduce((sum, asset) => 
-        sum + (asset.size - asset.compressedSize), 0
+      const totalSavings = uncompressedAssets.reduce(
+        (sum, asset) => sum + (asset.size - asset.compressedSize),
+        0
       )
-      
+
       recommendations.push({
         type: 'compression',
         priority: 'medium',
         description: `Enable better compression for ${uncompressedAssets.length} assets`,
         estimatedSavings: totalSavings,
         complexity: 'low',
-        implementation: `Configure compression in webpack or use compression plugins`
+        implementation: `Configure compression in webpack or use compression plugins`,
       })
     }
-    
+
     // Image optimization recommendations
-    const largeImages = assets.filter(asset => 
-      asset.type === 'image' && asset.size > 50 * 1024
+    const largeImages = assets.filter(
+      (asset) => asset.type === 'image' && asset.size > 50 * 1024
     )
-    
+
     if (largeImages.length > 0) {
-      const totalSavings = largeImages.reduce((sum, image) => 
-        sum + Math.floor(image.size * 0.3), 0
+      const totalSavings = largeImages.reduce(
+        (sum, image) => sum + Math.floor(image.size * 0.3),
+        0
       )
-      
+
       recommendations.push({
         type: 'optimization',
         priority: 'medium',
         description: `Optimize ${largeImages.length} large images for better performance`,
         estimatedSavings: totalSavings,
         complexity: 'low',
-        implementation: `Use image optimization tools or convert to modern formats (WebP, AVIF)`
+        implementation: `Use image optimization tools or convert to modern formats (WebP, AVIF)`,
       })
     }
-    
+
     return recommendations
   }
 
@@ -659,14 +706,14 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Calculate bundle score and grade
    */
   private calculateScore(
-    assets: AssetInfo[], 
-    chunks: ChunkInfo[], 
+    assets: AssetInfo[],
+    chunks: ChunkInfo[],
     warnings: BundleWarning[]
   ): { score: number; grade: 'A' | 'B' | 'C' | 'D' | 'F' } {
     let score = 100
-    
+
     // Penalize warnings
-    warnings.forEach(warning => {
+    warnings.forEach((warning) => {
       switch (warning.severity) {
         case 'high':
           score -= 15
@@ -679,18 +726,22 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
           break
       }
     })
-    
+
     // Penalize large chunks
-    const largeChunks = chunks.filter(chunk => chunk.size > this.config.thresholds.perChunk)
+    const largeChunks = chunks.filter(
+      (chunk) => chunk.size > this.config.thresholds.perChunk
+    )
     score -= largeChunks.length * 10
-    
+
     // Penalize large assets
-    const largeAssets = assets.filter(asset => asset.size > this.config.maxAssetSize)
+    const largeAssets = assets.filter(
+      (asset) => asset.size > this.config.maxAssetSize
+    )
     score -= largeAssets.length * 8
-    
+
     // Ensure score is within bounds
     score = Math.max(0, Math.min(100, score))
-    
+
     // Calculate grade
     let grade: 'A' | 'B' | 'C' | 'D' | 'F'
     if (score >= 90) grade = 'A'
@@ -698,7 +749,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
     else if (score >= 70) grade = 'C'
     else if (score >= 60) grade = 'D'
     else grade = 'F'
-    
+
     return { score, grade }
   }
 
@@ -707,20 +758,24 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    */
   private checkAllThresholds(analysis: BundleAnalysis): void {
     const { totalSize, assets, chunks } = analysis
-    
+
     // Check total size threshold
     this.checkThresholds('total', totalSize, this.config.thresholds.total)
-    
+
     // Check individual asset thresholds
-    assets.forEach(asset => {
+    assets.forEach((asset) => {
       const assetGroup = this.findAssetGroup(asset.name)
       const threshold = assetGroup?.maxSize || this.config.thresholds.perAsset
       this.checkThresholds(`asset:${asset.name}`, asset.size, threshold)
     })
-    
+
     // Check chunk thresholds
-    chunks.forEach(chunk => {
-      this.checkThresholds(`chunk:${chunk.id}`, chunk.size, this.config.thresholds.perChunk)
+    chunks.forEach((chunk) => {
+      this.checkThresholds(
+        `chunk:${chunk.id}`,
+        chunk.size,
+        this.config.thresholds.perChunk
+      )
     })
   }
 
@@ -736,24 +791,24 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
       warningCount: analysis.warnings.length,
       recommendationCount: analysis.recommendations.length,
       assetCount: analysis.assets.length,
-      chunkCount: analysis.chunks.length
+      chunkCount: analysis.chunks.length,
     })
-    
+
     // Update individual asset metrics
-    analysis.assets.forEach(asset => {
+    analysis.assets.forEach((asset) => {
       this.updateMetrics(`asset:${asset.name}`, {
         size: asset.size,
         compressedSize: asset.compressedSize,
-        type: asset.type
+        type: asset.type,
       })
     })
-    
+
     // Update chunk metrics
-    analysis.chunks.forEach(chunk => {
+    analysis.chunks.forEach((chunk) => {
       this.updateMetrics(`chunk:${chunk.id}`, {
         size: chunk.size,
         modules: chunk.modules,
-        isOverLimit: chunk.isOverSizeLimit
+        isOverLimit: chunk.isOverSizeLimit,
       })
     })
   }
@@ -763,8 +818,8 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    */
   private async generateReports(analysis: BundleAnalysis): Promise<void> {
     this.logger.info('Generating reports', { formats: this.config.formats })
-    
-    const reportPromises = this.config.formats.map(async format => {
+
+    const reportPromises = this.config.formats.map(async (format) => {
       try {
         switch (format) {
           case 'json':
@@ -780,7 +835,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         this.logger.error(`Failed to generate ${format} report`, error)
       }
     })
-    
+
     await Promise.all(reportPromises)
   }
 
@@ -790,7 +845,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
   private async generateJsonReport(analysis: BundleAnalysis): Promise<void> {
     const filename = this.generateReportFilename('bundle-analysis', 'json')
     const filepath = this.saveReport(filename, analysis, 'json')
-    
+
     this.logger.info('JSON report generated', { filepath })
   }
 
@@ -801,7 +856,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
     const html = this.generateHtmlContent(analysis)
     const filename = this.generateReportFilename('bundle-analysis', 'html')
     const filepath = this.saveReport(filename, html, 'html')
-    
+
     this.logger.info('HTML report generated', { filepath })
   }
 
@@ -809,8 +864,17 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
    * Generate HTML content for report
    */
   private generateHtmlContent(analysis: BundleAnalysis): string {
-    const { totalSize, compressedSize, score, grade, assets, chunks, warnings, recommendations } = analysis
-    
+    const {
+      totalSize,
+      compressedSize,
+      score,
+      grade,
+      assets,
+      chunks,
+      warnings,
+      recommendations,
+    } = analysis
+
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -879,24 +943,36 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
                 </div>
             </div>
 
-            ${warnings.length > 0 ? `
+            ${
+              warnings.length > 0
+                ? `
             <div class="warnings">
                 <h3>⚠️ Warnings (${warnings.length})</h3>
-                ${warnings.map(warning => `
+                ${warnings
+                  .map(
+                    (warning) => `
                     <div class="warning-item">
                         <strong>${warning.message}</strong>
                         <div style="color: #666; font-size: 0.9em; margin-top: 5px;">
                             ${warning.suggestion}
                         </div>
                     </div>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </div>
-            ` : ''}
+            `
+                : ''
+            }
 
-            ${recommendations.length > 0 ? `
+            ${
+              recommendations.length > 0
+                ? `
             <div class="recommendations">
                 <h3>💡 Recommendations (${recommendations.length})</h3>
-                ${recommendations.map(rec => `
+                ${recommendations
+                  .map(
+                    (rec) => `
                     <div class="recommendation-item">
                         <strong>${rec.description}</strong>
                         <div style="color: #666; font-size: 0.9em; margin-top: 5px;">
@@ -905,9 +981,13 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
                             📝 ${rec.implementation}
                         </div>
                     </div>
-                `).join('')}
+                `
+                  )
+                  .join('')}
             </div>
-            ` : ''}
+            `
+                : ''
+            }
 
             <h3>Assets</h3>
             <table class="assets-table">
@@ -921,7 +1001,9 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
                     </tr>
                 </thead>
                 <tbody>
-                    ${assets.map(asset => `
+                    ${assets
+                      .map(
+                        (asset) => `
                     <tr>
                         <td>${asset.name}</td>
                         <td>${formatBytes(asset.size)}</td>
@@ -929,7 +1011,9 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
                         <td>${asset.type}</td>
                         <td>${asset.isOverSizeLimit ? '<span class="over-limit">Over Limit</span>' : 'OK'}</td>
                     </tr>
-                    `).join('')}
+                    `
+                      )
+                      .join('')}
                 </tbody>
             </table>
 
@@ -944,14 +1028,18 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
                     </tr>
                 </thead>
                 <tbody>
-                    ${chunks.map(chunk => `
+                    ${chunks
+                      .map(
+                        (chunk) => `
                     <tr>
                         <td>${chunk.id}</td>
                         <td>${formatBytes(chunk.size)}</td>
                         <td>${chunk.modules}</td>
                         <td>${chunk.isOverSizeLimit ? '<span class="over-limit">Over Limit</span>' : 'OK'}</td>
                     </tr>
-                    `).join('')}
+                    `
+                      )
+                      .join('')}
                 </tbody>
             </table>
 
@@ -980,7 +1068,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
   } {
     const metrics = this.getMetrics('analysis')
     const latest = metrics[metrics.length - 1]
-    
+
     if (!latest) {
       return {
         totalSize: '0 B',
@@ -990,10 +1078,10 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
         warningCount: 0,
         recommendationCount: 0,
         assetCount: 0,
-        chunkCount: 0
+        chunkCount: 0,
       }
     }
-    
+
     return {
       totalSize: formatBytes(latest.totalSize),
       compressedSize: formatBytes(latest.compressedSize),
@@ -1002,7 +1090,7 @@ export class BundleAnalyzer extends EnhancedEnterpriseFeature<
       warningCount: latest.warningCount,
       recommendationCount: latest.recommendationCount,
       assetCount: latest.assetCount,
-      chunkCount: latest.chunkCount
+      chunkCount: latest.chunkCount,
     }
   }
 }

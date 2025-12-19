@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useTokenOptimizationEnhanced } from '../use-token-optimization-enhanced'
-import type { CoreMessage } from '../use-chat-enhanced'
+import type { CoreMessage } from '../chat/use-chat-enhanced'
 
 // Mock dependencies
 vi.mock('../../utils/tokenization/model-pricing', () => ({

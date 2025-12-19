@@ -54,7 +54,7 @@ import {
   calculateSimilarity,
   estimateTokens,
 } from '../../utils/optimization/token-optimization'
-import type { CoreMessage } from './use-chat-enhanced'
+import type { CoreMessage } from '../chat/use-chat-enhanced'
 
 export interface UseTokenOptimizationOptions extends TokenOptimizationConfig {
   // Prompt shortening

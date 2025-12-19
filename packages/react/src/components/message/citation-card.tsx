@@ -18,6 +18,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { Citation } from '../adapters/types'
 
 // Helper to safely render metadata values

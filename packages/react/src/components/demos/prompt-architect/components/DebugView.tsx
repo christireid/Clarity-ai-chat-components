@@ -9,7 +9,7 @@
 import * as React from 'react'
 import { cn } from '../../../../utils/cn'
 import type { DebugViewMode } from '../types'
-import type { CoreMessage } from '../../../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../../../hooks/chat/use-chat-enhanced'
 import { generateDiff } from '../utils/template-compiler'
 import { CopyButton } from './CopyButton'
 
