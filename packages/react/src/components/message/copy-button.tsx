@@ -126,6 +126,7 @@ export function CopyButton({
       const timer = setTimeout(() => setStatusMessage(null), 2000)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [statusMessage])
 
   // Enhanced copy handler with status announcement

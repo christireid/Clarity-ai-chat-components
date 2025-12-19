@@ -67,7 +67,7 @@ export const CodeBlockCopyButton = React.memo<CodeBlockCopyButtonProps>(
       <CopyButton
         text={content}
         onCopy={onCopy}
-        onError={onError}
+        onCopyError={onError}
         iconOnly
         disabled={disabled}
         aria-label={ariaLabel}
