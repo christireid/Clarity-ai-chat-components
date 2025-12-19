@@ -163,14 +163,12 @@ core
 # Temporary documentation files (archived)
 archive/documentation-overhaul/
 .docs-sync/
--e 
-# Environment files
+
+# Environment files (except templates)
 *.env
 *.env.*
--e 
-# Environment files
-*.env
-*.env.*
+!.env.example
+!*.env.example
 
 # Build reports
 build-report.json

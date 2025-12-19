@@ -25,7 +25,7 @@ export function TutorialProgress({
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: durations.moderate }}
       className="mb-8 p-4 rounded-xl bg-bg-secondary border border-border"
     >
       {/* Header */}
@@ -43,7 +43,7 @@ export function TutorialProgress({
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progressPercent}%` }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
           className="absolute inset-y-0 left-0 bg-gradient-to-r from-brand-500 to-brand-600 rounded-full"
         />
       </div>
@@ -101,8 +101,7 @@ export function TutorialProgress({
           className="mt-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
         >
           <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-            You're almost done! Complete this final step to finish the
-            tutorial.
+            You're almost done! Complete this final step to finish the tutorial.
           </p>
         </motion.div>
       )}

@@ -1,0 +1,27 @@
+{
+  "name": "@clarity-chat/example-quickstart",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@clarity-chat/react": "workspace:*",
+    "next": "^15.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "openai": "^4.78.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3"
+  }
+}
