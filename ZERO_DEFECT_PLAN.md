@@ -18,11 +18,11 @@
 
 | Severity  | Queued | In Progress | Fixed | Verified |
 | --------- | ------ | ----------- | ----- | -------- |
-| Blocker   | 0      | 0           | 2     | 0        |
+| Blocker   | 1      | 0           | 4     | 0        |
 | High      | 0      | 0           | 5     | 0        |
 | Medium    | 2      | 0           | 0     | 0        |
 | Low       | 2      | 0           | 0     | 0        |
-| **Total** | 4      | 0           | 7     | 0        |
+| **Total** | 5      | 0           | 9     | 0        |
 
 ---
 
@@ -194,6 +194,59 @@ patterns.
 - JSX closing tag mismatch (`</button>` → `</a>`)
 - Unterminated string literal in skeleton-prediction.test.tsx
 - Changed `@ts-ignore` to `@ts-expect-error`
+
+---
+
+### ZD-015: utils package missing type declarations ✅ FIXED
+
+| Field        | Value          |
+| ------------ | -------------- |
+| **ID**       | ZD-015         |
+| **Category** | build          |
+| **Severity** | blocker        |
+| **Scope**    | packages/utils |
+| **Status**   | **fixed**      |
+
+**Symptom:** `shared-utils` build fails with
+`Could not find a declaration file for module '@clarity-chat/utils'`
+
+**Fix Applied:** Changed `dts: false` to `dts: true` in `packages/utils/tsup.config.ts`
+
+---
+
+### ZD-016: react build script runs pnpm install ✅ FIXED
+
+| Field        | Value          |
+| ------------ | -------------- |
+| **ID**       | ZD-016         |
+| **Category** | build          |
+| **Severity** | blocker        |
+| **Scope**    | packages/react |
+| **Status**   | **fixed**      |
+
+**Symptom:** React package build fails because `build-production.cjs` runs `pnpm install` during
+turbo execution
+
+**Fix Applied:** Changed `build` script to use `build-sequential.mjs` instead of
+`build-production.cjs`
+
+---
+
+### ZD-017: react package duplicate exports ⏳ QUEUED
+
+| Field        | Value          |
+| ------------ | -------------- |
+| **ID**       | ZD-017         |
+| **Category** | type           |
+| **Severity** | blocker        |
+| **Scope**    | packages/react |
+| **Status**   | queued         |
+
+**Symptom:** DTS build fails with ~25 duplicate export errors in `src/index.ts`
+
+**Affected exports include:** SecurityManager, ValidationResult, TokenUsage, useReducedMotion, etc.
+
+**Root Cause:** Multiple barrel files re-export the same symbols
 
 ---
 
