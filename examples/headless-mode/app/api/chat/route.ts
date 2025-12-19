@@ -3,9 +3,9 @@ import { NextRequest } from 'next/server'
 const DEMO_MODE = process.env.DEMO_MODE !== 'false'
 
 const DEMO_RESPONSES = [
-  "This response is coming through Clarity Chat's **headless hooks**! The UI you see is 100% custom - no pre-built components.",
-  "Headless mode gives you full control. Use `useChat` for messaging, `useTokenTracker` for costs, `useAutoScroll` for UX - all without any UI lock-in.",
-  "Try building this with your own design system. The hooks work with Tailwind, MUI, Chakra, or plain CSS. Your call!",
+  'This UI is built with **pure React** - no library components! Just React state, fetch, and SSE streaming.',
+  'Headless mode means full control. This example shows token tracking, cost estimation, and auto-scroll - all implemented with custom React hooks you can copy.',
+  'Build with any design system. This demo uses Tailwind, but the patterns work with MUI, Chakra, or plain CSS. Zero lock-in!',
 ]
 
 function getDemoResponse(): string {
@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
             controller.enqueue(encoder.encode(`data: ${data}\n\n`))
           }
 
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`))
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`)
+          )
           controller.enqueue(encoder.encode('data: [DONE]\n\n'))
           controller.close()
         },
@@ -76,10 +78,18 @@ export async function POST(request: NextRequest) {
           for await (const chunk of completion) {
             const content = chunk.choices[0]?.delta?.content
             if (content) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text-delta', content })}\n\n`))
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'text-delta', content })}\n\n`
+                )
+              )
             }
             if (chunk.choices[0]?.finish_reason === 'stop') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`))
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'finish' })}\n\n`
+                )
+              )
             }
           }
 
@@ -87,7 +97,11 @@ export async function POST(request: NextRequest) {
           controller.close()
         } catch (error) {
           const msg = error instanceof Error ? error.message : 'Stream error'
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: msg })}\n\n`))
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', message: msg })}\n\n`
+            )
+          )
           controller.close()
         }
       },
@@ -102,6 +116,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('API error:', error)
-    return Response.json({ error: 'Failed to process request' }, { status: 500 })
+    return Response.json(
+      { error: 'Failed to process request' },
+      { status: 500 }
+    )
   }
 }
