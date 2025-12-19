@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SafetyReviewConsole } from '@clarity-chat/react'
+import { SafetyReviewConsole } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Enterprise/SafetyReviewConsole',

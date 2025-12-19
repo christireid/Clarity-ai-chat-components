@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { StreamBlock } from '@clarity-chat/react'
+import { StreamBlock } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 
 /**
  * **StreamBlock Component**
- * 
+ *
  * A flexible component for rendering streaming content from various sources.
- * 
+ *
  * **Key Features:**
  * - Supports multiple stream sources (StreamableValue, async iterable, promise, ReadableStream)
  * - Append or replace accumulation modes
@@ -15,7 +15,7 @@ import { useState } from 'react'
  * - Error handling with fallbacks
  * - Live streaming indicator
  * - Accessible with ARIA attributes
- * 
+ *
  * **Use Cases:**
  * - AI chat streaming responses
  * - Real-time data feeds
@@ -91,7 +91,7 @@ async function* createMockAsyncIterable(text: string, delay = 50) {
 // Helper to create a mock ReadableStream
 function createMockStream(text: string, delay = 50): ReadableStream<string> {
   const chunks = text.split(' ')
-  
+
   return new ReadableStream({
     async start(controller) {
       for (const chunk of chunks) {
@@ -109,7 +109,7 @@ function BasicStreamBlockDemo() {
   const handleStart = () => {
     const stream = createMockStream(
       'This is a streaming response that appears word by word. ' +
-      'Each word is streamed individually to demonstrate progressive rendering.'
+        'Each word is streamed individually to demonstrate progressive rendering.'
     )
     setSource(stream)
   }
@@ -125,7 +125,11 @@ function BasicStreamBlockDemo() {
         mode="append"
         showIndicator={true}
         spacing="compact"
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         renderItem={(item, index) => (
           <span key={index} className="inline-block mr-2">
             {item}
@@ -150,7 +154,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic StreamBlock with word-by-word streaming from a ReadableStream.',
+        story:
+          'Basic StreamBlock with word-by-word streaming from a ReadableStream.',
       },
     },
   },
@@ -162,7 +167,7 @@ function StreamBlockWithAsyncIterable() {
   const handleStart = () => {
     const iterable = createMockAsyncIterable(
       'This demonstrates streaming from an async iterable. ' +
-      'Async iterables are great for custom streaming logic and generators.'
+        'Async iterables are great for custom streaming logic and generators.'
     )
     setSource(iterable)
   }
@@ -174,7 +179,11 @@ function StreamBlockWithAsyncIterable() {
         mode="append"
         showIndicator={true}
         spacing="relaxed"
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         renderItem={(item, index) => (
           <div key={index} className="p-2 bg-muted rounded mb-2">
             {item}
@@ -206,7 +215,7 @@ function StreamBlockWithReplaceMode() {
   const handleStart = () => {
     const stream = createMockStream(
       'Replace mode replaces the entire content with each new chunk. ' +
-      'This is useful when you want to show only the latest state.'
+        'This is useful when you want to show only the latest state.'
     )
     setSource(stream)
   }
@@ -214,18 +223,25 @@ function StreamBlockWithReplaceMode() {
   return (
     <div className="space-y-4 w-full max-w-2xl">
       <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm mb-4">
-        <strong>Replace Mode:</strong> Each chunk replaces the previous content instead of appending.
+        <strong>Replace Mode:</strong> Each chunk replaces the previous content
+        instead of appending.
       </div>
 
       <StreamBlock
         source={source}
         mode="replace"
         showIndicator={true}
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         renderItem={(item) => (
           <div className="p-4 bg-muted rounded-lg text-center">
             <div className="text-2xl font-bold">{item}</div>
-            <div className="text-xs text-muted-foreground mt-2">Current chunk</div>
+            <div className="text-xs text-muted-foreground mt-2">
+              Current chunk
+            </div>
           </div>
         )}
       />
@@ -242,7 +258,8 @@ export const ReplaceMode: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates replace mode where each chunk replaces the previous content.',
+        story:
+          'Demonstrates replace mode where each chunk replaces the previous content.',
       },
     },
   },
@@ -272,7 +289,11 @@ function StreamBlockWithErrorHandling() {
         source={source}
         mode="append"
         showIndicator={true}
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         errorFallback={(error) => (
           <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
             <div className="font-semibold mb-2">Stream Error</div>
@@ -317,10 +338,14 @@ export const ErrorHandling: Story = {
 
 function StreamBlockSpacing() {
   const [source, setSource] = useState<ReadableStream<string> | null>(null)
-  const [spacing, setSpacing] = useState<'none' | 'compact' | 'relaxed'>('compact')
+  const [spacing, setSpacing] = useState<'none' | 'compact' | 'relaxed'>(
+    'compact'
+  )
 
   const handleStart = () => {
-    const stream = createMockStream('Item One Item Two Item Three Item Four Item Five')
+    const stream = createMockStream(
+      'Item One Item Two Item Three Item Four Item Five'
+    )
     setSource(stream)
   }
 
@@ -355,7 +380,11 @@ function StreamBlockSpacing() {
         mode="append"
         spacing={spacing}
         showIndicator={true}
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         renderItem={(item, index) => (
           <div key={index} className="p-3 bg-muted rounded border">
             {item}
@@ -375,7 +404,8 @@ export const SpacingOptions: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates different spacing options: none, compact, and relaxed.',
+        story:
+          'Demonstrates different spacing options: none, compact, and relaxed.',
       },
     },
   },
@@ -385,7 +415,9 @@ function StreamBlockCustomElement() {
   const [source, setSource] = useState<ReadableStream<string> | null>(null)
 
   const handleStart = () => {
-    const stream = createMockStream('Paragraph One Paragraph Two Paragraph Three')
+    const stream = createMockStream(
+      'Paragraph One Paragraph Two Paragraph Three'
+    )
     setSource(stream)
   }
 
@@ -398,7 +430,11 @@ function StreamBlockCustomElement() {
         className="prose dark:prose-invert"
         showIndicator={true}
         spacing="relaxed"
-        fallback={<div className="text-muted-foreground">Click "Start Stream" to begin...</div>}
+        fallback={
+          <div className="text-muted-foreground">
+            Click "Start Stream" to begin...
+          </div>
+        }
         renderItem={(item, index) => (
           <p key={index} className="mb-4">
             {item}
@@ -411,7 +447,8 @@ function StreamBlockCustomElement() {
       </Button>
 
       <div className="p-3 bg-muted rounded-lg text-xs">
-        <strong>Custom Element:</strong> Using <code>as="article"</code> to render as a semantic HTML article element.
+        <strong>Custom Element:</strong> Using <code>as="article"</code> to
+        render as a semantic HTML article element.
       </div>
     </div>
   )

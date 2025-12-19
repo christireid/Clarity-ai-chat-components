@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FollowUpSuggestions } from '@clarity-chat/react'
-import type { FollowUpSuggestion } from '@clarity-chat/react'
+import { FollowUpSuggestions } from '@clarity-chat/react/internal'
+import type { FollowUpSuggestion } from '@clarity-chat/react/internal'
 import { expect, within } from 'storybook/test'
 
 /**

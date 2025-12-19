@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { ABTestingDashboard, type ExperimentResult } from '@clarity-chat/react'
+import {
+  ABTestingDashboard,
+  type ExperimentResult,
+} from '@clarity-chat/react/internal'
 
 /**
  * Helper to create a Map from variant metrics array

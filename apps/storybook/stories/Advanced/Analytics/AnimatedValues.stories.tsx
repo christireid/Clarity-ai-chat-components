@@ -5,7 +5,7 @@ import {
   FlashingValue,
   useAnimatedValue,
   useValueChange,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 /**
  * **Animated Values**
@@ -101,7 +101,7 @@ const { formattedValue, direction } = useAnimatedValue(count, {
   },
   args: {
     value: 1234,
-    duration: 500,
+    duration: durations.slower,
     easing: 'easeOut',
     decimals: 0,
     highlightChange: true,
@@ -269,7 +269,7 @@ export const UseAnimatedValueHook: Story = {
   render: () => {
     const [value, setValue] = React.useState(500)
     const result = useAnimatedValue(value, {
-      duration: 600,
+      duration: durations.slower,
       prefix: '',
       suffix: ' ms',
       easing: 'easeOut',

@@ -1,11 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ChatWindow, ModelSelector, KeyboardHint } from '@clarity-chat/react'
 import {
-  ChatWindow,
-  ModelSelector,
   UsageDashboard,
   FollowUpSuggestions,
-  KeyboardHint,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 
@@ -31,7 +29,8 @@ export const FullChatExperience: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: 'Hello! I can help you with React, TypeScript, and web development.',
+        content:
+          'Hello! I can help you with React, TypeScript, and web development.',
         timestamp: Date.now(),
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -71,14 +70,19 @@ export const FullChatExperience: StoryObj = {
           </button>
         </div>
         <div className="flex-1 relative">
-          <ChatWindow
-            messages={messages}
-            onSendMessage={handleSendMessage}
-          />
+          <ChatWindow messages={messages} onSendMessage={handleSendMessage} />
           <KeyboardHint
             shortcuts={[
-              { keys: ['Ctrl', 'K'], description: 'Command palette', category: 'Navigation' },
-              { keys: ['Ctrl', 'Enter'], description: 'Send message', category: 'Actions' },
+              {
+                keys: ['Ctrl', 'K'],
+                description: 'Command palette',
+                category: 'Navigation',
+              },
+              {
+                keys: ['Ctrl', 'Enter'],
+                description: 'Send message',
+                category: 'Actions',
+              },
               { keys: ['Esc'], description: 'Close', category: 'Navigation' },
             ]}
             visible={showShortcuts}
@@ -116,10 +120,7 @@ export const ChatWithSuggestions: StoryObj = {
     return (
       <div className="h-screen flex flex-col">
         <div className="flex-1">
-          <ChatWindow
-            messages={messages}
-            onSendMessage={handleSendMessage}
-          />
+          <ChatWindow messages={messages} onSendMessage={handleSendMessage} />
         </div>
         {showSuggestions && messages.length === 0 && (
           <div className="border-t p-4 bg-muted/50">
@@ -166,7 +167,7 @@ export const DashboardView: StoryObj = {
             trends={{
               messages: { current: 1234, previous: 1000, change: 23.4 },
               tokens: { current: 45678, previous: 40000, change: 14.2 },
-              cost: { current: 12.34, previous: 10.00, change: 23.4 },
+              cost: { current: 12.34, previous: 10.0, change: 23.4 },
             }}
           />
         </div>

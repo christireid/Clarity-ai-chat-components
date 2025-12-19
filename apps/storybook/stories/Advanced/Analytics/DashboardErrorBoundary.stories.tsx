@@ -3,7 +3,7 @@ import React from 'react'
 import {
   DashboardErrorBoundary,
   useDashboardErrorHandler,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const BrokenWidget: React.FC<{ shouldBreak: boolean }> = ({ shouldBreak }) => {
   if (shouldBreak) {

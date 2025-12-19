@@ -159,6 +159,20 @@ const config: StorybookConfig = {
           '../../../packages/error-handling/src/index.ts'
         ),
       },
+      {
+        find: /^@clarity-chat\/token-optimization\/(.+)$/,
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/token-optimization/src/$1'
+        ),
+      },
+      {
+        find: '@clarity-chat/token-optimization',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/token-optimization/src/index.ts'
+        ),
+      },
       ...existingAlias,
     ]
 

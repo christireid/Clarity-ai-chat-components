@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EvaluationDashboard } from '@clarity-chat/react'
+import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Enterprise/EvaluationDashboard',
@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Dashboard for evaluating AI model performance with metrics, sparklines, and quality indicators.',
+        component:
+          'Dashboard for evaluating AI model performance with metrics, sparklines, and quality indicators.',
       },
     },
   },

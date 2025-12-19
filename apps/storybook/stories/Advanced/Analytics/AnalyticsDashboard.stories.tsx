@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AnalyticsDashboard } from '@clarity-chat/react'
+import { AnalyticsDashboard } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Analytics/AnalyticsDashboard',
@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities.',
+        component:
+          'Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities.',
       },
     },
   },
@@ -69,10 +70,30 @@ const sampleInsights = [
 ]
 
 const sampleActivities = [
-  { id: '1', user: 'Alice Johnson', action: 'sent a message', time: '2 minutes ago' },
-  { id: '2', user: 'Bob Smith', action: 'completed a task', time: '5 minutes ago' },
-  { id: '3', user: 'Charlie Brown', action: 'shared a document', time: '10 minutes ago' },
-  { id: '4', user: 'Diana Prince', action: 'created a conversation', time: '15 minutes ago' },
+  {
+    id: '1',
+    user: 'Alice Johnson',
+    action: 'sent a message',
+    time: '2 minutes ago',
+  },
+  {
+    id: '2',
+    user: 'Bob Smith',
+    action: 'completed a task',
+    time: '5 minutes ago',
+  },
+  {
+    id: '3',
+    user: 'Charlie Brown',
+    action: 'shared a document',
+    time: '10 minutes ago',
+  },
+  {
+    id: '4',
+    user: 'Diana Prince',
+    action: 'created a conversation',
+    time: '15 minutes ago',
+  },
 ]
 
 export const Default: Story = {
