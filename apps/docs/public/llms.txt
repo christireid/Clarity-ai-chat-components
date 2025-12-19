@@ -6,12 +6,22 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 ## Entry Points
 
-Three bundle options for different needs:
+Three main bundle options for different needs:
 
 - `@clarity-chat/react` (~120KB gzipped): Full library with all 200+ components
 - `@clarity-chat/react/core` (~60KB gzipped): Core chat components without dashboards/analytics
 - `@clarity-chat/react/core-minimal` (~30KB gzipped): Minimal bundle with lazy loading for features
+
+### Specialized Entry Points
+
+- `@clarity-chat/react/memory`: Memory management (MemoryProvider, createMemoryStore)
+- `@clarity-chat/react/animations`: Animation utilities and Framer Motion presets
+- `@clarity-chat/react/utils`: Utility functions (formatters, validators, helpers)
+- `@clarity-chat/react/prompt`: Prompt engineering utilities (PromptCacheManager, templates)
+- `@clarity-chat/react/analytics`: Analytics providers and tracking utilities
+- `@clarity-chat/react/adapters`: Model adapters (OpenAI, Anthropic, custom providers)
 - `@clarity-chat/react/test-utils`: Testing utilities (not for production builds)
+- `@clarity-chat/react/styles.css`: Default CSS styles (required for styling)
 
 ## Quick Start
 
