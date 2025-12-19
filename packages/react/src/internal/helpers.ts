@@ -1,4 +1,3 @@
-import { formatBytes } from '@clarity-chat/primitives'
 /**
  * Internal Helper Functions
  *
