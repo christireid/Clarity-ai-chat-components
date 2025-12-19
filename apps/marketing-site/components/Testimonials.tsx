@@ -3,14 +3,23 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
-import { Github, Package, Code2, Users, Star, MessageSquare, Boxes, Shield } from 'lucide-react'
+import {
+  Github,
+  Puzzle,
+  Code,
+  Users,
+  Star,
+  Sparkles,
+  Cpu,
+  Shield,
+} from 'lucide-react'
 import { durations } from '@/lib/constants'
 import Link from 'next/link'
 
 // Verifiable metrics - these can be confirmed by visiting the repo/npm
 const metrics = [
   {
-    icon: Boxes,
+    icon: Cpu,
     value: '170+',
     label: 'React Components',
     description: 'Production-ready, fully typed',
@@ -18,7 +27,7 @@ const metrics = [
     gradient: 'from-clarity-500 to-cyan-500',
   },
   {
-    icon: Code2,
+    icon: Code,
     value: '100%',
     label: 'TypeScript',
     description: 'Strict mode, zero any',
@@ -34,7 +43,7 @@ const metrics = [
     gradient: 'from-pink-500 to-rose-500',
   },
   {
-    icon: Package,
+    icon: Puzzle,
     value: '27KB',
     label: 'Gzipped Bundle',
     description: 'Tree-shakeable, no bloat',
@@ -46,7 +55,8 @@ const metrics = [
 const features = [
   {
     title: 'Multi-Provider Support',
-    description: 'Switch between OpenAI, Anthropic, and Google AI with a single prop change. No rewrites needed.',
+    description:
+      'Switch between OpenAI, Anthropic, and Google AI with a single prop change. No rewrites needed.',
     code: `<ClarityChat
   provider="anthropic" // or "openai" | "google"
   model="claude-3-sonnet"
@@ -54,7 +64,8 @@ const features = [
   },
   {
     title: 'Token Optimization Built-In',
-    description: 'KV-cache integration reduces repeated context tokens. See exactly how much you save.',
+    description:
+      'KV-cache integration reduces repeated context tokens. See exactly how much you save.',
     code: `import { useTokenBudget } from '@clarity-chat/react'
 
 const { savings, usage } = useTokenBudget()
@@ -62,7 +73,8 @@ const { savings, usage } = useTokenBudget()
   },
   {
     title: 'Enterprise-Ready',
-    description: 'SSO, RBAC, audit logging, and SOC 2 compliance support included in Enterprise tier.',
+    description:
+      'SSO, RBAC, audit logging, and SOC 2 compliance support included in Enterprise tier.',
     code: `<ClarityChat
   auth={{ sso: true, provider: 'okta' }}
   audit={{ enabled: true, destination: 's3' }}
@@ -94,11 +106,15 @@ function MetricCard({
       />
 
       <div className="relative glass-card p-6 border border-white/10 hover:border-white/20 transition-all h-full flex flex-col items-center text-center">
-        <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${metric.gradient} mb-4`}>
+        <div
+          className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${metric.gradient} mb-4`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
 
-        <div className={`text-4xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent mb-1`}>
+        <div
+          className={`text-4xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent mb-1`}
+        >
           {metric.value}
         </div>
 
@@ -130,7 +146,9 @@ function FeatureCard({
       <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
       <p className="text-gray-400 mb-4">{feature.description}</p>
       <pre className="bg-surface-950 rounded-lg p-4 overflow-x-auto">
-        <code className="text-sm text-clarity-400 font-mono">{feature.code}</code>
+        <code className="text-sm text-clarity-400 font-mono">
+          {feature.code}
+        </code>
       </pre>
     </motion.div>
   )
@@ -172,19 +190,15 @@ export default function Testimonials() {
             <span className="gradient-text"> Verifiable.</span>
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            No marketing fluff. Every claim is verifiable in our public GitHub repository.
-            Check the code yourself.
+            No marketing fluff. Every claim is verifiable in our public GitHub
+            repository. Check the code yourself.
           </p>
         </motion.div>
 
         {/* Metrics grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {metrics.map((metric, index) => (
-            <MetricCard
-              key={metric.label}
-              metric={metric}
-              index={index}
-            />
+            <MetricCard key={metric.label} metric={metric} index={index} />
           ))}
         </div>
 
@@ -205,7 +219,9 @@ export default function Testimonials() {
             <Github className="w-6 h-6 text-white" />
             <div className="text-left">
               <div className="text-white font-semibold">Browse the Source</div>
-              <div className="text-sm text-gray-400">MIT Licensed &middot; Fork it, extend it, ship it</div>
+              <div className="text-sm text-gray-400">
+                MIT Licensed &middot; Fork it, extend it, ship it
+              </div>
             </div>
             <Star className="w-5 h-5 text-yellow-400 group-hover:scale-110 transition-transform" />
           </Link>
@@ -226,11 +242,7 @@ export default function Testimonials() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              feature={feature}
-              index={index}
-            />
+            <FeatureCard key={feature.title} feature={feature} index={index} />
           ))}
         </div>
 
@@ -243,7 +255,7 @@ export default function Testimonials() {
           className="mt-20 text-center"
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-clarity-500/10 to-cosmic-500/10 border border-white/10">
-            <MessageSquare className="w-8 h-8 text-clarity-400" />
+            <Sparkles className="w-8 h-8 text-clarity-400" />
             <div className="text-left">
               <div className="text-white font-semibold">Join our community</div>
               <div className="text-sm text-gray-400">

@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
-import { Check, ArrowRight, Sparkles, Building, Code } from 'lucide-react'
+import { Check, ArrowRight, Sparkles, Globe, Code } from 'lucide-react'
 import { durations } from '@/lib/constants'
 import TiltCard from '../ui/TiltCard'
 
@@ -51,7 +51,7 @@ const tiers = [
     name: 'Enterprise',
     price: { monthly: 'Custom', annual: 'Custom' },
     description: 'For teams with custom requirements',
-    icon: Building,
+    icon: Globe,
     features: [
       'Everything in Pro',
       'Unlimited developer seats',
@@ -151,110 +151,113 @@ export default function PricingSection() {
               typeof tier.price[billingPeriod] === 'number'
                 ? tier.price[billingPeriod]
                 : tier.price[billingPeriod]
-            
+
             const Icon = tier.icon
 
             return (
-              <TiltCard
-                key={tier.name}
-                className={`h-full`}
-              >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={
-                  isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                }
-                transition={{ duration: durations.slow, delay: i * 0.1 }}
-                className={`relative rounded-2xl ${
-                  tier.highlighted
-                    ? 'border-2 border-clarity-500/50 scale-105 z-10'
-                    : 'border border-white/10'
-                } bg-surface-800 overflow-hidden h-full flex flex-col`}
-              >
-                {/* Highlighted badge */}
-                {tier.highlighted && (
-                  <div className="absolute top-0 left-0 right-0 flex justify-center">
-                    <div className="px-4 py-1 bg-gradient-to-r from-clarity-500 to-cosmic-500 text-white text-sm font-semibold rounded-b-lg flex items-center gap-1">
-                      <Sparkles className="w-4 h-4" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-
-                {/* Glow effect */}
-                {tier.highlighted && (
-                  <div className="absolute inset-0 bg-gradient-to-b from-clarity-500/10 to-transparent pointer-events-none" />
-                )}
-
-                <div className="p-8 pt-12 flex-1 flex flex-col">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${tier.gradient} bg-opacity-10 text-white`}>
-                        <Icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">
-                        {tier.name}
-                    </h3>
-                  </div>
-                  
-                  <p className="text-gray-400 text-sm mb-6">
-                    {tier.description}
-                  </p>
-
-                  <div className="mb-8">
-                    {typeof price === 'number' ? (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-5xl font-bold text-white">
-                          ${price}
-                        </span>
-                        {price > 0 && (
-                          <span className="text-gray-400 text-lg">
-                            /{billingPeriod === 'annual' ? 'mo' : 'month'}
-                          </span>
-                        )}
+              <TiltCard key={tier.name} className={`h-full`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={
+                    isHeaderInView
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 0, y: 20 }
+                  }
+                  transition={{ duration: durations.slow, delay: i * 0.1 }}
+                  className={`relative rounded-2xl ${
+                    tier.highlighted
+                      ? 'border-2 border-clarity-500/50 scale-105 z-10'
+                      : 'border border-white/10'
+                  } bg-surface-800 overflow-hidden h-full flex flex-col`}
+                >
+                  {/* Highlighted badge */}
+                  {tier.highlighted && (
+                    <div className="absolute top-0 left-0 right-0 flex justify-center">
+                      <div className="px-4 py-1 bg-gradient-to-r from-clarity-500 to-cosmic-500 text-white text-sm font-semibold rounded-b-lg flex items-center gap-1">
+                        <Sparkles className="w-4 h-4" />
+                        Most Popular
                       </div>
-                    ) : (
-                      <span className="text-4xl font-bold text-white">
-                        {price}
-                      </span>
-                    )}
-                    {billingPeriod === 'annual' &&
-                      typeof price === 'number' &&
-                      price > 0 && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          per developer / billed annually
-                        </p>
+                    </div>
+                  )}
+
+                  {/* Glow effect */}
+                  {tier.highlighted && (
+                    <div className="absolute inset-0 bg-gradient-to-b from-clarity-500/10 to-transparent pointer-events-none" />
+                  )}
+
+                  <div className="p-8 pt-12 flex-1 flex flex-col">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className={`p-2 rounded-lg bg-gradient-to-br ${tier.gradient} bg-opacity-10 text-white`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">
+                        {tier.name}
+                      </h3>
+                    </div>
+
+                    <p className="text-gray-400 text-sm mb-6">
+                      {tier.description}
+                    </p>
+
+                    <div className="mb-8">
+                      {typeof price === 'number' ? (
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-5xl font-bold text-white">
+                            ${price}
+                          </span>
+                          {price > 0 && (
+                            <span className="text-gray-400 text-lg">
+                              /{billingPeriod === 'annual' ? 'mo' : 'month'}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-4xl font-bold text-white">
+                          {price}
+                        </span>
                       )}
-                     {price === 0 && (
+                      {billingPeriod === 'annual' &&
+                        typeof price === 'number' &&
+                        price > 0 && (
+                          <p className="text-sm text-gray-500 mt-1">
+                            per developer / billed annually
+                          </p>
+                        )}
+                      {price === 0 && (
                         <p className="text-sm text-gray-500 mt-1">
                           Free forever for personal use
                         </p>
-                     )}
+                      )}
+                    </div>
+
+                    <ul className="space-y-3 mb-8 flex-1">
+                      {tier.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-3">
+                          <div className="mt-0.5 p-0.5 rounded-full bg-clarity-500/20">
+                            <Check className="w-4 h-4 text-clarity-400" />
+                          </div>
+                          <span className="text-gray-300 text-sm">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link
+                      href={tier.href}
+                      className={`flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl font-semibold transition-all ${
+                        tier.highlighted
+                          ? 'bg-gradient-to-r from-clarity-500 to-cosmic-500 text-white hover:from-clarity-400 hover:to-cosmic-400 shadow-lg shadow-clarity-500/20'
+                          : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
+                      }`}
+                    >
+                      {tier.cta}
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
-
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {tier.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <div className="mt-0.5 p-0.5 rounded-full bg-clarity-500/20">
-                          <Check className="w-4 h-4 text-clarity-400" />
-                        </div>
-                        <span className="text-gray-300 text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href={tier.href}
-                    className={`flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl font-semibold transition-all ${
-                      tier.highlighted
-                        ? 'bg-gradient-to-r from-clarity-500 to-cosmic-500 text-white hover:from-clarity-400 hover:to-cosmic-400 shadow-lg shadow-clarity-500/20'
-                        : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
-                    }`}
-                  >
-                    {tier.cta}
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </motion.div>
+                </motion.div>
               </TiltCard>
             )
           })}

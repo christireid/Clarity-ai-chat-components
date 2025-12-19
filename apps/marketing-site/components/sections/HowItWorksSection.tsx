@@ -3,15 +3,16 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
-import { Terminal, Code2, Rocket, ArrowRight } from 'lucide-react'
+import { Sparkles, Code, Zap, ArrowRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
 
 const steps = [
   {
     number: '01',
     title: 'Install',
-    description: 'Add to your React project with npm or scaffold a new project with our CLI.',
-    icon: Terminal,
+    description:
+      'Add to your React project with npm or scaffold a new project with our CLI.',
+    icon: Sparkles,
     code: `npm install @clarity-chat/react
 # or scaffold a new project
 npx create-clarity-chat@latest`,
@@ -19,8 +20,9 @@ npx create-clarity-chat@latest`,
   {
     number: '02',
     title: 'Import & Configure',
-    description: 'Import the components you need. Configure your AI provider with a single prop.',
-    icon: Code2,
+    description:
+      'Import the components you need. Configure your AI provider with a single prop.',
+    icon: Code,
     code: `import { ClarityChat } from '@clarity-chat/react'
 
 export default function Chat() {
@@ -36,8 +38,9 @@ export default function Chat() {
   {
     number: '03',
     title: 'Customize & Ship',
-    description: 'Style with Tailwind, add memory hooks, enable token tracking. Deploy when ready.',
-    icon: Rocket,
+    description:
+      'Style with Tailwind, add memory hooks, enable token tracking. Deploy when ready.',
+    icon: Zap,
     code: `<ClarityChat
   provider="anthropic"
   model="claude-3-sonnet"
@@ -48,13 +51,7 @@ export default function Chat() {
   },
 ]
 
-function StepCard({
-  step,
-  index,
-}: {
-  step: (typeof steps)[0]
-  index: number
-}) {
+function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const Icon = step.icon
@@ -89,7 +86,9 @@ function StepCard({
 
         {/* Code block */}
         <pre className="bg-surface-950 rounded-lg p-4 overflow-x-auto">
-          <code className="text-sm text-clarity-400 font-mono whitespace-pre">{step.code}</code>
+          <code className="text-sm text-clarity-400 font-mono whitespace-pre">
+            {step.code}
+          </code>
         </pre>
       </div>
     </motion.div>
