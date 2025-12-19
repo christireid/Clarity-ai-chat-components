@@ -50,21 +50,28 @@ const synonyms: Record<string, string[]> = {
 }
 
 // Component descriptions for AI-friendly context
-const componentDescriptions: Record<string, { description: string; keywords: string[] }> = {
+const componentDescriptions: Record<
+  string,
+  { description: string; keywords: string[] }
+> = {
   ClarityChat: {
-    description: 'All-in-one chat component with built-in state management, streaming, and token optimization',
+    description:
+      'All-in-one chat component with built-in state management, streaming, and token optimization',
     keywords: ['chat', 'messages', 'streaming', 'main'],
   },
   ChatWindow: {
-    description: 'Container component for chat interfaces with responsive design and scroll management',
+    description:
+      'Container component for chat interfaces with responsive design and scroll management',
     keywords: ['container', 'layout', 'wrapper', 'responsive'],
   },
   MessageList: {
-    description: 'Display chat messages with virtualization support for performance',
+    description:
+      'Display chat messages with virtualization support for performance',
     keywords: ['messages', 'display', 'virtual', 'scroll'],
   },
   ChatInput: {
-    description: 'User input component with voice, attachments, and keyboard shortcuts',
+    description:
+      'User input component with voice, attachments, and keyboard shortcuts',
     keywords: ['input', 'text', 'voice', 'upload'],
   },
   StreamingMessage: {
@@ -110,9 +117,13 @@ const componentDescriptions: Record<string, { description: string; keywords: str
 }
 
 // Hook descriptions
-const hookDescriptions: Record<string, { description: string; keywords: string[] }> = {
+const hookDescriptions: Record<
+  string,
+  { description: string; keywords: string[] }
+> = {
   useChat: {
-    description: 'Primary hook for managing chat state, messages, and operations',
+    description:
+      'Primary hook for managing chat state, messages, and operations',
     keywords: ['chat', 'state', 'messages', 'send'],
   },
   useStreaming: {
@@ -162,7 +173,10 @@ const hookDescriptions: Record<string, { description: string; keywords: string[]
 }
 
 // Guide descriptions
-const guideDescriptions: Record<string, { description: string; keywords: string[] }> = {
+const guideDescriptions: Record<
+  string,
+  { description: string; keywords: string[] }
+> = {
   'Quick Start': {
     description: 'Get started with Clarity Chat in 5 minutes',
     keywords: ['start', 'begin', 'setup', 'install'],
@@ -312,7 +326,10 @@ function calculateRelevance(
 
   // Keyword matching
   for (const keyword of item.keywords) {
-    if (keyword.toLowerCase().includes(queryLower) || queryLower.includes(keyword.toLowerCase())) {
+    if (
+      keyword.toLowerCase().includes(queryLower) ||
+      queryLower.includes(keyword.toLowerCase())
+    ) {
       score += 30
       if (matchType === 'none') matchType = 'keyword'
     } else if (useFuzzy) {
@@ -324,7 +341,10 @@ function calculateRelevance(
   }
 
   // Type/category bonus
-  if (item.type.toLowerCase().includes(queryLower) || item.category.toLowerCase().includes(queryLower)) {
+  if (
+    item.type.toLowerCase().includes(queryLower) ||
+    item.category.toLowerCase().includes(queryLower)
+  ) {
     score += 20
   }
 
@@ -334,7 +354,10 @@ function calculateRelevance(
 /**
  * Generate search suggestions based on partial query
  */
-function generateSuggestions(query: string, results: EnhancedSearchItem[]): string[] {
+function generateSuggestions(
+  query: string,
+  results: EnhancedSearchItem[]
+): string[] {
   if (!query || query.length < 2) return []
 
   const suggestions = new Set<string>()
@@ -411,7 +434,10 @@ export async function GET(request: Request) {
     const parsedPage = parseInt(searchParams.get('page') || '1', 10)
     const parsedLimit = parseInt(searchParams.get('limit') || '20', 10)
     const page = Math.max(1, Number.isNaN(parsedPage) ? 1 : parsedPage)
-    const limit = Math.min(100, Math.max(1, Number.isNaN(parsedLimit) ? 20 : parsedLimit))
+    const limit = Math.min(
+      100,
+      Math.max(1, Number.isNaN(parsedLimit) ? 20 : parsedLimit)
+    )
     const cursor = searchParams.get('cursor')
 
     let results = enhanceSearchData()
@@ -430,7 +456,11 @@ export async function GET(request: Request) {
         let bestHighlights: string[] = []
 
         for (const expandedQuery of expandedQueries) {
-          const { score, matchType, highlights } = calculateRelevance(item, expandedQuery, useFuzzy)
+          const { score, matchType, highlights } = calculateRelevance(
+            item,
+            expandedQuery,
+            useFuzzy
+          )
           if (score > bestScore) {
             bestScore = score
             bestMatchType = matchType
@@ -450,7 +480,9 @@ export async function GET(request: Request) {
       const minScore = useFuzzy ? 10 : 20
       results = scoredResults
         .filter((r) => r.relevanceScore >= minScore)
-        .sort((a, b) => b.relevanceScore - a.relevanceScore) as EnhancedSearchItem[]
+        .sort(
+          (a, b) => b.relevanceScore - a.relevanceScore
+        ) as EnhancedSearchItem[]
 
       // Generate suggestions
       suggestions = generateSuggestions(query, results)
@@ -474,7 +506,8 @@ export async function GET(request: Request) {
 
     for (const result of results) {
       facets.types[result.type] = (facets.types[result.type] || 0) + 1
-      facets.categories[result.category] = (facets.categories[result.category] || 0) + 1
+      facets.categories[result.category] =
+        (facets.categories[result.category] || 0) + 1
     }
 
     // Pagination
@@ -490,9 +523,10 @@ export async function GET(request: Request) {
     }
 
     const paginatedResults = results.slice(startIndex, startIndex + limit)
-    const nextCursor = paginatedResults.length > 0
-      ? paginatedResults[paginatedResults.length - 1]?.href
-      : null
+    const nextCursor =
+      paginatedResults.length > 0
+        ? paginatedResults[paginatedResults.length - 1]?.href
+        : null
 
     const processingTime = Date.now() - startTime
 
@@ -539,14 +573,24 @@ export async function GET(request: Request) {
 
       // Results with relevance
       totalResults,
-      results: paginatedResults.map((item: EnhancedSearchItem & { relevanceScore?: number; matchType?: string; highlights?: string[] }) => ({
-        ...item,
-        relevance: item.relevanceScore ? {
-          score: Math.round(item.relevanceScore),
-          matchType: item.matchType,
-          highlights: item.highlights,
-        } : undefined,
-      })),
+      results: paginatedResults.map(
+        (
+          item: EnhancedSearchItem & {
+            relevanceScore?: number
+            matchType?: string
+            highlights?: string[]
+          }
+        ) => ({
+          ...item,
+          relevance: item.relevanceScore
+            ? {
+                score: Math.round(item.relevanceScore),
+                matchType: item.matchType,
+                highlights: item.highlights,
+              }
+            : undefined,
+        })
+      ),
 
       // Facets for filtering UI
       facets,
@@ -582,7 +626,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    logger.error('[AI Search API] Error:', error)
+    console.error('[AI Search API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

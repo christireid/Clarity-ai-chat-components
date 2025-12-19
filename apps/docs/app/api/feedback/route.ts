@@ -7,8 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedbackStore } from '@/lib/ai/feedbackStore'
 
-const logger = getLogger('feedback')
-
+// Logger disabled for now
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -61,7 +60,9 @@ export async function POST(request: NextRequest) {
       metadata: body.metadata || {},
     })
 
-    logger.debug(`✅ Feedback received: ${body.type} for message ${body.messageId}`)
+    logger.debug(
+      `✅ Feedback received: ${body.type} for message ${body.messageId}`
+    )
 
     return NextResponse.json({
       success: true,
@@ -96,10 +97,7 @@ export async function GET(request: NextRequest) {
       const adminToken = process.env.ADMIN_AUTH_TOKEN
 
       if (!adminToken || authHeader !== `Bearer ${adminToken}`) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        )
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
     }
 

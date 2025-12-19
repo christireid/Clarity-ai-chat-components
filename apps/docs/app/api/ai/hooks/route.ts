@@ -845,8 +845,7 @@ function ReliableChat() {
     description:
       'Access and manage AI conversation memory within the MemoryProvider context. Add, query, update, and delete memories.',
     category: 'memory',
-    signature:
-      'useMemoryContext(): UseMemoryContextReturn',
+    signature: 'useMemoryContext(): UseMemoryContextReturn',
     parameters: [],
     returns: {
       type: 'UseMemoryContextReturn',
@@ -953,7 +952,8 @@ function ChatWithMemory() {
       ],
     },
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
+    docsUrl:
+      'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
     examples: [
       `import { useClarityChatWithTools } from "@clarity-chat/react";
 
@@ -1558,7 +1558,7 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logger.error('[AI Hooks API] Error:', error)
+    console.error('[AI Hooks API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

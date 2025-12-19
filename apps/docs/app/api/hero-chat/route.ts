@@ -691,7 +691,7 @@ export async function POST(request: NextRequest) {
         controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'))
         controller.close()
       } catch (error) {
-        logger.error('Hero Chat API error:', error)
+        console.error('Hero Chat API error:', error)
         controller.enqueue(
           encode({
             type: 'error',

@@ -13,17 +13,15 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
-const logger = getLogger('docs-assistant')
+// Logger disabled for now
 
 import {
   enhanceMessageWithRAG,
-
   formatCitations,
   shouldUseRAG,
 } from '@/lib/ai/rag'
 import {
   createSSEStream,
-
   getStreamingFunction,
   checkRateLimit,
   validateRequest,
@@ -32,23 +30,19 @@ import {
 } from '@/lib/ai/streaming'
 import {
   SYSTEM_PROMPT,
-
   ERROR_PROMPT,
   RATE_LIMIT_PROMPT,
 } from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
-
   updateSessionWithMessages,
   type SessionMessage,
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
-
 // Token optimization imports from @clarity-chat/react
 import {
   compressPrompt,
-
   balancedCompress,
   compressConversation,
   routeQuery,
