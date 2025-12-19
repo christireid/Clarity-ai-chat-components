@@ -9,11 +9,11 @@ export interface TokenCounterError extends Error {
 }
 
 export interface ErrorContext {
-  input: any
-  options?: any
+  input: unknown
+  options?: Record<string, unknown>
   timestamp: number
   stack?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface ErrorHandlingOptions {
@@ -109,7 +109,7 @@ export class RobustTokenCounter {
   /**
    * Validate input text
    */
-  private validateInput(text: any): {
+  private validateInput(text: unknown): {
     valid: boolean
     reason?: string
     sanitized?: string
@@ -183,7 +183,7 @@ export class RobustTokenCounter {
    * Handle various types of errors
    */
   private handleError(
-    error: any,
+    error: unknown,
     text: string,
     options: Required<ErrorHandlingOptions>,
     startTime: number
@@ -347,9 +347,9 @@ export class RobustTokenCounter {
    * Create error from any thrown value
    */
   private createErrorFromAny(
-    error: any,
+    error: unknown,
     text: string,
-    options: any,
+    options: Record<string, unknown>,
     code?: string
   ): TokenCounterError {
     if (this.isTokenCounterError(error)) {
@@ -357,7 +357,8 @@ export class RobustTokenCounter {
     }
 
     const errorCode = code || this.inferErrorCode(error)
-    const message = error.message || String(error) || 'Unknown error'
+    const message =
+      error instanceof Error ? error.message : String(error) || 'Unknown error'
 
     return this.createError(errorCode, message, {
       text,
@@ -372,13 +373,13 @@ export class RobustTokenCounter {
   private createError(
     code: string,
     message: string,
-    context: any
+    context: Record<string, unknown>
   ): TokenCounterError {
     const error = new Error(message) as TokenCounterError
     error.code = code
     error.context = {
       input: context.text || context.input,
-      options: context.options,
+      options: context.options as Record<string, unknown> | undefined,
       timestamp: Date.now(),
       stack: new Error().stack,
       metadata: context,
@@ -393,7 +394,7 @@ export class RobustTokenCounter {
   /**
    * Infer error code from error
    */
-  private inferErrorCode(error: any): string {
+  private inferErrorCode(error: unknown): string {
     const errorString = String(error).toLowerCase()
 
     if (errorString.includes('timeout')) return 'TIMEOUT'
@@ -425,9 +426,9 @@ export class RobustTokenCounter {
   /**
    * Check if error is TokenCounterError
    */
-  private isTokenCounterError(error: any): error is TokenCounterError {
+  private isTokenCounterError(error: unknown): error is TokenCounterError {
     return (
-      error &&
+      error !== null &&
       typeof error === 'object' &&
       'code' in error &&
       'context' in error

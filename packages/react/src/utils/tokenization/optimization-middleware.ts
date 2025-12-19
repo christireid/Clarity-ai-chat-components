@@ -59,8 +59,8 @@ export interface OptimizationContext {
   contextType?: string
   domain?: string
   complexity?: 'low' | 'medium' | 'high'
-  historicalData?: any
-  userPreferences?: any
+  historicalData?: Record<string, unknown>
+  userPreferences?: Record<string, unknown>
 }
 
 export interface MiddlewareResult {
@@ -91,13 +91,31 @@ export interface TokenUsageMetrics {
   costSavings: number
 }
 
+export interface HistoryEntry {
+  timestamp: number
+  context: OptimizationContext
+  result: MiddlewareResult
+  tokens: number
+}
+
+export interface ChatPayload {
+  text?: string
+  prompt?: string
+  messages?: Array<{ content: string; role?: string }>
+  model?: string
+  conversationId?: string
+  userId?: string
+  context?: Record<string, unknown>
+  [key: string]: unknown
+}
+
 /**
  * Core token optimization middleware
  */
 export class TokenOptimizationMiddleware {
   private config: MiddlewareConfig
   private metrics: TokenUsageMetrics
-  private requestHistory: Map<string, any[]>
+  private requestHistory: Map<string, HistoryEntry[]>
   private optimizationCache: Map<string, MiddlewareResult>
   private activeConversations: Map<string, OptimizationContext>
 
@@ -573,7 +591,7 @@ export class TokenOptimizationMiddleware {
    */
   private handleOptimizationError(
     text: string,
-    error: any,
+    error: unknown,
     startTime: number
   ): MiddlewareResult {
     console.warn('Token optimization failed:', error)
@@ -591,7 +609,7 @@ export class TokenOptimizationMiddleware {
         strategyUsed: 'fallback',
         cacheHit: false,
         fallbackUsed: true,
-        errors: [error.message],
+        errors: [error instanceof Error ? error.message : String(error)],
         warnings: ['Optimization failed, using original text'],
         recommendations: ['Check optimization configuration'],
       }
@@ -680,7 +698,7 @@ export class TokenOptimizationMiddleware {
   /**
    * Get history
    */
-  getHistory(id?: string): any[] {
+  getHistory(id?: string): HistoryEntry[] {
     const key = id || 'global'
     return this.requestHistory.get(key) || []
   }
@@ -721,13 +739,19 @@ export class TokenOptimizationInterceptor {
       model?: string
       conversationId?: string
       userId?: string
-      context?: any
+      context?: Record<string, unknown>
     },
-    options?: any
+    options?: Record<string, unknown>
   ): Promise<{
     optimizedText: string
-    metrics: any
-    originalRequest: any
+    metrics: MiddlewareResult | null
+    originalRequest: {
+      text: string
+      model?: string
+      conversationId?: string
+      userId?: string
+      context?: Record<string, unknown>
+    }
   }> {
     if (!this.enabled) {
       return {
@@ -737,14 +761,22 @@ export class TokenOptimizationInterceptor {
       }
     }
 
+    const reqContext = request.context || {}
     const context: OptimizationContext = {
       model: request.model || 'gpt-3.5-turbo',
       conversationId: request.conversationId,
       userId: request.userId,
       timestamp: Date.now(),
-      contextType: request.context?.type,
-      domain: request.context?.domain,
-      complexity: request.context?.complexity,
+      contextType:
+        typeof reqContext.type === 'string' ? reqContext.type : undefined,
+      domain:
+        typeof reqContext.domain === 'string' ? reqContext.domain : undefined,
+      complexity:
+        reqContext.complexity === 'low' ||
+        reqContext.complexity === 'medium' ||
+        reqContext.complexity === 'high'
+          ? reqContext.complexity
+          : undefined,
     }
 
     const result = await this.middleware.optimize(
@@ -755,14 +787,7 @@ export class TokenOptimizationInterceptor {
 
     return {
       optimizedText: result.optimizedText,
-      metrics: {
-        originalTokens: result.originalTokens,
-        optimizedTokens: result.optimizedTokens,
-        reductionRatio: result.reductionRatio,
-        estimatedCost: result.estimatedCost,
-        processingTime: result.processingTime,
-        cacheHit: result.cacheHit,
-      },
+      metrics: result,
       originalRequest: request,
     }
   }
@@ -790,20 +815,21 @@ export class TokenOptimizedAPI {
    */
   async createRequest(
     endpoint: string,
-    payload: any,
-    options?: any
-  ): Promise<any> {
+    payload: ChatPayload | string,
+    options?: Record<string, unknown>
+  ): Promise<ChatPayload | string> {
     // Extract text content from payload
     const text = this.extractTextFromPayload(payload)
 
     if (text) {
+      const payloadObj = typeof payload === 'string' ? {} : payload
       const intercepted = await this.interceptor.interceptRequest(
         {
           text,
-          model: payload.model,
-          conversationId: payload.conversationId,
-          userId: payload.userId,
-          context: payload.context,
+          model: payloadObj.model,
+          conversationId: payloadObj.conversationId,
+          userId: payloadObj.userId,
+          context: payloadObj.context,
         },
         options
       )
@@ -813,6 +839,10 @@ export class TokenOptimizedAPI {
         payload,
         intercepted.optimizedText
       )
+
+      if (typeof optimizedPayload === 'string') {
+        return optimizedPayload
+      }
 
       return {
         ...optimizedPayload,
@@ -826,12 +856,12 @@ export class TokenOptimizedAPI {
   /**
    * Extract text from various payload formats
    */
-  private extractTextFromPayload(payload: any): string {
+  private extractTextFromPayload(payload: ChatPayload | string): string {
     if (typeof payload === 'string') return payload
     if (payload.text) return payload.text
     if (payload.prompt) return payload.prompt
     if (payload.messages) {
-      return payload.messages.map((m: any) => m.content).join(' ')
+      return payload.messages.map((m) => m.content).join(' ')
     }
     return ''
   }
@@ -839,7 +869,10 @@ export class TokenOptimizedAPI {
   /**
    * Replace text in payload
    */
-  private replaceTextInPayload(payload: any, newText: string): any {
+  private replaceTextInPayload(
+    payload: ChatPayload | string,
+    newText: string
+  ): ChatPayload | string {
     if (typeof payload === 'string') return newText
     if (payload.text) return { ...payload, text: newText }
     if (payload.prompt) return { ...payload, prompt: newText }
@@ -890,7 +923,7 @@ export function getOptimizationMetrics(): TokenUsageMetrics {
   return tokenMiddleware.getMetrics()
 }
 
-export function getOptimizationHistory(id?: string): any[] {
+export function getOptimizationHistory(id?: string): HistoryEntry[] {
   return tokenMiddleware.getHistory(id)
 }
 

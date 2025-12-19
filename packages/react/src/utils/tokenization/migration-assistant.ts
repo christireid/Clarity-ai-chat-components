@@ -44,6 +44,12 @@ export interface LegacyAPI {
   description: string
 }
 
+export interface MigrationIssue {
+  type: string
+  line: number
+  message: string
+}
+
 /**
  * Migration assistant for transitioning from legacy token counting to @clarity-chat/token-optimization
  */
@@ -388,10 +394,8 @@ ${analysis.recommendations.map((rec) => `- ${rec}`).join('\n')}
   /**
    * Find issues in codebase
    */
-  private findIssues(
-    codebase: string
-  ): Array<{ type: string; line: number; message: string }> {
-    const issues: Array<{ type: string; line: number; message: string }> = []
+  private findIssues(codebase: string): MigrationIssue[] {
+    const issues: MigrationIssue[] = []
 
     this.legacyAPIs.forEach((api) => {
       const matches = codebase.match(api.pattern)
@@ -506,7 +510,7 @@ ${analysis.recommendations.map((rec) => `- ${rec}`).join('\n')}
   }
 
   private generateRecommendations(
-    issues: any[],
+    issues: MigrationIssue[],
     breakingChanges: number
   ): string[] {
     const recommendations: string[] = []
