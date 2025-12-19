@@ -34,7 +34,7 @@ import {
 } from 'lucide-react'
 import { useReducedMotion } from '@clarity-chat/react'
 import { cn } from '@/lib/utils'
-import { createFadeVariant, createSlideVariant } from '@/lib/animations'
+import { fadeIn, fadeInUp } from '@/lib/animations'
 
 // ============================================================================
 // Types
@@ -313,8 +313,9 @@ const MENTION_COMMANDS: Command[] = [
 // Animation Variants
 // ============================================================================
 
-const menuVariants = createSlideVariant('up', 8, 'fast', 'out')
-const menuVariantsReduced = createFadeVariant('fast', 'out')
+// Use fadeInUp for menu animation (slides up), fadeIn for reduced motion
+const menuVariants = fadeInUp
+const menuVariantsReduced = fadeIn
 
 // ============================================================================
 // CommandMenu Component
@@ -688,6 +689,5 @@ export function useSlashCommands(
   }
 }
 
-// Export command types for external use
-export type { Command }
+// Export command data for external use
 export { SLASH_COMMANDS, MENTION_COMMANDS }

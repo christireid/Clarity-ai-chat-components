@@ -703,7 +703,7 @@ interface ToonMetadata {
       </section>
 
       <Pagination
-        previous={{
+        prev={{
           title: 'createMemoryStore',
           href: '/reference/utilities/create-memory-store',
         }}

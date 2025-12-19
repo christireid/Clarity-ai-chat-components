@@ -650,7 +650,7 @@ function ChatWithOptimization() {
       </section>
 
       <Pagination
-        previous={{
+        prev={{
           title: 'Dev Tools',
           href: '/tools/dev-tools',
         }}
