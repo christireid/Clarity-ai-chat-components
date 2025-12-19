@@ -19,7 +19,7 @@ const Hero3D = dynamic(() => import('../3d/Hero3D'), {
 
 const trustBadges = [
   { icon: Shield, label: 'TypeScript Strict' },
-  { icon: Sparkles, label: 'WCAG 2.1 AA' },
+  { icon: Sparkles, label: 'MIT Licensed' },
   { icon: Zap, label: '27KB gzipped' },
 ]
 
@@ -61,7 +61,10 @@ export default function HeroSection() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
-                <span>170+ Components &middot; MIT Licensed &middot; TypeScript Strict</span>
+                <span>
+                  170+ Components &middot; MIT Licensed &middot; TypeScript
+                  Strict
+                </span>
               </div>
             </motion.div>
 
@@ -83,8 +86,9 @@ export default function HeroSection() {
               transition={{ delay: 0.3, duration: durations.slow }}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              170+ production-ready React components for AI chat. OpenAI, Anthropic,
-              and Google AI in one library. Token optimization built in.
+              170+ production-ready React components for AI chat. OpenAI,
+              Anthropic, and Google AI in one library. Token optimization built
+              in.
             </motion.p>
 
             {/* CTAs */}
@@ -100,7 +104,7 @@ export default function HeroSection() {
               >
                 Get Started Free
               </MagneticButton>
-              
+
               <MagneticButton
                 href="https://github.com/christireid/Clarity-ai-chat-components"
                 variant="secondary"

@@ -37,9 +37,9 @@ export default function NewsletterSignup() {
             <span className="gradient-text">AI Chat Implementation Guide</span>
           </h3>
           <p className="text-gray-400 mb-6">
-            Join 12,000+ developers receiving our weekly deep-dives on LLM
-            streaming, token optimization, and UI/UX patterns. Plus, get our
-            "Production Checklist" free.
+            Weekly deep-dives on LLM streaming, token optimization, and UI/UX
+            patterns for AI chat interfaces. Plus, get our "Production
+            Checklist" free.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex items-center gap-2 text-sm text-gray-500">

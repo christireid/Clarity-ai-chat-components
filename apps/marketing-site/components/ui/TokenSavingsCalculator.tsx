@@ -9,14 +9,14 @@ export default function TokenSavingsCalculator() {
   const [msgsPerUser, setMsgsPerUser] = useState(50)
   const [avgTokens, setAvgTokens] = useState(1000) // Input + Output
 
-  // Assumptions:
-  // GPT-4o cost blended: ~$5 / 1M tokens (very rough avg of input/output)
-  // Clarity Cache savings: ~40% on Input tokens (which are usually 70% of traffic)
-  // Let's assume conservative 30% total savings
+  // Estimates based on:
+  // - Average LLM costs: ~$5/1M tokens (blended input/output)
+  // - Cache hit rates vary by conversation patterns (20-50% typical)
+  // - Using 30% as conservative midpoint estimate
 
   const totalTokens = mau * msgsPerUser * avgTokens
   const estimatedCost = (totalTokens / 1000000) * 5 // $5 per million
-  const savings = estimatedCost * 0.4 // 40% savings claim
+  const savings = estimatedCost * 0.3 // Conservative 30% estimate
 
   return (
     <div className="glass-card p-8 border border-white/10">
@@ -87,7 +87,8 @@ export default function TokenSavingsCalculator() {
         </div>
         <div className="mt-4 pt-4 border-t border-white/5 text-center">
           <p className="text-xs text-gray-500">
-            Based on average LLM provider costs and 40% cache hit rate.
+            Estimates only. Actual savings depend on conversation patterns and
+            provider.
           </p>
         </div>
       </div>

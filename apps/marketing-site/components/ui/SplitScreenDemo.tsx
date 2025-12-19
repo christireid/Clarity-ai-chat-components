@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/constants'
 import {
   Check,
   Copy,
