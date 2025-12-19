@@ -183,6 +183,7 @@ Programmatic access to Clarity Chat documentation for AI systems and RAG applica
 
 Model Context Protocol server for Claude Code and other AI tools:
 
+**Option 1: API-based (Recommended for external use)**
 ```json
 {
   "mcpServers": {
@@ -193,5 +194,17 @@ Model Context Protocol server for Claude Code and other AI tools:
   }
 }
 ```
+Tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
 
-Available MCP tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
+**Option 2: Enhanced Local Server (28+ tools, for development)**
+```json
+{
+  "mcpServers": {
+    "clarity-chat-enhanced": {
+      "command": "npx",
+      "args": ["tsx", "tools/mcp-server/src/index.ts"]
+    }
+  }
+}
+```
+Tools: 28+ tools including `component_lookup`, `hook_lookup`, `project_init`, `generate_chat_interface`, `estimate_token_cost`, `accessibility_audit`, and more. Includes prompts and resources.
