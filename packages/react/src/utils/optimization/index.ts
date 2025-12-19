@@ -104,7 +104,17 @@ export {
   type StructuredMessage,
 } from './context-ordering'
 
-export * from './context-window'
+// Context Window (explicit exports to avoid ContextMessage conflict with context-ordering)
+export {
+  FIFOTruncation,
+  SlidingWindowTruncation,
+  SmartTruncation,
+  SummarizationTruncation,
+  ContextWindowManager,
+  type ContextMessage as ContextWindowMessage,
+  type ContextWindowOptions,
+  type TruncationStrategy,
+} from './context-window'
 
 // Caching
 export {

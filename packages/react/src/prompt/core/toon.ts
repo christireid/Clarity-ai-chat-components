@@ -5,7 +5,7 @@
  * Toon nodes can be combined to create complex prompt structures.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 
 /**
  * Base toon node type
@@ -168,7 +168,10 @@ export class ToonBuilder {
   role(
     role: 'system' | 'user' | 'assistant',
     builder: (b: ToonBuilder) => ToonBuilder,
-    options?: { importance?: number; compressStrategy?: 'keep' | 'summarize' | 'drop' }
+    options?: {
+      importance?: number
+      compressStrategy?: 'keep' | 'summarize' | 'drop'
+    }
   ): this {
     const roleBuilder = new ToonBuilder()
     builder(roleBuilder)
@@ -309,7 +312,10 @@ export function renderToon(
 /**
  * Render a single toon node
  */
-function renderNode(node: ToonNode, variables: Record<string, unknown>): string {
+function renderNode(
+  node: ToonNode,
+  variables: Record<string, unknown>
+): string {
   switch (node.type) {
     case 'text':
       return node.content
