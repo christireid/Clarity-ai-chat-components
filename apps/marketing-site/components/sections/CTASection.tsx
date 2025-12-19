@@ -64,15 +64,15 @@ export default function CTASection() {
           <span className="gradient-text"> This Weekend.</span>
         </motion.h2>
 
-        {/* Description - Urgency and value */}
+        {/* Description */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: durations.slow, delay: 0.2 }}
           className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto"
         >
-          One command. Production-ready chat UI. What takes agencies 12 months
-          takes you 12 minutes.
+          One command. 170+ components. MIT licensed.
+          Start building your AI chat interface now.
         </motion.p>
 
         {/* Install command */}
@@ -136,15 +136,15 @@ export default function CTASection() {
         >
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>Free forever tier</span>
+            <span>MIT Licensed</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>No credit card</span>
+            <span>TypeScript Strict</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>30-day money back</span>
+            <span>Open Source</span>
           </div>
         </motion.div>
         {/* Newsletter Signup */}

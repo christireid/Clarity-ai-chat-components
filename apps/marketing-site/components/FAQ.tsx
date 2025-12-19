@@ -9,44 +9,44 @@ import { durations } from '@/lib/constants'
 
 const faqs = [
   {
-    question: 'Is there a free tier?',
+    question: 'Is Clarity Chat free to use?',
     answer:
-      'Yes! The Starter tier is completely free with 15+ core components. Use it forever for learning and prototyping. Pro and Enterprise plans come with a 30-day money-back guarantee.',
+      'Yes! The entire library is MIT licensed and open source. All 170+ components are free to use in personal and commercial projects. Pro and Enterprise tiers offer priority support and additional services.',
   },
   {
-    question: 'What happens when my annual license expires?',
+    question: 'Which AI providers are supported?',
     answer:
-      "You can continue using the version you have, but won't receive updates or support. Simply renew to continue receiving the latest features and support.",
+      'We support OpenAI (GPT-4, GPT-3.5), Anthropic (Claude), and Google AI (Gemini). Switching providers is a single prop change - no code rewrites needed.',
   },
   {
-    question: 'Can I use this in client projects?',
+    question: 'How does the token optimization work?',
     answer:
-      'Yes! With a Pro or Enterprise license, you can build unlimited projects for clients. Each developer working with Clarity Chat needs their own seat.',
+      'We integrate with provider KV-cache APIs to avoid resending repeated context. The useTokenBudget hook tracks usage in real-time. Actual savings depend on your conversation patterns.',
   },
   {
-    question: 'Do I need a license for end users?',
+    question: 'What is the bundle size?',
     answer:
-      'No! Only developers who access the source code need licenses. Your end users (people using your application) do not need any license.',
+      'The core library is 27KB gzipped. All exports are tree-shakeable, so you only bundle what you import. Check the npm package for current size.',
   },
   {
-    question: 'Can I use this in a SaaS product?',
+    question: 'Is TypeScript required?',
     answer:
-      'Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.',
+      'No, but recommended. The library is written in TypeScript with strict mode. You get full IntelliSense and type checking, but JavaScript projects work fine too.',
   },
   {
-    question: "What's the difference between Annual and Lifetime?",
+    question: 'Can I customize the components?',
     answer:
-      'Annual gives you 1 year of updates and renews automatically. Lifetime gives you perpetual updates for the current major version (e.g., v1.x) with a one-time payment.',
+      'Yes. All components accept className props and are built with Tailwind CSS. You can override styles, extend components, or use them as references for your own.',
   },
   {
-    question: 'Do you offer refunds?',
+    question: 'What does Pro support include?',
     answer:
-      'Yes! We offer a 30-day money-back guarantee on all Pro and Enterprise plans. No questions asked.',
+      'Pro tier includes priority email support, private Slack channel access, Figma design kit, and early access to new features. The library itself remains MIT licensed.',
   },
   {
-    question: 'Can I upgrade from Pro to Enterprise?',
+    question: 'How do I get started?',
     answer:
-      "Absolutely! We'll credit your Pro license toward the first year of Enterprise. Contact us for upgrade pricing.",
+      'Run npx create-clarity-chat@latest to scaffold a new project, or npm install @clarity-chat/react to add to an existing project. Check the docs for detailed guides.',
   },
 ]
 

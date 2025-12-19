@@ -23,13 +23,6 @@ const trustBadges = [
   { icon: Zap, label: '27KB gzipped' },
 ]
 
-// Trust indicators - verifiable claims only
-const trustIndicators = [
-  { label: 'MIT Licensed', icon: 'shield' },
-  { label: 'TypeScript Strict', icon: 'code' },
-  { label: 'Open Source', icon: 'github' },
-]
-
 import MagneticButton from '../ui/MagneticButton'
 
 export default function HeroSection() {
