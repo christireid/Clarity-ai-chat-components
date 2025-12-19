@@ -6,17 +6,34 @@ import { dirname, resolve } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+// External dependencies (same as tsup.config.ts)
+const externals = [
+  'react',
+  'react-dom',
+  'framer-motion',
+  '@clarity-chat/primitives',
+  '@clarity-chat/types',
+  '@clarity-chat/memory',
+  'mermaid',
+  'highlight.js/styles/github-dark.css',
+  'katex/dist/katex.min.css',
+  'dompurify',
+]
+
 const entries = [
   { name: 'main', entry: 'src/index.ts src/styles/index.css', css: true },
-  { name: 'core', entry: 'core=src/core.ts' },
-  { name: 'core-minimal', entry: 'core-minimal=src/core-minimal.ts' },
-  { name: 'utils', entry: 'utils/index=src/utils/index.ts' },
-  { name: 'animations', entry: 'animations/index=src/animations/index.ts' },
-  { name: 'prompt', entry: 'prompt/index=src/prompt/index.ts' },
-  { name: 'analytics', entry: 'analytics/index=src/analytics/index.ts' },
-  { name: 'memory', entry: 'memory/index=src/memory/index.ts' },
-  { name: 'adapters', entry: 'adapters/index=src/adapters/index.ts' },
-  { name: 'test-utils', entry: 'test-utils=src/test-utils.tsx' },
+  { name: 'core', entry: 'src/core.ts' },
+  { name: 'core-minimal', entry: 'src/core-minimal.ts' },
+  { name: 'utils', entry: 'src/utils/index.ts', outDir: 'dist/utils' },
+  { name: 'animations', entry: 'src/animations/index.ts', outDir: 'dist/animations' },
+  { name: 'prompt', entry: 'src/prompt/index.ts', outDir: 'dist/prompt' },
+  { name: 'analytics', entry: 'src/analytics/index.ts', outDir: 'dist/analytics' },
+  { name: 'memory', entry: 'src/memory/index.ts', outDir: 'dist/memory' },
+  { name: 'adapters', entry: 'src/adapters/index.ts', outDir: 'dist/adapters' },
+  { name: 'test-utils', entry: 'src/test-utils.tsx' },
+  { name: 'internal', entry: 'src/internal.ts' },
+  { name: 'slim', entry: 'src/slim.ts' },
+  { name: 'namespaced', entry: 'src/namespaced.ts' },
 ]
 
 console.log(
@@ -24,7 +41,7 @@ console.log(
 )
 
 for (let i = 0; i < entries.length; i++) {
-  const { name, entry, css } = entries[i]
+  const { name, entry, css, outDir } = entries[i]
   const isFirst = i === 0
 
   console.log(`[${i + 1}/${entries.length}] Building ${name}...`)
@@ -33,8 +50,10 @@ for (let i = 0; i < entries.length; i++) {
     const loaderFlag = css ? '--loader .css=copy' : ''
     const cleanFlag = isFirst ? '--clean' : ''
     const dtsFlag = '--dts --dts-resolve'
+    const outDirFlag = outDir ? `--out-dir ${outDir}` : ''
+    const externalFlag = externals.map(e => `--external ${e}`).join(' ')
 
-    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} --no-sourcemap --no-minify --no-splitting --no-treeshake`
+    const cmd = `npx tsup ${entry} --config false --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap --no-minify --no-splitting --no-treeshake`
 
     execSync(cmd, {
       cwd: resolve(__dirname, '..'),
