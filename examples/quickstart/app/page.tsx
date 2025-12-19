@@ -1,9 +1,16 @@
 'use client'
 
+import type { FormEvent, ChangeEvent } from 'react'
 import { useState, useCallback, useRef, useEffect } from 'react'
 
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+}
+
 // Demo messages to show the chat works immediately
-const DEMO_RESPONSES: Record<string, string> = {
+const _DEMO_RESPONSES: Record<string, string> = {
   default: `I'm your AI assistant running in **demo mode**!
 
 This example works immediately without any API keys. Here's what you can try:
@@ -17,7 +24,8 @@ This example works immediately without any API keys. Here's what you can try:
 OPENAI_API_KEY=sk-your-key-here
 DEMO_MODE=false
 \`\`\``,
-  hello: "Hello! I'm Clarity Chat. This is a demo response - add your OpenAI API key for real AI!",
+  hello:
+    "Hello! I'm Clarity Chat. This is a demo response - add your OpenAI API key for real AI!",
   help: `Here's how to upgrade from demo to production:
 
 1. Get an OpenAI API key from https://platform.openai.com
@@ -29,13 +37,7 @@ DEMO_MODE=false
 That's it! You'll have real AI responses.`,
 }
 
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-}
-
-export default function QuickstartPage() {
+export default function QuickstartPage(): JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -213,7 +215,7 @@ export default function QuickstartPage() {
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <form
-            onSubmit={(e) => {
+            onSubmit={(e: FormEvent<HTMLFormElement>) => {
               e.preventDefault()
               sendMessage()
             }}
@@ -222,7 +224,9 @@ export default function QuickstartPage() {
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setInput(e.target.value)
+              }
               placeholder="Type a message..."
               className="flex-1 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={isLoading}
