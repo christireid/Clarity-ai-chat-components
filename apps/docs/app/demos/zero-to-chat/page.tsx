@@ -13,17 +13,21 @@ import {
   Send,
   Code2,
   Play,
-  ChevronLeft
+  ChevronLeft,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
+import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
 import { generateId, copyToClipboard, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
-import { trackDemoViewed, trackCodeCopied, trackMessageSent } from '@/lib/demos/analytics'
+import {
+  trackDemoViewed,
+  trackCodeCopied,
+  trackMessageSent,
+} from '@/lib/demos/analytics'
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
-const heroCode = `import { ClarityChat } from '@clarity-chat/react'
+const heroCode = `import { ClarityChat } from '@clarity-chat/react/internal'
 
 export default function App() {
   return (
@@ -34,7 +38,7 @@ export default function App() {
   )
 }`
 
-const expandedCode = `import { ClarityChat } from '@clarity-chat/react'
+const expandedCode = `import { ClarityChat } from '@clarity-chat/react/internal'
 
 export default function App() {
   return (
@@ -58,19 +62,34 @@ interface Message {
 }
 
 const demoResponses: Record<string, string> = {
-  default: "I'm the Clarity Chat demo! This entire chat was built with just a few lines of code. Try asking about features, streaming, theming, or anything else!",
-  streaming: "Streaming is built-in! Just set `api` to your streaming endpoint, and Clarity Chat handles everything: the typing indicator, character-by-character rendering, and smooth animations. No extra code needed.",
-  theme: "Theming is automatic! Use `theme=\"auto\"` to respect system preferences, or set `theme=\"dark\"` or `theme=\"light\"`. You can also use CSS variables for complete customization.",
-  features: "Clarity Chat includes: ✨ Streaming support, 🎨 Theming & dark mode, ⌨️ Keyboard shortcuts, 📱 Mobile responsive, ♿ Accessibility (WCAG 2.1 AA), 🔧 70+ components, and much more!",
+  default:
+    "I'm the Clarity Chat demo! This entire chat was built with just a few lines of code. Try asking about features, streaming, theming, or anything else!",
+  streaming:
+    'Streaming is built-in! Just set `api` to your streaming endpoint, and Clarity Chat handles everything: the typing indicator, character-by-character rendering, and smooth animations. No extra code needed.',
+  theme:
+    'Theming is automatic! Use `theme="auto"` to respect system preferences, or set `theme="dark"` or `theme="light"`. You can also use CSS variables for complete customization.',
+  features:
+    'Clarity Chat includes: ✨ Streaming support, 🎨 Theming & dark mode, ⌨️ Keyboard shortcuts, 📱 Mobile responsive, ♿ Accessibility (WCAG 2.1 AA), 🔧 70+ components, and much more!',
   code: "The code you see is real! Just `npm install @clarity-chat/react`, import the component, and pass your API endpoint. That's it - you get a production-ready chat with all the polish.",
 }
 
 function getResponse(input: string): string {
   const lower = input.toLowerCase()
   if (lower.includes('stream')) return demoResponses.streaming
-  if (lower.includes('theme') || lower.includes('dark') || lower.includes('light')) return demoResponses.theme
-  if (lower.includes('feature') || lower.includes('what can') || lower.includes('capabilities')) return demoResponses.features
-  if (lower.includes('code') || lower.includes('how') || lower.includes('work')) return demoResponses.code
+  if (
+    lower.includes('theme') ||
+    lower.includes('dark') ||
+    lower.includes('light')
+  )
+    return demoResponses.theme
+  if (
+    lower.includes('feature') ||
+    lower.includes('what can') ||
+    lower.includes('capabilities')
+  )
+    return demoResponses.features
+  if (lower.includes('code') || lower.includes('how') || lower.includes('work'))
+    return demoResponses.code
   return demoResponses.default
 }
 
@@ -113,17 +132,21 @@ export default function ZeroToChatDemo() {
     for (let i = 0; i < words.length; i++) {
       if (!isMountedRef.current) return
       currentText += (i > 0 ? ' ' : '') + words[i]
-      setMessages(prev => prev.map(msg =>
-        msg.id === messageId ? { ...msg, text: currentText } : msg
-      ))
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, text: currentText } : msg
+        )
+      )
       scrollToBottom()
       await sleep(30 + Math.random() * 30)
     }
 
     if (!isMountedRef.current) return
-    setMessages(prev => prev.map(msg =>
-      msg.id === messageId ? { ...msg, isStreaming: false } : msg
-    ))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId ? { ...msg, isStreaming: false } : msg
+      )
+    )
   }
 
   const handleSend = async () => {
@@ -139,7 +162,7 @@ export default function ZeroToChatDemo() {
     }
 
     const userInput = input
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
     scrollToBottom()
@@ -147,13 +170,16 @@ export default function ZeroToChatDemo() {
     await sleep(800)
 
     const botMessageId = generateId()
-    setMessages(prev => [...prev, {
-      id: botMessageId,
-      text: '',
-      sender: 'bot',
-      timestamp: new Date(),
-      isStreaming: true,
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: botMessageId,
+        text: '',
+        sender: 'bot',
+        timestamp: new Date(),
+        isStreaming: true,
+      },
+    ])
     setIsTyping(false)
 
     await simulateStream(getResponse(userInput), botMessageId)
@@ -185,8 +211,8 @@ export default function ZeroToChatDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              A fully functional AI chat with streaming, theming, and polish—no boilerplate required.
-              Type below and experience it yourself.
+              A fully functional AI chat with streaming, theming, and polish—no
+              boilerplate required. Type below and experience it yourself.
             </p>
           </div>
         </ScrollReveal>
@@ -201,7 +227,9 @@ export default function ZeroToChatDemo() {
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700">
                   <div className="flex items-center gap-2">
                     <Code2 className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-300 font-medium">App.tsx</span>
+                    <span className="text-sm text-gray-300 font-medium">
+                      App.tsx
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -221,7 +249,10 @@ export default function ZeroToChatDemo() {
                         <Copy className="w-4 h-4 text-gray-400" />
                       )}
                     </button>
-                    <CopyFullExampleButton demoId="zero-to-chat" variant="compact" />
+                    <CopyFullExampleButton
+                      demoId="zero-to-chat"
+                      variant="compact"
+                    />
                   </div>
                 </div>
 
@@ -238,23 +269,33 @@ export default function ZeroToChatDemo() {
                       {showExpanded ? (
                         <>
                           <span className="text-purple-400">import</span>{' '}
-                          <span className="text-yellow-300">{'{ ClarityChat }'}</span>{' '}
+                          <span className="text-yellow-300">
+                            {'{ ClarityChat }'}
+                          </span>{' '}
                           <span className="text-purple-400">from</span>{' '}
-                          <span className="text-green-400">'@clarity-chat/react'</span>
+                          <span className="text-green-400">
+                            '@clarity-chat/react'
+                          </span>
                           {'\n\n'}
-                          <span className="text-purple-400">export default function</span>{' '}
+                          <span className="text-purple-400">
+                            export default function
+                          </span>{' '}
                           <span className="text-blue-400">App</span>
                           <span className="text-yellow-300">()</span> {'{'}
                           {'\n  '}
                           <span className="text-purple-400">return</span> (
                           {'\n    '}
-                          <span className="text-blue-400">{'<ClarityChat'}</span>
+                          <span className="text-blue-400">
+                            {'<ClarityChat'}
+                          </span>
                           {'\n      '}
                           <span className="text-cyan-300">api</span>=
                           <span className="text-green-400">"/api/chat"</span>
                           {'\n      '}
                           <span className="text-cyan-300">placeholder</span>=
-                          <span className="text-green-400">"Ask me anything..."</span>
+                          <span className="text-green-400">
+                            "Ask me anything..."
+                          </span>
                           {'\n      '}
                           <span className="text-cyan-300">theme</span>=
                           <span className="text-green-400">"auto"</span>
@@ -264,39 +305,47 @@ export default function ZeroToChatDemo() {
                           <span className="text-cyan-300">enableMarkdown</span>
                           {'\n      '}
                           <span className="text-cyan-300">onMessageSent</span>=
-                          <span className="text-yellow-300">{'{(msg) => logger.debug(msg)}'}</span>
+                          <span className="text-yellow-300">
+                            {'{(msg) => logger.debug(msg)}'}
+                          </span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>
-                          {'\n  '}
-                          )
-                          {'\n'}
+                          {'\n  '}){'\n'}
                           {'}'}
                         </>
                       ) : (
                         <>
                           <span className="text-purple-400">import</span>{' '}
-                          <span className="text-yellow-300">{'{ ClarityChat }'}</span>{' '}
+                          <span className="text-yellow-300">
+                            {'{ ClarityChat }'}
+                          </span>{' '}
                           <span className="text-purple-400">from</span>{' '}
-                          <span className="text-green-400">'@clarity-chat/react'</span>
+                          <span className="text-green-400">
+                            '@clarity-chat/react'
+                          </span>
                           {'\n\n'}
-                          <span className="text-purple-400">export default function</span>{' '}
+                          <span className="text-purple-400">
+                            export default function
+                          </span>{' '}
                           <span className="text-blue-400">App</span>
                           <span className="text-yellow-300">()</span> {'{'}
                           {'\n  '}
                           <span className="text-purple-400">return</span> (
                           {'\n    '}
-                          <span className="text-blue-400">{'<ClarityChat'}</span>
+                          <span className="text-blue-400">
+                            {'<ClarityChat'}
+                          </span>
                           {'\n      '}
                           <span className="text-cyan-300">api</span>=
                           <span className="text-green-400">"/api/chat"</span>
                           {'\n      '}
                           <span className="text-cyan-300">placeholder</span>=
-                          <span className="text-green-400">"Ask me anything..."</span>
+                          <span className="text-green-400">
+                            "Ask me anything..."
+                          </span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>
-                          {'\n  '}
-                          )
-                          {'\n'}
+                          {'\n  '}){'\n'}
                           {'}'}
                         </>
                       )}
@@ -373,22 +422,26 @@ export default function ZeroToChatDemo() {
                       message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
                   >
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.sender === 'bot'
-                        ? 'bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400'
-                        : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
-                    }`}>
+                    <div
+                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.sender === 'bot'
+                          ? 'bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400'
+                          : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
                       {message.sender === 'bot' ? (
                         <Bot className="w-5 h-5" />
                       ) : (
                         <User className="w-5 h-5" />
                       )}
                     </div>
-                    <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${
-                      message.sender === 'bot'
-                        ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                        : 'bg-brand-500 text-white rounded-tr-sm'
-                    }`}>
+                    <div
+                      className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                        message.sender === 'bot'
+                          ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
+                          : 'bg-brand-500 text-white rounded-tr-sm'
+                      }`}
+                    >
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">
                         {message.text}
                         {message.isStreaming && (
@@ -441,7 +494,9 @@ export default function ZeroToChatDemo() {
         {/* Bottom CTA */}
         <ScrollReveal delay={0.3}>
           <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold mb-4">Ready to build your own?</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              Ready to build your own?
+            </h2>
             <p className="text-text-secondary mb-8">
               Install Clarity Chat and have a working chat interface in minutes.
             </p>

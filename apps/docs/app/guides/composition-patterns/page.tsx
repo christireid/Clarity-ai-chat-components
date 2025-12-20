@@ -36,7 +36,7 @@ export default function CompositionPatternsPage() {
         <h2>Basic Composition</h2>
         <p>Compose basic chat interface:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput, useClarityChat } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow, ChatInput, useClarityChat } from '@clarity-chat/react/internal'
 
 function BasicChat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -63,7 +63,7 @@ function BasicChat() {
   useClarityChat,
   useTokenTracker,
   useBatteryAware,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function FeatureRichChat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -106,7 +106,7 @@ function FeatureRichChat() {
   ThemeProvider,
   ChatWindow,
   useClarityChat,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function ChatWithProviders() {
   return (
@@ -141,7 +141,7 @@ function ChatApp() {
   useTokenOptimizationEnhanced,
   useBatteryAware,
   useOfflineChat,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -178,7 +178,7 @@ function OptimizedChat() {
   ChatWindow,
   MobileChatWindow,
   useMediaQuery,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function ResponsiveChat() {
   const isMobile = useMediaQuery('(max-width: 768px)')
@@ -205,7 +205,7 @@ function ResponsiveChat() {
   useClarityChat,
   useTokenBudgetMonitor,
   useContextMonitor,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function AdvancedChat() {
   const chat = useClarityChat({ api: '/api/chat' })

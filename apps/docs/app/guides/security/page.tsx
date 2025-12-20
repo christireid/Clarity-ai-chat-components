@@ -57,7 +57,7 @@ export default function SecurityGuidePage() {
   PIIGuardrail,
   ContentFilterGuardrail,
   PromptInjectionGuardrail,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const safety = new SafetyChecker([
   new PIIGuardrail({ action: 'redact', logMatches: true }),
@@ -97,7 +97,7 @@ export async function secureCompletion(messages: Message[]) {
   AuditLogger,
   MemoryAuditStorage,
   AuditActions,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const audit = new AuditLogger({
   storage: new MemoryAuditStorage(), // replace with your DB implementation
@@ -142,7 +142,7 @@ export async function logMessageSend({
   TenantManager,
   MemoryTenantStorage,
   CommonRoles,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const rbac = new RBACManager(
   new MemoryRBACStorage({
@@ -188,7 +188,7 @@ export async function withTenantContext<T>(
         <h2>Usage Quotas &amp; Rate Limits</h2>
         <CodeBlock
           language="tsx"
-          code={`import { QuotaManager, MemoryQuotaStorage } from '@clarity-chat/react'
+          code={`import { QuotaManager, MemoryQuotaStorage } from '@clarity-chat/react/internal'
 
 const quotas = new QuotaManager({
   storage: new MemoryQuotaStorage(),
@@ -235,7 +235,7 @@ export async function guardProviderCall(
         <h2>Webhooks &amp; Incident Response</h2>
         <CodeBlock
           language="tsx"
-          code={`import { WebhookManager, WebhookEvents } from '@clarity-chat/react'
+          code={`import { WebhookManager, WebhookEvents } from '@clarity-chat/react/internal'
 
 const webhooks = new WebhookManager({
   maxRetries: 5,

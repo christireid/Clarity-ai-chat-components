@@ -129,7 +129,7 @@ function calculateCost(model: string, tokens: number): number {
         <h2>Usage Dashboard</h2>
         <CodeBlock
           language="typescript"
-          code={`import { UsageDashboard } from '@clarity-chat/react'
+          code={`import { UsageDashboard } from '@clarity-chat/react/internal'
 
 // Fetch usage data
 const usageData = await prisma.usage.groupBy({
@@ -172,7 +172,7 @@ const usageData = await prisma.usage.groupBy({
         <h2>Track User Feedback</h2>
         <CodeBlock
           language="typescript"
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 <Message
   message={message}
@@ -240,7 +240,7 @@ trackEvent('api_response_time', {
 })
 
 // Show to user
-import { PerformanceDashboard } from '@clarity-chat/react'
+import { PerformanceDashboard } from '@clarity-chat/react/internal'
 
 <PerformanceDashboard
   metrics={[

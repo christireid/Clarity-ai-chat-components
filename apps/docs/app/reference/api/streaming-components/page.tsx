@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Streaming Components API Reference - Clarity Chat',
-  description: 'Complete API reference for streaming components: StreamingMessage, ToolInvocationCard, CitationCard, and ModelSelector.',
+  description:
+    'Complete API reference for streaming components: StreamingMessage, ToolInvocationCard, CitationCard, and ModelSelector.',
 }
 
 export default function StreamingComponentsAPIPage() {
@@ -15,14 +16,16 @@ export default function StreamingComponentsAPIPage() {
         <span className="docs-badge">API Reference</span>
         <h1>Streaming Components API</h1>
         <p className="docs-lead">
-          Complete API reference for streaming components: StreamingMessage, ToolInvocationCard, CitationCard, and ModelSelector.
+          Complete API reference for streaming components: StreamingMessage,
+          ToolInvocationCard, CitationCard, and ModelSelector.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>StreamingMessage</h2>
         <p>
-          Renders AI responses with real-time streaming, tool calls, citations, and thinking steps.
+          Renders AI responses with real-time streaming, tool calls, citations,
+          and thinking steps.
         </p>
 
         <h3>Props</h3>
@@ -67,7 +70,7 @@ export default function StreamingComponentsAPIPage() {
         <h3>Example</h3>
         <CodeBlock
           language="tsx"
-          code={`import { StreamingMessage } from '@clarity-chat/react'
+          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 
 <StreamingMessage
   content={streamingText}
@@ -84,9 +87,7 @@ export default function StreamingComponentsAPIPage() {
 
       <section className="docs-section">
         <h2>ToolInvocationCard</h2>
-        <p>
-          Displays function/tool invocations with approval workflow.
-        </p>
+        <p>Displays function/tool invocations with approval workflow.</p>
 
         <h3>Props</h3>
         <CodeBlock
@@ -132,9 +133,7 @@ type ToolStatus =
 
       <section className="docs-section">
         <h2>CitationCard</h2>
-        <p>
-          Displays RAG sources with confidence scores and metadata.
-        </p>
+        <p>Displays RAG sources with confidence scores and metadata.</p>
 
         <h3>Props</h3>
         <CodeBlock
@@ -160,9 +159,7 @@ type ToolStatus =
 
       <section className="docs-section">
         <h2>ModelSelector</h2>
-        <p>
-          Visual selector for switching between AI models.
-        </p>
+        <p>Visual selector for switching between AI models.</p>
 
         <h3>Props</h3>
         <CodeBlock
@@ -192,9 +189,17 @@ type ToolStatus =
       <section className="docs-section">
         <h2>Next Steps</h2>
         <ul>
-          <li><a href="/guides/streaming">Streaming Guide</a> - Learn about streaming</li>
-          <li><a href="/reference/api/model-adapters">Model Adapters API</a> - Adapter reference</li>
-          <li><a href="/examples/streaming">Examples</a> - See streaming in action</li>
+          <li>
+            <a href="/guides/streaming">Streaming Guide</a> - Learn about
+            streaming
+          </li>
+          <li>
+            <a href="/reference/api/model-adapters">Model Adapters API</a> -
+            Adapter reference
+          </li>
+          <li>
+            <a href="/examples/streaming">Examples</a> - See streaming in action
+          </li>
         </ul>
       </section>
     </div>

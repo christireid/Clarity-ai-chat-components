@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Vite Integration - Clarity Chat',
-  description: 'Complete guide for integrating Clarity Chat with Vite and React.',
+  description:
+    'Complete guide for integrating Clarity Chat with Vite and React.',
 }
 
 export default function ViteIntegrationPage() {
@@ -33,10 +34,7 @@ cd my-chat-app`}
         <p>
           <strong>2. Install Clarity Chat:</strong>
         </p>
-        <CodeBlock
-          language="bash"
-          code={`npm install @clarity-chat/react`}
-        />
+        <CodeBlock language="bash" code={`npm install @clarity-chat/react`} />
 
         <p>
           <strong>3. Import styles</strong> (<code>src/main.tsx</code>):
@@ -60,7 +58,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ChatWindow } from '@clarity-chat/react'
+          code={`import { ChatWindow } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 
@@ -127,7 +125,8 @@ export default App`}
       <section className="docs-section">
         <h2>Backend API</h2>
         <p>
-          Vite is frontend-only, so you'll need a separate backend. Here's an Express example:
+          Vite is frontend-only, so you'll need a separate backend. Here's an
+          Express example:
         </p>
         <CodeBlock
           language="javascript"
@@ -188,13 +187,8 @@ export default defineConfig({
         <p>
           Create <code>.env</code>:
         </p>
-        <CodeBlock
-          language="env"
-          code={`VITE_API_URL=http://localhost:3001`}
-        />
-        <p>
-          Access in code:
-        </p>
+        <CodeBlock language="env" code={`VITE_API_URL=http://localhost:3001`} />
+        <p>Access in code:</p>
         <CodeBlock
           language="tsx"
           code={`const API_URL = import.meta.env.VITE_API_URL`}
@@ -203,10 +197,7 @@ export default defineConfig({
 
       <section className="docs-section">
         <h2>Building for Production</h2>
-        <CodeBlock
-          language="bash"
-          code={`npm run build`}
-        />
+        <CodeBlock language="bash" code={`npm run build`} />
         <p>
           This creates a <code>dist/</code> folder with optimized assets.
         </p>
@@ -215,8 +206,18 @@ export default defineConfig({
       <section className="docs-section">
         <h2>Examples</h2>
         <ul>
-          <li><a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat">Basic Chat</a> - Simple Vite setup</li>
-          <li><a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ai-assistant">AI Assistant</a> - Vite with TanStack Query</li>
+          <li>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat">
+              Basic Chat
+            </a>{' '}
+            - Simple Vite setup
+          </li>
+          <li>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ai-assistant">
+              AI Assistant
+            </a>{' '}
+            - Vite with TanStack Query
+          </li>
         </ul>
       </section>
     </div>

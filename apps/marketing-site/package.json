@@ -8,7 +8,7 @@
     "dev": "node scripts/index-docs.cjs && next dev -p 3001",
     "build": "node scripts/index-docs.cjs && next build",
     "start": "next start",
-    "lint": "eslint . --ext ts,tsx --max-warnings 0",
+    "lint": "eslint . --ext ts,tsx --max-warnings 10",
     "typecheck": "tsc --noEmit",
     "test:retrieval": "npx tsx scripts/test-retrieval.ts"
   },

@@ -50,7 +50,7 @@ import {
   ConversationBranchVisualizer,
   useBranchManagement,
   Message,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const starterMessages: Message[] = [
   { id: 'm1', role: 'user', content: 'Draft a press release about our new AI feature.' },

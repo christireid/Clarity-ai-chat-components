@@ -1,7 +1,7 @@
 'use client'
 
 import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
@@ -49,7 +49,7 @@ export default function HooksConceptPage() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useMessageOperations } from '@clarity-chat/react'
+                code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatComponent() {
@@ -90,7 +90,7 @@ function ChatComponent() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useStreamingChat } from '@clarity-chat/react'
+                code={`import { useStreamingChat } from '@clarity-chat/react/internal'
 
 function StreamingChat() {
   const {
@@ -129,7 +129,7 @@ function StreamingChat() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
+                code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
 
 function ChatWithTracking() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -242,7 +242,7 @@ function ChatWithTracking() {
   useTokenTracker,
   useLocalStorage,
   useAutoScroll,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function AdvancedChat() {
   // Persist chat ID

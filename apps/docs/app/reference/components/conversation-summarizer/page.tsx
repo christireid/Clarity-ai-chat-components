@@ -89,7 +89,7 @@ export default function ConversationSummarizerPage() {
         <h2>Basic Usage</h2>
         <p>Generate summaries manually with default configuration:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithSummaries() {
@@ -127,7 +127,7 @@ render(<ChatWithSummaries />)`}
         <h2>Automatic Summarization</h2>
         <p>Configure automatic summarization at intervals:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function AutoSummarizeChat({ messages }: { messages: Message[] }) {
@@ -158,7 +158,7 @@ function AutoSummarizeChat({ messages }: { messages: Message[] }) {
         <h2>Summary Levels</h2>
         <p>Generate summaries at different detail levels:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react/internal'
 
 function MultiLevelSummaries({ messages }: { messages: Message[] }) {
   return (
@@ -188,7 +188,7 @@ function MultiLevelSummaries({ messages }: { messages: Message[] }) {
         <h2>Key Topics and Action Items</h2>
         <p>Extract key topics and action items from conversations:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react/internal'
 
 function RichSummaries({ messages }: { messages: Message[] }) {
   return (
@@ -222,7 +222,7 @@ function RichSummaries({ messages }: { messages: Message[] }) {
         <h2>Custom Summarization</h2>
         <p>Provide custom summarization logic:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer, type ConversationSummary, type SummaryLevel } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer, type ConversationSummary, type SummaryLevel } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function CustomSummarizer({ messages }: { messages: Message[] }) {
@@ -260,7 +260,7 @@ function CustomSummarizer({ messages }: { messages: Message[] }) {
         <h2>Summary History</h2>
         <p>Show history of generated summaries:</p>
         <CodePlayground
-          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+          initialCode={`import { ConversationSummarizer } from '@clarity-chat/react/internal'
 
 function SummariesWithHistory({ messages }: { messages: Message[] }) {
   return (

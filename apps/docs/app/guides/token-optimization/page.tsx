@@ -190,7 +190,7 @@ Bob, 25, San Francisco
 
           <h3 className="text-2xl font-semibold mb-3 mt-8">Using TOON</h3>
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function ToonExample() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -245,7 +245,7 @@ function ToonExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function PromptCachingExample() {
   const { prepareMessages } = useTokenOptimizationEnhanced({
@@ -306,7 +306,7 @@ function PromptCachingExample() {
           </ul>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function CompressionExample() {
   const { optimizePrompt } = useTokenOptimizationEnhanced({
@@ -343,7 +343,7 @@ function CompressionExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function SemanticCacheExample() {
   const { optimizePrompt } = useTokenOptimizationEnhanced({
@@ -384,7 +384,7 @@ function SemanticCacheExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function HistoryLimitingExample() {
   const { optimizeHistory } = useTokenOptimizationEnhanced({
@@ -426,7 +426,7 @@ function HistoryLimitingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function ModelRoutingExample() {
   const { routeQuery } = useTokenOptimizationEnhanced({
@@ -461,7 +461,7 @@ function ModelRoutingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function PresetExample() {
   // Aggressive: All optimizations enabled, maximum savings
@@ -554,7 +554,7 @@ function PresetExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function CostTrackingExample() {
   const { stats } = useTokenOptimizationEnhanced({
@@ -678,7 +678,7 @@ function CostTrackingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function CompleteOptimizationExample() {

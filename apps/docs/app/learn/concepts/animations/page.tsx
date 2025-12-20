@@ -7,7 +7,7 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { TypingIndicator, StreamingMessage } from '@clarity-chat/react'
+import { TypingIndicator, StreamingMessage } from '@clarity-chat/react/internal'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
 function TypingIndicatorDemo() {
@@ -153,7 +153,7 @@ export default function AnimationsConceptPage() {
   ANIMATION_EASING,
   ANIMATION_VARIANTS,
   INTERACTION_VARIANTS,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 logger.debug(ANIMATION_DURATION.normal) // 250
 logger.debug(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
@@ -177,7 +177,7 @@ logger.debug(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
           <ComponentPreview
             title="Typing Indicator"
             description="Interactive demo of typing indicator variants."
-            code={`import { TypingIndicator } from '@clarity-chat/react'
+            code={`import { TypingIndicator } from '@clarity-chat/react/internal'
 
 // Render
 <TypingIndicator variant="dots" />`}
@@ -213,7 +213,7 @@ import {
   ANIMATION_VARIANTS,
   ANIMATION_DURATION,
   StreamingMessage,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const bounceVariant = {
   initial: { y: 0 },

@@ -5,7 +5,8 @@ const DEMO_MODE = process.env.DEMO_MODE !== 'false'
 
 // Demo responses for common queries
 const DEMO_RESPONSES: Record<string, string> = {
-  hello: "Hello! I'm Clarity Chat running in demo mode. Add your OpenAI API key to get real AI responses!",
+  hello:
+    "Hello! I'm Clarity Chat running in demo mode. Add your OpenAI API key to get real AI responses!",
   help: `To upgrade from demo to production:
 
 1. Get an API key from https://platform.openai.com
@@ -28,8 +29,10 @@ Try asking me "help" for setup instructions!`,
 
 function getDemoResponse(message: string): string {
   const lower = message.toLowerCase()
-  if (lower.includes('hello') || lower.includes('hi')) return DEMO_RESPONSES.hello
-  if (lower.includes('help') || lower.includes('api') || lower.includes('key')) return DEMO_RESPONSES.help
+  if (lower.includes('hello') || lower.includes('hi'))
+    return DEMO_RESPONSES.hello
+  if (lower.includes('help') || lower.includes('api') || lower.includes('key'))
+    return DEMO_RESPONSES.help
   return DEMO_RESPONSES.default
 }
 
@@ -48,7 +51,10 @@ export async function POST(request: NextRequest) {
     const { messages } = await request.json()
 
     if (!Array.isArray(messages) || messages.length === 0) {
-      return Response.json({ error: 'Messages array is required' }, { status: 400 })
+      return Response.json(
+        { error: 'Messages array is required' },
+        { status: 400 }
+      )
     }
 
     const lastMessage = messages[messages.length - 1]
@@ -68,7 +74,9 @@ export async function POST(request: NextRequest) {
             controller.enqueue(encoder.encode(`data: ${data}\n\n`))
           }
 
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`))
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`)
+          )
           controller.enqueue(encoder.encode('data: [DONE]\n\n'))
           controller.close()
         },
@@ -106,15 +114,24 @@ export async function POST(request: NextRequest) {
               controller.enqueue(encoder.encode(`data: ${data}\n\n`))
             }
             if (chunk.choices[0]?.finish_reason === 'stop') {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'finish' })}\n\n`))
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'finish' })}\n\n`
+                )
+              )
             }
           }
 
           controller.enqueue(encoder.encode('data: [DONE]\n\n'))
           controller.close()
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Stream error'
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: errorMessage })}\n\n`))
+          const errorMessage =
+            error instanceof Error ? error.message : 'Stream error'
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'error', message: errorMessage })}\n\n`
+            )
+          )
           controller.close()
         }
       },
@@ -129,6 +146,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Chat API error:', error)
-    return Response.json({ error: 'Failed to process request' }, { status: 500 })
+    return Response.json(
+      { error: 'Failed to process request' },
+      { status: 500 }
+    )
   }
 }

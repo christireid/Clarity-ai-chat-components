@@ -3,7 +3,8 @@ import { FeedbackWidget } from '@/components/FeedbackWidget'
 
 export const metadata: Metadata = {
   title: 'useStreaming Hook | Clarity Chat',
-  description: 'Hook for handling streaming AI responses with SSE and WebSocket support.'
+  description:
+    'Hook for handling streaming AI responses with SSE and WebSocket support.',
 }
 
 export default function UseStreamingPage() {
@@ -11,7 +12,8 @@ export default function UseStreamingPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">useStreaming Hook</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        React hook for managing streaming AI responses with support for Server-Sent Events (SSE) and WebSocket protocols.
+        React hook for managing streaming AI responses with support for
+        Server-Sent Events (SSE) and WebSocket protocols.
       </p>
 
       <section className="mb-12">
@@ -30,7 +32,8 @@ export default function UseStreamingPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
-          <pre className="text-sm overflow-x-auto"><code>{`import { useStreaming } from '@clarity-chat/react'
+          <pre className="text-sm overflow-x-auto">
+            <code>{`import { useStreaming } from '@clarity-chat/react/internal'
 
 function StreamingChat() {
   const {
@@ -52,7 +55,8 @@ function StreamingChat() {
       <button onClick={stopStreaming}>Stop</button>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </section>
 

@@ -55,7 +55,7 @@ export default function UseABTestingPage() {
         <h2>Basic Usage</h2>
         <p>Assign users to experiment variants:</p>
         <CodePlayground
-          initialCode={`import { useABTesting } from '@clarity-chat/react'
+          initialCode={`import { useABTesting } from '@clarity-chat/react/internal'
 
 function ExperimentComponent() {
   const { getVariant, trackConversion, experiments } = useABTesting({
@@ -85,7 +85,7 @@ function ExperimentComponent() {
         <h2>Experiment Results</h2>
         <p>Get experiment results and metrics:</p>
         <CodePlayground
-          initialCode={`import { useABTesting } from '@clarity-chat/react'
+          initialCode={`import { useABTesting } from '@clarity-chat/react/internal'
 
 function ResultsView() {
   const { experiments, getExperiment } = useABTesting()
@@ -112,7 +112,7 @@ function ResultsView() {
         <h2>Conversion Tracking</h2>
         <p>Track conversions for experiments:</p>
         <CodePlayground
-          initialCode={`import { useABTesting } from '@clarity-chat/react'
+          initialCode={`import { useABTesting } from '@clarity-chat/react/internal'
 
 function ConversionTracking() {
   const { trackConversion, getVariant } = useABTesting()
@@ -143,7 +143,7 @@ function ConversionTracking() {
         <h2>Statistical Significance</h2>
         <p>Check statistical significance:</p>
         <CodePlayground
-          initialCode={`import { useABTesting } from '@clarity-chat/react'
+          initialCode={`import { useABTesting } from '@clarity-chat/react/internal'
 
 function SignificanceCheck() {
   const { getExperiment } = useABTesting()
@@ -170,7 +170,7 @@ function SignificanceCheck() {
         <h2>Experiment Recommendations</h2>
         <p>Get experiment recommendations:</p>
         <CodePlayground
-          initialCode={`import { useABTesting } from '@clarity-chat/react'
+          initialCode={`import { useABTesting } from '@clarity-chat/react/internal'
 
 function Recommendations() {
   const { getExperiment } = useABTesting()

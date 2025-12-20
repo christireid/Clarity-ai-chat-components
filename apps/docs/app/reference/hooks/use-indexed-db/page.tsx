@@ -80,7 +80,7 @@ export default function UseIndexedDBPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useIndexedDB } from '@clarity-chat/react'
+          code={`import { useIndexedDB } from '@clarity-chat/react/internal'
 
 function ConversationStorage() {
   const { data, save, load, isLoading, error } = useIndexedDB<Message[]>({

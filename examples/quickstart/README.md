@@ -26,21 +26,23 @@ No API keys needed. The example runs in demo mode by default.
 
 ## Features Demonstrated
 
-| Feature | Description |
-|---------|-------------|
-| Demo Mode | Works without API keys - great for testing |
-| SSE Streaming | Real-time token-by-token responses |
-| Production Ready | Add your API key to switch to real AI |
-| Dark Mode | Automatic light/dark theme support |
+| Feature          | Description                                |
+| ---------------- | ------------------------------------------ |
+| Demo Mode        | Works without API keys - great for testing |
+| SSE Streaming    | Real-time token-by-token responses         |
+| Production Ready | Add your API key to switch to real AI      |
+| Dark Mode        | Automatic light/dark theme support         |
 
 ## Upgrade to Production
 
 1. Copy the environment template:
+
    ```bash
    cp .env.example .env.local
    ```
 
 2. Add your OpenAI API key:
+
    ```
    OPENAI_API_KEY=sk-your-key-here
    DEMO_MODE=false

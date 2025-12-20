@@ -16,6 +16,131 @@
 // Re-export everything from public API
 export * from './public-api'
 
+// Re-export components from internal that aren't in public-api
+// Note: Some items are excluded to avoid duplicate export conflicts
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+export { ChatLayout } from './components/chat/chat-layout'
+export { Message } from './components/message/message'
+export { MessageMetadata } from './components/message/message-metadata'
+export { StreamBlock } from './components/message/stream-block'
+export { ToolInvocationCard } from './components/message/tool-invocation-card'
+export { ClarityToolResult } from './components/message/clarity-tool-result'
+export { CopyButton } from './components/message/copy-button'
+export { FileUpload } from './components/input/file-upload'
+export { ModelSelector } from './components/ai/model-selector'
+export { ContextCard } from './components/context/context-card'
+export { ContextManager } from './components/context/context-manager'
+export { ProjectSidebar } from './components/context/project-sidebar'
+export { PromptLibrary } from './components/prompt/prompt-library'
+export { SettingsPanel } from './components/context/settings-panel'
+export { UsageDashboard } from './components/dashboards/usage-dashboard'
+export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
+export { BatchExportDialog } from './components/media/batch-export-dialog'
+export { StreamCancellation } from './components/message/stream-cancellation'
+export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+export { PersonaPanel } from './components/ai/persona-panel'
+export { ConversationTimeline } from './components/conversation/conversation-timeline'
+export { MemoryInspector } from './components/context/memory-inspector'
+export { SafetyStatusCard } from './components/ai/safety-status-card'
+export { AuditLogViewer } from './components/ai/audit-log-viewer'
+export { DocumentViewer } from './components/media/document-viewer'
+export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
+export { MultiModalPreview } from './components/media/multi-modal-preview'
+export { AgentRunFeed } from './components/ai/agent-run-feed'
+export { SessionSummaryCard } from './components/ai/session-summary-card'
+export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
+export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
+export { RetryButton } from './components/feedback/retry-button'
+export { ConsoleAlertHandler, useConsoleAlerts } from './components/feedback/console-alert-handler'
+export type { ConsoleAlert, ConsoleAlertHandlerProps } from './components/feedback/console-alert-handler'
+export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
+export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
+export { TokenBudgetBar, TokenBudgetIndicator } from './components/token/token-budget-bar'
+export { TokenOptimizationDashboard } from './components/token/token-optimization-dashboard'
+export { ContextVisualizer } from './components/context/context-visualizer'
+export { ConversationList } from './components/conversation/conversation-list'
+export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+export { VirtualizedMessageList } from './components/chat/virtualized-message-list'
+export { VoiceInput } from './components/input/voice-input'
+export * from './components/ui/link-preview'
+
+// Re-export hooks from internal domains
+export { useChatHandlers } from './hooks/chat/use-chat-handlers'
+export { useChatHistory } from './hooks/chat/use-chat-history'
+export { useMemoryStore } from './hooks/storage/use-memory-store'
+export { useTokenBudgetMonitor } from './hooks/token/use-token-budget-monitor'
+export * from './hooks/token'
+// Note: useKeyboardNavigation is already exported from accessibility, so exclude it from hooks/keyboard
+export {
+  KeyboardNavigationProvider,
+  useKeyboardShortcut,
+  useVimNavigation,
+  useFocusScope,
+  useKeyboardHintsOnModifier,
+  useIsMac,
+  formatShortcutDisplay,
+  defaultChatShortcuts,
+} from './hooks/keyboard'
+export * from './hooks/keyboard/use-keyboard-shortcuts'
+export * from './hooks/keyboard/use-chat-keyboard-navigation'
+export * from './hooks/keyboard/use-command-palette'
+// Note: useReducedMotion is already exported from public-api, so exclude it from hooks/ui
+export * from './hooks/ui/use-auto-scroll'
+export * from './hooks/ui/use-clipboard'
+export * from './hooks/ui/use-debounce'
+export * from './hooks/ui/use-throttle'
+export * from './hooks/ui/use-toggle'
+export * from './hooks/ui/use-previous'
+export * from './hooks/ui/use-mounted'
+export * from './hooks/ui/use-is-mounted'
+export * from './hooks/ui/use-merged-ref'
+export * from './hooks/ui/use-window-size'
+export * from './hooks/ui/use-intersection-observer'
+export * from './hooks/ui/use-event-listener'
+export * from './hooks/ui/use-media-query'
+export * from './hooks/ui/use-animated-value'
+export * from './hooks/ui/use-safe-timeout'
+export * from './hooks/storage'
+export * from './hooks/context'
+export * from './hooks/model'
+export * from './hooks/message'
+export * from './hooks/input'
+export * from './hooks/dashboard'
+export * from './hooks/theme'
+
+// Re-export components from additional domains
+export * from './components/ui'
+export * from './components/ai'
+export * from './components/context'
+export * from './components/code'
+export * from './components/conversation'
+export * from './components/feedback'
+export * from './components/media'
+export * from './components/search'
+export * from './components/navigation'
+export * from './components/theme-components'
+export * from './components/input'
+// Export only working prompt components (excluding problematic ones with TypeScript issues)
+export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
+export { PromptSuggestions } from './components/prompt/prompt-suggestions'
+export type { PromptSuggestionsProps, PromptSuggestion, PromptSuggestionType } from './components/prompt/prompt-suggestions'
+export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt/prompt-suggestions-enhanced'
+export type { SuggestionRankingConfig, SuggestionInteraction } from './components/prompt/prompt-suggestions-enhanced'
+
+// Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
+export * from './accessibility/focus-management'
+export * from './accessibility/accessibility-automation'
+
+// Re-export types that are commonly needed
+export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
+export * from './types/chat-types'
+export * from './utils/tools'
+export * from './utils/streaming'
+export { SecurityManager, securityManager, useSecurity } from './utils/security'
+
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
@@ -72,4 +197,5 @@ export * from './agents/tool-ui-registry'
 // ============================================================================
 // ANIMATION SYSTEM
 // ============================================================================
-export * from './animations'
+// Note: Animation exports are already in public-api, additional internal
+// animation utilities can be imported directly from './animations'

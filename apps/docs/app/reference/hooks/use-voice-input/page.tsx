@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'useVoiceInput Hook | Clarity Chat',
-  description: 'Hook for voice-to-text input using Web Speech API with browser compatibility.'
+  description:
+    'Hook for voice-to-text input using Web Speech API with browser compatibility.',
 }
 
 export default function UseVoiceInputPage() {
@@ -10,7 +11,8 @@ export default function UseVoiceInputPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">useVoiceInput Hook</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        React hook for voice input using the Web Speech API with automatic transcription and browser compatibility detection.
+        React hook for voice input using the Web Speech API with automatic
+        transcription and browser compatibility detection.
       </p>
 
       <section className="mb-12">
@@ -29,7 +31,8 @@ export default function UseVoiceInputPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
-          <pre className="text-sm overflow-x-auto"><code>{`import { useVoiceInput } from '@clarity-chat/react'
+          <pre className="text-sm overflow-x-auto">
+            <code>{`import { useVoiceInput } from '@clarity-chat/react/internal'
 
 function VoiceInput() {
   const {
@@ -57,7 +60,8 @@ function VoiceInput() {
       <p>{transcript}</p>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </section>
     </div>

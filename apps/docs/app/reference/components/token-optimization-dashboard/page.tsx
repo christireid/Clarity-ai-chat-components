@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { TokenOptimizationDashboard } from '@clarity-chat/react'
+import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -84,7 +84,7 @@ export default function TokenOptimizationDashboardPage() {
         <ComponentPreview
           title="Token Dashboard"
           description="Monitoring token usage and savings."
-          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react'
+          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 
 function AnalyticsView() {
   return (
@@ -145,7 +145,7 @@ function AnalyticsView() {
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react'
+          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 
 function LiveDashboard() {
   const { stats } = useTokenTracker()

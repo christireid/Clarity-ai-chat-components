@@ -1,7 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { ToastProvider, Draggable, DropZone } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  Draggable,
+  DropZone,
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -157,7 +161,7 @@ export default function DraggablePage() {
             title="Drag and Drop Demo"
             description="Drag the blue box into the drop zone."
             code={`import { useState } from 'react'
-import { Draggable, DropZone } from '@clarity-chat/react'
+import { Draggable, DropZone } from '@clarity-chat/react/internal'
 
 function DragDemo() {
   const [status, setStatus] = useState('Waiting...')
@@ -247,7 +251,7 @@ render(<Example />)`}
           </p>
           <EnhancedCodeBlock
             language="tsx"
-            code={`import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react'
+            code={`import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react/internal'
 
 function KanbanBoard() {
   const { items, handleDrop } = useDragDrop({

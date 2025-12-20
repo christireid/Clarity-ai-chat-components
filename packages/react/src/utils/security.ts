@@ -10,6 +10,7 @@
  * - Security headers
  */
 
+import * as React from 'react'
 import DOMPurify from 'dompurify'
 
 /**

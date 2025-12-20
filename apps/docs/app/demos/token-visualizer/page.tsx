@@ -16,8 +16,9 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react'
+import { useAutoScroll } from '@clarity-chat/react/internal'
 import {
   generateId,
   sleep,

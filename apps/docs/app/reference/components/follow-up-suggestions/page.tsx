@@ -426,7 +426,7 @@ useEffect(() => {
   FollowUpSuggestions,
   type FollowUpSuggestionsProps,
   type FollowUpSuggestion 
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Suggestion structure
 interface FollowUpSuggestion {

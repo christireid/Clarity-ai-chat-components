@@ -5,6 +5,7 @@
  * Integrates multi-turn context, follow-up detection, and contextual reranking.
  */
 
+import { logger } from '@/lib/logger'
 import {
   retrieveWithContext,
   buildConversationContext,
@@ -85,7 +86,9 @@ export async function conversationAwareRAG(
   const topicShift = detectTopicShift(userQuery, conversationHistory)
 
   if (topicShift.hasShifted) {
-    logger.debug(`📊 Topic shift detected: ${topicShift.previousTopic} → ${topicShift.newTopic}`)
+    logger.debug(
+      `📊 Topic shift detected: ${topicShift.previousTopic} → ${topicShift.newTopic}`
+    )
   }
 
   // Retrieve with conversation context
@@ -100,7 +103,9 @@ export async function conversationAwareRAG(
     maxMessages: maxConversationMessages,
   })
 
-  logger.debug(`🔍 Retrieved ${sources.length} sources (follow-up: ${isFollowUp})`)
+  logger.debug(
+    `🔍 Retrieved ${sources.length} sources (follow-up: ${isFollowUp})`
+  )
 
   // Build documentation context
   const docContext = buildContext(sources, maxContextLength)
@@ -140,7 +145,8 @@ export async function conversationAwareRAG(
   if (sources.length > 0) {
     enhancedMessage += `I found ${sources.length} relevant documentation sections:\n\n`
     enhancedMessage += combinedContext
-    enhancedMessage += '\n\nPlease provide a helpful answer based on the documentation above. '
+    enhancedMessage +=
+      '\n\nPlease provide a helpful answer based on the documentation above. '
 
     if (isFollowUp) {
       enhancedMessage += 'Reference our previous discussion where appropriate. '
@@ -149,7 +155,8 @@ export async function conversationAwareRAG(
     enhancedMessage += 'Include code examples and links to relevant pages.\n'
   } else {
     enhancedMessage += 'No specific documentation found. '
-    enhancedMessage += 'Please provide a general answer or suggest where to find this information.\n'
+    enhancedMessage +=
+      'Please provide a general answer or suggest where to find this information.\n'
   }
 
   return {
@@ -181,8 +188,8 @@ export function convertToChatHistory(
   }>
 ): ConversationMessage[] {
   return messages
-    .filter(m => m.role !== 'system') // Exclude system messages
-    .map(m => ({
+    .filter((m) => m.role !== 'system') // Exclude system messages
+    .map((m) => ({
       role: m.role as 'user' | 'assistant',
       content: m.content,
       timestamp: m.timestamp,
@@ -203,7 +210,10 @@ export async function enhanceWithConversation(
   isFollowUp: boolean
 }> {
   const conversationHistory = convertToChatHistory(
-    chatHistory as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>
+    chatHistory as Array<{
+      role: 'user' | 'assistant' | 'system'
+      content: string
+    }>
   )
 
   const result = await conversationAwareRAG(userQuery, {
@@ -234,13 +244,21 @@ export function getConversationInsights(
 } {
   const context = buildConversationContext(conversationHistory, 100)
 
-  const userMessages = conversationHistory.filter(m => m.role === 'user').length
-  const assistantMessages = conversationHistory.filter(m => m.role === 'assistant').length
+  const userMessages = conversationHistory.filter(
+    (m) => m.role === 'user'
+  ).length
+  const assistantMessages = conversationHistory.filter(
+    (m) => m.role === 'assistant'
+  ).length
 
-  const totalLength = conversationHistory.reduce((sum, m) => sum + m.content.length, 0)
-  const averageMessageLength = conversationHistory.length > 0
-    ? Math.round(totalLength / conversationHistory.length)
-    : 0
+  const totalLength = conversationHistory.reduce(
+    (sum, m) => sum + m.content.length,
+    0
+  )
+  const averageMessageLength =
+    conversationHistory.length > 0
+      ? Math.round(totalLength / conversationHistory.length)
+      : 0
 
   return {
     messageCount: conversationHistory.length,
@@ -248,8 +266,8 @@ export function getConversationInsights(
     assistantMessages,
     topics: context.discussedTopics,
     averageMessageLength,
-    hasFollowUps: conversationHistory.some((_, i, arr) =>
-      i > 0 // At least one previous message
+    hasFollowUps: conversationHistory.some(
+      (_, i, arr) => i > 0 // At least one previous message
     ),
   }
 }

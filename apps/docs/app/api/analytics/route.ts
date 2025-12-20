@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logApiError(error as Error, 'Analytics API GET', request)
+    logApiError('Analytics API GET', error, { url: request.url })
 
     return NextResponse.json(
       {
@@ -95,10 +95,7 @@ export async function POST(request: NextRequest) {
       const adminToken = process.env.ADMIN_AUTH_TOKEN
 
       if (!adminToken || authHeader !== `Bearer ${adminToken}`) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        )
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
     }
 
@@ -115,7 +112,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logApiError(error as Error, 'Analytics API POST', request)
+    logApiError('Analytics API POST', error, { url: request.url })
 
     return NextResponse.json(
       {

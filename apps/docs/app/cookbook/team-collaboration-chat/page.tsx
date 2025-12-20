@@ -94,7 +94,7 @@ io.on('connection', (socket) => {
           language="tsx"
           code={`import { useEffect } from 'react'
 import { io, Socket } from 'socket.io-client'
-import { useChat, useTyping } from '@clarity-chat/react'
+import { useChat, useTyping } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 interface Presence {
@@ -166,7 +166,7 @@ export function useTeamChat(user: Presence) {
   ChatWindow,
   PresenceAvatarStack,
   TypingIndicator,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 export function TeamChatPage({ user }: { user: Presence }) {
   const chat = useTeamChat(user)

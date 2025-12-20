@@ -44,7 +44,7 @@ export default function MultiAgentOrchestrationPage() {
         <h2>Agent Creation</h2>
         <p>Create multiple specialized agents:</p>
         <CodePlayground
-          initialCode={`import { createAgent } from '@clarity-chat/react'
+          initialCode={`import { createAgent } from '@clarity-chat/react/internal'
 
 // Research agent
 const researchAgent = createAgent({
@@ -73,7 +73,7 @@ const writingAgent = createAgent({
         <h2>Agent Orchestration</h2>
         <p>Orchestrate agents in a workflow:</p>
         <CodePlayground
-          initialCode={`import { createAgent } from '@clarity-chat/react'
+          initialCode={`import { createAgent } from '@clarity-chat/react/internal'
 
 async function orchestrateAgents(query: string) {
   // Step 1: Research
@@ -151,7 +151,7 @@ async function orchestrateAgents(query: string) {
         <h2>Complete Multi-Agent System</h2>
         <p>Complete multi-agent orchestration:</p>
         <CodePlayground
-          initialCode={`import { createAgent, AgentOrchestrator } from '@clarity-chat/react'
+          initialCode={`import { createAgent, AgentOrchestrator } from '@clarity-chat/react/internal'
 
 function MultiAgentSystem() {
   const agents = [

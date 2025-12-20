@@ -52,7 +52,7 @@ import {
   useMessageListScroll,
   useJumpToBottom,
   Message,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function generateMessages(count: number): Message[] {
   return Array.from({ length: count }, (_, index) => ({

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, useStreamableUI } from '@clarity-chat/react'
+import { ToastProvider, useStreamableUI } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -267,7 +267,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -279,7 +279,7 @@ import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat
         <ComponentPreview
           title="Simple Streaming"
           description="Basic streaming from AsyncIterable"
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function SimpleStreaming() {
   const stream = {
@@ -317,7 +317,7 @@ function SimpleStreaming() {
         <p>Use with Vercel AI SDK's StreamableValue:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { createStreamableValue } from 'ai/rsc'
 
 function StreamableValueExample() {
@@ -349,7 +349,7 @@ function StreamableValueExample() {
         <p>Handle a Promise that resolves to a value:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function PromiseExample() {
@@ -388,7 +388,7 @@ function PromiseExample() {
         <p>Stream from a ReadableStream (e.g., from fetch):</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function ReadableStreamExample() {
@@ -433,7 +433,7 @@ function ReadableStreamExample() {
         <p>Control how values are accumulated:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function AppendMode() {
   const stream = createAsyncIterable(['a', 'b', 'c'])
@@ -465,7 +465,7 @@ function ReplaceMode() {
         <p>Transform incoming values (e.g., decode binary, parse JSON):</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function TransformExample() {
   const stream = createAsyncIterable([
@@ -508,7 +508,7 @@ function TransformExample() {
         <p>Detect when streaming is complete:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function CompletionExample() {
   const stream = createAsyncIterable(['Hello', ' ', 'World', null])
@@ -586,7 +586,7 @@ function CompletionExample() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { useStreamableUI } from '@clarity-chat/react'
+import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function CompleteStreamableUIExample() {
   const [source, setSource] = useState<AsyncIterable<string> | null>(null)

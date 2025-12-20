@@ -448,7 +448,7 @@ render(<AgentDebugDashboard />)`}
   ConversationTimeline, 
   type ConversationTimelineProps,
   type ConversationTimelineEvent 
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Event structure
 interface ConversationTimelineEvent {

@@ -9,6 +9,7 @@ import { Pinecone } from '@pinecone-database/pinecone'
 import fs from 'fs/promises'
 import path from 'path'
 import { cosineSimilarity } from './embeddings'
+import { logger } from '@/lib/logger'
 
 export interface DocChunk {
   id: string
@@ -78,7 +79,7 @@ export class PineconeVectorStore implements VectorStore {
       if (!apiKey) {
         throw new Error(
           'PINECONE_API_KEY environment variable is not set. ' +
-          'Please add it to your .env.local file or use LocalVectorStore for development.'
+            'Please add it to your .env.local file or use LocalVectorStore for development.'
         )
       }
 
@@ -94,7 +95,9 @@ export class PineconeVectorStore implements VectorStore {
     try {
       // Check if index exists
       const indexes = await client.listIndexes()
-      const indexExists = indexes.indexes?.some(index => index.name === this.indexName)
+      const indexExists = indexes.indexes?.some(
+        (index) => index.name === this.indexName
+      )
 
       if (!indexExists) {
         logger.debug(`Creating Pinecone index: ${this.indexName}`)
@@ -113,7 +116,7 @@ export class PineconeVectorStore implements VectorStore {
 
         // Wait for index to be ready
         logger.debug('Waiting for index to be ready...')
-        await new Promise(resolve => setTimeout(resolve, 10000))
+        await new Promise((resolve) => setTimeout(resolve, 10000))
       }
 
       logger.debug(`Pinecone index ready: ${this.indexName}`)
@@ -172,7 +175,9 @@ export class PineconeVectorStore implements VectorStore {
         }))
       )
 
-      logger.debug(`Uploaded batch ${i / batchSize + 1} (${batch.length} chunks)`)
+      logger.debug(
+        `Uploaded batch ${i / batchSize + 1} (${batch.length} chunks)`
+      )
     }
   }
 
@@ -195,7 +200,9 @@ export class PineconeVectorStore implements VectorStore {
       score: match.score || 0,
       metadata: {
         lastUpdated: (match.metadata?.lastUpdated as string) || '',
-        tags: ((match.metadata?.tags as string) || '').split(',').filter(Boolean),
+        tags: ((match.metadata?.tags as string) || '')
+          .split(',')
+          .filter(Boolean),
         section: (match.metadata?.section as string) || undefined,
         headings: ((match.metadata?.headings as string) || '')
           .split(',')
@@ -318,7 +325,8 @@ export class LocalVectorStore implements VectorStore {
  * Get the appropriate vector store based on environment
  */
 export function getVectorStore(): VectorStore {
-  const usePinecone = process.env.PINECONE_API_KEY && process.env.NODE_ENV === 'production'
+  const usePinecone =
+    process.env.PINECONE_API_KEY && process.env.NODE_ENV === 'production'
 
   if (usePinecone) {
     logger.debug('Using Pinecone vector store')

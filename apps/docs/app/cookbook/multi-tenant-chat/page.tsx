@@ -86,7 +86,7 @@ export function useTenant() {
         <h2>Tenant-Isolated Chat</h2>
         <p>Create tenant-isolated chat instances:</p>
         <CodePlayground
-          initialCode={`import { ClarityChat } from '@clarity-chat/react'
+          initialCode={`import { ClarityChat } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function TenantChat() {
@@ -112,7 +112,7 @@ function TenantChat() {
         <h2>Seat Management</h2>
         <p>Manage seats for each tenant:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function SeatManagement() {
@@ -143,7 +143,7 @@ function SeatManagement() {
         <h2>SSO Integration</h2>
         <p>Integrate SSO for tenant authentication:</p>
         <CodePlayground
-          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function SSOIntegration() {
@@ -169,7 +169,7 @@ function SSOIntegration() {
         <h2>API Token Management</h2>
         <p>Manage API tokens per tenant:</p>
         <CodePlayground
-          initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function TokenManagement() {
@@ -197,7 +197,7 @@ function TokenManagement() {
         <p>Complete multi-tenant chat application:</p>
         <CodePlayground
           initialCode={`import { TenantProvider, useTenant } from './tenant-context'
-import { ClarityChat, SeatInviteDialog, ApiTokenManager } from '@clarity-chat/react'
+import { ClarityChat, SeatInviteDialog, ApiTokenManager } from '@clarity-chat/react/internal'
 
 function MultiTenantApp({ tenantId }: { tenantId: string }) {
   return (
