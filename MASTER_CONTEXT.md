@@ -1162,7 +1162,629 @@ _"Stop Building Chat UI. Start Shipping AI."_
 | 2025-12-19 | Examples Overhaul Phase 0-3 Complete - Audit, research, GTM proof test, strategy defined           | PM/GTM/Architect   |
 | 2025-12-19 | Examples Overhaul Phase 4 Complete - Created quickstart, headless-mode, fixed ai-research-platform | Engineering        |
 | 2025-12-19 | Examples Overhaul Phase 5 Complete - Added copy-paste demo hooks, refactored headless-mode         | Engineering        |
+| 2025-12-20 | OSS Package Expansion Analysis Complete - 10 packages evaluated, 5 recommended for implementation  | PM/Architect       |
 
 ---
 
 _This document is continuously updated as the audit progresses._
+
+---
+
+## H) OPEN-SOURCE PACKAGE EXPANSION ANALYSIS
+
+> **Goal**: Evaluate open-source packages that could enhance Clarity Chat's value proposition while remaining license-safe for paid products.
+>
+> **Analysis Date**: 2025-12-20 | **Status**: Complete
+
+---
+
+### H.1) Executive Summary
+
+**What We Analyzed**:
+
+- Comprehensive audit of Clarity Chat's current dependency landscape (170+ components, 14 packages)
+- Research across 50+ open-source packages in 7 categories
+- License safety verification for paid product model
+- GTM impact assessment for each candidate
+
+**Categories Explored**:
+
+1. AI/Chat UX Enhancements
+2. Performance & Virtualization
+3. UI Primitives & Accessibility
+4. State Management
+5. Security & Sanitization
+6. Developer Experience
+7. AI/LLM Tooling & Integrations
+
+**High-Level Recommendations**:
+
+| Category            | Implement Now    | Revisit Later  | Do Not Adopt           |
+| ------------------- | ---------------- | -------------- | ---------------------- |
+| AI/Chat UX          | flowtoken        | assistant-ui   | -                      |
+| Performance         | TanStack Virtual | -              | -                      |
+| UI/Notifications    | Sonner           | -              | react-hot-toast        |
+| State Management    | -                | Zustand, Jotai | -                      |
+| Security            | isomorphic-dompurify | -          | -                      |
+| Panels/Layout       | react-resizable-panels | -        | -                      |
+| Form Validation     | -                | react-hook-form | -                     |
+| Date Utilities      | -                | date-fns       | moment.js              |
+| AI/LLM Integration  | -                | LangChain.js   | -                      |
+
+---
+
+### H.2) Project Capability Baseline
+
+#### Current Dependencies (Key Packages)
+
+**@clarity-chat/react**:
+
+| Package | Purpose | License |
+| ------- | ------- | ------- |
+| @radix-ui/* | UI primitives | MIT |
+| framer-motion | Animations | MIT |
+| react-markdown | Markdown rendering | MIT |
+| shiki, prismjs, highlight.js | Syntax highlighting | MIT |
+| js-tiktoken | Token counting | MIT |
+| react-window | List virtualization | MIT |
+| zod | Schema validation | MIT |
+| lucide-react | Icons | ISC |
+
+**@clarity-chat/primitives**:
+
+| Package | Purpose | License |
+| ------- | ------- | ------- |
+| cmdk | Command palette | MIT |
+| vaul | Drawer/sheet | MIT |
+| @radix-ui/* (full suite) | Dialog, dropdown, popover, etc. | MIT |
+
+**@clarity-chat/token-optimization**:
+
+| Package | Purpose | License |
+| ------- | ------- | ------- |
+| @dqbd/tiktoken | Accurate token counting | MIT |
+| @tensorflow/tfjs | ML compression | Apache-2.0 |
+| lru-cache | Caching | ISC |
+
+#### Identified Capability Gaps
+
+| Gap | Current State | User Pain | Opportunity |
+| --- | ------------- | --------- | ----------- |
+| Streaming text animations | Basic text append | Choppy UX, no visual polish | flowtoken could add professional animations |
+| Virtualization performance | react-window (adequate) | Large message lists slow | TanStack Virtual more modern/performant |
+| Toast notifications | Custom implementation | Maintenance burden | Sonner is industry standard |
+| XSS sanitization | Partial/manual | Security risk in markdown | isomorphic-dompurify is battle-tested |
+| Panel layouts | None | No resizable panels for dev tools | react-resizable-panels needed |
+| Form validation DX | Manual Zod integration | Boilerplate for complex forms | react-hook-form could simplify |
+
+#### Competitive Landscape
+
+| Competitor | Strength We're Missing |
+| ---------- | ---------------------- |
+| Vercel AI SDK | Streaming UI components (`createStreamableUI`) |
+| assistant-ui | Radix-style composable chat primitives |
+| ChatGPT Web | Polished streaming text animations |
+| Linear/Slack | Professional toast/notification systems |
+
+---
+
+### H.3) Package Long-List (License-Safe Only)
+
+All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
+
+#### Category 1: AI/Chat UX Enhancements
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [flowtoken](https://github.com/Ephibbs/flowtoken) | MIT | ~500 stars | Streaming text animations (fade, blur, typewriter) |
+| [assistant-ui](https://github.com/assistant-ui/assistant-ui) | MIT | 2k+ stars, 400k/mo downloads | Composable AI chat primitives, Radix-style |
+| [typeit-react](https://www.npmjs.com/package/typeit-react) | MIT | Popular | Typewriter effect for streaming |
+
+#### Category 2: Performance & Virtualization
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [@tanstack/react-virtual](https://github.com/TanStack/virtual) | MIT | 5k+ stars | Modern virtualization (10-15kb), headless |
+| [react-virtuoso](https://github.com/petyosi/react-virtuoso) | MIT | 5k+ stars | Most powerful virtual list |
+
+#### Category 3: UI Primitives & Accessibility
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [sonner](https://github.com/emilkowalski/sonner) | MIT | 7M+/week | Opinionated toast notifications |
+| [react-resizable-panels](https://github.com/bvaughn/react-resizable-panels) | MIT | 5k+ stars | Resizable panel layouts |
+| [react-aria](https://react-spectrum.adobe.com/react-aria/) | Apache-2.0 | Adobe-backed | Accessibility primitives |
+| [ariakit](https://ariakit.org/) | MIT | 7k+ stars | Accessible UI primitives |
+
+#### Category 4: State Management
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [zustand](https://github.com/pmndrs/zustand) | MIT | 47k+ stars | Lightweight global state (~3KB) |
+| [jotai](https://github.com/pmndrs/jotai) | MIT | 18k+ stars | Atomic state, fine-grained reactivity |
+
+#### Category 5: Security & Sanitization
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [isomorphic-dompurify](https://www.npmjs.com/package/isomorphic-dompurify) | MIT | Wrapper for DOMPurify | XSS sanitization (server + client) |
+
+#### Category 6: Developer Experience
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [date-fns](https://github.com/date-fns/date-fns) | MIT | 34k+ stars | Modern date utilities, tree-shakeable |
+| [react-hook-form](https://github.com/react-hook-form/react-hook-form) | MIT | 41k+ stars | Form state with Zod integration |
+| [@hookform/resolvers](https://github.com/react-hook-form/resolvers) | MIT | Official | Zod/Yup validation resolvers |
+
+#### Category 7: AI/LLM Tooling
+
+| Package | License | Stars/Downloads | What It Solves |
+| ------- | ------- | --------------- | -------------- |
+| [langchain](https://github.com/langchain-ai/langchainjs) | MIT | 12k+ stars | LLM chains, tools, agents |
+
+---
+
+### H.4) Shortlist Deep Evaluation (10 Packages)
+
+#### 1. flowtoken - LLM Streaming Text Animations
+
+**What it does**:
+
+- Provides 10+ animation styles for streaming text (fade, blur, typewriter, slide, etc.)
+- Optimized for LLM token-by-token rendering
+- Configurable speed matching for variable token generation rates
+
+**How we would use it**:
+
+- Integration layer: `StreamingMessage` component
+- Would replace basic text append with polished animations
+- Public API addition: `animationStyle` prop on `StreamingMessage`
+
+**Why we need it**:
+
+- **User pain**: Current streaming feels "choppy" compared to ChatGPT
+- **DX improvement**: Drop-in enhancement, minimal integration effort
+- **Competitive advantage**: Matches/exceeds ChatGPT's visual polish
+- **Differentiator**: No other chat library includes this
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Low** (React component wrapper)
+- Lock-in: **None** (pure presentation, easily replaceable)
+- Performance: **Minimal** (CSS-based animations)
+- Bundle size: **~5KB** gzipped
+
+**GTM Impact**: **HIGH** - Immediate visual improvement users will notice
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+#### 2. TanStack Virtual - Modern Virtualization
+
+**What it does**:
+
+- Headless virtualization for lists, grids, tables
+- 10-15KB bundle, modern architecture
+- Supports variable row heights, horizontal/vertical/grid layouts
+
+**How we would use it**:
+
+- Replace `react-window` in `VirtualizedMessageList`
+- Internal implementation detail (no API change)
+
+**Why we need it**:
+
+- **User pain**: Large conversations (1000+ messages) can lag
+- **Maintenance**: `react-window` is older, less actively maintained
+- **Performance**: Better dynamic row height handling
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Medium** (API differs from react-window)
+- Lock-in: **Low** (virtualization is swappable)
+- Performance: **Better** than current solution
+- Migration effort: **2-3 days** for full replacement
+
+**GTM Impact**: **MEDIUM** - Users won't notice unless they have large conversations
+
+**Recommendation**: ✅ **IMPLEMENT NOW** (performance is table stakes)
+
+---
+
+#### 3. Sonner - Toast Notifications
+
+**What it does**:
+
+- Opinionated, beautiful toast notifications
+- Used by Vercel, Cursor, shadcn/ui
+- Zero dependencies, TypeScript-first
+
+**How we would use it**:
+
+- Replace custom `Toast` implementation in `useToast` hook
+- Export `Toaster` component for easy setup
+- Internal improvement, minimal API change
+
+**Why we need it**:
+
+- **User pain**: Current toast system requires more boilerplate
+- **Maintenance burden**: Maintaining custom toast is unnecessary
+- **Industry standard**: Users expect Sonner-like UX
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Low** (drop-in replacement)
+- Lock-in: **None** (toast is pure presentation)
+- Bundle size: **~5KB** (same as current)
+
+**GTM Impact**: **MEDIUM** - Table stakes, not differentiating
+
+**Recommendation**: ✅ **IMPLEMENT NOW** (reduces maintenance burden)
+
+---
+
+#### 4. isomorphic-dompurify - XSS Sanitization
+
+**What it does**:
+
+- Battle-tested XSS sanitization
+- Works on both server and client (Next.js compatible)
+- OWASP recommended
+
+**How we would use it**:
+
+- Integrate into `MarkdownRendererEnhanced` component
+- Sanitize all rendered HTML content
+- Internal security improvement
+
+**Why we need it**:
+
+- **Security**: User-generated content + markdown = XSS risk
+- **Enterprise requirement**: Security audits will flag this
+- **Compliance**: SOC 2, HIPAA require input sanitization
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Low**
+- Performance: **Minimal** (DOM-based parsing)
+- False positives: **Configurable** whitelist
+
+**GTM Impact**: **HIGH** for enterprise sales (security checkbox)
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+#### 5. react-resizable-panels - Panel Layouts
+
+**What it does**:
+
+- Resizable panel groups (horizontal/vertical)
+- Auto-save layout persistence
+- Keyboard accessible
+
+**How we would use it**:
+
+- Add to dev-tools package for debug panels
+- Enable resizable sidebar in `ChatLayout`
+- Public API addition: `ResizableChatLayout` component
+
+**Why we need it**:
+
+- **User pain**: Fixed layouts limit customization
+- **Enterprise use case**: Debugging panels, context inspector
+- **Competitive**: VS Code-like developer experience
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Low**
+- Bundle size: **~8KB**
+- Lock-in: **None**
+
+**GTM Impact**: **MEDIUM** - Enables advanced use cases
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+#### 6. Zustand - State Management
+
+**What it does**:
+
+- Minimal global state (~3KB)
+- No boilerplate, hook-based API
+- Works with React DevTools
+
+**How we would use it**:
+
+- Internal state management for complex components
+- Replace scattered useState/useReducer patterns
+- Not exposed in public API
+
+**Why we need it**:
+
+- **DX improvement**: Cleaner internal code
+- **Performance**: Optimized re-renders
+- **Testing**: Easier to mock and test
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **Medium** (refactoring required)
+- Lock-in: **Low** (internal implementation)
+- Migration effort: **Significant** for existing code
+
+**GTM Impact**: **LOW** - Internal improvement only
+
+**Recommendation**: ⏸️ **REVISIT LATER** (not user-facing)
+
+---
+
+#### 7. react-aria - Accessibility Primitives
+
+**What it does**:
+
+- Adobe's accessibility hooks
+- Full WCAG compliance
+- Internationalization (30+ languages)
+
+**How we would use it**:
+
+- Augment existing Radix UI components
+- Add missing accessibility patterns
+- Improve focus management
+
+**Why we need it**:
+
+- **Compliance**: WCAG AAA claims require robust foundation
+- **Enterprise**: Accessibility is procurement checkbox
+- **Quality**: Adobe-quality accessibility
+
+**Risks & tradeoffs**:
+
+- Integration complexity: **High** (overlaps with Radix)
+- Bundle size: **Significant** if not tree-shaken
+- API complexity: **Higher learning curve**
+
+**GTM Impact**: **MEDIUM** - Already strong with Radix
+
+**Recommendation**: ⏸️ **REVISIT LATER** (Radix already good)
+
+---
+
+#### 8. assistant-ui - AI Chat Primitives
+
+**What it does**:
+
+- Y Combinator backed
+- 400k+ monthly downloads
+- Radix-style composable primitives for AI chat
+
+**How we would use it**:
+
+- **NOT recommended** - direct competitor
+- Could study for API design patterns
+
+**Why we DON'T need it**:
+
+- **Competitive overlap**: We are the alternative to this
+- **Lock-in risk**: Their primitives, their API
+- **Differentiation lost**: We'd become a wrapper
+
+**Risks & tradeoffs**:
+
+- Lock-in: **HIGH**
+- Differentiation: **Destroyed**
+
+**GTM Impact**: **NEGATIVE** - Undermines our value proposition
+
+**Recommendation**: ❌ **DO NOT ADOPT**
+
+---
+
+#### 9. date-fns - Date Formatting
+
+**What it does**:
+
+- Modern date utilities
+- Tree-shakeable (only import what you use)
+- TypeScript-first
+
+**How we would use it**:
+
+- Replace manual date formatting in timestamps
+- `MessageTimestamp` component
+- Analytics date ranges
+
+**Why we need it**:
+
+- **DX**: Better than `new Date().toLocaleString()`
+- **Consistency**: Unified date formatting
+- **I18n**: Built-in locale support
+
+**Risks & tradeoffs**:
+
+- Bundle size: **Only adds what you import**
+- Integration: **Simple**
+
+**GTM Impact**: **LOW** - Internal improvement
+
+**Recommendation**: ⏸️ **REVISIT LATER** (nice to have)
+
+---
+
+#### 10. LangChain.js - LLM Tooling
+
+**What it does**:
+
+- LLM chains, agents, tools
+- Multi-provider support
+- RAG integrations
+
+**How we would use it**:
+
+- **Optional integration layer**
+- Document in "Advanced Integrations" guide
+- Adapter for LangChain → Clarity Chat
+
+**Why we might need it**:
+
+- **User demand**: Many users already use LangChain
+- **Ecosystem play**: Interoperability increases adoption
+
+**Risks & tradeoffs**:
+
+- Bundle size: **Large** (optional dependency only)
+- Complexity: **High** (LangChain has learning curve)
+- Overlap: **Some** with our primitives
+
+**GTM Impact**: **MEDIUM** - Ecosystem play
+
+**Recommendation**: ⏸️ **REVISIT LATER** (write adapter guide first)
+
+---
+
+### H.5) GTM Value Assessment
+
+#### Would Users Notice This Improvement?
+
+| Package | User-Visible? | Strengthens Paid Value? | Table Stakes vs Differentiating |
+| ------- | ------------- | ----------------------- | ------------------------------- |
+| flowtoken | ✅ Yes | ✅ Yes (polish) | **Differentiating** |
+| TanStack Virtual | ⚠️ For large lists | ⚠️ Performance is expected | Table stakes |
+| Sonner | ⚠️ Subtly | ❌ No | Table stakes |
+| isomorphic-dompurify | ❌ No (security) | ✅ Yes (enterprise) | Table stakes |
+| react-resizable-panels | ✅ Yes | ✅ Yes (power users) | **Differentiating** |
+| Zustand | ❌ No | ❌ No | Internal only |
+| react-aria | ⚠️ For a11y users | ✅ Yes (compliance) | Table stakes |
+| date-fns | ❌ No | ❌ No | Internal only |
+
+#### Marketing/Docs Positioning
+
+| Package | How to Describe |
+| ------- | --------------- |
+| flowtoken | "ChatGPT-quality streaming animations out of the box" |
+| TanStack Virtual | "Handle 10,000+ messages without lag" |
+| Sonner | N/A (internal) |
+| isomorphic-dompurify | "Enterprise-grade security with built-in XSS protection" |
+| react-resizable-panels | "Customizable layouts for any workspace" |
+
+---
+
+### H.6) Final Recommendations
+
+#### ✅ Implement Now (P0)
+
+| Package | Effort | Impact | Next Step |
+| ------- | ------ | ------ | --------- |
+| **flowtoken** | Small | High | Add to `@clarity-chat/react`, expose `animationStyle` prop |
+| **TanStack Virtual** | Medium | Medium | Replace react-window in VirtualizedMessageList |
+| **Sonner** | Small | Medium | Replace custom toast, export Toaster |
+| **isomorphic-dompurify** | Small | High | Integrate into MarkdownRendererEnhanced |
+| **react-resizable-panels** | Small | Medium | Add ResizableChatLayout component |
+
+**Estimated Total Effort**: 1-2 sprints
+
+#### ⏸️ Revisit Later (P1/P2)
+
+| Package | Reason to Wait |
+| ------- | -------------- |
+| **Zustand** | Internal only, significant refactor |
+| **Jotai** | Same as Zustand |
+| **react-aria** | Radix already provides good a11y |
+| **date-fns** | Low priority, nice to have |
+| **react-hook-form** | Only needed for complex forms |
+| **LangChain.js** | Write integration guide first |
+
+#### ❌ Do Not Adopt
+
+| Package | Reason |
+| ------- | ------ |
+| **assistant-ui** | Direct competitor, undermines differentiation |
+| **moment.js** | Deprecated, use date-fns instead |
+| **react-hot-toast** | Sonner is better |
+
+---
+
+### H.7) Implementation Roadmap
+
+#### Sprint 1: Core DX Improvements
+
+1. **flowtoken integration**
+   - Add dependency: `pnpm add flowtoken`
+   - Wrap in `StreamingMessage` component
+   - Add `animationStyle` prop (fade | blur | typewriter | slide | none)
+   - Update Storybook stories
+
+2. **isomorphic-dompurify integration**
+   - Add dependency: `pnpm add isomorphic-dompurify`
+   - Integrate into `MarkdownRendererEnhanced`
+   - Add configurable sanitization options
+
+3. **Sonner migration**
+   - Add dependency: `pnpm add sonner`
+   - Replace internal toast implementation
+   - Export `Toaster` component
+   - Maintain backward compatibility
+
+#### Sprint 2: Performance & Layout
+
+1. **TanStack Virtual migration**
+   - Add dependency: `pnpm add @tanstack/react-virtual`
+   - Migrate `VirtualizedMessageList`
+   - Add dynamic row height support
+   - Performance benchmarking
+
+2. **react-resizable-panels integration**
+   - Add dependency: `pnpm add react-resizable-panels`
+   - Create `ResizableChatLayout` component
+   - Add to dev-tools for debugging panels
+   - Document advanced layouts
+
+---
+
+### H.8) Sources & References
+
+**AI Chat Libraries**:
+- [assistant-ui](https://github.com/assistant-ui/assistant-ui) - Y Combinator backed
+- [flowtoken](https://github.com/Ephibbs/flowtoken) - LLM streaming animations
+- [NLUX](https://www.nlkit.com/blog/react-js-lib-to-build-ai-chatbots) - Zero-dependency chatbot UI
+
+**Performance**:
+- [TanStack Virtual](https://tanstack.com/virtual/latest) - Modern virtualization
+- [react-virtuoso](https://github.com/petyosi/react-virtuoso) - Powerful virtual list
+
+**UI/UX**:
+- [Sonner](https://sonner.emilkowal.ski/) - Toast notifications
+- [react-resizable-panels](https://react-resizable-panels.vercel.app/) - Panel layouts
+
+**Accessibility**:
+- [React Aria](https://react-spectrum.adobe.com/react-aria/) - Adobe accessibility
+- [ARIAKit](https://ariakit.org/) - Accessible components
+
+**Security**:
+- [DOMPurify](https://github.com/cure53/DOMPurify) - XSS sanitization
+- [isomorphic-dompurify](https://www.npmjs.com/package/isomorphic-dompurify) - SSR-compatible
+
+**State Management**:
+- [Zustand vs Jotai](https://dev.to/hijazi313/state-management-in-2025-when-to-use-context-redux-zustand-or-jotai-2d2k)
+
+**AI/LLM**:
+- [LangChain.js](https://github.com/langchain-ai/langchainjs) - LLM framework
+- [AI SDK by Vercel](https://ai-sdk.dev/) - AI toolkit
+
+---
+
+### H.9) Decision Log
+
+| Date | Decision | Rationale | Owner |
+| ---- | -------- | --------- | ----- |
+| 2025-12-20 | Add flowtoken for streaming animations | Differentiating feature, low risk | PM |
+| 2025-12-20 | Migrate to TanStack Virtual | Modern architecture, better perf | Architect |
+| 2025-12-20 | Replace toast with Sonner | Reduce maintenance, industry standard | Engineering |
+| 2025-12-20 | Add isomorphic-dompurify | Enterprise security requirement | Security |
+| 2025-12-20 | Do not adopt assistant-ui | Competitive conflict | PM |
+| 2025-12-20 | Defer Zustand/Jotai | Internal only, not user-facing | Architect |
+
+---
