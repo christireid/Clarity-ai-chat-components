@@ -8,7 +8,7 @@
  * @see /DEMO_HARNESS_TEST_LOG.md for test results
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
 
 // === Primitives (from @clarity-chat/primitives) ===
 import { Button, Input, Card, Badge } from '@clarity-chat/primitives'
@@ -19,6 +19,7 @@ import {
   ChatInput,
   ChatWindow,
   FloatingChatWidget,
+  MessageList,
 
   // Message Components
   StreamingMessage,
@@ -45,6 +46,7 @@ import {
 
   // Search Components
   MessageSearch,
+  MessageSearchWithSuspense,
 
   // Prompt Components
   FollowUpSuggestions,
@@ -61,6 +63,7 @@ import {
 
   // Toast System
   ToastProvider,
+  ToastContainer,
   useToast,
 
   // Providers
@@ -68,6 +71,7 @@ import {
   TokenBudgetProvider,
   LicenseProvider,
   LicenseGate,
+  Watermark,
 
   // === Hooks ===
   useAutoScroll,
@@ -75,18 +79,35 @@ import {
   useTheme,
   useTokenBudget,
   useKeyboardShortcuts,
+  useCommandPalette,
   useClipboard,
   useLocalStorage,
   useRetryWithBackoff,
   useThrottledCallback,
   useReducedMotion,
+  useVoiceInput,
+  useStreaming,
+  useFocusTrap,
+  useFocusRestoration,
 
   // License Hooks
   useLicenseStatus,
   useIsLicensed,
+  useHasPlan,
+  useLicenseInfo,
 
   // Utilities
   cn,
+
+  // Animation utilities
+  createFadeVariant,
+  createSlideVariant,
+  createScaleVariant,
+  createPulseAnimation,
+
+  // Message helpers
+  createUserMessage,
+  createAssistantMessage,
 } from '@clarity-chat/react'
 
 // Import styles
@@ -800,6 +821,29 @@ function SearchPromptsSection() {
           onError={(error) => console.error('Voice error:', error)}
         />
       </Card>
+
+      {/* MessageSearchWithSuspense */}
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">MessageSearchWithSuspense</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Search component wrapped with React Suspense for async loading.
+        </p>
+        <Suspense
+          fallback={
+            <div className="text-sm text-muted-foreground">
+              Loading search...
+            </div>
+          }
+        >
+          <MessageSearchWithSuspense
+            messages={messages as any}
+            onResultsChange={(results) =>
+              console.log('Suspense search results:', results)
+            }
+            placeholder="Search with suspense..."
+          />
+        </Suspense>
+      </Card>
     </div>
   )
 }
@@ -881,16 +925,25 @@ function TokenBudgetDemo() {
 function LicenseDemo() {
   const isLicensed = useIsLicensed()
   const status = useLicenseStatus()
+  const hasPro = useHasPlan('pro')
+  const licenseInfo = useLicenseInfo()
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         <Badge variant={isLicensed ? 'success' : 'warning'}>
           {isLicensed ? 'Licensed' : 'Unlicensed'}
+        </Badge>
+        <Badge variant={hasPro ? 'success' : 'secondary'}>
+          {hasPro ? 'Has Pro' : 'No Pro Plan'}
         </Badge>
         <span className="text-sm text-muted-foreground">
           Status: {status?.status || 'unknown'}
         </span>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        License Info:{' '}
+        {licenseInfo ? JSON.stringify(licenseInfo).slice(0, 80) : 'N/A'}...
       </div>
       <LicenseGate
         requiredPlan="pro"
@@ -902,6 +955,15 @@ function LicenseDemo() {
       >
         <p className="text-sm text-green-600">Premium feature unlocked!</p>
       </LicenseGate>
+      <div className="border-t pt-4 mt-4">
+        <h4 className="font-medium mb-2">Watermark Component</h4>
+        <div className="relative h-20 bg-muted rounded-lg flex items-center justify-center">
+          <Watermark status="GracePeriod" message="Demo Version" />
+          <span className="text-sm text-muted-foreground">
+            Content area with watermark
+          </span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -944,6 +1006,38 @@ function HooksSection() {
       <Card className="p-6">
         <h3 className="font-semibold mb-4">useAutoScroll</h3>
         <AutoScrollDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">useCommandPalette</h3>
+        <CommandPaletteDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">useVoiceInput</h3>
+        <VoiceInputHookDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">useStreaming</h3>
+        <StreamingHookDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">
+          useFocusTrap & useFocusRestoration
+        </h3>
+        <FocusManagementDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">Animation Utilities</h3>
+        <AnimationUtilsDemo />
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">Message Helpers</h3>
+        <MessageHelpersDemo />
       </Card>
     </div>
   )
@@ -1158,6 +1252,261 @@ function AutoScrollDemo() {
               {item}
             </div>
           ))
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CommandPaletteDemo() {
+  const { isOpen, open, close, toggle, shortcutDisplay } = useCommandPalette({
+    shortcut: 'mod+p',
+    onOpen: () => console.log('Command palette opened'),
+    onClose: () => console.log('Command palette closed'),
+  })
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <Button size="sm" onClick={toggle}>
+          {isOpen ? 'Close Palette' : 'Open Palette'}
+        </Button>
+        <Badge variant={isOpen ? 'success' : 'secondary'}>
+          {isOpen ? 'Open' : 'Closed'}
+        </Badge>
+        <span className="text-sm text-muted-foreground">
+          Shortcut: {shortcutDisplay}
+        </span>
+      </div>
+      {isOpen && (
+        <div className="border rounded-lg p-4 space-y-2">
+          <p className="text-sm font-medium">Command Palette is Open</p>
+          <p className="text-sm text-muted-foreground">
+            This hook manages open/close state and keyboard shortcuts.
+          </p>
+          <Button size="sm" variant="outline" onClick={close}>
+            Close
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function VoiceInputHookDemo() {
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    error,
+    isSupported,
+  } = useVoiceInput({
+    onTranscript: (text) => console.log('Voice hook transcript:', text),
+  })
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <Button
+          size="sm"
+          onClick={isListening ? stopListening : startListening}
+          disabled={!isSupported}
+        >
+          {isListening ? 'Stop Listening' : 'Start Listening'}
+        </Button>
+        <Badge variant={isListening ? 'success' : 'secondary'}>
+          {isListening ? 'Listening...' : 'Not listening'}
+        </Badge>
+        {!isSupported && <Badge variant="destructive">Not Supported</Badge>}
+      </div>
+      {transcript && (
+        <p className="text-sm bg-muted p-2 rounded">Transcript: {transcript}</p>
+      )}
+      {error && <p className="text-sm text-destructive">Error: {error}</p>}
+      <p className="text-sm text-muted-foreground">
+        Note: Requires microphone permission and browser support.
+      </p>
+    </div>
+  )
+}
+
+function StreamingHookDemo() {
+  const { content, isStreaming, startStreaming, stopStreaming, reset } =
+    useStreaming({
+      onChunk: (chunk) => console.log('Chunk received:', chunk),
+      onComplete: (fullText) => console.log('Stream complete:', fullText),
+      onError: (err) => console.error('Stream error:', err),
+    })
+
+  const handleStart = async () => {
+    reset()
+    // Create a mock ReadableStream to simulate streaming
+    const mockText =
+      'This is a simulated streaming response from the useStreaming hook. Watch it appear character by character!'
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        for (const char of mockText) {
+          controller.enqueue(encoder.encode(char))
+          await new Promise((r) => setTimeout(r, 30))
+        }
+        controller.close()
+      },
+    })
+    await startStreaming(stream)
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 items-center">
+        <Button size="sm" onClick={handleStart} disabled={isStreaming}>
+          {isStreaming ? 'Streaming...' : 'Start Stream'}
+        </Button>
+        {isStreaming && (
+          <Button size="sm" variant="outline" onClick={stopStreaming}>
+            Stop
+          </Button>
+        )}
+        <Button size="sm" variant="ghost" onClick={reset}>
+          Reset
+        </Button>
+      </div>
+      {content && <p className="text-sm bg-muted p-2 rounded">{content}</p>}
+    </div>
+  )
+}
+
+function FocusManagementDemo() {
+  const [showTrap, setShowTrap] = useState(false)
+  const trapRef = useFocusTrap<HTMLDivElement>(showTrap)
+  const { saveFocus, restoreFocus } = useFocusRestoration()
+
+  const handleOpen = () => {
+    saveFocus()
+    setShowTrap(true)
+  }
+
+  const handleClose = () => {
+    setShowTrap(false)
+    restoreFocus()
+  }
+
+  return (
+    <div className="space-y-4">
+      <Button size="sm" onClick={handleOpen}>
+        Open Focus Trap
+      </Button>
+      {showTrap && (
+        <div
+          ref={trapRef}
+          className="border-2 border-primary rounded-lg p-4 space-y-2"
+        >
+          <p className="text-sm font-medium">Focus is trapped here!</p>
+          <div className="flex gap-2">
+            <Input placeholder="Tab navigation works here..." />
+            <Button size="sm">Button 1</Button>
+            <Button size="sm" variant="outline" onClick={handleClose}>
+              Close Trap
+            </Button>
+          </div>
+        </div>
+      )}
+      <p className="text-sm text-muted-foreground">
+        Focus trap keeps keyboard focus within a container. Focus restoration
+        returns focus when closed.
+      </p>
+    </div>
+  )
+}
+
+function AnimationUtilsDemo() {
+  const fadeVariant = createFadeVariant('normal')
+  const slideVariant = createSlideVariant('up', 20, 'normal')
+  const scaleVariant = createScaleVariant(0.9, 'fast')
+  const pulseAnimation = createPulseAnimation(0.5, 0.8, 1.5)
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="p-3 bg-muted rounded">
+          <p className="font-medium mb-1">Fade Variant</p>
+          <code className="text-xs">
+            {JSON.stringify(fadeVariant).slice(0, 60)}...
+          </code>
+        </div>
+        <div className="p-3 bg-muted rounded">
+          <p className="font-medium mb-1">Slide Variant</p>
+          <code className="text-xs">
+            {JSON.stringify(slideVariant).slice(0, 60)}...
+          </code>
+        </div>
+        <div className="p-3 bg-muted rounded">
+          <p className="font-medium mb-1">Scale Variant</p>
+          <code className="text-xs">
+            {JSON.stringify(scaleVariant).slice(0, 60)}...
+          </code>
+        </div>
+        <div className="p-3 bg-muted rounded">
+          <p className="font-medium mb-1">Pulse Animation</p>
+          <code className="text-xs">
+            {JSON.stringify(pulseAnimation).slice(0, 60)}...
+          </code>
+        </div>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Animation utilities create Framer Motion variants for consistent
+        animations.
+      </p>
+    </div>
+  )
+}
+
+function MessageHelpersDemo() {
+  const [demoMessages, setDemoMessages] = useState<any[]>([])
+
+  const addUserMessage = () => {
+    const msg = createUserMessage('Hello, this is a user message!')
+    setDemoMessages((prev) => [...prev, msg])
+  }
+
+  const addAssistantMessage = () => {
+    const msg = createAssistantMessage('Hi! I am an assistant response.')
+    setDemoMessages((prev) => [...prev, msg])
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <Button size="sm" onClick={addUserMessage}>
+          Add User Message
+        </Button>
+        <Button size="sm" variant="outline" onClick={addAssistantMessage}>
+          Add Assistant Message
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setDemoMessages([])}>
+          Clear
+        </Button>
+      </div>
+      <div className="space-y-2 max-h-40 overflow-y-auto">
+        {demoMessages.map((msg, i) => (
+          <div
+            key={i}
+            className={cn(
+              'p-2 rounded text-sm',
+              msg.role === 'user' ? 'bg-primary/10 text-right' : 'bg-muted'
+            )}
+          >
+            <span className="font-medium">{msg.role}: </span>
+            {typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content)}
+          </div>
+        ))}
+        {demoMessages.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-2">
+            Click buttons to create messages using helper functions
+          </p>
         )}
       </div>
     </div>
