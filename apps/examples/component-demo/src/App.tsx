@@ -119,6 +119,21 @@ import {
   // Message helpers
   createUserMessage,
   createAssistantMessage,
+
+  // Additional API-dependent hooks
+  useClarityObject,
+
+  // Type guards
+  isUserMessage,
+  isAssistantMessage,
+  hasTextContent,
+  extractTextContent,
+
+  // Memory context
+  useMemoryContext,
+
+  // Main component
+  ClarityChat,
 } from '@clarity-chat/react'
 
 // ============================================================================
@@ -136,6 +151,46 @@ const mockResponses: Record<string, string> = {
     'Thank you for your message! This is a mock response demonstrating that the useClarityChat hook works correctly with simulated API calls. The streaming effect you see is also simulated.',
 }
 
+// Mock object generation responses
+const mockObjectResponses: Record<string, object> = {
+  products: {
+    products: [
+      {
+        name: 'Gaming Laptop Pro',
+        price: 1299.99,
+        description: 'High-performance gaming laptop with RTX 4070',
+        inStock: true,
+      },
+      {
+        name: 'Ultrabook Elite',
+        price: 999.99,
+        description: 'Lightweight ultrabook for professionals',
+        inStock: true,
+      },
+      {
+        name: 'Budget Laptop',
+        price: 499.99,
+        description: 'Affordable laptop for everyday use',
+        inStock: false,
+      },
+    ],
+  },
+  user: {
+    user: {
+      id: 'user-123',
+      name: 'John Doe',
+      email: 'john@example.com',
+      preferences: { theme: 'dark', notifications: true },
+    },
+  },
+  analysis: {
+    sentiment: 'positive',
+    confidence: 0.92,
+    keywords: ['react', 'typescript', 'testing'],
+    summary: 'The text discusses modern web development practices.',
+  },
+}
+
 function getMockResponse(message: string): string {
   const lower = message.toLowerCase()
   if (lower.includes('hello') || lower.includes('hi'))
@@ -143,6 +198,13 @@ function getMockResponse(message: string): string {
   if (lower.includes('help')) return mockResponses.help
   if (lower.includes('react')) return mockResponses.react
   return mockResponses.default
+}
+
+function getMockObjectResponse(input: any): object {
+  const query = (input?.query || input?.prompt || '').toLowerCase()
+  if (query.includes('product')) return mockObjectResponses.products
+  if (query.includes('user')) return mockObjectResponses.user
+  return mockObjectResponses.analysis
 }
 
 // Install mock fetch globally
@@ -158,7 +220,7 @@ globalThis.fetch = async (
         ? input.toString()
         : input.url
 
-  // Only mock /api/chat endpoints
+  // Mock /api/chat endpoints (streaming)
   if (url.includes('/api/chat')) {
     const body = JSON.parse((init?.body as string) || '{}')
     const messages = body.messages || []
@@ -183,6 +245,19 @@ globalThis.fetch = async (
 
     return new Response(stream, {
       headers: { 'Content-Type': 'text/event-stream' },
+    })
+  }
+
+  // Mock /api/generate-object endpoints (JSON response)
+  if (url.includes('/api/generate-object') || url.includes('/api/generate')) {
+    const body = JSON.parse((init?.body as string) || '{}')
+    const responseObject = getMockObjectResponse(body)
+
+    // Simulate network delay
+    await new Promise((r) => setTimeout(r, 800))
+
+    return new Response(JSON.stringify(responseObject), {
+      headers: { 'Content-Type': 'application/json' },
     })
   }
 
@@ -586,7 +661,235 @@ function ApiChatSection() {
           </div>
         </div>
       </Card>
+
+      {/* useClarityObject Demo */}
+      <UseClarityObjectDemo />
+
+      {/* Type Guards Demo */}
+      <TypeGuardsDemo />
+
+      {/* ClarityChat Component Demo */}
+      <ClarityChatDemo />
     </div>
+  )
+}
+
+// useClarityObject structured output demo
+interface Product {
+  name: string
+  price: number
+  description: string
+  inStock: boolean
+}
+
+function UseClarityObjectDemo() {
+  const [query, setQuery] = useState('products')
+  const { object, run, isLoading, error, reset } = useClarityObject<{
+    products: Product[]
+  }>({
+    api: '/api/generate-object',
+    initialInput: { query },
+  })
+
+  const handleGenerate = async () => {
+    try {
+      await run({ query })
+    } catch (err) {
+      console.error('Error generating:', err)
+    }
+  }
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">useClarityObject Hook</h3>
+        <Badge variant={isLoading ? 'warning' : 'success'}>
+          {isLoading ? 'Generating...' : 'Ready'}
+        </Badge>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Generate structured JSON objects from AI. Try "products", "user", or any
+        query.
+      </p>
+
+      <div className="flex gap-2 mb-4">
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Enter query (e.g., products, user)"
+          className="flex-1"
+        />
+        <Button onClick={handleGenerate} disabled={isLoading}>
+          Generate
+        </Button>
+        {object && (
+          <Button variant="outline" onClick={reset}>
+            Reset
+          </Button>
+        )}
+      </div>
+
+      {error && (
+        <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm mb-4">
+          Error: {error.message}
+        </div>
+      )}
+
+      {object && (
+        <div className="p-4 bg-muted/30 rounded-lg">
+          <p className="text-xs font-medium mb-2">Generated Object:</p>
+          <pre className="text-xs overflow-auto max-h-60">
+            {JSON.stringify(object, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+        <h4 className="font-medium text-sm mb-2">Hook Return Values:</h4>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <code>object</code>: {object ? 'Object' : 'null'}
+          </div>
+          <div>
+            <code>isLoading</code>: {String(isLoading)}
+          </div>
+          <div>
+            <code>error</code>: {error ? error.message : 'null'}
+          </div>
+          <div>
+            <code>run</code>: function
+          </div>
+          <div>
+            <code>reset</code>: function
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+// Type guards demonstration
+function TypeGuardsDemo() {
+  const [testMessages] = useState([
+    createUserMessage('Hello, how are you?'),
+    createAssistantMessage('I am doing well, thank you!'),
+    { id: '3', role: 'system' as const, content: 'System message' },
+  ])
+
+  return (
+    <Card className="p-6">
+      <h3 className="font-semibold mb-4">Type Guards & Utilities</h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        Testing type guard functions for message validation.
+      </p>
+
+      <div className="space-y-4">
+        {testMessages.map((msg, i) => (
+          <div key={i} className="p-3 bg-muted/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="secondary">{msg.role}</Badge>
+              <span className="text-xs text-muted-foreground">
+                {typeof msg.content === 'string'
+                  ? msg.content.slice(0, 30)
+                  : '...'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div
+                className={cn(
+                  'p-1 rounded',
+                  isUserMessage(msg)
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-muted'
+                )}
+              >
+                isUserMessage: {String(isUserMessage(msg))}
+              </div>
+              <div
+                className={cn(
+                  'p-1 rounded',
+                  isAssistantMessage(msg)
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-muted'
+                )}
+              >
+                isAssistantMessage: {String(isAssistantMessage(msg))}
+              </div>
+              <div
+                className={cn(
+                  'p-1 rounded',
+                  hasTextContent(msg)
+                    ? 'bg-purple-100 text-purple-800'
+                    : 'bg-muted'
+                )}
+              >
+                hasTextContent: {String(hasTextContent(msg))}
+              </div>
+              <div className="p-1 rounded bg-muted">
+                extractTextContent: "{extractTextContent(msg).slice(0, 20)}..."
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 p-3 bg-muted/50 rounded-lg text-xs">
+        <p className="font-medium mb-1">Available Type Guards:</p>
+        <code>
+          isUserMessage, isAssistantMessage, hasTextContent, extractTextContent
+        </code>
+      </div>
+    </Card>
+  )
+}
+
+// ClarityChat drop-in component demo
+function ClarityChatDemo() {
+  const [showChat, setShowChat] = useState(false)
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">ClarityChat Component</h3>
+        <Badge variant="info">Drop-in Component</Badge>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        The main drop-in component that provides a complete chat interface. This
+        is the recommended way to add AI chat to your app.
+      </p>
+
+      <Button onClick={() => setShowChat(!showChat)} className="mb-4">
+        {showChat ? 'Hide ClarityChat' : 'Show ClarityChat'}
+      </Button>
+
+      {showChat && (
+        <div className="border rounded-lg overflow-hidden h-[400px]">
+          <ClarityChat
+            api="/api/chat"
+            showHeader
+            sessionTitle="AI Assistant"
+            sessionSubtitle="Mock demo - try 'hello', 'help', or 'react'"
+            showTokenCounter
+            showNetworkStatus
+            autoScroll
+          />
+        </div>
+      )}
+
+      <div className="mt-4 p-4 bg-muted/30 rounded-lg">
+        <p className="text-xs font-medium mb-2">Usage:</p>
+        <code className="text-xs">
+          {`<ClarityChat
+  api="/api/chat"
+  showHeader
+  sessionTitle="AI Assistant"
+  sessionSubtitle="How can I help?"
+  showTokenCounter
+  autoScroll
+/>`}
+        </code>
+      </div>
+    </Card>
   )
 }
 

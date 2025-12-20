@@ -64,18 +64,18 @@ The app will be available at `http://localhost:5173` (or next available port)
 
 ## Component Inventory (Public API)
 
-Total: **37 components** (34 tested in harness)
+Total: **37 components** (35 tested in harness)
 
 ### Core Components
 
-| #   | Component          | Location                  | Tested | Status       |
-| --- | ------------------ | ------------------------- | ------ | ------------ |
-| 1   | ClarityChat        | chat/clarity-chat         | ⬜     | Requires API |
-| 2   | ClarityChatPresets | chat/clarity-chat-presets | ⬜     | Requires API |
-| 3   | ChatComplete       | chat/chat-recipes         | ⬜     | Requires API |
-| 4   | ChatWithMemory     | chat/chat-recipes         | ⬜     | Requires API |
-| 5   | ChatWithAnalytics  | chat/chat-recipes         | ⬜     | Requires API |
-| 6   | ChatWithPreset     | chat/chat-recipes         | ⬜     | Requires API |
+| #   | Component          | Location                  | Tested | Status              |
+| --- | ------------------ | ------------------------- | ------ | ------------------- |
+| 1   | ClarityChat        | chat/clarity-chat         | ✅     | Verified (mock API) |
+| 2   | ClarityChatPresets | chat/clarity-chat-presets | ⬜     | Requires API        |
+| 3   | ChatComplete       | chat/chat-recipes         | ⬜     | Requires API        |
+| 4   | ChatWithMemory     | chat/chat-recipes         | ⬜     | Requires API        |
+| 5   | ChatWithAnalytics  | chat/chat-recipes         | ⬜     | Requires API        |
+| 6   | ChatWithPreset     | chat/chat-recipes         | ⬜     | Requires API        |
 
 ### AI Components
 
@@ -153,7 +153,7 @@ Total: **37 components** (34 tested in harness)
 
 ## Hook Inventory (Public API)
 
-Total: **25 hooks** (23 tested in harness)
+Total: **25 hooks** (24 tested in harness)
 
 ### Core Chat Hooks
 
@@ -161,7 +161,7 @@ Total: **25 hooks** (23 tested in harness)
 | --- | ----------------------- | -------------------------------------- | ------ | ------------------- |
 | 1   | useClarityChat          | hooks/chat/use-clarity-chat            | ✅     | Verified (mock API) |
 | 2   | useHeadlessChat         | hooks/chat/use-chat-enhanced           | ⬜     | Requires API        |
-| 3   | useClarityObject        | hooks/chat/use-clarity-object          | ⬜     | Requires API        |
+| 3   | useClarityObject        | hooks/chat/use-clarity-object          | ✅     | Verified (mock API) |
 | 4   | useClarityChatWithTools | hooks/chat/use-clarity-chat-with-tools | ⬜     | Requires API        |
 
 ### Context Hooks
@@ -279,15 +279,29 @@ globalThis.fetch = async (input, init) => {
 
 ### Coverage Achieved
 
-| Hook/Component  | Status                                        |
-| --------------- | --------------------------------------------- |
-| useClarityChat  | ✅ Tested with mock fetch, streaming verified |
-| MemoryProvider  | ✅ Wrapped in harness for context             |
-| append()        | ✅ Verified message appending                 |
-| stop()          | ✅ Verified stream stopping                   |
-| reload()        | ✅ Verified last message reload               |
-| setMessages()   | ✅ Verified conversation clearing             |
-| isLoading state | ✅ Verified streaming state changes           |
+| Hook/Component     | Status                                        |
+| ------------------ | --------------------------------------------- |
+| useClarityChat     | ✅ Tested with mock fetch, streaming verified |
+| useClarityObject   | ✅ Tested with mock JSON responses            |
+| ClarityChat        | ✅ Drop-in component tested with mock API     |
+| MemoryProvider     | ✅ Wrapped in harness for context             |
+| append()           | ✅ Verified message appending                 |
+| stop()             | ✅ Verified stream stopping                   |
+| reload()           | ✅ Verified last message reload               |
+| setMessages()      | ✅ Verified conversation clearing             |
+| isLoading state    | ✅ Verified streaming state changes           |
+| Type guards        | ✅ isUserMessage, isAssistantMessage, etc.    |
+| extractTextContent | ✅ Verified text extraction utility           |
+
+### Mock Object Generation
+
+The harness also supports mock object generation via `/api/generate-object`:
+
+| Query      | Response Type           |
+| ---------- | ----------------------- |
+| "products" | Array of products       |
+| "user"     | User profile object     |
+| (other)    | Sentiment analysis data |
 
 ---
 
@@ -296,9 +310,9 @@ globalThis.fetch = async (input, init) => {
 1. **License-gated features**: Some components require valid license - tested with mock license key
 2. **Voice input**: Requires browser microphone permission - component included but not functionally
    tested
-3. **Memory provider**: Requires backend adapter - excluded from harness
+3. **Memory provider backends**: Some memory strategies require backend adapters
 4. **Streaming hooks**: Require mock streaming responses - simulated in harness
-5. **API-dependent components**: ClarityChat, ChatComplete, etc. require real API endpoint
+5. ~~**API-dependent components**: ClarityChat, etc.~~ - Now tested with mock fetch!
 
 ---
 
@@ -335,3 +349,7 @@ globalThis.fetch = async (input, init) => {
 | `createUserMessage`      | Message Helper | ✅     |
 | `createAssistantMessage` | Message Helper | ✅     |
 | `cn`                     | CSS Utility    | ✅     |
+| `isUserMessage`          | Type Guard     | ✅     |
+| `isAssistantMessage`     | Type Guard     | ✅     |
+| `hasTextContent`         | Type Guard     | ✅     |
+| `extractTextContent`     | Type Guard     | ✅     |
