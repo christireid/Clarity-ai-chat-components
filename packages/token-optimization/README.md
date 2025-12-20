@@ -2,29 +2,46 @@
 
 ## Overview
 
-The Clarity Chat Token Optimization System is a comprehensive solution for reducing AI API costs by 60-90% through intelligent token counting, compression, and optimization. It implements industry-leading techniques including TOON format, LLMLingua compression, semantic caching, and enterprise-grade security.
+The Clarity Chat Token Optimization System is a comprehensive solution for reducing AI API costs by
+60-90% through intelligent token counting, compression, and optimization. It implements
+industry-leading techniques including TOON format, LLMLingua compression, semantic caching, and
+enterprise-grade security.
 
 ## Features
 
 ### 🎯 Accurate Token Counting
-- **tiktoken Integration**: 99%+ accuracy vs 4-char approximation
-- **Multi-model Support**: GPT-4, GPT-3.5, Claude, Gemini
+
+- **gpt-tokenizer Integration**: 99%+ accuracy, 20x smaller than tiktoken WASM (~200KB vs ~4MB)
+- **Multi-model Support**: GPT-4, GPT-4o, o-series (o1, o3, o4), GPT-3.5, Claude, Gemini
+- **Chat Token Counting**: Accurate overhead calculation for chat conversations
+- **Fast Limit Checking**: `isWithinTokenLimit` stops early without full encoding
 - **Intelligent Caching**: 80%+ hit rates with LRU eviction
 - **Performance Monitoring**: Real-time metrics and analytics
 
+### 📄 Text Chunking
+
+- **llm-splitter Integration**: Lightweight chunking (100x smaller than LangChain)
+- **Strategy Presets**: Precise (256 tokens), Balanced (512), Context (1024)
+- **Overlap Support**: Configurable overlap percentage for context preservation
+- **Rich Metadata**: Character positions, token counts, paragraph boundaries
+- **Paragraph-aware**: Respects document structure while chunking
+
 ### 🔒 Enterprise Security
+
 - **OWASP LLM Top 10 Compliance**: Prompt injection prevention
 - **PII Protection**: Automatic detection and redaction
 - **Side-channel Protection**: Compression ratio obfuscation
 - **Audit Logging**: Comprehensive security event tracking
 
 ### 🗜️ Advanced Compression
+
 - **TOON Format**: 30-60% token savings vs JSON
 - **LLMLingua Integration**: Up to 20x compression ratio
 - **Context-aware Compression**: Intelligent content analysis
 - **Semantic Caching**: 65x performance improvements
 
 ### 🧠 Intelligent Optimization
+
 - **ML-powered Predictions**: Optimal strategy selection
 - **Context Analysis**: Importance-based compression
 - **Adaptive Learning**: Usage pattern recognition
@@ -41,24 +58,52 @@ npm install @clarity-chat/token-optimization
 ### Basic Usage
 
 ```typescript
-import { AccurateTokenCounter, ToonOptimizer } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  TextChunker,
+  ChunkingStrategy,
+  ToonOptimizer,
+} from '@clarity-chat/token-optimization'
 
-// Accurate token counting
+// Accurate token counting with gpt-tokenizer (20x smaller than tiktoken)
 const counter = new AccurateTokenCounter({
-  model: 'gpt-4',
+  model: 'gpt-4o', // Supports latest o-series models
   enableCaching: true,
-  enableMonitoring: true
+  enableMonitoring: true,
 })
 
-const text = "Hello world, this is a test message"
-const tokens = counter.count(text) // Accurate count vs 4-char approximation
+const text = 'Hello world, this is a test message'
+const tokens = counter.count(text) // Accurate count via pure JS (no WASM)
+
+// Fast limit checking (stops early, doesn't encode full text)
+const isOk = counter.isWithinLimit(text, 1000)
+
+// Chat conversation token counting with message overhead
+const chatTokens = counter.countChat([
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'Hello!' },
+  { role: 'assistant', content: 'Hi! How can I help you today?' },
+])
+
+// Text chunking with llm-splitter (100x smaller than LangChain)
+const chunker = TextChunker.balanced() // 512 tokens, 15% overlap
+const result = chunker.chunk(longDocument)
+
+for (const chunk of result.chunks) {
+  console.log(`Chunk ${chunk.index}: ${chunk.tokenCount} tokens`)
+  // chunk.text, chunk.startPosition, chunk.endPosition available
+}
+
+// Strategy presets for different use cases
+const preciseChunker = TextChunker.precise() // 256 tokens for retrieval
+const contextChunker = TextChunker.context() // 1024 tokens for context
 
 // TOON format optimization
 const data = {
   users: [
     { id: 1, name: 'Alice', role: 'admin' },
-    { id: 2, name: 'Bob', role: 'user' }
-  ]
+    { id: 2, name: 'Bob', role: 'user' },
+  ],
 }
 
 const toon = ToonOptimizer.optimizeForLLM(data)
@@ -68,12 +113,12 @@ const toon = ToonOptimizer.optimizeForLLM(data)
 ### Advanced Usage
 
 ```typescript
-import { 
+import {
   AccurateTokenCounter,
   TokenSecurityManager,
   LLMLinguaOptimizer,
   SemanticCache,
-  UnifiedTokenOptimizer
+  UnifiedTokenOptimizer,
 } from '@clarity-chat/token-optimization'
 
 // Complete optimization system
@@ -81,25 +126,27 @@ const optimizer = new UnifiedTokenOptimizer({
   tokenizer: {
     model: 'gpt-4',
     cacheSize: 100000,
-    enableCaching: true
+    enableCaching: true,
   },
   security: {
     enableSanitization: true,
     enableCompressionObfuscation: true,
-    complianceLevel: 'enterprise'
+    complianceLevel: 'enterprise',
   },
   toon: { enableArrayTables: true },
   llmlingua: { compressionRate: 0.6 },
-  cache: { maxSize: 1000000 }
+  cache: { maxSize: 1000000 },
 })
 
 const result = await optimizer.optimize(prompt, {
   maxTokens: 1000,
   context: conversationHistory,
-  security: { userId: 'user123' }
+  security: { userId: 'user123' },
 })
 
-console.log(`Saved ${result.percentage}% tokens: ${result.originalTokens} → ${result.optimizedTokens}`)
+console.log(
+  `Saved ${result.percentage}% tokens: ${result.originalTokens} → ${result.optimizedTokens}`
+)
 ```
 
 ## Core Components
@@ -113,17 +160,17 @@ const counter = new AccurateTokenCounter({
   model: 'gpt-4',
   cacheSize: 10000,
   enableCaching: true,
-  enableMonitoring: true
+  enableMonitoring: true,
 })
 
 // Single text counting
-const tokens = counter.count("Hello world") // 2 tokens (accurate)
+const tokens = counter.count('Hello world') // 2 tokens (accurate)
 
 // Batch counting
-const total = counter.countBatch(["Text 1", "Text 2", "Text 3"])
+const total = counter.countBatch(['Text 1', 'Text 2', 'Text 3'])
 
 // Token information
-const info = counter.getTokenInfo("Hello world from token counter")
+const info = counter.getTokenInfo('Hello world from token counter')
 console.log(info) // { tokens: 6, characters: 32, words: 6, ratio: 5.33 }
 
 // Text truncation
@@ -139,7 +186,7 @@ const security = new TokenSecurityManager({
   enableSanitization: true,
   enableCompressionObfuscation: true,
   enableAuditLogging: true,
-  complianceLevel: 'enterprise'
+  complianceLevel: 'enterprise',
 })
 
 // Input sanitization (OWASP LLM01)
@@ -165,8 +212,8 @@ TOON format for 30-60% token savings:
 const toon = ToonOptimizer.optimizeForLLM({
   users: [
     { id: 1, name: 'Alice', age: 25 },
-    { id: 2, name: 'Bob', age: 30 }
-  ]
+    { id: 2, name: 'Bob', age: 30 },
+  ],
 })
 
 // Result:
@@ -183,7 +230,7 @@ Advanced prompt compression with Microsoft LLMLingua:
 const compressor = new LLMLinguaOptimizer({
   modelName: 'microsoft/llmlingua-2-xlm-roberta-large-meetingbank',
   compressionRate: 0.6,
-  useLLMLingua2: true
+  useLLMLingua2: true,
 })
 
 const result = await compressor.compressPrompt(prompt, targetTokens)
@@ -198,7 +245,7 @@ Intelligent caching with 65x performance improvements:
 const cache = new SemanticCache({
   maxSize: 100000,
   similarityThreshold: 0.85,
-  embeddingModel: 'text-embedding-ada-002'
+  embeddingModel: 'text-embedding-ada-002',
 })
 
 // Get similar response
@@ -220,21 +267,21 @@ const securityLevels = {
   basic: {
     enableSanitization: true,
     enablePIIRedaction: true,
-    noiseLevel: 0.05
+    noiseLevel: 0.05,
   },
   enterprise: {
     enableSanitization: true,
     enableCompressionObfuscation: true,
     enableAuditLogging: true,
-    noiseLevel: 0.1
+    noiseLevel: 0.1,
   },
   government: {
     enableSanitization: true,
     enableCompressionObfuscation: true,
     enableAuditLogging: true,
     noiseLevel: 0.2,
-    complianceLevel: 'government'
-  }
+    complianceLevel: 'government',
+  },
 }
 ```
 
@@ -245,24 +292,25 @@ const strategies = {
   conservative: {
     compressionRatio: 0.8,
     preserveEntities: true,
-    qualityScore: 0.9
+    qualityScore: 0.9,
   },
   balanced: {
     compressionRatio: 0.6,
     preserveEntities: true,
-    qualityScore: 0.8
+    qualityScore: 0.8,
   },
   aggressive: {
     compressionRatio: 0.4,
     preserveEntities: false,
-    qualityScore: 0.7
-  }
+    qualityScore: 0.7,
+  },
 }
 ```
 
 ## Performance Benchmarks
 
 ### Token Counting Performance
+
 ```
 AccurateTokenCounter vs 4-char approximation:
 - Accuracy: 99%+ vs 75%
@@ -271,6 +319,7 @@ AccurateTokenCounter vs 4-char approximation:
 ```
 
 ### Compression Performance
+
 ```
 TOON vs JSON:
 - Token reduction: 30-60%
@@ -284,6 +333,7 @@ LLMLingua vs original:
 ```
 
 ### Caching Performance
+
 ```
 SemanticCache:
 - Hit rate: 80%+
@@ -310,6 +360,7 @@ SemanticCache:
 ## Best Practices
 
 ### 1. Always Use Accurate Token Counting
+
 ```typescript
 // ❌ Inaccurate
 const tokens = Math.ceil(text.length / 4) // 75% accuracy
@@ -319,6 +370,7 @@ const tokens = counter.count(text) // 99%+ accuracy
 ```
 
 ### 2. Implement Proper Security
+
 ```typescript
 // ❌ No security
 const result = optimizer.optimize(text)
@@ -331,6 +383,7 @@ if (secured.riskLevel === 'low') {
 ```
 
 ### 3. Use Appropriate Compression Levels
+
 ```typescript
 // ❌ Over-compression
 const aggressive = await compressor.compress(text, 0.3)
@@ -340,13 +393,14 @@ const balanced = await compressor.compress(text, 0.6)
 ```
 
 ### 4. Implement Intelligent Caching
+
 ```typescript
 // ❌ No caching
 const response = await generateResponse(query)
 
 // ✅ With caching
 const cached = await cache.getSimilarResponse(query)
-const response = cached || await generateResponse(query)
+const response = cached || (await generateResponse(query))
 if (!cached) await cache.cacheResponse(query, response)
 ```
 
@@ -409,11 +463,11 @@ const compressed = result.compressed
 const optimizer = new UnifiedTokenOptimizer({
   tokenizer: {
     enableMonitoring: true,
-    cacheSize: 1000
+    cacheSize: 1000,
   },
   security: {
-    enableAuditLogging: true
-  }
+    enableAuditLogging: true,
+  },
 })
 
 // Monitor performance
@@ -455,5 +509,6 @@ MIT License - see LICENSE file for details.
 
 - **Documentation**: [Full API Reference](./API.md)
 - **Issues**: [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
+- **Discussions**:
+  [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 - **Discord**: [Join Community](https://discord.gg/clarity-chat)
