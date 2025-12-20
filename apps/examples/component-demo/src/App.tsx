@@ -8,7 +8,14 @@
  * @see /DEMO_HARNESS_TEST_LOG.md for test results
  */
 
-import { useState, useCallback, useRef, useEffect, Suspense } from 'react'
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  Suspense,
+  useMemo,
+} from 'react'
 
 // === Primitives (from @clarity-chat/primitives) ===
 import { Button, Input, Card, Badge } from '@clarity-chat/primitives'
@@ -72,6 +79,7 @@ import {
   LicenseProvider,
   LicenseGate,
   Watermark,
+  MemoryProvider,
 
   // === Hooks ===
   useAutoScroll,
@@ -96,6 +104,9 @@ import {
   useHasPlan,
   useLicenseInfo,
 
+  // API-dependent hooks (now testable with mock)
+  useClarityChat,
+
   // Utilities
   cn,
 
@@ -109,6 +120,75 @@ import {
   createUserMessage,
   createAssistantMessage,
 } from '@clarity-chat/react'
+
+// ============================================================================
+// MOCK API SETUP
+// ============================================================================
+
+// Mock API response generator for testing without real API keys
+const mockResponses: Record<string, string> = {
+  hello:
+    'Hello! I am a mock AI assistant. This response is simulated for testing the useClarityChat hook without requiring a real API key.',
+  help: 'I can help you test the Clarity Chat components! Try asking me about React, TypeScript, or any other topic. All responses are mocked for demonstration purposes.',
+  react:
+    '# React Overview\n\nReact is a JavaScript library for building user interfaces.\n\n## Key Concepts\n\n1. **Components** - Reusable UI pieces\n2. **Props** - Data passed to components\n3. **State** - Component-managed data\n4. **Hooks** - Functional component features\n\n```tsx\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;\n}\n```',
+  default:
+    'Thank you for your message! This is a mock response demonstrating that the useClarityChat hook works correctly with simulated API calls. The streaming effect you see is also simulated.',
+}
+
+function getMockResponse(message: string): string {
+  const lower = message.toLowerCase()
+  if (lower.includes('hello') || lower.includes('hi'))
+    return mockResponses.hello
+  if (lower.includes('help')) return mockResponses.help
+  if (lower.includes('react')) return mockResponses.react
+  return mockResponses.default
+}
+
+// Install mock fetch globally
+const originalFetch = globalThis.fetch
+globalThis.fetch = async (
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Promise<Response> => {
+  const url =
+    typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url
+
+  // Only mock /api/chat endpoints
+  if (url.includes('/api/chat')) {
+    const body = JSON.parse((init?.body as string) || '{}')
+    const messages = body.messages || []
+    const lastMessage = messages[messages.length - 1]
+    const responseText = getMockResponse(lastMessage?.content || '')
+
+    // Create a streaming response
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        // Stream character by character for realistic effect
+        for (const char of responseText) {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ content: char })}\n\n`)
+          )
+          await new Promise((r) => setTimeout(r, 15))
+        }
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
+      },
+    })
+
+    return new Response(stream, {
+      headers: { 'Content-Type': 'text/event-stream' },
+    })
+  }
+
+  // Fall through to original fetch for other URLs
+  return originalFetch(input, init)
+}
 
 // Import styles
 import '@clarity-chat/react/dist/styles/index.css'
@@ -133,6 +213,7 @@ interface Message {
 
 type Section =
   | 'overview'
+  | 'api-chat'
   | 'core-chat'
   | 'ai-components'
   | 'feedback'
@@ -143,6 +224,7 @@ type Section =
 
 const sections: { id: Section; label: string }[] = [
   { id: 'overview', label: 'Overview' },
+  { id: 'api-chat', label: 'API Chat (Mock)' },
   { id: 'core-chat', label: 'Core Chat' },
   { id: 'ai-components', label: 'AI Components' },
   { id: 'feedback', label: 'Feedback' },
@@ -256,7 +338,7 @@ function OverviewSection() {
             <div className="text-sm text-muted-foreground">Providers</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-primary">8</div>
+            <div className="text-3xl font-bold text-primary">9</div>
             <div className="text-sm text-muted-foreground">Sections</div>
           </div>
         </div>
@@ -287,6 +369,223 @@ function OverviewSection() {
           Test Warning Toast
         </Button>
       </div>
+    </div>
+  )
+}
+
+function ApiChatSection() {
+  const toast = useToast()
+  const [inputValue, setInputValue] = useState('')
+
+  // Use the useClarityChat hook with mock API
+  const { messages, append, isLoading, error, stop, reload, setMessages } =
+    useClarityChat({
+      api: '/api/chat',
+    })
+
+  const handleSend = useCallback(async () => {
+    if (!inputValue.trim() || isLoading) return
+
+    const content = inputValue
+    setInputValue('')
+
+    try {
+      await append({
+        role: 'user',
+        content,
+      })
+    } catch (err) {
+      toast.error('Failed to send message', 'Error')
+    }
+  }, [inputValue, isLoading, append, toast])
+
+  const handleClear = useCallback(() => {
+    setMessages([])
+    toast.info('Conversation cleared', 'Info')
+  }, [setMessages, toast])
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">API Chat Components (Mock)</h2>
+        <p className="text-muted-foreground">
+          This section tests the API-dependent hooks and components using a mock
+          fetch that simulates streaming responses. No real API key required!
+        </p>
+      </div>
+
+      {/* useClarityChat Demo */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">useClarityChat Hook</h3>
+          <div className="flex gap-2">
+            <Badge variant={isLoading ? 'warning' : 'success'}>
+              {isLoading ? 'Streaming...' : 'Ready'}
+            </Badge>
+            <Badge variant="secondary">{messages.length} messages</Badge>
+          </div>
+        </div>
+
+        {/* Messages Display */}
+        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto mb-4 bg-muted/20">
+          {messages.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
+              <p className="text-lg mb-2">No messages yet</p>
+              <p className="text-sm">
+                Try saying "hello", "help", or ask about "react"!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={cn(
+                    'p-3 rounded-lg',
+                    msg.role === 'user'
+                      ? 'bg-primary/10 ml-12'
+                      : 'bg-background mr-12 border'
+                  )}
+                >
+                  <div className="text-xs font-semibold mb-1 text-muted-foreground">
+                    {msg.role === 'user' ? 'You' : 'Assistant'}
+                  </div>
+                  <div className="text-sm whitespace-pre-wrap">
+                    {typeof msg.content === 'string'
+                      ? msg.content
+                      : JSON.stringify(msg.content)}
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="p-3 rounded-lg bg-background mr-12 border">
+                  <div className="text-xs font-semibold mb-1 text-muted-foreground">
+                    Assistant
+                  </div>
+                  <TypingIndicator />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Input */}
+        <div className="flex gap-2">
+          <Input
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+            placeholder="Type a message... (try 'hello', 'help', or 'react')"
+            disabled={isLoading}
+            className="flex-1"
+          />
+          <Button
+            onClick={handleSend}
+            disabled={isLoading || !inputValue.trim()}
+          >
+            Send
+          </Button>
+          {isLoading && (
+            <Button variant="outline" onClick={stop}>
+              Stop
+            </Button>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="flex gap-2 mt-4">
+          <Button variant="outline" size="sm" onClick={handleClear}>
+            Clear Chat
+          </Button>
+          {messages.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={() => reload()}>
+              Reload Last
+            </Button>
+          )}
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mt-4 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
+            Error: {error.message}
+          </div>
+        )}
+
+        {/* Hook Info */}
+        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+          <h4 className="font-medium text-sm mb-2">Hook Return Values:</h4>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <code>messages</code>: {messages.length} items
+            </div>
+            <div>
+              <code>isLoading</code>: {String(isLoading)}
+            </div>
+            <div>
+              <code>error</code>: {error ? error.message : 'null'}
+            </div>
+            <div>
+              <code>append</code>: function
+            </div>
+            <div>
+              <code>stop</code>: function
+            </div>
+            <div>
+              <code>reload</code>: function
+            </div>
+            <div>
+              <code>setMessages</code>: function
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Memory Integration Demo */}
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">
+          Memory Integration (MemoryProvider)
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          The useClarityChat hook supports memory integration for context-aware
+          conversations. This demo shows the MemoryProvider wrapping the chat
+          components.
+        </p>
+        <div className="p-4 bg-muted/30 rounded-lg">
+          <code className="text-xs">
+            {`<MemoryProvider config={{ maxTokens: 10000 }}>
+  <YourChatComponent />
+</MemoryProvider>`}
+          </code>
+        </div>
+        <div className="mt-4 flex gap-2">
+          <Badge variant="info">Memory Strategy: sliding-window</Badge>
+          <Badge variant="secondary">Max Tokens: 10000</Badge>
+        </div>
+      </Card>
+
+      {/* API Info */}
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">Mock API Details</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          This demo uses a mock fetch that intercepts <code>/api/chat</code>{' '}
+          requests and returns streaming responses. Try these keywords for
+          different responses:
+        </p>
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div className="p-3 bg-muted/30 rounded">
+            <p className="font-medium">"hello" or "hi"</p>
+            <p className="text-xs text-muted-foreground">Greeting response</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded">
+            <p className="font-medium">"help"</p>
+            <p className="text-xs text-muted-foreground">Help information</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded">
+            <p className="font-medium">"react"</p>
+            <p className="text-xs text-muted-foreground">Markdown with code</p>
+          </div>
+        </div>
+      </Card>
     </div>
   )
 }
@@ -1524,6 +1823,8 @@ function ComponentDemoApp() {
     switch (activeSection) {
       case 'overview':
         return <OverviewSection />
+      case 'api-chat':
+        return <ApiChatSection />
       case 'core-chat':
         return <CoreChatSection />
       case 'ai-components':
