@@ -26,6 +26,7 @@ export type ComponentErrorCode =
   | 'API_CONFIGURATION_ERROR'
   | 'THEME_ERROR'
   | 'STORAGE_ERROR'
+  | 'SECURITY_RISK'
 
 /**
  * Component error options

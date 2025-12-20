@@ -407,7 +407,7 @@ export function useDocsChat() {
                 }
               } catch (parseError) {
                 if (process.env.NODE_ENV === 'development') {
-                  logger.debug('[DocsAssistant] JSON parse error:', parseError)
+                  console.debug('[DocsAssistant] JSON parse error:', parseError)
                 }
               }
             }

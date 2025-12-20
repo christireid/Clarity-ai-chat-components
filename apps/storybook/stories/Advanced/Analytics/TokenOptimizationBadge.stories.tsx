@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { TokenOptimizationBadge, type TokenOptimizationStats } from '@clarity-chat/react'
+import {
+  TokenOptimizationBadge,
+  type TokenOptimizationStats,
+} from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationBadge',
@@ -61,7 +64,7 @@ const mockStats: TokenOptimizationStats = {
   cacheHits: 85,
   cacheMisses: 45,
   routedToSmaller: 15,
-  compressionRatio: 0.30,
+  compressionRatio: 0.3,
 }
 
 const mockStatsHigh: TokenOptimizationStats = {
@@ -164,8 +167,12 @@ export const InHeader: Story = {
         <TokenOptimizationBadge stats={mockStats} showCost={true} size="sm" />
       </div>
       <nav className="flex items-center gap-2">
-        <button className="px-3 py-1.5 text-sm rounded hover:bg-accent">Settings</button>
-        <button className="px-3 py-1.5 text-sm rounded hover:bg-accent">Help</button>
+        <button className="px-3 py-1.5 text-sm rounded hover:bg-accent">
+          Settings
+        </button>
+        <button className="px-3 py-1.5 text-sm rounded hover:bg-accent">
+          Help
+        </button>
       </nav>
     </header>
   ),
@@ -181,8 +188,12 @@ export const InHeader: Story = {
 export const InToolbar: Story = {
   render: () => (
     <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-      <button className="px-3 py-1.5 text-sm border rounded hover:bg-card">Export</button>
-      <button className="px-3 py-1.5 text-sm border rounded hover:bg-card">Share</button>
+      <button className="px-3 py-1.5 text-sm border rounded hover:bg-card">
+        Export
+      </button>
+      <button className="px-3 py-1.5 text-sm border rounded hover:bg-card">
+        Share
+      </button>
       <div className="flex-1" />
       <TokenOptimizationBadge stats={mockStats} size="sm" />
       <button className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90">
@@ -217,7 +228,9 @@ export const InSidebar: Story = {
         </nav>
       </div>
       <div className="pt-4 border-t">
-        <h4 className="text-xs font-semibold mb-2 text-muted-foreground">Optimization</h4>
+        <h4 className="text-xs font-semibold mb-2 text-muted-foreground">
+          Optimization
+        </h4>
         <TokenOptimizationBadge stats={mockStats} showCost={true} size="sm" />
       </div>
     </aside>
@@ -285,7 +298,7 @@ export const DifferentSavingsLevels: Story = {
       cacheHits: 10,
       cacheMisses: 40,
       routedToSmaller: 2,
-      compressionRatio: 0.10,
+      compressionRatio: 0.1,
     }
 
     const mediumSavings: TokenOptimizationStats = {
@@ -295,31 +308,37 @@ export const DifferentSavingsLevels: Story = {
       cacheHits: 85,
       cacheMisses: 45,
       routedToSmaller: 15,
-      compressionRatio: 0.30,
+      compressionRatio: 0.3,
     }
 
     const highSavings: TokenOptimizationStats = {
       totalTokens: 50000,
       tokensSaved: 20000,
-      costSaved: 0.60,
+      costSaved: 0.6,
       cacheHits: 320,
       cacheMisses: 80,
       routedToSmaller: 65,
-      compressionRatio: 0.40,
+      compressionRatio: 0.4,
     }
 
     return (
       <div className="space-y-4">
         <div>
-          <h4 className="text-sm font-medium mb-2">Low Optimization (10% savings)</h4>
+          <h4 className="text-sm font-medium mb-2">
+            Low Optimization (10% savings)
+          </h4>
           <TokenOptimizationBadge stats={lowSavings} showCost={true} />
         </div>
         <div>
-          <h4 className="text-sm font-medium mb-2">Medium Optimization (30% savings)</h4>
+          <h4 className="text-sm font-medium mb-2">
+            Medium Optimization (30% savings)
+          </h4>
           <TokenOptimizationBadge stats={mediumSavings} showCost={true} />
         </div>
         <div>
-          <h4 className="text-sm font-medium mb-2">High Optimization (40% savings)</h4>
+          <h4 className="text-sm font-medium mb-2">
+            High Optimization (40% savings)
+          </h4>
           <TokenOptimizationBadge stats={highSavings} showCost={true} />
         </div>
       </div>

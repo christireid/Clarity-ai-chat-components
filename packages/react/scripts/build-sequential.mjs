@@ -14,6 +14,10 @@ const externals = [
   '@clarity-chat/primitives',
   '@clarity-chat/types',
   '@clarity-chat/memory',
+  '@clarity-chat/license',
+  '@clarity-chat/error-handling',
+  '@clarity-chat/token-optimization',
+  '@clarity-chat/utils',
   'mermaid',
   'highlight.js/styles/github-dark.css',
   'katex/dist/katex.min.css',
@@ -49,7 +53,8 @@ for (let i = 0; i < entries.length; i++) {
   try {
     const loaderFlag = css ? '--loader .css=copy' : ''
     const cleanFlag = isFirst ? '--clean' : ''
-    const dtsFlag = '--dts --dts-resolve'
+    // DTS generation uses paths from tsconfig.json pointing to dist/ folders
+    const dtsFlag = '--dts'
     const outDirFlag = outDir ? `--out-dir ${outDir}` : ''
     const externalFlag = externals.map(e => `--external ${e}`).join(' ')
 

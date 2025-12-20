@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -13,7 +14,6 @@ import {
   Terminal,
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
-import { durations } from '@/lib/animations'
 import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
 import { CardSkeleton } from './Skeletons'
 

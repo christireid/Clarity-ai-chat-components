@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PersonaPanel } from '@clarity-chat/react'
-import type { Persona } from '@clarity-chat/react'
+import { PersonaPanel } from '@clarity-chat/react/internal'
+import type { Persona } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof PersonaPanel> = {
   title: 'Components/DataDisplay/PersonaPanel',

@@ -501,8 +501,6 @@ const { isKeyboardOpen, keyboardHeight } = useMobileKeyboard()
         <pre>
           <code>{`// Fix server/client imports
 // Mark client components
-'use client'
-
 // Check for window/document in SSR
 const isBrowser = typeof window !== 'undefined'
 

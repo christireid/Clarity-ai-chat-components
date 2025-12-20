@@ -463,8 +463,69 @@ export * from './components/search'
 // Accessibility utilities (useFocusTrap, useFocusRestoration, etc.)
 export * from './accessibility'
 
-// Animations (useReducedMotion, etc.)
-export * from './animations'
+// Animations - re-export all except useReducedMotion (already exported from accessibility)
+export {
+  // Constants
+  ANIMATION_DURATION,
+  DURATION_CSS,
+  DURATION_SECONDS,
+  TAILWIND_DURATION,
+  ANIMATION_EASING,
+  EASING_FRAMER,
+  TAILWIND_EASING,
+  STAGGER_TIMING,
+  ANIMATION_DELAY,
+  DELAY_CSS,
+  DELAY_SECONDS,
+  TAILWIND_DELAY,
+  INTERACTION_VARIANTS,
+  INTERACTION_VARIANTS_REDUCED,
+  ANIMATION_TIMINGS,
+  UI_FEEDBACK_DELAYS,
+  ANIMATION_PRESETS,
+  ANIMATION_PRESETS_REDUCED,
+  ANIMATION_Z_INDEX,
+  CSS_VARS,
+  // Utility functions
+  generateCSSVars,
+  getPreset,
+  getInteractionVariant,
+  getTransition,
+  getTailwindTransition,
+  getEasing,
+  getCSSEasing,
+  getFramerEasing,
+  duration,
+  delay,
+  ease,
+  createFadeVariant,
+  createSlideVariant,
+  createScaleVariant,
+  createStaggerContainerVariant,
+  createStaggerChildVariant,
+  createInteractionVariant,
+  createPulseAnimation,
+  createShimmerAnimation,
+  createSpinnerAnimation,
+  createDotsAnimation,
+  createBounceAnimation,
+  createShakeAnimation,
+  createSuccessAnimation,
+  createErrorAnimation,
+  mergeTransitions,
+  getDurationInSeconds,
+  getDurationInMs,
+  createTweenTransition,
+  // Types
+  type AnimationDuration,
+  type AnimationEasing,
+  type AnimationDelay,
+  type StaggerTiming,
+  type AnimationPreset,
+  type InteractionVariant,
+  type DurationKey,
+  type FramerEasing,
+} from './animations'
 
 // Prompt Components and Types
 export * from './components/prompt'
@@ -473,11 +534,71 @@ export * from './components/prompt'
 // HOOKS (All hook domains)
 // =============================================================================
 
-// UI Hooks
-export * from './hooks/ui'
+// UI Hooks (excluding useReducedMotion which is exported from accessibility)
+export * from './hooks/ui/use-auto-scroll'
+export * from './hooks/ui/use-clipboard'
+export * from './hooks/ui/use-debounce'
+export * from './hooks/ui/use-throttle'
+export * from './hooks/ui/use-toggle'
+export * from './hooks/ui/use-previous'
+export * from './hooks/ui/use-mounted'
+export * from './hooks/ui/use-is-mounted'
+export {
+  useMergedRef,
+  mergeRefs,
+  useMergedRefWithCleanup,
+  assignRef,
+  type ReactRef,
+} from './hooks/ui/use-merged-ref'
+export * from './hooks/ui/use-window-size'
+export * from './hooks/ui/use-intersection-observer'
+export * from './hooks/ui/use-event-listener'
+export * from './hooks/ui/use-media-query'
+// Note: use-reduced-motion is excluded as it's already exported from accessibility
+export {
+  useAnimatedValue,
+  AnimatedNumber,
+  useValueChange,
+  FlashingValue,
+  type UseAnimatedValueOptions,
+  type AnimatedValueResult,
+  type AnimatedNumberProps,
+  type FlashingValueProps,
+} from './hooks/ui/use-animated-value'
+export * from './hooks/ui/use-safe-timeout'
 
-// Keyboard Hooks
-export * from './hooks/keyboard'
+// Keyboard Hooks (excluding useKeyboardNavigation which is exported from accessibility)
+export {
+  KeyboardNavigationProvider,
+  useKeyboardShortcut,
+  useVimNavigation,
+  useFocusScope,
+  useKeyboardHintsOnModifier,
+  useIsMac,
+  formatShortcutDisplay,
+  defaultChatShortcuts,
+  type KeyboardShortcutConfig,
+  type ShortcutConflict,
+  type KeyboardNavigationState,
+  type KeyboardNavigationProviderProps,
+  type UseVimNavigationOptions,
+  useKeyboardShortcuts,
+  useShortcutDisplay,
+  useScopedKeyboardShortcuts,
+  useFocusedKeyboardShortcuts,
+  KeyboardShortcutsHelp,
+  type KeyboardShortcut,
+  type KeyboardShortcutsHelpProps,
+  type ScopedKeyboardShortcutsOptions,
+  useChatKeyboardNavigation,
+  useFocusInputShortcut,
+  useEscapeToClose,
+  useQuickActions,
+  type ChatKeyboardNavigationOptions,
+  type ChatKeyboardNavigationReturn,
+  type QuickAction,
+} from './hooks/keyboard'
+export * from './hooks/keyboard/use-command-palette'
 
 // Storage Hooks
 export * from './hooks/storage'

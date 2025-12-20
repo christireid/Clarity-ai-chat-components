@@ -8,7 +8,9 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
-import { logger } from '@/lib/logger'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-hook-lookup-api')
 
 /**
  * Single Hook Lookup API
@@ -350,7 +352,7 @@ export async function GET(
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logger.error('[AI Hook Lookup API] Error:', error)
+    console.error('[AI Hook Lookup API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

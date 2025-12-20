@@ -100,10 +100,8 @@ export async function POST(req: Request) {
         <CodeBlock
           language="typescript"
           code={`// app/chat/page.tsx
-
-
 import { useSession, signIn } from 'next-auth/react'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 export default function ChatPage() {
   const { data: session, status } = useSession()
@@ -145,8 +143,6 @@ export default function ChatPage() {
         <CodeBlock
           language="typescript"
           code={`// app/providers.tsx
-
-
 import { SessionProvider } from 'next-auth/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {

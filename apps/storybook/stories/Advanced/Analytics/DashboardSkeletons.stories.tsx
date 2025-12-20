@@ -13,7 +13,7 @@ import {
   DashboardStateTransition,
   useLoadingAnnouncement,
   LoadingAnnouncer,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 /**
  * **Dashboard Skeletons**

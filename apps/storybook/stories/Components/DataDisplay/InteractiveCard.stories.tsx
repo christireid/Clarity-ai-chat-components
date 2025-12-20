@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { InteractiveCard, InteractiveButton } from '@clarity-chat/react'
+import {
+  InteractiveCard,
+  InteractiveButton,
+} from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Components/DataDisplay/InteractiveCard',
@@ -37,7 +40,9 @@ type Story = StoryObj<typeof meta>
 
 export const PricingTiles: Story = {
   render: (args) => {
-    const [activeTier, setActiveTier] = React.useState<'starter' | 'growth' | 'scale'>('growth')
+    const [activeTier, setActiveTier] = React.useState<
+      'starter' | 'growth' | 'scale'
+    >('growth')
 
     const tiers = [
       {
@@ -59,7 +64,8 @@ export const PricingTiles: Story = {
         name: 'Scale',
         price: 'Custom',
         badge: 'Approved vendors',
-        description: 'Enterprise SSO, seat management, and white-glove onboarding.',
+        description:
+          'Enterprise SSO, seat management, and white-glove onboarding.',
       },
     ]
 
@@ -76,8 +82,12 @@ export const PricingTiles: Story = {
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-semibold text-foreground">{tier.name}</h3>
-                <p className="text-xs text-muted-foreground">{tier.description}</p>
+                <h3 className="text-base font-semibold text-foreground">
+                  {tier.name}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {tier.description}
+                </p>
               </div>
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                 {tier.badge}
@@ -93,7 +103,9 @@ export const PricingTiles: Story = {
               >
                 Choose plan
               </InteractiveButton>
-              <span className="text-xs text-muted-foreground">Keyboard support: Enter/Space</span>
+              <span className="text-xs text-muted-foreground">
+                Keyboard support: Enter/Space
+              </span>
             </div>
           </InteractiveCard>
         ))}
@@ -105,21 +117,33 @@ export const PricingTiles: Story = {
 export const StatesGallery: Story = {
   render: () => (
     <div className="grid gap-4 md:grid-cols-2">
-      <InteractiveCard interactive hoverIntensity="subtle" className="space-y-2 p-5">
+      <InteractiveCard
+        interactive
+        hoverIntensity="subtle"
+        className="space-y-2 p-5"
+      >
         <h4 className="text-sm font-semibold">Interactive</h4>
-        <p className="text-xs text-muted-foreground">Default hover elevation and ripple feedback.</p>
+        <p className="text-xs text-muted-foreground">
+          Default hover elevation and ripple feedback.
+        </p>
       </InteractiveCard>
       <InteractiveCard interactive selected className="space-y-2 p-5">
         <h4 className="text-sm font-semibold">Selected</h4>
-        <p className="text-xs text-muted-foreground">Displays primary ring and top progress bar.</p>
+        <p className="text-xs text-muted-foreground">
+          Displays primary ring and top progress bar.
+        </p>
       </InteractiveCard>
       <InteractiveCard interactive disabled className="space-y-2 p-5">
         <h4 className="text-sm font-semibold">Disabled</h4>
-        <p className="text-xs text-muted-foreground">No hover or ripple, muted colors for clarity.</p>
+        <p className="text-xs text-muted-foreground">
+          No hover or ripple, muted colors for clarity.
+        </p>
       </InteractiveCard>
       <InteractiveCard hoverIntensity="none" className="space-y-2 p-5">
         <h4 className="text-sm font-semibold">Static Card</h4>
-        <p className="text-xs text-muted-foreground">Use when you need a neutral informational surface.</p>
+        <p className="text-xs text-muted-foreground">
+          Use when you need a neutral informational surface.
+        </p>
       </InteractiveCard>
     </div>
   ),

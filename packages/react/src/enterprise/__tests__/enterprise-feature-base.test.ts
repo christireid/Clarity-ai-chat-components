@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { EnhancedEnterpriseFeature } from '../enterprise-feature-base.js'
-import { CLIError } from '../../../cli/src/utils/errors.js'
+import { EnhancedEnterpriseFeature } from '../enterprise-feature-base'
+import { CLIError } from '../../../cli/src/utils/errors'
 
 // Mock logger
 const mockLogger = {
@@ -12,12 +12,12 @@ const mockLogger = {
   warn: vi.fn(),
   error: vi.fn(),
   debug: vi.fn(),
-  setLevel: vi.fn()
+  setLevel: vi.fn(),
 }
 
 // Mock getLogger
-vi.mock('../../../cli/src/utils/logger.js', () => ({
-  getLogger: vi.fn(() => mockLogger)
+vi.mock('../../../cli/src/utils/logger', () => ({
+  getLogger: vi.fn(() => mockLogger),
 }))
 
 /**
@@ -38,7 +38,7 @@ class TestEnterpriseFeature extends EnhancedEnterpriseFeature<any, any, any> {
       generateReports: true,
       includeGzip: false,
       generateTrends: true,
-      logLevel: 'info'
+      logLevel: 'info',
     }
   }
 
@@ -69,7 +69,7 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should merge user config with defaults', () => {
       const customFeature = new TestEnterpriseFeature({
         outputDir: './custom-output',
-        thresholds: { test: 200 }
+        thresholds: { test: 200 },
       })
 
       expect(customFeature.getConfig().outputDir).toBe('./custom-output')
@@ -86,7 +86,10 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should update configuration', () => {
       feature.updateConfig({ outputDir: './new-output' })
       expect(feature.getConfig().outputDir).toBe('./new-output')
-      expect(mockLogger.info).toHaveBeenCalledWith('Configuration updated successfully', expect.any(Object))
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Configuration updated successfully',
+        expect.any(Object)
+      )
     })
 
     it('should validate partial config updates', () => {
@@ -102,12 +105,15 @@ describe('EnhancedEnterpriseFeature', () => {
       expect(() => {
         feature.checkThresholds('test', 150, 100)
       }).not.toThrow()
-      
-      expect(mockLogger.warn).toHaveBeenCalledWith('Threshold exceeded', expect.objectContaining({
-        metric: 'test',
-        value: 150,
-        threshold: 100
-      }))
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Threshold exceeded',
+        expect.objectContaining({
+          metric: 'test',
+          value: 150,
+          threshold: 100,
+        })
+      )
     })
 
     it('should throw when failOnThreshold is true', () => {
@@ -128,7 +134,7 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should update and retrieve metrics', () => {
       feature.updateMetrics('test', { value: 100 })
       feature.updateMetrics('test', { value: 200 })
-      
+
       const metrics = feature.getMetrics('test')
       expect(metrics).toHaveLength(2)
       expect(metrics[0].value).toBe(100)
@@ -140,7 +146,7 @@ describe('EnhancedEnterpriseFeature', () => {
       for (let i = 0; i < 150; i++) {
         feature.updateMetrics('test', { value: i })
       }
-      
+
       const metrics = feature.getMetrics('test')
       expect(metrics).toHaveLength(100) // Should be limited to maxMetricsHistory
       expect(metrics[0].value).toBe(50) // Should have the most recent 100
@@ -156,30 +162,33 @@ describe('EnhancedEnterpriseFeature', () => {
       expect(feature.classifyError(configError)).toEqual({
         type: 'ConfigurationError',
         severity: 'high',
-        shouldExit: true
+        shouldExit: true,
       })
 
       expect(feature.classifyError(processingError)).toEqual({
         type: 'ProcessingError',
         severity: 'medium',
-        shouldExit: false
+        shouldExit: false,
       })
 
       expect(feature.classifyError(genericError)).toEqual({
         type: 'UnknownError',
         severity: 'medium',
-        shouldExit: false
+        shouldExit: false,
       })
     })
 
     it('should handle errors with proper logging', () => {
       const error = new Error('Test error')
       feature.handleError(error)
-      
-      expect(mockLogger.error).toHaveBeenCalledWith('Error handled', expect.objectContaining({
-        message: 'Test error',
-        type: 'UnknownError'
-      }))
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Error handled',
+        expect.objectContaining({
+          message: 'Test error',
+          type: 'UnknownError',
+        })
+      )
     })
   })
 
@@ -187,11 +196,15 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should enable and disable feature', () => {
       feature.disable()
       expect(feature.isEnabled()).toBe(false)
-      expect(mockLogger.info).toHaveBeenCalledWith('Feature disabled successfully')
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Feature disabled successfully'
+      )
 
       feature.enable()
       expect(feature.isEnabled()).toBe(true)
-      expect(mockLogger.info).toHaveBeenCalledWith('Feature enabled successfully')
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Feature enabled successfully'
+      )
     })
 
     it('should get feature status', () => {
@@ -207,7 +220,7 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should generate unique filenames', () => {
       const filename1 = feature.generateReportFilename('test', 'json')
       const filename2 = feature.generateReportFilename('test', 'json')
-      
+
       expect(filename1).toMatch(/^test-report-.*\.json$/)
       expect(filename2).toMatch(/^test-report-.*\.json$/)
       expect(filename1).not.toBe(filename2) // Should be unique
@@ -216,10 +229,10 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should save and load reports', () => {
       const testData = { test: 'data' }
       const filename = 'test-report.json'
-      
+
       const filepath = feature.saveReport(filename, testData, 'json')
       expect(filepath).toContain(filename)
-      
+
       const loadedData = feature.loadReport(filename)
       expect(loadedData).toEqual(testData)
     })
@@ -229,19 +242,21 @@ describe('EnhancedEnterpriseFeature', () => {
     it('should process data successfully', async () => {
       const inputData = { test: 'input' }
       const result = await feature.process(inputData)
-      
+
       expect(result).toEqual({ processed: true, data: inputData })
       expect(mockLogger.info).toHaveBeenCalledWith('Processing started')
     })
 
     it('should handle processing errors', async () => {
-      const errorFeature = new class extends TestEnterpriseFeature {
+      const errorFeature = new (class extends TestEnterpriseFeature {
         async process(data: any) {
           throw new Error('Processing failed')
         }
-      }()
+      })()
 
-      await expect(errorFeature.process({})).rejects.toThrow('Processing failed')
+      await expect(errorFeature.process({})).rejects.toThrow(
+        'Processing failed'
+      )
     })
   })
 
@@ -283,7 +298,11 @@ describe('EnhancedEnterpriseFeature', () => {
 
 describe('EnhancedEnterpriseFeature Integration', () => {
   it('should handle complex configuration scenarios', () => {
-    const complexFeature = new class extends EnhancedEnterpriseFeature<any, any, any> {
+    const complexFeature = new (class extends EnhancedEnterpriseFeature<
+      any,
+      any,
+      any
+    > {
       constructor(config: any) {
         super(config, 'complex-feature')
       }
@@ -298,7 +317,7 @@ describe('EnhancedEnterpriseFeature Integration', () => {
           generateReports: true,
           includeGzip: true,
           generateTrends: true,
-          logLevel: 'debug'
+          logLevel: 'debug',
         }
       }
 
@@ -312,14 +331,18 @@ describe('EnhancedEnterpriseFeature Integration', () => {
       async process(data: any) {
         return { processed: true, complexity: data.complexity * 2 }
       }
-    }({ thresholds: { complex: 75 } })
+    })({ thresholds: { complex: 75 } })
 
     expect(complexFeature.getConfig().thresholds.complex).toBe(75)
     expect(complexFeature.isEnabled()).toBe(true)
   })
 
   it('should handle error scenarios gracefully', async () => {
-    const errorFeature = new class extends EnhancedEnterpriseFeature<any, any, any> {
+    const errorFeature = new (class extends EnhancedEnterpriseFeature<
+      any,
+      any,
+      any
+    > {
       constructor(config: any) {
         super(config, 'error-feature')
       }
@@ -334,7 +357,7 @@ describe('EnhancedEnterpriseFeature Integration', () => {
           generateReports: true,
           includeGzip: false,
           generateTrends: true,
-          logLevel: 'info'
+          logLevel: 'info',
         }
       }
 
@@ -345,8 +368,10 @@ describe('EnhancedEnterpriseFeature Integration', () => {
       async process(data: any) {
         return data
       }
-    }()
+    })()
 
-    await expect(errorFeature.process({})).rejects.toThrow('Configuration validation failed')
+    await expect(errorFeature.process({})).rejects.toThrow(
+      'Configuration validation failed'
+    )
   })
 })

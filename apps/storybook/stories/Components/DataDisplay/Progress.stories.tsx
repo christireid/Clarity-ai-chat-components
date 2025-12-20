@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Progress } from '@clarity-chat/react'
+import { Progress } from '@clarity-chat/react/internal'
 import { useState, useEffect } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 
@@ -337,11 +337,11 @@ export const DataProcessing: Story = {
     const [currentTask, setCurrentTask] = useState('')
 
     const tasks = [
-      { name: 'Reading file...', duration: 1000 },
-      { name: 'Parsing data...', duration: 1500 },
-      { name: 'Validating records...', duration: 2000 },
-      { name: 'Importing to database...', duration: 1500 },
-      { name: 'Finalizing...', duration: 500 },
+      { name: 'Reading file...', duration: durations.slower },
+      { name: 'Parsing data...', duration: durations.slower },
+      { name: 'Validating records...', duration: durations.slower },
+      { name: 'Importing to database...', duration: durations.slower },
+      { name: 'Finalizing...', duration: durations.slower },
     ]
 
     const startProcessing = async () => {
@@ -460,10 +460,13 @@ export const InstallationProgress: Story = {
       setProgress(0)
 
       const steps = [
-        { status: 'Downloading dependencies...', duration: 2000 },
-        { status: 'Installing packages...', duration: 3000 },
-        { status: 'Building project...', duration: 2500 },
-        { status: 'Running post-install scripts...', duration: 1500 },
+        { status: 'Downloading dependencies...', duration: durations.slower },
+        { status: 'Installing packages...', duration: durations.slower },
+        { status: 'Building project...', duration: durations.slower },
+        {
+          status: 'Running post-install scripts...',
+          duration: durations.slower,
+        },
       ]
 
       for (let i = 0; i < steps.length; i++) {
@@ -654,6 +657,9 @@ export const Accessibility: Story = {
     })
     await expect(progressBar).toBeInTheDocument()
     await expect(progressBar).toHaveAttribute('aria-valuenow', '65')
-    await expect(progressBar).toHaveAttribute('aria-label', 'Task completion progress')
+    await expect(progressBar).toHaveAttribute(
+      'aria-label',
+      'Task completion progress'
+    )
   },
 }

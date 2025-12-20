@@ -25,8 +25,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dqbd/tiktoken": "^1.0.22",
-    "@tensorflow/tfjs": "^4.15.0",
+    "gpt-tokenizer": "^2.8.0",
+    "llm-splitter": "^0.2.0",
     "crypto-js": "^4.2.0",
     "lru-cache": "^10.0.0"
   },

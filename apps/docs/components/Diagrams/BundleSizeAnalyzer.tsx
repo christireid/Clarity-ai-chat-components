@@ -197,7 +197,7 @@ export function BundleSizeAnalyzer() {
                 <span>
                   Use tree-shaking imports:{' '}
                   <code className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
-                    {`import { ChatWindow } from '@clarity-chat/react'`}
+                    {`import {ChatWindow} from '@clarity-chat/react'`}
                   </code>
                 </span>
               </li>

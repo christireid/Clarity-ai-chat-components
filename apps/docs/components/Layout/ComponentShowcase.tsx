@@ -1,8 +1,8 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { durations } from '@/lib/animations'
 import {
   ChevronLeft,
   ChevronRight,

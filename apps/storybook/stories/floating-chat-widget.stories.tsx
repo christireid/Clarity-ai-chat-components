@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { FloatingChatWidget } from '@clarity-chat/react/components/chat/floating-chat-widget'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { FloatingChatWidget } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof FloatingChatWidget> = {
   title: 'Components/Chat/FloatingChatWidget',

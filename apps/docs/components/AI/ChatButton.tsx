@@ -1,10 +1,10 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState, useEffect } from 'react'
 import { MessageSquare, X, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { durations } from '@/lib/animations'
 
 interface ChatButtonProps {
   onClick: () => void

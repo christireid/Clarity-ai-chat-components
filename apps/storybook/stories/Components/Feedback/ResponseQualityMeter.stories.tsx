@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ResponseQualityMeter } from '@clarity-chat/react'
-import type { ResponseQualityMetric } from '@clarity-chat/react'
+import { ResponseQualityMeter } from '@clarity-chat/react/internal'
+import type { ResponseQualityMetric } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ResponseQualityMeter> = {
   title: 'Components/Feedback/ResponseQualityMeter',
@@ -106,7 +106,7 @@ export const WithTargets: Story = {
       {
         id: '3',
         label: 'On Target',
-        score: 0.80,
+        score: 0.8,
         target: 0.8,
       },
     ],

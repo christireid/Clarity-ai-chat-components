@@ -2,34 +2,10 @@
  * Advanced Token Counter with Model-Specific Heuristics
  *
  * Enhanced token counting with content type detection, confidence levels,
- * and model-specific optimizations based on empirical analysis.
- * Uses lazy loading to avoid WASM issues during SSR/SSG.
+ * and model-specific optimizations based on empirical analysis
  */
 
-// Lazy-loaded tiktoken module
-let tiktokenModule: typeof import('@dqbd/tiktoken') | null = null
-let tiktokenLoadPromise: Promise<typeof import('@dqbd/tiktoken')> | null = null
-
-async function loadTiktoken(): Promise<typeof import('@dqbd/tiktoken') | null> {
-  // Only load in browser environment
-  if (typeof window === 'undefined') return null
-
-  if (tiktokenModule) return tiktokenModule
-
-  if (!tiktokenLoadPromise) {
-    tiktokenLoadPromise = import('@dqbd/tiktoken')
-      .then((mod) => {
-        tiktokenModule = mod
-        return mod
-      })
-      .catch((error) => {
-        console.warn('[AdvancedTokenCounter] Failed to load tiktoken:', error)
-        return null
-      })
-  }
-
-  return tiktokenLoadPromise
-}
+import { encode } from 'gpt-tokenizer'
 
 /**
  * Supported model families for token counting
@@ -136,16 +112,9 @@ const MODEL_RATIOS: Record<ModelFamily, Record<ContentType, number>> = {
 export class AdvancedTokenCounter {
   private cache: Map<string, { count: number; timestamp: number }>
   private metrics: TokenCounterMetrics
-  private tiktokenEncoders: Map<
-    ModelFamily,
-    ReturnType<typeof import('@dqbd/tiktoken').get_encoding>
-  >
-  private encodersInitialized = false
-  private initPromise: Promise<void> | null = null
 
   constructor(private config: AdvancedTokenizerConfig) {
     this.cache = new Map()
-    this.tiktokenEncoders = new Map()
     this.metrics = {
       totalCounts: 0,
       cacheHits: 0,
@@ -158,50 +127,10 @@ export class AdvancedTokenCounter {
       },
       cacheHitRate: 0,
     }
-
-    // Start loading encoders in background (client-side only)
-    if (typeof window !== 'undefined') {
-      this.initializeEncoders()
-    }
-  }
-
-  private async initializeEncoders(): Promise<void> {
-    if (this.encodersInitialized || this.initPromise) return
-
-    this.initPromise = loadTiktoken().then((tiktoken) => {
-      if (!tiktoken) return
-
-      try {
-        this.tiktokenEncoders.set('gpt-4', tiktoken.encoding_for_model('gpt-4'))
-        this.tiktokenEncoders.set(
-          'gpt-3.5',
-          tiktoken.encoding_for_model('gpt-3.5-turbo')
-        )
-        this.encodersInitialized = true
-      } catch (error) {
-        console.warn(
-          '[AdvancedTokenCounter] Failed to initialize encoders:',
-          error
-        )
-      }
-    })
-
-    return this.initPromise
   }
 
   /**
-   * Ensure encoders are ready
-   */
-  async ensureReady(): Promise<boolean> {
-    if (this.encodersInitialized) return true
-    if (typeof window === 'undefined') return false
-
-    await this.initializeEncoders()
-    return this.encodersInitialized
-  }
-
-  /**
-   * Count tokens with high accuracy using Tiktoken when available
+   * Count tokens with high accuracy using gpt-tokenizer
    */
   async countWithConfidence(
     text: string,
@@ -231,21 +160,20 @@ export class AdvancedTokenCounter {
     // Detect content type
     const contentType = this.detectContentType(text)
 
-    // Try to use Tiktoken for exact counting
+    // Use gpt-tokenizer for exact counting (works for GPT models)
     let count: number
     let confidence: 'exact' | 'high' | 'approximate' = 'exact'
 
-    const encoder = this.tiktokenEncoders.get(model)
-    if (encoder) {
+    if (model === 'gpt-4' || model === 'gpt-3.5') {
       try {
-        count = encoder.encode(text).length
+        count = encode(text).length
       } catch {
         // Fallback to heuristic counting
         count = this.estimateWithHeuristics(text, model, contentType)
         confidence = 'approximate'
       }
     } else {
-      // Use heuristic counting
+      // Use heuristic counting for non-GPT models
       count = this.estimateWithHeuristics(text, model, contentType)
       confidence = 'approximate'
     }
@@ -384,25 +312,10 @@ export class AdvancedTokenCounter {
   }
 
   /**
-   * Check if encoders are ready
-   */
-  isReady(): boolean {
-    return this.encodersInitialized
-  }
-
-  /**
    * Clean up resources
    */
   destroy(): void {
     this.cache.clear()
-    this.tiktokenEncoders.forEach((encoder) => {
-      try {
-        encoder.free()
-      } catch {
-        // Ignore cleanup errors
-      }
-    })
-    this.tiktokenEncoders.clear()
   }
 }
 

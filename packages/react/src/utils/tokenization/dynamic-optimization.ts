@@ -434,7 +434,7 @@ export class DynamicOptimizer {
     const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
 
     // Use extractive summarization for aggressive reduction
-    const { truncateText } = await import('./smart-truncation.js')
+    const { truncateText } = await import('./smart-truncation')
     optimized = await truncateText(optimized, maxTokens, 'extractive')
 
     return optimized
@@ -452,7 +452,7 @@ export class DynamicOptimizer {
     const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
 
     // Use semantic compression for moderate reduction
-    const { compressText } = await import('./text-compression.js')
+    const { compressText } = await import('./text-compression')
     const result = await compressText(text, {
       strategy: 'semantic',
       targetRatio,
@@ -472,7 +472,7 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     // Lossless compression first
-    const { compressText } = await import('./text-compression.js')
+    const { compressText } = await import('./text-compression')
     const losslessResult = await compressText(text, {
       strategy: 'lossless',
       preserveKeyTerms: contentContext.keyTerms,
@@ -509,7 +509,7 @@ export class DynamicOptimizer {
     }
 
     // Use budget-controlled compression
-    const { compressText } = await import('./text-compression.js')
+    const { compressText } = await import('./text-compression')
     const result = await compressText(text, {
       strategy: 'budget-controlled',
       budgetTokens: config.budgetTokens,
@@ -542,7 +542,7 @@ export class DynamicOptimizer {
       config.budgetTokens || Math.floor((await TokenCounter.count(text)) * 0.8)
 
     if (currentTokens > targetTokens) {
-      const { compressText } = await import('./text-compression.js')
+      const { compressText } = await import('./text-compression')
       const result = await compressText(optimized, {
         strategy: 'semantic',
         budgetTokens: targetTokens,
@@ -773,7 +773,7 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     // Apply aggressive text compression
-    const { compressText } = await import('./text-compression.js')
+    const { compressText } = await import('./text-compression')
     const result = await compressText(text, {
       strategy: 'semantic',
       targetRatio: 0.3, // 70% reduction

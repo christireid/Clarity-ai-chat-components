@@ -1,26 +1,18 @@
 /**
  * Accurate Token Counter
  *
- * High-performance token counting using tiktoken with caching and monitoring.
- * Uses lazy loading to avoid WASM issues during SSR/SSG.
+ * High-performance token counting using gpt-tokenizer with caching and monitoring.
+ *
+ * gpt-tokenizer is a pure JavaScript implementation that is:
+ * - 20x smaller than tiktoken WASM (~200KB vs ~4MB)
+ * - The fastest JS tokenizer available
+ * - Supports all OpenAI models including o-series (o1, o3, o4), GPT-4o, GPT-4.1
+ * - Used by Microsoft Teams AI, CodeRabbit, Elastic Kibana
+ *
+ * @see https://github.com/niieani/gpt-tokenizer
  */
 
-// Lazy-loaded tiktoken module to avoid WASM loading during SSR/SSG
-let tiktokenModule: typeof import('@dqbd/tiktoken') | null = null
-let tiktokenLoadPromise: Promise<typeof import('@dqbd/tiktoken')> | null = null
-
-async function loadTiktoken(): Promise<typeof import('@dqbd/tiktoken')> {
-  if (tiktokenModule) return tiktokenModule
-
-  if (!tiktokenLoadPromise) {
-    tiktokenLoadPromise = import('@dqbd/tiktoken').then((mod) => {
-      tiktokenModule = mod
-      return mod
-    })
-  }
-
-  return tiktokenLoadPromise
-}
+import { encode, encodeChat, isWithinTokenLimit } from 'gpt-tokenizer'
 
 export interface TokenizerConfig {
   model: string
@@ -29,11 +21,75 @@ export interface TokenizerConfig {
   enableMonitoring?: boolean
 }
 
+/**
+ * Chat message format for token counting
+ */
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant' | 'function' | 'tool'
+  content: string
+  name?: string
+}
+
+/**
+ * Model name type for gpt-tokenizer
+ */
+type ModelName =
+  | 'gpt-4o'
+  | 'gpt-4o-mini'
+  | 'gpt-4'
+  | 'gpt-4-turbo'
+  | 'gpt-3.5-turbo'
+  | 'o1'
+  | 'o1-mini'
+  | string
+
+/**
+ * Model to encoding mapping for gpt-tokenizer
+ * Supports all current OpenAI models including the latest o-series
+ */
+const MODEL_ENCODING_MAP: Record<string, ModelName> = {
+  // O-series models (o200k_base encoding)
+  o1: 'o1',
+  'o1-mini': 'o1-mini',
+  'o1-preview': 'o1-preview',
+  o3: 'o1', // Use o1 encoding for o3
+  'o3-mini': 'o1-mini',
+  o4: 'o1', // Use o1 encoding for o4
+  'o4-mini': 'o1-mini',
+
+  // GPT-4o models (o200k_base encoding)
+  'gpt-4o': 'gpt-4o',
+  'gpt-4o-mini': 'gpt-4o-mini',
+  'gpt-4o-2024-05-13': 'gpt-4o',
+  'gpt-4o-2024-08-06': 'gpt-4o',
+  'gpt-4.1': 'gpt-4o',
+
+  // GPT-4 models (cl100k_base encoding)
+  'gpt-4': 'gpt-4',
+  'gpt-4-turbo': 'gpt-4-turbo',
+  'gpt-4-turbo-preview': 'gpt-4-turbo-preview',
+  'gpt-4-0125-preview': 'gpt-4-0125-preview',
+  'gpt-4-1106-preview': 'gpt-4-1106-preview',
+  'gpt-4-32k': 'gpt-4-32k',
+
+  // GPT-3.5 models (cl100k_base encoding)
+  'gpt-3.5-turbo': 'gpt-3.5-turbo',
+  'gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
+  'gpt-3.5-turbo-0125': 'gpt-3.5-turbo-0125',
+  'gpt-3.5-turbo-1106': 'gpt-3.5-turbo-1106',
+
+  // Legacy models
+  'text-davinci-003': 'text-davinci-003',
+  'text-davinci-002': 'text-davinci-002',
+
+  // Embedding models
+  'text-embedding-ada-002': 'text-embedding-ada-002',
+  'text-embedding-3-small': 'text-embedding-3-small',
+  'text-embedding-3-large': 'text-embedding-3-large',
+}
+
 export class AccurateTokenCounter {
-  private encoder: ReturnType<
-    typeof import('@dqbd/tiktoken').get_encoding
-  > | null = null
-  private encoderPromise: Promise<void> | null = null
+  private modelName: ModelName
   private cache: Map<string, number>
   private cacheHits = 0
   private cacheMisses = 0
@@ -45,12 +101,10 @@ export class AccurateTokenCounter {
   }
 
   constructor(private config: TokenizerConfig) {
-    this.cache = new Map()
+    // Map the model name to gpt-tokenizer model name
+    this.modelName = MODEL_ENCODING_MAP[config.model] || 'gpt-4o'
 
-    // Start loading tiktoken in the background (client-side only)
-    if (typeof window !== 'undefined') {
-      this.initEncoder()
-    }
+    this.cache = new Map()
 
     if (this.config.enableCaching) {
       this.setupCacheInvalidation()
@@ -61,40 +115,8 @@ export class AccurateTokenCounter {
     }
   }
 
-  private async initEncoder(): Promise<void> {
-    if (this.encoder || this.encoderPromise) return
-
-    this.encoderPromise = loadTiktoken()
-      .then((tiktoken) => {
-        try {
-          this.encoder = tiktoken.encoding_for_model(
-            this.config.model as import('@dqbd/tiktoken').TiktokenModel
-          )
-        } catch {
-          // Fallback to cl100k_base encoding if model not found
-          this.encoder = tiktoken.get_encoding('cl100k_base')
-        }
-      })
-      .catch((error) => {
-        console.warn('[TokenCounter] Failed to load tiktoken:', error)
-      })
-
-    return this.encoderPromise
-  }
-
   /**
-   * Ensure encoder is loaded before counting
-   */
-  async ensureReady(): Promise<boolean> {
-    if (this.encoder) return true
-    if (typeof window === 'undefined') return false
-
-    await this.initEncoder()
-    return this.encoder !== null
-  }
-
-  /**
-   * Count tokens in text with high accuracy
+   * Count tokens in text with high accuracy using gpt-tokenizer
    */
   count(text: string): number {
     if (!text) return 0
@@ -111,14 +133,9 @@ export class AccurateTokenCounter {
 
     this.cacheMisses++
 
-    // If encoder not ready, use estimation
-    if (!this.encoder) {
-      return this.estimate(text)
-    }
-
     try {
-      // Use tiktoken for accurate counting
-      const tokens = this.encoder.encode(text).length
+      // Use gpt-tokenizer for accurate counting (pure JS, no WASM)
+      const tokens = encode(text, { allowedSpecial: 'all' }).length
 
       this.updateMonitoring('tokens', tokens)
 
@@ -130,20 +147,43 @@ export class AccurateTokenCounter {
       return tokens
     } catch (error) {
       // Fallback to character-based estimation
-      const estimated = this.estimate(text)
+      const estimated = Math.ceil(text.length / 4)
       console.warn(`Token encoding failed, using estimation: ${error}`)
       return estimated
     }
   }
 
   /**
-   * Count tokens asynchronously, ensuring encoder is loaded
+   * Check if text is within token limit (optimized - faster than counting)
+   * Uses gpt-tokenizer's isWithinTokenLimit which stops counting once limit is reached
    */
-  async countAsync(text: string): Promise<number> {
-    if (!text) return 0
+  isWithinLimit(text: string, maxTokens: number): boolean {
+    if (!text) return true
+    return isWithinTokenLimit(text, maxTokens) !== false
+  }
 
-    await this.ensureReady()
-    return this.count(text)
+  /**
+   * Count tokens in a chat conversation (handles message formatting overhead)
+   */
+  countChat(messages: ChatMessage[]): number {
+    if (!messages || messages.length === 0) return 0
+
+    try {
+      // Convert to gpt-tokenizer format and use encodeChat
+      const gptMessages = messages.map((msg) => ({
+        role: msg.role as 'system' | 'user' | 'assistant',
+        content: msg.content,
+        ...(msg.name && { name: msg.name }),
+      }))
+      const tokens = encodeChat(gptMessages, this.modelName as 'gpt-4o').length
+      return tokens
+    } catch {
+      // Fallback: estimate each message
+      return messages.reduce((sum, msg) => {
+        const content = typeof msg.content === 'string' ? msg.content : ''
+        return sum + this.count(content) + 4 // +4 for message overhead
+      }, 3) // +3 for conversation overhead
+    }
   }
 
   /**
@@ -151,14 +191,6 @@ export class AccurateTokenCounter {
    */
   countBatch(texts: string[]): number {
     return texts.reduce((sum, text) => sum + this.count(text), 0)
-  }
-
-  /**
-   * Count tokens in multiple texts asynchronously
-   */
-  async countBatchAsync(texts: string[]): Promise<number> {
-    await this.ensureReady()
-    return this.countBatch(texts)
   }
 
   /**
@@ -192,7 +224,7 @@ export class AccurateTokenCounter {
       characters: chars,
       words,
       ratio: chars > 0 ? chars / tokens : 0,
-      estimated: !this.encoder,
+      estimated: false,
     }
   }
 
@@ -246,9 +278,6 @@ export class AccurateTokenCounter {
   }
 
   private setupCacheInvalidation(): void {
-    // Only run in browser
-    if (typeof window === 'undefined') return
-
     // Clear cache every hour to prevent memory leaks
     setInterval(() => {
       this.cache.clear()
@@ -262,9 +291,6 @@ export class AccurateTokenCounter {
   }
 
   private setupMonitoring(): void {
-    // Only run in browser
-    if (typeof window === 'undefined') return
-
     // Log monitoring stats every 5 minutes
     setInterval(() => {
       this.logMonitoringStats()
@@ -333,25 +359,24 @@ export class AccurateTokenCounter {
   }
 
   /**
-   * Check if encoder is ready
-   */
-  isReady(): boolean {
-    return this.encoder !== null
-  }
-
-  /**
    * Clean up resources
    */
   destroy(): void {
     this.cache.clear()
-    if (this.encoder) {
-      try {
-        this.encoder.free()
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
-    this.encoder = null
+  }
+
+  /**
+   * Get the model name being used for tokenization
+   */
+  getModelName(): string {
+    return this.modelName
+  }
+
+  /**
+   * Get supported model names
+   */
+  static getSupportedModels(): string[] {
+    return Object.keys(MODEL_ENCODING_MAP)
   }
 }
 

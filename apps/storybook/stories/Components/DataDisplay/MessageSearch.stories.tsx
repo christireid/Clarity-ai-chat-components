@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { MessageSearch, MessageSearchWithSuspense } from '@clarity-chat/react'
+import {
+  MessageSearch,
+  MessageSearchWithSuspense,
+} from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 const dataset: Message[] = [
@@ -8,7 +11,8 @@ const dataset: Message[] = [
     id: '1',
     chatId: 'storybook',
     role: 'user',
-    content: 'Outline a GTM plan for the Phoenix launch focusing on enterprise accounts.',
+    content:
+      'Outline a GTM plan for the Phoenix launch focusing on enterprise accounts.',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
     status: 'sent',
   },
@@ -16,7 +20,8 @@ const dataset: Message[] = [
     id: '2',
     chatId: 'storybook',
     role: 'assistant',
-    content: 'Here is a phased approach with awareness, activation, and expansion plays.',
+    content:
+      'Here is a phased approach with awareness, activation, and expansion plays.',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 22),
     status: 'sent',
   },
@@ -24,7 +29,8 @@ const dataset: Message[] = [
     id: '3',
     chatId: 'storybook',
     role: 'user',
-    content: 'Summarise objections from pilot customers and suggested mitigations.',
+    content:
+      'Summarise objections from pilot customers and suggested mitigations.',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 10),
     status: 'sent',
   },
@@ -32,7 +38,8 @@ const dataset: Message[] = [
     id: '4',
     chatId: 'storybook',
     role: 'assistant',
-    content: 'Top objections: integration effort, contract flexibility, and quota alignment.',
+    content:
+      'Top objections: integration effort, contract flexibility, and quota alignment.',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8),
     status: 'sent',
   },
@@ -40,7 +47,8 @@ const dataset: Message[] = [
     id: '5',
     chatId: 'storybook',
     role: 'assistant',
-    content: 'Mitigations include pre-built Okta workflows, flexible seat pricing, and success SLAs.',
+    content:
+      'Mitigations include pre-built Okta workflows, flexible seat pricing, and success SLAs.',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 7),
     status: 'sent',
   },
@@ -48,7 +56,8 @@ const dataset: Message[] = [
     id: '6',
     chatId: 'storybook',
     role: 'user',
-    content: 'Draft a leadership update synthesising outcomes, risks, and asks.',
+    content:
+      'Draft a leadership update synthesising outcomes, risks, and asks.',
     createdAt: new Date(Date.now() - 1000 * 60 * 30),
     status: 'sent',
   },
@@ -92,14 +101,20 @@ export const Default: Story = {
 
         <ul className="space-y-2 rounded-xl border border-border bg-card p-4 text-sm">
           {filtered.map((message) => (
-            <li key={message.id} className="rounded-lg border border-border/60 bg-muted/30 p-3">
-              <p className="font-medium text-foreground">{message.role === 'assistant' ? 'Assistant' : 'You'}</p>
+            <li
+              key={message.id}
+              className="rounded-lg border border-border/60 bg-muted/30 p-3"
+            >
+              <p className="font-medium text-foreground">
+                {message.role === 'assistant' ? 'Assistant' : 'You'}
+              </p>
               <p className="text-xs text-muted-foreground">{message.content}</p>
             </li>
           ))}
           {filtered.length === 0 && (
             <li className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
-              No messages match this query. Try keywords such as “risks” or “pricing”.
+              No messages match this query. Try keywords such as “risks” or
+              “pricing”.
             </li>
           )}
         </ul>
@@ -113,7 +128,8 @@ export const WithSuspenseBoundary: Story = {
     <div className="w-full max-w-xl space-y-4">
       <MessageSearchWithSuspense {...args} messages={dataset} />
       <p className="text-xs text-muted-foreground">
-        Suspense-friendly wrapper is useful when lazily loading the search component or heavy analytics providers.
+        Suspense-friendly wrapper is useful when lazily loading the search
+        component or heavy analytics providers.
       </p>
     </div>
   ),

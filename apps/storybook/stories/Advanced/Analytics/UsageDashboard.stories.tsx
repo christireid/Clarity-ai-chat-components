@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { UsageDashboard } from '@clarity-chat/react'
+import { UsageDashboard } from '@clarity-chat/react/internal'
 import type { UsageStats } from '@clarity-chat/types'
 
 const meta = {

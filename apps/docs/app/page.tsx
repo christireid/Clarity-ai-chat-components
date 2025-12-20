@@ -11,7 +11,8 @@ import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
 import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
 import { SocialProof } from '@/components/Layout/SocialProof'
 import { Testimonials } from '@/components/Layout/Testimonials'
-import { AnimatedBackgroundClient } from '@/components/Layout/AnimatedBackgroundClient'
+// AnimatedBackground is a 'use client' component with built-in lazy loading
+import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 import {
   Zap,
   Palette,
@@ -25,7 +26,7 @@ import {
 export default function HomePage() {
   return (
     <div className="relative">
-      <AnimatedBackgroundClient />
+      <AnimatedBackground />
       {/* Hero Section */}
       <HeroSection
         title={
@@ -79,7 +80,7 @@ export default function HomePage() {
 
           <CodeExample
             title="Your First Chat Window"
-            code={`import { ChatWindow, Message } from '@clarity-chat/react/internal'
+            code={`import { ChatWindow, Message } from '@clarity-chat/react'
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])

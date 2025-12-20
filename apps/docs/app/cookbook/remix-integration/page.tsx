@@ -38,7 +38,7 @@ export default function RemixIntegrationPage() {
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
-import { ClarityChat } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react'
 import type { LoaderFunctionArgs } from '@remix-run/node'
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -70,7 +70,7 @@ export default function ChatRoute() {
           initialCode={`// app/routes/chat.tsx
 import { useActionData, useNavigation } from '@remix-run/react'
 import { action } from './chat.server'
-import { ChatInput } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react'
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
@@ -136,9 +136,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 // Client component
-
-
-import { useStreaming } from '@clarity-chat/react/internal'
+import { useStreaming } from '@clarity-chat/react'
 
 export function StreamingChat() {
   const streaming = useStreaming({

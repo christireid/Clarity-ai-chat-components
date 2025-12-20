@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   RefreshCw,
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
+import { TypingIndicator } from '@clarity-chat/react'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
 import {
@@ -25,6 +25,18 @@ import {
   trackMessageSent,
 } from '@/lib/demos/analytics'
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
+
+// Simple auto-scroll hook
+function useAutoScroll() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }
+  return { scrollRef, scrollToBottom }
+}
 
 interface Provider {
   id: string
@@ -117,7 +129,7 @@ export async function POST(req: Request) {
 }`
 
 const clientCode = `// components/Chat.tsx
-import { ClarityChat } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react'
 
 export function Chat({ provider }) {
   return (

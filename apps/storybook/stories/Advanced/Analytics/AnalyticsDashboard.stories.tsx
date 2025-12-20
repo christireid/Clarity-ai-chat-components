@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AnalyticsDashboard } from '@clarity-chat/react'
+import { AnalyticsDashboard } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Analytics/AnalyticsDashboard',
@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities.',
+        component:
+          'Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities.',
       },
     },
   },
@@ -51,28 +52,48 @@ const sampleInsights = [
   {
     id: '1',
     type: 'success' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Performance Improved',
     description: 'Average response time decreased by 20% this week',
   },
   {
     id: '2',
     type: 'info' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Feature Adoption',
     description: '45% of users are using the new voice input feature',
   },
   {
     id: '3',
     type: 'warning' as const,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Usage Pattern',
     description: 'Peak usage hours are between 2-4 PM',
   },
 ]
 
 const sampleActivities = [
-  { id: '1', user: 'Alice Johnson', action: 'sent a message', time: '2 minutes ago' },
-  { id: '2', user: 'Bob Smith', action: 'completed a task', time: '5 minutes ago' },
-  { id: '3', user: 'Charlie Brown', action: 'shared a document', time: '10 minutes ago' },
-  { id: '4', user: 'Diana Prince', action: 'created a conversation', time: '15 minutes ago' },
+  {
+    id: '1',
+    user: 'Alice Johnson',
+    action: 'sent a message',
+    time: '2 minutes ago',
+  },
+  {
+    id: '2',
+    user: 'Bob Smith',
+    action: 'completed a task',
+    time: '5 minutes ago',
+  },
+  {
+    id: '3',
+    user: 'Charlie Brown',
+    action: 'shared a document',
+    time: '10 minutes ago',
+  },
+  {
+    id: '4',
+    user: 'Diana Prince',
+    action: 'created a conversation',
+    time: '15 minutes ago',
+  },
 ]
 
 export const Default: Story = {
@@ -107,7 +128,7 @@ export const CustomTitle: Story = {
     leaderboard: sampleLeaderboard,
     insights: sampleInsights,
     recentActivities: sampleActivities,
-    title: 'Advanced/Analytics/AnalyticsDashboard',
-    subtitle: 'Advanced/Analytics/AnalyticsDashboard',
+    title: 'Team Analytics Dashboard',
+    subtitle: 'Real-time metrics and activity feed',
   },
 }

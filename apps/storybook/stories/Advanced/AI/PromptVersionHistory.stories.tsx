@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import { PromptVersionHistory } from '@clarity-chat/react'
-import type { PromptVersion, PromptEnvironment } from '@clarity-chat/react'
+import { PromptVersionHistory } from '@clarity-chat/react/internal'
+import type {
+  PromptVersion,
+  PromptEnvironment,
+} from '@clarity-chat/react/internal'
 
 /**
  * PromptVersionHistory displays and manages version history for prompt templates.
@@ -71,7 +74,8 @@ const sampleVersions: PromptVersion[] = [
     id: 'v-2',
     templateId: 'template-1',
     version: '1.0.1',
-    template: 'Hello {{name}}! Welcome to our service. How can I help you today?',
+    template:
+      'Hello {{name}}! Welcome to our service. How can I help you today?',
     createdAt: now - 5 * day,
     notes: 'Added follow-up question',
     isActive: false,
@@ -246,8 +250,8 @@ export const ComparisonOnly: Story = {
     return (
       <div className="space-y-4">
         <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
-          <strong>Instructions:</strong> Click &quot;Compare&quot; on any two versions to
-          select them for comparison.
+          <strong>Instructions:</strong> Click &quot;Compare&quot; on any two
+          versions to select them for comparison.
         </div>
         <PromptVersionHistory
           {...args}
@@ -258,15 +262,25 @@ export const ComparisonOnly: Story = {
         {selectedVersions.length === 2 && (
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 border rounded-lg">
-              <h3 className="text-sm font-medium mb-2">Version {selectedVersions[0]}</h3>
+              <h3 className="text-sm font-medium mb-2">
+                Version {selectedVersions[0]}
+              </h3>
               <pre className="text-xs bg-muted p-2 rounded overflow-auto">
-                {sampleVersions.find((v) => v.id === selectedVersions[0])?.template}
+                {
+                  sampleVersions.find((v) => v.id === selectedVersions[0])
+                    ?.template
+                }
               </pre>
             </div>
             <div className="p-4 border rounded-lg">
-              <h3 className="text-sm font-medium mb-2">Version {selectedVersions[1]}</h3>
+              <h3 className="text-sm font-medium mb-2">
+                Version {selectedVersions[1]}
+              </h3>
               <pre className="text-xs bg-muted p-2 rounded overflow-auto">
-                {sampleVersions.find((v) => v.id === selectedVersions[1])?.template}
+                {
+                  sampleVersions.find((v) => v.id === selectedVersions[1])
+                    ?.template
+                }
               </pre>
             </div>
           </div>

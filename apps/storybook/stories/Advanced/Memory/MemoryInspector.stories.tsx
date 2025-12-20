@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MemoryInspector } from '@clarity-chat/react'
-import type { MemoryItem } from '@clarity-chat/react'
+import { MemoryInspector } from '@clarity-chat/react/internal'
+import type { MemoryItem } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof MemoryInspector> = {
   title: 'Advanced/Memory/MemoryInspector',

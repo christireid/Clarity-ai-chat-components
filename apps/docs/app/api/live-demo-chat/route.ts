@@ -14,13 +14,15 @@ import {
   searchDocumentation,
   formatSearchResultsForRAG,
 } from '@/lib/ai/keywordSearch'
-import { logger } from '@/lib/logger'
 import {
   streamFromGemini,
   streamFromDemo,
   type StreamChunk,
 } from '@/lib/ai/streaming'
 import { trackChatInteraction } from '@/lib/ai/chat-analytics'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('live-demo-chat')
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -171,7 +173,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    logger.error('API error:', error)
+    console.error('API error:', error)
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

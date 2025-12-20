@@ -1,10 +1,7 @@
 'use client'
 
-import {
-  Skeleton,
-  SkeletonText,
-  SkeletonCard,
-} from '@clarity-chat/react/internal'
+// Local skeleton components for docs site
+import { Skeleton, SkeletonText, SkeletonCard } from '@/components/UI/Skeleton'
 
 /**
  * Page-level skeleton loader for documentation pages

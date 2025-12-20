@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PromptLibrary } from '@clarity-chat/react'
+import { PromptLibrary } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof PromptLibrary> = {
   title: 'Advanced/AI/PromptLibrary',
@@ -14,13 +14,13 @@ type Story = StoryObj<typeof PromptLibrary>
 const mockPrompts = [
   {
     id: '1',
-    title: 'Advanced/AI/PromptLibrary',
+    title: 'Code Review Assistant',
     content: 'Review this code for best practices...',
     category: 'development',
   },
   {
     id: '2',
-    title: 'Advanced/AI/PromptLibrary',
+    title: 'Concept Explainer',
     content: 'Explain {concept} in simple terms...',
     category: 'education',
   },

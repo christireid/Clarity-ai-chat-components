@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SettingsPanel } from '@clarity-chat/react'
+import { SettingsPanel } from '@clarity-chat/react/internal'
 import type { UserSettings } from '@clarity-chat/types'
 
 const meta = {
@@ -68,7 +68,8 @@ export const CasualTone: Story = {
         ...defaultSettings.aiPersonality,
         tone: 'casual',
         verbosity: 'detailed',
-        customInstructions: 'Use friendly language and emojis when appropriate.',
+        customInstructions:
+          'Use friendly language and emojis when appropriate.',
       },
     },
   },
@@ -82,7 +83,8 @@ export const TechnicalTone: Story = {
         ...defaultSettings.aiPersonality,
         tone: 'technical',
         verbosity: 'comprehensive',
-        customInstructions: 'Provide detailed technical explanations with code examples.',
+        customInstructions:
+          'Provide detailed technical explanations with code examples.',
       },
     },
   },

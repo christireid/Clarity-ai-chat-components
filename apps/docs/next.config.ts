@@ -15,8 +15,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
-  // Server-side external packages (tiktoken uses WASM)
-  serverExternalPackages: ['tiktoken', '@clarity-chat/token-optimization'],
+  // Server-side external packages
+  serverExternalPackages: ['tiktoken'],
 
   // Typed routes for compile-time Link validation (Next.js 16 - moved from experimental)
   typedRoutes: true,
@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // Typed routes for compile-time Link validation (Next.js 16 - moved from experimental)
+  typedRoutes: true,
+
   // Experimental features
   experimental: {
     mdxRs: true,
@@ -43,13 +46,24 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
+  transpilePackages: [
+    '@clarity-chat/react',
+    '@clarity-chat/primitives',
+    '@clarity-chat/license',
+    '@clarity-chat/memory',
+    '@clarity-chat/token-optimization',
+    '@clarity-chat/error-handling',
+    '@clarity-chat/utils',
+    '@clarity-chat/types',
+  ],
 
   // TypeScript configuration
   typescript: {
     // Note: Consider enabling type checking in CI/CD
     ignoreBuildErrors: true,
   },
+
+  // Note: ESLint configuration moved to eslint.config.js (Next.js 16)
 
   // Production optimizations
   compress: true,

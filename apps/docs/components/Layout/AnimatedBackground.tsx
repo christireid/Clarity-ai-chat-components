@@ -17,14 +17,12 @@ import {
 
 // Dynamically import Particles to reduce initial bundle size
 // This is a heavy library that's only needed for the background animation
-// @tsparticles/react exports Particles as both default and named export
+// Next.js dynamic requires the returned module to have a `default` export
 const Particles = dynamic(
   () =>
-    import('@tsparticles/react').then((mod) => {
-      // Ensure we return a proper module object for Next.js dynamic
-      const Component = mod.default || mod.Particles
-      return { default: Component }
-    }),
+    import('@tsparticles/react').then((mod) => ({
+      default: mod.default || mod.Particles,
+    })),
   {
     ssr: false,
     loading: () => null, // Render nothing while loading

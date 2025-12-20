@@ -1,16 +1,11 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-
-export const metadata: Metadata = {
-  title: 'useRAGPipeline Hook | Clarity Chat',
-  description:
-    'Top-level hook for Retrieval-Augmented Generation with vector stores.',
-}
 
 const useRAGPipelineOptions: Prop[] = [
   {
@@ -85,7 +80,7 @@ export default function UseRAGPipelinePage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+          code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 function RAGChat() {
   const rag = useRAGPipeline({
@@ -116,7 +111,7 @@ function RAGChat() {
           Experiment with useRAGPipeline:
         </p>
         <CodePlayground
-          initialCode={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+          initialCode={`import { useRAGPipeline } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -156,7 +151,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Reranking</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+          code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 function RerankedRAG() {
   const rag = useRAGPipeline({
@@ -189,7 +184,7 @@ function RerankedRAG() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline, useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useRAGPipeline, useClarityChat } from '@clarity-chat/react'
 
 function RAGChat() {
   const rag = useRAGPipeline({
@@ -228,7 +223,7 @@ function RAGChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+          code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 // Pinecone
 const pineconeRAG = useRAGPipeline({

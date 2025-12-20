@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { NetworkStatus } from '@clarity-chat/react'
+import { NetworkStatus } from '@clarity-chat/react/internal'
 import { expect, within } from 'storybook/test'
 
 /**
  * **NetworkStatus Component**
- * 
+ *
  * Component for displaying network connection status
  * with latency tracking and reconnection attempts.
- * 
+ *
  * **Key Features:**
  * - Online/offline status detection
  * - Network latency display
@@ -15,7 +15,7 @@ import { expect, within } from 'storybook/test'
  * - Slow connection detection
  * - Visual status indicators
  * - Accessible with ARIA labels
- * 
+ *
  * **Use Cases:**
  * - Network monitoring
  * - Connection status display

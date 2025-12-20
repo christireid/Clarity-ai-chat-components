@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
+import { useTheme } from '@clarity-chat/react'
 import {
   CommandPalette,
   KeyboardHint,
@@ -7,12 +8,8 @@ import {
   DropZone,
   ContextMenu,
   ThemeSwitcher,
-  useTheme,
-  // useUndoRedo,
-  // useUndoRedoShortcuts,
-  // useHaptic,
   useKeyboardShortcuts,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // ============================================================================
 // Command Palette Stories
@@ -82,8 +79,8 @@ const CommandPaletteDemo = () => {
       <div className="max-w-2xl mx-auto space-y-4">
         <h2 className="text-2xl font-bold">Command Palette Demo</h2>
         <p className="text-muted-foreground">
-          Press <kbd className="px-2 py-1 bg-muted rounded">Ctrl+K</kbd> or click the button to
-          open the command palette
+          Press <kbd className="px-2 py-1 bg-muted rounded">Ctrl+K</kbd> or
+          click the button to open the command palette
         </p>
 
         <button
@@ -100,7 +97,11 @@ const CommandPaletteDemo = () => {
         )}
       </div>
 
-      <CommandPalette items={commands} open={open} onClose={() => setOpen(false)} />
+      <CommandPalette
+        items={commands}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   )
 }
@@ -113,7 +114,11 @@ const KeyboardHintsDemo = () => {
   const [visible, setVisible] = React.useState(false)
 
   const shortcuts = [
-    { keys: ['⌘', 'K'], description: 'Open command palette', category: 'Navigation' },
+    {
+      keys: ['⌘', 'K'],
+      description: 'Open command palette',
+      category: 'Navigation',
+    },
     { keys: ['⌘', 'N'], description: 'New chat', category: 'Actions' },
     { keys: ['⌘', 'F'], description: 'Search messages', category: 'Actions' },
     { keys: ['⌘', 'Z'], description: 'Undo', category: 'Editing' },
@@ -134,7 +139,8 @@ const KeyboardHintsDemo = () => {
       <div className="max-w-2xl mx-auto space-y-4">
         <h2 className="text-2xl font-bold">Keyboard Shortcuts</h2>
         <p className="text-muted-foreground">
-          Press <kbd className="px-2 py-1 bg-muted rounded">?</kbd> to toggle the shortcuts panel
+          Press <kbd className="px-2 py-1 bg-muted rounded">?</kbd> to toggle
+          the shortcuts panel
         </p>
 
         <button
@@ -179,7 +185,7 @@ const DragDropDemo = () => {
         <p className="text-muted-foreground">Drag items between columns</p>
 
         <div className="grid grid-cols-3 gap-4">
-          {dropZones.map(zone => (
+          {dropZones.map((zone) => (
             <DropZone
               key={zone.id}
               dropId={zone.id}
@@ -189,8 +195,8 @@ const DragDropDemo = () => {
               <div className="font-semibold mb-4">{zone.label}</div>
               <div className="space-y-2">
                 {items
-                  .filter(item => zone.items.includes(item.id))
-                  .map(item => (
+                  .filter((item) => zone.items.includes(item.id))
+                  .map((item) => (
                     <Draggable key={item.id} dragId={item.id}>
                       <div className="p-3 bg-card rounded border hover:border-primary transition-colors">
                         {item.text}
@@ -295,7 +301,11 @@ const ThemeSwitcherDemo = () => {
           Current theme: <strong>{theme}</strong>
         </p>
 
-        <ThemeSwitcher currentTheme={theme} onThemeChange={setTheme} showPreview />
+        <ThemeSwitcher
+          currentTheme={theme}
+          onThemeChange={setTheme}
+          showPreview
+        />
       </div>
     </div>
   )
@@ -343,7 +353,6 @@ const InteractiveDemo = () => {
   const [paletteOpen, setPaletteOpen] = React.useState(false)
   const [hintsVisible, setHintsVisible] = React.useState(false)
   const { theme, setTheme } = useTheme()
-  // const { success, error } = useHaptic()
   const success = () => {}
   const error = () => {}
 
@@ -378,7 +387,11 @@ const InteractiveDemo = () => {
   ]
 
   const shortcuts = [
-    { keys: ['⌘', 'K'], description: 'Open command palette', category: 'Navigation' },
+    {
+      keys: ['⌘', 'K'],
+      description: 'Open command palette',
+      category: 'Navigation',
+    },
     { keys: ['?'], description: 'Show shortcuts', category: 'Help' },
     { keys: ['Esc'], description: 'Close', category: 'Navigation' },
   ]
@@ -394,7 +407,9 @@ const InteractiveDemo = () => {
     <div className="p-8 min-h-screen">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Advanced Interactions Showcase</h2>
+          <h2 className="text-3xl font-bold mb-2">
+            Advanced Interactions Showcase
+          </h2>
           <p className="text-muted-foreground">
             A comprehensive demo of all Phase 8 features working together
           </p>
@@ -405,7 +420,9 @@ const InteractiveDemo = () => {
             onClick={() => setPaletteOpen(true)}
             className="p-6 bg-card border rounded-lg hover:border-primary transition-all group"
           >
-            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">⌘</div>
+            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+              ⌘
+            </div>
             <h3 className="font-semibold mb-1">Command Palette</h3>
             <p className="text-sm text-muted-foreground">Press Ctrl+K</p>
           </button>
@@ -414,7 +431,9 @@ const InteractiveDemo = () => {
             onClick={() => setHintsVisible(true)}
             className="p-6 bg-card border rounded-lg hover:border-primary transition-all group"
           >
-            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">⌨️</div>
+            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+              ⌨️
+            </div>
             <h3 className="font-semibold mb-1">Keyboard Shortcuts</h3>
             <p className="text-sm text-muted-foreground">Press ?</p>
           </button>
@@ -422,11 +441,19 @@ const InteractiveDemo = () => {
 
         <div className="p-6 bg-card border rounded-lg">
           <h3 className="font-semibold mb-4">Current Theme</h3>
-          <ThemeSwitcher currentTheme={theme} onThemeChange={setTheme} compact />
+          <ThemeSwitcher
+            currentTheme={theme}
+            onThemeChange={setTheme}
+            compact
+          />
         </div>
       </div>
 
-      <CommandPalette items={commands} open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <CommandPalette
+        items={commands}
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+      />
       <KeyboardHint
         shortcuts={shortcuts}
         visible={hintsVisible}

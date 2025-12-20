@@ -417,54 +417,46 @@ export const createViewport = (
 })
 
 /**
- * Create a fade animation variant
+ * Create a fade animation variant with customizable duration
  */
-export const createFadeVariant = (options?: {
-  duration?: number
-  delay?: number
-  ease?: number[]
-}): Variants => {
-  const {
-    duration = durations.normal,
-    delay = 0,
-    ease = easings.easeOut,
-  } = options || {}
-  return {
-    initial: { opacity: 0 },
-    animate: {
-      opacity: 1,
-      transition: { duration, delay, ease },
-    },
-    exit: { opacity: 0, transition: { duration: duration / 2 } },
-  }
-}
+export const createFadeVariant = (
+  duration: keyof typeof durations = 'normal'
+): Variants => ({
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: { duration: durations[duration] },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: durations[duration] },
+  },
+})
 
 /**
- * Create a slide animation variant
+ * Create a slide animation variant with customizable direction and duration
  */
 export const createSlideVariant = (
   direction: 'up' | 'down' | 'left' | 'right' = 'up',
-  distance = 20,
-  options?: { duration?: number; delay?: number; ease?: number[] }
+  distance: number = 20,
+  duration: keyof typeof durations = 'normal'
 ): Variants => {
-  const {
-    duration = durations.normal,
-    delay = 0,
-    ease = easings.easeOut,
-  } = options || {}
-
   const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
-  const sign =
-    direction === 'down' || direction === 'right' ? -distance : distance
+  const value =
+    direction === 'down' || direction === 'right' ? distance : -distance
 
   return {
-    initial: { opacity: 0, [axis]: sign },
+    initial: { opacity: 0, [axis]: value },
     animate: {
       opacity: 1,
       [axis]: 0,
-      transition: { duration, delay, ease },
+      transition: { duration: durations[duration], ease: easings.easeOut },
     },
-    exit: { opacity: 0, [axis]: -sign / 2 },
+    exit: {
+      opacity: 0,
+      [axis]: -value,
+      transition: { duration: durations[duration], ease: easings.easeOut },
+    },
   }
 }
 
@@ -560,4 +552,8 @@ export default {
   getAccessibleVariants,
   createViewport,
   confettiParticles,
+
+  // Animation factories
+  createFadeVariant,
+  createSlideVariant,
 }

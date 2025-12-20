@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ToastProvider, useToast } from '@clarity-chat/react'
+import { ToastProvider, useToast } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import { expect, userEvent, within, waitFor } from 'storybook/test'
 
@@ -96,12 +96,15 @@ export const SuccessToast: Story = {
     await userEvent.click(button)
 
     // Wait for toast to appear
-    await waitFor(async () => {
-      const toast = document.querySelector('[role="alert"], [role="status"]')
-      if (toast) {
-        await expect(toast).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+    await waitFor(
+      async () => {
+        const toast = document.querySelector('[role="alert"], [role="status"]')
+        if (toast) {
+          await expect(toast).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -245,7 +248,7 @@ export const UndoAction: Story = {
             })
           },
         },
-        duration: 5000,
+        duration: durations.slower,
       })
     }
 
@@ -344,7 +347,7 @@ export const CustomDuration: Story = {
             showToast({
               type: 'info',
               description: 'Short duration (2 seconds)',
-              duration: 2000,
+              duration: durations.slower,
             })
           }
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -356,7 +359,7 @@ export const CustomDuration: Story = {
             showToast({
               type: 'info',
               description: 'Default duration (4 seconds)',
-              duration: 4000,
+              duration: durations.slower,
             })
           }
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -368,7 +371,7 @@ export const CustomDuration: Story = {
             showToast({
               type: 'info',
               description: 'Long duration (8 seconds)',
-              duration: 8000,
+              duration: durations.slower,
             })
           }
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -552,7 +555,7 @@ export const CopyToClipboard: Story = {
       showToast({
         type: 'success',
         description: 'Copied to clipboard!',
-        duration: 2000,
+        duration: durations.slower,
       })
     }
 
@@ -578,18 +581,23 @@ export const CopyToClipboard: Story = {
     await expect(copyButton).toBeInTheDocument()
 
     // Test code text is displayed
-    await expect(canvas.getByText(/npm install @clarity-chat\/react/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/npm install @clarity-chat\/react/)
+    ).toBeInTheDocument()
 
     // Click copy button
     await userEvent.click(copyButton)
 
     // Wait for success toast
-    await waitFor(async () => {
-      const toast = document.querySelector('[role="alert"], [role="status"]')
-      if (toast) {
-        await expect(toast).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+    await waitFor(
+      async () => {
+        const toast = document.querySelector('[role="alert"], [role="status"]')
+        if (toast) {
+          await expect(toast).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -605,7 +613,7 @@ export const FileUpload: Story = {
       showToast({
         type: 'info',
         description: `Uploading ${files.length} file(s)...`,
-        duration: 2000,
+        duration: durations.slower,
       })
 
       // Simulate upload
@@ -645,7 +653,7 @@ export const NetworkStatus: Story = {
           title: 'Components/Feedback/Toast',
           description:
             'You are currently offline. Changes will sync when reconnected.',
-          duration: 5000,
+          duration: durations.slower,
         })
       } else {
         showToast({

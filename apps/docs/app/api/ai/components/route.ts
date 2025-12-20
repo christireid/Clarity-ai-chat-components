@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { logger } from '@/lib/logger'
 import {
   type ComponentInfo,
   type ComponentsAPIResponse,
@@ -15,6 +14,9 @@ import {
   mergeComponentData,
   getDataSourceInfo,
 } from '@/lib/ai/merge-component-data'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-components-api')
 
 /**
  * AI-Optimized Components API
@@ -1386,9 +1388,9 @@ export async function GET() {
         documentation: BASE_URL,
       },
       dataSource: {
-        ...dataSourceInfo,
         curated: curatedComponents.length,
         generatedCount: allComponents.length - curatedComponents.length,
+        ...dataSourceInfo,
       },
     }
 
@@ -1396,7 +1398,7 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logger.error('[AI Components API] Error:', error)
+    console.error('[AI Components API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

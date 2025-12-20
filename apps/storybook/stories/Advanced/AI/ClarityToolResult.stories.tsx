@@ -1,19 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ClarityToolResult, createToolUIRegistry, type CoreMessage } from '@clarity-chat/react'
-import { Card, CardHeader, CardContent, Badge, Button } from '@clarity-chat/primitives'
+import {
+  ClarityToolResult,
+  createToolUIRegistry,
+  type CoreMessage,
+} from '@clarity-chat/react/internal'
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
 
 /**
  * **ClarityToolResult Component (Tool UI Registry)**
- * 
+ *
  * Automatic rendering of tool results with custom components.
- * 
+ *
  * **Key Features:**
  * - Type-safe component mapping
  * - Automatic tool result rendering
  * - Fallback rendering for unregistered tools
  * - Message context integration
  * - Customizable props and styling
- * 
+ *
  * **Use Cases:**
  * - Weather displays
  * - Search results
@@ -74,7 +84,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Weather Tool Component
-function WeatherResult({ data }: { data: { location: string; temperature: number; condition: string; humidity: number } }) {
+function WeatherResult({
+  data,
+}: {
+  data: {
+    location: string
+    temperature: number
+    condition: string
+    humidity: number
+  }
+}) {
   return (
     <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
       <CardHeader>
@@ -86,7 +105,9 @@ function WeatherResult({ data }: { data: { location: string; temperature: number
       <CardContent>
         <div className="space-y-2">
           <div className="text-3xl font-bold">{data.temperature}°C</div>
-          <div className="text-sm text-gray-600">Humidity: {data.humidity}%</div>
+          <div className="text-sm text-gray-600">
+            Humidity: {data.humidity}%
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -94,7 +115,14 @@ function WeatherResult({ data }: { data: { location: string; temperature: number
 }
 
 // Search Tool Component
-function SearchResult({ data }: { data: { query: string; results: Array<{ title: string; url: string; snippet: string }> } }) {
+function SearchResult({
+  data,
+}: {
+  data: {
+    query: string
+    results: Array<{ title: string; url: string; snippet: string }>
+  }
+}) {
   return (
     <Card>
       <CardHeader>
@@ -104,7 +132,10 @@ function SearchResult({ data }: { data: { query: string; results: Array<{ title:
         <div className="space-y-3">
           {data.results.map((result, index) => (
             <div key={index} className="border-b pb-3 last:border-0">
-              <a href={result.url} className="text-blue-600 hover:underline font-medium">
+              <a
+                href={result.url}
+                className="text-blue-600 hover:underline font-medium"
+              >
                 {result.title}
               </a>
               <p className="text-sm text-gray-600 mt-1">{result.snippet}</p>
@@ -117,7 +148,11 @@ function SearchResult({ data }: { data: { query: string; results: Array<{ title:
 }
 
 // Calculator Tool Component
-function CalculatorResult({ data }: { data: { expression: string; result: number } }) {
+function CalculatorResult({
+  data,
+}: {
+  data: { expression: string; result: number }
+}) {
   return (
     <Card className="bg-green-50">
       <CardHeader>
@@ -125,8 +160,12 @@ function CalculatorResult({ data }: { data: { expression: string; result: number
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <div className="text-sm text-gray-600">Expression: {data.expression}</div>
-          <div className="text-2xl font-bold text-green-700">= {data.result}</div>
+          <div className="text-sm text-gray-600">
+            Expression: {data.expression}
+          </div>
+          <div className="text-2xl font-bold text-green-700">
+            = {data.result}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -166,7 +205,8 @@ export const WeatherTool: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Rendering weather tool results with a custom WeatherResult component.',
+        story:
+          'Rendering weather tool results with a custom WeatherResult component.',
       },
     },
   },
@@ -185,14 +225,16 @@ export const SearchTool: Story = {
         query: 'React hooks',
         results: [
           {
-            title: 'Advanced/AI/ClarityToolResult',
+            title: 'React Hooks - React',
             url: 'https://react.dev/reference/react',
-            snippet: 'Hooks let you use state and other React features without writing a class.',
+            snippet:
+              'Hooks let you use state and other React features without writing a class.',
           },
           {
-            title: 'Advanced/AI/ClarityToolResult',
+            title: 'useState - React',
             url: 'https://react.dev/reference/react/useState',
-            snippet: 'useState is a React Hook that lets you add a state variable to your component.',
+            snippet:
+              'useState is a React Hook that lets you add a state variable to your component.',
           },
         ],
       }}
@@ -202,7 +244,8 @@ export const SearchTool: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Rendering search tool results with a custom SearchResult component.',
+        story:
+          'Rendering search tool results with a custom SearchResult component.',
       },
     },
   },
@@ -227,7 +270,8 @@ export const CalculatorTool: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Rendering calculator tool results with a custom CalculatorResult component.',
+        story:
+          'Rendering calculator tool results with a custom CalculatorResult component.',
       },
     },
   },
@@ -249,7 +293,8 @@ export const UnregisteredTool: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Fallback rendering for unregistered tools using the default component.',
+        story:
+          'Fallback rendering for unregistered tools using the default component.',
       },
     },
   },
@@ -257,7 +302,13 @@ export const UnregisteredTool: Story = {
 
 export const CustomFallback: Story = {
   render: () => {
-    const CustomFallback = ({ toolCall, result }: { toolCall: any; result: any }) => (
+    const CustomFallback = ({
+      toolCall,
+      result,
+    }: {
+      toolCall: any
+      result: any
+    }) => (
       <Card className="border-yellow-200 bg-yellow-50">
         <CardContent className="pt-6">
           <p className="text-yellow-800">
@@ -315,7 +366,8 @@ export const WithHeader: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Rendering tool result with a header showing tool name and call ID.',
+        story:
+          'Rendering tool result with a header showing tool name and call ID.',
       },
     },
   },
@@ -363,9 +415,10 @@ export const MultipleTools: Story = {
           query: 'TypeScript',
           results: [
             {
-              title: 'Advanced/AI/ClarityToolResult',
+              title: 'TypeScript Documentation',
               url: 'https://www.typescriptlang.org/docs/',
-              snippet: 'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.',
+              snippet:
+                'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.',
             },
           ],
         }}

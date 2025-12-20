@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedbackStore } from '@/lib/ai/feedbackStore'
-import { getLogger } from '@/lib/logger'
+import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('feedback')
 

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
-  BrainCircuit,
+  Brain as BrainCircuit,
   ChevronLeft,
   User,
   Bot,
@@ -18,12 +18,23 @@ import {
   EyeOff,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react/internal'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
+import { durations } from '@/lib/animations'
+
+// Simple auto-scroll hook (useAutoScroll not exported from @clarity-chat/react yet)
+function useAutoScroll() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }
+  return { scrollRef, scrollToBottom }
+}
 
 interface MemoryItem {
   id: string

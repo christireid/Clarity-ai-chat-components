@@ -1,4 +1,4 @@
-import { getLogger } from '@/lib/logger'
+import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('secure')
 
@@ -7,19 +7,19 @@ const logger = getLogger('secure')
  * Adapts the legacy SecureLogger interface to the new standard logger
  */
 export class SecureLogger {
-  static debug(message: string, ...args: any[]) {
+  static debug(message: string, ...args: unknown[]) {
     logger.debug(message, ...args)
   }
 
-  static info(message: string, ...args: any[]) {
+  static info(message: string, ...args: unknown[]) {
     logger.info(message, ...args)
   }
 
-  static warn(message: string, ...args: any[]) {
+  static warn(message: string, ...args: unknown[]) {
     logger.warn(message, ...args)
   }
 
-  static error(message: string, ...args: any[]) {
+  static error(message: string, ...args: unknown[]) {
     logger.error(message, ...args)
   }
 
@@ -28,23 +28,22 @@ export class SecureLogger {
   }
 }
 
-export const loggerInstance = SecureLogger
-export { loggerInstance as logger }
-
 /**
  * Log API errors with context
  */
 export function logApiError(
+  error: Error,
   context: string,
-  error: unknown,
-  additionalInfo?: Record<string, unknown>
+  request: Request | null
 ) {
-  const errorMessage = error instanceof Error ? error.message : String(error)
-  const errorStack = error instanceof Error ? error.stack : undefined
-
-  logger.error(`[API Error] ${context}:`, {
-    message: errorMessage,
-    stack: errorStack,
-    ...additionalInfo,
+  logger.error(`[${context}] API Error:`, {
+    message: error.message,
+    stack: error.stack,
+    url: request?.url,
+    method: request?.method,
   })
 }
+
+export const loggerInstance = SecureLogger
+export { loggerInstance as secureLogger }
+export { getLogger }

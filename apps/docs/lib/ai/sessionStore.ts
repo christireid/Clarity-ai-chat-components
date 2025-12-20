@@ -7,13 +7,17 @@
 
 import { Redis } from '@upstash/redis'
 import { v4 as uuidv4 } from 'uuid'
-import { logger } from '@/lib/logger'
 
 export interface SessionMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: string
-  metadata?: Record<string, unknown>
+  metadata?: {
+    model?: string
+    tokenCount?: number
+    latency?: number
+    [key: string]: unknown
+  }
 }
 
 export interface Session {

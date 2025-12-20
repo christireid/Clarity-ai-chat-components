@@ -1,9 +1,9 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import clsx from 'clsx'
-import { durations } from '@/lib/animations'
 
 interface TutorialProgressProps {
   currentStep: number

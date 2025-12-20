@@ -294,10 +294,11 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
               s !== null &&
               'id' in s &&
               'name' in s &&
-              'filters' in s
+              'filters' in s &&
+              'createdAt' in s
           )
         ) {
-          setSavedSearches(parsed)
+          setSavedSearches(parsed as SavedSearch[])
         }
       }
       const recent = localStorage.getItem(STORAGE_KEY_RECENT)

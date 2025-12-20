@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { TokenOptimizationPanel, type TokenOptimizationStats } from '@clarity-chat/react'
+import {
+  TokenOptimizationPanel,
+  type TokenOptimizationStats,
+} from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationPanel',
@@ -81,7 +84,7 @@ const mockStatsMedium: TokenOptimizationStats = {
   cacheHits: 85,
   cacheMisses: 45,
   routedToSmaller: 15,
-  compressionRatio: 0.30,
+  compressionRatio: 0.3,
 }
 
 const mockStatsHigh: TokenOptimizationStats = {
@@ -246,7 +249,8 @@ export const EnterpriseUsage: Story = {
 
 export const RealTimeUpdates: Story = {
   render: () => {
-    const [stats, setStats] = React.useState<TokenOptimizationStats>(mockStatsMedium)
+    const [stats, setStats] =
+      React.useState<TokenOptimizationStats>(mockStatsMedium)
 
     React.useEffect(() => {
       const interval = setInterval(() => {
@@ -257,7 +261,10 @@ export const RealTimeUpdates: Story = {
           cacheHits: prev.cacheHits + Math.floor(Math.random() * 3),
           cacheMisses: prev.cacheMisses + Math.floor(Math.random() * 2),
           routedToSmaller: prev.routedToSmaller + Math.floor(Math.random() * 2),
-          compressionRatio: Math.min(0.5, prev.compressionRatio + Math.random() * 0.01),
+          compressionRatio: Math.min(
+            0.5,
+            prev.compressionRatio + Math.random() * 0.01
+          ),
         }))
       }, 2000)
 
@@ -316,7 +323,8 @@ export const SideBySideComparison: Story = {
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [stats, setStats] = React.useState<TokenOptimizationStats>(mockStatsLow)
+    const [stats, setStats] =
+      React.useState<TokenOptimizationStats>(mockStatsLow)
     const [showDetails, setShowDetails] = React.useState(true)
     const [showCache, setShowCache] = React.useState(true)
     const [showRouting, setShowRouting] = React.useState(true)
@@ -328,8 +336,12 @@ export const InteractiveDemo: Story = {
         costSaved: prev.costSaved + Math.random() * 0.05,
         cacheHits: prev.cacheHits + Math.floor(Math.random() * 5) + 2,
         cacheMisses: prev.cacheMisses + Math.floor(Math.random() * 3),
-        routedToSmaller: prev.routedToSmaller + Math.floor(Math.random() * 3) + 1,
-        compressionRatio: Math.min(0.5, prev.compressionRatio + Math.random() * 0.05),
+        routedToSmaller:
+          prev.routedToSmaller + Math.floor(Math.random() * 3) + 1,
+        compressionRatio: Math.min(
+          0.5,
+          prev.compressionRatio + Math.random() * 0.05
+        ),
       }))
     }
 
@@ -389,7 +401,8 @@ export const InteractiveDemo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive demo with simulated API activity and toggle controls.',
+        story:
+          'Interactive demo with simulated API activity and toggle controls.',
       },
     },
   },

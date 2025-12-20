@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { logger } from '@/lib/logger'
 import {
   type HookInfo,
   type HooksAPIResponse,
@@ -12,6 +11,9 @@ import {
   getStableTimestamp,
 } from '@/lib/ai/types'
 import { mergeHookData, getDataSourceInfo } from '@/lib/ai/merge-component-data'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-hooks-api')
 
 /**
  * AI-Optimized Hooks API
@@ -1549,9 +1551,9 @@ export async function GET() {
         documentation: `${BASE_URL}/reference/hooks`,
       },
       dataSource: {
-        ...dataSourceInfo,
         curated: curatedHooks.length,
         generatedCount: allHooks.length - curatedHooks.length,
+        ...dataSourceInfo,
       },
     }
 
@@ -1559,7 +1561,7 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logger.error('[AI Hooks API] Error:', error)
+    console.error('[AI Hooks API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

@@ -1,5 +1,6 @@
 'use client'
 
+import { durations } from '@/lib/animations'
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
@@ -14,7 +15,6 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { durations } from '@/lib/animations'
 
 interface Step {
   id: number

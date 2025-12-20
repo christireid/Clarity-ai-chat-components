@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState, useEffect } from 'react'
-import { StreamingTextRenderer } from '@clarity-chat/react'
+import { StreamingTextRenderer } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 const meta: Meta<typeof StreamingTextRenderer> = {
@@ -18,12 +18,14 @@ type Story = StoryObj<typeof StreamingTextRenderer>
 const InteractiveWrapper = (args: any) => {
   const [text, setText] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
-  const fullText = args.text || 'This is a streaming text example that demonstrates progressive character-by-character display with smooth animation and cursor feedback.'
+  const fullText =
+    args.text ||
+    'This is a streaming text example that demonstrates progressive character-by-character display with smooth animation and cursor feedback.'
 
   const handleStart = () => {
     setText('')
     setIsStreaming(true)
-    
+
     let index = 0
     const interval = setInterval(() => {
       if (index < fullText.length) {

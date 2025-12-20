@@ -29,7 +29,7 @@ import {
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: query === '(prefers-reduced-motion: reduce)' ? false : true,
     media: query,
     onchange: null,
@@ -90,7 +90,7 @@ describe('Zero-Dependency Animation System', () => {
         '@keyframes typingDot',
       ]
 
-      expectedKeyframes.forEach(keyframe => {
+      expectedKeyframes.forEach((keyframe) => {
         expect(cssKeyframes).toContain(keyframe)
       })
     })
@@ -132,15 +132,17 @@ describe('Zero-Dependency Animation System', () => {
         'springBouncy',
       ]
 
-      expectedEasings.forEach(easing => {
+      expectedEasings.forEach((easing) => {
         expect(easings[easing as keyof typeof easings]).toBeDefined()
       })
     })
 
     it('has valid cubic-bezier values', () => {
-      Object.values(easings).forEach(easing => {
+      Object.values(easings).forEach((easing) => {
         if (easing !== 'linear' && easing !== 'ease') {
-          expect(easing).toMatch(/cubic-bezier\([\d.-]+,\s*[\d.-]+,\s*[\d.-]+,\s*[\d.-]+\)/)
+          expect(easing).toMatch(
+            /cubic-bezier\([\d.-]+,\s*[\d.-]+,\s*[\d.-]+,\s*[\d.-]+\)/
+          )
         }
       })
     })
@@ -163,13 +165,13 @@ describe('Zero-Dependency Animation System', () => {
         'slower',
       ]
 
-      expectedDurations.forEach(duration => {
+      expectedDurations.forEach((duration) => {
         expect(durations[duration as keyof typeof durations]).toBeDefined()
       })
     })
 
     it('has valid CSS time values', () => {
-      Object.values(durations).forEach(duration => {
+      Object.values(durations).forEach((duration) => {
         expect(duration).toMatch(/\d+(\.\d+)?s/)
       })
     })
@@ -214,13 +216,15 @@ describe('Zero-Dependency Animation System', () => {
         'typingDot',
       ]
 
-      expectedClasses.forEach(className => {
-        expect(animationClasses[className as keyof typeof animationClasses]).toBeDefined()
+      expectedClasses.forEach((className) => {
+        expect(
+          animationClasses[className as keyof typeof animationClasses]
+        ).toBeDefined()
       })
     })
 
     it('has valid animation properties', () => {
-      Object.values(animationClasses).forEach(animationClass => {
+      Object.values(animationClasses).forEach((animationClass) => {
         expect(animationClass).toHaveProperty('animation')
       })
     })
@@ -247,7 +251,7 @@ describe('Zero-Dependency Animation System', () => {
       })
 
       it('returns true when reduced motion is preferred', () => {
-        window.matchMedia = jest.fn().mockImplementation(query => ({
+        window.matchMedia = jest.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)' ? true : false,
           media: query,
           onchange: null,
@@ -276,7 +280,7 @@ describe('Zero-Dependency Animation System', () => {
       })
 
       it('returns reduced motion class when reduced motion is preferred', () => {
-        window.matchMedia = jest.fn().mockImplementation(query => ({
+        window.matchMedia = jest.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)' ? true : false,
           media: query,
           onchange: null,
@@ -285,11 +289,13 @@ describe('Zero-Dependency Animation System', () => {
           dispatchEvent: jest.fn(),
         }))
 
-        expect(getAccessibleAnimation('fade-in', 'opacity-100')).toBe('opacity-100')
+        expect(getAccessibleAnimation('fade-in', 'opacity-100')).toBe(
+          'opacity-100'
+        )
       })
 
       it('uses default reduced motion class', () => {
-        window.matchMedia = jest.fn().mockImplementation(query => ({
+        window.matchMedia = jest.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)' ? true : false,
           media: query,
           onchange: null,
@@ -342,7 +348,12 @@ describe('Zero-Dependency Animation System', () => {
       })
 
       it('creates transition style with custom parameters', () => {
-        const style = createTransition('transform, opacity', '0.3s', easings.spring, '0.1s')
+        const style = createTransition(
+          'transform, opacity',
+          '0.3s',
+          easings.spring,
+          '0.1s'
+        )
         expect(style.transition).toContain('transform, opacity')
         expect(style.transition).toContain('0.3s')
         expect(style.transition).toContain(easings.spring)
@@ -414,7 +425,9 @@ describe('Zero-Dependency Animation System', () => {
       it('returns reduced motion state', () => {
         const TestComponent = () => {
           const reducedMotion = useReducedMotion()
-          return <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          return (
+            <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          )
         }
 
         render(<TestComponent />)
@@ -425,7 +438,7 @@ describe('Zero-Dependency Animation System', () => {
         const mockAddEventListener = jest.fn()
         const mockRemoveEventListener = jest.fn()
 
-        window.matchMedia = jest.fn().mockImplementation(query => ({
+        window.matchMedia = jest.fn().mockImplementation((query) => ({
           matches: false,
           media: query,
           onchange: null,
@@ -436,14 +449,22 @@ describe('Zero-Dependency Animation System', () => {
 
         const TestComponent = () => {
           const reducedMotion = useReducedMotion()
-          return <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          return (
+            <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          )
         }
 
         const { unmount } = render(<TestComponent />)
-        expect(mockAddEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+        expect(mockAddEventListener).toHaveBeenCalledWith(
+          'change',
+          expect.any(Function)
+        )
 
         unmount()
-        expect(mockRemoveEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+        expect(mockRemoveEventListener).toHaveBeenCalledWith(
+          'change',
+          expect.any(Function)
+        )
       })
 
       it('returns false on server side', () => {
@@ -453,7 +474,9 @@ describe('Zero-Dependency Animation System', () => {
 
         const TestComponent = () => {
           const reducedMotion = useReducedMotion()
-          return <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          return (
+            <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
+          )
         }
 
         render(<TestComponent />)
@@ -482,7 +505,7 @@ describe('Zero-Dependency Animation System', () => {
 
         const { rerender } = render(<TestComponent />)
         rerender(<TestComponent />)
-        
+
         // Should only be called once for the style element
         expect(mockCreateElement).toHaveBeenCalledTimes(1)
       })
@@ -518,7 +541,7 @@ describe('Zero-Dependency Animation System', () => {
     it('handles null/undefined parameters gracefully', () => {
       const style1 = createAnimation(null as any, null as any, null as any)
       const style2 = createTransition(null as any, null as any, null as any)
-      
+
       expect(style1.animation).toBeDefined()
       expect(style2.transition).toBeDefined()
     })
@@ -529,31 +552,47 @@ describe('Zero-Dependency Animation System', () => {
       const TestComponent = () => {
         useAnimations()
         const reducedMotion = useReducedMotion()
-        
+
         const accessibleClass = getAccessibleAnimation('fade-in', 'opacity-100')
-        const customAnimation = createAnimation('custom', '0.5s', easings.spring)
-        const customTransition = createTransition('transform', '0.3s', easings.easeOut)
-        
+        const customAnimation = createAnimation(
+          'custom',
+          '0.5s',
+          easings.spring
+        )
+        const customTransition = createTransition(
+          'transform',
+          '0.3s',
+          easings.easeOut
+        )
+
         return (
           <div>
             <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
             <div data-testid="accessible-class">{accessibleClass}</div>
-            <div data-testid="custom-animation">{customAnimation.animation}</div>
-            <div data-testid="custom-transition">{customTransition.transition}</div>
+            <div data-testid="custom-animation">
+              {customAnimation.animation}
+            </div>
+            <div data-testid="custom-transition">
+              {customTransition.transition}
+            </div>
           </div>
         )
       }
 
       render(<TestComponent />)
-      
+
       expect(screen.getByTestId('reduced-motion')).toHaveTextContent('false')
-      expect(screen.getByTestId('accessible-class')).toHaveTextContent('fade-in')
+      expect(screen.getByTestId('accessible-class')).toHaveTextContent(
+        'fade-in'
+      )
       expect(screen.getByTestId('custom-animation')).toHaveTextContent('custom')
-      expect(screen.getByTestId('custom-transition')).toHaveTextContent('transform')
+      expect(screen.getByTestId('custom-transition')).toHaveTextContent(
+        'transform'
+      )
     })
 
     it('handles reduced motion integration', () => {
-      window.matchMedia = jest.fn().mockImplementation(query => ({
+      window.matchMedia = jest.fn().mockImplementation((query) => ({
         matches: query === '(prefers-reduced-motion: reduce)' ? true : false,
         media: query,
         onchange: null,
@@ -565,7 +604,7 @@ describe('Zero-Dependency Animation System', () => {
       const TestComponent = () => {
         const reducedMotion = useReducedMotion()
         const accessibleClass = getAccessibleAnimation('fade-in', 'opacity-100')
-        
+
         return (
           <div>
             <div data-testid="reduced-motion">{reducedMotion.toString()}</div>
@@ -575,16 +614,19 @@ describe('Zero-Dependency Animation System', () => {
       }
 
       render(<TestComponent />)
-      
+
       expect(screen.getByTestId('reduced-motion')).toHaveTextContent('true')
-      expect(screen.getByTestId('accessible-class')).toHaveTextContent('opacity-100')
+      expect(screen.getByTestId('accessible-class')).toHaveTextContent(
+        'opacity-100'
+      )
     })
   })
 
   describe('Default Export', () => {
     it('exports all expected properties', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const zeroDepModule = require('../zero-dependency').default
-      
+
       expect(zeroDepModule).toHaveProperty('cssKeyframes')
       expect(zeroDepModule).toHaveProperty('easings')
       expect(zeroDepModule).toHaveProperty('durations')

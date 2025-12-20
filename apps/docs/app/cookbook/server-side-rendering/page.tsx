@@ -52,9 +52,7 @@ export default async function ChatPage() {
 }
 
 // app/chat/chat-client.tsx (Client Component)
-
-
-import { ClarityChat } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react'
 
 export function ChatClient({ initialMessages }: { initialMessages: Message[] }) {
   return (
@@ -89,10 +87,8 @@ export async function sendMessage(formData: FormData) {
 }
 
 // app/chat/page.tsx
-
-
 import { sendMessage } from '@/app/actions/chat'
-import { ChatInput } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react'
 
 export default function ChatPage() {
   return (
@@ -125,9 +121,7 @@ export async function POST(req: Request) {
 }
 
 // Client component handles streaming
-
-
-import { useClarityChat } from '@clarity-chat/react/internal'
+import { useClarityChat } from '@clarity-chat/react'
 
 export function StreamingChat() {
   const chat = useClarityChat({
@@ -146,7 +140,7 @@ export function StreamingChat() {
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
-import { ClarityChat } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react'
 
 export async function loader() {
   // Load initial data server-side

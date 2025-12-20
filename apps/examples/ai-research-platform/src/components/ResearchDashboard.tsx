@@ -30,7 +30,7 @@ interface Metrics {
 
 interface ResearchDashboardProps {
   messages: Message[]
-  metrics: Metrics
+  metrics?: Metrics
   researchTopic: string
 }
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import { PromptPlayground, builtInPrompts } from '@clarity-chat/react'
-import type { PromptTemplate } from '@clarity-chat/react'
+import { PromptPlayground, builtInPrompts } from '@clarity-chat/react/internal'
+import type { PromptTemplate } from '@clarity-chat/react/internal'
 
 /**
  * PromptPlayground provides an interactive environment for testing
@@ -84,7 +84,12 @@ Code:
 
 Provide specific suggestions for improvement.`,
     variables: [
-      { name: 'language', type: 'string', default: 'TypeScript', required: true },
+      {
+        name: 'language',
+        type: 'string',
+        default: 'TypeScript',
+        required: true,
+      },
       { name: 'code', type: 'string', required: true },
     ],
     tags: ['code', 'review', 'development'],
@@ -209,7 +214,9 @@ export const WithSaveCallback: Story = {
     showCostEstimate: true,
   },
   render: (args) => {
-    const [lastSaved, setLastSaved] = React.useState<PromptTemplate | null>(null)
+    const [lastSaved, setLastSaved] = React.useState<PromptTemplate | null>(
+      null
+    )
 
     return (
       <div className="space-y-4">
@@ -249,8 +256,8 @@ export const FullFeatured: Story = {
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
         <p>
-          <strong>Instructions:</strong> Select a template from the dropdown, edit
-          variables, and see the live preview.
+          <strong>Instructions:</strong> Select a template from the dropdown,
+          edit variables, and see the live preview.
         </p>
       </div>
       <PromptPlayground {...args} />

@@ -17,12 +17,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@clarity-chat/primitives": ["../primitives/src"],
-      "@clarity-chat/types": ["../types/src"],
-      "@clarity-chat/memory": ["../memory/src"],
-      "@clarity-chat/token-optimization": ["../token-optimization/src"],
-      "@clarity-chat/utils": ["../utils/src"]
+      "@/*": ["./src/*"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
@@ -43,7 +38,6 @@
     "src/prompts/**/*",
     "src/components/prompt/**/*",
     "src/components/TokenCountingDemo.tsx",
-    "src/components/chat/floating-chat-widget.tsx",
     "src/components/structured-input/**/*",
     "src/utils/tokenization/**/*",
     "src/enterprise/**/*",
@@ -57,9 +51,7 @@
     "src/exports/chat-ui.ts",
     "src/exports/domains.ts",
     "src/extensions/**/*",
-    "src/components/search/**/*",
     "src/components/ui/dashboard-skeleton.tsx",
-    "src/components/chat/floating-chat-widget.tsx",
     "src/hooks/chat/use-agent.ts",
     "src/hooks/chat/use-rag-pipeline.ts",
     "src/hooks/chat/use-chat-unified.ts",

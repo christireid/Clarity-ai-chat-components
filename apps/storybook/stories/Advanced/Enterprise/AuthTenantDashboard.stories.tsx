@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AuthTenantDashboard } from '@clarity-chat/react'
+import { AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Advanced/Enterprise/AuthTenantDashboard',
@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Dashboard for managing tenant authentication, seat usage, and plan information.',
+        component:
+          'Dashboard for managing tenant authentication, seat usage, and plan information.',
       },
     },
   },

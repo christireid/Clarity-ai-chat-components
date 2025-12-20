@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { logger } from '@/lib/logger'
 import { searchData } from '@/lib/search-data'
 import { fuzzyScore } from '@/lib/fuzzy-search'
 import {
@@ -13,6 +12,9 @@ import {
   validateSearchParams,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { getLogger } from '@/lib/logging'
+
+const logger = getLogger('ai-search-api')
 
 /**
  * AI-Optimized Search API (v2)
@@ -627,7 +629,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    logger.error('[AI Search API] Error:', error)
+    console.error('[AI Search API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

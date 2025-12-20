@@ -5,7 +5,7 @@ import {
   SuccessCheckmark,
   ErrorShake,
   PulseAttention,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Components/Feedback/FeedbackAnimation',
@@ -34,7 +34,7 @@ const meta = {
   args: {
     type: 'success',
     message: 'Changes published to production',
-    duration: 2000,
+    duration: durations.slower,
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof FeedbackAnimation>
@@ -56,7 +56,11 @@ export const Playground: Story = {
 
     return (
       <div className="flex flex-col items-center gap-4">
-        <FeedbackAnimation {...args} show={show} onComplete={() => setShow(false)} />
+        <FeedbackAnimation
+          {...args}
+          show={show}
+          onComplete={() => setShow(false)}
+        />
         <button
           type="button"
           className="rounded-lg border border-border bg-background px-4 py-2 text-sm hover:bg-accent"
@@ -93,11 +97,20 @@ export const Library: Story = {
         <div className="grid gap-6 md:grid-cols-3">
           <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6">
             <SuccessCheckmark show size={64} />
-            <p className="text-xs text-muted-foreground">Use after optimistic saves succeed.</p>
+            <p className="text-xs text-muted-foreground">
+              Use after optimistic saves succeed.
+            </p>
           </div>
-          <ErrorShake trigger={shake} className="rounded-xl border border-border bg-card p-6 text-center">
-            <p className="text-sm font-semibold text-destructive">Incorrect API key</p>
-            <p className="text-xs text-muted-foreground">The field shakes to highlight the error.</p>
+          <ErrorShake
+            trigger={shake}
+            className="rounded-xl border border-border bg-card p-6 text-center"
+          >
+            <p className="text-sm font-semibold text-destructive">
+              Incorrect API key
+            </p>
+            <p className="text-xs text-muted-foreground">
+              The field shakes to highlight the error.
+            </p>
             <button
               type="button"
               className="mt-4 rounded-lg border border-destructive px-3 py-1 text-xs text-destructive hover:bg-destructive/10"
@@ -109,9 +122,16 @@ export const Library: Story = {
               Trigger shake
             </button>
           </ErrorShake>
-          <PulseAttention active={pulse} className="rounded-xl border border-border bg-card p-6 text-center">
-            <p className="text-sm font-semibold text-foreground">Awaiting approval</p>
-            <p className="text-xs text-muted-foreground">Pulse draws attention without blocking interaction.</p>
+          <PulseAttention
+            active={pulse}
+            className="rounded-xl border border-border bg-card p-6 text-center"
+          >
+            <p className="text-sm font-semibold text-foreground">
+              Awaiting approval
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Pulse draws attention without blocking interaction.
+            </p>
             <button
               type="button"
               className="mt-4 rounded-lg border border-border px-3 py-1 text-xs hover:bg-accent"

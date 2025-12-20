@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   ConversationBranchVisualizer,
   type ConversationBranch,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ConversationBranchVisualizer> = {
   title: 'Components/DataDisplay/ConversationBranchVisualizer',
@@ -95,8 +95,10 @@ const BranchVisualizerDemo: React.FC<{
   compact?: boolean
   maxDepth?: number
 }> = ({ compact = false, maxDepth }) => {
-  const [branches, setBranches] = React.useState<ConversationBranch[]>(baseBranches)
-  const [currentBranchId, setCurrentBranchId] = React.useState<string>('analysis')
+  const [branches, setBranches] =
+    React.useState<ConversationBranch[]>(baseBranches)
+  const [currentBranchId, setCurrentBranchId] =
+    React.useState<string>('analysis')
   const [counter, setCounter] = React.useState(1)
 
   const handleCreateBranch = React.useCallback(
@@ -122,28 +124,37 @@ const BranchVisualizerDemo: React.FC<{
     [counter]
   )
 
-  const handleDelete = React.useCallback((branchId: string) => {
-    setBranches((prev) => prev.filter((branch) => branch.id !== branchId))
-    if (currentBranchId === branchId) {
-      setCurrentBranchId('root')
-    }
-  }, [currentBranchId])
+  const handleDelete = React.useCallback(
+    (branchId: string) => {
+      setBranches((prev) => prev.filter((branch) => branch.id !== branchId))
+      if (currentBranchId === branchId) {
+        setCurrentBranchId('root')
+      }
+    },
+    [currentBranchId]
+  )
 
-  const handleRename = React.useCallback((branchId: string, newTitle: string) => {
-    setBranches((prev) =>
-      prev.map((branch) =>
-        branch.id === branchId ? { ...branch, title: newTitle, updatedAt: new Date() } : branch
+  const handleRename = React.useCallback(
+    (branchId: string, newTitle: string) => {
+      setBranches((prev) =>
+        prev.map((branch) =>
+          branch.id === branchId
+            ? { ...branch, title: newTitle, updatedAt: new Date() }
+            : branch
+        )
       )
-    )
-  }, [])
+    },
+    []
+  )
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] min-h-[520px] bg-muted/20 p-6 rounded-xl border border-border">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Branch Controls</h2>
         <p className="text-sm text-muted-foreground">
-          Select a branch to inspect its metadata, or create alternate explorations
-          without losing prior context. Branches can be renamed, nested, or removed when obsolete.
+          Select a branch to inspect its metadata, or create alternate
+          explorations without losing prior context. Branches can be renamed,
+          nested, or removed when obsolete.
         </p>
 
         <div className="rounded-lg border border-border bg-background p-4 space-y-3 text-sm">
@@ -163,8 +174,12 @@ const BranchVisualizerDemo: React.FC<{
         <div className="rounded-lg border border-border bg-background p-4 text-xs text-muted-foreground space-y-2">
           <p>✨ Tips</p>
           <ul className="list-disc pl-4 space-y-1">
-            <li>Track hypothesis branches vs. production-ready conversations.</li>
-            <li>Visualize evaluation paths for safety and compliance reviews.</li>
+            <li>
+              Track hypothesis branches vs. production-ready conversations.
+            </li>
+            <li>
+              Visualize evaluation paths for safety and compliance reviews.
+            </li>
             <li>Use compact mode when embedding inside sidebars.</li>
           </ul>
         </div>

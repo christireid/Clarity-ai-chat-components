@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AgentRunFeed } from '@clarity-chat/react'
-import type { AgentRunStep } from '@clarity-chat/react'
+import { AgentRunFeed } from '@clarity-chat/react/internal'
+import type { AgentRunStep } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof AgentRunFeed> = {
   title: 'Advanced/AI/AgentRunFeed',
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof AgentRunFeed>
 const mockSteps: AgentRunStep[] = [
   {
     id: '1',
-    title: 'Advanced/AI/AgentRunFeed',
+    title: 'Intent Analysis',
     detail: 'Parsing intent and extracting key information',
     status: 'succeeded',
     startedAt: new Date(Date.now() - 5000),
@@ -32,7 +32,7 @@ const mockSteps: AgentRunStep[] = [
   },
   {
     id: '2',
-    title: 'Advanced/AI/AgentRunFeed',
+    title: 'Document Search',
     tool: 'vector_search',
     status: 'succeeded',
     startedAt: new Date(Date.now() - 4500),
@@ -41,7 +41,7 @@ const mockSteps: AgentRunStep[] = [
   },
   {
     id: '3',
-    title: 'Advanced/AI/AgentRunFeed',
+    title: 'Generate Response',
     detail: 'Creating comprehensive explanation',
     status: 'running',
     startedAt: new Date(Date.now() - 3000),
@@ -59,20 +59,20 @@ export const AllStatuses: Story = {
     steps: [
       {
         id: '1',
-        title: 'Advanced/AI/AgentRunFeed',
+        title: 'Initialize Context',
         status: 'pending',
         startedAt: new Date(),
       },
       {
         id: '2',
-        title: 'Advanced/AI/AgentRunFeed',
+        title: 'Execute Code',
         status: 'running',
         tool: 'code_executor',
         startedAt: new Date(Date.now() - 2000),
       },
       {
         id: '3',
-        title: 'Advanced/AI/AgentRunFeed',
+        title: 'Search Web',
         status: 'succeeded',
         tool: 'web_search',
         startedAt: new Date(Date.now() - 5000),
@@ -81,7 +81,7 @@ export const AllStatuses: Story = {
       },
       {
         id: '4',
-        title: 'Advanced/AI/AgentRunFeed',
+        title: 'API Request',
         status: 'failed',
         tool: 'api_call',
         startedAt: new Date(Date.now() - 10000),
@@ -115,8 +115,8 @@ export const WithLogs: Story = {
 export const CustomTitle: Story = {
   args: {
     steps: mockSteps,
-    title: 'Advanced/AI/AgentRunFeed',
-    subtitle: 'Advanced/AI/AgentRunFeed',
+    title: 'Code Explanation Workflow',
+    subtitle: 'Real-time agent execution progress',
   },
 }
 
