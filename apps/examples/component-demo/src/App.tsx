@@ -134,6 +134,14 @@ import {
 
   // Main component
   ClarityChat,
+
+  // Recipe components
+  ChatWithMemory,
+  ChatComplete,
+  ChatWithAnalytics,
+
+  // Headless hook
+  useHeadlessChat,
 } from '@clarity-chat/react'
 
 // ============================================================================
@@ -670,6 +678,12 @@ function ApiChatSection() {
 
       {/* ClarityChat Component Demo */}
       <ClarityChatDemo />
+
+      {/* Recipe Components Demo */}
+      <RecipeComponentsDemo />
+
+      {/* useHeadlessChat Demo */}
+      <UseHeadlessChatDemo />
     </div>
   )
 }
@@ -887,6 +901,210 @@ function ClarityChatDemo() {
   showTokenCounter
   autoScroll
 />`}
+        </code>
+      </div>
+    </Card>
+  )
+}
+
+// Recipe components demo
+function RecipeComponentsDemo() {
+  const [activeRecipe, setActiveRecipe] = useState<string | null>(null)
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">Recipe Components</h3>
+        <Badge variant="secondary">Pre-configured</Badge>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Pre-built chat components for common use cases. Each recipe extends
+        ClarityChat with specific configurations.
+      </p>
+
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <Button
+          size="sm"
+          variant={activeRecipe === 'memory' ? 'default' : 'outline'}
+          onClick={() =>
+            setActiveRecipe(activeRecipe === 'memory' ? null : 'memory')
+          }
+        >
+          ChatWithMemory
+        </Button>
+        <Button
+          size="sm"
+          variant={activeRecipe === 'analytics' ? 'default' : 'outline'}
+          onClick={() =>
+            setActiveRecipe(activeRecipe === 'analytics' ? null : 'analytics')
+          }
+        >
+          ChatWithAnalytics
+        </Button>
+        <Button
+          size="sm"
+          variant={activeRecipe === 'complete' ? 'default' : 'outline'}
+          onClick={() =>
+            setActiveRecipe(activeRecipe === 'complete' ? null : 'complete')
+          }
+        >
+          ChatComplete
+        </Button>
+      </div>
+
+      {activeRecipe === 'memory' && (
+        <div className="border rounded-lg overflow-hidden h-[350px]">
+          <ChatWithMemory
+            api="/api/chat"
+            strategy="sliding-window"
+            showHeader
+            sessionTitle="Memory Chat"
+            sessionSubtitle="Context-aware conversation"
+          />
+        </div>
+      )}
+
+      {activeRecipe === 'analytics' && (
+        <div className="border rounded-lg overflow-hidden h-[350px]">
+          <ChatWithAnalytics
+            api="/api/chat"
+            showHeader
+            sessionTitle="Analytics Chat"
+            sessionSubtitle="With tracking enabled"
+            onMessageSent={(content) =>
+              console.log('[Analytics] Message sent:', content)
+            }
+            onError={(error) => console.log('[Analytics] Error:', error)}
+          />
+        </div>
+      )}
+
+      {activeRecipe === 'complete' && (
+        <div className="border rounded-lg overflow-hidden h-[350px]">
+          <ChatComplete
+            api="/api/chat"
+            showHeader
+            sessionTitle="Complete Chat"
+            sessionSubtitle="All features enabled"
+          />
+        </div>
+      )}
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+        <div className="p-2 bg-muted/30 rounded">
+          <p className="font-medium">ChatWithMemory</p>
+          <p className="text-muted-foreground">+ Memory context</p>
+        </div>
+        <div className="p-2 bg-muted/30 rounded">
+          <p className="font-medium">ChatWithAnalytics</p>
+          <p className="text-muted-foreground">+ Event tracking</p>
+        </div>
+        <div className="p-2 bg-muted/30 rounded">
+          <p className="font-medium">ChatComplete</p>
+          <p className="text-muted-foreground">+ All features</p>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+// useHeadlessChat demo
+function UseHeadlessChatDemo() {
+  const [inputValue, setInputValue] = useState('')
+
+  const { messages, append, isLoading, error, stop, setMessages } =
+    useHeadlessChat({
+      api: '/api/chat',
+    })
+
+  const handleSend = useCallback(async () => {
+    if (!inputValue.trim() || isLoading) return
+    const content = inputValue
+    setInputValue('')
+    try {
+      await append({ role: 'user', content })
+    } catch (err) {
+      console.error('Error:', err)
+    }
+  }, [inputValue, isLoading, append])
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">useHeadlessChat Hook</h3>
+        <Badge variant={isLoading ? 'warning' : 'success'}>
+          {isLoading ? 'Streaming...' : 'Ready'}
+        </Badge>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Low-level headless hook for custom chat implementations. Provides full
+        control over the chat logic without any UI.
+      </p>
+
+      <div className="border rounded-lg p-3 min-h-[200px] max-h-[250px] overflow-y-auto mb-4 bg-muted/20">
+        {messages.length === 0 ? (
+          <p className="text-center text-muted-foreground text-sm py-4">
+            Headless chat - build your own UI!
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  'p-2 rounded text-sm',
+                  msg.role === 'user'
+                    ? 'bg-primary/10 ml-8'
+                    : 'bg-background border mr-8'
+                )}
+              >
+                <span className="font-medium text-xs">{msg.role}: </span>
+                {typeof msg.content === 'string'
+                  ? msg.content
+                  : JSON.stringify(msg.content)}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="Type a message..."
+          disabled={isLoading}
+          className="flex-1"
+        />
+        <Button
+          onClick={handleSend}
+          disabled={isLoading || !inputValue.trim()}
+          size="sm"
+        >
+          Send
+        </Button>
+        {isLoading && (
+          <Button variant="outline" size="sm" onClick={stop}>
+            Stop
+          </Button>
+        )}
+        <Button variant="ghost" size="sm" onClick={() => setMessages([])}>
+          Clear
+        </Button>
+      </div>
+
+      {error && (
+        <div className="mt-2 p-2 bg-destructive/10 text-destructive rounded text-sm">
+          Error: {error.message}
+        </div>
+      )}
+
+      <div className="mt-4 p-3 bg-muted/50 rounded-lg text-xs">
+        <p className="font-medium mb-1">Hook Return Values:</p>
+        <code>
+          messages, append, isLoading, error, stop, setMessages, reload,
+          handleSubmit
         </code>
       </div>
     </Card>
