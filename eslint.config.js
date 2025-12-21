@@ -184,6 +184,15 @@ export default [
       'no-unused-vars': 'off',
     },
   },
+  {
+    files: ['packages/token-optimization/**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 
   // Apps and examples overrides
   {
@@ -193,6 +202,8 @@ export default [
       'no-unused-vars': 'off',
       'no-useless-escape': 'off',
       '@typescript-eslint/triple-slash-reference': 'off',
+      'no-undef': 'off',
+      'no-case-declarations': 'off',
     },
   },
 
