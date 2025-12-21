@@ -605,12 +605,24 @@ importers:
 
   apps/examples/component-demo:
     dependencies:
+      '@clarity-chat/error-handling':
+        specifier: workspace:*
+        version: link:../../../packages/error-handling
+      '@clarity-chat/memory':
+        specifier: workspace:*
+        version: link:../../../packages/memory
       '@clarity-chat/primitives':
         specifier: workspace:*
         version: link:../../../packages/primitives
       '@clarity-chat/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      '@clarity-chat/token-optimization':
+        specifier: workspace:*
+        version: link:../../../packages/token-optimization
+      '@clarity-chat/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
       react:
         specifier: 19.2.0
         version: 19.2.0
