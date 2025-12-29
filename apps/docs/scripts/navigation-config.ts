@@ -467,7 +467,7 @@ export const navigationConfig: NavigationSection[] = [
 /**
  * Project description for llms.txt header
  */
-export const projectDescription = `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ production-ready components, 35+ custom hooks, 13 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+export const projectDescription = `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.`
 

@@ -124,7 +124,7 @@ npm install @clarity-chat/types`}
           projects
         </p>
         <p>
-          Everything in Free, plus 55+ premium components, 13 themes, 4 AI
+          Everything in Free, plus 55+ premium components, 15 themes, 4 AI
           providers, and email support.
         </p>
       </section>
@@ -146,7 +146,7 @@ npm install @clarity-chat/types`}
           <strong>Perfect for:</strong> Companies, SaaS products
         </p>
         <p>
-          70+ components (everything), unlimited AI providers, vector databases
+          200+ components (everything), unlimited AI providers, vector databases
           & RAG, white-label support, 4-hour SLA, and dedicated engineer.
         </p>
       </section>

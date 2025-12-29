@@ -19,8 +19,8 @@ A world-class Model Context Protocol (MCP) server for Clarity Chat - enables AI 
 
 Model Context Protocol is an open protocol developed by Anthropic that standardizes how AI agents interact with external tools and data sources. This MCP server provides AI assistants with:
 
-- Component discovery and documentation for 70+ React components
-- Hook documentation for 35+ specialized React hooks
+- Component discovery and documentation for 200+ React components
+- Hook documentation for 95+ specialized React hooks
 - WCAG accessibility guidance for all components
 - Code generation and examples
 - Updated AI model pricing and capabilities (2024/2025)
@@ -36,9 +36,9 @@ Model Context Protocol is an open protocol developed by Anthropic that standardi
 
 | Tool                             | Description                                              |
 | -------------------------------- | -------------------------------------------------------- |
-| `clarity_discover_components`    | Search 70+ components by name, category, or use case     |
+| `clarity_discover_components`    | Search 200+ components by name, category, or use case    |
 | `clarity_get_component_docs`     | Get full documentation for a component (props, examples) |
-| `clarity_discover_hooks`         | Search 35+ React hooks by functionality                  |
+| `clarity_discover_hooks`         | Search 95+ React hooks by functionality                  |
 | `clarity_get_hook_docs`          | Get documentation for a hook (parameters, return values) |
 | `clarity_get_accessibility`      | Get WCAG accessibility guidance for a component          |
 | `clarity_generate_code`          | Generate ready-to-use code snippets                      |
@@ -414,7 +414,7 @@ tools/mcp-server/
 │   ├── plugins/
 │   │   └── index.ts          # Plugin registry system
 │   ├── data/
-│   │   ├── component-registry.ts  # 70+ components, 35+ hooks
+│   │   ├── component-registry.ts  # 200+ components, 95+ hooks
 │   │   └── model-registry.ts      # 2024/2025 model pricing
 │   └── utils/
 │       ├── schemas.ts        # Zod validation schemas

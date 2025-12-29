@@ -88,7 +88,7 @@ export default function ConceptsPage() {
             >
               Component Reference
             </Link>{' '}
-            - Full API documentation for all 70+ components
+            - Full API documentation for all 200+ components
           </li>
           <li>
             <Link
@@ -97,7 +97,7 @@ export default function ConceptsPage() {
             >
               Hooks Reference
             </Link>{' '}
-            - Complete guide to all 35+ hooks
+            - Complete guide to all 95+ hooks
           </li>
           <li>
             <Link href="/examples" className="text-brand-500 hover:underline">

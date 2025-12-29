@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Clarity Chat vs Alternatives - Feature Comparison',
     description:
-      'Compare Clarity Chat with Vercel AI SDK, LangChain, and Gradio. See why 70+ components, enterprise features, and WCAG AAA accessibility set us apart.',
+      'Compare Clarity Chat with Vercel AI SDK, LangChain, and Gradio. See why 200+ components, enterprise features, and WCAG AAA accessibility set us apart.',
   },
 }
 

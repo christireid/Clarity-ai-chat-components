@@ -137,7 +137,7 @@ function CustomChat() {
               icon: <Palette className="w-8 h-8" />,
               title: 'Fully Customizable',
               description:
-                'Built with Tailwind CSS. 13 themes included. Override any style. Dark mode by default.',
+                'Built with Tailwind CSS. 15 themes included. Override any style. Dark mode by default.',
             },
             {
               icon: <Accessibility className="w-8 h-8" />,

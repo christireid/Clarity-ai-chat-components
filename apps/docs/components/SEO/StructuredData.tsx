@@ -41,7 +41,7 @@ export interface StructuredDataProps {
 export function StructuredData({
   type = 'website',
   title = 'Clarity Chat UI - Beautiful, Accessible React Components',
-  description = 'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 140+ hooks, and 150+ animations.',
+  description = 'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 95+ hooks, and 150+ animations.',
   url = 'https://clarity-chat.dev',
   componentName,
   category,
@@ -353,7 +353,7 @@ export function SoftwareLibraryStructuredData() {
     name: 'Clarity Chat',
     alternateName: '@clarity-chat/react',
     description:
-      'Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ components, 140+ hooks, 13 themes, and comprehensive token optimization.',
+      'Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ components, 95+ hooks, 15 themes, and comprehensive token optimization.',
     url: 'https://clarity-chat.dev',
     codeRepository: 'https://github.com/christireid/Clarity-ai-chat-components',
     programmingLanguage: [

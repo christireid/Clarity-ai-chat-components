@@ -14,7 +14,7 @@ const entryPointComparison: Prop[] = [
     type: '~120KB gzipped',
     required: false,
     default: 'Full',
-    description: 'Complete library with all 200+ components and 140+ hooks',
+    description: 'Complete library with all 200+ components and 95+ hooks',
   },
   {
     name: '@clarity-chat/react/core',

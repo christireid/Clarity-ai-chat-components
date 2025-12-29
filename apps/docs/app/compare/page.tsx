@@ -27,7 +27,7 @@ export default function ComparePage() {
       {/* Floating Share Button */}
       <ShareButton
         variant="floating"
-        text="Clarity Chat vs alternatives - see why 70+ components, enterprise features, and WCAG AAA accessibility set it apart 🚀"
+        text="Clarity Chat vs alternatives - see why 200+ components, enterprise features, and WCAG AAA accessibility set it apart 🚀"
         url="https://clarity-chat.dev/compare"
       />
 
@@ -108,7 +108,7 @@ export default function ComparePage() {
           {[
             {
               icon: <Package className="w-6 h-6" />,
-              title: '70+ Production Components',
+              title: '200+ Production Components',
               description:
                 'Not just a few primitives—complete solutions for chat windows, message lists, streaming indicators, file uploads, voice input, and more.',
               highlight: 'vs 5-10 components in alternatives',
@@ -129,7 +129,7 @@ export default function ComparePage() {
             },
             {
               icon: <Palette className="w-6 h-6" />,
-              title: '11 Built-in Themes',
+              title: '15 Built-in Themes',
               description:
                 'Dark mode, high contrast, and brand-ready themes. CSS variables for easy customization.',
               highlight: 'vs 0-2 themes elsewhere',
