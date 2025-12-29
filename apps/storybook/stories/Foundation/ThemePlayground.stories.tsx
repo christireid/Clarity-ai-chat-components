@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React, { useState } from 'react'
+import { ThemeProvider } from '@clarity-chat/react'
 import {
-  ThemeProvider,
   createTheme,
   ThemeContrastChecker,
   type CompleteThemeConfig,
   type ModernThemePresetName,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const meta: Meta = {
   title: 'Foundation/Theme Playground',

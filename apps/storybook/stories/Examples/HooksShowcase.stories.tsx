@@ -10,7 +10,7 @@ import {
   usePrevious,
   useClipboard,
   useMounted,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {
@@ -49,7 +49,8 @@ export const UseDebounce: Story = {
         <div>
           <h3 className="text-lg font-semibold mb-2">useDebounce</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Delays updating a value until after a specified delay has passed since the last change.
+            Delays updating a value until after a specified delay has passed
+            since the last change.
           </p>
         </div>
 
@@ -67,7 +68,8 @@ export const UseDebounce: Story = {
               <strong>Immediate value:</strong> {text || '(empty)'}
             </div>
             <div className="text-sm">
-              <strong>Debounced value (500ms):</strong> {debouncedText || '(empty)'}
+              <strong>Debounced value (500ms):</strong>{' '}
+              {debouncedText || '(empty)'}
             </div>
           </div>
         </div>
@@ -90,7 +92,8 @@ export const UseThrottle: Story = {
         <div>
           <h3 className="text-lg font-semibold mb-2">useThrottle</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Limits how often a value can update to at most once per specified interval.
+            Limits how often a value can update to at most once per specified
+            interval.
           </p>
         </div>
 
@@ -100,7 +103,9 @@ export const UseThrottle: Story = {
         >
           <div className="h-[800px] flex items-center justify-center">
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">Scroll to test throttling</p>
+              <p className="text-sm text-muted-foreground">
+                Scroll to test throttling
+              </p>
             </div>
           </div>
         </div>
@@ -131,14 +136,17 @@ export const UseToggle: Story = {
         <div>
           <h3 className="text-lg font-semibold mb-2">useToggle</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Manages boolean state with convenient toggle, set, and reset functions.
+            Manages boolean state with convenient toggle, set, and reset
+            functions.
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           <div
             className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-colors ${
-              isOn ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+              isOn
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
             }`}
           >
             {isOn ? '✓' : '✗'}
@@ -223,8 +231,8 @@ export const UseLocalStorage: Story = {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          Reload the page to see the values persist! Perfect for user preferences, settings, and
-          draft content.
+          Reload the page to see the values persist! Perfect for user
+          preferences, settings, and draft content.
         </div>
       </div>
     )
@@ -244,7 +252,8 @@ export const UseMediaQuery: Story = {
         <div>
           <h3 className="text-lg font-semibold mb-2">useMediaQuery</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Responds to CSS media queries in React, enabling responsive and adaptive UIs.
+            Responds to CSS media queries in React, enabling responsive and
+            adaptive UIs.
           </p>
         </div>
 
@@ -256,15 +265,26 @@ export const UseMediaQuery: Story = {
               value: isTablet,
               query: '(min-width: 641px) and (max-width: 1024px)',
             },
-            { label: 'Desktop', value: isDesktop, query: '(min-width: 1025px)' },
-            { label: 'Dark Mode', value: isDarkMode, query: '(prefers-color-scheme: dark)' },
+            {
+              label: 'Desktop',
+              value: isDesktop,
+              query: '(min-width: 1025px)',
+            },
+            {
+              label: 'Dark Mode',
+              value: isDarkMode,
+              query: '(prefers-color-scheme: dark)',
+            },
             {
               label: 'Reduced Motion',
               value: isReducedMotion,
               query: '(prefers-reduced-motion: reduce)',
             },
           ].map(({ label, value, query }) => (
-            <div key={label} className="flex items-center justify-between p-3 border rounded-md">
+            <div
+              key={label}
+              className="flex items-center justify-between p-3 border rounded-md"
+            >
               <div>
                 <div className="font-medium">{label}</div>
                 <code className="text-xs text-muted-foreground">{query}</code>
@@ -283,8 +303,9 @@ export const UseMediaQuery: Story = {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          Resize your window to see responsive breakpoints change. Perfect for responsive layouts,
-          adaptive components, and accessibility preferences.
+          Resize your window to see responsive breakpoints change. Perfect for
+          responsive layouts, adaptive components, and accessibility
+          preferences.
         </div>
       </div>
     )
@@ -324,12 +345,14 @@ export const UseWindowSize: Story = {
 
         <div className="p-4 bg-muted rounded-md text-center">
           <div className="text-lg font-semibold">{getBreakpoint()}</div>
-          <div className="text-sm text-muted-foreground">Current Breakpoint</div>
+          <div className="text-sm text-muted-foreground">
+            Current Breakpoint
+          </div>
         </div>
 
         <div className="text-xs text-muted-foreground">
-          Resize your browser to see values update. Perfect for responsive layouts, canvas sizing,
-          and viewport calculations.
+          Resize your browser to see values update. Perfect for responsive
+          layouts, canvas sizing, and viewport calculations.
         </div>
       </div>
     )
@@ -361,7 +384,9 @@ export const UsePrevious: Story = {
 
         <div className="p-4 bg-muted rounded-md text-center">
           <div className="text-2xl font-semibold">{previousCount ?? '—'}</div>
-          <div className="text-sm text-muted-foreground mt-1">Previous Value</div>
+          <div className="text-sm text-muted-foreground mt-1">
+            Previous Value
+          </div>
         </div>
 
         {previousCount !== undefined && (
@@ -411,7 +436,11 @@ export const UseClipboard: Story = {
             placeholder="Enter text to copy..."
           />
 
-          <Button onClick={() => copy(textToCopy)} className="w-full" disabled={copied}>
+          <Button
+            onClick={() => copy(textToCopy)}
+            className="w-full"
+            disabled={copied}
+          >
             {copied ? '✓ Copied!' : 'Copy to Clipboard'}
           </Button>
         </div>
@@ -428,8 +457,8 @@ export const UseClipboard: Story = {
         </div>
 
         <div className="text-xs text-muted-foreground">
-          Perfect for code snippets, sharing links, and copy buttons. The copied state resets after
-          2 seconds.
+          Perfect for code snippets, sharing links, and copy buttons. The copied
+          state resets after 2 seconds.
         </div>
       </div>
     )
@@ -446,8 +475,8 @@ export const UseMounted: Story = {
         <div>
           <h3 className="text-lg font-semibold mb-2">useMounted</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Returns whether the component is currently mounted (useful for preventing state updates
-            after unmount).
+            Returns whether the component is currently mounted (useful for
+            preventing state updates after unmount).
           </p>
         </div>
 
@@ -457,8 +486,9 @@ export const UseMounted: Story = {
               Component mounted: <strong>{isMounted ? 'Yes ✓' : 'No ✗'}</strong>
             </div>
             <div className="text-xs text-muted-foreground">
-              This hook returns false on first render and true after the component mounts. It's
-              useful for preventing SSR/hydration issues and avoiding state updates after unmount.
+              This hook returns false on first render and true after the
+              component mounts. It's useful for preventing SSR/hydration issues
+              and avoiding state updates after unmount.
             </div>
           </div>
         </div>
@@ -469,10 +499,12 @@ export const UseMounted: Story = {
 
         {showContent && isMounted && (
           <div className="p-4 border border-primary rounded-md bg-primary/5 animate-in fade-in">
-            <div className="font-medium">This content only shows when mounted!</div>
+            <div className="font-medium">
+              This content only shows when mounted!
+            </div>
             <div className="text-sm text-muted-foreground mt-1">
-              Perfect for preventing "Can't perform a React state update on an unmounted component"
-              warnings.
+              Perfect for preventing "Can't perform a React state update on an
+              unmounted component" warnings.
             </div>
           </div>
         )}
@@ -502,9 +534,18 @@ export const HooksCatalog: Story = {
             <h3 className="text-lg font-semibold mb-3">💬 Chat Hooks</h3>
             <div className="grid gap-2">
               {[
-                { name: 'useChat', desc: 'Main hook for managing chat state and messages' },
-                { name: 'useStreaming', desc: 'Handle streaming responses from AI models' },
-                { name: 'useStreamingSSE', desc: 'Server-sent events streaming' },
+                {
+                  name: 'useChat',
+                  desc: 'Main hook for managing chat state and messages',
+                },
+                {
+                  name: 'useStreaming',
+                  desc: 'Handle streaming responses from AI models',
+                },
+                {
+                  name: 'useStreamingSSE',
+                  desc: 'Server-sent events streaming',
+                },
                 {
                   name: 'useStreamingWebSocket',
                   desc: 'WebSocket-based streaming',
@@ -531,7 +572,10 @@ export const HooksCatalog: Story = {
             <h3 className="text-lg font-semibold mb-3">🎨 UI Hooks</h3>
             <div className="grid gap-2">
               {[
-                { name: 'useToggle', desc: 'Boolean state with toggle helpers' },
+                {
+                  name: 'useToggle',
+                  desc: 'Boolean state with toggle helpers',
+                },
                 { name: 'useClipboard', desc: 'Copy text to clipboard' },
                 { name: 'useMediaQuery', desc: 'Respond to CSS media queries' },
                 { name: 'useWindowSize', desc: 'Track window dimensions' },
@@ -572,7 +616,10 @@ export const HooksCatalog: Story = {
             <h3 className="text-lg font-semibold mb-3">💾 State Hooks</h3>
             <div className="grid gap-2">
               {[
-                { name: 'useLocalStorage', desc: 'Persist state in localStorage' },
+                {
+                  name: 'useLocalStorage',
+                  desc: 'Persist state in localStorage',
+                },
                 { name: 'usePrevious', desc: 'Access previous value' },
                 { name: 'useMounted', desc: 'Check if component is mounted' },
                 { name: 'useUndoRedo', desc: 'Undo/redo functionality' },
@@ -590,7 +637,10 @@ export const HooksCatalog: Story = {
             <h3 className="text-lg font-semibold mb-3">🌐 DOM Hooks</h3>
             <div className="grid gap-2">
               {[
-                { name: 'useEventListener', desc: 'Add event listeners safely' },
+                {
+                  name: 'useEventListener',
+                  desc: 'Add event listeners safely',
+                },
                 {
                   name: 'useIntersectionObserver',
                   desc: 'Observe element intersection',
@@ -610,7 +660,10 @@ export const HooksCatalog: Story = {
             <h3 className="text-lg font-semibold mb-3">🚀 Advanced Hooks</h3>
             <div className="grid gap-2">
               {[
-                { name: 'useErrorRecovery', desc: 'Handle and recover from errors' },
+                {
+                  name: 'useErrorRecovery',
+                  desc: 'Handle and recover from errors',
+                },
                 { name: 'useTokenTracker', desc: 'Track AI token usage' },
                 { name: 'useVoiceInput', desc: 'Speech-to-text input' },
                 { name: 'useMobileKeyboard', desc: 'Mobile keyboard handling' },

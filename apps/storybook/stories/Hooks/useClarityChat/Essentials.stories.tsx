@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useClarityChat, ChatWindow, MemoryProvider, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react/internal'
 import { Button, Card, Badge } from '@clarity-chat/primitives'
 import { useState, useMemo } from 'react'
 
 /**
  * **useClarityChat Hook - Essentials Track**
- * 
+ *
  * This track focuses on the most common use cases for useClarityChat.
  * These examples are production-ready and can be copied directly into your app.
- * 
+ *
  * For advanced patterns, see the "Enterprise" track.
  */
 const meta = {
@@ -62,20 +63,22 @@ type Story = StoryObj<typeof meta>
 // Mock API function
 const mockApiCall = async (messages: any[]) => {
   await new Promise((resolve) => setTimeout(resolve, 500))
-  
+
   const lastMessage = messages[messages.length - 1]
   const response = `Response to: "${lastMessage.content}"`
-  
+
   return new Response(
     new ReadableStream({
       start(controller) {
         const encoder = new TextEncoder()
         const chunks = response.split(' ')
-        
+
         chunks.forEach((chunk, index) => {
           setTimeout(() => {
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ content: chunk + ' ' })}\n\n`)
+              encoder.encode(
+                `data: ${JSON.stringify({ content: chunk + ' ' })}\n\n`
+              )
             )
             if (index === chunks.length - 1) {
               controller.close()
@@ -98,7 +101,7 @@ global.fetch = async (url: string | URL | Request, init?: RequestInit) => {
 
 /**
  * **Essential Pattern 1: Basic Chat**
- * 
+ *
  * The simplest use case - a basic chat interface with minimal configuration.
  * This is what you'll use most often.
  */
@@ -133,7 +136,7 @@ export const BasicChat: Story = {
       <div className="space-y-4 w-full max-w-4xl">
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-4">Basic Chat</h3>
-          
+
           <div className="border rounded-lg p-4 min-h-[300px] max-h-[500px] overflow-y-auto mb-4">
             {messages.length === 0 ? (
               <div className="text-center text-muted-foreground py-8">
@@ -155,7 +158,9 @@ export const BasicChat: Story = {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="text-muted-foreground text-sm">Thinking...</div>
+                  <div className="text-muted-foreground text-sm">
+                    Thinking...
+                  </div>
                 )}
               </div>
             )}
@@ -165,7 +170,9 @@ export const BasicChat: Story = {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && !e.shiftKey && handleSend()
+              }
               placeholder="Type a message..."
               className="flex-1 px-4 py-2 border rounded-lg"
               disabled={isLoading}
@@ -208,7 +215,7 @@ The most basic chat setup. This is the foundation for all other patterns.
 
 /**
  * **Essential Pattern 2: With ChatWindow**
- * 
+ *
  * Use the ChatWindow component for a complete, production-ready interface.
  * This is the recommended pattern for most applications.
  */
@@ -230,10 +237,12 @@ export const WithChatWindow: Story = {
     return (
       <div className="w-full max-w-4xl">
         <Card className="p-4">
-          <h3 className="text-lg font-semibold mb-4">With ChatWindow Component</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            With ChatWindow Component
+          </h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Using ChatWindow provides a complete, production-ready interface with
-            all features built-in.
+            Using ChatWindow provides a complete, production-ready interface
+            with all features built-in.
           </p>
           <ChatWindow
             messages={messages}
@@ -271,7 +280,7 @@ pattern for production applications.
 
 /**
  * **Essential Pattern 3: With Memory**
- * 
+ *
  * Enable conversation memory for context-aware responses.
  * This is essential for multi-turn conversations.
  */
@@ -313,9 +322,7 @@ export const WithMemory: Story = {
         <Card className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">With Memory Enabled</h3>
-            {memoryEnabled && (
-              <Badge variant="success">Memory Active</Badge>
-            )}
+            {memoryEnabled && <Badge variant="success">Memory Active</Badge>}
           </div>
 
           {contextSummary && (
@@ -330,7 +337,8 @@ export const WithMemory: Story = {
           <div className="border rounded-lg p-4 min-h-[300px] max-h-[500px] overflow-y-auto mb-4">
             {messages.length === 0 ? (
               <div className="text-center text-muted-foreground py-8">
-                Memory is enabled. Start a conversation to see context management!
+                Memory is enabled. Start a conversation to see context
+                management!
               </div>
             ) : (
               <div className="space-y-4">
@@ -348,7 +356,9 @@ export const WithMemory: Story = {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="text-muted-foreground text-sm">Thinking...</div>
+                  <div className="text-muted-foreground text-sm">
+                    Thinking...
+                  </div>
                 )}
               </div>
             )}
@@ -358,7 +368,9 @@ export const WithMemory: Story = {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && !e.shiftKey && handleSend()
+              }
               placeholder="Type a message..."
               className="flex-1 px-4 py-2 border rounded-lg"
               disabled={isLoading}

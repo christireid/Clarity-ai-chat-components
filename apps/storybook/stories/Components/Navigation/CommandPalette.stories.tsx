@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   CommandPalette,
-  CommandItem,
+  type CommandItem,
   useCommandPalette,
 } from '@clarity-chat/react/internal'
 import { useState } from 'react'

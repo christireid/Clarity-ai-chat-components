@@ -1,17 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useClarityChat, ChatWindow, MemoryProvider, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react/internal'
 import { Button, Card, Badge } from '@clarity-chat/primitives'
 import { useState, useMemo } from 'react'
 
 /**
  * **useClarityChat Hook (Flagship API)**
- * 
+ *
  * Clarity's flagship chat hook that extends useChatEnhanced with:
  * - Memory integration (sliding-window, semantic-chunks, vector-store)
  * - Transport selection (SSE/WebSocket)
  * - Context enrichment
  * - Auto memory capture
- * 
+ *
  * **Key Features:**
  * - Full Vercel AI SDK compatibility
  * - Memory-aware conversations
@@ -19,7 +20,7 @@ import { useState, useMemo } from 'react'
  * - Transport protocol selection
  * - Context summary generation
  * - Auto memory capture
- * 
+ *
  * **Use Cases:**
  * - Production AI chat applications
  * - Long-context conversations
@@ -85,20 +86,22 @@ type Story = StoryObj<typeof meta>
 // Mock API function
 const mockApiCall = async (messages: any[]) => {
   await new Promise((resolve) => setTimeout(resolve, 500))
-  
+
   const lastMessage = messages[messages.length - 1]
   const response = `Response to: "${lastMessage.content}"`
-  
+
   return new Response(
     new ReadableStream({
       start(controller) {
         const encoder = new TextEncoder()
         const chunks = response.split(' ')
-        
+
         chunks.forEach((chunk, index) => {
           setTimeout(() => {
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ content: chunk + ' ' })}\n\n`)
+              encoder.encode(
+                `data: ${JSON.stringify({ content: chunk + ' ' })}\n\n`
+              )
             )
             if (index === chunks.length - 1) {
               controller.close()
@@ -152,11 +155,9 @@ function BasicDemo() {
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Basic useClarityChat</h3>
-          {memoryEnabled && (
-            <Badge variant="success">Memory Enabled</Badge>
-          )}
+          {memoryEnabled && <Badge variant="success">Memory Enabled</Badge>}
         </div>
-        
+
         {contextSummary && (
           <div className="mb-4 p-3 bg-muted rounded-lg">
             <p className="text-xs font-medium text-muted-foreground mb-1">
@@ -474,7 +475,9 @@ function FullFeaturedDemo() {
   return (
     <div className="space-y-4 w-full max-w-4xl">
       <Card className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Full-Featured Configuration</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          Full-Featured Configuration
+        </h3>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="flex items-center gap-2">

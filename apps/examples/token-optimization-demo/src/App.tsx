@@ -1,25 +1,107 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
-  usePromptCompression,
   useSmartCache,
   useModelRouter,
-  useResponseLimiter,
-  useRequestBatcher,
   useSmartThrottle,
   TokenOptimizationDashboard,
   ThemeProvider,
   themes,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
+
+// Stub hook implementations for demo purposes
+// These hooks don't exist in the library yet, but the demo needs them
+
+function usePromptCompression(_options: {
+  removeFillers?: boolean
+  useAbbreviations?: boolean
+  trimWhitespace?: boolean
+}) {
+  const [compressionCount, setCompressionCount] = useState(0)
+  const [totalTokensSaved, setTotalTokensSaved] = useState(0)
+
+  const compress = useCallback((text: string) => {
+    setCompressionCount((c) => c + 1)
+    // Simple compression: remove extra whitespace
+    const compressed = text.replace(/\s+/g, ' ').trim()
+    const saved = Math.floor((text.length - compressed.length) * 0.25)
+    setTotalTokensSaved((t) => t + saved)
+    return { compressed, tokenSavings: saved }
+  }, [])
+
+  const resetStats = useCallback(() => {
+    setCompressionCount(0)
+    setTotalTokensSaved(0)
+  }, [])
+
+  return {
+    compress,
+    compressionCount,
+    totalTokensSaved,
+    averageSavingsPercent:
+      compressionCount > 0 ? (totalTokensSaved / compressionCount) * 10 : 0,
+    resetStats,
+  }
+}
+
+function useResponseLimiter(_options: {
+  preset?: string
+  onTruncate?: (original: string, truncated: string) => void
+}) {
+  const statsRef = useRef({ tokensSaved: 0, savingsPercent: 0 })
+
+  const createPrompt = useCallback((text: string) => {
+    return { prompt: text, constraints: ['max_tokens: 500', 'brief responses'] }
+  }, [])
+
+  const enforce = useCallback((text: string) => {
+    const maxLen = 500
+    const truncated =
+      text.length > maxLen ? text.slice(0, maxLen) + '...' : text
+    const saved = Math.max(0, text.length - truncated.length)
+    statsRef.current.tokensSaved += Math.floor(saved * 0.25)
+    return { response: truncated, tokensSaved: Math.floor(saved * 0.25) }
+  }, [])
+
+  const resetStats = useCallback(() => {
+    statsRef.current = { tokensSaved: 0, savingsPercent: 0 }
+  }, [])
+
+  return {
+    createPrompt,
+    enforce,
+    stats: statsRef.current,
+    resetStats,
+  }
+}
+
+function useRequestBatcher<T>(_options: {
+  maxBatchSize?: number
+  maxWaitTime?: number
+  processor?: (queries: string[]) => Promise<T[]>
+}) {
+  const statsRef = useRef({ totalBatches: 0 })
+
+  const clear = useCallback(() => {
+    statsRef.current = { totalBatches: 0 }
+  }, [])
+
+  return {
+    stats: statsRef.current,
+    clear,
+  }
+}
 
 /**
  * Comprehensive Token Optimization Demo
- * 
+ *
  * Demonstrates all token optimization features working together.
  */
 export function App() {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
+  const [messages, setMessages] = useState<
+    Array<{ role: 'user' | 'assistant'; content: string }>
+  >([])
   const [isLoading, setIsLoading] = useState(false)
 
   // Initialize all optimization features
@@ -55,7 +137,7 @@ export function App() {
     processor: async (queries) => {
       // Simulate batch API call
       console.log(`Processing batch of ${queries.length} queries`)
-      return queries.map(q => `Response to: ${q}`)
+      return queries.map((q) => `Response to: ${q}`)
     },
   })
 
@@ -67,14 +149,13 @@ export function App() {
   })
 
   // Calculate combined metrics
-  const totalTokensSaved = 
+  const totalTokensSaved =
     compression.totalTokensSaved +
     cache.stats.tokensSaved +
     limiter.stats.tokensSaved
 
-  const totalCostSaved = 
-    cache.stats.costSaved +
-    router.stats.totalEstimatedCost * 0.3 // Rough estimate
+  const totalCostSaved =
+    cache.stats.costSaved + router.stats.totalEstimatedCost * 0.3 // Rough estimate
 
   const metrics = {
     totalTokens: compression.compressionCount * 100 + totalTokensSaved, // Rough estimate
@@ -109,9 +190,12 @@ export function App() {
         percent: 0,
       },
     },
-    savingsPercent: totalTokensSaved > 0 
-      ? (totalTokensSaved / (compression.compressionCount * 100 + totalTokensSaved)) * 100 
-      : 0,
+    savingsPercent:
+      totalTokensSaved > 0
+        ? (totalTokensSaved /
+            (compression.compressionCount * 100 + totalTokensSaved)) *
+          100
+        : 0,
   }
 
   const handleSend = async () => {
@@ -127,7 +211,7 @@ export function App() {
       const cached = await cache.get(compressionResult.compressed)
       if (cached) {
         console.log('Cache hit!')
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           { role: 'user', content: input },
           { role: 'assistant', content: cached },
@@ -145,19 +229,22 @@ export function App() {
       console.log(`Constraints: ${limitedPrompt.constraints.join(', ')}`)
 
       // Step 5: Simulate API call (in real app, call your API here)
-      const mockResponse = `This is a simulated response using ${routing.model.name}. ` +
+      const mockResponse =
+        `This is a simulated response using ${routing.model.name}. ` +
         `Your query was: "${compressionResult.compressed}". ` +
         `Token optimization is active with ${metrics.savingsPercent.toFixed(1)}% savings!`
 
       // Step 6: Enforce response limits
       const limitedResponse = limiter.enforce(mockResponse)
-      console.log(`Response limited: ${limitedResponse.tokensSaved} tokens saved`)
+      console.log(
+        `Response limited: ${limitedResponse.tokensSaved} tokens saved`
+      )
 
       // Step 7: Cache result
       await cache.set(compressionResult.compressed, limitedResponse.response)
 
       // Update messages
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { role: 'user', content: input },
         { role: 'assistant', content: limitedResponse.response },
@@ -211,7 +298,7 @@ export function App() {
           {/* Chat Interface */}
           <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-4">Try It Out</h2>
-            
+
             {/* Messages */}
             <div className="space-y-4 mb-4 min-h-[200px] max-h-[400px] overflow-y-auto">
               {messages.length === 0 ? (
@@ -246,7 +333,9 @@ export function App() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+                onKeyPress={(e) =>
+                  e.key === 'Enter' && !isLoading && handleSend()
+                }
                 placeholder="Type your message..."
                 disabled={isLoading}
                 className="flex-1 px-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -275,7 +364,9 @@ export function App() {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Compressions:</span>
-                  <span className="font-medium">{compression.compressionCount}</span>
+                  <span className="font-medium">
+                    {compression.compressionCount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Avg Savings:</span>
@@ -309,7 +400,9 @@ export function App() {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Queries:</span>
-                  <span className="font-medium">{router.stats.totalQueries}</span>
+                  <span className="font-medium">
+                    {router.stats.totalQueries}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Avg Savings:</span>
@@ -324,7 +417,8 @@ export function App() {
           {/* Info Footer */}
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              This demo simulates API calls. In production, integrate with your actual API.
+              This demo simulates API calls. In production, integrate with your
+              actual API.
             </p>
             <p className="mt-1">
               Check the browser console for detailed optimization logs.

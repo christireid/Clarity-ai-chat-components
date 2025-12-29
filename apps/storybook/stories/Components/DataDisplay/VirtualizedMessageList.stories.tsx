@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { VirtualizedMessageList } from '@clarity-chat/react'
+import { VirtualizedMessageList } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 const generateMessages = (count: number): Message[] =>
@@ -61,9 +61,15 @@ type Story = StoryObj<typeof meta>
 export const LargeConversation: Story = {
   args: {
     messages: baseMessages,
-    emptyState: <div className="text-sm text-muted-foreground">Start a conversation to see history.</div>,
-    onMessageCopy: (id, content) => console.info('[Storybook] Copy message', id, content.slice(0, 40)),
-    onMessageFeedback: (id, type) => console.info('[Storybook] Feedback', id, type),
+    emptyState: (
+      <div className="text-sm text-muted-foreground">
+        Start a conversation to see history.
+      </div>
+    ),
+    onMessageCopy: (id, content) =>
+      console.info('[Storybook] Copy message', id, content.slice(0, 40)),
+    onMessageFeedback: (id, type) =>
+      console.info('[Storybook] Feedback', id, type),
   },
 }
 
@@ -83,7 +89,8 @@ export const NonVirtualized: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Disable virtualization for shorter conversations (< 50 messages). Virtualization adds overhead that may not be needed for small lists.',
+        story:
+          'Disable virtualization for shorter conversations (< 50 messages). Virtualization adds overhead that may not be needed for small lists.',
       },
     },
   },
@@ -106,7 +113,8 @@ export const EmptyState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Empty state when no messages are present. Customize the emptyState prop to match your app\'s design.',
+        story:
+          "Empty state when no messages are present. Customize the emptyState prop to match your app's design.",
       },
     },
   },
@@ -121,7 +129,8 @@ export const WithError: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Error state with retry functionality. The error prop displays a user-friendly error message.',
+        story:
+          'Error state with retry functionality. The error prop displays a user-friendly error message.',
       },
     },
   },
@@ -135,7 +144,8 @@ export const StreamingMessage: Story = {
         id: 'streaming-msg',
         chatId: 'virtualized-demo',
         role: 'assistant',
-        content: 'This is a streaming message that is currently being generated...',
+        content:
+          'This is a streaming message that is currently being generated...',
         createdAt: Date.now(),
         status: 'streaming',
       },
@@ -144,7 +154,8 @@ export const StreamingMessage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Handles streaming messages gracefully. Messages with status "streaming" show a loading indicator.',
+        story:
+          'Handles streaming messages gracefully. Messages with status "streaming" show a loading indicator.',
       },
     },
   },

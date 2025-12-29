@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { ThemePreview } from '@clarity-chat/react'
+import { ThemePreview } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Foundation/ThemePreview',

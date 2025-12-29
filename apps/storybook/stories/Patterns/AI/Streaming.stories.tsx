@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatWindow, ChatInput, Message, ThinkingIndicator } from '@clarity-chat/react'
+import { ChatWindow, ChatInput, ThinkingIndicator } from '@clarity-chat/react'
+import { Message } from '@clarity-chat/react/internal'
 import { StatusBadge } from '../../../.storybook/blocks'
 import React, { useState, useRef } from 'react'
 
@@ -63,30 +64,33 @@ const simulateStreamingResponse = (
   const words = response.split(' ')
   let currentIndex = 0
 
-  const streamInterval = setInterval(() => {
-    if (signal?.aborted) {
-      clearInterval(streamInterval)
-      onComplete()
-      return
-    }
+  const streamInterval = setInterval(
+    () => {
+      if (signal?.aborted) {
+        clearInterval(streamInterval)
+        onComplete()
+        return
+      }
 
-    if (currentIndex >= words.length) {
-      clearInterval(streamInterval)
-      onComplete()
-      return
-    }
+      if (currentIndex >= words.length) {
+        clearInterval(streamInterval)
+        onComplete()
+        return
+      }
 
-    // Simulate occasional errors (5% chance)
-    if (Math.random() < 0.05 && currentIndex > words.length / 2) {
-      clearInterval(streamInterval)
-      onError(new Error('Network connection lost'))
-      return
-    }
+      // Simulate occasional errors (5% chance)
+      if (Math.random() < 0.05 && currentIndex > words.length / 2) {
+        clearInterval(streamInterval)
+        onError(new Error('Network connection lost'))
+        return
+      }
 
-    const token = (currentIndex === 0 ? '' : ' ') + words[currentIndex]
-    onToken(token)
-    currentIndex++
-  }, 50 + Math.random() * 100) // Variable token timing
+      const token = (currentIndex === 0 ? '' : ' ') + words[currentIndex]
+      onToken(token)
+      currentIndex++
+    },
+    50 + Math.random() * 100
+  ) // Variable token timing
 }
 
 const generateResponse = (message: string): string => {
@@ -100,7 +104,11 @@ const generateResponse = (message: string): string => {
     return 'Here is a basic implementation of streaming in React: First, establish a connection to your streaming endpoint using fetch with a ReadableStream. Then, create a reader from the response body and process chunks as they arrive. Update your UI state with each token, building up the complete message progressively. Make sure to handle cleanup properly to avoid memory leaks, and provide a way for users to cancel the stream if needed.'
   }
 
-  return 'I understand you are asking about "' + message + '". Streaming responses provide a better user experience by showing progress in real-time. Instead of waiting 30 seconds for a complete answer, users see text appearing word by word, similar to how humans type. This makes the interaction feel more natural and responsive. The technical implementation uses protocols like Server-Sent Events or WebSockets to maintain a connection and transmit data progressively.'
+  return (
+    'I understand you are asking about "' +
+    message +
+    '". Streaming responses provide a better user experience by showing progress in real-time. Instead of waiting 30 seconds for a complete answer, users see text appearing word by word, similar to how humans type. This makes the interaction feel more natural and responsive. The technical implementation uses protocols like Server-Sent Events or WebSockets to maintain a connection and transmit data progressively.'
+  )
 }
 
 export const BasicStreaming: Story = {
@@ -109,7 +117,8 @@ export const BasicStreaming: Story = {
       {
         id: '1',
         role: 'assistant' as const,
-        content: 'Hello! Ask me anything and watch my response stream in real-time.',
+        content:
+          'Hello! Ask me anything and watch my response stream in real-time.',
         timestamp: new Date(Date.now() - 60000),
       },
     ])
@@ -167,7 +176,10 @@ export const BasicStreaming: Story = {
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessageId
-                ? { ...msg, content: msg.content + '\n\n[Error: ' + error.message + ']' }
+                ? {
+                    ...msg,
+                    content: msg.content + '\n\n[Error: ' + error.message + ']',
+                  }
                 : msg
             )
           )
@@ -190,7 +202,8 @@ export const BasicStreaming: Story = {
             <StatusBadge status="stable" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Watch responses stream in real-time as tokens are generated. Notice how text appears progressively.
+            Watch responses stream in real-time as tokens are generated. Notice
+            how text appears progressively.
           </p>
         </div>
 
@@ -201,14 +214,15 @@ export const BasicStreaming: Story = {
                 {messages.map((message) => (
                   <Message key={message.id} message={message} />
                 ))}
-                {isStreaming && messages[messages.length - 1]?.content === '' && (
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium">
-                      AI
+                {isStreaming &&
+                  messages[messages.length - 1]?.content === '' && (
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium">
+                        AI
+                      </div>
+                      <ThinkingIndicator />
                     </div>
-                    <ThinkingIndicator />
-                  </div>
-                )}
+                  )}
               </div>
 
               <div className="border-t border-gray-200 dark:border-gray-700 p-4">
@@ -248,7 +262,9 @@ export const BasicStreaming: Story = {
           </div>
 
           <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-200 dark:border-green-800">
-            <h3 className="text-lg font-semibold mb-3">Features Demonstrated</h3>
+            <h3 className="text-lg font-semibold mb-3">
+              Features Demonstrated
+            </h3>
             <ul className="space-y-2 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-green-500 font-bold">✓</span>
@@ -275,7 +291,8 @@ export const BasicStreaming: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic streaming implementation with token-by-token rendering and cancellation support.',
+        story:
+          'Basic streaming implementation with token-by-token rendering and cancellation support.',
       },
     },
   },
@@ -287,14 +304,18 @@ export const WithRetryAndRegenerate: Story = {
       {
         id: '1',
         role: 'assistant' as const,
-        content: 'I can help you with streaming responses. Try asking a question, and you can regenerate responses if needed.',
+        content:
+          'I can help you with streaming responses. Try asking a question, and you can regenerate responses if needed.',
         timestamp: new Date(Date.now() - 120000),
       },
     ])
     const [input, setInput] = useState('')
     const [isStreaming, setIsStreaming] = useState(false)
     const abortControllerRef = useRef<AbortController | null>(null)
-    const [streamStats, setStreamStats] = useState({ tokensReceived: 0, duration: 0 })
+    const [streamStats, setStreamStats] = useState({
+      tokensReceived: 0,
+      duration: 0,
+    })
 
     const startStreaming = (userInput: string) => {
       const assistantMessageId = Date.now().toString()
@@ -338,7 +359,14 @@ export const WithRetryAndRegenerate: Story = {
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessageId
-                ? { ...msg, content: msg.content + '\n\n[Error: ' + error.message + ' - Click Retry to try again]' }
+                ? {
+                    ...msg,
+                    content:
+                      msg.content +
+                      '\n\n[Error: ' +
+                      error.message +
+                      ' - Click Retry to try again]',
+                  }
                 : msg
             )
           )
@@ -389,7 +417,8 @@ export const WithRetryAndRegenerate: Story = {
             <StatusBadge status="stable" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Advanced streaming with regeneration support and streaming statistics. Hover over responses to regenerate.
+            Advanced streaming with regeneration support and streaming
+            statistics. Hover over responses to regenerate.
           </p>
         </div>
 
@@ -413,22 +442,32 @@ export const WithRetryAndRegenerate: Story = {
                     )}
                   </div>
                 ))}
-                {isStreaming && messages[messages.length - 1]?.content === '' && (
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium">
-                      AI
+                {isStreaming &&
+                  messages[messages.length - 1]?.content === '' && (
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium">
+                        AI
+                      </div>
+                      <ThinkingIndicator />
                     </div>
-                    <ThinkingIndicator />
-                  </div>
-                )}
+                  )}
               </div>
 
               <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
                 {isStreaming && (
                   <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 px-2">
-                    <span>Streaming... {streamStats.tokensReceived} tokens in {streamStats.duration}s</span>
+                    <span>
+                      Streaming... {streamStats.tokensReceived} tokens in{' '}
+                      {streamStats.duration}s
+                    </span>
                     <span className="text-xs">
-                      ~{streamStats.duration > 0 ? Math.round(streamStats.tokensReceived / streamStats.duration) : 0} tokens/sec
+                      ~
+                      {streamStats.duration > 0
+                        ? Math.round(
+                            streamStats.tokensReceived / streamStats.duration
+                          )
+                        : 0}{' '}
+                      tokens/sec
                     </span>
                   </div>
                 )}
@@ -485,7 +524,8 @@ export const WithRetryAndRegenerate: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Advanced streaming with response regeneration and real-time statistics.',
+        story:
+          'Advanced streaming with response regeneration and real-time statistics.',
       },
     },
   },

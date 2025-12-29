@@ -6,7 +6,7 @@
  */
 
 // Optional Redis import - falls back to in-memory if not available
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 let createClient: any = null
 
 // Dynamic import for optional Redis dependency

@@ -1,10 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import {
-  ThemeProvider,
-  ThemeContrastChecker,
-  createTheme,
-} from '@clarity-chat/react'
+import { ThemeProvider } from '@clarity-chat/react'
+import { ThemeContrastChecker, createTheme } from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ThemeContrastChecker> = {
   title: 'Foundation/Theme Contrast Checker',
