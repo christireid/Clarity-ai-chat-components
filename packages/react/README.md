@@ -50,41 +50,29 @@ export default function App() {
 - **Streaming** - SSE and WebSocket support
 - **Enterprise-ready** - RBAC, audit logging, multi-tenancy
 
-### Basic Chat (With Hook - Mid-Level API)
+### Need More Control? Use the Hook
 
 ```tsx
-import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const chat = useClarityChat({
-    api: '/api/chat',
-  })
-
-  // Pre-configured handlers - no boilerplate! ✨
-  const handlers = useChatHandlers({ chat })
+  const chat = useClarityChat({ api: '/api/chat' })
 
   return (
     <ChatWindow
-      messages={chat.messages} // No conversion needed! ✨
+      messages={chat.messages}
       isLoading={chat.isLoading}
-      onSendMessage={handlers.onSendMessage}
-      onClear={handlers.onClear}
+      onSendMessage={(content) => chat.append({ role: 'user', content })}
     />
   )
 }
 ```
 
-**Architecture**: This uses **Mid-Level APIs** for more control while maintaining ergonomics.
-
-**What Changed:**
-
-- ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
-- ✅ `useChatHandlers` provides pre-configured handlers - less boilerplate
-- ✅ Simpler API - same power, easier to use
-
-**When to Use**: Use this pattern when you need custom UI or more control than `ClarityChat`
-provides.
+**Three hooks, three use cases:**
+- `useClarityChat` — Chat with messages, streaming, memory options
+- `useClarityObject` — Structured output generation
+- `useClarityChatWithTools` — Chat with tool/function calling
 
 ### Using Presets (Top-Level APIs - Even Easier!)
 
