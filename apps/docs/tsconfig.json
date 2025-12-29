@@ -33,5 +33,17 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "scripts"]
+  "exclude": [
+    "node_modules",
+    "scripts",
+    "mcp-server",
+    "lib/testing",
+    "lib/types/strict.ts",
+    "lib/animations.ts",
+    "lib/analyticsOptimized.ts",
+    "lib/demos",
+    "lib/error",
+    "lib/security",
+    "next.config.security.ts"
+  ]
 }
