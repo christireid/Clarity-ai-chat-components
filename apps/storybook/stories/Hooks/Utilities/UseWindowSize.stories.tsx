@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useWindowSize } from '@clarity-chat/react'
+import { useWindowSize } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 /**
  * **useWindowSize Hook**
- * 
+ *
  * Hook for tracking window dimensions with throttled updates
  * to prevent performance issues during window resize events.
- * 
+ *
  * **Key Features:**
  * - Track window width and height
  * - Automatic throttling (150ms default)
  * - SSR-safe (returns 0x0 on server)
  * - Automatic cleanup on unmount
  * - Memory efficient
- * 
+ *
  * **Use Cases:**
  * - Responsive component rendering
  * - Conditional layout switching
@@ -82,7 +82,8 @@ function BasicWindowSizeDemo() {
       </div>
 
       <p className="text-xs text-gray-500">
-        Resize the browser window to see the values update. Updates are throttled to prevent performance issues.
+        Resize the browser window to see the values update. Updates are
+        throttled to prevent performance issues.
       </p>
     </div>
   )
@@ -181,13 +182,16 @@ function ConditionalRenderingDemo() {
       <div className="p-4 bg-gray-50 dark:bg-gray-900 border rounded-lg">
         <div className="space-y-2 text-sm">
           <div>
-            <strong>Is Mobile:</strong> {isMobile ? 'Yes' : 'No'} (width &lt; 768px)
+            <strong>Is Mobile:</strong> {isMobile ? 'Yes' : 'No'} (width &lt;
+            768px)
           </div>
           <div>
-            <strong>Is Landscape:</strong> {isLandscape ? 'Yes' : 'No'} (width &gt; height)
+            <strong>Is Landscape:</strong> {isLandscape ? 'Yes' : 'No'} (width
+            &gt; height)
           </div>
           <div>
-            <strong>Is Small Screen:</strong> {isSmallScreen ? 'Yes' : 'No'} (width &lt; 640px)
+            <strong>Is Small Screen:</strong> {isSmallScreen ? 'Yes' : 'No'}{' '}
+            (width &lt; 640px)
           </div>
         </div>
       </div>
@@ -218,7 +222,8 @@ export const ConditionalRendering: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Using window size for conditional rendering based on screen size.',
+        story:
+          'Using window size for conditional rendering based on screen size.',
       },
     },
   },

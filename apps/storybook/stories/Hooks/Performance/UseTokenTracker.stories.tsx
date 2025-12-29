@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useTokenTracker, type MessageWithTokens } from '@clarity-chat/react'
+import {
+  useTokenTracker,
+  type MessageWithTokens,
+} from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {

@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useLocalStorage } from '@clarity-chat/react'
+import { useLocalStorage } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 
 /**
  * **useLocalStorage Hook**
- * 
+ *
  * Hook for persisting state in localStorage with automatic serialization
  * and cross-tab synchronization.
- * 
+ *
  * **Key Features:**
  * - Persist state in localStorage
  * - Automatic serialization/deserialization
@@ -16,7 +16,7 @@ import { useState } from 'react'
  * - SSR-safe
  * - Custom serializers
  * - Remove functionality
- * 
+ *
  * **Use Cases:**
  * - Theme preferences
  * - User settings
@@ -74,7 +74,8 @@ function ThemeDemo() {
             <strong>Current Theme:</strong> {theme}
           </div>
           <div>
-            <strong>Stored in localStorage:</strong> {localStorage.getItem('demo-theme') || 'None'}
+            <strong>Stored in localStorage:</strong>{' '}
+            {localStorage.getItem('demo-theme') || 'None'}
           </div>
         </div>
       </div>
@@ -107,18 +108,22 @@ export const ThemeStorage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Storing theme preference in localStorage with cross-tab synchronization.',
+        story:
+          'Storing theme preference in localStorage with cross-tab synchronization.',
       },
     },
   },
 }
 
 function UserPreferencesDemo() {
-  const [preferences, setPreferences, removePreferences] = useLocalStorage('user-preferences', {
-    language: 'en',
-    notifications: true,
-    fontSize: 14,
-  })
+  const [preferences, setPreferences, removePreferences] = useLocalStorage(
+    'user-preferences',
+    {
+      language: 'en',
+      notifications: true,
+      fontSize: 14,
+    }
+  )
 
   const updatePreference = (key: string, value: any) => {
     setPreferences((prev) => ({ ...prev, [key]: value }))
@@ -132,7 +137,8 @@ function UserPreferencesDemo() {
             <strong>Language:</strong> {preferences.language}
           </div>
           <div>
-            <strong>Notifications:</strong> {preferences.notifications ? 'Enabled' : 'Disabled'}
+            <strong>Notifications:</strong>{' '}
+            {preferences.notifications ? 'Enabled' : 'Disabled'}
           </div>
           <div>
             <strong>Font Size:</strong> {preferences.fontSize}px
@@ -168,7 +174,9 @@ function UserPreferencesDemo() {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Font Size: {preferences.fontSize}px</label>
+        <label className="text-sm font-medium">
+          Font Size: {preferences.fontSize}px
+        </label>
         <input
           type="range"
           min="12"
@@ -211,7 +219,9 @@ function FormPersistenceDemo() {
         <input
           type="text"
           value={formData.name}
-          onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, name: e.target.value }))
+          }
           className="w-full p-2 border rounded-lg"
           placeholder="Enter your name"
         />
@@ -222,7 +232,9 @@ function FormPersistenceDemo() {
         <input
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, email: e.target.value }))
+          }
           className="w-full p-2 border rounded-lg"
           placeholder="Enter your email"
         />
@@ -232,7 +244,9 @@ function FormPersistenceDemo() {
         <label className="text-sm font-medium">Message:</label>
         <textarea
           value={formData.message}
-          onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, message: e.target.value }))
+          }
           className="w-full p-2 border rounded-lg resize-none"
           rows={4}
           placeholder="Enter your message"
@@ -246,7 +260,8 @@ function FormPersistenceDemo() {
       </div>
 
       <p className="text-xs text-gray-500">
-        Form data is automatically saved to localStorage. Try refreshing the page to see persistence.
+        Form data is automatically saved to localStorage. Try refreshing the
+        page to see persistence.
       </p>
     </div>
   )
@@ -257,7 +272,8 @@ export const FormPersistence: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Persisting form data in localStorage to prevent data loss on page refresh.',
+        story:
+          'Persisting form data in localStorage to prevent data loss on page refresh.',
       },
     },
   },

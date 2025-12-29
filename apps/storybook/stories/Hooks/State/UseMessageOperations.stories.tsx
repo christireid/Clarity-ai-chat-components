@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useMessageOperations } from '@clarity-chat/react'
+import { useMessageOperations } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 

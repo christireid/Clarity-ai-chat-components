@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useClarityObject } from '@clarity-chat/react'
+import { useClarityObject } from '@clarity-chat/react/internal'
 import {
   Button,
   Card,

@@ -52,11 +52,20 @@ export { SessionSummaryCard } from './components/ai/session-summary-card'
 export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 export { RetryButton } from './components/feedback/retry-button'
-export { ConsoleAlertHandler, useConsoleAlerts } from './components/feedback/console-alert-handler'
-export type { ConsoleAlert, ConsoleAlertHandlerProps } from './components/feedback/console-alert-handler'
+export {
+  ConsoleAlertHandler,
+  useConsoleAlerts,
+} from './components/feedback/console-alert-handler'
+export type {
+  ConsoleAlert,
+  ConsoleAlertHandlerProps,
+} from './components/feedback/console-alert-handler'
 export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
-export { TokenBudgetBar, TokenBudgetIndicator } from './components/token/token-budget-bar'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token/token-budget-bar'
 export { TokenOptimizationDashboard } from './components/token/token-optimization-dashboard'
 export { ContextVisualizer } from './components/context/context-visualizer'
 export { ConversationList } from './components/conversation/conversation-list'
@@ -111,6 +120,9 @@ export * from './hooks/input'
 export * from './hooks/dashboard'
 export * from './hooks/theme'
 
+// Re-export full theme system
+export * from './theme'
+
 // Re-export components from additional domains
 export * from './components/ui'
 export * from './components/ai'
@@ -126,9 +138,19 @@ export * from './components/input'
 // Export only working prompt components (excluding problematic ones with TypeScript issues)
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
-export type { PromptSuggestionsProps, PromptSuggestion, PromptSuggestionType } from './components/prompt/prompt-suggestions'
-export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt/prompt-suggestions-enhanced'
-export type { SuggestionRankingConfig, SuggestionInteraction } from './components/prompt/prompt-suggestions-enhanced'
+export type {
+  PromptSuggestionsProps,
+  PromptSuggestion,
+  PromptSuggestionType,
+} from './components/prompt/prompt-suggestions'
+export {
+  PromptSuggestionsEnhanced,
+  usePromptSuggestionsEnhanced,
+} from './components/prompt/prompt-suggestions-enhanced'
+export type {
+  SuggestionRankingConfig,
+  SuggestionInteraction,
+} from './components/prompt/prompt-suggestions-enhanced'
 
 // Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
 export * from './accessibility/focus-management'
@@ -139,12 +161,23 @@ export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
 export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
+export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
 export { SecurityManager, securityManager, useSecurity } from './utils/security'
 
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
 export * from './internal/index'
+
+// ============================================================================
+// AI CHAT HOOKS (Advanced)
+// ============================================================================
+export { useAssistant } from './hooks/chat/use-assistant'
+export { useCompletion } from './hooks/chat/use-completion'
+export {
+  useChat,
+  useChat as useChatEnhanced,
+} from './hooks/chat/use-chat-enhanced'
 
 // ============================================================================
 // STREAMING HOOKS (Advanced)
@@ -161,6 +194,40 @@ export * from './hooks/resilience'
 // ============================================================================
 export * from './analytics'
 export * from './observability'
+
+// ============================================================================
+// ERROR HANDLING & REPORTING
+// ============================================================================
+// Note: ErrorSeverity excluded to avoid conflict with components/feedback
+export {
+  ErrorReporterProvider,
+  useErrorReporter,
+  createSentryProvider,
+  createRollbarProvider,
+  createBugsnagProvider,
+  createCustomAPIProvider,
+  createConsoleErrorProvider,
+  createLocalStorageErrorProvider,
+  getStoredErrors,
+  clearStoredErrors,
+  ErrorFeedback,
+  ErrorFeedbackButton,
+  ClarityError,
+  validateArrayProp,
+  validateRequiredProp,
+  validateMessageRole,
+  validateMessagesArray,
+} from './error'
+export type {
+  ErrorReport,
+  ErrorProvider,
+  ErrorReporterConfig,
+  ErrorFeedbackType,
+  ErrorBoundaryState,
+  ErrorStats,
+  ClarityErrorCode,
+  ClarityErrorContext,
+} from './error'
 
 // ============================================================================
 // ENTERPRISE FEATURES

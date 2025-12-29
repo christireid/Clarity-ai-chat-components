@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useAutoScroll } from '@clarity-chat/react'
+import { useAutoScroll } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {
@@ -149,13 +149,16 @@ export const ChatExample: Story = {
 
 export const LiveFeedExample: Story = {
   render: () => {
-    const [items, setItems] = React.useState<Array<{ id: number; text: string; time: string }>>([])
+    const [items, setItems] = React.useState<
+      Array<{ id: number; text: string; time: string }>
+    >([])
     const [isLive, setIsLive] = React.useState(false)
 
-    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
-      dependencies: [items],
-      behavior: 'smooth',
-    })
+    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } =
+      useAutoScroll({
+        dependencies: [items],
+        behavior: 'smooth',
+      })
 
     React.useEffect(() => {
       if (!isLive) return
@@ -184,11 +187,7 @@ export const LiveFeedExample: Story = {
             >
               {isLive ? 'Stop' : 'Start'} Feed
             </Button>
-            <Button
-              onClick={() => setItems([])}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={() => setItems([])} variant="outline" size="sm">
               Clear
             </Button>
           </div>
@@ -213,9 +212,15 @@ export const LiveFeedExample: Story = {
         </div>
 
         <div className="flex items-center gap-4 text-sm">
-          <div className={`flex items-center gap-2 ${isNearBottom ? 'text-green-600' : 'text-yellow-600'}`}>
-            <div className={`w-2 h-2 rounded-full ${isNearBottom ? 'bg-green-500' : 'bg-yellow-500'}`} />
-            <span>{isNearBottom ? 'Auto-scrolling' : 'Paused (scroll manually)'}</span>
+          <div
+            className={`flex items-center gap-2 ${isNearBottom ? 'text-green-600' : 'text-yellow-600'}`}
+          >
+            <div
+              className={`w-2 h-2 rounded-full ${isNearBottom ? 'bg-green-500' : 'bg-yellow-500'}`}
+            />
+            <span>
+              {isNearBottom ? 'Auto-scrolling' : 'Paused (scroll manually)'}
+            </span>
           </div>
           {!isNearBottom && (
             <Button onClick={scrollToBottom} size="sm" variant="outline">
@@ -241,20 +246,26 @@ export const LiveFeedExample: Story = {
 
 export const ManualControlExample: Story = {
   render: () => {
-    const [items, setItems] = React.useState(Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`))
+    const [items, setItems] = React.useState(
+      Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`)
+    )
     const [autoScrollEnabled, setAutoScrollEnabled] = React.useState(true)
 
-    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
-      dependencies: [items],
-      enabled: autoScrollEnabled,
-    })
+    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } =
+      useAutoScroll({
+        dependencies: [items],
+        enabled: autoScrollEnabled,
+      })
 
     React.useEffect(() => {
       setEnabled(autoScrollEnabled)
     }, [autoScrollEnabled, setEnabled])
 
     const addItems = (count: number) => {
-      const newItems = Array.from({ length: count }, (_, i) => `Item ${items.length + i + 1}`)
+      const newItems = Array.from(
+        { length: count },
+        (_, i) => `Item ${items.length + i + 1}`
+      )
       setItems([...items, ...newItems])
     }
 
@@ -293,7 +304,12 @@ export const ManualControlExample: Story = {
           <div className="text-muted-foreground">
             {isNearBottom ? '✓ At bottom' : '⚠ Scrolled up'}
           </div>
-          <Button onClick={scrollToBottom} variant="outline" size="sm" disabled={isNearBottom}>
+          <Button
+            onClick={scrollToBottom}
+            variant="outline"
+            size="sm"
+            disabled={isNearBottom}
+          >
             Scroll to Bottom
           </Button>
         </div>
