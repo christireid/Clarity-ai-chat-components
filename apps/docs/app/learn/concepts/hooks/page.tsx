@@ -7,6 +7,7 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function HooksConceptPage() {
   return (
@@ -20,7 +21,7 @@ export default function HooksConceptPage() {
             React Hooks
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            Clarity Chat provides 140+ React hooks to handle chat functionality,
+            Clarity Chat provides {LIBRARY_STATS.hooks} React hooks to handle chat functionality,
             state management, streaming, and more. Hooks provide a clean,
             composable API for building chat interfaces.
           </p>

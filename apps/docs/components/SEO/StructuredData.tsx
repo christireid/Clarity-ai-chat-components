@@ -401,13 +401,12 @@ export function SoftwareLibraryStructuredData() {
       {
         '@type': 'SoftwareSourceCode',
         name: 'Components',
-        description:
-          '70+ production-ready React components for chat interfaces',
+        description: `${LIBRARY_STATS.components} production-ready React components for chat interfaces`,
       },
       {
         '@type': 'SoftwareSourceCode',
         name: 'Hooks',
-        description: '35+ custom React hooks for chat functionality',
+        description: `${LIBRARY_STATS.hooks} custom React hooks for chat functionality`,
       },
       {
         '@type': 'SoftwareSourceCode',

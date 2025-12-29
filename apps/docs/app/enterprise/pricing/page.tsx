@@ -1,6 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export const metadata: Metadata = {
   title: 'Pricing - Clarity Chat Enterprise',
@@ -124,8 +125,8 @@ npm install @clarity-chat/types`}
           projects
         </p>
         <p>
-          Everything in Free, plus 55+ premium components, 15 themes, 4 AI
-          providers, and email support.
+          Everything in Free, plus 55+ premium components, {LIBRARY_STATS.themes}{' '}
+          themes, 4 AI providers, and email support.
         </p>
       </section>
 
@@ -146,8 +147,9 @@ npm install @clarity-chat/types`}
           <strong>Perfect for:</strong> Companies, SaaS products
         </p>
         <p>
-          200+ components (everything), unlimited AI providers, vector databases
-          & RAG, white-label support, 4-hour SLA, and dedicated engineer.
+          {LIBRARY_STATS.components} components (everything), unlimited AI providers,
+          vector databases & RAG, white-label support, 4-hour SLA, and dedicated
+          engineer.
         </p>
       </section>
     </div>

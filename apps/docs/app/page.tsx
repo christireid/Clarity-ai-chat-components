@@ -22,6 +22,7 @@ import {
   Layers,
   Smartphone,
 } from 'lucide-react'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function HomePage() {
   return (
@@ -136,8 +137,7 @@ function CustomChat() {
             {
               icon: <Palette className="w-8 h-8" />,
               title: 'Fully Customizable',
-              description:
-                'Built with Tailwind CSS. 15 themes included. Override any style. Dark mode by default.',
+              description: `Built with Tailwind CSS. ${LIBRARY_STATS.themes} themes included. Override any style. Dark mode by default.`,
             },
             {
               icon: <Accessibility className="w-8 h-8" />,

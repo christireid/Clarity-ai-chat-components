@@ -18,6 +18,7 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { ShareButton } from '@/components/Share/ShareButton'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function ComparePage() {
   return (
@@ -27,7 +28,7 @@ export default function ComparePage() {
       {/* Floating Share Button */}
       <ShareButton
         variant="floating"
-        text="Clarity Chat vs alternatives - see why 200+ components, enterprise features, and WCAG AAA accessibility set it apart 🚀"
+        text={`Clarity Chat vs alternatives - see why ${LIBRARY_STATS.components} components, enterprise features, and WCAG AAA accessibility set it apart 🚀`}
         url="https://clarity-chat.dev/compare"
       />
 
@@ -108,7 +109,7 @@ export default function ComparePage() {
           {[
             {
               icon: <Package className="w-6 h-6" />,
-              title: '200+ Production Components',
+              title: `${LIBRARY_STATS.components} Production Components`,
               description:
                 'Not just a few primitives—complete solutions for chat windows, message lists, streaming indicators, file uploads, voice input, and more.',
               highlight: 'vs 5-10 components in alternatives',

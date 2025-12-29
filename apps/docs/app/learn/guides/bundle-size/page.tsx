@@ -7,6 +7,7 @@ import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ToastProvider } from '@clarity-chat/react/internal'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 const entryPointComparison: Prop[] = [
   {
@@ -14,7 +15,7 @@ const entryPointComparison: Prop[] = [
     type: '~120KB gzipped',
     required: false,
     default: 'Full',
-    description: 'Complete library with all 200+ components and 95+ hooks',
+    description: `Complete library with all ${LIBRARY_STATS.components} components and ${LIBRARY_STATS.hooks} hooks`,
   },
   {
     name: '@clarity-chat/react/core',

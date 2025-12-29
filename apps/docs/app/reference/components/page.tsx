@@ -1,9 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export const metadata: Metadata = {
   title: 'Components - Clarity Chat UI',
-  description: 'Browse all 70+ React components for building chat interfaces',
+  description: `Browse all ${LIBRARY_STATS.components} React components for building chat interfaces`,
 }
 
 const componentCategories = [
