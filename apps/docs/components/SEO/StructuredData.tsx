@@ -465,14 +465,14 @@ export function DocumentationSiteStructuredData() {
           position: 2,
           name: 'Components',
           url: 'https://clarity-chat.dev/reference/components',
-          description: 'API reference for all 70+ components',
+          description: 'API reference for all 200+ components',
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Hooks',
           url: 'https://clarity-chat.dev/reference/hooks',
-          description: 'API reference for all 35+ hooks',
+          description: 'API reference for all 95+ hooks',
         },
         {
           '@type': 'ListItem',

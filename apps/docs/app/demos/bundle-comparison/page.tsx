@@ -46,8 +46,8 @@ const competitors: BundleInfo[] = [
     gzipped: 8.5,
     color: 'bg-green-500',
     features: [
-      '70+ components',
-      '35+ hooks',
+      '200+ components',
+      '95+ hooks',
       'Memory',
       'Streaming',
       'Full theming',
