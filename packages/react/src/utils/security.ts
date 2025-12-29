@@ -282,9 +282,9 @@ export class SecurityManager {
         return false
       }
 
-      // Prevent javascript: and data: URLs (use variable to avoid lint false positive)
-      const dangerousProtocols = ['javascript', 'data'].map((p) => `${p}:`)
-      if (dangerousProtocols.some((proto) => url.includes(proto))) {
+      // Prevent javascript: and data: URLs (using regex to avoid ESLint no-script-url)
+      const dangerousProtocols = /^(java|vb)script:|^data:/i
+      if (dangerousProtocols.test(url)) {
         return false
       }
 

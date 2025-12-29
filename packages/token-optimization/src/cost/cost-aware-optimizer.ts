@@ -1,6 +1,6 @@
 /**
  * Cost-Aware Optimizer
- * 
+ *
  * Implements budget-conscious technique selection for maximum cost-effectiveness
  * Selects optimization techniques based on estimated costs and defined budget
  */
@@ -106,7 +106,8 @@ export class CostAwareOptimizer {
       )
 
       // Filter techniques within budget
-      const affordableTechniques = this.filterAffordableTechniques(costEstimates)
+      const affordableTechniques =
+        this.filterAffordableTechniques(costEstimates)
 
       // Generate optimization strategies
       const strategies = this.generateStrategies(affordableTechniques)
@@ -121,8 +122,7 @@ export class CostAwareOptimizer {
       this.checkBudgetAlerts()
 
       return optimalStrategy
-
-    } catch (error) {
+    } catch {
       // Return fallback strategy on error
       return this.getFallbackStrategy(availableTechniques)
     }
@@ -139,13 +139,13 @@ export class CostAwareOptimizer {
 
     for (const technique of techniques) {
       try {
-        const estimate = await this.estimateTechniqueCost(
-          technique,
-          content
-        )
+        const estimate = await this.estimateTechniqueCost(technique, content)
         estimates.push(estimate)
       } catch (error) {
-        console.warn(`Failed to estimate cost for technique ${technique}:`, error)
+        console.warn(
+          `Failed to estimate cost for technique ${technique}:`,
+          error
+        )
       }
     }
 
@@ -164,26 +164,29 @@ export class CostAwareOptimizer {
     const processingCost = this.calculateProcessingCost(technique, content)
     const storageCost = this.calculateStorageCost(technique, content)
     const networkCost = this.calculateNetworkCost(technique, content)
-    
+
     const totalCost = baseTokenCost + processingCost + storageCost + networkCost
-    
+
     // Expected savings based on technique
     const expectedSavings = this.calculateExpectedSavings(technique, content)
-    
+
     // Cost effectiveness (savings per dollar)
     const costEffectiveness = totalCost > 0 ? expectedSavings / totalCost : 0
-    
+
     // Risk assessment
     const riskLevel = this.assessRisk(technique, content)
-    
+
     // Quality impact
     const qualityImpact = this.estimateQualityImpact(technique)
-    
+
     // Processing time
     const processingTime = this.estimateProcessingTime(technique, content)
-    
+
     // Resource requirements
-    const resourceRequirements = this.estimateResourceRequirements(technique, content)
+    const resourceRequirements = this.estimateResourceRequirements(
+      technique,
+      content
+    )
 
     return {
       technique,
@@ -198,35 +201,40 @@ export class CostAwareOptimizer {
       riskLevel,
       qualityImpact,
       processingTime,
-      resourceRequirements
+      resourceRequirements,
     }
   }
 
   /**
    * Filter techniques within budget constraints
    */
-  private filterAffordableTechniques(estimates: CostEstimate[]): CostEstimate[] {
+  private filterAffordableTechniques(
+    estimates: CostEstimate[]
+  ): CostEstimate[] {
     const remainingBudget = this.getRemainingBudget()
     const budgetThreshold = remainingBudget * 0.9 // Use 90% of remaining budget
-    
-    return estimates.filter(estimate => estimate.totalCost <= budgetThreshold)
+
+    return estimates.filter((estimate) => estimate.totalCost <= budgetThreshold)
   }
 
   /**
    * Generate optimization strategies
    */
-  private generateStrategies(techniques: CostEstimate[]): OptimizationStrategy[] {
+  private generateStrategies(
+    techniques: CostEstimate[]
+  ): OptimizationStrategy[] {
     const strategies: OptimizationStrategy[] = []
-    
+
     // Single technique strategies
     for (const technique of techniques) {
       strategies.push(this.createSingleTechniqueStrategy(technique))
     }
-    
+
     // Multi-technique strategies (combinations of 2-3 techniques)
-    const multiTechniqueStrategies = this.generateMultiTechniqueStrategies(techniques)
+    const multiTechniqueStrategies =
+      this.generateMultiTechniqueStrategies(techniques)
     strategies.push(...multiTechniqueStrategies)
-    
+
     // Sort by cost-effectiveness
     return strategies.sort((a, b) => b.costEffectiveness - a.costEffectiveness)
   }
@@ -234,7 +242,9 @@ export class CostAwareOptimizer {
   /**
    * Create single technique strategy
    */
-  private createSingleTechniqueStrategy(technique: CostEstimate): OptimizationStrategy {
+  private createSingleTechniqueStrategy(
+    technique: CostEstimate
+  ): OptimizationStrategy {
     const totalCost = technique.totalCost
     const expectedSavings = technique.expectedSavings
     const costEffectiveness = technique.costEffectiveness
@@ -252,20 +262,22 @@ export class CostAwareOptimizer {
       processingTime,
       riskLevel: technique.riskLevel,
       budgetUtilization,
-      recommendation: this.generateRecommendation('single', technique)
+      recommendation: this.generateRecommendation('single', technique),
     }
   }
 
   /**
    * Generate multi-technique strategies
    */
-  private generateMultiTechniqueStrategies(techniques: CostEstimate[]): OptimizationStrategy[] {
+  private generateMultiTechniqueStrategies(
+    techniques: CostEstimate[]
+  ): OptimizationStrategy[] {
     const strategies: OptimizationStrategy[] = []
     const maxTechniques = Math.min(3, techniques.length)
-    
+
     for (let i = 2; i <= maxTechniques; i++) {
       const combinations = this.generateCombinations(techniques, i)
-      
+
       for (const combination of combinations) {
         const strategy = this.createMultiTechniqueStrategy(combination)
         if (strategy.totalCost <= this.getRemainingBudget()) {
@@ -273,22 +285,32 @@ export class CostAwareOptimizer {
         }
       }
     }
-    
+
     return strategies
   }
 
   /**
    * Create multi-technique strategy
    */
-  private createMultiTechniqueStrategy(techniques: CostEstimate[]): OptimizationStrategy {
+  private createMultiTechniqueStrategy(
+    techniques: CostEstimate[]
+  ): OptimizationStrategy {
     const totalCost = techniques.reduce((sum, t) => sum + t.totalCost, 0)
-    const expectedSavings = techniques.reduce((sum, t) => sum + t.expectedSavings, 0)
-    const processingTime = techniques.reduce((sum, t) => sum + t.processingTime, 0)
-    const qualityScore = techniques.reduce((sum, t) => sum + t.qualityImpact, 0) / techniques.length
+    const expectedSavings = techniques.reduce(
+      (sum, t) => sum + t.expectedSavings,
+      0
+    )
+    const processingTime = techniques.reduce(
+      (sum, t) => sum + t.processingTime,
+      0
+    )
+    const qualityScore =
+      techniques.reduce((sum, t) => sum + t.qualityImpact, 0) /
+      techniques.length
     const costEffectiveness = totalCost > 0 ? expectedSavings / totalCost : 0
     const budgetUtilization = totalCost / this.config.totalBudget
     const riskLevel = this.assessMultiTechniqueRisk(techniques)
-    const techniqueNames = techniques.map(t => t.technique)
+    const techniqueNames = techniques.map((t) => t.technique)
 
     return {
       name: `Multi_${techniqueNames.join('_')}`,
@@ -300,37 +322,55 @@ export class CostAwareOptimizer {
       processingTime,
       riskLevel,
       budgetUtilization,
-      recommendation: this.generateRecommendation('multi', techniques[0])
+      recommendation: this.generateRecommendation('multi', techniques[0]),
     }
   }
 
   /**
    * Select best strategy based on optimization goals
    */
-  private selectBestStrategy(strategies: OptimizationStrategy[]): OptimizationStrategy {
+  private selectBestStrategy(
+    strategies: OptimizationStrategy[]
+  ): OptimizationStrategy {
     if (strategies.length === 0) {
       return this.getFallbackStrategy([])
     }
 
     switch (this.config.optimizationStrategy) {
       case 'maximize_savings':
-        return strategies.reduce((best, current) => 
+        return strategies.reduce((best, current) =>
           current.expectedSavings > best.expectedSavings ? current : best
         )
-      
+
       case 'minimize_cost':
-        return strategies.reduce((best, current) => 
+        return strategies.reduce((best, current) =>
           current.totalCost < best.totalCost ? current : best
         )
-      
+
       case 'balanced':
       default:
         return strategies.reduce((best, current) => {
-          const bestRiskWeight = best.riskLevel === 'high' ? 0.3 : best.riskLevel === 'medium' ? 0.2 : 0.1
-          const currentRiskWeight = current.riskLevel === 'high' ? 0.3 : current.riskLevel === 'medium' ? 0.2 : 0.1
-          
-          const bestScore = best.costEffectiveness * 0.4 + best.qualityScore * 0.3 + (1 - bestRiskWeight)
-          const currentScore = current.costEffectiveness * 0.4 + current.qualityScore * 0.3 + (1 - currentRiskWeight)
+          const bestRiskWeight =
+            best.riskLevel === 'high'
+              ? 0.3
+              : best.riskLevel === 'medium'
+                ? 0.2
+                : 0.1
+          const currentRiskWeight =
+            current.riskLevel === 'high'
+              ? 0.3
+              : current.riskLevel === 'medium'
+                ? 0.2
+                : 0.1
+
+          const bestScore =
+            best.costEffectiveness * 0.4 +
+            best.qualityScore * 0.3 +
+            (1 - bestRiskWeight)
+          const currentScore =
+            current.costEffectiveness * 0.4 +
+            current.qualityScore * 0.3 +
+            (1 - currentRiskWeight)
           return currentScore > bestScore ? current : best
         })
     }
@@ -343,17 +383,20 @@ export class CostAwareOptimizer {
     const usedBudget = this.calculateUsedBudget()
     const remainingBudget = this.config.totalBudget - usedBudget
     const budgetUtilization = usedBudget / this.config.totalBudget
-    
+
     let budgetStatus: 'healthy' | 'warning' | 'critical' | 'emergency'
     if (budgetUtilization >= 1) budgetStatus = 'emergency'
-    else if (budgetUtilization >= this.config.budgetAlertThresholds.critical) budgetStatus = 'critical'
-    else if (budgetUtilization >= this.config.budgetAlertThresholds.warning) budgetStatus = 'warning'
+    else if (budgetUtilization >= this.config.budgetAlertThresholds.critical)
+      budgetStatus = 'critical'
+    else if (budgetUtilization >= this.config.budgetAlertThresholds.warning)
+      budgetStatus = 'warning'
     else budgetStatus = 'healthy'
-    
+
     const costPerHour = this.calculateCostPerHour()
     const savingsPerHour = this.calculateSavingsPerHour()
     const efficiency = costPerHour > 0 ? savingsPerHour / costPerHour : 0
-    const estimatedTimeRemaining = remainingBudget > 0 ? remainingBudget / costPerHour : 0
+    const estimatedTimeRemaining =
+      remainingBudget > 0 ? remainingBudget / costPerHour : 0
 
     return {
       totalBudget: this.config.totalBudget,
@@ -364,7 +407,7 @@ export class CostAwareOptimizer {
       estimatedTimeRemaining,
       costPerHour,
       savingsPerHour,
-      efficiency
+      efficiency,
     }
   }
 
@@ -384,7 +427,7 @@ export class CostAwareOptimizer {
     const baseCost = 0.01 // Base processing cost
     const complexityMultiplier = this.getComplexityMultiplier(technique)
     const contentSizeMultiplier = content.length / 1000 // Cost scales with content size
-    
+
     return baseCost * complexityMultiplier * contentSizeMultiplier
   }
 
@@ -395,7 +438,7 @@ export class CostAwareOptimizer {
     const storageMultiplier = this.getStorageMultiplier(technique)
     const storageSize = content.length * storageMultiplier
     const storageRate = 0.0001 // $0.0001 per KB per hour
-    
+
     return storageSize * storageRate
   }
 
@@ -406,7 +449,7 @@ export class CostAwareOptimizer {
     const networkMultiplier = this.getNetworkMultiplier(technique)
     const dataSize = content.length * networkMultiplier
     const networkRate = 0.0005 // $0.0005 per KB
-    
+
     return dataSize * networkRate
   }
 
@@ -415,37 +458,40 @@ export class CostAwareOptimizer {
    */
   private calculateExpectedSavings(technique: string, content: string): number {
     const savingsRates: Record<string, number> = {
-      'semantic_caching': 0.9,
-      'context_caching': 0.85,
-      'llmlingua_compression': 0.8,
-      'dynamic_compression': 0.75,
-      'intelligent_routing': 0.4,
-      'token_counting': 0.1,
-      'basic_compression': 0.6
+      semantic_caching: 0.9,
+      context_caching: 0.85,
+      llmlingua_compression: 0.8,
+      dynamic_compression: 0.75,
+      intelligent_routing: 0.4,
+      token_counting: 0.1,
+      basic_compression: 0.6,
     }
-    
+
     const baseCost = this.calculateBaseTokenCost(content)
     const savingsRate = savingsRates[technique] || 0.1
-    
+
     return baseCost * savingsRate
   }
 
   /**
    * Assess risk level
    */
-  private assessRisk(technique: string, _content: string): 'low' | 'medium' | 'high' {
+  private assessRisk(
+    technique: string,
+    _content: string
+  ): 'low' | 'medium' | 'high' {
     const riskFactors: Record<string, number> = {
-      'semantic_caching': 0.2,
-      'context_caching': 0.1,
-      'llmlingua_compression': 0.7,
-      'dynamic_compression': 0.5,
-      'intelligent_routing': 0.3,
-      'token_counting': 0.1,
-      'basic_compression': 0.3
+      semantic_caching: 0.2,
+      context_caching: 0.1,
+      llmlingua_compression: 0.7,
+      dynamic_compression: 0.5,
+      intelligent_routing: 0.3,
+      token_counting: 0.1,
+      basic_compression: 0.3,
     }
-    
+
     const riskScore = riskFactors[technique] || 0.5
-    
+
     if (riskScore < 0.3) return 'low'
     if (riskScore < 0.6) return 'medium'
     return 'high'
@@ -456,15 +502,15 @@ export class CostAwareOptimizer {
    */
   private estimateQualityImpact(technique: string): number {
     const qualityImpacts: Record<string, number> = {
-      'semantic_caching': 0.95,
-      'context_caching': 0.98,
-      'llmlingua_compression': 0.85,
-      'dynamic_compression': 0.9,
-      'intelligent_routing': 0.95,
-      'token_counting': 0.99,
-      'basic_compression': 0.92
+      semantic_caching: 0.95,
+      context_caching: 0.98,
+      llmlingua_compression: 0.85,
+      dynamic_compression: 0.9,
+      intelligent_routing: 0.95,
+      token_counting: 0.99,
+      basic_compression: 0.92,
     }
-    
+
     return qualityImpacts[technique] || 0.9
   }
 
@@ -474,50 +520,62 @@ export class CostAwareOptimizer {
   private estimateProcessingTime(technique: string, content: string): number {
     const baseTime = 10 // Base 10ms
     const complexityMultipliers: Record<string, number> = {
-      'semantic_caching': 2.0,
-      'context_caching': 1.5,
-      'llmlingua_compression': 5.0,
-      'dynamic_compression': 3.0,
-      'intelligent_routing': 2.5,
-      'token_counting': 1.0,
-      'basic_compression': 1.8
+      semantic_caching: 2.0,
+      context_caching: 1.5,
+      llmlingua_compression: 5.0,
+      dynamic_compression: 3.0,
+      intelligent_routing: 2.5,
+      token_counting: 1.0,
+      basic_compression: 1.8,
     }
-    
+
     const complexityMultiplier = complexityMultipliers[technique] || 2.0
     const contentSizeMultiplier = content.length / 1000
-    
+
     return baseTime * complexityMultiplier * contentSizeMultiplier
   }
 
   /**
    * Estimate resource requirements
    */
-  private estimateResourceRequirements(technique: string, content: string): ResourceRequirements {
+  private estimateResourceRequirements(
+    technique: string,
+    content: string
+  ): ResourceRequirements {
     const baseRequirements = {
       memory: 10, // MB
-      cpu: 0.1,   // CPU cores
-      time: 100,  // milliseconds
-      cost: 0.01  // estimated cost
+      cpu: 0.1, // CPU cores
+      time: 100, // milliseconds
+      cost: 0.01, // estimated cost
     }
-    
-    const complexityMultipliers: Record<string, {memory: number, cpu: number, time: number, cost: number}> = {
-      'semantic_caching': {memory: 2, cpu: 1.5, time: 2, cost: 1.5},
-      'context_caching': {memory: 1.5, cpu: 1.2, time: 1.5, cost: 1.2},
-      'llmlingua_compression': {memory: 4, cpu: 3, time: 5, cost: 3},
-      'dynamic_compression': {memory: 3, cpu: 2.5, time: 3, cost: 2.5},
-      'intelligent_routing': {memory: 2.5, cpu: 2, time: 2.5, cost: 2},
-      'token_counting': {memory: 1, cpu: 1, time: 1, cost: 1},
-      'basic_compression': {memory: 1.8, cpu: 1.5, time: 1.8, cost: 1.5}
+
+    const complexityMultipliers: Record<
+      string,
+      { memory: number; cpu: number; time: number; cost: number }
+    > = {
+      semantic_caching: { memory: 2, cpu: 1.5, time: 2, cost: 1.5 },
+      context_caching: { memory: 1.5, cpu: 1.2, time: 1.5, cost: 1.2 },
+      llmlingua_compression: { memory: 4, cpu: 3, time: 5, cost: 3 },
+      dynamic_compression: { memory: 3, cpu: 2.5, time: 3, cost: 2.5 },
+      intelligent_routing: { memory: 2.5, cpu: 2, time: 2.5, cost: 2 },
+      token_counting: { memory: 1, cpu: 1, time: 1, cost: 1 },
+      basic_compression: { memory: 1.8, cpu: 1.5, time: 1.8, cost: 1.5 },
     }
-    
-    const multipliers = complexityMultipliers[technique] || {memory: 2, cpu: 1.5, time: 2, cost: 1.5}
+
+    const multipliers = complexityMultipliers[technique] || {
+      memory: 2,
+      cpu: 1.5,
+      time: 2,
+      cost: 1.5,
+    }
     const contentSizeMultiplier = content.length / 1000
-    
+
     return {
-      memory: baseRequirements.memory * multipliers.memory * contentSizeMultiplier,
+      memory:
+        baseRequirements.memory * multipliers.memory * contentSizeMultiplier,
       cpu: baseRequirements.cpu * multipliers.cpu,
       time: baseRequirements.time * multipliers.time * contentSizeMultiplier,
-      cost: baseRequirements.cost * multipliers.cost * contentSizeMultiplier
+      cost: baseRequirements.cost * multipliers.cost * contentSizeMultiplier,
     }
   }
 
@@ -527,15 +585,15 @@ export class CostAwareOptimizer {
   private estimateTokenCount(content: string, technique: string): number {
     const baseTokens = Math.ceil(content.length / 4) // Rough estimate: 4 chars per token
     const techniqueMultipliers: Record<string, number> = {
-      'semantic_caching': 0.1,  // 90% reduction
-      'context_caching': 0.15,  // 85% reduction
-      'llmlingua_compression': 0.2,  // 80% reduction
-      'dynamic_compression': 0.25,  // 75% reduction
-      'intelligent_routing': 0.6,  // 40% reduction
-      'token_counting': 0.9,  // 10% reduction
-      'basic_compression': 0.4  // 60% reduction
+      semantic_caching: 0.1, // 90% reduction
+      context_caching: 0.15, // 85% reduction
+      llmlingua_compression: 0.2, // 80% reduction
+      dynamic_compression: 0.25, // 75% reduction
+      intelligent_routing: 0.6, // 40% reduction
+      token_counting: 0.9, // 10% reduction
+      basic_compression: 0.4, // 60% reduction
     }
-    
+
     const multiplier = techniqueMultipliers[technique] || 0.9
     return Math.ceil(baseTokens * multiplier)
   }
@@ -545,15 +603,15 @@ export class CostAwareOptimizer {
    */
   private getComplexityMultiplier(technique: string): number {
     const multipliers: Record<string, number> = {
-      'semantic_caching': 2.0,
-      'context_caching': 1.5,
-      'llmlingua_compression': 4.0,
-      'dynamic_compression': 3.0,
-      'intelligent_routing': 2.5,
-      'token_counting': 1.0,
-      'basic_compression': 1.8
+      semantic_caching: 2.0,
+      context_caching: 1.5,
+      llmlingua_compression: 4.0,
+      dynamic_compression: 3.0,
+      intelligent_routing: 2.5,
+      token_counting: 1.0,
+      basic_compression: 1.8,
     }
-    
+
     return multipliers[technique] || 2.0
   }
 
@@ -562,15 +620,15 @@ export class CostAwareOptimizer {
    */
   private getStorageMultiplier(technique: string): number {
     const multipliers: Record<string, number> = {
-      'semantic_caching': 0.2,
-      'context_caching': 0.3,
-      'llmlingua_compression': 0.1,
-      'dynamic_compression': 0.15,
-      'intelligent_routing': 0.05,
-      'token_counting': 0.02,
-      'basic_compression': 0.1
+      semantic_caching: 0.2,
+      context_caching: 0.3,
+      llmlingua_compression: 0.1,
+      dynamic_compression: 0.15,
+      intelligent_routing: 0.05,
+      token_counting: 0.02,
+      basic_compression: 0.1,
     }
-    
+
     return multipliers[technique] || 0.1
   }
 
@@ -579,27 +637,30 @@ export class CostAwareOptimizer {
    */
   private getNetworkMultiplier(technique: string): number {
     const multipliers: Record<string, number> = {
-      'semantic_caching': 0.1,
-      'context_caching': 0.2,
-      'llmlingua_compression': 0.05,
-      'dynamic_compression': 0.1,
-      'intelligent_routing': 0.3,
-      'token_counting': 0.01,
-      'basic_compression': 0.08
+      semantic_caching: 0.1,
+      context_caching: 0.2,
+      llmlingua_compression: 0.05,
+      dynamic_compression: 0.1,
+      intelligent_routing: 0.3,
+      token_counting: 0.01,
+      basic_compression: 0.08,
     }
-    
+
     return multipliers[technique] || 0.1
   }
 
   /**
    * Assess risk for multiple techniques
    */
-  private assessMultiTechniqueRisk(techniques: CostEstimate[]): 'low' | 'medium' | 'high' {
+  private assessMultiTechniqueRisk(
+    techniques: CostEstimate[]
+  ): 'low' | 'medium' | 'high' {
     const maxRisk = techniques.reduce((max, t) => {
-      const riskScore = t.riskLevel === 'high' ? 0.8 : t.riskLevel === 'medium' ? 0.5 : 0.2
+      const riskScore =
+        t.riskLevel === 'high' ? 0.8 : t.riskLevel === 'medium' ? 0.5 : 0.2
       return Math.max(max, riskScore)
     }, 0)
-    
+
     if (maxRisk >= 0.7) return 'high'
     if (maxRisk >= 0.4) return 'medium'
     return 'low'
@@ -610,26 +671,32 @@ export class CostAwareOptimizer {
    */
   private generateCombinations<T>(array: T[], size: number): T[][] {
     if (size > array.length) return []
-    if (size === 1) return array.map(item => [item])
-    
+    if (size === 1) return array.map((item) => [item])
+
     const combinations: T[][] = []
-    
+
     for (let i = 0; i <= array.length - size; i++) {
       const head = array[i]
-      const tailCombinations = this.generateCombinations(array.slice(i + 1), size - 1)
-      
+      const tailCombinations = this.generateCombinations(
+        array.slice(i + 1),
+        size - 1
+      )
+
       for (const tail of tailCombinations) {
         combinations.push([head, ...tail])
       }
     }
-    
+
     return combinations
   }
 
   /**
    * Generate recommendation
    */
-  private generateRecommendation(type: 'single' | 'multi', technique: CostEstimate): string {
+  private generateRecommendation(
+    type: 'single' | 'multi',
+    technique: CostEstimate
+  ): string {
     if (type === 'single') {
       return `Use ${technique.technique} for ${technique.riskLevel} risk and ${Math.round(technique.costEffectiveness * 100)}% cost effectiveness`
     } else {
@@ -648,14 +715,17 @@ export class CostAwareOptimizer {
    * Calculate used budget
    */
   private calculateUsedBudget(): number {
-    return Array.from(this.budgetTracking.values()).reduce((sum, cost) => sum + cost, 0)
+    return Array.from(this.budgetTracking.values()).reduce(
+      (sum, cost) => sum + cost,
+      0
+    )
   }
 
   /**
    * Update budget tracking
    */
   private updateBudgetTracking(strategy: OptimizationStrategy): void {
-    strategy.techniques.forEach(technique => {
+    strategy.techniques.forEach((technique) => {
       const currentCost = this.budgetTracking.get(technique) || 0
       const techniqueCost = strategy.totalCost / strategy.techniques.length
       this.budgetTracking.set(technique, currentCost + techniqueCost)
@@ -667,7 +737,7 @@ export class CostAwareOptimizer {
    */
   private checkBudgetAlerts(): void {
     const budgetStatus = this.getBudgetStatus()
-    
+
     if (budgetStatus.budgetStatus === 'warning') {
       console.warn('[COST WARNING] Budget utilization at 80%')
     } else if (budgetStatus.budgetStatus === 'critical') {
@@ -691,7 +761,10 @@ export class CostAwareOptimizer {
    */
   private calculateSavingsPerHour(): number {
     const recentEstimates = this.costHistory.slice(-100)
-    const totalSavings = recentEstimates.reduce((sum, estimate) => sum + estimate.expectedSavings, 0)
+    const totalSavings = recentEstimates.reduce(
+      (sum, estimate) => sum + estimate.expectedSavings,
+      0
+    )
     const timeWindow = 24 // 24 hours
     return totalSavings / timeWindow
   }
@@ -710,7 +783,7 @@ export class CostAwareOptimizer {
       processingTime: 0,
       riskLevel: 'low',
       budgetUtilization: 0,
-      recommendation: 'No optimization due to budget constraints'
+      recommendation: 'No optimization due to budget constraints',
     }
   }
 

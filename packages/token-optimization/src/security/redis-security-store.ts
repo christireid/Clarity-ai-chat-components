@@ -6,17 +6,21 @@
  */
 
 // Optional Redis import - falls back to in-memory if not available
+
 let createClient: any = null
 
-// Dynamic import for optional redis dependency
-try {
-  // Using require for optional dependency - redis may not be installed
-  createClient = require('redis').createClient
-} catch {
-  console.warn(
-    '[REDIS SECURITY STORE] Redis not available, using in-memory fallback'
-  )
+// Dynamic import for optional Redis dependency
+const initRedis = async () => {
+  try {
+    const redis = await import('redis')
+    createClient = redis.createClient
+  } catch {
+    console.warn(
+      '[REDIS SECURITY STORE] Redis not available, using in-memory fallback'
+    )
+  }
 }
+initRedis()
 
 import type { ThreatIntelligence } from './enhanced-security'
 
