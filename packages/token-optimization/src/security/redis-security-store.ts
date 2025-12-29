@@ -6,12 +6,14 @@
  */
 
 // Optional Redis import - falls back to in-memory if not available
+// Redis is an optional peer dependency - consumers install it only if needed
 
 let createClient: any = null
 
 // Dynamic import for optional Redis dependency
 const initRedis = async () => {
   try {
+    // @ts-expect-error - redis is an optional peer dependency
     const redis = await import('redis')
     createClient = redis.createClient
   } catch {
