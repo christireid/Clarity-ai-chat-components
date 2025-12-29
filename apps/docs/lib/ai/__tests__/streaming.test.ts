@@ -145,7 +145,7 @@ describe('streaming utilities', () => {
       }
 
       const response = chunks.join('')
-      expect(response).toContain('70+ pre-built components')
+      expect(response).toContain('200+ pre-built components')
       expect(response).toContain('ChatWindow')
       expect(response).toContain('MessageList')
     })

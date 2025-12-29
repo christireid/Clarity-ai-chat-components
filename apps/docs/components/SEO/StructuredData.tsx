@@ -411,7 +411,7 @@ export function SoftwareLibraryStructuredData() {
       {
         '@type': 'SoftwareSourceCode',
         name: 'Themes',
-        description: '11+ pre-built themes with full customization support',
+        description: '15 pre-built themes with full customization support',
       },
       {
         '@type': 'SoftwareSourceCode',
