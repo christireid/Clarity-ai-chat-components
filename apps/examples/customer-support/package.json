@@ -14,16 +14,16 @@
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/types": "workspace:*",
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.89.0",
     "next": "^16.0.9",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "supabase": "^1.142.2",
     "typescript": "^5.9.3"
   }
