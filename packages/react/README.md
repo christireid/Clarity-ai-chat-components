@@ -24,20 +24,21 @@ export default function App() {
 }
 ```
 
-**That's it.** You now have a production-ready chat with streaming, error handling, and accessibility.
+**That's it.** You now have a production-ready chat with streaming, error handling, and
+accessibility.
 
 ---
 
 ## Why Clarity Chat?
 
-| Feature | Clarity Chat | DIY Solution |
-|---------|-------------|--------------|
-| Setup time | 1 line | Days |
-| Streaming | Built-in | Manual |
-| Memory management | 3 strategies | Build from scratch |
-| Accessibility | WCAG AAA | DIY |
-| Token optimization | Automatic | Manual |
-| Error recovery | Auto-retry | Custom logic |
+| Feature            | Clarity Chat | DIY Solution       |
+| ------------------ | ------------ | ------------------ |
+| Setup time         | 1 line       | Days               |
+| Streaming          | Built-in     | Manual             |
+| Memory management  | 3 strategies | Build from scratch |
+| Accessibility      | WCAG AAA     | DIY                |
+| Token optimization | Automatic    | Manual             |
+| Error recovery     | Auto-retry   | Custom logic       |
 
 ---
 
@@ -69,10 +70,14 @@ function MyChat() {
 }
 ```
 
-**Three hooks, three use cases:**
-- `useClarityChat` — Chat with messages, streaming, memory options
+**Three primary hooks:**
+
+- `useClarityChat` — **Recommended.** Chat with messages, streaming, memory options
 - `useClarityObject` — Structured output generation
 - `useClarityChatWithTools` — Chat with tool/function calling
+
+> ⚠️ **Deprecation Notice:** `useChat`, `useChatEnhanced`, `useChatSimple`, `useChatComposable`, and
+> `useChatLegacy` are deprecated and will be removed in v3.0. Use `useClarityChat` instead.
 
 ### Using Presets (Top-Level APIs - Even Easier!)
 
@@ -225,8 +230,7 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 
 ### Quick Start & Migration
 
-- **[Getting Started with Clarity Chat](../../docs/getting-started.md)** ⭐ - Quick
-  start guide
+- **[Getting Started with Clarity Chat](../../docs/getting-started.md)** ⭐ - Quick start guide
 - **[Clarity vs Vercel AI SDK UI](../../docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](../../docs/migrating-from-vercel.md)** - Migration guide
 
@@ -282,17 +286,9 @@ Full-featured chat with memory, analytics, and error handling.
 
 ### Mid-Level: Composable Hooks
 
-#### `useChat`
+#### `useClarityChat` (Recommended)
 
-Simplified chat hook with automatic message conversion.
-
-```tsx
-const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
-```
-
-#### `useClarityChat`
-
-Flagship chat hook with memory integration and transport selection.
+The flagship chat hook with memory integration and transport selection.
 
 ```tsx
 const { messages, append, isLoading, error, memoryEnabled, contextSummary } = useClarityChat({
@@ -316,16 +312,17 @@ const { object, run, isLoading } = useClarityObject<Product[]>({
 })
 ```
 
-### `useChatEnhanced`
+### `useChatEnhanced` ⚠️ Deprecated
 
-Advanced chat hook with enhanced features.
+> **Deprecated:** Use `useClarityChat` instead. Will be removed in v3.0.
 
 ```tsx
-const { messages, append, isLoading } = useChatEnhanced({
+// ❌ Deprecated
+const { messages, append, isLoading } = useChatEnhanced({...})
+
+// ✅ Use instead
+const { messages, append, isLoading } = useClarityChat({
   api: '/api/chat',
-  experimental: {
-    generateMetadata: true,
-  },
 })
 ```
 
@@ -362,6 +359,59 @@ const { messages, toolInvocations, append } = useAssistant({
 - `ErrorBoundary` - Error boundary wrapper
 - `RetryButton` - Retry action button
 - `NetworkStatus` - Connection status
+
+### 🎨 ChatPrimitive (Headless Components)
+
+Unstyled, composable building blocks for custom chat UIs. Follows Radix UI patterns.
+
+```tsx
+import { ChatPrimitive } from '@clarity-chat/react'
+
+function CustomChat({ messages }) {
+  return (
+    <ChatPrimitive.Root>
+      <ChatPrimitive.Messages>
+        {messages.map((msg) => (
+          <ChatPrimitive.Message key={msg.id}>
+            <ChatPrimitive.MessageContent>{msg.content}</ChatPrimitive.MessageContent>
+            <ChatPrimitive.MessageActions>
+              <ChatPrimitive.CopyButton />
+              <ChatPrimitive.RegenerateButton />
+            </ChatPrimitive.MessageActions>
+          </ChatPrimitive.Message>
+        ))}
+      </ChatPrimitive.Messages>
+      <ChatPrimitive.Input />
+      <ChatPrimitive.EmptyState />
+      <ChatPrimitive.LoadingIndicator />
+    </ChatPrimitive.Root>
+  )
+}
+```
+
+## ⚡ Streaming Utilities
+
+### `useSmoothedText`
+
+60fps smooth text streaming. Eliminates jarring text jumps from chunked API responses.
+
+```tsx
+import { useSmoothedText } from '@clarity-chat/react'
+
+function StreamingMessage({ text }) {
+  const { displayText, isAnimating } = useSmoothedText(text, {
+    charsPerFrame: 2,
+    preset: 'typewriter', // 'default' | 'fast' | 'typewriter' | 'instant'
+  })
+
+  return (
+    <p>
+      {displayText}
+      {isAnimating && '▋'}
+    </p>
+  )
+}
+```
 
 ## 🔧 Memory Strategies
 
@@ -469,6 +519,17 @@ pnpm lint
 - `@clarity-chat/memory` - Memory management system
 - `@clarity-chat/types` - Shared type definitions
 - `@clarity-chat/primitives` - Primitive components
+
+## 🔒 Security
+
+Clarity Chat maintains zero HIGH/CRITICAL vulnerabilities through proactive dependency management:
+
+- **XSS Protection**: DOMPurify integration for markdown rendering
+- **Input Validation**: Built-in sanitization for user inputs
+- **CSP Compatible**: No inline styles requiring `unsafe-inline`
+- **Supply Chain**: All dependencies from npm with verified publishers
+
+Vulnerabilities are patched via pnpm overrides. See `package.json` for current security patches.
 
 ## 📊 Feature Comparison
 
