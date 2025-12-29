@@ -81,26 +81,26 @@ function printMetricsComparison(
   stats: GenerationStats,
   previous: PreviousMetrics
 ): void {
-  logger.debug('')
-  logger.debug('📈 COMPARISON WITH PREVIOUS RUN')
-  logger.debug('─'.repeat(50))
-  logger.debug(`   Previous: ${new Date(previous.generatedAt).toLocaleString()}`)
-  logger.debug('')
-  logger.debug(
+  console.log('')
+  console.log('📈 COMPARISON WITH PREVIOUS RUN')
+  console.log('─'.repeat(50))
+  console.log(`   Previous: ${new Date(previous.generatedAt).toLocaleString()}`)
+  console.log('')
+  console.log(
     `   Pages:    ${formatDelta(stats.totalPages, previous.totalPages)}`
   )
-  logger.debug(
+  console.log(
     `   Tokens:   ${formatDelta(stats.totalTokens, previous.totalTokens)}`
   )
   if (stats.llmsTxtTokens && previous.llmsTxtTokens) {
-    logger.debug(
+    console.log(
       `   Nav:      ${formatDelta(stats.llmsTxtTokens, previous.llmsTxtTokens)}`
     )
   }
-  logger.debug(
+  console.log(
     `   Warnings: ${formatDelta(stats.warnings.length, previous.warningCount)}`
   )
-  logger.debug('─'.repeat(50))
+  console.log('─'.repeat(50))
 }
 
 /**
@@ -124,60 +124,60 @@ function calculateFileSizeMetrics(
  * Print metrics dashboard to console
  */
 function printMetricsDashboard(stats: GenerationStats): void {
-  logger.debug('')
-  logger.debug(
+  console.log('')
+  console.log(
     '╔══════════════════════════════════════════════════════════════╗'
   )
-  logger.debug(
+  console.log(
     '║                    📊 METRICS DASHBOARD                      ║'
   )
-  logger.debug(
+  console.log(
     '╠══════════════════════════════════════════════════════════════╣'
   )
 
   // File sizes
   if (stats.fileSizes) {
-    logger.debug(
+    console.log(
       '║  📦 FILE SIZES                                               ║'
     )
-    logger.debug(
+    console.log(
       `║     llms.txt:      ${stats.fileSizes.llmsTxtHuman.padEnd(12)} (${stats.llmsTxtTokens?.toLocaleString() || 'N/A'} tokens)`.padEnd(
         65
       ) + '║'
     )
-    logger.debug(
+    console.log(
       `║     llms-full.txt: ${stats.fileSizes.llmsFullTxtHuman.padEnd(12)} (${stats.totalTokens.toLocaleString()} tokens)`.padEnd(
         65
       ) + '║'
     )
-    logger.debug(
+    console.log(
       '╠──────────────────────────────────────────────────────────────╣'
     )
   }
 
   // Page statistics
-  logger.debug(
+  console.log(
     '║  📄 PAGE STATISTICS                                          ║'
   )
-  logger.debug(
+  console.log(
     `║     Total pages processed: ${stats.totalPages.toString().padEnd(6)}                          ║`
   )
-  logger.debug(
+  console.log(
     `║     Skipped (drafts):      ${stats.skippedPages.length.toString().padEnd(6)}                          ║`
   )
-  logger.debug(
+  console.log(
     `║     Truncated (too long):  ${stats.truncatedPages.length.toString().padEnd(6)}                          ║`
   )
 
   // Category breakdown
   if (stats.categoryMetrics && stats.categoryMetrics.length > 0) {
-    logger.debug(
+    console.log(
       '╠──────────────────────────────────────────────────────────────╣'
     )
-    logger.debug(
+    console.log(
       '║  📁 TOKEN DISTRIBUTION BY CATEGORY                          ║'
     )
-    logger.debug(
+    console.log(
       '║                                                              ║'
     )
 
@@ -190,11 +190,11 @@ function printMetricsDashboard(stats: GenerationStats): void {
       const bar = '█'.repeat(Math.round(cat.tokenPercentage / 5))
       const barPadded = bar.padEnd(20)
       const line = `║     ${cat.category.padEnd(12)} ${barPadded} ${cat.tokenPercentage.toFixed(1).padStart(5)}% (${cat.tokenCount.toLocaleString()} tokens)`
-      logger.debug(line.padEnd(65) + '║')
+      console.log(line.padEnd(65) + '║')
     }
 
     if (sorted.length > 10) {
-      logger.debug(
+      console.log(
         `║     ... and ${sorted.length - 10} more categories`.padEnd(65) + '║'
       )
     }
@@ -202,13 +202,13 @@ function printMetricsDashboard(stats: GenerationStats): void {
 
   // Warnings summary
   if (stats.warnings.length > 0) {
-    logger.debug(
+    console.log(
       '╠──────────────────────────────────────────────────────────────╣'
     )
-    logger.debug(`║  ⚠️  ${stats.warnings.length} WARNING(S)`.padEnd(64) + '║')
+    console.log(`║  ⚠️  ${stats.warnings.length} WARNING(S)`.padEnd(64) + '║')
   }
 
-  logger.debug(
+  console.log(
     '╚══════════════════════════════════════════════════════════════╝'
   )
 }
@@ -227,7 +227,7 @@ async function validateDirectories(): Promise<void> {
   // Create output directory if it doesn't exist
   if (!(await directoryExists(OUTPUT_DIR))) {
     await mkdir(OUTPUT_DIR, { recursive: true })
-    logger.debug(`📁 Created output directory: ${OUTPUT_DIR}`)
+    console.log(`📁 Created output directory: ${OUTPUT_DIR}`)
   }
 }
 
@@ -743,13 +743,13 @@ async function generateLlmsFullTxt(
  * Main generation function
  */
 async function generateLlmsDocs(): Promise<GenerationResult> {
-  logger.debug('🚀 Starting llms.txt generation...')
+  console.log('🚀 Starting llms.txt generation...')
   if (DRY_RUN) {
-    logger.debug('🔍 DRY RUN MODE - no files will be written')
+    console.log('🔍 DRY RUN MODE - no files will be written')
   }
-  logger.debug(`📁 Docs directory: ${DOCS_DIR}`)
-  logger.debug(`📂 Output directory: ${OUTPUT_DIR}`)
-  logger.debug('')
+  console.log(`📁 Docs directory: ${DOCS_DIR}`)
+  console.log(`📂 Output directory: ${OUTPUT_DIR}`)
+  console.log('')
 
   // Load previous metrics for comparison
   const previousMetrics = await loadPreviousMetrics()
@@ -767,42 +767,42 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   }
 
   // Discover pages
-  logger.debug('🔍 Discovering documentation pages...')
+  console.log('🔍 Discovering documentation pages...')
   const pages = await discoverPages()
-  logger.debug(`   Found ${pages.length} page files`)
+  console.log(`   Found ${pages.length} page files`)
 
   // Validate navigation coverage
-  logger.debug('🔗 Validating navigation config...')
+  console.log('🔗 Validating navigation config...')
   validateNavigationCoverage(pages, navigationConfig, stats)
   validateDescriptions(navigationConfig, stats)
 
   // Generate llms.txt
-  logger.debug('📝 Generating llms.txt...')
+  console.log('📝 Generating llms.txt...')
   const llmsTxt = generateLlmsTxt(navigationConfig)
   stats.llmsTxtTokens = estimateTokens(llmsTxt)
-  logger.debug(`   Generated ${stats.llmsTxtTokens} estimated tokens`)
+  console.log(`   Generated ${stats.llmsTxtTokens} estimated tokens`)
 
   // Generate llms-full.txt
-  logger.debug('📄 Generating llms-full.txt...')
+  console.log('📄 Generating llms-full.txt...')
   const llmsFullTxt = await generateLlmsFullTxt(pages, stats)
-  logger.debug(`   Processed ${stats.totalPages} pages`)
-  logger.debug(`   Generated ${stats.totalTokens} estimated tokens`)
+  console.log(`   Processed ${stats.totalPages} pages`)
+  console.log(`   Generated ${stats.totalTokens} estimated tokens`)
 
   // Calculate file size metrics
   stats.fileSizes = calculateFileSizeMetrics(llmsTxt, llmsFullTxt)
 
   // Write output files (skip in dry-run mode)
   if (DRY_RUN) {
-    logger.debug('💾 Would write output files (dry-run):')
-    logger.debug('   📄 llms.txt')
-    logger.debug('   📄 llms-full.txt')
-    logger.debug('   📄 llms-metrics.json')
+    console.log('💾 Would write output files (dry-run):')
+    console.log('   📄 llms.txt')
+    console.log('   📄 llms-full.txt')
+    console.log('   📄 llms-metrics.json')
   } else {
-    logger.debug('💾 Writing output files...')
+    console.log('💾 Writing output files...')
     await writeFile(join(OUTPUT_DIR, 'llms.txt'), llmsTxt, 'utf-8')
     await writeFile(join(OUTPUT_DIR, 'llms-full.txt'), llmsFullTxt, 'utf-8')
-    logger.debug('   ✅ llms.txt')
-    logger.debug('   ✅ llms-full.txt')
+    console.log('   ✅ llms.txt')
+    console.log('   ✅ llms-full.txt')
 
     // Write metrics JSON for CI/CD tracking
     const metricsJson = JSON.stringify(
@@ -821,7 +821,7 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
       2
     )
     await writeFile(join(OUTPUT_DIR, 'llms-metrics.json'), metricsJson, 'utf-8')
-    logger.debug('   ✅ llms-metrics.json')
+    console.log('   ✅ llms-metrics.json')
   }
 
   // Print metrics dashboard
@@ -834,21 +834,21 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
 
   // Print warnings if any
   if (stats.warnings.length > 0) {
-    logger.debug('')
-    logger.debug('⚠️  Warnings:')
+    console.log('')
+    console.log('⚠️  Warnings:')
     for (const warning of stats.warnings.slice(0, 10)) {
-      logger.debug(`   - ${warning}`)
+      console.log(`   - ${warning}`)
     }
     if (stats.warnings.length > 10) {
-      logger.debug(`   ... and ${stats.warnings.length - 10} more`)
+      console.log(`   ... and ${stats.warnings.length - 10} more`)
     }
   }
 
-  logger.debug('')
+  console.log('')
   if (DRY_RUN) {
-    logger.debug('✨ Dry run complete! No files were modified.')
+    console.log('✨ Dry run complete! No files were modified.')
   } else {
-    logger.debug('✨ Generation complete!')
+    console.log('✨ Generation complete!')
   }
 
   return {
@@ -863,9 +863,9 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
  * Start watch mode for continuous regeneration
  */
 async function startWatchMode(): Promise<void> {
-  logger.debug('👀 Starting watch mode...')
-  logger.debug(`   Watching: ${DOCS_DIR}`)
-  logger.debug('   Press Ctrl+C to stop\n')
+  console.log('👀 Starting watch mode...')
+  console.log(`   Watching: ${DOCS_DIR}`)
+  console.log('   Press Ctrl+C to stop\n')
 
   // Initial generation
   await generateLlmsDocs()
@@ -886,7 +886,7 @@ async function startWatchMode(): Promise<void> {
       clearTimeout(debounceTimer)
     }
     debounceTimer = setTimeout(async () => {
-      logger.debug('\n🔄 Change detected, regenerating...\n')
+      console.log('\n🔄 Change detected, regenerating...\n')
       try {
         await generateLlmsDocs()
       } catch (error) {
@@ -897,15 +897,15 @@ async function startWatchMode(): Promise<void> {
 
   watcher
     .on('change', (path) => {
-      logger.debug(`   📝 Changed: ${relative(DOCS_DIR, path)}`)
+      console.log(`   📝 Changed: ${relative(DOCS_DIR, path)}`)
       regenerate()
     })
     .on('add', (path) => {
-      logger.debug(`   ➕ Added: ${relative(DOCS_DIR, path)}`)
+      console.log(`   ➕ Added: ${relative(DOCS_DIR, path)}`)
       regenerate()
     })
     .on('unlink', (path) => {
-      logger.debug(`   ➖ Removed: ${relative(DOCS_DIR, path)}`)
+      console.log(`   ➖ Removed: ${relative(DOCS_DIR, path)}`)
       regenerate()
     })
     .on('error', (error) => {
@@ -914,7 +914,7 @@ async function startWatchMode(): Promise<void> {
 
   // Keep process alive
   process.on('SIGINT', () => {
-    logger.debug('\n\n👋 Watch mode stopped.')
+    console.log('\n\n👋 Watch mode stopped.')
     watcher.close()
     process.exit(0)
   })

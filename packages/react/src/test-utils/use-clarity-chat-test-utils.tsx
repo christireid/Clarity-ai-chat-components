@@ -127,11 +127,26 @@ export function createTestMessages(): CoreMessage[] {
 }
 
 /**
+ * Counter for unique test message ID generation
+ */
+let testMessageCounter = 0
+
+/**
+ * Generate a unique test message ID
+ */
+function generateTestMessageId(prefix: string): string {
+  const timestamp = Date.now()
+  const counter = testMessageCounter++
+  const random = Math.random().toString(36).substring(2, 6)
+  return `${prefix}-${timestamp}-${counter}-${random}`
+}
+
+/**
  * Create a test user message
  */
 export function createTestUserMessage(content: string): CoreMessage {
   return {
-    id: `user-${Date.now()}`,
+    id: generateTestMessageId('user'),
     role: 'user',
     content,
   }
@@ -142,7 +157,7 @@ export function createTestUserMessage(content: string): CoreMessage {
  */
 export function createTestAssistantMessage(content: string): CoreMessage {
   return {
-    id: `assistant-${Date.now()}`,
+    id: generateTestMessageId('assistant'),
     role: 'assistant',
     content,
   }

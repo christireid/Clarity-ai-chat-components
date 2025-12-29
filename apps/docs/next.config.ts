@@ -175,19 +175,10 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Redirects for confusing guides section
+  // Redirects for legacy routes
   async redirects() {
     return [
-      {
-        source: '/guides',
-        destination: '/learn/guides',
-        permanent: true,
-      },
-      {
-        source: '/guides/prompt-testing',
-        destination: '/learn/guides/prompt-testing',
-        permanent: true,
-      },
+      // Redirect /guides sub-routes that have been moved to /learn/guides
       {
         source: '/guides/testing',
         destination: '/learn/guides/testing',
@@ -198,14 +189,10 @@ const nextConfig: NextConfig = {
         destination: '/learn/guides/accessibility',
         permanent: true,
       },
+      // Redirect legacy /concepts routes
       {
         source: '/concepts/animations',
         destination: '/learn/concepts/animations',
-        permanent: true,
-      },
-      {
-        source: '/demos/accessibility-audit',
-        destination: '/learn/demos/accessibility-audit',
         permanent: true,
       },
     ]

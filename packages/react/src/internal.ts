@@ -52,11 +52,20 @@ export { SessionSummaryCard } from './components/ai/session-summary-card'
 export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 export { RetryButton } from './components/feedback/retry-button'
-export { ConsoleAlertHandler, useConsoleAlerts } from './components/feedback/console-alert-handler'
-export type { ConsoleAlert, ConsoleAlertHandlerProps } from './components/feedback/console-alert-handler'
+export {
+  ConsoleAlertHandler,
+  useConsoleAlerts,
+} from './components/feedback/console-alert-handler'
+export type {
+  ConsoleAlert,
+  ConsoleAlertHandlerProps,
+} from './components/feedback/console-alert-handler'
 export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
-export { TokenBudgetBar, TokenBudgetIndicator } from './components/token/token-budget-bar'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token/token-budget-bar'
 export { TokenOptimizationDashboard } from './components/token/token-optimization-dashboard'
 export { ContextVisualizer } from './components/context/context-visualizer'
 export { ConversationList } from './components/conversation/conversation-list'
@@ -126,9 +135,19 @@ export * from './components/input'
 // Export only working prompt components (excluding problematic ones with TypeScript issues)
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
-export type { PromptSuggestionsProps, PromptSuggestion, PromptSuggestionType } from './components/prompt/prompt-suggestions'
-export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt/prompt-suggestions-enhanced'
-export type { SuggestionRankingConfig, SuggestionInteraction } from './components/prompt/prompt-suggestions-enhanced'
+export type {
+  PromptSuggestionsProps,
+  PromptSuggestion,
+  PromptSuggestionType,
+} from './components/prompt/prompt-suggestions'
+export {
+  PromptSuggestionsEnhanced,
+  usePromptSuggestionsEnhanced,
+} from './components/prompt/prompt-suggestions-enhanced'
+export type {
+  SuggestionRankingConfig,
+  SuggestionInteraction,
+} from './components/prompt/prompt-suggestions-enhanced'
 
 // Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
 export * from './accessibility/focus-management'
