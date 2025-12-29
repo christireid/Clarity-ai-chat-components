@@ -64,7 +64,7 @@ export default function MemoryGuidePage() {
             need predictable token usage.
           </p>
           <EnhancedCodeBlock
-            code={`import { ClarityChat } from '@clarity-chat/react'
+            code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function SlidingWindowChat() {
   return (
@@ -98,7 +98,7 @@ function SlidingWindowChat() {
             staying within token limits.
           </p>
           <EnhancedCodeBlock
-            code={`import { ClarityChat } from '@clarity-chat/react'
+            code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function SemanticChunksChat() {
   return (
@@ -130,7 +130,7 @@ function SemanticChunksChat() {
             recall information from earlier in the conversation.
           </p>
           <EnhancedCodeBlock
-            code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+            code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
 
 function VectorStoreChat() {
   return (
@@ -233,7 +233,7 @@ function VectorStoreChat() {
 
           <h3 className="text-2xl font-semibold mb-3">Basic Usage</h3>
           <EnhancedCodeBlock
-            code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react'
+            code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react/internal'
 
 function App() {
   return (
@@ -257,8 +257,8 @@ function App() {
             With Vector Store
           </h3>
           <EnhancedCodeBlock
-            code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react'
-import { createVectorStore } from '@clarity-chat/react'
+            code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react/internal'
+import { createVectorStore } from '@clarity-chat/react/internal'
 
 function App() {
   const vectorStore = createVectorStore({
@@ -312,7 +312,7 @@ function App() {
           </ul>
 
           <EnhancedCodeBlock
-            code={`import { useMemoryContext } from '@clarity-chat/react'
+            code={`import { useMemoryContext } from '@clarity-chat/react/internal'
 
 function MemoryExample() {
   const memory = useMemoryContext()
@@ -373,7 +373,7 @@ function MemoryExample() {
           </ul>
 
           <EnhancedCodeBlock
-            code={`import { useMemoryContext } from '@clarity-chat/react'
+            code={`import { useMemoryContext } from '@clarity-chat/react/internal'
 
 function ScopeExample() {
   const memory = useMemoryContext()
@@ -429,7 +429,7 @@ function ScopeExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useClarityChat, MemoryProvider } from '@clarity-chat/react'
+            code={`import { useClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
 
 function ChatWithMemory() {
   const {
@@ -483,7 +483,7 @@ function App() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useMemoryContext } from '@clarity-chat/react'
+            code={`import { useMemoryContext } from '@clarity-chat/react/internal'
 import { useEffect, useState } from 'react'
 
 function MemoryQueryExample() {
@@ -619,7 +619,7 @@ if (compressed) {
           <p className="mb-4">Get statistics about memory usage:</p>
 
           <EnhancedCodeBlock
-            code={`import { useMemoryContext } from '@clarity-chat/react'
+            code={`import { useMemoryContext } from '@clarity-chat/react/internal'
 
 function MemoryStats() {
   const memory = useMemoryContext()

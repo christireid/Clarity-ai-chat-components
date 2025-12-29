@@ -38,7 +38,7 @@ export default function VoiceInputPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput, ClarityChat } from '@clarity-chat/react'
+          code={`import { VoiceInput, ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -66,7 +66,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow, VoiceInput } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow, VoiceInput } from '@clarity-chat/react/internal'
 
 function VoiceChat() {
   const { messages, append } = useClarityChat({
@@ -102,7 +102,7 @@ function VoiceChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { AdvancedChatInput, VoiceInput } from '@clarity-chat/react'
+          code={`import { AdvancedChatInput, VoiceInput } from '@clarity-chat/react/internal'
 
 function ChatInput() {
   const [message, setMessage] = useState('')
@@ -136,7 +136,7 @@ function ChatInput() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput } from '@clarity-chat/react'
+          code={`import { VoiceInput } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function VoiceChat() {
@@ -171,7 +171,7 @@ function VoiceChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput } from '@clarity-chat/react'
+          code={`import { VoiceInput } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function MultiLanguageChat() {
@@ -216,7 +216,7 @@ function MultiLanguageChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput } from '@clarity-chat/react'
+          code={`import { VoiceInput } from '@clarity-chat/react/internal'
 
 function VoiceChat() {
   return (
@@ -248,7 +248,7 @@ function VoiceChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput } from '@clarity-chat/react'
+          code={`import { VoiceInput } from '@clarity-chat/react/internal'
 import { useState, useEffect } from 'react'
 
 function VoiceChat() {
@@ -289,7 +289,7 @@ function VoiceChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { VoiceInput } from '@clarity-chat/react'
+          code={`import { VoiceInput } from '@clarity-chat/react/internal'
 
 function MobileVoiceChat() {
   return (

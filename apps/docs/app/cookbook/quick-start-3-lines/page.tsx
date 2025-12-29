@@ -46,7 +46,7 @@ yarn add @clarity-chat/react`}
         <h2 className="text-2xl font-bold mb-4">3 Lines of Code</h2>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function App() {

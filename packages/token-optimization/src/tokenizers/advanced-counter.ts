@@ -1,11 +1,11 @@
 /**
  * Advanced Token Counter with Model-Specific Heuristics
- * 
+ *
  * Enhanced token counting with content type detection, confidence levels,
  * and model-specific optimizations based on empirical analysis
  */
 
-import { encoding_for_model } from '@dqbd/tiktoken'
+import { encode } from 'gpt-tokenizer'
 
 /**
  * Supported model families for token counting
@@ -78,32 +78,32 @@ const MODEL_RATIOS: Record<ModelFamily, Record<ContentType, number>> = {
     prose: 4.0,
     code: 3.5,
     mixed: 3.8,
-    unknown: 3.9
+    unknown: 3.9,
   },
   'gpt-3.5': {
     prose: 4.2,
     code: 3.8,
     mixed: 4.0,
-    unknown: 4.1
+    unknown: 4.1,
   },
-  'claude': {
+  claude: {
     prose: 3.8,
     code: 3.3,
     mixed: 3.6,
-    unknown: 3.7
+    unknown: 3.7,
   },
-  'gemini': {
+  gemini: {
     prose: 3.9,
     code: 3.4,
     mixed: 3.7,
-    unknown: 3.8
+    unknown: 3.8,
   },
-  'generic': {
+  generic: {
     prose: 4.0,
     code: 3.5,
     mixed: 3.8,
-    unknown: 3.9
-  }
+    unknown: 3.9,
+  },
 }
 
 /**
@@ -112,11 +112,9 @@ const MODEL_RATIOS: Record<ModelFamily, Record<ContentType, number>> = {
 export class AdvancedTokenCounter {
   private cache: Map<string, { count: number; timestamp: number }>
   private metrics: TokenCounterMetrics
-  private tiktokenEncoders: Map<ModelFamily, any>
 
   constructor(private config: AdvancedTokenizerConfig) {
     this.cache = new Map()
-    this.tiktokenEncoders = new Map()
     this.metrics = {
       totalCounts: 0,
       cacheHits: 0,
@@ -125,26 +123,14 @@ export class AdvancedTokenCounter {
         prose: 0,
         code: 0,
         mixed: 0,
-        unknown: 0
+        unknown: 0,
       },
-      cacheHitRate: 0
-    }
-
-    this.initializeEncoders()
-  }
-
-  private initializeEncoders(): void {
-    // Initialize Tiktoken encoders for supported models
-    try {
-      this.tiktokenEncoders.set('gpt-4', encoding_for_model('gpt-4'))
-      this.tiktokenEncoders.set('gpt-3.5', encoding_for_model('gpt-3.5-turbo'))
-    } catch (error) {
-      console.warn('Failed to initialize Tiktoken encoders, falling back to heuristic counting')
+      cacheHitRate: 0,
     }
   }
 
   /**
-   * Count tokens with high accuracy using Tiktoken when available
+   * Count tokens with high accuracy using gpt-tokenizer
    */
   async countWithConfidence(
     text: string,
@@ -159,14 +145,14 @@ export class AdvancedTokenCounter {
       if (cached && Date.now() - cached.timestamp < this.config.cacheTimeout) {
         this.metrics.cacheHits++
         this.updateMetrics()
-        
+
         return {
           count: cached.count,
           confidence: 'exact',
           contentType: this.detectContentType(text),
           model,
           processingTime: Date.now() - startTime,
-          cached: true
+          cached: true,
         }
       }
     }
@@ -174,21 +160,20 @@ export class AdvancedTokenCounter {
     // Detect content type
     const contentType = this.detectContentType(text)
 
-    // Try to use Tiktoken for exact counting
+    // Use gpt-tokenizer for exact counting (works for GPT models)
     let count: number
     let confidence: 'exact' | 'high' | 'approximate' = 'exact'
 
-    const encoder = this.tiktokenEncoders.get(model)
-    if (encoder) {
+    if (model === 'gpt-4' || model === 'gpt-3.5') {
       try {
-        count = encoder.encode(text).length
-      } catch (error) {
+        count = encode(text).length
+      } catch {
         // Fallback to heuristic counting
         count = this.estimateWithHeuristics(text, model, contentType)
         confidence = 'approximate'
       }
     } else {
-      // Use heuristic counting
+      // Use heuristic counting for non-GPT models
       count = this.estimateWithHeuristics(text, model, contentType)
       confidence = 'approximate'
     }
@@ -207,7 +192,7 @@ export class AdvancedTokenCounter {
       contentType,
       model,
       processingTime: Date.now() - startTime,
-      cached: false
+      cached: false,
     }
   }
 
@@ -215,7 +200,9 @@ export class AdvancedTokenCounter {
    * Simple token counting without detailed analysis
    */
   count(text: string, model: ModelFamily = this.config.defaultModel): number {
-    return Math.ceil(text.length / MODEL_RATIOS[model][this.detectContentType(text)])
+    return Math.ceil(
+      text.length / MODEL_RATIOS[model][this.detectContentType(text)]
+    )
   }
 
   /**
@@ -242,7 +229,7 @@ export class AdvancedTokenCounter {
       /\{.*\}/,
       /\[.*\]/,
       /import\s+\w+/,
-      /export\s+\w+/
+      /export\s+\w+/,
     ]
 
     const codeMatches = codePatterns.reduce((count, pattern) => {
@@ -260,7 +247,7 @@ export class AdvancedTokenCounter {
       this.metrics.contentTypeDistribution.mixed++
       return 'mixed'
     }
-    
+
     this.metrics.contentTypeDistribution.prose++
     return 'prose'
   }
@@ -272,7 +259,11 @@ export class AdvancedTokenCounter {
     texts: string[],
     model: ModelFamily = this.config.defaultModel
   ): Promise<number[]> {
-    return Promise.all(texts.map(text => this.countWithConfidence(text, model).then(result => result.count)))
+    return Promise.all(
+      texts.map((text) =>
+        this.countWithConfidence(text, model).then((result) => result.count)
+      )
+    )
   }
 
   /**
@@ -282,7 +273,9 @@ export class AdvancedTokenCounter {
     texts: string[],
     model: ModelFamily = this.config.defaultModel
   ): Promise<TokenCountResult[]> {
-    return Promise.all(texts.map(text => this.countWithConfidence(text, model)))
+    return Promise.all(
+      texts.map((text) => this.countWithConfidence(text, model))
+    )
   }
 
   /**
@@ -304,9 +297,9 @@ export class AdvancedTokenCounter {
         prose: 0,
         code: 0,
         mixed: 0,
-        unknown: 0
+        unknown: 0,
       },
-      cacheHitRate: 0
+      cacheHitRate: 0,
     }
   }
 
@@ -314,7 +307,8 @@ export class AdvancedTokenCounter {
    * Update internal metrics
    */
   private updateMetrics(): void {
-    this.metrics.cacheHitRate = this.metrics.cacheHits / Math.max(1, this.metrics.totalCounts)
+    this.metrics.cacheHitRate =
+      this.metrics.cacheHits / Math.max(1, this.metrics.totalCounts)
   }
 
   /**
@@ -322,7 +316,6 @@ export class AdvancedTokenCounter {
    */
   destroy(): void {
     this.cache.clear()
-    this.tiktokenEncoders.forEach(encoder => encoder.free())
   }
 }
 
@@ -336,9 +329,9 @@ export function countTokens(text: string, model?: ModelFamily): number {
     cacheTimeout: 3600000,
     enableContentDetection: true,
     enableMonitoring: false,
-    confidenceThreshold: 0.8
+    confidenceThreshold: 0.8,
   })
-  
+
   return counter.count(text, model || 'generic')
 }
 
@@ -355,8 +348,8 @@ export async function countTokensWithConfidence(
     cacheTimeout: 3600000,
     enableContentDetection: true,
     enableMonitoring: false,
-    confidenceThreshold: 0.8
+    confidenceThreshold: 0.8,
   })
-  
+
   return await counter.countWithConfidence(text, model || 'generic')
 }

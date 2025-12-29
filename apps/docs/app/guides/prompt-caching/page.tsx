@@ -1,13 +1,13 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TutorialStep } from '@/components/Enhanced/TutorialStep'
-import { PropTable, type Prop } from '@/components/API/PropTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
 const cacheManagerOptions: Prop[] = [
@@ -27,15 +27,13 @@ const cacheManagerOptions: Prop[] = [
   {
     name: 'defaultMinLength',
     type: 'number',
-    description:
-      'Minimum token count for content to be cached. Default: 1024.',
+    description: 'Minimum token count for content to be cached. Default: 1024.',
     required: false,
   },
   {
     name: 'autoManage',
     type: 'boolean',
-    description:
-      'Automatically add cache control markers. Default: true.',
+    description: 'Automatically add cache control markers. Default: true.',
     required: false,
   },
   {
@@ -116,12 +114,15 @@ export default function PromptCachingGuidePage() {
 
         <ScrollReveal delay={0.2}>
           <div className="my-8 p-6 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
-            <h3 className="text-lg font-semibold mb-2">Cost Savings Potential</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Cost Savings Potential
+            </h3>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <p className="text-3xl font-bold text-green-500">90%</p>
                 <p className="text-sm text-text-secondary">
-                  Anthropic cache reads are 90% cheaper than regular input tokens
+                  Anthropic cache reads are 90% cheaper than regular input
+                  tokens
                 </p>
               </div>
               <div>
@@ -190,7 +191,7 @@ export default function PromptCachingGuidePage() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { PromptCacheManager } from '@clarity-chat/react'
+                code={`import { PromptCacheManager } from '@clarity-chat/react/internal'
 
 // Create a cache manager for Anthropic
 const cacheManager = new PromptCacheManager({
@@ -226,10 +227,7 @@ const messages = cacheManager.prepareMessagesAnthropic([
           </ScrollReveal>
 
           <ScrollReveal delay={0.5}>
-            <TutorialStep
-              step={3}
-              title="Convenience Functions"
-            >
+            <TutorialStep step={3} title="Convenience Functions">
               <p className="text-text-secondary mb-4">
                 For simpler use cases, use the standalone utility functions:
               </p>
@@ -238,7 +236,7 @@ const messages = cacheManager.prepareMessagesAnthropic([
                 code={`import {
   createAnthropicCachedMessages,
   estimateCacheSavings,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Create Anthropic-formatted messages with caching
 const messages = createAnthropicCachedMessages(
@@ -276,7 +274,7 @@ console.log(\`Monthly savings: $\${savings.monthlySavings.toFixed(2)}\`)
                 code={`import {
   calculateCacheBreakpoints,
   applyBreakpointsToMessages,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 const messages = [
   { role: 'system', content: longSystemPrompt },      // 3000 tokens
@@ -342,7 +340,7 @@ const cachedMessages = applyBreakpointsToMessages(messages, breakpoints)`}
                 code={`import {
   createCacheWarmingRequests,
   calculateWarmingSchedule,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Define content to warm
 const warmingConfig = {
@@ -402,7 +400,7 @@ async function warmCaches() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { calculateTTLRefreshSchedule } from '@clarity-chat/react'
+                code={`import { calculateTTLRefreshSchedule } from '@clarity-chat/react/internal'
 
 // Track last cache hit timestamp
 let lastCacheHit = Date.now()
@@ -445,15 +443,17 @@ setInterval(() => {
                   <h3 className="text-xl font-semibold mb-4">
                     PromptCacheManager Options
                   </h3>
-                  <PropTable props={cacheManagerOptions} />
+                  <PropsTable props={cacheManagerOptions} />
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Cache Statistics</h3>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Cache Statistics
+                  </h3>
                   <p className="text-text-secondary mb-4">
                     Call <code>cacheManager.getStats()</code> to retrieve:
                   </p>
-                  <PropTable props={cacheStatsProps} />
+                  <PropsTable props={cacheStatsProps} />
                 </div>
               </div>
             </section>
@@ -513,8 +513,8 @@ setInterval(() => {
                     Avoid Caching Dynamic Content
                   </h4>
                   <p className="text-sm text-text-secondary">
-                    User-specific data that changes frequently won&apos;t benefit
-                    from caching.
+                    User-specific data that changes frequently won&apos;t
+                    benefit from caching.
                   </p>
                 </div>
 

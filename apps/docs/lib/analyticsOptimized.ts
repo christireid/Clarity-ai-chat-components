@@ -1,4 +1,7 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+'use client'
+
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { logger } from '@/lib/logger'
 
 /**
  * Optimized hook for performance monitoring with memory leak prevention
@@ -11,86 +14,94 @@ export function usePerformanceMonitoringOptimized() {
     fid: 0,
     cls: 0,
     tti: 0,
-    memory: 0
-  });
-  
-  const observerRef = useRef<PerformanceObserver | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    memory: 0,
+  })
+
+  const observerRef = useRef<PerformanceObserver | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const updateMetrics = useCallback(() => {
     if ('performance' in window) {
-      const memoryInfo = (performance as any).memory;
-      setMetrics(prev => ({
+      const memoryInfo = (performance as any).memory
+      setMetrics((prev) => ({
         ...prev,
-        memory: memoryInfo ? memoryInfo.usedJSHeapSize / 1024 / 1024 : 0
-      }));
+        memory: memoryInfo ? memoryInfo.usedJSHeapSize / 1024 / 1024 : 0,
+      }))
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     // Optimize with requestAnimationFrame instead of setInterval
     const scheduleUpdate = () => {
       rafRef.current = requestAnimationFrame(() => {
-        updateMetrics();
-        scheduleUpdate();
-      });
-    };
+        updateMetrics()
+        scheduleUpdate()
+      })
+    }
 
     // Initialize performance observer with optimized configuration
     if ('PerformanceObserver' in window) {
       const observer = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
+        const entries = list.getEntries()
         entries.forEach((entry) => {
           if (entry.name === 'first-contentful-paint') {
-            setMetrics(prev => ({ ...prev, fcp: entry.startTime }));
+            setMetrics((prev) => ({ ...prev, fcp: entry.startTime }))
           }
           if (entry.name === 'largest-contentful-paint') {
-            setMetrics(prev => ({ ...prev, lcp: entry.startTime }));
+            setMetrics((prev) => ({ ...prev, lcp: entry.startTime }))
           }
           if (entry.entryType === 'first-input') {
-            setMetrics(prev => ({ ...prev, fid: entry.processingStart - entry.startTime }));
+            setMetrics((prev) => ({
+              ...prev,
+              fid: entry.processingStart - entry.startTime,
+            }))
           }
           if (entry.entryType === 'layout-shift') {
-            setMetrics(prev => ({ ...prev, cls: prev.cls + (entry as any).value }));
+            setMetrics((prev) => ({
+              ...prev,
+              cls: prev.cls + (entry as any).value,
+            }))
           }
-        });
-      });
+        })
+      })
 
       try {
-        observer.observe({ entryTypes: ['paint', 'first-input', 'layout-shift'] });
-        observerRef.current = observer;
+        observer.observe({
+          entryTypes: ['paint', 'first-input', 'layout-shift'],
+        })
+        observerRef.current = observer
       } catch (error) {
         // Fallback for unsupported entry types
-        logger.warn('PerformanceObserver not supported for some entry types');
+        logger.warn('PerformanceObserver not supported for some entry types')
       }
     }
 
     // Schedule memory updates
-    scheduleUpdate();
+    scheduleUpdate()
 
     // Cleanup timeout for delayed metrics
     timeoutRef.current = setTimeout(() => {
       // Time to Interactive calculation
-      setMetrics(prev => ({ ...prev, tti: performance.now() }));
-    }, 5000);
+      setMetrics((prev) => ({ ...prev, tti: performance.now() }))
+    }, 5000)
 
     return () => {
       // Comprehensive cleanup to prevent memory leaks
       if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
+        observerRef.current.disconnect()
+        observerRef.current = null
       }
       if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
       }
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
       }
-    };
-  }, [updateMetrics]);
+    }
+  }, [updateMetrics])
 
   const resetMetrics = useCallback(() => {
     setMetrics({
@@ -99,31 +110,34 @@ export function usePerformanceMonitoringOptimized() {
       fid: 0,
       cls: 0,
       tti: 0,
-      memory: 0
-    });
-  }, []);
+      memory: 0,
+    })
+  }, [])
 
-  return useMemo(() => ({
-    metrics,
-    resetMetrics,
-    isSupported: 'performance' in window && 'PerformanceObserver' in window
-  }), [metrics, resetMetrics]);
+  return useMemo(
+    () => ({
+      metrics,
+      resetMetrics,
+      isSupported: 'performance' in window && 'PerformanceObserver' in window,
+    }),
+    [metrics, resetMetrics]
+  )
 }
 
 /**
  * Optimized analytics tracking with batching and memory management
  */
 export function useAnalyticsOptimized() {
-  const [events, setEvents] = useState<any[]>([]);
-  const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isProcessingRef = useRef(false);
+  const [events, setEvents] = useState<any[]>([])
+  const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isProcessingRef = useRef(false)
 
   const processBatch = useCallback(async () => {
-    if (isProcessingRef.current || events.length === 0) return;
-    
-    isProcessingRef.current = true;
-    const batchEvents = [...events];
-    setEvents([]);
+    if (isProcessingRef.current || events.length === 0) return
+
+    isProcessingRef.current = true
+    const batchEvents = [...events]
+    setEvents([])
 
     try {
       // Batch send events with optimized payload
@@ -131,99 +145,108 @@ export function useAnalyticsOptimized() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ events: batchEvents }),
-        keepalive: true // Ensures request completes even if page unloads
-      });
+        keepalive: true, // Ensures request completes even if page unloads
+      })
 
       if (!response.ok) {
         // Re-queue failed events with exponential backoff
-        setEvents(prev => [...batchEvents, ...prev]);
+        setEvents((prev) => [...batchEvents, ...prev])
       }
     } catch (error) {
       // Re-queue on network failure
-      setEvents(prev => [...batchEvents, ...prev]);
+      setEvents((prev) => [...batchEvents, ...prev])
     } finally {
-      isProcessingRef.current = false;
+      isProcessingRef.current = false
     }
-  }, [events]);
+  }, [events])
 
-  const trackEvent = useCallback((event: string, data: any = {}) => {
-    const eventData = {
-      event,
-      data,
-      timestamp: Date.now(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      viewport: `${window.innerWidth}x${window.innerHeight}`
-    };
+  const trackEvent = useCallback(
+    (event: string, data: any = {}) => {
+      const eventData = {
+        event,
+        data,
+        timestamp: Date.now(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+      }
 
-    setEvents(prev => [...prev, eventData]);
+      setEvents((prev) => [...prev, eventData])
 
-    // Batch process with optimized timing
-    if (batchTimeoutRef.current) {
-      clearTimeout(batchTimeoutRef.current);
-    }
+      // Batch process with optimized timing
+      if (batchTimeoutRef.current) {
+        clearTimeout(batchTimeoutRef.current)
+      }
 
-    batchTimeoutRef.current = setTimeout(() => {
-      processBatch();
-    }, 1000); // 1-second batching window
-  }, [processBatch]);
+      batchTimeoutRef.current = setTimeout(() => {
+        processBatch()
+      }, 1000) // 1-second batching window
+    },
+    [processBatch]
+  )
 
   useEffect(() => {
     // Cleanup on unmount
     return () => {
       if (batchTimeoutRef.current) {
-        clearTimeout(batchTimeoutRef.current);
+        clearTimeout(batchTimeoutRef.current)
       }
       // Process remaining events
       if (events.length > 0 && !isProcessingRef.current) {
-        processBatch();
+        processBatch()
       }
-    };
-  }, [events, processBatch]);
+    }
+  }, [events, processBatch])
 
-  return useMemo(() => ({
-    trackEvent,
-    eventCount: events.length
-  }), [trackEvent, events.length]);
+  return useMemo(
+    () => ({
+      trackEvent,
+      eventCount: events.length,
+    }),
+    [trackEvent, events.length]
+  )
 }
 
 /**
  * Optimized component for tracking page views with memory management
  */
 export function AnalyticsScriptOptimized() {
-  const { trackEvent } = useAnalyticsOptimized();
-  const trackedRef = useRef(false);
+  const { trackEvent } = useAnalyticsOptimized()
+  const trackedRef = useRef(false)
 
   useEffect(() => {
-    if (trackedRef.current) return;
-    trackedRef.current = true;
+    if (trackedRef.current) return
+    trackedRef.current = true
 
     // Track page view with optimized data
     trackEvent('page_view', {
       title: document.title,
       referrer: document.referrer,
-      loadTime: performance.now()
-    });
+      loadTime: performance.now(),
+    })
 
     // Track outbound links with event delegation for performance
     const handleOutboundClick = (event: MouseEvent) => {
-      const target = event.target as HTMLAnchorElement;
-      if (target.tagName === 'A' && target.hostname !== window.location.hostname) {
+      const target = event.target as HTMLAnchorElement
+      if (
+        target.tagName === 'A' &&
+        target.hostname !== window.location.hostname
+      ) {
         trackEvent('outbound_click', {
           url: target.href,
-          text: target.textContent
-        });
+          text: target.textContent,
+        })
       }
-    };
+    }
 
-    document.addEventListener('click', handleOutboundClick, true);
+    document.addEventListener('click', handleOutboundClick, true)
 
     return () => {
-      document.removeEventListener('click', handleOutboundClick, true);
-    };
-  }, [trackEvent]);
+      document.removeEventListener('click', handleOutboundClick, true)
+    }
+  }, [trackEvent])
 
-  return null;
+  return null
 }
 
 /**
@@ -235,58 +258,66 @@ export function useWebVitalsOptimized() {
     lcp: null,
     fid: null,
     cls: null,
-    ttfb: null
-  });
-  const observerRef = useRef<PerformanceObserver | null>(null);
+    ttfb: null,
+  })
+  const observerRef = useRef<PerformanceObserver | null>(null)
 
   useEffect(() => {
-    if (!('PerformanceObserver' in window)) return;
+    if (!('PerformanceObserver' in window)) return
 
     const observer = new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      
+      const entries = list.getEntries()
+
       entries.forEach((entry) => {
         if (entry.name === 'first-contentful-paint') {
-          setVitals(prev => ({ ...prev, fcp: entry.startTime }));
+          setVitals((prev) => ({ ...prev, fcp: entry.startTime }))
         }
         if (entry.name === 'largest-contentful-paint') {
-          setVitals(prev => ({ ...prev, lcp: entry.startTime }));
+          setVitals((prev) => ({ ...prev, lcp: entry.startTime }))
         }
         if (entry.entryType === 'first-input') {
-          setVitals(prev => ({ 
-            ...prev, 
-            fid: entry.processingStart - entry.startTime 
-          }));
+          setVitals((prev) => ({
+            ...prev,
+            fid: entry.processingStart - entry.startTime,
+          }))
         }
         if (entry.entryType === 'layout-shift') {
-          setVitals(prev => ({ 
-            ...prev, 
-            cls: (prev.cls || 0) + (entry as any).value 
-          }));
+          setVitals((prev) => ({
+            ...prev,
+            cls: (prev.cls || 0) + (entry as any).value,
+          }))
         }
         if (entry.entryType === 'navigation') {
-          setVitals(prev => ({ ...prev, ttfb: entry.responseStart - entry.fetchStart }));
+          setVitals((prev) => ({
+            ...prev,
+            ttfb: entry.responseStart - entry.fetchStart,
+          }))
         }
-      });
-    });
+      })
+    })
 
     try {
-      observer.observe({ entryTypes: ['paint', 'first-input', 'layout-shift', 'navigation'] });
-      observerRef.current = observer;
+      observer.observe({
+        entryTypes: ['paint', 'first-input', 'layout-shift', 'navigation'],
+      })
+      observerRef.current = observer
     } catch (error) {
-      logger.warn('Some performance entry types not supported');
+      logger.warn('Some performance entry types not supported')
     }
 
     return () => {
       if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
+        observerRef.current.disconnect()
+        observerRef.current = null
       }
-    };
-  }, []);
+    }
+  }, [])
 
-  return useMemo(() => ({
-    vitals,
-    isReady: Object.values(vitals).some(v => v !== null)
-  }), [vitals]);
+  return useMemo(
+    () => ({
+      vitals,
+      isReady: Object.values(vitals).some((v) => v !== null),
+    }),
+    [vitals]
+  )
 }

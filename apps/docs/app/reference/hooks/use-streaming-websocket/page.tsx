@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, useStreamingWebSocket } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  useStreamingWebSocket,
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -383,7 +386,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSocketReturn } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -395,7 +398,7 @@ import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSoc
         <ComponentPreview
           title="Simple WebSocket Connection"
           description="Basic WebSocket connection with send/receive"
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function SimpleWebSocket() {
@@ -438,7 +441,7 @@ function SimpleWebSocket() {
         <p>Automatically connect when component mounts:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function AutoConnectWebSocket() {
   const {
@@ -470,7 +473,7 @@ function AutoConnectWebSocket() {
         <p>Send text, JSON, or binary messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function WebSocketWithSend() {
   const {
@@ -525,7 +528,7 @@ function WebSocketWithSend() {
         <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function WebSocketWithReconnect() {
   const {
@@ -565,7 +568,7 @@ function WebSocketWithReconnect() {
         <p>Keep connection alive with heartbeat mechanism:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function WebSocketWithHeartbeat() {
   const {
@@ -607,8 +610,8 @@ function WebSocketWithHeartbeat() {
         <p>Handle different message types:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
-import type { WebSocketMessage } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+import type { WebSocketMessage } from '@clarity-chat/react/internal'
 
 function WebSocketWithMessageHandling() {
   const {
@@ -702,8 +705,8 @@ function WebSocketWithMessageHandling() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { useStreamingWebSocket } from '@clarity-chat/react'
-import type { WebSocketMessage } from '@clarity-chat/react'
+import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+import type { WebSocketMessage } from '@clarity-chat/react/internal'
 
 function CompleteWebSocketExample() {
   const [input, setInput] = useState('')

@@ -63,7 +63,7 @@ export default function UseClarityChatWithToolsPage() {
           code={`import {
   useClarityChatWithTools,
   createToolUIRegistry
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Create a registry mapping tool names to components
 const registry = createToolUIRegistry({

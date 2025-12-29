@@ -3,6 +3,8 @@
  * Track user engagement with demos for conversion insights
  */
 
+import { logger } from '@/lib/logger'
+
 export type DemoName =
   | 'zero-to-chat'
   | 'provider-hotswap'
@@ -40,7 +42,8 @@ interface DemoEventData {
  * Check if Google Analytics is available
  */
 const hasGtag = (): boolean =>
-  typeof window !== 'undefined' && typeof (window as { gtag?: unknown }).gtag === 'function'
+  typeof window !== 'undefined' &&
+  typeof (window as { gtag?: unknown }).gtag === 'function'
 
 /**
  * Track a demo event
@@ -60,7 +63,13 @@ export const trackDemoEvent = (data: DemoEventData): void => {
 
   // Log in development
   if (process.env.NODE_ENV === 'development') {
-    logger.debug('[Demo Analytics]', { demo_name, action, label, value, metadata })
+    logger.debug('[Demo Analytics]', {
+      demo_name,
+      action,
+      label,
+      value,
+      metadata,
+    })
   }
 
   // Send to Google Analytics if available
@@ -99,7 +108,10 @@ export const trackDemoStarted = (demoName: DemoName): void => {
 /**
  * Track when a demo runs to completion
  */
-export const trackDemoCompleted = (demoName: DemoName, duration?: number): void => {
+export const trackDemoCompleted = (
+  demoName: DemoName,
+  duration?: number
+): void => {
   trackDemoEvent({
     demo_name: demoName,
     action: 'demo_completed',

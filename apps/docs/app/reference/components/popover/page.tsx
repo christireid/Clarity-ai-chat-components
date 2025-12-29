@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { Callout } from '@/components/MDX/Callout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Popover Component - Clarity Chat Components',

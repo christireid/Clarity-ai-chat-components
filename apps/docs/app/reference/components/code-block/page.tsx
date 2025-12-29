@@ -1,6 +1,6 @@
 'use client'
 
-import { CodeBlock } from '@clarity-chat/react'
+import { CodeBlock } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'

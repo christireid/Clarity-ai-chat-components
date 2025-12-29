@@ -1,6 +1,6 @@
 /**
  * Quality Gate Implementation
- * 
+ *
  * Implements the 85% quality minimum requirement with fallback strategies
  * Ensures high-quality token optimization with comprehensive quality metrics
  */
@@ -12,7 +12,10 @@ export interface QualityGateConfig {
   enableReadabilityCheck: boolean
   enableCoherenceCheck: boolean
   enableRelevanceCheck: boolean
-  fallbackStrategy: 'minimal_compression' | 'no_compression' | 'alternative_model'
+  fallbackStrategy:
+    | 'minimal_compression'
+    | 'no_compression'
+    | 'alternative_model'
   qualityWeights: {
     semanticSimilarity: number
     informationRetention: number
@@ -75,7 +78,7 @@ export class QualityGate {
     context?: QualityContext
   ): Promise<QualityCheckResult> {
     const startTime = Date.now()
-    
+
     try {
       // Calculate comprehensive quality metrics
       const metrics = await this.calculateQualityMetrics(
@@ -87,7 +90,10 @@ export class QualityGate {
       // Check if quality meets minimum threshold
       const passed = metrics.overallScore >= this.config.minimumQualityScore
       const failedChecks = this.identifyFailedChecks(metrics)
-      const recommendations = this.generateRecommendations(metrics, failedChecks)
+      const recommendations = this.generateRecommendations(
+        metrics,
+        failedChecks
+      )
 
       // Store quality history for adaptive learning
       this.updateQualityHistory({
@@ -97,7 +103,7 @@ export class QualityGate {
         metrics,
         passed,
         fallbackUsed: false,
-        strategy: 'primary'
+        strategy: 'primary',
       })
 
       // Trigger fallback if quality is insufficient
@@ -111,20 +117,22 @@ export class QualityGate {
           metrics,
           context
         )
-        
+
         if (fallbackResult.success) {
           fallbackTriggered = true
           fallbackStrategy = fallbackResult.strategy
-          
+
           // Update history with fallback usage
           this.updateQualityHistory({
             timestamp: new Date(),
             originalContent,
             processedContent: fallbackResult.content,
             metrics: fallbackResult.metrics,
-            passed: fallbackResult.metrics.overallScore >= this.config.minimumQualityScore,
+            passed:
+              fallbackResult.metrics.overallScore >=
+              this.config.minimumQualityScore,
             fallbackUsed: true,
-            strategy: fallbackStrategy
+            strategy: fallbackStrategy,
           })
         }
       }
@@ -137,19 +145,21 @@ export class QualityGate {
         recommendations,
         processingTime: Date.now() - startTime,
         fallbackTriggered,
-        fallbackStrategy
+        fallbackStrategy,
       }
-
-    } catch (error) {
+    } catch {
       return {
         passed: false,
         score: 0,
         metrics: this.getDefaultMetrics(),
         failedChecks: ['quality_calculation_error'],
-        recommendations: ['Use fallback strategy', 'Review quality calculation'],
+        recommendations: [
+          'Use fallback strategy',
+          'Review quality calculation',
+        ],
         processingTime: Date.now() - startTime,
         fallbackTriggered: true,
-        fallbackStrategy: this.config.fallbackStrategy
+        fallbackStrategy: this.config.fallbackStrategy,
       }
     }
   }
@@ -186,14 +196,16 @@ export class QualityGate {
 
     // Readability score calculation
     if (this.config.enableReadabilityCheck) {
-      metrics.readabilityScore = await this.calculateReadabilityScore(processedContent)
+      metrics.readabilityScore =
+        await this.calculateReadabilityScore(processedContent)
     } else {
       metrics.readabilityScore = 1.0
     }
 
     // Coherence score calculation
     if (this.config.enableCoherenceCheck) {
-      metrics.coherenceScore = await this.calculateCoherenceScore(processedContent)
+      metrics.coherenceScore =
+        await this.calculateCoherenceScore(processedContent)
     } else {
       metrics.coherenceScore = 1.0
     }
@@ -210,12 +222,12 @@ export class QualityGate {
 
     // Calculate weighted overall score
     const weights = this.config.qualityWeights
-    metrics.overallScore = 
-      (metrics.semanticSimilarity * weights.semanticSimilarity) +
-      (metrics.informationRetention * weights.informationRetention) +
-      (metrics.readabilityScore * weights.readability) +
-      (metrics.coherenceScore * weights.coherence) +
-      (metrics.relevanceScore * weights.relevance)
+    metrics.overallScore =
+      metrics.semanticSimilarity * weights.semanticSimilarity +
+      metrics.informationRetention * weights.informationRetention +
+      metrics.readabilityScore * weights.readability +
+      metrics.coherenceScore * weights.coherence +
+      metrics.relevanceScore * weights.relevance
 
     return metrics as QualityMetrics
   }
@@ -232,24 +244,28 @@ export class QualityGate {
     switch (this.config.fallbackStrategy) {
       case 'minimal_compression':
         return this.executeMinimalCompressionFallback(originalContent, context)
-      
+
       case 'no_compression':
         return {
           success: true,
           content: originalContent,
           metrics: this.getPerfectMetrics(),
-          strategy: 'no_compression'
+          strategy: 'no_compression',
         }
-      
+
       case 'alternative_model':
-        return this.executeAlternativeModelFallback(originalContent, _processedContent, context)
-      
+        return this.executeAlternativeModelFallback(
+          originalContent,
+          _processedContent,
+          context
+        )
+
       default:
         return {
           success: false,
           content: _processedContent,
           metrics,
-          strategy: 'none'
+          strategy: 'none',
         }
     }
   }
@@ -277,7 +293,7 @@ export class QualityGate {
       success: metrics.overallScore >= this.config.minimumQualityScore,
       content: minimallyCompressed,
       metrics,
-      strategy: 'minimal_compression'
+      strategy: 'minimal_compression',
     }
   }
 
@@ -303,7 +319,7 @@ export class QualityGate {
       success: metrics.overallScore >= this.config.minimumQualityScore,
       content: alternativeContent,
       metrics,
-      strategy: 'alternative_model'
+      strategy: 'alternative_model',
     }
   }
 
@@ -318,17 +334,20 @@ export class QualityGate {
     // In production, this would use advanced NLP techniques
     const originalWords = new Set(originalContent.toLowerCase().split(/\s+/))
     const processedWords = new Set(processedContent.toLowerCase().split(/\s+/))
-    
-    const intersection = new Set([...originalWords].filter(x => processedWords.has(x)))
+
+    const intersection = new Set(
+      [...originalWords].filter((x) => processedWords.has(x))
+    )
     const union = new Set([...originalWords, ...processedWords])
-    
+
     // Jaccard similarity
     const similarity = intersection.size / union.size
-    
+
     // Adjust for length difference
-    const lengthRatio = Math.min(processedContent.length, originalContent.length) / 
-                       Math.max(processedContent.length, originalContent.length)
-    
+    const lengthRatio =
+      Math.min(processedContent.length, originalContent.length) /
+      Math.max(processedContent.length, originalContent.length)
+
     return Math.min(similarity * lengthRatio, 1.0)
   }
 
@@ -342,11 +361,11 @@ export class QualityGate {
     // Simplified information retention calculation
     const originalKeyTerms = this.extractKeyTerms(originalContent)
     const processedKeyTerms = this.extractKeyTerms(processedContent)
-    
-    const retainedTerms = originalKeyTerms.filter(term => 
+
+    const retainedTerms = originalKeyTerms.filter((term) =>
       processedKeyTerms.includes(term)
     )
-    
+
     return retainedTerms.length / originalKeyTerms.length
   }
 
@@ -355,18 +374,22 @@ export class QualityGate {
    */
   private async calculateReadabilityScore(content: string): Promise<number> {
     // Simplified Flesch Reading Ease calculation
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0)
-    const words = content.split(/\s+/).filter(w => w.length > 0)
-    const syllables = words.reduce((count, word) => count + this.estimateSyllables(word), 0)
-    
+    const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 0)
+    const words = content.split(/\s+/).filter((w) => w.length > 0)
+    const syllables = words.reduce(
+      (count, word) => count + this.estimateSyllables(word),
+      0
+    )
+
     if (sentences.length === 0 || words.length === 0) return 1.0
-    
+
     const avgSentenceLength = words.length / sentences.length
     const avgSyllablesPerWord = syllables / words.length
-    
+
     // Flesch Reading Ease score (0-100, higher is easier)
-    const fleschScore = 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgSyllablesPerWord)
-    
+    const fleschScore =
+      206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllablesPerWord
+
     // Normalize to 0-1 range
     return Math.max(0, Math.min(1, fleschScore / 100))
   }
@@ -376,27 +399,34 @@ export class QualityGate {
    */
   private async calculateCoherenceScore(content: string): Promise<number> {
     // Simplified coherence calculation based on sentence transitions
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0)
+    const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 0)
     if (sentences.length <= 1) return 1.0
-    
+
     let coherenceScore = 0
-    const transitionWords = ['however', 'therefore', 'furthermore', 'moreover', 'nevertheless', 'consequently']
-    
+    const transitionWords = [
+      'however',
+      'therefore',
+      'furthermore',
+      'moreover',
+      'nevertheless',
+      'consequently',
+    ]
+
     for (let i = 1; i < sentences.length; i++) {
       const currentSentence = sentences[i].toLowerCase()
-      
+
       // Check for logical connections
-      if (transitionWords.some(word => currentSentence.includes(word))) {
+      if (transitionWords.some((word) => currentSentence.includes(word))) {
         coherenceScore += 0.2
       }
-      
+
       // Check for pronoun references
       const pronouns = ['this', 'that', 'these', 'those', 'it']
-      if (pronouns.some(pronoun => currentSentence.startsWith(pronoun))) {
+      if (pronouns.some((pronoun) => currentSentence.startsWith(pronoun))) {
         coherenceScore += 0.1
       }
     }
-    
+
     return Math.min(coherenceScore / sentences.length, 1.0)
   }
 
@@ -408,22 +438,26 @@ export class QualityGate {
     context: QualityContext
   ): Promise<number> {
     if (!context.domain && !context.userIntent) return 1.0
-    
+
     let relevanceScore = 0
     const contentWords = new Set(content.toLowerCase().split(/\s+/))
-    
+
     if (context.domain) {
       const domainWords = new Set(context.domain.toLowerCase().split(/\s+/))
-      const domainOverlap = [...domainWords].filter(word => contentWords.has(word)).length
+      const domainOverlap = [...domainWords].filter((word) =>
+        contentWords.has(word)
+      ).length
       relevanceScore += (domainOverlap / domainWords.size) * 0.5
     }
-    
+
     if (context.userIntent) {
       const intentWords = new Set(context.userIntent.toLowerCase().split(/\s+/))
-      const intentOverlap = [...intentWords].filter(word => contentWords.has(word)).length
+      const intentOverlap = [...intentWords].filter((word) =>
+        contentWords.has(word)
+      ).length
       relevanceScore += (intentOverlap / intentWords.size) * 0.5
     }
-    
+
     return Math.min(relevanceScore, 1.0)
   }
 
@@ -433,19 +467,20 @@ export class QualityGate {
   private extractKeyTerms(content: string): string[] {
     const words = content.toLowerCase().split(/\s+/)
     const termFrequency = new Map<string, number>()
-    
-    words.forEach(word => {
+
+    words.forEach((word) => {
       if (word.length > 3 && !this.isStopWord(word)) {
         termFrequency.set(word, (termFrequency.get(word) || 0) + 1)
       }
     })
-    
+
     // Return top 20% most frequent terms
     const termEntries = Array.from(termFrequency.entries())
     const sortedTermEntries = termEntries.sort((a, b) => b[1] - a[1])
-    const topTerms = sortedTermEntries.slice(0, Math.ceil(termEntries.length * 0.2))
+    const topTerms = sortedTermEntries
+      .slice(0, Math.ceil(termEntries.length * 0.2))
       .map(([term]) => term)
-    
+
     return topTerms
   }
 
@@ -456,7 +491,7 @@ export class QualityGate {
     word = word.toLowerCase()
     let count = 0
     let previousWasVowel = false
-    
+
     for (let i = 0; i < word.length; i++) {
       const isVowel = 'aeiou'.includes(word[i])
       if (isVowel && !previousWasVowel) {
@@ -464,12 +499,12 @@ export class QualityGate {
       }
       previousWasVowel = isVowel
     }
-    
+
     // Handle silent e
     if (word.endsWith('e') && count > 1) {
       count--
     }
-    
+
     return Math.max(count, 1)
   }
 
@@ -478,7 +513,20 @@ export class QualityGate {
    */
   private isStopWord(word: string): boolean {
     const stopWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
     ])
     return stopWords.has(word)
   }
@@ -488,31 +536,31 @@ export class QualityGate {
    */
   private identifyFailedChecks(metrics: QualityMetrics): string[] {
     const failedChecks: string[] = []
-    
+
     if (metrics.overallScore < this.config.minimumQualityScore) {
       failedChecks.push('overall_quality')
     }
-    
+
     if (metrics.semanticSimilarity < 0.8) {
       failedChecks.push('semantic_similarity')
     }
-    
+
     if (metrics.informationRetention < 0.7) {
       failedChecks.push('information_retention')
     }
-    
+
     if (metrics.readabilityScore < 0.6) {
       failedChecks.push('readability')
     }
-    
+
     if (metrics.coherenceScore < 0.7) {
       failedChecks.push('coherence')
     }
-    
+
     if (metrics.relevanceScore < 0.8) {
       failedChecks.push('relevance')
     }
-    
+
     return failedChecks
   }
 
@@ -524,37 +572,37 @@ export class QualityGate {
     failedChecks: string[]
   ): string[] {
     const recommendations: string[] = []
-    
+
     if (failedChecks.includes('semantic_similarity')) {
       recommendations.push('Increase semantic similarity threshold')
       recommendations.push('Use more conservative compression')
     }
-    
+
     if (failedChecks.includes('information_retention')) {
       recommendations.push('Preserve more key information')
       recommendations.push('Use information-aware compression')
     }
-    
+
     if (failedChecks.includes('readability')) {
       recommendations.push('Improve readability of compressed content')
       recommendations.push('Use readability-preserving techniques')
     }
-    
+
     if (failedChecks.includes('coherence')) {
       recommendations.push('Maintain better logical flow')
       recommendations.push('Preserve transition words')
     }
-    
+
     if (failedChecks.includes('relevance')) {
       recommendations.push('Maintain better context relevance')
       recommendations.push('Use context-aware compression')
     }
-    
+
     if (metrics.overallScore < this.config.minimumQualityScore) {
       recommendations.push('Consider using fallback strategy')
       recommendations.push('Adjust compression parameters')
     }
-    
+
     return recommendations
   }
 
@@ -563,12 +611,14 @@ export class QualityGate {
    */
   private updateQualityHistory(entry: QualityHistoryEntry): void {
     this.qualityHistory.push(entry)
-    
+
     // Maintain history size limit
     if (this.qualityHistory.length > this.config.qualityHistorySize) {
-      this.qualityHistory = this.qualityHistory.slice(-this.config.qualityHistorySize)
+      this.qualityHistory = this.qualityHistory.slice(
+        -this.config.qualityHistorySize
+      )
     }
-    
+
     // Update adaptive thresholds if enabled
     if (this.config.enableAdaptiveThresholds) {
       this.updateAdaptiveThresholds(entry)
@@ -581,8 +631,11 @@ export class QualityGate {
   private updateAdaptiveThresholds(_entry: QualityHistoryEntry): void {
     // Analyze recent quality trends
     const recentEntries = this.qualityHistory.slice(-100)
-    const passRate = recentEntries.length > 0 ? recentEntries.filter(e => e.passed).length / recentEntries.length : 0
-    
+    const passRate =
+      recentEntries.length > 0
+        ? recentEntries.filter((e) => e.passed).length / recentEntries.length
+        : 0
+
     // Adjust thresholds based on pass rate
     if (passRate > 0.9) {
       // High pass rate, can be more strict
@@ -616,7 +669,7 @@ export class QualityGate {
       readabilityScore: 0.7,
       coherenceScore: 0.7,
       relevanceScore: 0.8,
-      overallScore: 0.74
+      overallScore: 0.74,
     }
   }
 
@@ -630,7 +683,7 @@ export class QualityGate {
       readabilityScore: 1.0,
       coherenceScore: 1.0,
       relevanceScore: 1.0,
-      overallScore: 1.0
+      overallScore: 1.0,
     }
   }
 }

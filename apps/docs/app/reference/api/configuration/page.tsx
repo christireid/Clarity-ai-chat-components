@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Configuration - Clarity Chat',
-  description: 'Configure Clarity Chat components and hooks with TypeScript-first options.',
+  description:
+    'Configure Clarity Chat components and hooks with TypeScript-first options.',
 }
 
 export default function ConfigurationPage() {
@@ -15,20 +16,21 @@ export default function ConfigurationPage() {
         <span className="docs-badge">API Reference</span>
         <h1>Configuration</h1>
         <p className="docs-lead">
-          Configure Clarity Chat components and hooks with TypeScript-first options for
-          optimal performance and customization.
+          Configure Clarity Chat components and hooks with TypeScript-first
+          options for optimal performance and customization.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Global Configuration</h2>
         <p>
-          Set default options for all Clarity Chat components using the provider:
+          Set default options for all Clarity Chat components using the
+          provider:
         </p>
 
         <CodeBlock
           language="tsx"
-          code={`import { ClarityChatProvider } from '@clarity-chat/react'
+          code={`import { ClarityChatProvider } from '@clarity-chat/react/internal'
 
 function App({ children }) {
   return (
@@ -65,9 +67,7 @@ function App({ children }) {
 
       <section className="docs-section">
         <h2>Environment Variables</h2>
-        <p>
-          Configure sensitive values using environment variables:
-        </p>
+        <p>Configure sensitive values using environment variables:</p>
 
         <CodeBlock
           language="bash"
@@ -162,9 +162,7 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}
 
       <section className="docs-section">
         <h2>TypeScript Configuration</h2>
-        <p>
-          Extend types for your specific use case:
-        </p>
+        <p>Extend types for your specific use case:</p>
 
         <CodeBlock
           language="tsx"

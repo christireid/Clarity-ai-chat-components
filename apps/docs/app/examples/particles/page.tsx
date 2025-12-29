@@ -6,7 +6,7 @@ import { HeroParticles } from '@/components/hero'
 import type { InteractionMode } from '@/components/hero'
 import {
   Sparkles,
-  Pointer,
+  MousePointer2 as Pointer,
   Navigation,
   Layers,
   Moon,

@@ -114,16 +114,18 @@ const messages = [
 
 ### Integrating Real Tokenization
 
-Replace mock functions with actual tokenization:
+Replace mock functions with actual tokenization using the token-optimization package:
 
 ```typescript
-import { encoding_for_model } from 'tiktoken'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
-function countTokens(text: string, model = 'gpt-4o'): number {
-  const enc = encoding_for_model(model)
-  const tokens = enc.encode(text)
-  enc.free()
-  return tokens.length
+const counter = new AccurateTokenCounter({
+  model: 'gpt-4o',
+  enableCaching: true,
+})
+
+function countTokens(text: string): number {
+  return counter.count(text)
 }
 ```
 
@@ -155,11 +157,14 @@ function MyComponent() {
 <details>
 <summary>Inaccurate token counts</summary>
 
-The demo uses rough estimates (1 token ≈ 4 characters). For accurate counts, install `tiktoken`:
+The demo uses rough estimates (1 token ≈ 4 characters). For accurate counts, use
+`@clarity-chat/token-optimization`:
 
 ```bash
-pnpm add tiktoken
+pnpm add @clarity-chat/token-optimization
 ```
+
+The package uses `gpt-tokenizer` internally for 99%+ accuracy (20x smaller than tiktoken WASM).
 
 </details>
 
@@ -180,10 +185,10 @@ const COST_PER_TOKEN = {
 
 ## 📚 Learn More
 
-- [Clarity Chat Token Optimization](../../packages/react/README.md)
+- [Token Optimization Package](../../packages/token-optimization/README.md)
 - [OpenAI Tokenizer](https://platform.openai.com/tokenizer)
 - [Anthropic Prompt Caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
-- [tiktoken Library](https://github.com/openai/tiktoken)
+- [gpt-tokenizer Library](https://github.com/niieani/gpt-tokenizer)
 
 ## 📄 License
 

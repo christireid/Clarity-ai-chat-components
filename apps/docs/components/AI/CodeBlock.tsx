@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { durations } from '@/lib/animations'
 import {
   Check,
   Copy,
@@ -61,7 +62,7 @@ export function CodeBlock({
     if (!highlightedCode) return code
     return DOMPurify.sanitize(highlightedCode, {
       ALLOWED_TAGS: ['span', 'div', 'br', 'strong', 'em', 'code', 'pre'],
-      ALLOWED_ATTR: ['class', 'style']
+      ALLOWED_ATTR: ['class', 'style'],
     })
   }, [highlightedCode, code])
 
@@ -71,8 +72,8 @@ export function CodeBlock({
     if (hash.startsWith('#L')) {
       const match = hash.match(/#L(\d+)(?:-L(\d+))?/)
       if (match) {
-        const start = parseInt(match[1])
-        const end = match[2] ? parseInt(match[2]) : start
+        const start = parseInt(match[1], 10)
+        const end = match[2] ? parseInt(match[2], 10) : start
         const lines = Array.from(
           { length: end - start + 1 },
           (_, i) => start + i
@@ -500,8 +501,8 @@ export function CodeBlock({
                         dangerouslySetInnerHTML={{
                           __html: DOMPurify.sanitize(highlightedLine || '\n', {
                             ALLOWED_TAGS: ['span', 'div', 'br'],
-                            ALLOWED_ATTR: ['class', 'style']
-                          })
+                            ALLOWED_ATTR: ['class', 'style'],
+                          }),
                         }}
                       />
                     </motion.div>
@@ -653,9 +654,12 @@ function renderInlineCode(text: string): string {
   // SECURITY: Sanitize the text before processing
   const sanitizedText = DOMPurify.sanitize(text, {
     ALLOWED_TAGS: [],
-    ALLOWED_ATTR: []
+    ALLOWED_ATTR: [],
   })
-  return sanitizedText.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
+  return sanitizedText.replace(
+    /`([^`]+)`/g,
+    '<code class="inline-code">$1</code>'
+  )
 }
 
 /**

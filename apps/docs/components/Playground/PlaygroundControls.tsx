@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Share2, Download, Code2, ExternalLink, Check, X } from 'lucide-react'
-import { useToast } from '@clarity-chat/react'
+import { useToast } from '@clarity-chat/react/internal'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 interface PlaygroundControlsProps {
   code: string
@@ -15,7 +16,7 @@ interface PlaygroundControlsProps {
 export function PlaygroundControls({
   code,
   dependencies = {},
-  templateName
+  templateName,
 }: PlaygroundControlsProps) {
   const [showShareModal, setShowShareModal] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -62,16 +63,20 @@ export function PlaygroundControls({
       const parameters = {
         files: {
           'package.json': {
-            content: JSON.stringify({
-              name: templateName.toLowerCase().replace(/\s+/g, '-'),
-              version: '1.0.0',
-              dependencies: {
-                'react': '^18.2.0',
-                'react-dom': '^18.2.0',
-                '@clarity-chat/react': 'latest',
-                ...dependencies
-              }
-            }, null, 2)
+            content: JSON.stringify(
+              {
+                name: templateName.toLowerCase().replace(/\s+/g, '-'),
+                version: '1.0.0',
+                dependencies: {
+                  react: '^18.2.0',
+                  'react-dom': '^18.2.0',
+                  '@clarity-chat/react': 'latest',
+                  ...dependencies,
+                },
+              },
+              null,
+              2
+            ),
           },
           'index.html': {
             content: `<!DOCTYPE html>
@@ -84,7 +89,7 @@ export function PlaygroundControls({
 <body>
   <div id="root"></div>
 </body>
-</html>`
+</html>`,
           },
           'index.tsx': {
             content: `import React from 'react'
@@ -96,12 +101,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-)`
+)`,
           },
           'App.tsx': {
-            content: code
-          }
-        }
+            content: code,
+          },
+        },
       }
 
       const form = document.createElement('form')
@@ -139,9 +144,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     URL.revokeObjectURL(url)
   }
 
-  const shareUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/playground?code=${encodeURIComponent(btoa(code))}`
-    : ''
+  const shareUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/playground?code=${encodeURIComponent(btoa(code))}`
+      : ''
 
   return (
     <>
@@ -149,8 +155,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <button
           onClick={handleCopyCode}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm font-medium",
-            copied && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+            'flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm font-medium',
+            copied &&
+              'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
           )}
         >
           {copied ? (
@@ -186,8 +193,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           onClick={handleExportCodeSandbox}
           disabled={isExporting}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium",
-            isExporting && "opacity-75 cursor-wait"
+            'flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium',
+            isExporting && 'opacity-75 cursor-wait'
           )}
         >
           {isExporting ? (
@@ -213,7 +220,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal }}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
               onClick={() => setShowShareModal(false)}
               aria-hidden="true"
@@ -224,7 +231,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{
+                duration: durations.normal,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
               className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
               role="dialog"
               aria-modal="true"
@@ -241,10 +251,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                   <button
                     onClick={() => setShowShareModal(false)}
                     className={cn(
-                      "p-1.5 rounded-lg text-gray-500 dark:text-gray-400",
-                      "hover:bg-gray-100 dark:hover:bg-gray-700",
-                      "transition-colors",
-                      "focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      'p-1.5 rounded-lg text-gray-500 dark:text-gray-400',
+                      'hover:bg-gray-100 dark:hover:bg-gray-700',
+                      'transition-colors',
+                      'focus:outline-none focus:ring-2 focus:ring-blue-500'
                     )}
                     aria-label="Close share modal"
                   >
@@ -276,9 +286,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                       }
                     }}
                     className={cn(
-                      "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium",
-                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                      copied && "bg-green-500 hover:bg-green-600"
+                      'px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium',
+                      'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      copied && 'bg-green-500 hover:bg-green-600'
                     )}
                     aria-label="Copy share link to clipboard"
                   >

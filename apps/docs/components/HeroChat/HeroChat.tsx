@@ -18,7 +18,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useCommandPalette } from '@clarity-chat/react'
+import { useCommandPalette } from '@clarity-chat/react/internal'
 
 // Decomposed components
 import {
@@ -99,7 +99,7 @@ function useAutoScroll(dependencies: unknown[]) {
 
   useEffect(() => {
     scrollToBottom()
-  }, dependencies) // eslint-disable-line react-hooks/exhaustive-deps
+  }, dependencies)
 
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return

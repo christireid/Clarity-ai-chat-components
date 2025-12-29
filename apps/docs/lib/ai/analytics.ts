@@ -6,6 +6,7 @@
  */
 
 import { Redis } from '@upstash/redis'
+import { logger } from '@/lib/logger'
 
 export interface QueryAnalytics {
   id: string
@@ -101,7 +102,9 @@ export interface AnalyticsStore {
   getRecentQueries(limit?: number): Promise<QueryAnalytics[]>
 
   /** Get popular topics */
-  getPopularTopics(limit?: number): Promise<Array<{ topic: string; count: number }>>
+  getPopularTopics(
+    limit?: number
+  ): Promise<Array<{ topic: string; count: number }>>
 
   /** Clear old analytics data */
   clearOldData(olderThanDays: number): Promise<void>
@@ -144,7 +147,9 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     return `${this.prefix}:metrics`
   }
 
-  async trackQuery(analytics: Omit<QueryAnalytics, 'id' | 'timestamp'>): Promise<void> {
+  async trackQuery(
+    analytics: Omit<QueryAnalytics, 'id' | 'timestamp'>
+  ): Promise<void> {
     const id = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = new Date().toISOString()
 
@@ -162,10 +167,10 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     )
 
     // Add to sorted set (by timestamp)
-    await this.redis.zadd(
-      this.getQueryListKey(),
-      { score: Date.now(), member: id }
-    )
+    await this.redis.zadd(this.getQueryListKey(), {
+      score: Date.now(),
+      member: id,
+    })
 
     // Track topic if present
     if (analytics.topicDetected) {
@@ -174,10 +179,26 @@ export class RedisAnalyticsStore implements AnalyticsStore {
 
     // Update aggregate metrics
     const metrics = {
-      totalQueries: await this.redis.hincrby(this.getMetricsKey(), 'totalQueries', 1),
-      totalCost: await this.redis.hincrbyfloat(this.getMetricsKey(), 'totalCost', analytics.cost),
-      totalTokens: await this.redis.hincrby(this.getMetricsKey(), 'totalTokens', analytics.tokenCount),
-      totalResponseTime: await this.redis.hincrby(this.getMetricsKey(), 'totalResponseTime', analytics.responseTime),
+      totalQueries: await this.redis.hincrby(
+        this.getMetricsKey(),
+        'totalQueries',
+        1
+      ),
+      totalCost: await this.redis.hincrbyfloat(
+        this.getMetricsKey(),
+        'totalCost',
+        analytics.cost
+      ),
+      totalTokens: await this.redis.hincrby(
+        this.getMetricsKey(),
+        'totalTokens',
+        analytics.tokenCount
+      ),
+      totalResponseTime: await this.redis.hincrby(
+        this.getMetricsKey(),
+        'totalResponseTime',
+        analytics.responseTime
+      ),
     }
 
     if (analytics.cached) {
@@ -188,34 +209,48 @@ export class RedisAnalyticsStore implements AnalyticsStore {
 
     if (analytics.ragUsed) {
       await this.redis.hincrby(this.getMetricsKey(), 'ragQueries', 1)
-      await this.redis.hincrby(this.getMetricsKey(), 'totalSources', analytics.sourcesFound)
+      await this.redis.hincrby(
+        this.getMetricsKey(),
+        'totalSources',
+        analytics.sourcesFound
+      )
     }
 
     if (analytics.isFollowUp) {
       await this.redis.hincrby(this.getMetricsKey(), 'followUps', 1)
     }
 
-    logger.debug(`📊 Analytics tracked: ${analytics.query.substring(0, 50)}... (${analytics.responseTime}ms, $${analytics.cost.toFixed(4)})`)
+    logger.debug(
+      `📊 Analytics tracked: ${analytics.query.substring(0, 50)}... (${analytics.responseTime}ms, $${analytics.cost.toFixed(4)})`
+    )
   }
 
-  async getSummary(startDate?: Date, endDate?: Date): Promise<AnalyticsSummary> {
+  async getSummary(
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<AnalyticsSummary> {
     const end = endDate || new Date()
     const start = startDate || new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000) // Default: 7 days
 
-    const durationDays = Math.ceil((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
+    const durationDays = Math.ceil(
+      (end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)
+    )
 
     // Get aggregate metrics
     const metrics = await this.redis.hgetall(this.getMetricsKey())
 
-    const totalQueries = parseInt((metrics?.totalQueries as string) || '0')
+    const totalQueries = parseInt((metrics?.totalQueries as string) || '0', 10)
     const totalCost = parseFloat((metrics?.totalCost as string) || '0')
-    const totalTokens = parseInt((metrics?.totalTokens as string) || '0')
-    const totalResponseTime = parseInt((metrics?.totalResponseTime as string) || '0')
-    const cacheHits = parseInt((metrics?.cacheHits as string) || '0')
-    const cacheMisses = parseInt((metrics?.cacheMisses as string) || '0')
-    const ragQueries = parseInt((metrics?.ragQueries as string) || '0')
-    const totalSources = parseInt((metrics?.totalSources as string) || '0')
-    const followUps = parseInt((metrics?.followUps as string) || '0')
+    const totalTokens = parseInt((metrics?.totalTokens as string) || '0', 10)
+    const totalResponseTime = parseInt(
+      (metrics?.totalResponseTime as string) || '0',
+      10
+    )
+    const cacheHits = parseInt((metrics?.cacheHits as string) || '0', 10)
+    const cacheMisses = parseInt((metrics?.cacheMisses as string) || '0', 10)
+    const ragQueries = parseInt((metrics?.ragQueries as string) || '0', 10)
+    const totalSources = parseInt((metrics?.totalSources as string) || '0', 10)
+    const followUps = parseInt((metrics?.followUps as string) || '0', 10)
 
     // Calculate cache hit rate
     const cacheTotal = cacheHits + cacheMisses
@@ -224,7 +259,9 @@ export class RedisAnalyticsStore implements AnalyticsStore {
 
     // Get popular topics
     // @ts-expect-error - zrevrange exists in Redis but not in type definitions
-    const topics = await this.redis.zrevrange(this.getTopicsKey(), 0, 9, { withScores: true })
+    const topics = await this.redis.zrevrange(this.getTopicsKey(), 0, 9, {
+      withScores: true,
+    })
     const popularTopics = []
     for (let i = 0; i < topics.length; i += 2) {
       const topic = topics[i] as string
@@ -250,7 +287,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
 
     // Calculate popular queries
     const queryCount = new Map<string, number>()
-    queries.forEach(q => {
+    queries.forEach((q) => {
       const normalized = q.query.toLowerCase().trim()
       queryCount.set(normalized, (queryCount.get(normalized) || 0) + 1)
     })
@@ -261,14 +298,19 @@ export class RedisAnalyticsStore implements AnalyticsStore {
       .slice(0, 10)
 
     // Calculate feedback metrics
-    const positiveCount = queries.filter(q => q.feedbackType === 'positive').length
-    const negativeCount = queries.filter(q => q.feedbackType === 'negative').length
+    const positiveCount = queries.filter(
+      (q) => q.feedbackType === 'positive'
+    ).length
+    const negativeCount = queries.filter(
+      (q) => q.feedbackType === 'negative'
+    ).length
     const feedbackTotal = positiveCount + negativeCount
-    const positiveRate = feedbackTotal > 0 ? (positiveCount / feedbackTotal) * 100 : 0
+    const positiveRate =
+      feedbackTotal > 0 ? (positiveCount / feedbackTotal) * 100 : 0
 
     // Calculate model usage
     const modelUsage: Record<string, number> = {}
-    queries.forEach(q => {
+    queries.forEach((q) => {
       modelUsage[q.model] = (modelUsage[q.model] || 0) + 1
     })
 
@@ -282,7 +324,8 @@ export class RedisAnalyticsStore implements AnalyticsStore {
         total: totalQueries,
         unique: queryCount.size,
         averagePerDay: totalQueries / durationDays,
-        averageResponseTime: totalQueries > 0 ? totalResponseTime / totalQueries : 0,
+        averageResponseTime:
+          totalQueries > 0 ? totalResponseTime / totalQueries : 0,
         followUpRate: totalQueries > 0 ? (followUps / totalQueries) * 100 : 0,
       },
       costs: {
@@ -316,7 +359,11 @@ export class RedisAnalyticsStore implements AnalyticsStore {
 
   async getRecentQueries(limit = 50): Promise<QueryAnalytics[]> {
     // @ts-expect-error - zrevrange exists in Redis but not in type definitions
-    const recentIds = await this.redis.zrevrange(this.getQueryListKey(), 0, limit - 1)
+    const recentIds = await this.redis.zrevrange(
+      this.getQueryListKey(),
+      0,
+      limit - 1
+    )
     const queries: QueryAnalytics[] = []
 
     for (const id of recentIds) {
@@ -329,9 +376,16 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     return queries
   }
 
-  async getPopularTopics(limit = 10): Promise<Array<{ topic: string; count: number }>> {
+  async getPopularTopics(
+    limit = 10
+  ): Promise<Array<{ topic: string; count: number }>> {
     // @ts-expect-error - zrevrange exists in Redis but not in type definitions
-    const topics = await this.redis.zrevrange(this.getTopicsKey(), 0, limit - 1, { withScores: true })
+    const topics = await this.redis.zrevrange(
+      this.getTopicsKey(),
+      0,
+      limit - 1,
+      { withScores: true }
+    )
     const result = []
 
     for (let i = 0; i < topics.length; i += 2) {
@@ -371,7 +425,9 @@ export class LocalAnalyticsStore implements AnalyticsStore {
     followUps: 0,
   }
 
-  async trackQuery(analytics: Omit<QueryAnalytics, 'id' | 'timestamp'>): Promise<void> {
+  async trackQuery(
+    analytics: Omit<QueryAnalytics, 'id' | 'timestamp'>
+  ): Promise<void> {
     const id = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = new Date().toISOString()
 
@@ -404,31 +460,42 @@ export class LocalAnalyticsStore implements AnalyticsStore {
       this.metrics.followUps++
     }
 
-    logger.debug(`📊 Analytics tracked (local): ${analytics.query.substring(0, 50)}...`)
+    logger.debug(
+      `📊 Analytics tracked (local): ${analytics.query.substring(0, 50)}...`
+    )
   }
 
-  async getSummary(startDate?: Date, endDate?: Date): Promise<AnalyticsSummary> {
+  async getSummary(
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<AnalyticsSummary> {
     const end = endDate || new Date()
     const start = startDate || new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000)
 
     // Filter queries by date range
-    const filteredQueries = this.queries.filter(q => {
+    const filteredQueries = this.queries.filter((q) => {
       const qDate = new Date(q.timestamp)
       return qDate >= start && qDate <= end
     })
 
-    const durationDays = Math.ceil((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
+    const durationDays = Math.ceil(
+      (end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)
+    )
 
     // Calculate metrics (same logic as Redis store)
     const totalQueries = this.metrics.totalQueries
     const cacheTotal = this.metrics.cacheHits + this.metrics.cacheMisses
-    const cacheHitRate = cacheTotal > 0 ? (this.metrics.cacheHits / cacheTotal) * 100 : 0
+    const cacheHitRate =
+      cacheTotal > 0 ? (this.metrics.cacheHits / cacheTotal) * 100 : 0
 
     // Get popular topics
     const topicCount = new Map<string, number>()
-    filteredQueries.forEach(q => {
+    filteredQueries.forEach((q) => {
       if (q.topicDetected) {
-        topicCount.set(q.topicDetected, (topicCount.get(q.topicDetected) || 0) + 1)
+        topicCount.set(
+          q.topicDetected,
+          (topicCount.get(q.topicDetected) || 0) + 1
+        )
       }
     })
 
@@ -443,7 +510,7 @@ export class LocalAnalyticsStore implements AnalyticsStore {
 
     // Get popular queries
     const queryCount = new Map<string, number>()
-    filteredQueries.forEach(q => {
+    filteredQueries.forEach((q) => {
       const normalized = q.query.toLowerCase().trim()
       queryCount.set(normalized, (queryCount.get(normalized) || 0) + 1)
     })
@@ -454,13 +521,17 @@ export class LocalAnalyticsStore implements AnalyticsStore {
       .slice(0, 10)
 
     // Feedback metrics
-    const positiveCount = filteredQueries.filter(q => q.feedbackType === 'positive').length
-    const negativeCount = filteredQueries.filter(q => q.feedbackType === 'negative').length
+    const positiveCount = filteredQueries.filter(
+      (q) => q.feedbackType === 'positive'
+    ).length
+    const negativeCount = filteredQueries.filter(
+      (q) => q.feedbackType === 'negative'
+    ).length
     const feedbackTotal = positiveCount + negativeCount
 
     // Model usage
     const modelUsage: Record<string, number> = {}
-    filteredQueries.forEach(q => {
+    filteredQueries.forEach((q) => {
       modelUsage[q.model] = (modelUsage[q.model] || 0) + 1
     })
 
@@ -474,12 +545,15 @@ export class LocalAnalyticsStore implements AnalyticsStore {
         total: totalQueries,
         unique: queryCount.size,
         averagePerDay: totalQueries / durationDays,
-        averageResponseTime: totalQueries > 0 ? this.metrics.totalResponseTime / totalQueries : 0,
-        followUpRate: totalQueries > 0 ? (this.metrics.followUps / totalQueries) * 100 : 0,
+        averageResponseTime:
+          totalQueries > 0 ? this.metrics.totalResponseTime / totalQueries : 0,
+        followUpRate:
+          totalQueries > 0 ? (this.metrics.followUps / totalQueries) * 100 : 0,
       },
       costs: {
         total: this.metrics.totalCost,
-        averagePerQuery: totalQueries > 0 ? this.metrics.totalCost / totalQueries : 0,
+        averagePerQuery:
+          totalQueries > 0 ? this.metrics.totalCost / totalQueries : 0,
         estimatedMonthlyCost: (this.metrics.totalCost / durationDays) * 30,
         cacheSavings: this.metrics.cacheHits * 0.0015,
       },
@@ -490,13 +564,18 @@ export class LocalAnalyticsStore implements AnalyticsStore {
         estimatedSavings: this.metrics.cacheHits * 0.0015,
       },
       rag: {
-        usageRate: totalQueries > 0 ? (this.metrics.ragQueries / totalQueries) * 100 : 0,
-        averageSourcesReturned: this.metrics.ragQueries > 0 ? this.metrics.totalSources / this.metrics.ragQueries : 0,
+        usageRate:
+          totalQueries > 0 ? (this.metrics.ragQueries / totalQueries) * 100 : 0,
+        averageSourcesReturned:
+          this.metrics.ragQueries > 0
+            ? this.metrics.totalSources / this.metrics.ragQueries
+            : 0,
         averageRelevanceScore: 0.85,
       },
       feedback: {
         total: feedbackTotal,
-        positiveRate: feedbackTotal > 0 ? (positiveCount / feedbackTotal) * 100 : 0,
+        positiveRate:
+          feedbackTotal > 0 ? (positiveCount / feedbackTotal) * 100 : 0,
         positive: positiveCount,
         negative: negativeCount,
       },
@@ -510,11 +589,16 @@ export class LocalAnalyticsStore implements AnalyticsStore {
     return this.queries.slice(-limit).reverse()
   }
 
-  async getPopularTopics(limit = 10): Promise<Array<{ topic: string; count: number }>> {
+  async getPopularTopics(
+    limit = 10
+  ): Promise<Array<{ topic: string; count: number }>> {
     const topicCount = new Map<string, number>()
-    this.queries.forEach(q => {
+    this.queries.forEach((q) => {
       if (q.topicDetected) {
-        topicCount.set(q.topicDetected, (topicCount.get(q.topicDetected) || 0) + 1)
+        topicCount.set(
+          q.topicDetected,
+          (topicCount.get(q.topicDetected) || 0) + 1
+        )
       }
     })
 
@@ -526,7 +610,7 @@ export class LocalAnalyticsStore implements AnalyticsStore {
 
   async clearOldData(olderThanDays: number): Promise<void> {
     const cutoff = new Date(Date.now() - olderThanDays * 24 * 60 * 60 * 1000)
-    this.queries = this.queries.filter(q => new Date(q.timestamp) > cutoff)
+    this.queries = this.queries.filter((q) => new Date(q.timestamp) > cutoff)
   }
 }
 

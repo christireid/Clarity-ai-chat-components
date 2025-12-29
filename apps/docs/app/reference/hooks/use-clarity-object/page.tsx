@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider, useClarityObject } from '@clarity-chat/react'
+import { ToastProvider, useClarityObject } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -462,7 +462,7 @@ function UserGenerator() {
         <h3>Complete Example with All Features</h3>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react'
+          code={`import { useClarityObject } from '@clarity-chat/react/internal'
 
 interface BlogPost {
   title: string
@@ -656,7 +656,7 @@ export async function POST(req: Request) {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react'
+          code={`import { useClarityObject } from '@clarity-chat/react/internal'
 import { z } from 'zod'
 
 // Define Zod schema for runtime validation

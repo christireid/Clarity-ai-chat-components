@@ -11,7 +11,13 @@ import {
 } from '@/lib/hook-metadata'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 
-type CompareField = 'description' | 'signature' | 'category' | 'useCases' | 'relatedHooks' | 'tags'
+type CompareField =
+  | 'description'
+  | 'signature'
+  | 'category'
+  | 'useCases'
+  | 'relatedHooks'
+  | 'tags'
 
 const compareFields: { key: CompareField; label: string }[] = [
   { key: 'description', label: 'Description' },
@@ -23,7 +29,15 @@ const compareFields: { key: CompareField; label: string }[] = [
 ]
 
 // Toast notification component
-function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
+function Toast({
+  message,
+  type,
+  onClose,
+}: {
+  message: string
+  type: 'success' | 'error'
+  onClose: () => void
+}) {
   useEffect(() => {
     const timer = setTimeout(onClose, 3000)
     return () => clearTimeout(timer)
@@ -39,18 +53,48 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
       role="alert"
     >
       {type === 'success' ? (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       ) : (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       )}
       <span className="text-sm font-medium">{message}</span>
       <button onClick={onClose} className="ml-2 hover:opacity-70">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </div>
@@ -65,7 +109,10 @@ function HookSelector({
   onToggle: (hookName: string) => void
 }) {
   const [search, setSearch] = useState('')
-  const [expandedCategories, setExpandedCategories] = useState<HookCategory[]>(['top-level', 'chat'])
+  const [expandedCategories, setExpandedCategories] = useState<HookCategory[]>([
+    'top-level',
+    'chat',
+  ])
 
   const filteredHooks = useMemo(() => {
     if (!search) return hookMetadata
@@ -79,7 +126,10 @@ function HookSelector({
   }, [search])
 
   const groupedHooks = useMemo(() => {
-    const groups: Record<HookCategory, HookMetadata[]> = {} as Record<HookCategory, HookMetadata[]>
+    const groups: Record<HookCategory, HookMetadata[]> = {} as Record<
+      HookCategory,
+      HookMetadata[]
+    >
     filteredHooks.forEach((hook) => {
       if (!groups[hook.category]) {
         groups[hook.category] = []
@@ -129,7 +179,12 @@ function HookSelector({
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
                 {config.label} ({hooks.length})
               </button>
@@ -160,7 +215,8 @@ function HookSelector({
       {selectedHooks.length > 0 && (
         <div className="mt-4 pt-4 border-t">
           <p className="text-sm text-muted-foreground mb-2">
-            Selected: {selectedHooks.length} hook{selectedHooks.length !== 1 ? 's' : ''}
+            Selected: {selectedHooks.length} hook
+            {selectedHooks.length !== 1 ? 's' : ''}
           </p>
           <div className="flex flex-wrap gap-2">
             {selectedHooks.map((name) => (
@@ -277,34 +333,81 @@ function ExportMenu({
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+          />
         </svg>
         Export
-        <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
           <div className="absolute right-0 mt-2 w-56 bg-background border rounded-lg shadow-lg z-50 py-1">
             <button
-              onClick={() => copyToClipboard(generateImports(), 'Imports copied!')}
+              onClick={() =>
+                copyToClipboard(generateImports(), 'Imports copied!')
+              }
               className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
               </svg>
               Copy All Imports
             </button>
             <button
-              onClick={() => copyToClipboard(generateMarkdown(), 'Markdown copied!')}
+              onClick={() =>
+                copyToClipboard(generateMarkdown(), 'Markdown copied!')
+              }
               className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               Copy as Markdown
             </button>
@@ -312,8 +415,18 @@ function ExportMenu({
               onClick={() => copyToClipboard(generateJSON(), 'JSON copied!')}
               className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                />
               </svg>
               Copy as JSON
             </button>
@@ -325,8 +438,18 @@ function ExportMenu({
               }}
               className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                />
               </svg>
               Copy Share Link
             </button>
@@ -347,11 +470,23 @@ function ComparisonTable({
   if (hooks.length === 0) {
     return (
       <div className="border rounded-lg p-8 text-center text-muted-foreground">
-        <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg
+          className="w-12 h-12 mx-auto mb-4 opacity-50"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          />
         </svg>
         <p className="font-medium mb-2">No hooks selected</p>
-        <p className="text-sm">Select hooks from the sidebar to compare them side by side.</p>
+        <p className="text-sm">
+          Select hooks from the sidebar to compare them side by side.
+        </p>
       </div>
     )
   }
@@ -362,9 +497,14 @@ function ComparisonTable({
         <table className="w-full">
           <thead>
             <tr className="bg-muted">
-              <th className="text-left p-3 font-semibold border-b w-32">Property</th>
+              <th className="text-left p-3 font-semibold border-b w-32">
+                Property
+              </th>
               {hooks.map((hook) => (
-                <th key={hook.name} className="text-left p-3 font-semibold border-b min-w-64">
+                <th
+                  key={hook.name}
+                  className="text-left p-3 font-semibold border-b min-w-64"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <Link
                       href={hook.href}
@@ -377,8 +517,18 @@ function ComparisonTable({
                       className="p-1 hover:bg-muted-foreground/10 rounded"
                       aria-label={`Remove ${hook.name}`}
                     >
-                      <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-4 h-4 text-muted-foreground"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -388,8 +538,13 @@ function ComparisonTable({
           </thead>
           <tbody>
             {compareFields.map((field, idx) => (
-              <tr key={field.key} className={idx % 2 === 0 ? '' : 'bg-muted/50'}>
-                <td className="p-3 font-medium text-sm border-r">{field.label}</td>
+              <tr
+                key={field.key}
+                className={idx % 2 === 0 ? '' : 'bg-muted/50'}
+              >
+                <td className="p-3 font-medium text-sm border-r">
+                  {field.label}
+                </td>
                 {hooks.map((hook) => (
                   <td key={hook.name} className="p-3 text-sm">
                     {renderFieldValue(hook, field.key)}
@@ -414,19 +569,29 @@ function ComparisonTable({
   )
 }
 
-function renderFieldValue(hook: HookMetadata, field: CompareField): React.ReactNode {
+function renderFieldValue(
+  hook: HookMetadata,
+  field: CompareField
+): React.ReactNode {
   switch (field) {
     case 'description':
       return hook.description
     case 'signature':
-      return <code className="text-xs bg-muted px-2 py-1 rounded">{hook.signature}</code>
-    case 'category':
+      return (
+        <code className="text-xs bg-muted px-2 py-1 rounded">
+          {hook.signature}
+        </code>
+      )
+    case 'category': {
       const config = categoryConfig[hook.category]
       return (
-        <span className={`px-2 py-1 rounded text-xs font-medium ${config.colorClass}`}>
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${config.colorClass}`}
+        >
           {config.label}
         </span>
       )
+    }
     case 'useCases':
       if (!hook.useCases || hook.useCases.length === 0) {
         return <span className="text-muted-foreground">—</span>
@@ -434,7 +599,9 @@ function renderFieldValue(hook: HookMetadata, field: CompareField): React.ReactN
       return (
         <ul className="list-disc list-inside space-y-1">
           {hook.useCases.map((uc, i) => (
-            <li key={i} className="text-muted-foreground">{uc}</li>
+            <li key={i} className="text-muted-foreground">
+              {uc}
+            </li>
           ))}
         </ul>
       )
@@ -447,7 +614,11 @@ function renderFieldValue(hook: HookMetadata, field: CompareField): React.ReactN
           {hook.relatedHooks.map((name) => (
             <Link
               key={name}
-              href={`/reference/hooks/${name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '').replace('use-', 'use-')}`}
+              href={`/reference/hooks/${name
+                .replace(/([A-Z])/g, '-$1')
+                .toLowerCase()
+                .replace(/^-/, '')
+                .replace('use-', 'use-')}`}
               className="text-xs bg-muted px-2 py-1 rounded hover:bg-brand-100 dark:hover:bg-brand-900"
             >
               {name}
@@ -493,13 +664,18 @@ const suggestedComparisons = [
 export default function CompareHooksPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [toast, setToast] = useState<{
+    message: string
+    type: 'success' | 'error'
+  } | null>(null)
 
   // Initialize from URL params
   const [selectedHooks, setSelectedHooks] = useState<string[]>(() => {
     const hooksParam = searchParams.get('hooks')
     if (hooksParam) {
-      const hooks = hooksParam.split(',').filter((h) => hookMetadata.some((m) => m.name === h))
+      const hooks = hooksParam
+        .split(',')
+        .filter((h) => hookMetadata.some((m) => m.name === h))
       return hooks
     }
     return []
@@ -511,9 +687,10 @@ export default function CompareHooksPage() {
     if (selectedHooks.length > 0) {
       params.set('hooks', selectedHooks.join(','))
     }
-    const newUrl = selectedHooks.length > 0
-      ? `${window.location.pathname}?${params.toString()}`
-      : window.location.pathname
+    const newUrl =
+      selectedHooks.length > 0
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname
     router.replace(newUrl, { scroll: false })
   }, [selectedHooks, router])
 
@@ -547,17 +724,21 @@ export default function CompareHooksPage() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Compare Hooks</h1>
         <p className="text-xl text-muted-foreground">
-          Select multiple hooks to compare their features, signatures, and use cases side by side.
+          Select multiple hooks to compare their features, signatures, and use
+          cases side by side.
         </p>
         <p className="text-sm text-muted-foreground mt-2">
-          Tip: Share your comparison by copying the URL or using the Export button.
+          Tip: Share your comparison by copying the URL or using the Export
+          button.
         </p>
       </div>
 
       {/* Toolbar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-muted-foreground mb-2">Quick comparisons:</p>
+          <p className="text-sm text-muted-foreground mb-2">
+            Quick comparisons:
+          </p>
           <div className="flex flex-wrap gap-2">
             {suggestedComparisons.map((suggestion) => (
               <button
@@ -598,13 +779,22 @@ export default function CompareHooksPage() {
 
       {/* Footer Links */}
       <div className="mt-8 pt-8 border-t flex gap-4 text-sm">
-        <Link href="/reference/hooks" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/hooks"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           ← All Hooks
         </Link>
-        <Link href="/reference/hooks/selector" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/hooks/selector"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           Hook Selector →
         </Link>
-        <Link href="/reference/quick-reference" className="text-brand-600 dark:text-brand-400 hover:underline">
+        <Link
+          href="/reference/quick-reference"
+          className="text-brand-600 dark:text-brand-400 hover:underline"
+        >
           Quick Reference →
         </Link>
       </div>

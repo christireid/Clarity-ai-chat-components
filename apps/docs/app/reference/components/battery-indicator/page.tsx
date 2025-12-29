@@ -86,7 +86,7 @@ export default function BatteryIndicatorPage() {
         <h2>Basic Usage</h2>
         <p>Display battery status with default configuration:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
+          initialCode={`import { BatteryIndicator } from '@clarity-chat/react/internal'
 
 function ChatWithBattery() {
   return (
@@ -108,7 +108,7 @@ render(<ChatWithBattery />)`}
         <h2>Battery-Aware Configuration</h2>
         <p>Configure battery-aware optimizations:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react'
+          initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const { recommendations, shouldEnableBatterySaver } = useBatteryAware({
@@ -144,7 +144,7 @@ function OptimizedChat() {
         <h2>Position Options</h2>
         <p>Position the indicator in different locations:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
+          initialCode={`import { BatteryIndicator } from '@clarity-chat/react/internal'
 
 function PositionedIndicators() {
   return (
@@ -170,7 +170,7 @@ function PositionedIndicators() {
         <h2>Compact Mode</h2>
         <p>Use compact mode for minimal UI footprint:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
+          initialCode={`import { BatteryIndicator } from '@clarity-chat/react/internal'
 
 function CompactIndicator() {
   return (
@@ -188,7 +188,7 @@ function CompactIndicator() {
         <h2>With Recommendations</h2>
         <p>Display optimization recommendations:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react'
+          initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react/internal'
 
 function ChatWithRecommendations() {
   const { recommendations, batteryStatus, shouldEnableBatterySaver } = useBatteryAware({

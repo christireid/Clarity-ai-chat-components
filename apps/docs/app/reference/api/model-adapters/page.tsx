@@ -22,7 +22,9 @@ export default function ModelAdaptersAPIPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Model adapters provide a unified interface for multiple AI providers, enabling easy switching between OpenAI, Anthropic, Google AI, and custom implementations.
+          Model adapters provide a unified interface for multiple AI providers,
+          enabling easy switching between OpenAI, Anthropic, Google AI, and
+          custom implementations.
         </p>
       </section>
 
@@ -30,9 +32,7 @@ export default function ModelAdaptersAPIPage() {
         <h2>Core Interfaces</h2>
 
         <h3>ModelAdapter</h3>
-        <p>
-          The base interface that all adapters implement:
-        </p>
+        <p>The base interface that all adapters implement:</p>
         <CodeBlock
           language="typescript"
           code={`interface ModelAdapter {
@@ -97,12 +97,10 @@ export default function ModelAdaptersAPIPage() {
         <h2>Adapters</h2>
 
         <h3>openAIAdapter</h3>
-        <p>
-          OpenAI GPT models adapter:
-        </p>
+        <p>OpenAI GPT models adapter:</p>
         <CodeBlock
           language="typescript"
-          code={`import { openAIAdapter } from '@clarity-chat/react'
+          code={`import { openAIAdapter } from '@clarity-chat/react/internal'
 
 const response = await openAIAdapter.chat(messages, {
   provider: 'openai',
@@ -115,7 +113,7 @@ const response = await openAIAdapter.chat(messages, {
         <h3>anthropicAdapter</h3>
         <CodeBlock
           language="typescript"
-          code={`import { anthropicAdapter } from '@clarity-chat/react'
+          code={`import { anthropicAdapter } from '@clarity-chat/react/internal'
 
 const response = await anthropicAdapter.chat(messages, {
   provider: 'anthropic',
@@ -127,7 +125,7 @@ const response = await anthropicAdapter.chat(messages, {
         <h3>googleAdapter</h3>
         <CodeBlock
           language="typescript"
-          code={`import { googleAdapter } from '@clarity-chat/react'
+          code={`import { googleAdapter } from '@clarity-chat/react/internal'
 
 const response = await googleAdapter.chat(messages, {
   provider: 'google',
@@ -140,9 +138,20 @@ const response = await googleAdapter.chat(messages, {
       <section className="docs-section">
         <h2>Next Steps</h2>
         <ul>
-          <li><a href="/guides/model-adapters">Model Adapters Guide</a> - Learn about adapters</li>
-          <li><a href="/guides/streaming">Streaming Guide</a> - Learn about streaming</li>
-          <li><a href="/reference/api/streaming-components">Streaming Components API</a> - Streaming components</li>
+          <li>
+            <a href="/guides/model-adapters">Model Adapters Guide</a> - Learn
+            about adapters
+          </li>
+          <li>
+            <a href="/guides/streaming">Streaming Guide</a> - Learn about
+            streaming
+          </li>
+          <li>
+            <a href="/reference/api/streaming-components">
+              Streaming Components API
+            </a>{' '}
+            - Streaming components
+          </li>
         </ul>
       </section>
     </div>

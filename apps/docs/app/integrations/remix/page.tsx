@@ -33,10 +33,7 @@ cd my-chat-app`}
         <p>
           <strong>2. Install Clarity Chat:</strong>
         </p>
-        <CodeBlock
-          language="bash"
-          code={`npm install @clarity-chat/react`}
-        />
+        <CodeBlock language="bash" code={`npm install @clarity-chat/react`} />
 
         <p>
           <strong>3. Add styles to root</strong> (<code>app/root.tsx</code>):
@@ -51,11 +48,12 @@ export function links() {
         />
 
         <p>
-          <strong>4. Create chat route</strong> (<code>app/routes/_index.tsx</code>):
+          <strong>4. Create chat route</strong> (
+          <code>app/routes/_index.tsx</code>):
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ChatWindow } from '@clarity-chat/react'
+          code={`import { ChatWindow } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 
@@ -136,10 +134,7 @@ export async function action({ request }: ActionFunctionArgs) {
         <p>
           Create <code>.env</code>:
         </p>
-        <CodeBlock
-          language="env"
-          code={`OPENAI_API_KEY=sk-...`}
-        />
+        <CodeBlock language="env" code={`OPENAI_API_KEY=sk-...`} />
       </section>
 
       <section className="docs-section">
@@ -155,7 +150,11 @@ fly deploy`}
       <section className="docs-section">
         <h2>Example</h2>
         <p>
-          See the complete <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/multi-user-chat">Multi-User Chat example</a> built with Remix and Socket.io.
+          See the complete{' '}
+          <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/multi-user-chat">
+            Multi-User Chat example
+          </a>{' '}
+          built with Remix and Socket.io.
         </p>
       </section>
     </div>

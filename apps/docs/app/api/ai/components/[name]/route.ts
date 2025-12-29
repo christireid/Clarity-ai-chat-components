@@ -296,7 +296,7 @@ export async function GET(
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    logApiError(error as Error, 'AI Component Lookup API', null)
+    logApiError('AI Component Lookup API', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

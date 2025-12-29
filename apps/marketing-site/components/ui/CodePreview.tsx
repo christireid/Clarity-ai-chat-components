@@ -221,6 +221,7 @@ export default function CodePreview() {
         {/* Code content */}
         <div className="relative">
           <AnimatePresence mode="wait">
+            {/* eslint-disable clarity-animations/prefer-animation-library -- Tab transition animation */}
             <motion.div
               key={activeIndex}
               initial={{ opacity: 0, y: 10 }}
@@ -229,6 +230,7 @@ export default function CodePreview() {
               transition={{ duration: durations.moderate }}
               className="p-4 font-mono text-sm overflow-x-auto"
             >
+              {/* eslint-enable clarity-animations/prefer-animation-library */}
               <pre className="text-gray-200">
                 {highlightCode(activeExample.code)}
               </pre>

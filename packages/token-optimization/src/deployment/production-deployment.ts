@@ -1,6 +1,6 @@
 /**
  * Production Deployment Configuration
- * 
+ *
  * Comprehensive production setup for the token optimization system
  * including monitoring, alerting, and performance tracking
  */
@@ -10,7 +10,7 @@ export interface ProductionConfig {
   environment: 'production' | 'staging' | 'development'
   region: string
   availabilityZones: string[]
-  
+
   // Scaling configuration
   scaling: {
     minInstances: number
@@ -20,7 +20,7 @@ export interface ProductionConfig {
     scaleUpCooldown: number
     scaleDownCooldown: number
   }
-  
+
   // Resource allocation
   resources: {
     cpu: {
@@ -36,7 +36,7 @@ export interface ProductionConfig {
       class: string
     }
   }
-  
+
   // Security settings
   security: {
     enableNetworkPolicies: boolean
@@ -48,7 +48,7 @@ export interface ProductionConfig {
       allowedEgress: string[]
     }
   }
-  
+
   // Monitoring configuration
   monitoring: {
     enablePrometheus: boolean
@@ -59,7 +59,7 @@ export interface ProductionConfig {
     healthCheckPort: number
     logLevel: 'debug' | 'info' | 'warn' | 'error'
   }
-  
+
   // Alerting configuration
   alerting: {
     enableSlackAlerts: boolean
@@ -74,7 +74,7 @@ export interface ProductionConfig {
       availability: number
     }
   }
-  
+
   // Backup and recovery
   backup: {
     enabled: boolean
@@ -82,7 +82,7 @@ export interface ProductionConfig {
     retentionDays: number
     storageLocation: string
   }
-  
+
   // Performance optimization
   performance: {
     enableCaching: boolean
@@ -100,19 +100,19 @@ export interface MonitoringMetrics {
   memoryUsage: number
   diskUsage: number
   networkIO: number
-  
+
   // Application metrics
   requestCount: number
   responseTime: number
   errorRate: number
   throughput: number
-  
+
   // Business metrics
   tokenOptimizationRate: number
   costSavings: number
   qualityScore: number
   compressionRatio: number
-  
+
   // Security metrics
   securityEvents: number
   blockedRequests: number
@@ -154,41 +154,41 @@ export class ProductionDeploymentManager {
   async deploy(): Promise<DeploymentResult> {
     try {
       console.log('🚀 Starting production deployment...')
-      
+
       // Pre-deployment checks
       await this.runPreDeploymentChecks()
-      
+
       // Deploy infrastructure
       await this.deployInfrastructure()
-      
+
       // Deploy application
       await this.deployApplication()
-      
+
       // Post-deployment validation
       await this.runPostDeploymentValidation()
-      
+
       // Start monitoring
       await this.startMonitoring()
-      
+
       console.log('✅ Production deployment completed successfully')
-      
+
       return {
         success: true,
         deploymentId: this.generateDeploymentId(),
         timestamp: new Date(),
-        metrics: await this.getDeploymentMetrics()
+        metrics: await this.getDeploymentMetrics(),
       }
     } catch (error) {
       console.error('❌ Production deployment failed:', error)
-      
+
       // Rollback on failure
       await this.rollback()
-      
+
       return {
         success: false,
         error: error.message,
         timestamp: new Date(),
-        rollbackCompleted: true
+        rollbackCompleted: true,
       }
     }
   }
@@ -198,16 +198,16 @@ export class ProductionDeploymentManager {
    */
   private async runPreDeploymentChecks(): Promise<void> {
     console.log('🔍 Running pre-deployment checks...')
-    
+
     // Check resource availability
     await this.checkResourceAvailability()
-    
+
     // Validate configuration
     this.validateConfiguration()
-    
+
     // Check dependencies
     await this.checkDependencies()
-    
+
     console.log('✅ Pre-deployment checks passed')
   }
 
@@ -216,19 +216,19 @@ export class ProductionDeploymentManager {
    */
   private async deployInfrastructure(): Promise<void> {
     console.log('🏗️ Deploying infrastructure...')
-    
+
     // Deploy Kubernetes cluster
     await this.deployKubernetesCluster()
-    
+
     // Deploy load balancers
     await this.deployLoadBalancers()
-    
+
     // Deploy databases
     await this.deployDatabases()
-    
+
     // Deploy monitoring infrastructure
     await this.deployMonitoringInfrastructure()
-    
+
     console.log('✅ Infrastructure deployed')
   }
 
@@ -237,19 +237,19 @@ export class ProductionDeploymentManager {
    */
   private async deployApplication(): Promise<void> {
     console.log('📦 Deploying application...')
-    
+
     // Build and push Docker images
     await this.buildAndPushImages()
-    
+
     // Deploy to Kubernetes
     await this.deployToKubernetes()
-    
+
     // Configure ingress
     await this.configureIngress()
-    
+
     // Setup SSL/TLS
     await this.setupSSL()
-    
+
     console.log('✅ Application deployed')
   }
 
@@ -258,19 +258,19 @@ export class ProductionDeploymentManager {
    */
   private async runPostDeploymentValidation(): Promise<void> {
     console.log('🧪 Running post-deployment validation...')
-    
+
     // Health checks
     await this.healthChecker.runHealthChecks()
-    
+
     // Performance tests
     await this.runPerformanceTests()
-    
+
     // Security tests
     await this.runSecurityTests()
-    
+
     // Integration tests
     await this.runIntegrationTests()
-    
+
     console.log('✅ Post-deployment validation passed')
   }
 
@@ -279,16 +279,16 @@ export class ProductionDeploymentManager {
    */
   private async startMonitoring(): Promise<void> {
     console.log('📊 Starting monitoring and alerting...')
-    
+
     // Start metrics collection
     this.metricsCollector.start()
-    
+
     // Configure alerts
     await this.alertManager.configureAlerts()
-    
+
     // Start performance monitoring
     this.performanceMonitor.start()
-    
+
     console.log('✅ Monitoring and alerting started')
   }
 
@@ -297,17 +297,17 @@ export class ProductionDeploymentManager {
    */
   private async rollback(): Promise<void> {
     console.log('🔄 Rolling back deployment...')
-    
+
     try {
       // Stop new instances
       await this.stopNewInstances()
-      
+
       // Restore previous version
       await this.restorePreviousVersion()
-      
+
       // Verify rollback
       await this.verifyRollback()
-      
+
       console.log('✅ Rollback completed')
     } catch (rollbackError) {
       console.error('❌ Rollback failed:', rollbackError)
@@ -328,14 +328,15 @@ export class ProductionDeploymentManager {
       responseTime: await this.metricsCollector.getResponseTime(),
       errorRate: await this.metricsCollector.getErrorRate(),
       throughput: await this.metricsCollector.getThroughput(),
-      tokenOptimizationRate: await this.metricsCollector.getTokenOptimizationRate(),
+      tokenOptimizationRate:
+        await this.metricsCollector.getTokenOptimizationRate(),
       costSavings: await this.metricsCollector.getCostSavings(),
       qualityScore: await this.metricsCollector.getQualityScore(),
       compressionRatio: await this.metricsCollector.getCompressionRatio(),
       securityEvents: await this.metricsCollector.getSecurityEvents(),
       blockedRequests: await this.metricsCollector.getBlockedRequests(),
       quarantineEvents: await this.metricsCollector.getQuarantineEvents(),
-      auditLogs: await this.metricsCollector.getAuditLogs()
+      auditLogs: await this.metricsCollector.getAuditLogs(),
     }
   }
 
@@ -453,7 +454,7 @@ class MetricsCollector {
     if (this.collectionInterval) {
       clearInterval(this.collectionInterval)
     }
-    
+
     this.collectionInterval = setInterval(() => {
       this.collectMetrics()
     }, 30000) // Collect every 30 seconds
@@ -483,7 +484,7 @@ class MetricsCollector {
       securityEvents: 0,
       blockedRequests: 0,
       quarantineEvents: 0,
-      auditLogs: 0
+      auditLogs: 0,
     }
   }
 
@@ -590,7 +591,7 @@ class AlertManager {
         threshold: 80,
         duration: '5m',
         severity: 'warning',
-        notificationChannels: ['slack', 'email']
+        notificationChannels: ['slack', 'email'],
       },
       {
         name: 'HighMemoryUsage',
@@ -598,7 +599,7 @@ class AlertManager {
         threshold: 85,
         duration: '5m',
         severity: 'critical',
-        notificationChannels: ['slack', 'email', 'pagerduty']
+        notificationChannels: ['slack', 'email', 'pagerduty'],
       },
       {
         name: 'HighErrorRate',
@@ -606,7 +607,7 @@ class AlertManager {
         threshold: 5,
         duration: '2m',
         severity: 'critical',
-        notificationChannels: ['slack', 'email', 'pagerduty']
+        notificationChannels: ['slack', 'email', 'pagerduty'],
       },
       {
         name: 'LowAvailability',
@@ -615,12 +616,12 @@ class AlertManager {
         duration: '1m',
         severity: 'emergency',
         notificationChannels: ['slack', 'email', 'pagerduty'],
-        autoRecovery: true
-      }
+        autoRecovery: true,
+      },
     ]
   }
 
-  sendAlert(alert: AlertConfig, metrics: MonitoringMetrics): void {
+  sendAlert(alert: AlertConfig, _metrics: MonitoringMetrics): void {
     console.log(`[ALERT] ${alert.name}: Threshold exceeded`)
     // Implementation would send alerts through configured channels
   }
@@ -634,16 +635,16 @@ class HealthChecker {
 
   async runHealthChecks(): Promise<void> {
     console.log('Running health checks...')
-    
+
     // Check application health
     await this.checkApplicationHealth()
-    
+
     // Check database health
     await this.checkDatabaseHealth()
-    
+
     // Check external dependencies
     await this.checkExternalDependencies()
-    
+
     console.log('Health checks completed')
   }
 

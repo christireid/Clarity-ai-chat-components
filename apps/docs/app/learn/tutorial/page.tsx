@@ -321,7 +321,11 @@ const handleSendMessage = (text: string) => {
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
+<<<<<<< HEAD
+import { ChatWindow, Message, useTyping } from '@clarity-chat/react/internal'
+=======
 import { ChatWindow, Message, useTyping } from '@clarity-chat/react'
+>>>>>>> origin/main
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -407,7 +411,11 @@ return (
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
+<<<<<<< HEAD
+import { ChatWindow, ThemeProvider } from '@clarity-chat/react/internal'
+=======
 import { ChatWindow, ThemeProvider } from '@clarity-chat/react'
+>>>>>>> origin/main
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
@@ -469,7 +477,7 @@ import {
   Message,
   ThemeProvider,
   useTyping,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 import './App.css'
 

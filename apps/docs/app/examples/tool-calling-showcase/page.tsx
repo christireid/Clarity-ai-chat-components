@@ -9,82 +9,9 @@ import {
   Layers,
   GitBranch,
   CheckCircle,
-  AlertTriangle,
-  RefreshCw,
 } from 'lucide-react'
 import { ToolCallingShowcase } from './components/ToolCallingShowcase'
-import { Component, type ReactNode, type ErrorInfo } from 'react'
-
-// ============================================================================
-// Top-Level Error Boundary
-// ============================================================================
-
-interface ErrorBoundaryProps {
-  children: ReactNode
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-}
-
-class ShowcaseErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null }
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ShowcaseErrorBoundary caught error:', error, errorInfo)
-  }
-
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null })
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div
-          className="h-[700px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl border border-red-200 dark:border-red-800 overflow-hidden shadow-xl flex items-center justify-center"
-          role="alert"
-          aria-live="assertive"
-        >
-          <div className="text-center max-w-md px-6">
-            <div className="w-16 h-16 rounded-2xl bg-red-100 dark:bg-red-900/50 flex items-center justify-center mx-auto mb-6">
-              <AlertTriangle className="w-8 h-8 text-red-500" aria-hidden="true" />
-            </div>
-            <h2 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-3">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">
-              The demo encountered an unexpected error.
-            </p>
-            {this.state.error && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                {this.state.error.message}
-              </p>
-            )}
-            <button
-              onClick={this.handleRetry}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
-              aria-label="Retry loading the demo"
-            >
-              <RefreshCw className="w-4 h-4" aria-hidden="true" />
-              Try Again
-            </button>
-          </div>
-        </div>
-      )
-    }
-
-    return this.props.children
-  }
-}
+import { ShowcaseErrorBoundary } from './components/ShowcaseErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'Advanced Tool Calling Showcase | Clarity Chat',
@@ -112,8 +39,9 @@ export default function ToolCallingShowcasePage() {
           <div>
             <h1 className="text-5xl font-bold mb-4">Advanced Tool Calling</h1>
             <p className="text-xl text-text-secondary">
-              The AI isn't just chatting — it's orchestrating. Watch it call tools, render
-              interactive UI, and ask for your approval on critical actions.
+              The AI isn't just chatting — it's orchestrating. Watch it call
+              tools, render interactive UI, and ask for your approval on
+              critical actions.
             </p>
           </div>
         </div>
@@ -183,29 +111,31 @@ export default function ToolCallingShowcasePage() {
 
           <h3>1. Multi-Step Tool Chains</h3>
           <p>
-            When you ask "Analyze Apple stock", the AI doesn't just call one tool. It orchestrates a
-            chain:
+            When you ask "Analyze Apple stock", the AI doesn't just call one
+            tool. It orchestrates a chain:
           </p>
           <ol>
             <li>
               <strong>search_ticker</strong> → Finds the correct symbol (AAPL)
             </li>
             <li>
-              <strong>get_financials</strong> → Fetches price, P/E ratio, market cap
+              <strong>get_financials</strong> → Fetches price, P/E ratio, market
+              cap
             </li>
             <li>
-              <strong>render_chart</strong> → Generates an interactive price chart
+              <strong>render_chart</strong> → Generates an interactive price
+              chart
             </li>
           </ol>
           <p>
-            Each step builds on the previous one. The AI analyzes results and decides what to do
-            next.
+            Each step builds on the previous one. The AI analyzes results and
+            decides what to do next.
           </p>
 
           <h3>2. Generative UI</h3>
           <p>
-            Instead of returning raw JSON, each tool renders a custom React component. This is the
-            heart of "Generative UI":
+            Instead of returning raw JSON, each tool renders a custom React
+            component. This is the heart of "Generative UI":
           </p>
           <pre className="bg-surface-muted p-4 rounded-lg text-sm">
             <code>{`// Tool Registry maps tool names to React components
@@ -219,8 +149,8 @@ const registry = createToolUIRegistry({
 
           <h3>3. Human-in-the-Loop</h3>
           <p>
-            Some actions are too important to execute automatically. When you say "Buy 10 shares of
-            AAPL", the AI:
+            Some actions are too important to execute automatically. When you
+            say "Buy 10 shares of AAPL", the AI:
           </p>
           <ol>
             <li>Detects this is a "critical tool" (execute_trade)</li>
@@ -230,9 +160,7 @@ const registry = createToolUIRegistry({
           </ol>
 
           <h3>4. Glass Box Debugging</h3>
-          <p>
-            The debug panel at the bottom shows every event in real-time:
-          </p>
+          <p>The debug panel at the bottom shows every event in real-time:</p>
           <ul>
             <li>User messages and AI responses</li>
             <li>Tool calls with full argument payloads</li>
@@ -240,8 +168,8 @@ const registry = createToolUIRegistry({
             <li>Approval requests and user decisions</li>
           </ul>
           <p>
-            This "glass box" transparency is crucial for developers building with AI — you need to
-            see exactly what's happening under the hood.
+            This "glass box" transparency is crucial for developers building
+            with AI — you need to see exactly what's happening under the hood.
           </p>
         </div>
 
@@ -290,7 +218,9 @@ const registry = createToolUIRegistry({
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-text-secondary mb-2">{tool.description}</p>
+                <p className="text-sm text-text-secondary mb-2">
+                  {tool.description}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Args: <code>{tool.args}</code>
                 </p>
@@ -336,18 +266,20 @@ if (CRITICAL_TOOLS.includes(toolCall.name)) {
               <div>
                 <h4 className="font-semibold mb-1">Beyond Chatbots</h4>
                 <p className="text-sm text-text-secondary">
-                  This isn't a chatbot — it's an AI-powered application that can perform real
-                  actions in the world.
+                  This isn't a chatbot — it's an AI-powered application that can
+                  perform real actions in the world.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
               <div>
-                <h4 className="font-semibold mb-1">Trust Through Transparency</h4>
+                <h4 className="font-semibold mb-1">
+                  Trust Through Transparency
+                </h4>
                 <p className="text-sm text-text-secondary">
-                  The glass box debug panel builds user trust by showing exactly what the AI is
-                  doing.
+                  The glass box debug panel builds user trust by showing exactly
+                  what the AI is doing.
                 </p>
               </div>
             </div>
@@ -356,7 +288,8 @@ if (CRITICAL_TOOLS.includes(toolCall.name)) {
               <div>
                 <h4 className="font-semibold mb-1">Safety First</h4>
                 <p className="text-sm text-text-secondary">
-                  Human-in-the-loop ensures critical actions always have human oversight.
+                  Human-in-the-loop ensures critical actions always have human
+                  oversight.
                 </p>
               </div>
             </div>
@@ -365,10 +298,13 @@ if (CRITICAL_TOOLS.includes(toolCall.name)) {
 
         {/* CTA */}
         <div className="p-8 rounded-2xl bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-950 dark:to-purple-950 border border-brand-200 dark:border-brand-800">
-          <h3 className="text-2xl font-bold mb-4">Build Your Own AI-Powered App</h3>
+          <h3 className="text-2xl font-bold mb-4">
+            Build Your Own AI-Powered App
+          </h3>
           <p className="text-text-secondary mb-6">
-            This demo showcases what's possible with Clarity Chat's tool calling infrastructure.
-            Start building your own intelligent applications today.
+            This demo showcases what's possible with Clarity Chat's tool calling
+            infrastructure. Start building your own intelligent applications
+            today.
           </p>
           <div className="flex gap-4 flex-wrap">
             <Link

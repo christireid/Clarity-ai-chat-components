@@ -189,7 +189,7 @@ export default function ClarityChatPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -205,7 +205,7 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Memory Integration</h2>
         <CodePlayground
-          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
 
 function ChatWithMemory() {
   return (
@@ -234,7 +234,7 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Custom Header</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function CustomHeaderChat() {
   return (
@@ -260,7 +260,7 @@ function CustomHeaderChat() {
           With Prompt Optimization
         </h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   return (
@@ -284,7 +284,7 @@ function OptimizedChat() {
           With WebSocket Transport
         </h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function WebSocketChat() {
   return (
@@ -305,7 +305,7 @@ function WebSocketChat() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Message Operations</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function AdvancedChat() {
   return (

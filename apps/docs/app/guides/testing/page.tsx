@@ -64,7 +64,7 @@ export default function TestingGuidePage() {
           language="tsx"
           code={`import { createMockProviders, mockScenarios } from '@clarity-chat/dev-tools'
 import { renderHook, act } from '@testing-library/react'
-import { useChat } from '@clarity-chat/react'
+import { useChat } from '@clarity-chat/react/internal'
 
 describe('useChat', () => {
   it('streams responses using mocked provider', async () => {
@@ -101,7 +101,7 @@ describe('useChat', () => {
           language="tsx"
           code={`import { render } from '@testing-library/react'
 import { axe } from 'jest-axe'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 it('ChatWindow is accessible', async () => {
   const { container } = render(

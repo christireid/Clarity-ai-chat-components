@@ -1,6 +1,6 @@
 /**
  * Dynamic Compression Engine
- * 
+ *
  * Implements adaptive compression with quality preservation
  * Provides 70-85% compression ratio with 95%+ quality preservation
  */
@@ -85,42 +85,68 @@ export class DynamicCompressionEngine {
    * Compress content using dynamic strategy selection
    */
   async compress(
-    content: string, 
+    content: string,
     context?: CompressionContext
   ): Promise<CompressionResult> {
     const startTime = Date.now()
-    
+
+    // Handle null/undefined/empty content early
+    if (content == null || content === '') {
+      const safeContent = content ?? ''
+      return {
+        originalContent: safeContent,
+        compressedContent: safeContent,
+        compressionRatio: 1,
+        qualityScore: 1,
+        processingTime: Date.now() - startTime,
+        strategyUsed: 'none',
+        tokensSaved: 0,
+        costSavings: 0,
+        qualityMetrics: {
+          semanticSimilarity: 1,
+          informationRetention: 1,
+          readabilityScore: 1,
+          coherenceScore: 1,
+          relevanceScore: 1,
+          overallScore: 1,
+        },
+        fallbackApplied: false,
+        recommendations: [],
+      }
+    }
+
     try {
       // Analyze content characteristics
       const contentAnalysis = await this.contentAnalyzer.analyze(content)
-      
+
       // Select optimal compression strategy
       const selectedStrategy = await this.selectOptimalStrategy(
-        contentAnalysis, 
+        contentAnalysis,
         context
       )
-      
+
       // Apply compression strategy
       const compressedContent = await this.applyCompression(
         content,
         selectedStrategy,
         contentAnalysis
       )
-      
+
       // Measure quality preservation
       const qualityMetrics = await this.qualityMonitor.evaluateQuality(
         content,
         compressedContent,
         selectedStrategy
       )
-      
+
       const processingTime = Date.now() - startTime
       const tokensSaved = this.calculateTokensSaved(content, compressedContent)
       const costSavings = this.calculateCostSavings(tokensSaved)
-      
+
       // Check if quality meets threshold
-      const qualityAcceptable = qualityMetrics.overallScore >= this.config.qualityThreshold
-      
+      const qualityAcceptable =
+        qualityMetrics.overallScore >= this.config.qualityThreshold
+
       let finalContent = compressedContent
       let fallbackApplied = false
       let recommendations: string[] = []
@@ -132,7 +158,7 @@ export class DynamicCompressionEngine {
           qualityMetrics,
           selectedStrategy
         )
-        
+
         finalContent = fallbackResult.content
         fallbackApplied = true
         recommendations = fallbackResult.recommendations
@@ -142,20 +168,21 @@ export class DynamicCompressionEngine {
         originalContent: content,
         compressedContent: finalContent,
         compressionRatio: finalContent.length / content.length,
-        qualityScore: qualityAcceptable ? qualityMetrics.overallScore : 
-                     await this.qualityMonitor.quickQualityCheck(content, finalContent),
+        qualityScore: qualityAcceptable
+          ? qualityMetrics.overallScore
+          : await this.qualityMonitor.quickQualityCheck(content, finalContent),
         processingTime,
         strategyUsed: selectedStrategy.name,
         tokensSaved,
         costSavings,
         qualityMetrics,
         fallbackApplied,
-        recommendations
+        recommendations,
       }
 
       // Update performance tracking
       this.performanceTracker.recordCompression(result)
-      
+
       // Update adaptive controller
       if (this.config.enableAdaptiveCompression) {
         await this.adaptiveController.updateStrategyPerformance(
@@ -170,7 +197,6 @@ export class DynamicCompressionEngine {
       }
 
       return result
-
     } catch (error) {
       // Apply emergency fallback
       return await this.applyEmergencyFallback(content, error as Error)
@@ -184,18 +210,22 @@ export class DynamicCompressionEngine {
     contentAnalysis: ContentAnalysis,
     context?: CompressionContext
   ): Promise<CompressionStrategy> {
-    const candidates = Array.from(this.strategies.values())
-      .filter(strategy => 
+    const candidates = Array.from(this.strategies.values()).filter(
+      (strategy) =>
         strategy.contentTypes.includes(contentAnalysis.contentType) &&
         this.meetsResourceRequirements(strategy, context)
-      )
+    )
 
     if (candidates.length === 0) {
       return this.getDefaultStrategy()
     }
 
     if (this.config.enableAdaptiveCompression) {
-      return await this.adaptiveController.selectStrategy(candidates, contentAnalysis, context)
+      return await this.adaptiveController.selectStrategy(
+        candidates,
+        contentAnalysis,
+        context
+      )
     } else {
       return this.selectStaticStrategy(candidates, contentAnalysis, context)
     }
@@ -212,16 +242,24 @@ export class DynamicCompressionEngine {
     switch (strategy.type) {
       case 'llmlingua':
         return await this.applyLLMLinguaCompression(content, strategy)
-      
+
       case 'semantic':
-        return await this.applySemanticCompression(content, strategy, contentAnalysis)
-      
+        return await this.applySemanticCompression(
+          content,
+          strategy,
+          contentAnalysis
+        )
+
       case 'syntactic':
         return await this.applySyntacticCompression(content, strategy)
-      
+
       case 'hybrid':
-        return await this.applyHybridCompression(content, strategy, contentAnalysis)
-      
+        return await this.applyHybridCompression(
+          content,
+          strategy,
+          contentAnalysis
+        )
+
       default:
         throw new Error(`Unknown compression strategy: ${strategy.type}`)
     }
@@ -231,17 +269,17 @@ export class DynamicCompressionEngine {
    * Apply LLMLingua-style compression
    */
   private async applyLLMLinguaCompression(
-    content: string, 
+    content: string,
     _strategy: CompressionStrategy
   ): Promise<string> {
     // Simplified LLMLingua implementation
     // In production, this would use the actual LLMLingua algorithm
-    
+
     const sentences = content.split(/[.!?]+/)
     const compressedSentences = sentences
-      .filter(sentence => sentence.trim().length > 10)
-      .map(sentence => this.compressSentence(sentence))
-    
+      .filter((sentence) => sentence.trim().length > 10)
+      .map((sentence) => this.compressSentence(sentence))
+
     return compressedSentences.join('. ')
   }
 
@@ -256,7 +294,7 @@ export class DynamicCompressionEngine {
     // Extract key semantic information
     const keyPhrases = await this.extractKeyPhrases(content, contentAnalysis)
     const compressedContent = this.reconstructFromKeyPhrases(keyPhrases)
-    
+
     return compressedContent
   }
 
@@ -269,18 +307,21 @@ export class DynamicCompressionEngine {
   ): Promise<string> {
     // Remove redundant syntactic elements
     let compressed = content
-    
+
     // Remove filler words
-    compressed = compressed.replace(/\b(actually|basically|literally|really|very)\b/gi, '')
-    
+    compressed = compressed.replace(
+      /\b(actually|basically|literally|really|very)\b/gi,
+      ''
+    )
+
     // Compress repetitive phrases
     compressed = compressed.replace(/in order to/gi, 'to')
     compressed = compressed.replace(/due to the fact that/gi, 'because')
     compressed = compressed.replace(/at this point in time/gi, 'now')
-    
+
     // Remove extra whitespace
     compressed = compressed.replace(/\s+/g, ' ').trim()
-    
+
     return compressed
   }
 
@@ -294,16 +335,20 @@ export class DynamicCompressionEngine {
   ): Promise<string> {
     // Apply multiple compression techniques in sequence
     let compressed = content
-    
+
     // Step 1: Semantic compression
-    compressed = await this.applySemanticCompression(compressed, strategy, contentAnalysis)
-    
+    compressed = await this.applySemanticCompression(
+      compressed,
+      strategy,
+      contentAnalysis
+    )
+
     // Step 2: Syntactic compression
     compressed = await this.applySyntacticCompression(compressed, strategy)
-    
+
     // Step 3: LLMLingua compression
     compressed = await this.applyLLMLinguaCompression(compressed, strategy)
-    
+
     return compressed
   }
 
@@ -320,10 +365,12 @@ export class DynamicCompressionEngine {
       case 'minimal':
         return {
           content: await this.applyMinimalCompression(originalContent),
-          recommendations: ['Applied minimal compression due to quality concerns']
+          recommendations: [
+            'Applied minimal compression due to quality concerns',
+          ],
         }
-      
-      case 'alternative':
+
+      case 'alternative': {
         const alternativeStrategy = await this.findAlternativeStrategy(strategy)
         if (alternativeStrategy) {
           const alternativeCompressed = await this.applyCompression(
@@ -331,26 +378,33 @@ export class DynamicCompressionEngine {
             alternativeStrategy,
             await this.contentAnalyzer.analyze(originalContent)
           )
-          
+
           return {
             content: alternativeCompressed,
-            recommendations: [`Switched to ${alternativeStrategy.name} strategy`]
+            recommendations: [
+              `Switched to ${alternativeStrategy.name} strategy`,
+            ],
           }
         }
         break
-      
+      }
+
       case 'none':
       default:
         return {
           content: originalContent,
-          recommendations: ['No compression applied - quality preservation prioritized']
+          recommendations: [
+            'No compression applied - quality preservation prioritized',
+          ],
         }
     }
-    
+
     // Fallback for any uncovered cases
     return {
       content: originalContent,
-      recommendations: ['Fallback strategy not configured, returning original content']
+      recommendations: [
+        'Fallback strategy not configured, returning original content',
+      ],
     }
   }
 
@@ -362,10 +416,13 @@ export class DynamicCompressionEngine {
     error: Error
   ): Promise<CompressionResult> {
     console.error('Compression failed, applying emergency fallback:', error)
-    
+
     const minimalCompressed = await this.applyMinimalCompression(content)
-    const qualityScore = await this.qualityMonitor.quickQualityCheck(content, minimalCompressed)
-    
+    const qualityScore = await this.qualityMonitor.quickQualityCheck(
+      content,
+      minimalCompressed
+    )
+
     return {
       originalContent: content,
       compressedContent: minimalCompressed,
@@ -381,10 +438,12 @@ export class DynamicCompressionEngine {
         readabilityScore: qualityScore,
         coherenceScore: qualityScore,
         relevanceScore: qualityScore,
-        overallScore: qualityScore
+        overallScore: qualityScore,
       },
       fallbackApplied: true,
-      recommendations: ['Emergency fallback applied due to compression failure']
+      recommendations: [
+        'Emergency fallback applied due to compression failure',
+      ],
     }
   }
 
@@ -412,7 +471,7 @@ export class DynamicCompressionEngine {
         processingTime: 200,
         contentTypes: ['text', 'mixed'],
         complexity: 'high',
-        resourceRequirements: { memory: 512, cpu: 2, time: 200, cost: 0.05 }
+        resourceRequirements: { memory: 512, cpu: 2, time: 200, cost: 0.05 },
       },
       {
         name: 'llmlingua_balanced',
@@ -422,7 +481,7 @@ export class DynamicCompressionEngine {
         processingTime: 150,
         contentTypes: ['text', 'mixed'],
         complexity: 'medium',
-        resourceRequirements: { memory: 256, cpu: 1, time: 150, cost: 0.03 }
+        resourceRequirements: { memory: 256, cpu: 1, time: 150, cost: 0.03 },
       },
       {
         name: 'semantic_intelligent',
@@ -432,7 +491,7 @@ export class DynamicCompressionEngine {
         processingTime: 100,
         contentTypes: ['text', 'mixed'],
         complexity: 'high',
-        resourceRequirements: { memory: 384, cpu: 2, time: 100, cost: 0.04 }
+        resourceRequirements: { memory: 384, cpu: 2, time: 100, cost: 0.04 },
       },
       {
         name: 'syntactic_efficient',
@@ -442,7 +501,7 @@ export class DynamicCompressionEngine {
         processingTime: 50,
         contentTypes: ['text', 'code', 'mixed'],
         complexity: 'low',
-        resourceRequirements: { memory: 128, cpu: 1, time: 50, cost: 0.01 }
+        resourceRequirements: { memory: 128, cpu: 1, time: 50, cost: 0.01 },
       },
       {
         name: 'hybrid_optimized',
@@ -452,11 +511,11 @@ export class DynamicCompressionEngine {
         processingTime: 300,
         contentTypes: ['text', 'mixed'],
         complexity: 'high',
-        resourceRequirements: { memory: 768, cpu: 4, time: 300, cost: 0.08 }
-      }
+        resourceRequirements: { memory: 768, cpu: 4, time: 300, cost: 0.08 },
+      },
     ]
 
-    strategies.forEach(strategy => {
+    strategies.forEach((strategy) => {
       this.strategies.set(strategy.name, strategy)
     })
   }
@@ -476,7 +535,7 @@ export class DynamicCompressionEngine {
    * Helper methods
    */
   private meetsResourceRequirements(
-    _strategy: CompressionStrategy, 
+    _strategy: CompressionStrategy,
     _context?: CompressionContext
   ): boolean {
     // Simplified resource checking
@@ -493,35 +552,40 @@ export class DynamicCompressionEngine {
     _context?: CompressionContext
   ): CompressionStrategy {
     // Simple static selection based on content type and quality requirements
-    return candidates.find(s => s.qualityScore >= this.config.targetQuality) || 
-           candidates.reduce((best, current) => 
-             current.qualityScore > best.qualityScore ? current : best
-           )
+    return (
+      candidates.find((s) => s.qualityScore >= this.config.targetQuality) ||
+      candidates.reduce((best, current) =>
+        current.qualityScore > best.qualityScore ? current : best
+      )
+    )
   }
 
   private compressSentence(sentence: string): string {
     // Simplified sentence compression
     return sentence
-      .replace(/\b(actually|basically|literally|really|very|quite|rather)\b/gi, '')
+      .replace(
+        /\b(actually|basically|literally|really|very|quite|rather)\b/gi,
+        ''
+      )
       .replace(/in order to/gi, 'to')
       .replace(/due to the fact that/gi, 'because')
       .trim()
   }
 
   private async extractKeyPhrases(
-    content: string, 
+    content: string,
     _analysis: ContentAnalysis
   ): Promise<string[]> {
     // Simplified key phrase extraction
     const words = content.toLowerCase().split(/\s+/)
     const wordFreq: Map<string, number> = new Map()
-    
-    words.forEach(word => {
+
+    words.forEach((word) => {
       if (word.length > 3) {
         wordFreq.set(word, (wordFreq.get(word) || 0) + 1)
       }
     })
-    
+
     return Array.from(wordFreq.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
@@ -540,11 +604,17 @@ export class DynamicCompressionEngine {
     return tokensSaved * 0.000001 // Assume $0.001 per 1K tokens
   }
 
-  private async findAlternativeStrategy(failedStrategy: CompressionStrategy): Promise<CompressionStrategy | null> {
+  private async findAlternativeStrategy(
+    failedStrategy: CompressionStrategy
+  ): Promise<CompressionStrategy | null> {
     const alternatives = Array.from(this.strategies.values())
-      .filter(s => s.name !== failedStrategy.name && s.qualityScore > failedStrategy.qualityScore)
+      .filter(
+        (s) =>
+          s.name !== failedStrategy.name &&
+          s.qualityScore > failedStrategy.qualityScore
+      )
       .sort((a, b) => b.qualityScore - a.qualityScore)
-    
+
     return alternatives[0] || null
   }
 }
@@ -561,19 +631,22 @@ class QualityMonitor {
     strategy: CompressionStrategy
   ): Promise<QualityMetrics> {
     const metrics = await this.calculateQualityMetrics(original, compressed)
-    
+
     this.qualityHistory.push({
       timestamp: new Date(),
       strategy: strategy.name,
       originalLength: original.length,
       compressedLength: compressed.length,
-      metrics
+      metrics,
     })
 
     return metrics
   }
 
-  async quickQualityCheck(original: string, compressed: string): Promise<number> {
+  async quickQualityCheck(
+    original: string,
+    compressed: string
+  ): Promise<number> {
     const metrics = await this.calculateQualityMetrics(original, compressed)
     return metrics.overallScore
   }
@@ -583,16 +656,25 @@ class QualityMonitor {
     compressed: string
   ): Promise<QualityMetrics> {
     // Simplified quality calculation
-    const semanticSimilarity = this.calculateSemanticSimilarity(original, compressed)
-    const informationRetention = this.calculateInformationRetention(original, compressed)
+    const semanticSimilarity = this.calculateSemanticSimilarity(
+      original,
+      compressed
+    )
+    const informationRetention = this.calculateInformationRetention(
+      original,
+      compressed
+    )
     const readabilityScore = this.calculateReadability(compressed)
     const coherenceScore = this.calculateCoherence(compressed)
     const relevanceScore = this.calculateRelevance(original, compressed)
-    
-    const overallScore = (
-      semanticSimilarity + informationRetention + readabilityScore + 
-      coherenceScore + relevanceScore
-    ) / 5
+
+    const overallScore =
+      (semanticSimilarity +
+        informationRetention +
+        readabilityScore +
+        coherenceScore +
+        relevanceScore) /
+      5
 
     return {
       semanticSimilarity,
@@ -600,58 +682,76 @@ class QualityMonitor {
       readabilityScore,
       coherenceScore,
       relevanceScore,
-      overallScore
+      overallScore,
     }
   }
 
-  private calculateSemanticSimilarity(original: string, compressed: string): number {
+  private calculateSemanticSimilarity(
+    original: string,
+    compressed: string
+  ): number {
     // Simplified semantic similarity
     const originalWords = new Set(original.toLowerCase().split(/\s+/))
     const compressedWords = new Set(compressed.toLowerCase().split(/\s+/))
-    
-    const intersection = new Set([...originalWords].filter(word => compressedWords.has(word)))
+
+    const intersection = new Set(
+      [...originalWords].filter((word) => compressedWords.has(word))
+    )
     const union = new Set([...originalWords, ...compressedWords])
-    
+
     return intersection.size / union.size
   }
 
-  private calculateInformationRetention(original: string, compressed: string): number {
+  private calculateInformationRetention(
+    original: string,
+    compressed: string
+  ): number {
     // Simplified information retention
     return compressed.length / original.length
   }
 
   private calculateReadability(text: string): number {
     // Simplified readability score
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length
+    const sentences = text
+      .split(/[.!?]+/)
+      .filter((s) => s.trim().length > 0).length
     const words = text.split(/\s+/).length
-    
+
     return Math.min(1, sentences / Math.max(1, words / 20))
   }
 
   private calculateCoherence(text: string): number {
     // Simplified coherence score
-    return text.includes('and') || text.includes('but') || text.includes('however') ? 0.8 : 0.6
+    return text.includes('and') ||
+      text.includes('but') ||
+      text.includes('however')
+      ? 0.8
+      : 0.6
   }
 
   private calculateRelevance(original: string, compressed: string): number {
     // Simplified relevance calculation
     const originalKeyWords = this.extractKeyWords(original)
     const compressedKeyWords = this.extractKeyWords(compressed)
-    
-    const overlap = originalKeyWords.filter(word => compressedKeyWords.includes(word)).length
-    return overlap / Math.max(originalKeyWords.length, compressedKeyWords.length, 1)
+
+    const overlap = originalKeyWords.filter((word) =>
+      compressedKeyWords.includes(word)
+    ).length
+    return (
+      overlap / Math.max(originalKeyWords.length, compressedKeyWords.length, 1)
+    )
   }
 
   private extractKeyWords(text: string): string[] {
     const words = text.toLowerCase().split(/\s+/)
     const wordFreq: Map<string, number> = new Map()
-    
-    words.forEach(word => {
+
+    words.forEach((word) => {
       if (word.length > 3) {
         wordFreq.set(word, (wordFreq.get(word) || 0) + 1)
       }
     })
-    
+
     return Array.from(wordFreq.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
@@ -660,29 +760,34 @@ class QualityMonitor {
 
   generateQualityReport(): QualityReport {
     const recentRecords = this.qualityHistory.slice(-100)
-    
+
     return {
-      averageQuality: recentRecords.reduce((sum, r) => sum + r.metrics.overallScore, 0) / recentRecords.length,
+      averageQuality:
+        recentRecords.reduce((sum, r) => sum + r.metrics.overallScore, 0) /
+        recentRecords.length,
       strategyPerformance: this.calculateStrategyPerformance(recentRecords),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
   }
 
-  private calculateStrategyPerformance(records: QualityRecord[]): Record<string, number> {
+  private calculateStrategyPerformance(
+    records: QualityRecord[]
+  ): Record<string, number> {
     const strategyScores: Record<string, number[]> = {}
-    
-    records.forEach(record => {
+
+    records.forEach((record) => {
       if (!strategyScores[record.strategy]) {
         strategyScores[record.strategy] = []
       }
       strategyScores[record.strategy].push(record.metrics.overallScore)
     })
-    
+
     const performance: Record<string, number> = {}
     for (const [strategy, scores] of Object.entries(strategyScores)) {
-      performance[strategy] = scores.reduce((sum, score) => sum + score, 0) / scores.length
+      performance[strategy] =
+        scores.reduce((sum, score) => sum + score, 0) / scores.length
     }
-    
+
     return performance
   }
 }
@@ -700,7 +805,7 @@ class PerformanceTracker {
       processingTime: result.processingTime,
       compressionRatio: result.compressionRatio,
       qualityScore: result.qualityScore,
-      tokensSaved: result.tokensSaved
+      tokensSaved: result.tokensSaved,
     })
 
     // Keep only recent history
@@ -711,12 +816,15 @@ class PerformanceTracker {
 
   getPerformanceStats(): PerformanceStats {
     const recent = this.performanceHistory.slice(-100)
-    
+
     return {
-      averageProcessingTime: recent.reduce((sum, r) => sum + r.processingTime, 0) / recent.length,
-      averageCompressionRatio: recent.reduce((sum, r) => sum + r.compressionRatio, 0) / recent.length,
-      averageQualityScore: recent.reduce((sum, r) => sum + r.qualityScore, 0) / recent.length,
-      totalTokensSaved: recent.reduce((sum, r) => sum + r.tokensSaved, 0)
+      averageProcessingTime:
+        recent.reduce((sum, r) => sum + r.processingTime, 0) / recent.length,
+      averageCompressionRatio:
+        recent.reduce((sum, r) => sum + r.compressionRatio, 0) / recent.length,
+      averageQualityScore:
+        recent.reduce((sum, r) => sum + r.qualityScore, 0) / recent.length,
+      totalTokensSaved: recent.reduce((sum, r) => sum + r.tokensSaved, 0),
     }
   }
 }
@@ -726,28 +834,37 @@ class PerformanceTracker {
  */
 class ContentAnalyzer {
   async analyze(content: string): Promise<ContentAnalysis> {
+    // Handle null/undefined/empty content
+    const safeContent = content ?? ''
     return {
-      contentType: this.detectContentType(content),
-      length: content.length,
-      complexity: this.assessComplexity(content),
-      keyPhrases: await this.extractKeyPhrases(content),
-      sentiment: this.assessSentiment(content)
+      contentType: this.detectContentType(safeContent),
+      length: safeContent.length,
+      complexity: this.assessComplexity(safeContent),
+      keyPhrases: await this.extractKeyPhrases(safeContent),
+      sentiment: this.assessSentiment(safeContent),
     }
   }
 
   private detectContentType(content: string): 'text' | 'code' | 'mixed' {
+    // Handle null/undefined/empty content
+    if (!content || content.length === 0) {
+      return 'text'
+    }
+
     const codePatterns = [
       /function\s+\w+\s*\(/,
       /const\s+\w+\s*=/,
       /class\s+\w+/,
       /def\s+\w+\s*\(/,
       /\{.*\}/,
-      /\[.*\]/
+      /\[.*\]/,
     ]
-    
-    const codeMatches = codePatterns.filter(pattern => pattern.test(content)).length
+
+    const codeMatches = codePatterns.filter((pattern) =>
+      pattern.test(content)
+    ).length
     const totalLines = content.split('\n').length
-    
+
     if (codeMatches > totalLines * 0.3) return 'code'
     if (codeMatches > 0) return 'mixed'
     return 'text'
@@ -757,7 +874,7 @@ class ContentAnalyzer {
     const sentences = content.split(/[.!?]+/).length
     const words = content.split(/\s+/).length
     const avgWordsPerSentence = words / Math.max(sentences, 1)
-    
+
     if (avgWordsPerSentence > 20) return 'high'
     if (avgWordsPerSentence > 12) return 'medium'
     return 'low'
@@ -766,27 +883,39 @@ class ContentAnalyzer {
   private async extractKeyPhrases(content: string): Promise<string[]> {
     const words = content.toLowerCase().split(/\s+/)
     const wordFreq: Map<string, number> = new Map()
-    
-    words.forEach(word => {
+
+    words.forEach((word) => {
       if (word.length > 3) {
         wordFreq.set(word, (wordFreq.get(word) || 0) + 1)
       }
     })
-    
+
     return Array.from(wordFreq.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
       .map(([word]) => word)
   }
 
-  private assessSentiment(content: string): 'positive' | 'negative' | 'neutral' {
+  private assessSentiment(
+    content: string
+  ): 'positive' | 'negative' | 'neutral' {
     const positiveWords = ['good', 'great', 'excellent', 'amazing', 'wonderful']
-    const negativeWords = ['bad', 'terrible', 'awful', 'horrible', 'disappointing']
-    
+    const negativeWords = [
+      'bad',
+      'terrible',
+      'awful',
+      'horrible',
+      'disappointing',
+    ]
+
     const lowerContent = content.toLowerCase()
-    const positiveCount = positiveWords.filter(word => lowerContent.includes(word)).length
-    const negativeCount = negativeWords.filter(word => lowerContent.includes(word)).length
-    
+    const positiveCount = positiveWords.filter((word) =>
+      lowerContent.includes(word)
+    ).length
+    const negativeCount = negativeWords.filter((word) =>
+      lowerContent.includes(word)
+    ).length
+
     if (positiveCount > negativeCount) return 'positive'
     if (negativeCount > positiveCount) return 'negative'
     return 'neutral'
@@ -807,14 +936,13 @@ class AdaptiveController {
     context?: CompressionContext
   ): Promise<CompressionStrategy> {
     // Score each strategy based on multiple factors
-    const scoredStrategies = candidates.map(strategy => ({
+    const scoredStrategies = candidates.map((strategy) => ({
       strategy,
-      score: this.calculateStrategyScore(strategy, contentAnalysis, context)
+      score: this.calculateStrategyScore(strategy, contentAnalysis, context),
     }))
 
     // Select best strategy
-    const bestStrategy = scoredStrategies
-      .sort((a, b) => b.score - a.score)[0]
+    const bestStrategy = scoredStrategies.sort((a, b) => b.score - a.score)[0]
       .strategy
 
     return bestStrategy
@@ -828,7 +956,7 @@ class AdaptiveController {
       totalAttempts: 0,
       successfulAttempts: 0,
       averageQuality: 0,
-      averageCompression: 0
+      averageCompression: 0,
     }
 
     summary.totalAttempts++
@@ -836,7 +964,8 @@ class AdaptiveController {
       summary.successfulAttempts++
     }
     summary.averageQuality = (summary.averageQuality + result.qualityScore) / 2
-    summary.averageCompression = (summary.averageCompression + result.compressionRatio) / 2
+    summary.averageCompression =
+      (summary.averageCompression + result.compressionRatio) / 2
 
     this.strategyPerformance.set(strategy.name, summary)
   }
@@ -858,14 +987,15 @@ class AdaptiveController {
     const complexityBonus = {
       low: 0.1,
       medium: 0.05,
-      high: 0
+      high: 0,
     }
     score += complexityBonus[strategy.complexity]
 
     // Adjust based on historical performance
     const performance = this.strategyPerformance.get(strategy.name)
     if (performance) {
-      const successRate = performance.successfulAttempts / performance.totalAttempts
+      const successRate =
+        performance.successfulAttempts / performance.totalAttempts
       score += successRate * 0.1
     }
 
@@ -884,7 +1014,7 @@ class FeedbackLoop {
       timestamp: new Date(),
       result,
       context,
-      userFeedback: context?.userFeedback
+      userFeedback: context?.userFeedback,
     })
 
     // Keep only recent feedback
@@ -895,26 +1025,32 @@ class FeedbackLoop {
 
   analyzeTrends(): FeedbackAnalysis {
     const recent = this.feedbackHistory.slice(-100)
-    
+
     return {
-      averageQuality: recent.reduce((sum, f) => sum + f.result.qualityScore, 0) / recent.length,
-      qualityTrend: this.calculateTrend(recent.map(f => f.result.qualityScore)),
+      averageQuality:
+        recent.reduce((sum, f) => sum + f.result.qualityScore, 0) /
+        recent.length,
+      qualityTrend: this.calculateTrend(
+        recent.map((f) => f.result.qualityScore)
+      ),
       mostSuccessfulStrategy: this.findMostSuccessfulStrategy(recent),
-      recommendations: this.generateRecommendations(recent)
+      recommendations: this.generateRecommendations(recent),
     }
   }
 
-  private calculateTrend(values: number[]): 'improving' | 'declining' | 'stable' {
+  private calculateTrend(
+    values: number[]
+  ): 'improving' | 'declining' | 'stable' {
     if (values.length < 10) return 'stable'
-    
+
     const recent = values.slice(-10)
     const older = values.slice(-20, -10)
-    
+
     const recentAvg = recent.reduce((sum, val) => sum + val, 0) / recent.length
     const olderAvg = older.reduce((sum, val) => sum + val, 0) / older.length
-    
+
     const change = (recentAvg - olderAvg) / olderAvg
-    
+
     if (change > 0.05) return 'improving'
     if (change < -0.05) return 'declining'
     return 'stable'
@@ -922,44 +1058,47 @@ class FeedbackLoop {
 
   private findMostSuccessfulStrategy(recent: FeedbackRecord[]): string {
     const strategySuccess: Record<string, number[]> = {}
-    
-    recent.forEach(feedback => {
+
+    recent.forEach((feedback) => {
       const strategy = feedback.result.strategyUsed
       if (!strategySuccess[strategy]) {
         strategySuccess[strategy] = []
       }
       strategySuccess[strategy].push(feedback.result.qualityScore)
     })
-    
+
     let bestStrategy = ''
     let bestAverage = 0
-    
+
     for (const [strategy, scores] of Object.entries(strategySuccess)) {
-      const average = scores.reduce((sum, score) => sum + score, 0) / scores.length
+      const average =
+        scores.reduce((sum, score) => sum + score, 0) / scores.length
       if (average > bestAverage) {
         bestAverage = average
         bestStrategy = strategy
       }
     }
-    
+
     return bestStrategy
   }
 
   private generateRecommendations(recent: FeedbackRecord[]): string[] {
     const recommendations: string[] = []
-    
-    const lowQualityResults = recent.filter(f => f.result.qualityScore < 0.8)
+
+    const lowQualityResults = recent.filter((f) => f.result.qualityScore < 0.8)
     if (lowQualityResults.length > recent.length * 0.2) {
       recommendations.push('Consider adjusting quality thresholds')
-      recommendations.push('Review compression strategies for quality-critical content')
+      recommendations.push(
+        'Review compression strategies for quality-critical content'
+      )
     }
-    
-    const slowResults = recent.filter(f => f.result.processingTime > 500)
+
+    const slowResults = recent.filter((f) => f.result.processingTime > 500)
     if (slowResults.length > recent.length * 0.1) {
       recommendations.push('Optimize processing performance')
       recommendations.push('Consider faster compression strategies')
     }
-    
+
     return recommendations
   }
 }

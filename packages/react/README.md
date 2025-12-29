@@ -626,8 +626,30 @@ Full API compatibility with Vercel AI SDK UI hooks. Drop-in replacement for `use
 
 ### Bundle Size
 
-- Full bundle: ~350KB gzipped
-- Tree-shakeable: Import only what you need
+The library provides multiple entrypoints for optimal bundle size:
+
+| Entrypoint                         | Size (ESM) | Use Case                          |
+| ---------------------------------- | ---------- | --------------------------------- |
+| `@clarity-chat/react`              | ~600KB     | Full library with all features    |
+| `@clarity-chat/react/core`         | ~300KB     | Core components + hooks           |
+| `@clarity-chat/react/core-minimal` | ~30KB      | Just ClarityChat + useClarityChat |
+| `@clarity-chat/react/slim`         | ~276KB     | Optimized minimal bundle          |
+| `@clarity-chat/react/adapters`     | ~28KB      | LLM adapters only                 |
+
+**Recommended Import Patterns:**
+
+```tsx
+// Most apps: Use the default export
+import { ClarityChat, useClarityChat } from '@clarity-chat/react'
+
+// Performance-critical: Use core-minimal
+import { ClarityChat } from '@clarity-chat/react/core-minimal'
+
+// Custom integrations: Use adapters
+import { openAIAdapter, anthropicAdapter } from '@clarity-chat/react/adapters'
+```
+
+**Tree-shaking**: All entrypoints are tree-shakeable. Import only what you need.
 
 ## 📝 License
 

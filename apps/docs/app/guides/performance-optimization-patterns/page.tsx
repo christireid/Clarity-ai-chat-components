@@ -38,7 +38,7 @@ export default function PerformanceOptimizationPatternsPage() {
         <p>Use React.memo and useMemo for optimization:</p>
         <CodePlayground
           initialCode={`import { memo, useMemo } from 'react'
-import { Message } from '@clarity-chat/react'
+import { Message } from '@clarity-chat/react/internal'
 
 // Memoize message component
 const OptimizedMessage = memo(({ message }: { message: Message }) => {
@@ -69,7 +69,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
         <p>Virtualize long message lists:</p>
         <CodePlayground
           initialCode={`import { useVirtualizer } from '@tanstack/react-virtual'
-import { MessageList } from '@clarity-chat/react'
+import { MessageList } from '@clarity-chat/react/internal'
 
 function VirtualizedMessageList({ messages }: { messages: Message[] }) {
   const parentRef = useRef<HTMLDivElement>(null)
@@ -114,7 +114,7 @@ function VirtualizedMessageList({ messages }: { messages: Message[] }) {
         <p>Lazy load components and features:</p>
         <CodePlayground
           initialCode={`import { lazy, Suspense } from 'react'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 // Lazy load heavy components
 const PerformanceAnalytics = lazy(() => 
@@ -179,7 +179,7 @@ function ChatWithFeatures() {
         <p>Optimize frequent updates:</p>
         <CodePlayground
           initialCode={`import { useDebouncedCallback } from 'use-debounce'
-import { ChatInput } from '@clarity-chat/react'
+import { ChatInput } from '@clarity-chat/react/internal'
 
 function OptimizedChatInput() {
   // Debounce search

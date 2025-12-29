@@ -60,7 +60,7 @@ import {
   // Accessibility hooks
   useFocusTrap,
   useFocusRestoration,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'

@@ -13,7 +13,7 @@
 import { useState, useRef, useCallback, memo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@clarity-chat/react'
+import { useReducedMotion } from '@clarity-chat/react/internal'
 import { toast } from '@/lib/toast'
 import { Send, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'

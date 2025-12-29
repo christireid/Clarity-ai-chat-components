@@ -138,13 +138,12 @@
     "test:memory": "NODE_OPTIONS='--max-old-space-size=2048' vitest run",
     "size": "size-limit",
     "size:why": "size-limit --why",
-    "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "postbuild": "npm run build:types"
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
   },
   "peerDependencies": {
+    "framer-motion": "^12.23.25",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "framer-motion": "^12.23.25",
     "flowtoken": "^1.0.0",
     "mermaid": "^11.0.0"
   },

@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useInView } from 'framer-motion'
 import { ChevronDown, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { durations } from '@/lib/constants'
@@ -61,14 +60,11 @@ function FAQItem({
   isOpen: boolean
   onToggle: () => void
 }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-50px' })
-
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 10 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: durations.moderate, delay: index * 0.05 }}
       className="glass-card border border-white/10 rounded-xl overflow-hidden"
     >
@@ -78,6 +74,7 @@ function FAQItem({
         aria-expanded={isOpen}
       >
         <span className="font-semibold text-white pr-4">{faq.question}</span>
+        {/* eslint-disable-next-line clarity-animations/require-reduced-motion -- Interactive state animation, not scroll-based */}
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: durations.fast }}
@@ -88,6 +85,7 @@ function FAQItem({
       </button>
       <AnimatePresence>
         {isOpen && (
+          /* eslint-disable-next-line clarity-animations/require-reduced-motion -- Interactive state animation */
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -106,8 +104,6 @@ function FAQItem({
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
-  const headerRef = useRef(null)
-  const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
 
   return (
     <section id="faq" className="relative py-24 sm:py-32 bg-surface-900">
@@ -118,11 +114,9 @@ export default function FAQ() {
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <motion.div
-          ref={headerRef}
           initial={{ opacity: 0, y: 20 }}
-          animate={
-            isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: durations.slow }}
           className="text-center mb-12"
         >
@@ -153,7 +147,8 @@ export default function FAQ() {
         {/* More questions CTA */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={isHeaderInView ? { opacity: 1 } : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
           transition={{ delay: 0.5, duration: durations.slow }}
           className="mt-12 text-center"
         >

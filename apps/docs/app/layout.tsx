@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
 import dynamic from 'next/dynamic'
 import '@/styles/globals.css'
 import '@/styles/syntax-highlighting.css'
@@ -42,17 +41,11 @@ const MobileBottomNav = dynamic(() =>
   }))
 )
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-geist-sans',
-  display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
+// Font CSS classes using system font stacks (no external font loading required)
+const fontClasses = {
+  sans: 'font-sans',
+  mono: 'font-mono',
+}
 
 export const metadata: Metadata = {
   title: {
@@ -112,7 +105,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${fontClasses.sans} ${fontClasses.mono}`}
     >
       <head>
         <StructuredData type="software" />
@@ -127,7 +120,7 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
         <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">

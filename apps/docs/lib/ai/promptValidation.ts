@@ -19,6 +19,7 @@ import {
   validatePromptXml,
 } from '@/components/AI/systemPrompt'
 import { estimateTokens, validateTokenEstimate } from './tokenUtils'
+import { logger } from '@/lib/logger'
 
 // ============================================================================
 // Types

@@ -12,7 +12,7 @@ import {
   ConsoleAlertHandler,
   type SecurityResult,
   type SecurityMetrics,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // Pre-loaded attack examples
 const ATTACK_EXAMPLES = [
@@ -90,43 +90,44 @@ const ATTACK_EXAMPLES = [
 ]
 
 export default function SecurityPlayground() {
-  const [security] = useState(
-    () =>
-      new SecurityManager({
-        promptInjection: {
-          enabled: true,
-          config: {
-            enableHeuristics: true,
-            enableSemanticAnalysis: true,
-            useAttackPatternDB: true,
-            enableMultiTurnDetection: true,
-            confidenceThreshold: 0.7,
-          },
+  const [security] = useState(() => {
+    // Only initialize on client side
+    if (typeof window === 'undefined') return null
+    return new SecurityManager({
+      promptInjection: {
+        enabled: true,
+        config: {
+          enableHeuristics: true,
+          enableSemanticAnalysis: true,
+          useAttackPatternDB: true,
+          enableMultiTurnDetection: true,
+          confidenceThreshold: 0.7,
         },
-        pii: {
-          enabled: true,
-          patterns: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD', 'IP_ADDRESS'],
-          redactionStrategy: 'synthetic',
+      },
+      pii: {
+        enabled: true,
+        patterns: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD', 'IP_ADDRESS'],
+        redactionStrategy: 'synthetic',
+      },
+      jailbreakPrevention: {
+        enabled: true,
+        config: {
+          protectSystemMessage: true,
+          bracketUserInput: true,
+          validateOutput: true,
+          monitorConversation: true,
         },
-        jailbreakPrevention: {
-          enabled: true,
-          config: {
-            protectSystemMessage: true,
-            bracketUserInput: true,
-            validateOutput: true,
-            monitorConversation: true,
-          },
-        },
-        contentModeration: {
-          enabled: true,
-        },
-        monitoring: {
-          enabled: true,
-          logEvents: true,
-          alertHandlers: [new ConsoleAlertHandler()],
-        },
-      })
-  )
+      },
+      contentModeration: {
+        enabled: true,
+      },
+      monitoring: {
+        enabled: true,
+        logEvents: true,
+        alertHandlers: [new ConsoleAlertHandler()],
+      },
+    })
+  })
 
   const [customInput, setCustomInput] = useState('')
   const [selectedExample, setSelectedExample] = useState<number | null>(null)
@@ -135,6 +136,7 @@ export default function SecurityPlayground() {
   const [metrics, setMetrics] = useState<SecurityMetrics | null>(null)
 
   const testMessage = async (text: string, exampleIndex?: number) => {
+    if (!security) return
     setIsValidating(true)
     setSelectedExample(exampleIndex ?? null)
     setCustomInput(text)
@@ -160,8 +162,17 @@ export default function SecurityPlayground() {
     setResult(null)
     setSelectedExample(null)
     setCustomInput('')
-    security.clearEvents()
+    security?.clearEvents()
     setMetrics(null)
+  }
+
+  // Show loading state during SSR
+  if (!security) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center py-12">Loading security playground...</div>
+      </div>
+    )
   }
 
   return (
@@ -169,7 +180,8 @@ export default function SecurityPlayground() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Security Playground</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
-          Test the security system with various attack patterns and see real-time validation results.
+          Test the security system with various attack patterns and see
+          real-time validation results.
         </p>
       </div>
 
@@ -179,7 +191,8 @@ export default function SecurityPlayground() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-2xl font-semibold mb-4">Attack Examples</h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              Click any example below to test how the security system handles it.
+              Click any example below to test how the security system handles
+              it.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -195,16 +208,18 @@ export default function SecurityPlayground() {
                   } ${isValidating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <span className="font-semibold text-sm">{example.name}</span>
+                    <span className="font-semibold text-sm">
+                      {example.name}
+                    </span>
                     <span
                       className={`text-xs px-2 py-1 rounded ${
                         example.severity === 'Critical'
                           ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
                           : example.severity === 'High'
-                          ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
-                          : example.severity === 'Medium'
-                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-                          : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+                            : example.severity === 'Medium'
+                              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+                              : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                       }`}
                     >
                       {example.severity}
@@ -274,7 +289,10 @@ export default function SecurityPlayground() {
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
-                <p>Select an example or enter custom input to see validation results</p>
+                <p>
+                  Select an example or enter custom input to see validation
+                  results
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -286,7 +304,9 @@ export default function SecurityPlayground() {
                       : 'bg-red-50 dark:bg-red-900/20 border-2 border-red-500'
                   }`}
                 >
-                  <div className="text-3xl mb-2">{result.allowed ? '✅' : '🚫'}</div>
+                  <div className="text-3xl mb-2">
+                    {result.allowed ? '✅' : '🚫'}
+                  </div>
                   <div className="font-bold text-lg">
                     {result.allowed ? 'ALLOWED' : 'BLOCKED'}
                   </div>
@@ -298,22 +318,27 @@ export default function SecurityPlayground() {
                 </div>
 
                 {/* Sanitized Input */}
-                {result.sanitizedInput && result.sanitizedInput !== customInput && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="font-semibold text-sm mb-2">Sanitized Input:</div>
-                    <div className="text-sm text-gray-700 dark:text-gray-300">
-                      {result.sanitizedInput}
+                {result.sanitizedInput &&
+                  result.sanitizedInput !== customInput && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="font-semibold text-sm mb-2">
+                        Sanitized Input:
+                      </div>
+                      <div className="text-sm text-gray-700 dark:text-gray-300">
+                        {result.sanitizedInput}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-2">
+                        ℹ️ PII has been redacted
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-2">
-                      ℹ️ PII has been redacted
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Security Checks */}
                 {result.checks && result.checks.length > 0 && (
                   <div>
-                    <div className="font-semibold text-sm mb-2">Security Checks:</div>
+                    <div className="font-semibold text-sm mb-2">
+                      Security Checks:
+                    </div>
                     <div className="space-y-2">
                       {result.checks.map((check, index) => (
                         <div
@@ -371,7 +396,9 @@ export default function SecurityPlayground() {
                 <h3 className="font-semibold mb-3">Session Metrics</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Total Tests:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Total Tests:
+                    </span>
                     <span className="font-medium">{metrics.totalEvents}</span>
                   </div>
                   <div className="flex justify-between">
@@ -383,7 +410,9 @@ export default function SecurityPlayground() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">PII Detected:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      PII Detected:
+                    </span>
                     <span className="font-medium">
                       {metrics.eventsByType.pii_detected || 0}
                     </span>
@@ -400,31 +429,36 @@ export default function SecurityPlayground() {
         <h3 className="font-semibold text-lg mb-3">How It Works</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <h4 className="font-semibold mb-2">🛡️ Prompt Injection Detection</h4>
+            <h4 className="font-semibold mb-2">
+              🛡️ Prompt Injection Detection
+            </h4>
             <p className="text-gray-700 dark:text-gray-300">
-              Multi-layered detection using heuristics, semantic analysis, and a database of
-              known attack patterns from 2025. Achieves 90%+ detection rate.
+              Multi-layered detection using heuristics, semantic analysis, and a
+              database of known attack patterns from 2025. Achieves 90%+
+              detection rate.
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">🚫 Jailbreak Prevention</h4>
             <p className="text-gray-700 dark:text-gray-300">
-              Protects system messages, brackets user input, validates output, and monitors
-              conversation for gradual attacks. Reduces success rate to &lt;1%.
+              Protects system messages, brackets user input, validates output,
+              and monitors conversation for gradual attacks. Reduces success
+              rate to &lt;1%.
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">🔐 PII Redaction</h4>
             <p className="text-gray-700 dark:text-gray-300">
-              Automatically detects and redacts emails, phone numbers, SSNs, credit cards, and
-              IP addresses using pattern matching and generates synthetic replacements.
+              Automatically detects and redacts emails, phone numbers, SSNs,
+              credit cards, and IP addresses using pattern matching and
+              generates synthetic replacements.
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">📊 Real-time Monitoring</h4>
             <p className="text-gray-700 dark:text-gray-300">
-              Logs all security events, tracks metrics, and can trigger alerts for critical
-              threats. Fully compliant with GDPR, HIPAA, and SOC2.
+              Logs all security events, tracks metrics, and can trigger alerts
+              for critical threats. Fully compliant with GDPR, HIPAA, and SOC2.
             </p>
           </div>
         </div>
