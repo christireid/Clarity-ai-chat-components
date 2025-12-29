@@ -8,6 +8,28 @@ import storybook from 'eslint-plugin-storybook'
 import globals from 'globals'
 import clarityAnimations from './eslint-plugin-clarity-animations/index.js'
 
+// Security-focused rules to catch common vulnerabilities
+const securityRules = {
+  // Prevent eval() usage
+  'no-eval': 'error',
+  // Prevent implied eval via setTimeout/setInterval with strings
+  'no-implied-eval': 'error',
+  // Prevent new Function() with string arguments
+  'no-new-func': 'warn',
+  // Prevent script URL usage
+  'no-script-url': 'error',
+  // Warn on prototype pollution patterns
+  'no-prototype-builtins': 'warn',
+  // Prevent Buffer() constructor (security issues in older Node)
+  'no-buffer-constructor': 'error',
+  // Ensure consistent return in callbacks (helps prevent logic errors)
+  'array-callback-return': 'error',
+  // Require radix parameter to parseInt
+  radix: 'error',
+  // Prevent void operator (can be used for injection)
+  'no-void': 'warn',
+}
+
 const sharedRules = {
   'react/react-in-jsx-scope': 'off',
   'react/prop-types': 'off',
@@ -66,6 +88,7 @@ export default [
     plugins: sharedPlugins,
     rules: {
       ...sharedRules,
+      ...securityRules,
       'no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -101,6 +124,7 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       ...sharedRules,
+      ...securityRules,
       'no-undef': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -109,6 +133,9 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
+      // Security: Detect dangerous React patterns
+      'react/no-danger': 'warn',
+      'react/no-danger-with-children': 'error',
       // Clarity Animations rules
       'clarity-animations/no-hardcoded-duration': 'warn',
       'clarity-animations/no-layout-animation': 'error',
@@ -156,6 +183,10 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'off',
       'jsx-a11y/role-supports-aria-props': 'off',
       'react-hooks/rules-of-hooks': 'off',
+      // Security: Allow controlled use of danger in library code
+      'react/no-danger': 'off',
+      // Security: Allow new Function in safe-evaluate.ts with documentation
+      'no-new-func': 'off',
       // React 19: Warn on forwardRef usage - prefer ref-as-prop pattern
       // See: packages/react/REACT_19_REF_MIGRATION.md
       'no-restricted-syntax': [
@@ -185,6 +216,15 @@ export default [
     },
   },
 
+  // Playground - needs unsafe-eval for live code preview
+  {
+    files: ['packages/playground/**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      'no-new-func': 'off',
+      'no-eval': 'off',
+    },
+  },
+
   // Apps and examples overrides
   {
     files: ['apps/**/*.{ts,tsx,js,jsx}', 'examples/**/*.{ts,tsx,js,jsx}'],
@@ -196,7 +236,7 @@ export default [
     },
   },
 
-  // Test files
+  // Test files - relaxed security rules for testing
   {
     files: [
       '**/*.test.{ts,tsx,js,jsx}',
@@ -242,13 +282,16 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+      // Relax security rules in tests
+      'no-eval': 'off',
+      'no-new-func': 'off',
     },
   },
 
   // Linter options
   {
     linterOptions: {
-      reportUnusedDisableDirectives: 'off',
+      reportUnusedDisableDirectives: 'warn',
     },
   },
 
