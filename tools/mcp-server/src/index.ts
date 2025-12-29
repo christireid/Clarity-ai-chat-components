@@ -34,12 +34,20 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 
 import { tools, handleToolCall } from './tools/index.js'
-import { enhancedTools, handleEnhancedToolCall } from './tools/enhanced-tools.js'
+import {
+  enhancedTools,
+  handleEnhancedToolCall,
+} from './tools/enhanced-tools.js'
 import { resources, handleResourceRead } from './resources/index.js'
 import { prompts, handlePromptGet } from './prompts/index.js'
 import { pluginRegistry } from './plugins/index.js'
 import { logger } from './utils/logger.js'
-import { formatErrorResponse, ValidationError, TimeoutError, PluginError } from './utils/errors.js'
+import {
+  formatErrorResponse,
+  ValidationError,
+  TimeoutError,
+  PluginError,
+} from './utils/errors.js'
 import { serverEvents } from './utils/events.js'
 import { metrics, healthChecker } from './utils/health.js'
 import {
@@ -57,7 +65,7 @@ const SERVER_VERSION = '2.0.0'
 const SERVER_NAME = 'clarity-chat-mcp'
 
 /** Tool execution timeout in milliseconds */
-const TOOL_TIMEOUT_MS = parseInt(process.env.MCP_TOOL_TIMEOUT || '30000')
+const TOOL_TIMEOUT_MS = parseInt(process.env.MCP_TOOL_TIMEOUT || '30000', 10)
 
 /**
  * Generate a unique request ID
@@ -225,8 +233,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           processedArgs
         )
       } catch (hookError) {
-        logger.error('Plugin before-hook failed', hookError instanceof Error ? hookError : undefined, { tool: name })
-        throw new PluginError('before-hook', `Before-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`)
+        logger.error(
+          'Plugin before-hook failed',
+          hookError instanceof Error ? hookError : undefined,
+          { tool: name }
+        )
+        throw new PluginError(
+          'before-hook',
+          `Before-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`
+        )
       }
     }
 
@@ -266,8 +281,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       try {
         result = await pluginRegistry.executeAfterToolCallHooks(name, result)
       } catch (hookError) {
-        logger.error('Plugin after-hook failed', hookError instanceof Error ? hookError : undefined, { tool: name })
-        throw new PluginError('after-hook', `After-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`)
+        logger.error(
+          'Plugin after-hook failed',
+          hookError instanceof Error ? hookError : undefined,
+          { tool: name }
+        )
+        throw new PluginError(
+          'after-hook',
+          `After-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`
+        )
       }
     }
 
@@ -570,8 +592,15 @@ async function main() {
 
     // Initialize transport with connection timeout
     const transport = new StdioServerTransport()
-    const CONNECTION_TIMEOUT_MS = parseInt(process.env.MCP_CONNECTION_TIMEOUT || '30000')
-    await withTimeout(server.connect(transport), CONNECTION_TIMEOUT_MS, 'server:connect')
+    const CONNECTION_TIMEOUT_MS = parseInt(
+      process.env.MCP_CONNECTION_TIMEOUT || '30000',
+      10
+    )
+    await withTimeout(
+      server.connect(transport),
+      CONNECTION_TIMEOUT_MS,
+      'server:connect'
+    )
 
     const allTools = getAllTools()
     const allResources = getAllResources()

@@ -325,6 +325,12 @@ export { useTokenTracker } from './hooks/token/use-token-tracker'
 
 // Streaming
 export { useStreaming } from './hooks/streaming/use-streaming'
+export {
+  useSmoothedText,
+  smoothingPresets,
+  type UseSmoothedTextOptions,
+  type UseSmoothedTextReturn,
+} from './hooks/streaming/use-smoothed-text'
 
 // Accessibility
 export { useReducedMotion } from './animations'
@@ -364,3 +370,33 @@ export {
   getDurationInMs,
   createTweenTransition,
 } from './animations/utils'
+
+// ============================================================================
+// CHAT PRIMITIVES (Headless, composable building blocks)
+// ============================================================================
+
+export {
+  ChatPrimitive,
+  ChatRoot,
+  ChatMessages,
+  ChatMessage,
+  ChatMessageContent,
+  ChatMessageActions,
+  ChatInput as ChatInputPrimitive,
+  ChatCopyButton,
+  ChatRegenerateButton,
+  ChatDeleteButton,
+  ChatEmptyState,
+  ChatLoadingIndicator,
+  type ChatRootProps,
+  type ChatMessagesProps,
+  type ChatMessageProps,
+  type ChatMessageContentProps,
+  type ChatMessageActionsProps,
+  type ChatInputProps as ChatInputPrimitiveProps,
+  type ChatCopyButtonProps,
+  type ChatRegenerateButtonProps,
+  type ChatDeleteButtonProps,
+  type ChatEmptyStateProps,
+  type ChatLoadingIndicatorProps,
+} from './primitives/chat'

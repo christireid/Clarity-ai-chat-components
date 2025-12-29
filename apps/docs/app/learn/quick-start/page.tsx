@@ -186,14 +186,12 @@ pnpm add @clarity-chat/react`}
               </p>
 
               <EnhancedCodeBlock
-                code={`import { ClarityChat } from '@clarity-chat/react/internal'
+                code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-function App() {
+export default function App() {
   return <ClarityChat api="/api/chat" />
-}
-
-export default App`}
+}`}
                 language="tsx"
                 filename="App.tsx"
                 showLineNumbers
@@ -255,59 +253,20 @@ export default App`}
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useState } from 'react'
-import { ChatWindow } from '@clarity-chat/react/internal'
-import type { Message } from '@clarity-chat/types'
+                code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-function App() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      chatId: 'default-chat',
-      role: 'assistant',
-      content: 'Hello! How can I help you today?',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'sent',
-    },
-  ])
-
-  const handleSendMessage = async (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      chatId: 'default-chat',
-      role: 'user',
-      content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'sent',
-    }
-    setMessages(prev => [...prev, userMessage])
-
-    // Call your AI API here
-    // const response = await fetch('/api/chat', { ... })
-  }
+export default function App() {
+  const chat = useClarityChat({ api: '/api/chat' })
 
   return (
-    <ToastProvider>
-    <div style={{ height: '100vh' }}>
-      <ChatWindow
-        messages={messages}
-        onSendMessage={handleSendMessage}
-        emptyState={
-          <div className="text-center text-text-secondary">
-            <p>Start a conversation</p>
-          </div>
-        }
-      />
-    </div>
-    </ToastProvider>
+    <ChatWindow
+      messages={chat.messages}
+      isLoading={chat.isLoading}
+      onSendMessage={(content) => chat.append({ role: 'user', content })}
+    />
   )
-}
-
-export default App`}
+}`}
                 language="tsx"
                 filename="App.tsx"
                 showLineNumbers
@@ -316,20 +275,12 @@ export default App`}
 
               <TryItOut title="Try it out">
                 <p className="text-text-secondary mb-4">
-                  Copy the code above into your React app. Make sure to:
+                  This pattern gives you full control over the chat while keeping it simple:
                 </p>
                 <ul className="space-y-2 text-text-secondary">
-                  <li>✓ Import the CSS file for default styles</li>
-                  <li>
-                    ✓ Use proper TypeScript types from{' '}
-                    <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                      @clarity-chat/types
-                    </code>
-                  </li>
-                  <li>
-                    ✓ Include all required Message fields (id, chatId, role,
-                    content, createdAt, updatedAt, status)
-                  </li>
+                  <li>✓ <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">useClarityChat</code> manages all state, streaming, and API calls</li>
+                  <li>✓ <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ChatWindow</code> accepts messages directly - no conversion needed</li>
+                  <li>✓ Add memory, tools, or custom behavior via hook options</li>
                 </ul>
               </TryItOut>
 

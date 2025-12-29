@@ -1,14 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useChatEnhanced } from '@clarity-chat/react/internal'
+import { useClarityChat } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 
 /**
- * **useChat Hook (Enhanced)**
+ * **useChat Hook (Enhanced)** ⚠️ DEPRECATED
+ *
+ * @deprecated Use `useClarityChat` instead. Will be removed in v3.0.
  *
  * Enhanced useChat hook with full Vercel AI SDK compatibility.
  * Provides complete chat interface with streaming support, message management,
  * tool calling, and multi-modal content.
+ *
+ * **Migration:**
+ * ```tsx
+ * // ❌ Deprecated
+ * import { useChatEnhanced } from '@clarity-chat/react'
+ *
+ * // ✅ Use instead
+ * import { useClarityChat } from '@clarity-chat/react'
+ * ```
  *
  * **Key Features:**
  * - Vercel AI SDK compatible API
