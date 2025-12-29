@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useThrottle } from '@clarity-chat/react'
+import { useThrottle } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState, useEffect } from 'react'
 
 /**
  * **useThrottle Hook**
- * 
+ *
  * Hook for throttling values - only updates at most once per delay period.
  * Useful for limiting the rate of updates from frequent events.
- * 
+ *
  * **Key Features:**
  * - Throttle value updates
  * - Configurable delay
  * - Limits update frequency
  * - Automatic cleanup
- * 
+ *
  * **Use Cases:**
  * - Scroll position tracking
  * - Resize handlers
@@ -107,7 +107,8 @@ function ScrollTrackingDemo() {
           <strong>Throttled Updates:</strong> {updates}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Scroll the page to see throttling in action. Updates are limited to once per {delay}ms.
+          Scroll the page to see throttling in action. Updates are limited to
+          once per {delay}ms.
         </p>
       </div>
 
@@ -136,7 +137,10 @@ export const ScrollTracking: Story = {
 }
 
 function ResizeTrackingDemo() {
-  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight })
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  })
   const [delay, setDelay] = useState(200)
   const throttledSize = useThrottle(windowSize, delay)
   const [updates, setUpdates] = useState(0)
@@ -170,16 +174,19 @@ function ResizeTrackingDemo() {
 
       <div className="p-4 bg-gray-50 dark:bg-gray-900 border rounded-lg space-y-2">
         <div className="text-sm">
-          <strong>Current Window Size:</strong> {windowSize.width} × {windowSize.height}px
+          <strong>Current Window Size:</strong> {windowSize.width} ×{' '}
+          {windowSize.height}px
         </div>
         <div className="text-sm">
-          <strong>Throttled Window Size:</strong> {throttledSize.width} × {throttledSize.height}px
+          <strong>Throttled Window Size:</strong> {throttledSize.width} ×{' '}
+          {throttledSize.height}px
         </div>
         <div className="text-sm">
           <strong>Throttled Updates:</strong> {updates}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Resize the browser window to see throttling in action. Updates are limited to once per {delay}ms.
+          Resize the browser window to see throttling in action. Updates are
+          limited to once per {delay}ms.
         </p>
       </div>
     </div>
@@ -242,7 +249,8 @@ function CounterDemo() {
           <strong>Throttled Updates:</strong> {updates}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Click rapidly to see throttling effect. Updates are limited to once per {delay}ms.
+          Click rapidly to see throttling effect. Updates are limited to once
+          per {delay}ms.
         </p>
       </div>
     </div>

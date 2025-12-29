@@ -151,8 +151,8 @@ export class RedisResponseCache implements ResponseCache {
 
   async getStats(): Promise<CacheStats> {
     const stats = await this.redis.hgetall(this.getStatsKey())
-    const hits = parseInt((stats?.hits as string) || '0')
-    const misses = parseInt((stats?.misses as string) || '0')
+    const hits = parseInt((stats?.hits as string) || '0', 10)
+    const misses = parseInt((stats?.misses as string) || '0', 10)
     const total = hits + misses
     const hitRate = total > 0 ? (hits / total) * 100 : 0
 

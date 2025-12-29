@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useErrorRecovery } from '@clarity-chat/react'
+import { useErrorRecovery } from '@clarity-chat/react/internal'
 
 const meta = {
   title: 'Hooks/Utilities/UseErrorRecovery',
@@ -97,21 +97,30 @@ export const BasicExample: Story = {
     const [result, setResult] = React.useState<string | null>(null)
     const [failureRate, setFailureRate] = React.useState(0.7) // 70% failure rate
 
-    const { execute, error, isLoading, attemptNumber, canRetry, retry, errorMessage } = useErrorRecovery({
+    const {
+      execute,
+      error,
+      isLoading,
+      attemptNumber,
+      canRetry,
+      retry,
+      errorMessage,
+    } = useErrorRecovery({
       operation: async () => {
         // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 500))
-        
+
         if (Math.random() < failureRate) {
           throw new Error('Network request failed')
         }
-        
+
         return 'Success! Data loaded.'
       },
       maxAttempts: 3,
       backoffMs: [1000, 2000, 3000],
       onRetryStart: (attempt) => console.log(`Retry attempt ${attempt}`),
-      onRetrySuccess: (_, attempt) => console.log(`Succeeded on attempt ${attempt}`),
+      onRetrySuccess: (_, attempt) =>
+        console.log(`Succeeded on attempt ${attempt}`),
     })
 
     const handleExecute = async () => {
@@ -123,7 +132,9 @@ export const BasicExample: Story = {
       <div className="space-y-4">
         <div className="p-4 bg-muted rounded-lg space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Failure Rate: {Math.round(failureRate * 100)}%</span>
+            <span className="text-sm font-medium">
+              Failure Rate: {Math.round(failureRate * 100)}%
+            </span>
             <input
               type="range"
               min="0"
@@ -146,7 +157,7 @@ export const BasicExample: Story = {
           >
             {isLoading ? 'Loading...' : 'Execute Operation'}
           </button>
-          
+
           {error && canRetry && (
             <button
               onClick={retry}
@@ -168,7 +179,9 @@ export const BasicExample: Story = {
 
         {error && (
           <div className="p-4 border border-red-500 bg-red-50 dark:bg-red-950/20 rounded-lg">
-            <div className="font-semibold text-red-800 dark:text-red-200">Error</div>
+            <div className="font-semibold text-red-800 dark:text-red-200">
+              Error
+            </div>
             <div className="text-sm mt-1">{errorMessage}</div>
             {!canRetry && (
               <div className="text-xs mt-2 text-muted-foreground">
@@ -180,7 +193,9 @@ export const BasicExample: Story = {
 
         {result && !error && (
           <div className="p-4 border border-green-500 bg-green-50 dark:bg-green-950/20 rounded-lg">
-            <div className="font-semibold text-green-800 dark:text-green-200">Success!</div>
+            <div className="font-semibold text-green-800 dark:text-green-200">
+              Success!
+            </div>
             <div className="text-sm mt-1">{result}</div>
           </div>
         )}
@@ -195,44 +210,52 @@ export const BasicExample: Story = {
 
 export const ErrorClassificationExample: Story = {
   render: () => {
-    const [selectedError, setSelectedError] = React.useState<'network' | 'ratelimit' | 'server' | 'auth'>('network')
-    
+    const [selectedError, setSelectedError] = React.useState<
+      'network' | 'ratelimit' | 'server' | 'auth'
+    >('network')
+
     const errorSimulators = {
       network: () => new Error('Network connection failed'),
-      ratelimit: () => new Error('Too many requests - rate limit exceeded (429)'),
+      ratelimit: () =>
+        new Error('Too many requests - rate limit exceeded (429)'),
       server: () => new Error('Internal server error (500)'),
       auth: () => new Error('Unauthorized access (401)'),
     }
 
-    const { execute, error, errorType, errorMessage, isLoading, reset } = useErrorRecovery({
-      operation: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        throw errorSimulators[selectedError]()
-      },
-      maxAttempts: 1, // Just demonstrate classification, no retries
-    })
+    const { execute, error, errorType, errorMessage, isLoading, reset } =
+      useErrorRecovery({
+        operation: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 500))
+          throw errorSimulators[selectedError]()
+        },
+        maxAttempts: 1, // Just demonstrate classification, no retries
+      })
 
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Select Error Type to Simulate:</label>
+          <label className="text-sm font-medium">
+            Select Error Type to Simulate:
+          </label>
           <div className="flex flex-wrap gap-2">
-            {(['network', 'ratelimit', 'server', 'auth'] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => {
-                  setSelectedError(type)
-                  reset()
-                }}
-                className={`px-3 py-1.5 text-sm rounded ${
-                  selectedError === type
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                }`}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
+            {(['network', 'ratelimit', 'server', 'auth'] as const).map(
+              (type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    setSelectedError(type)
+                    reset()
+                  }}
+                  className={`px-3 py-1.5 text-sm rounded ${
+                    selectedError === type
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              )
+            )}
           </div>
         </div>
 
@@ -250,15 +273,21 @@ export const ErrorClassificationExample: Story = {
               <div>
                 <div className="font-semibold">Error Detected</div>
                 <div className="text-sm text-muted-foreground mt-1">
-                  Type: <span className="font-mono font-semibold">{errorType}</span>
+                  Type:{' '}
+                  <span className="font-mono font-semibold">{errorType}</span>
                 </div>
               </div>
-              <span className={`px-2 py-1 text-xs rounded ${
-                errorType === 'network' ? 'bg-orange-100 text-orange-800' :
-                errorType === 'ratelimit' ? 'bg-yellow-100 text-yellow-800' :
-                errorType === 'server' ? 'bg-red-100 text-red-800' :
-                'bg-purple-100 text-purple-800'
-              }`}>
+              <span
+                className={`px-2 py-1 text-xs rounded ${
+                  errorType === 'network'
+                    ? 'bg-orange-100 text-orange-800'
+                    : errorType === 'ratelimit'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : errorType === 'server'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-purple-100 text-purple-800'
+                }`}
+              >
                 {errorType}
               </span>
             </div>
@@ -280,7 +309,8 @@ export const ErrorClassificationExample: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates automatic error type classification and user-friendly messaging.',
+        story:
+          'Demonstrates automatic error type classification and user-friendly messaging.',
       },
     },
   },
@@ -292,8 +322,12 @@ export const ErrorClassificationExample: Story = {
 
 export const RetryStrategyExample: Story = {
   render: () => {
-    const [attempts, setAttempts] = React.useState<Array<{ attempt: number; time: number; success: boolean }>>([])
-    const [backoffStrategy, setBackoffStrategy] = React.useState<'linear' | 'exponential'>('exponential')
+    const [attempts, setAttempts] = React.useState<
+      Array<{ attempt: number; time: number; success: boolean }>
+    >([])
+    const [backoffStrategy, setBackoffStrategy] = React.useState<
+      'linear' | 'exponential'
+    >('exponential')
 
     const backoffDelays = {
       linear: [1000, 1000, 1000],
@@ -304,14 +338,28 @@ export const RetryStrategyExample: Story = {
       operation: async () => {
         const startTime = Date.now()
         await new Promise((resolve) => setTimeout(resolve, 300))
-        
+
         // Succeed on 3rd attempt
         if (attemptNumber >= 3) {
-          setAttempts((prev) => [...prev, { attempt: attemptNumber, time: Date.now() - startTime, success: true }])
+          setAttempts((prev) => [
+            ...prev,
+            {
+              attempt: attemptNumber,
+              time: Date.now() - startTime,
+              success: true,
+            },
+          ])
           return 'Success!'
         }
-        
-        setAttempts((prev) => [...prev, { attempt: attemptNumber, time: Date.now() - startTime, success: false }])
+
+        setAttempts((prev) => [
+          ...prev,
+          {
+            attempt: attemptNumber,
+            time: Date.now() - startTime,
+            success: false,
+          },
+        ])
         throw new Error('Operation failed')
       },
       maxAttempts: 5,
@@ -365,11 +413,15 @@ export const RetryStrategyExample: Story = {
                 <div
                   key={index}
                   className={`flex items-center justify-between p-3 rounded ${
-                    attempt.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                    attempt.success
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-red-50 border-red-200'
                   } border`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-sm">#{attempt.attempt}</span>
+                    <span className="font-mono text-sm">
+                      #{attempt.attempt}
+                    </span>
                     <span className="text-sm">
                       {attempt.success ? '✓ Success' : '✗ Failed'}
                     </span>
@@ -395,7 +447,8 @@ export const RetryStrategyExample: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Visualizes retry attempts and backoff strategies (linear vs exponential).',
+        story:
+          'Visualizes retry attempts and backoff strategies (linear vs exponential).',
       },
     },
   },
@@ -408,20 +461,30 @@ export const RetryStrategyExample: Story = {
 export const APIDataFetchingExample: Story = {
   render: () => {
     const [data, setData] = React.useState<any>(null)
-    const [serverStatus, setServerStatus] = React.useState<'healthy' | 'degraded' | 'down'>('healthy')
+    const [serverStatus, setServerStatus] = React.useState<
+      'healthy' | 'degraded' | 'down'
+    >('healthy')
 
-    const { execute, error, isLoading, isRetrying, attemptNumber, errorMessage, reset } = useErrorRecovery({
+    const {
+      execute,
+      error,
+      isLoading,
+      isRetrying,
+      attemptNumber,
+      errorMessage,
+      reset,
+    } = useErrorRecovery({
       operation: async () => {
         await new Promise((resolve) => setTimeout(resolve, 800))
-        
+
         if (serverStatus === 'down') {
           throw new Error('Server unavailable (503)')
         }
-        
+
         if (serverStatus === 'degraded' && Math.random() < 0.6) {
           throw new Error('Request timeout - server is slow')
         }
-        
+
         return {
           users: Math.floor(Math.random() * 1000) + 100,
           revenue: (Math.random() * 100000 + 50000).toFixed(2),
@@ -461,9 +524,11 @@ export const APIDataFetchingExample: Story = {
                 }}
                 className={`px-3 py-1.5 text-sm rounded ${
                   serverStatus === status
-                    ? status === 'healthy' ? 'bg-green-600 text-white' :
-                      status === 'degraded' ? 'bg-yellow-600 text-white' :
-                      'bg-red-600 text-white'
+                    ? status === 'healthy'
+                      ? 'bg-green-600 text-white'
+                      : status === 'degraded'
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-red-600 text-white'
                     : 'bg-background hover:bg-accent'
                 }`}
               >
@@ -499,7 +564,9 @@ export const APIDataFetchingExample: Story = {
 
         {error && (
           <div className="p-4 border border-red-500 bg-red-50 dark:bg-red-950/20 rounded-lg">
-            <div className="font-semibold text-red-800 dark:text-red-200">Failed to load data</div>
+            <div className="font-semibold text-red-800 dark:text-red-200">
+              Failed to load data
+            </div>
             <div className="text-sm mt-1">{errorMessage}</div>
           </div>
         )}
@@ -510,7 +577,9 @@ export const APIDataFetchingExample: Story = {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-2xl font-bold">{data.users}</div>
-                <div className="text-sm text-muted-foreground">Active Users</div>
+                <div className="text-sm text-muted-foreground">
+                  Active Users
+                </div>
               </div>
               <div>
                 <div className="text-2xl font-bold">${data.revenue}</div>
@@ -528,7 +597,8 @@ export const APIDataFetchingExample: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Real-world scenario: Fetching dashboard data with server status simulation.',
+        story:
+          'Real-world scenario: Fetching dashboard data with server status simulation.',
       },
     },
   },

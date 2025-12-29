@@ -99,7 +99,7 @@ function useAutoScroll(dependencies: unknown[]) {
 
   useEffect(() => {
     scrollToBottom()
-  }, dependencies) // eslint-disable-line react-hooks/exhaustive-deps
+  }, dependencies)
 
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return

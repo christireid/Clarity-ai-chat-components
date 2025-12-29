@@ -90,6 +90,31 @@ export class DynamicCompressionEngine {
   ): Promise<CompressionResult> {
     const startTime = Date.now()
 
+    // Handle null/undefined/empty content early
+    if (content == null || content === '') {
+      const safeContent = content ?? ''
+      return {
+        originalContent: safeContent,
+        compressedContent: safeContent,
+        compressionRatio: 1,
+        qualityScore: 1,
+        processingTime: Date.now() - startTime,
+        strategyUsed: 'none',
+        tokensSaved: 0,
+        costSavings: 0,
+        qualityMetrics: {
+          semanticSimilarity: 1,
+          informationRetention: 1,
+          readabilityScore: 1,
+          coherenceScore: 1,
+          relevanceScore: 1,
+          overallScore: 1,
+        },
+        fallbackApplied: false,
+        recommendations: [],
+      }
+    }
+
     try {
       // Analyze content characteristics
       const contentAnalysis = await this.contentAnalyzer.analyze(content)
@@ -809,16 +834,23 @@ class PerformanceTracker {
  */
 class ContentAnalyzer {
   async analyze(content: string): Promise<ContentAnalysis> {
+    // Handle null/undefined/empty content
+    const safeContent = content ?? ''
     return {
-      contentType: this.detectContentType(content),
-      length: content.length,
-      complexity: this.assessComplexity(content),
-      keyPhrases: await this.extractKeyPhrases(content),
-      sentiment: this.assessSentiment(content),
+      contentType: this.detectContentType(safeContent),
+      length: safeContent.length,
+      complexity: this.assessComplexity(safeContent),
+      keyPhrases: await this.extractKeyPhrases(safeContent),
+      sentiment: this.assessSentiment(safeContent),
     }
   }
 
   private detectContentType(content: string): 'text' | 'code' | 'mixed' {
+    // Handle null/undefined/empty content
+    if (!content || content.length === 0) {
+      return 'text'
+    }
+
     const codePatterns = [
       /function\s+\w+\s*\(/,
       /const\s+\w+\s*=/,

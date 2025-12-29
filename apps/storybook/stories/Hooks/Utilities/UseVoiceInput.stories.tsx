@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useVoiceInput } from '@clarity-chat/react'
+import { useVoiceInput } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {
@@ -118,10 +118,10 @@ export const BasicVoiceInput: Story = {
     const simulateVoiceInput = () => {
       setIsListening(true)
       setInterimText('')
-      
+
       const words = 'Hello this is a test of voice input'.split(' ')
       let index = 0
-      
+
       const interval = setInterval(() => {
         if (index < words.length) {
           setInterimText(words.slice(0, index + 1).join(' '))
@@ -145,8 +145,9 @@ export const BasicVoiceInput: Story = {
       <div className="space-y-4">
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> This is a simulation. Real voice input requires user microphone permission.
-            In production, this hook uses the Web Speech API.
+            <strong>Note:</strong> This is a simulation. Real voice input
+            requires user microphone permission. In production, this hook uses
+            the Web Speech API.
           </p>
         </div>
 
@@ -177,9 +178,7 @@ export const BasicVoiceInput: Story = {
               <span className="animate-pulse">▋</span>
             </div>
           )}
-          {transcript && (
-            <div className="font-medium">{transcript}</div>
-          )}
+          {transcript && <div className="font-medium">{transcript}</div>}
           {!isListening && !transcript && (
             <div className="text-muted-foreground text-center py-8">
               Click "Start Voice Input" to begin
@@ -210,7 +209,11 @@ export const LanguageSelection: Story = {
     const languages = [
       { code: 'en-US', name: 'English (US)', sample: 'Hello, how are you?' },
       { code: 'es-ES', name: 'Español', sample: 'Hola, ¿cómo estás?' },
-      { code: 'fr-FR', name: 'Français', sample: 'Bonjour, comment allez-vous?' },
+      {
+        code: 'fr-FR',
+        name: 'Français',
+        sample: 'Bonjour, comment allez-vous?',
+      },
       { code: 'de-DE', name: 'Deutsch', sample: 'Hallo, wie geht es dir?' },
       { code: 'ja-JP', name: '日本語', sample: 'こんにちは、お元気ですか？' },
       { code: 'zh-CN', name: '中文', sample: '你好，你好吗？' },
@@ -218,8 +221,8 @@ export const LanguageSelection: Story = {
 
     const simulateTranscription = () => {
       setIsListening(true)
-      const selectedLang = languages.find(l => l.code === language)
-      
+      const selectedLang = languages.find((l) => l.code === language)
+
       setTimeout(() => {
         setTranscript(selectedLang?.sample || 'Hello!')
         setIsListening(false)
@@ -255,7 +258,7 @@ export const LanguageSelection: Story = {
           {isListening ? (
             <>
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
-              Listening in {languages.find(l => l.code === language)?.name}...
+              Listening in {languages.find((l) => l.code === language)?.name}...
             </>
           ) : (
             <>🎤 Start Voice Input</>
@@ -272,7 +275,7 @@ export const LanguageSelection: Story = {
 
         {transcript && (
           <div className="text-sm text-muted-foreground">
-            Recognized in: {languages.find(l => l.code === language)?.name}
+            Recognized in: {languages.find((l) => l.code === language)?.name}
           </div>
         )}
       </div>
@@ -301,11 +304,11 @@ export const ChatIntegration: Story = {
     const simulateVoice = () => {
       setIsListening(true)
       setCurrentTranscript('')
-      
+
       const sample = 'What is artificial intelligence?'
       const words = sample.split(' ')
       let index = 0
-      
+
       const interval = setInterval(() => {
         if (index < words.length) {
           setCurrentTranscript(words.slice(0, index + 1).join(' '))
@@ -336,7 +339,10 @@ export const ChatIntegration: Story = {
           ) : (
             <div className="space-y-2">
               {messages.map((msg, index) => (
-                <div key={index} className="p-3 bg-primary text-primary-foreground rounded-lg">
+                <div
+                  key={index}
+                  className="p-3 bg-primary text-primary-foreground rounded-lg"
+                >
                   {msg}
                 </div>
               ))}
@@ -375,7 +381,11 @@ export const ChatIntegration: Story = {
             </div>
           </div>
 
-          <Button onClick={sendMessage} className="w-full" disabled={!textInput.trim()}>
+          <Button
+            onClick={sendMessage}
+            className="w-full"
+            disabled={!textInput.trim()}
+          >
             Send Message
           </Button>
         </div>
@@ -398,20 +408,43 @@ export const ChatIntegration: Story = {
 export const BrowserSupportInfo: Story = {
   render: () => {
     const browsers = [
-      { name: 'Chrome', supported: true, version: '25+', notes: 'Full support' },
+      {
+        name: 'Chrome',
+        supported: true,
+        version: '25+',
+        notes: 'Full support',
+      },
       { name: 'Edge', supported: true, version: '79+', notes: 'Full support' },
-      { name: 'Safari', supported: true, version: 'iOS 14.5+', notes: 'Good support' },
-      { name: 'Firefox', supported: false, version: '-', notes: 'Not yet supported' },
+      {
+        name: 'Safari',
+        supported: true,
+        version: 'iOS 14.5+',
+        notes: 'Good support',
+      },
+      {
+        name: 'Firefox',
+        supported: false,
+        version: '-',
+        notes: 'Not yet supported',
+      },
       { name: 'Opera', supported: true, version: '27+', notes: 'Full support' },
-      { name: 'Samsung Internet', supported: false, version: '-', notes: 'Not supported' },
+      {
+        name: 'Samsung Internet',
+        supported: false,
+        version: '-',
+        notes: 'Not supported',
+      },
     ]
 
     return (
       <div className="space-y-6">
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2">Browser Compatibility</h4>
+          <h4 className="font-semibold text-blue-900 mb-2">
+            Browser Compatibility
+          </h4>
           <p className="text-sm text-blue-800">
-            The Web Speech API has varying support across browsers. Check compatibility before using voice features.
+            The Web Speech API has varying support across browsers. Check
+            compatibility before using voice features.
           </p>
         </div>
 
@@ -427,19 +460,26 @@ export const BrowserSupportInfo: Story = {
             </thead>
             <tbody>
               {browsers.map((browser, index) => (
-                <tr key={browser.name} className={index % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
+                <tr
+                  key={browser.name}
+                  className={index % 2 === 0 ? 'bg-card' : 'bg-muted/30'}
+                >
                   <td className="p-3 font-medium">{browser.name}</td>
                   <td className="p-3 text-sm">{browser.version}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      browser.supported 
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        browser.supported
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {browser.supported ? '✅ Supported' : '❌ Not Supported'}
                     </span>
                   </td>
-                  <td className="p-3 text-sm text-muted-foreground">{browser.notes}</td>
+                  <td className="p-3 text-sm text-muted-foreground">
+                    {browser.notes}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -447,7 +487,9 @@ export const BrowserSupportInfo: Story = {
         </div>
 
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h4 className="font-semibold text-yellow-900 mb-2">💡 Implementation Tips</h4>
+          <h4 className="font-semibold text-yellow-900 mb-2">
+            💡 Implementation Tips
+          </h4>
           <ul className="text-sm text-yellow-800 space-y-1 ml-4 list-disc">
             <li>Always check \`isSupported\` before showing voice UI</li>
             <li>Provide fallback text input for unsupported browsers</li>
@@ -487,7 +529,7 @@ export const ContinuousModeExample: Story = {
         }
       } else {
         setIsListening(true)
-        
+
         // Simulate continuous listening
         const interval = setInterval(() => {
           setTranscript((prev) => {
@@ -496,7 +538,7 @@ export const ContinuousModeExample: Story = {
             return prev ? `${prev} ${randomWord}` : randomWord
           })
         }, 1000)
-        
+
         setTimeout(() => {
           clearInterval(interval)
         }, 5000)
@@ -509,8 +551,12 @@ export const ContinuousModeExample: Story = {
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold">Continuous Listening Mode</h4>
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${isListening ? 'bg-red-500 animate-pulse' : 'bg-gray-300'}`} />
-              <span className="text-sm">{isListening ? 'Listening' : 'Idle'}</span>
+              <div
+                className={`w-3 h-3 rounded-full ${isListening ? 'bg-red-500 animate-pulse' : 'bg-gray-300'}`}
+              />
+              <span className="text-sm">
+                {isListening ? 'Listening' : 'Idle'}
+              </span>
             </div>
           </div>
 
@@ -520,9 +566,15 @@ export const ContinuousModeExample: Story = {
         </div>
 
         <div className="border rounded-lg p-4 min-h-[120px] bg-card">
-          <div className="text-sm text-muted-foreground mb-2">Current Transcript:</div>
+          <div className="text-sm text-muted-foreground mb-2">
+            Current Transcript:
+          </div>
           <div className="font-medium">
-            {transcript || <span className="text-muted-foreground italic">No speech detected...</span>}
+            {transcript || (
+              <span className="text-muted-foreground italic">
+                No speech detected...
+              </span>
+            )}
             {isListening && <span className="animate-pulse">▋</span>}
           </div>
         </div>
@@ -555,8 +607,10 @@ export const ContinuousModeExample: Story = {
 
 export const ConfidenceScores: Story = {
   render: () => {
-    const [results, setResults] = React.useState<Array<{ text: string; confidence: number }>>([])
-    
+    const [results, setResults] = React.useState<
+      Array<{ text: string; confidence: number }>
+    >([])
+
     const simulateRecognition = () => {
       const samples = [
         { text: 'Hello world', confidence: 0.98 },
@@ -564,7 +618,7 @@ export const ConfidenceScores: Story = {
         { text: 'The weather is nice', confidence: 0.85 },
         { text: 'Something unclear', confidence: 0.62 },
       ]
-      
+
       const sample = samples[Math.floor(Math.random() * samples.length)]
       setResults([...results, sample])
     }
@@ -585,20 +639,26 @@ export const ConfidenceScores: Story = {
               <div key={index} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="font-medium">{result.text}</div>
-                  <span className={`px-2 py-1 text-xs rounded ${
-                    result.confidence >= 0.9 ? 'bg-green-100 text-green-800' :
-                    result.confidence >= 0.75 ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs rounded ${
+                      result.confidence >= 0.9
+                        ? 'bg-green-100 text-green-800'
+                        : result.confidence >= 0.75
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}
+                  >
                     {(result.confidence * 100).toFixed(0)}% confident
                   </span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className={`h-full ${
-                      result.confidence >= 0.9 ? 'bg-green-500' :
-                      result.confidence >= 0.75 ? 'bg-yellow-500' :
-                      'bg-red-500'
+                      result.confidence >= 0.9
+                        ? 'bg-green-500'
+                        : result.confidence >= 0.75
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
                     }`}
                     style={{ width: `${result.confidence * 100}%` }}
                   />
@@ -610,8 +670,9 @@ export const ConfidenceScores: Story = {
 
         {results.length > 0 && (
           <div className="p-3 bg-muted rounded-lg text-sm">
-            <strong>Tip:</strong> Low confidence scores may indicate unclear speech, background noise,
-            or accents. Consider asking users to repeat for better accuracy.
+            <strong>Tip:</strong> Low confidence scores may indicate unclear
+            speech, background noise, or accents. Consider asking users to
+            repeat for better accuracy.
           </div>
         )}
       </div>

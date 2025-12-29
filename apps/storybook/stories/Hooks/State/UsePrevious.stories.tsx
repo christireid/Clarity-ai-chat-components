@@ -1,21 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { usePrevious } from '@clarity-chat/react'
+import { usePrevious } from '@clarity-chat/react/internal'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 
 /**
  * **usePrevious Hook**
- * 
+ *
  * Hook for getting the previous value of state or prop from the last render.
  * Useful for tracking changes and implementing undo/comparison features.
- * 
+ *
  * **Key Features:**
  * - Track previous value
  * - Compare current vs previous
  * - Undefined on first render
  * - Automatic updates
  * - Memory efficient
- * 
+ *
  * **Use Cases:**
  * - Tracking value changes
  * - Comparing current vs previous
@@ -81,11 +81,13 @@ function CounterDemo() {
             <strong>Current Count:</strong> {count}
           </div>
           <div>
-            <strong>Previous Count:</strong> {prevCount !== undefined ? prevCount : 'N/A (first render)'}
+            <strong>Previous Count:</strong>{' '}
+            {prevCount !== undefined ? prevCount : 'N/A (first render)'}
           </div>
           {prevCount !== undefined && (
             <div>
-              <strong>Change:</strong> {count - prevCount > 0 ? '+' : ''}{count - prevCount}
+              <strong>Change:</strong> {count - prevCount > 0 ? '+' : ''}
+              {count - prevCount}
             </div>
           )}
         </div>
@@ -138,7 +140,8 @@ function InputChangeDemo() {
             <strong>Current Value:</strong> {input || '(empty)'}
           </div>
           <div>
-            <strong>Previous Value:</strong> {prevInput !== undefined ? (prevInput || '(empty)') : 'N/A'}
+            <strong>Previous Value:</strong>{' '}
+            {prevInput !== undefined ? prevInput || '(empty)' : 'N/A'}
           </div>
           {prevInput !== undefined && prevInput !== input && (
             <div className="text-green-600 dark:text-green-400">
@@ -193,7 +196,11 @@ function UndoDemo() {
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={undo} disabled={prevValue === undefined} variant="outline">
+        <Button
+          onClick={undo}
+          disabled={prevValue === undefined}
+          variant="outline"
+        >
           Undo (Restore Previous)
         </Button>
       </div>
@@ -204,17 +211,24 @@ function UndoDemo() {
             <strong>Current Value:</strong> {value}
           </div>
           <div>
-            <strong>Previous Value:</strong> {prevValue !== undefined ? prevValue : 'N/A'}
+            <strong>Previous Value:</strong>{' '}
+            {prevValue !== undefined ? prevValue : 'N/A'}
           </div>
           {history.length > 0 && (
             <div className="mt-2">
               <strong>History:</strong>
               <div className="mt-1 space-y-1">
-                {history.slice(-5).reverse().map((item, index) => (
-                  <div key={index} className="text-xs text-gray-600 dark:text-gray-400">
-                    {item}
-                  </div>
-                ))}
+                {history
+                  .slice(-5)
+                  .reverse()
+                  .map((item, index) => (
+                    <div
+                      key={index}
+                      className="text-xs text-gray-600 dark:text-gray-400"
+                    >
+                      {item}
+                    </div>
+                  ))}
               </div>
             </div>
           )}

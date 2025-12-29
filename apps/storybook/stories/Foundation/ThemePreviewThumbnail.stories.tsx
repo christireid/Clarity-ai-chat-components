@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
+import { ThemeProvider } from '@clarity-chat/react'
 import {
-  ThemeProvider,
   ThemePreviewThumbnail,
   ThemePreviewGrid,
   createTheme,
-} from '@clarity-chat/react'
-import type { ModernThemePresetName } from '@clarity-chat/react'
+  type ModernThemePresetName,
+} from '@clarity-chat/react/internal'
 
 const meta: Meta<typeof ThemePreviewThumbnail> = {
   title: 'Foundation/Theme Preview Thumbnail',

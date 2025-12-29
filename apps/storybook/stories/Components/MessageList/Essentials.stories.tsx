@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
+import { VirtualizedMessageList as MessageList } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 const meta: Meta<typeof MessageList> = {

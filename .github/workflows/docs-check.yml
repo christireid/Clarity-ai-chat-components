@@ -3,22 +3,8 @@ name: Documentation Check
 on:
   push:
     branches: [main, develop]
-    paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'packages/*/README.md'
-      - 'packages/react/src/index.ts'
-      - 'apps/docs/lib/**'
-      - 'apps/docs/app/reference/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'packages/*/README.md'
-      - 'packages/react/src/index.ts'
-      - 'apps/docs/lib/**'
-      - 'apps/docs/app/reference/**'
 
 # Minimal global permissions
 permissions:

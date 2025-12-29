@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatWindow, ToolInvocationCard, SafetyStatusCard } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react'
+import {
+  SafetyStatusCard,
+  ToolInvocationCard,
+} from '@clarity-chat/react/internal'
 import type { Message, ToolInvocation } from '@clarity-chat/types'
 import { useState } from 'react'
 
@@ -9,7 +13,8 @@ const meta: Meta = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'Industry-specific AI chat solutions demonstrating real-world use cases.',
+        component:
+          'Industry-specific AI chat solutions demonstrating real-world use cases.',
       },
     },
   },
@@ -20,7 +25,7 @@ export default meta
 
 /**
  * Healthcare Assistant Demo
- * 
+ *
  * HIPAA-compliant medical chatbot with:
  * - Patient records integration
  * - Medical terminology understanding
@@ -34,7 +39,8 @@ export const HealthcareAssistant: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '👋 Hello! I\'m your healthcare assistant. How can I help you today?',
+        content:
+          "👋 Hello! I'm your healthcare assistant. How can I help you today?",
         createdAt: new Date(Date.now() - 5000),
         senderName: 'HealthBot',
       },
@@ -105,7 +111,9 @@ Your blood glucose is slightly elevated. I recommend:
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6">
           <h1 className="text-2xl font-bold">🏥 Healthcare Assistant</h1>
-          <p className="text-blue-100 mt-1">HIPAA-compliant AI medical assistant</p>
+          <p className="text-blue-100 mt-1">
+            HIPAA-compliant AI medical assistant
+          </p>
         </div>
         <div className="flex-1 p-6">
           <ChatWindow
@@ -115,7 +123,9 @@ Your blood glucose is slightly elevated. I recommend:
             emptyState={
               <div className="text-center p-8">
                 <span className="text-6xl mb-4 block">🏥</span>
-                <h3 className="text-xl font-semibold mb-2">Healthcare Assistant Ready</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Healthcare Assistant Ready
+                </h3>
                 <p className="text-muted-foreground">
                   Ask about symptoms, medications, lab results, or appointments
                 </p>
@@ -124,7 +134,8 @@ Your blood glucose is slightly elevated. I recommend:
           />
         </div>
         <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border-t border-yellow-200 dark:border-yellow-800 text-sm text-yellow-800 dark:text-yellow-200">
-          ⚠️ <strong>Demo Only</strong> - This is for demonstration purposes. Not a substitute for professional medical advice.
+          ⚠️ <strong>Demo Only</strong> - This is for demonstration purposes.
+          Not a substitute for professional medical advice.
         </div>
       </div>
     )
@@ -133,7 +144,7 @@ Your blood glucose is slightly elevated. I recommend:
 
 /**
  * Financial Advisor Demo
- * 
+ *
  * AI-powered financial assistant with:
  * - Budget planning
  * - Expense tracking
@@ -146,7 +157,8 @@ export const FinancialAdvisor: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '💰 Welcome to your Financial Advisor! I can help with budgeting, expense tracking, and financial planning.',
+        content:
+          '💰 Welcome to your Financial Advisor! I can help with budgeting, expense tracking, and financial planning.',
         createdAt: new Date(Date.now() - 5000),
         senderName: 'FinBot',
       },
@@ -224,7 +236,9 @@ Would you like me to analyze your current spending or adjust any categories?`,
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
           <h1 className="text-2xl font-bold">💰 Financial Advisor</h1>
-          <p className="text-green-100 mt-1">Smart budgeting and financial planning</p>
+          <p className="text-green-100 mt-1">
+            Smart budgeting and financial planning
+          </p>
         </div>
         <div className="flex-1 p-6">
           <ChatWindow
@@ -234,7 +248,8 @@ Would you like me to analyze your current spending or adjust any categories?`,
           />
         </div>
         <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border-t border-yellow-200 dark:border-yellow-800 text-sm text-yellow-800 dark:text-yellow-200">
-          ⚠️ <strong>Educational Only</strong> - Not financial advice. Consult licensed financial advisors.
+          ⚠️ <strong>Educational Only</strong> - Not financial advice. Consult
+          licensed financial advisors.
         </div>
       </div>
     )
@@ -243,7 +258,7 @@ Would you like me to analyze your current spending or adjust any categories?`,
 
 /**
  * Ecommerce Assistant Demo
- * 
+ *
  * Product recommendations and shopping assistance with:
  * - Product search
  * - Personalized recommendations
@@ -256,7 +271,8 @@ export const EcommerceAssistant: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '🛍️ Hi! I\'m your shopping assistant. I can help you find products, answer questions, and manage your cart.',
+        content:
+          "🛍️ Hi! I'm your shopping assistant. I can help you find products, answer questions, and manage your cart.",
         createdAt: new Date(Date.now() - 5000),
         senderName: 'ShopBot',
       },
@@ -334,7 +350,9 @@ Would you like to:
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
           <h1 className="text-2xl font-bold">🛍️ Ecommerce Assistant</h1>
-          <p className="text-purple-100 mt-1">Smart product recommendations & shopping help</p>
+          <p className="text-purple-100 mt-1">
+            Smart product recommendations & shopping help
+          </p>
         </div>
         <div className="flex-1 p-6">
           <ChatWindow
@@ -350,7 +368,7 @@ Would you like to:
 
 /**
  * Education Tutor Demo
- * 
+ *
  * Interactive learning assistant with:
  * - Quiz generation
  * - Progress tracking
@@ -363,7 +381,8 @@ export const EducationTutor: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '📚 Hi! I\'m your AI tutor. What would you like to learn today?',
+        content:
+          "📚 Hi! I'm your AI tutor. What would you like to learn today?",
         createdAt: new Date(Date.now() - 5000),
         senderName: 'TutorBot',
       },
@@ -447,7 +466,9 @@ Try answering these to test your understanding!`,
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-6">
           <h1 className="text-2xl font-bold">📚 Education Tutor</h1>
-          <p className="text-indigo-100 mt-1">Interactive AI learning assistant</p>
+          <p className="text-indigo-100 mt-1">
+            Interactive AI learning assistant
+          </p>
         </div>
         <div className="flex-1 p-6">
           <ChatWindow
@@ -463,7 +484,7 @@ Try answering these to test your understanding!`,
 
 /**
  * AI Agents Workflow Demo
- * 
+ *
  * Multi-agent orchestration with:
  * - Custom agent tools
  * - Agent coordination
@@ -476,7 +497,8 @@ export const AIAgentsWorkflow: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '🤖 AI Agent System initialized. I can coordinate multiple specialized agents to solve complex tasks.',
+        content:
+          '🤖 AI Agent System initialized. I can coordinate multiple specialized agents to solve complex tasks.',
         createdAt: new Date(Date.now() - 5000),
         senderName: 'AgentOrchestrator',
       },
@@ -581,7 +603,9 @@ export const AIAgentsWorkflow: StoryObj = {
       <div className="h-screen flex flex-col">
         <div className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
           <h1 className="text-2xl font-bold">🤖 AI Agents Workflow</h1>
-          <p className="text-violet-100 mt-1">Multi-agent orchestration system</p>
+          <p className="text-violet-100 mt-1">
+            Multi-agent orchestration system
+          </p>
         </div>
         <div className="flex-1 grid grid-cols-3 gap-6 p-6">
           <div className="col-span-2">
@@ -605,7 +629,7 @@ export const AIAgentsWorkflow: StoryObj = {
 
 /**
  * Code Assistant Demo
- * 
+ *
  * AI-powered coding help with:
  * - Code explanation
  * - Bug fixing
@@ -618,7 +642,8 @@ export const CodeAssistant: StoryObj = {
       {
         id: '1',
         role: 'assistant',
-        content: '👨‍💻 Hello! I\'m your code assistant. I can help with code review, debugging, and implementation.',
+        content:
+          "👨‍💻 Hello! I'm your code assistant. I can help with code review, debugging, and implementation.",
         createdAt: new Date(Date.now() - 5000),
         senderName: 'CodeBot',
       },
@@ -733,4 +758,3 @@ Need help with anything else?`,
     )
   },
 }
-

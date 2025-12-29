@@ -1,6 +1,6 @@
 /**
  * Intelligent Routing System
- * 
+ *
  * Implements smart model selection with cost optimization
  * Provides 30-40% cost reduction with performance optimization
  */
@@ -57,7 +57,11 @@ export interface RoutingDecision {
   estimatedTime: number
   estimatedQuality: number
   alternatives: AlternativeModel[]
-  routingStrategy: 'cost_optimized' | 'performance_optimized' | 'quality_optimized' | 'balanced'
+  routingStrategy:
+    | 'cost_optimized'
+    | 'performance_optimized'
+    | 'quality_optimized'
+    | 'balanced'
   adaptationApplied: boolean
 }
 
@@ -102,21 +106,24 @@ export class IntelligentRoutingSystem {
     context?: RoutingContext
   ): Promise<RoutingDecision> {
     const startTime = Date.now()
-    
+
     try {
       // Analyze request characteristics
       const requestAnalysis = await this.analyzeRequest(request, context)
-      
+
       // Get available models
       const availableModels = this.getAvailableModels(requestAnalysis)
-      
+
       if (availableModels.length === 0) {
         throw new Error('No models available for routing')
       }
 
       // Apply routing strategies
-      const routingStrategies = this.determineRoutingStrategies(requestAnalysis, context)
-      
+      const routingStrategies = this.determineRoutingStrategies(
+        requestAnalysis,
+        context
+      )
+
       // Evaluate models against criteria
       const modelEvaluations = await this.evaluateModels(
         availableModels,
@@ -140,7 +147,7 @@ export class IntelligentRoutingSystem {
           requestAnalysis,
           context
         )
-        
+
         if (adaptedModel.modelId !== selectedModel.modelId) {
           selectedModel = adaptedModel
           adaptationApplied = true
@@ -153,21 +160,26 @@ export class IntelligentRoutingSystem {
       // Generate routing decision
       const decision: RoutingDecision = {
         selectedModel: selectedModel.modelId,
-        reasoning: this.generateRoutingReasoning(selectedModel, routingStrategies),
+        reasoning: this.generateRoutingReasoning(
+          selectedModel,
+          routingStrategies
+        ),
         confidence: selectedModel.confidence || 0.8,
         estimatedCost: selectedModel.estimatedCost,
         estimatedTime: selectedModel.estimatedTime,
         estimatedQuality: selectedModel.estimatedQuality,
-        alternatives: this.generateAlternatives(modelEvaluations, selectedModel),
+        alternatives: this.generateAlternatives(
+          modelEvaluations,
+          selectedModel
+        ),
         routingStrategy: this.determineRoutingStrategy(routingStrategies),
-        adaptationApplied
+        adaptationApplied,
       }
 
       // Monitor routing decision
       this.monitoring.recordRoutingDecision(decision, Date.now() - startTime)
 
       return decision
-
     } catch (error) {
       // Apply fallback routing
       return await this.applyFallbackRouting(request, context, error)
@@ -185,7 +197,8 @@ export class IntelligentRoutingSystem {
     const complexity = this.assessComplexity(request.content)
     const urgency = context?.urgency || 'normal'
     const budget = context?.budget || this.config.costBudget
-    const qualityRequirement = context?.qualityRequirement || this.config.qualityThreshold
+    const qualityRequirement =
+      context?.qualityRequirement || this.config.qualityThreshold
 
     // Predict request characteristics if predictive routing is enabled
     let predictedLoad = 1.0
@@ -201,7 +214,7 @@ export class IntelligentRoutingSystem {
       qualityRequirement,
       predictedLoad,
       timestamp: new Date(),
-      estimatedTokens: this.estimateTokens(request.content)
+      estimatedTokens: this.estimateTokens(request.content),
     }
   }
 
@@ -214,21 +227,23 @@ export class IntelligentRoutingSystem {
     for (const profile of this.modelProfiles.values()) {
       // Check availability
       if (profile.availability < 0.5) continue
-      
+
       // Check capabilities
       if (analysis.estimatedTokens > profile.capabilities.maxTokens) continue
-      
+
       // Check cost budget
       const estimatedCost = this.estimateCost(profile, analysis.estimatedTokens)
       if (estimatedCost > analysis.budget) continue
-      
+
       // Check quality requirements
       if (profile.quality.averageScore < analysis.qualityRequirement) continue
-      
+
       available.push(profile)
     }
 
-    return available.sort((a, b) => b.quality.averageScore - a.quality.averageScore)
+    return available.sort(
+      (a, b) => b.quality.averageScore - a.quality.averageScore
+    )
   }
 
   /**
@@ -244,29 +259,33 @@ export class IntelligentRoutingSystem {
 
     for (const model of models) {
       const estimatedTokens = analysis.estimatedTokens
-      
+
       // Calculate cost
       const estimatedCost = this.estimateCost(model, estimatedTokens)
-      
+
       // Calculate time
       const estimatedTime = this.estimateTime(model, analysis)
-      
+
       // Calculate quality
       const estimatedQuality = this.estimateQuality(model, analysis)
-      
+
       // Calculate confidence
       const confidence = this.calculateConfidence(model, analysis, context)
-      
+
       // Apply strategy-specific adjustments
-      const strategyAdjusted = this.applyStrategyAdjustments({
-        modelId: model.id,
-        estimatedCost,
-        estimatedTime,
-        estimatedQuality,
-        confidence,
-        load: model.currentLoad,
-        availability: model.availability
-      }, strategies, analysis)
+      const strategyAdjusted = this.applyStrategyAdjustments(
+        {
+          modelId: model.id,
+          estimatedCost,
+          estimatedTime,
+          estimatedQuality,
+          confidence,
+          load: model.currentLoad,
+          availability: model.availability,
+        },
+        strategies,
+        analysis
+      )
 
       evaluations.push(strategyAdjusted)
     }
@@ -292,14 +311,15 @@ export class IntelligentRoutingSystem {
     }
 
     // Apply multi-criteria decision making
-    const scoredEvaluations = evaluations.map(evaluation => ({
+    const scoredEvaluations = evaluations.map((evaluation) => ({
       ...evaluation,
-      overallScore: this.calculateOverallScore(evaluation, analysis, context)
+      overallScore: this.calculateOverallScore(evaluation, analysis, context),
     }))
 
     // Select best model
-    const bestEvaluation = scoredEvaluations
-      .sort((a, b) => b.overallScore - a.overallScore)[0]
+    const bestEvaluation = scoredEvaluations.sort(
+      (a, b) => b.overallScore - a.overallScore
+    )[0]
 
     return bestEvaluation
   }
@@ -317,23 +337,23 @@ export class IntelligentRoutingSystem {
         performance: {
           averageResponseTime: 2000,
           reliability: 0.99,
-          throughput: 100
+          throughput: 100,
         },
         capabilities: {
           maxTokens: 128000,
           supportsStreaming: true,
           supportsTools: true,
           supportsVision: true,
-          supportsFineTuning: false
+          supportsFineTuning: false,
         },
         quality: {
           averageScore: 0.95,
           consistency: 0.98,
-          accuracy: 0.96
+          accuracy: 0.96,
         },
         availability: 0.95,
         currentLoad: 0.3,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       {
         id: 'gpt-3.5-turbo',
@@ -343,23 +363,23 @@ export class IntelligentRoutingSystem {
         performance: {
           averageResponseTime: 1000,
           reliability: 0.98,
-          throughput: 200
+          throughput: 200,
         },
         capabilities: {
           maxTokens: 16385,
           supportsStreaming: true,
           supportsTools: true,
           supportsVision: false,
-          supportsFineTuning: true
+          supportsFineTuning: true,
         },
         quality: {
           averageScore: 0.85,
           consistency: 0.92,
-          accuracy: 0.88
+          accuracy: 0.88,
         },
         availability: 0.98,
         currentLoad: 0.4,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       {
         id: 'claude-3-sonnet',
@@ -369,23 +389,23 @@ export class IntelligentRoutingSystem {
         performance: {
           averageResponseTime: 1500,
           reliability: 0.97,
-          throughput: 150
+          throughput: 150,
         },
         capabilities: {
           maxTokens: 200000,
           supportsStreaming: true,
           supportsTools: true,
           supportsVision: true,
-          supportsFineTuning: false
+          supportsFineTuning: false,
         },
         quality: {
-          averageScore: 0.90,
+          averageScore: 0.9,
           consistency: 0.95,
-          accuracy: 0.92
+          accuracy: 0.92,
         },
         availability: 0.92,
         currentLoad: 0.25,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       {
         id: 'claude-3-haiku',
@@ -395,23 +415,23 @@ export class IntelligentRoutingSystem {
         performance: {
           averageResponseTime: 800,
           reliability: 0.96,
-          throughput: 300
+          throughput: 300,
         },
         capabilities: {
           maxTokens: 200000,
           supportsStreaming: true,
           supportsTools: true,
           supportsVision: false,
-          supportsFineTuning: false
+          supportsFineTuning: false,
         },
         quality: {
           averageScore: 0.82,
-          consistency: 0.90,
-          accuracy: 0.85
+          consistency: 0.9,
+          accuracy: 0.85,
         },
         availability: 0.94,
         currentLoad: 0.35,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       {
         id: 'gemini-pro',
@@ -421,27 +441,27 @@ export class IntelligentRoutingSystem {
         performance: {
           averageResponseTime: 1200,
           reliability: 0.95,
-          throughput: 180
+          throughput: 180,
         },
         capabilities: {
           maxTokens: 1000000,
           supportsStreaming: true,
           supportsTools: true,
           supportsVision: true,
-          supportsFineTuning: false
+          supportsFineTuning: false,
         },
         quality: {
           averageScore: 0.87,
           consistency: 0.93,
-          accuracy: 0.89
+          accuracy: 0.89,
         },
-        availability: 0.90,
+        availability: 0.9,
         currentLoad: 0.28,
-        lastUpdated: new Date()
-      }
+        lastUpdated: new Date(),
+      },
     ]
 
-    profiles.forEach(profile => {
+    profiles.forEach((profile) => {
       this.modelProfiles.set(profile.id, profile)
     })
   }
@@ -462,7 +482,7 @@ export class IntelligentRoutingSystem {
    */
   private determineRoutingStrategies(
     analysis: RequestAnalysis,
-    context?: RoutingContext
+    _context?: RoutingContext
   ): RoutingStrategy[] {
     const strategies: RoutingStrategy[] = []
 
@@ -470,11 +490,17 @@ export class IntelligentRoutingSystem {
       strategies.push('cost_optimized')
     }
 
-    if (this.config.enablePerformanceOptimization && analysis.urgency === 'high') {
+    if (
+      this.config.enablePerformanceOptimization &&
+      analysis.urgency === 'high'
+    ) {
       strategies.push('performance_optimized')
     }
 
-    if (this.config.enableQualityBasedRouting && analysis.qualityRequirement > 0.9) {
+    if (
+      this.config.enableQualityBasedRouting &&
+      analysis.qualityRequirement > 0.9
+    ) {
       strategies.push('quality_optimized')
     }
 
@@ -491,11 +517,11 @@ export class IntelligentRoutingSystem {
   private applyStrategyAdjustments(
     evaluation: ModelEvaluation,
     strategies: RoutingStrategy[],
-    analysis: RequestAnalysis
+    _analysis: RequestAnalysis
   ): ModelEvaluation {
     let adjustedEvaluation = { ...evaluation }
 
-    strategies.forEach(strategy => {
+    strategies.forEach((strategy) => {
       switch (strategy) {
         case 'cost_optimized':
           adjustedEvaluation.estimatedCost *= 0.8 // Favor cheaper models
@@ -551,8 +577,8 @@ export class IntelligentRoutingSystem {
    */
   private calculateOverallScore(
     evaluation: ModelEvaluation,
-    analysis: RequestAnalysis,
-    context?: RoutingContext
+    _analysis: RequestAnalysis,
+    _context?: RoutingContext
   ): number {
     let score = 0
 
@@ -560,7 +586,10 @@ export class IntelligentRoutingSystem {
     score += evaluation.estimatedQuality * 0.4
 
     // Cost component (30%)
-    const costEfficiency = Math.max(0, 1 - evaluation.estimatedCost / analysis.budget)
+    const costEfficiency = Math.max(
+      0,
+      1 - evaluation.estimatedCost / analysis.budget
+    )
     score += costEfficiency * 0.3
 
     // Performance component (20%)
@@ -587,34 +616,37 @@ export class IntelligentRoutingSystem {
    */
   private estimateTime(model: ModelProfile, analysis: RequestAnalysis): number {
     let baseTime = model.performance.averageResponseTime
-    
+
     // Adjust for complexity
     const complexityMultiplier = {
       low: 0.8,
       medium: 1.0,
-      high: 1.5
+      high: 1.5,
     }
     baseTime *= complexityMultiplier[analysis.complexity]
-    
+
     // Adjust for urgency
     if (analysis.urgency === 'high') {
       baseTime *= 0.7
     }
-    
+
     return baseTime
   }
 
   /**
    * Estimate quality for a model
    */
-  private estimateQuality(model: ModelProfile, analysis: RequestAnalysis): number {
+  private estimateQuality(
+    model: ModelProfile,
+    analysis: RequestAnalysis
+  ): number {
     let quality = model.quality.averageScore
-    
+
     // Adjust for complexity
     if (analysis.complexity === 'high' && model.quality.consistency < 0.9) {
       quality *= 0.95
     }
-    
+
     return quality
   }
 
@@ -623,20 +655,20 @@ export class IntelligentRoutingSystem {
    */
   private calculateConfidence(
     model: ModelProfile,
-    analysis: RequestAnalysis,
-    context?: RoutingContext
+    _analysis: RequestAnalysis,
+    _context?: RoutingContext
   ): number {
     let confidence = 0.8 // Base confidence
-    
+
     // Adjust for availability
     confidence *= model.availability
-    
+
     // Adjust for current load
-    confidence *= (1 - model.currentLoad)
-    
+    confidence *= 1 - model.currentLoad
+
     // Adjust for reliability
     confidence *= model.performance.reliability
-    
+
     return confidence
   }
 
@@ -659,14 +691,14 @@ export class IntelligentRoutingSystem {
     selectedModel: ModelEvaluation
   ): AlternativeModel[] {
     return evaluations
-      .filter(evaluation => evaluation.modelId !== selectedModel.modelId)
+      .filter((evaluation) => evaluation.modelId !== selectedModel.modelId)
       .slice(0, 3)
-      .map(evaluation => ({
+      .map((evaluation) => ({
         modelId: evaluation.modelId,
         cost: evaluation.estimatedCost,
         time: evaluation.estimatedTime,
         quality: evaluation.estimatedQuality,
-        reason: this.generateAlternativeReasoning(evaluation, selectedModel)
+        reason: this.generateAlternativeReasoning(evaluation, selectedModel),
       }))
   }
 
@@ -677,19 +709,33 @@ export class IntelligentRoutingSystem {
     alternative: ModelEvaluation,
     selected: ModelEvaluation
   ): string {
-    const costDiff = ((alternative.estimatedCost - selected.estimatedCost) / selected.estimatedCost * 100).toFixed(1)
-    const timeDiff = ((alternative.estimatedTime - selected.estimatedTime) / selected.estimatedTime * 100).toFixed(1)
-    const qualityDiff = ((alternative.estimatedQuality - selected.estimatedQuality) * 100).toFixed(1)
-    
+    const costDiff = (
+      ((alternative.estimatedCost - selected.estimatedCost) /
+        selected.estimatedCost) *
+      100
+    ).toFixed(1)
+    const timeDiff = (
+      ((alternative.estimatedTime - selected.estimatedTime) /
+        selected.estimatedTime) *
+      100
+    ).toFixed(1)
+    const qualityDiff = (
+      (alternative.estimatedQuality - selected.estimatedQuality) *
+      100
+    ).toFixed(1)
+
     return `Cost ${costDiff}%, Time ${timeDiff}%, Quality ${qualityDiff}% relative to selected`
   }
 
   /**
    * Determine routing strategy from strategies array
    */
-  private determineRoutingStrategy(strategies: RoutingStrategy[]): RoutingStrategy {
+  private determineRoutingStrategy(
+    strategies: RoutingStrategy[]
+  ): RoutingStrategy {
     if (strategies.includes('quality_optimized')) return 'quality_optimized'
-    if (strategies.includes('performance_optimized')) return 'performance_optimized'
+    if (strategies.includes('performance_optimized'))
+      return 'performance_optimized'
     if (strategies.includes('cost_optimized')) return 'cost_optimized'
     return 'balanced'
   }
@@ -705,7 +751,7 @@ export class IntelligentRoutingSystem {
     console.warn('Applying fallback routing due to error:', error?.message)
 
     const fallbackModel = this.getFallbackModel()
-    
+
     return {
       selectedModel: fallbackModel.id,
       reasoning: `Fallback routing applied due to primary routing failure: ${error?.message}`,
@@ -715,7 +761,7 @@ export class IntelligentRoutingSystem {
       estimatedQuality: 0.85,
       alternatives: [],
       routingStrategy: this.config.fallbackStrategy,
-      adaptationApplied: false
+      adaptationApplied: false,
     }
   }
 
@@ -724,22 +770,29 @@ export class IntelligentRoutingSystem {
    */
   private getFallbackModel(): ModelProfile {
     const models = Array.from(this.modelProfiles.values())
-    
+
     switch (this.config.fallbackStrategy) {
       case 'cheapest':
-        return models.reduce((cheapest, current) => 
-          current.costPerToken.input < cheapest.costPerToken.input ? current : cheapest
+        return models.reduce((cheapest, current) =>
+          current.costPerToken.input < cheapest.costPerToken.input
+            ? current
+            : cheapest
         )
-      
+
       case 'fastest':
-        return models.reduce((fastest, current) => 
-          current.performance.averageResponseTime < fastest.performance.averageResponseTime ? current : fastest
+        return models.reduce((fastest, current) =>
+          current.performance.averageResponseTime <
+          fastest.performance.averageResponseTime
+            ? current
+            : fastest
         )
-      
+
       case 'most_reliable':
       default:
-        return models.reduce((mostReliable, current) => 
-          current.performance.reliability > mostReliable.performance.reliability ? current : mostReliable
+        return models.reduce((mostReliable, current) =>
+          current.performance.reliability > mostReliable.performance.reliability
+            ? current
+            : mostReliable
         )
     }
   }
@@ -754,12 +807,14 @@ export class IntelligentRoutingSystem {
       /class\s+\w+/,
       /def\s+\w+\s*\(/,
       /\{.*\}/,
-      /\[.*\]/
+      /\[.*\]/,
     ]
-    
-    const codeMatches = codePatterns.filter(pattern => pattern.test(content)).length
+
+    const codeMatches = codePatterns.filter((pattern) =>
+      pattern.test(content)
+    ).length
     const totalLines = content.split('\n').length
-    
+
     if (codeMatches > totalLines * 0.3) return 'code'
     if (codeMatches > 0) return 'mixed'
     return 'text'
@@ -769,7 +824,7 @@ export class IntelligentRoutingSystem {
     const sentences = content.split(/[.!?]+/).length
     const words = content.split(/\s+/).length
     const avgWordsPerSentence = words / Math.max(sentences, 1)
-    
+
     if (avgWordsPerSentence > 20) return 'high'
     if (avgWordsPerSentence > 12) return 'medium'
     return 'low'
@@ -809,7 +864,7 @@ class CostOptimizer {
     budget: number
   ): ModelEvaluation[] {
     return evaluations
-      .filter(evaluation => evaluation.estimatedCost <= budget)
+      .filter((evaluation) => evaluation.estimatedCost <= budget)
       .sort((a, b) => a.estimatedCost - b.estimatedCost)
   }
 
@@ -829,7 +884,7 @@ class LoadBalancer {
     this.routingHistory.push({
       modelId,
       timestamp: new Date(),
-      success: true
+      success: true,
     })
 
     // Update model load
@@ -849,9 +904,9 @@ class LoadBalancer {
   }
 
   getOptimalDistribution(models: ModelProfile[]): ModelProfile[] {
-    return models.map(model => ({
+    return models.map((model) => ({
       ...model,
-      currentLoad: this.modelLoads.get(model.id) || 0
+      currentLoad: this.modelLoads.get(model.id) || 0,
     }))
   }
 
@@ -880,14 +935,20 @@ class RequestPredictor {
 
     // Calculate average load from recent patterns
     const recentPatterns = patterns.slice(-10)
-    const averageLoad = recentPatterns.reduce((sum, pattern) => sum + pattern.load, 0) / recentPatterns.length
+    const averageLoad =
+      recentPatterns.reduce((sum, pattern) => sum + pattern.load, 0) /
+      recentPatterns.length
 
     return Math.min(2.0, Math.max(0.5, averageLoad)) // Clamp between 0.5 and 2.0
   }
 
-  recordPattern(request: RoutingRequest, context: RoutingContext, load: number): void {
+  recordPattern(
+    request: RoutingRequest,
+    context: RoutingContext,
+    load: number
+  ): void {
     const patternKey = `${context.userId || 'anonymous'}:${context.domain || 'general'}`
-    
+
     if (!this.requestPatterns.has(patternKey)) {
       this.requestPatterns.set(patternKey, [])
     }
@@ -897,7 +958,7 @@ class RequestPredictor {
       timestamp: new Date(),
       contentType: this.detectContentType(request.content),
       load,
-      urgency: context.urgency || 'normal'
+      urgency: context.urgency || 'normal',
     })
 
     // Keep only recent patterns
@@ -913,12 +974,14 @@ class RequestPredictor {
       /class\s+\w+/,
       /def\s+\w+\s*\(/,
       /\{.*\}/,
-      /\[.*\]/
+      /\[.*\]/,
     ]
-    
-    const codeMatches = codePatterns.filter(pattern => pattern.test(content)).length
+
+    const codeMatches = codePatterns.filter((pattern) =>
+      pattern.test(content)
+    ).length
     const totalLines = content.split('\n').length
-    
+
     if (codeMatches > totalLines * 0.3) return 'code'
     if (codeMatches > 0) return 'mixed'
     return 'text'
@@ -933,8 +996,8 @@ class RealTimeAdapter {
 
   async adaptRouting(
     evaluation: ModelEvaluation,
-    analysis: RequestAnalysis,
-    context?: RoutingContext
+    _analysis: RequestAnalysis,
+    _context?: RoutingContext
   ): Promise<ModelEvaluation> {
     // Apply real-time adjustments based on current conditions
     let adaptedEvaluation = { ...evaluation }
@@ -956,12 +1019,15 @@ class RealTimeAdapter {
   adaptModelProfiles(modelProfiles: Map<string, ModelProfile>): void {
     // Update model profiles based on real-time performance data
     // This would typically involve external monitoring data
-    
-    for (const [modelId, profile] of modelProfiles.entries()) {
+
+    for (const [_modelId, profile] of modelProfiles.entries()) {
       // Simulate real-time updates
       const loadVariation = (Math.random() - 0.5) * 0.2
-      const newLoad = Math.max(0, Math.min(1, profile.currentLoad + loadVariation))
-      
+      const newLoad = Math.max(
+        0,
+        Math.min(1, profile.currentLoad + loadVariation)
+      )
+
       profile.currentLoad = newLoad
       profile.lastUpdated = new Date()
     }
@@ -974,12 +1040,15 @@ class RealTimeAdapter {
 class RoutingMonitor {
   private routingDecisions: RoutingDecisionRecord[] = []
 
-  recordRoutingDecision(decision: RoutingDecision, processingTime: number): void {
+  recordRoutingDecision(
+    decision: RoutingDecision,
+    processingTime: number
+  ): void {
     this.routingDecisions.push({
       timestamp: new Date(),
       decision,
       processingTime,
-      success: true
+      success: true,
     })
 
     // Keep only recent decisions
@@ -990,26 +1059,28 @@ class RoutingMonitor {
 
   getStats(): RoutingStats {
     const recent = this.routingDecisions.slice(-100)
-    
+
     return {
       totalDecisions: this.routingDecisions.length,
-      averageProcessingTime: recent.reduce((sum, d) => sum + d.processingTime, 0) / recent.length,
-      successRate: recent.filter(d => d.success).length / recent.length,
+      averageProcessingTime:
+        recent.reduce((sum, d) => sum + d.processingTime, 0) / recent.length,
+      successRate: recent.filter((d) => d.success).length / recent.length,
       mostUsedStrategy: this.getMostUsedStrategy(recent),
-      averageConfidence: recent.reduce((sum, d) => sum + d.decision.confidence, 0) / recent.length
+      averageConfidence:
+        recent.reduce((sum, d) => sum + d.decision.confidence, 0) /
+        recent.length,
     }
   }
 
   private getMostUsedStrategy(recent: RoutingDecisionRecord[]): string {
     const strategyCounts: Record<string, number> = {}
-    
-    recent.forEach(decision => {
+
+    recent.forEach((decision) => {
       const strategy = decision.decision.routingStrategy
       strategyCounts[strategy] = (strategyCounts[strategy] || 0) + 1
     })
-    
-    return Object.entries(strategyCounts)
-      .sort((a, b) => b[1] - a[1])[0][0]
+
+    return Object.entries(strategyCounts).sort((a, b) => b[1] - a[1])[0][0]
   }
 }
 
@@ -1087,4 +1158,8 @@ export interface RoutingStats {
   averageConfidence: number
 }
 
-export type RoutingStrategyType = 'cost_optimized' | 'performance_optimized' | 'quality_optimized' | 'balanced'
+export type RoutingStrategyType =
+  | 'cost_optimized'
+  | 'performance_optimized'
+  | 'quality_optimized'
+  | 'balanced'

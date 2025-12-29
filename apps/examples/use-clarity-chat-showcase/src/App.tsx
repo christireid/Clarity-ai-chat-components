@@ -10,19 +10,12 @@
  */
 
 import * as React from 'react'
-import {
-  useClarityChat,
-  ChatWindow,
-  MemoryProvider,
-  convertCoreMessagesToMessages,
-} from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react/internal'
 import { Button, Card, Badge } from '@clarity-chat/primitives'
 
 const memoryConfig = {
   maxTokens: 10000,
-  compressionRatio: 0.5,
-  enableAutoCleanup: true,
-  enableAutoSummarization: false,
 }
 
 function ChatShowcase() {
@@ -37,8 +30,7 @@ function ChatShowcase() {
     append,
     isLoading,
     error,
-    memoryEnabled: hookMemoryEnabled,
-    contextSummary,
+    memoryInfo,
     input,
     setInput,
     handleSubmit,
@@ -49,7 +41,6 @@ function ChatShowcase() {
           enabled: true,
           strategy: memoryStrategy,
           maxTokens: 4000,
-          autoCapture: true,
         }
       : undefined,
     transport,
@@ -122,7 +113,7 @@ function ChatShowcase() {
             </select>
           </div>
 
-          {hookMemoryEnabled && (
+          {memoryInfo?.enabled && (
             <Badge variant="success" className="gap-1">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               Memory Active
@@ -131,13 +122,13 @@ function ChatShowcase() {
         </div>
 
         {/* Memory Context Preview */}
-        {contextSummary && (
+        {memoryInfo?.lastContextSummary && (
           <div className="mt-3 rounded-lg border bg-muted/50 p-3">
             <p className="text-xs font-medium text-muted-foreground mb-1">
               Memory Context:
             </p>
             <p className="text-xs text-foreground/80 line-clamp-2">
-              {contextSummary}
+              {memoryInfo.lastContextSummary}
             </p>
           </div>
         )}

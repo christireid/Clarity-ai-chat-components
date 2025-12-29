@@ -13,13 +13,13 @@
 import { useState, useCallback } from 'react'
 import {
   ChatWindow,
-  useMessageOperations,
   useTokenTracker,
   useAutoScroll,
   TokenCounter,
   ExportDialog,
   ErrorBoundary,
 } from '@clarity-chat/react'
+import { useMessageOperations } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 
@@ -76,10 +76,13 @@ function AdvancedChatApp() {
   }))
 
   // Token tracking
-  const { totalTokens, addInputTokens, addOutputTokens, estimatedCost, reset } =
-    useTokenTracker({
-      modelName: 'gpt-4-turbo',
-    })
+  const {
+    tokens,
+    estimatedCost,
+    clear: resetTokens,
+  } = useTokenTracker({
+    modelName: 'gpt-4-turbo',
+  })
 
   // Auto-scroll
   const { scrollRef } = useAutoScroll({
@@ -341,7 +344,7 @@ function AdvancedChatApp() {
           </button>
 
           {/* Token counter */}
-          <TokenCounter tokens={totalTokens} cost={estimatedCost} />
+          <TokenCounter currentTokens={tokens} maxTokens={128000} />
         </div>
       </div>
 

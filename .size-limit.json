@@ -1,5 +1,35 @@
 [
   {
+    "name": "@clarity-chat/react (full)",
+    "path": "packages/react/dist/index.js",
+    "limit": "650 KB",
+    "webpack": false
+  },
+  {
+    "name": "@clarity-chat/react (core)",
+    "path": "packages/react/dist/core.js",
+    "limit": "350 KB",
+    "webpack": false
+  },
+  {
+    "name": "@clarity-chat/react (core-minimal)",
+    "path": "packages/react/dist/core-minimal.js",
+    "limit": "35 KB",
+    "webpack": false
+  },
+  {
+    "name": "@clarity-chat/react (slim)",
+    "path": "packages/react/dist/slim.js",
+    "limit": "300 KB",
+    "webpack": false
+  },
+  {
+    "name": "@clarity-chat/react (adapters)",
+    "path": "packages/react/dist/adapters.js",
+    "limit": "35 KB",
+    "webpack": false
+  },
+  {
     "name": "@clarity-chat/error-handling",
     "path": "packages/error-handling/dist/index.mjs",
     "limit": "50 KB",

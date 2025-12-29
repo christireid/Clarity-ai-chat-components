@@ -120,11 +120,51 @@ export * from './hooks/input'
 export * from './hooks/dashboard'
 export * from './hooks/theme'
 
+// Re-export full theme system
+export * from './theme'
+
 // Re-export components from additional domains
 export * from './components/ui'
 export * from './components/ai'
 export * from './components/context'
-export * from './components/code'
+// Note: Using explicit exports from './components/code' to avoid conflict with
+// getDarkThemes/getLightThemes exported from './theme'
+export {
+  CodeBlock,
+  type CodeBlockProps,
+  type CodeFontFamily,
+  StreamingCodeBlock,
+  type StreamingCodeBlockProps,
+  InlineCode,
+  type InlineCodeProps,
+  LineNumbers,
+  type LineNumbersProps,
+  CodeBlockHeader,
+  type CodeBlockHeaderProps,
+  CodeBlockCopyButton,
+  type CodeBlockCopyButtonProps,
+  CODE_THEMES,
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  getThemeDefinition,
+  isValidTheme,
+  type CodeThemeDefinition,
+  type CodeThemeName,
+  parseLineRanges,
+  escapeHtml,
+  normalizeLanguage,
+  detectLanguage,
+  getLanguageDisplayName,
+  extractLanguageFromClassName,
+  countLines,
+  truncateCode,
+  COMMON_LANGUAGES,
+  LANGUAGE_DISPLAY_NAMES,
+  type CommonLanguage,
+  // Rename conflicting theme functions to avoid collision with './theme' exports
+  getDarkThemes as getCodeDarkThemes,
+  getLightThemes as getCodeLightThemes,
+} from './components/code'
 export * from './components/conversation'
 export * from './components/feedback'
 export * from './components/media'
@@ -158,12 +198,23 @@ export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
 export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
+export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
 export { SecurityManager, securityManager, useSecurity } from './utils/security'
 
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
 export * from './internal/index'
+
+// ============================================================================
+// AI CHAT HOOKS (Advanced)
+// ============================================================================
+export { useAssistant } from './hooks/chat/use-assistant'
+export { useCompletion } from './hooks/chat/use-completion'
+export {
+  useChat,
+  useChat as useChatEnhanced,
+} from './hooks/chat/use-chat-enhanced'
 
 // ============================================================================
 // STREAMING HOOKS (Advanced)
@@ -180,6 +231,40 @@ export * from './hooks/resilience'
 // ============================================================================
 export * from './analytics'
 export * from './observability'
+
+// ============================================================================
+// ERROR HANDLING & REPORTING
+// ============================================================================
+// Note: ErrorSeverity excluded to avoid conflict with components/feedback
+export {
+  ErrorReporterProvider,
+  useErrorReporter,
+  createSentryProvider,
+  createRollbarProvider,
+  createBugsnagProvider,
+  createCustomAPIProvider,
+  createConsoleErrorProvider,
+  createLocalStorageErrorProvider,
+  getStoredErrors,
+  clearStoredErrors,
+  ErrorFeedback,
+  ErrorFeedbackButton,
+  ClarityError,
+  validateArrayProp,
+  validateRequiredProp,
+  validateMessageRole,
+  validateMessagesArray,
+} from './error'
+export type {
+  ErrorReport,
+  ErrorProvider,
+  ErrorReporterConfig,
+  ErrorFeedbackType,
+  ErrorBoundaryState,
+  ErrorStats,
+  ClarityErrorCode,
+  ClarityErrorContext,
+} from './error'
 
 // ============================================================================
 // ENTERPRISE FEATURES

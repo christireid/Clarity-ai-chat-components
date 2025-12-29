@@ -344,8 +344,26 @@ const { messages, toolInvocations, append } = useAssistant({
 - `ChatWindow` - Complete chat interface
 - `ChatInput` - Message input component
 - `AdvancedChatInput` - Enhanced input with attachments
-- `VirtualizedMessageList` - Optimized message list
+- `VirtualizedMessageList` - Optimized message list (react-window)
+- `TanStackMessageList` - Modern virtualized list (TanStack Virtual)
 - `StreamingMessage` - Real-time streaming display
+
+### Layout Components
+
+- `ChatLayout` - Basic layout with sidebar/header/footer
+- `ResizableChatLayout` - Resizable panel layout with drag handles
+- `Panel`, `PanelGroup`, `PanelResizeHandle` - Low-level resizable primitives
+
+### Toast Notifications
+
+- `ClarityToaster` - Sonner-powered toast container
+- `toast` API - `toast.success()`, `toast.error()`, `toast.info()`, `toast.warning()`,
+  `toast.promise()`
+
+### Streaming Animations (Optional)
+
+- `FlowTokenStreamingText` - Enhanced streaming with animations (requires `npm install flowtoken`)
+- `FlowTokenMarkdown` - Streaming markdown with animations
 
 ### Tool Components
 
@@ -389,6 +407,30 @@ function CustomChat({ messages }) {
 }
 ```
 
+## 🆕 New Components (OSS Enhanced)
+
+### Resizable Chat Layout
+
+```tsx
+import { ResizableChatLayout } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ResizableChatLayout
+      sidebar={<ConversationList />}
+      header={<ChatHeader />}
+      defaultSidebarSize={25}
+      minSidebarSize={15}
+      maxSidebarSize={40}
+      collapsible
+      persistLayout
+    >
+      <ChatWindow {...chat} />
+    </ResizableChatLayout>
+  )
+}
+```
+
 ## ⚡ Streaming Utilities
 
 ### `useSmoothedText`
@@ -409,6 +451,71 @@ function StreamingMessage({ text }) {
       {displayText}
       {isAnimating && '▋'}
     </p>
+  )
+}
+```
+
+### Toast Notifications (Sonner)
+
+```tsx
+import { ClarityToaster, toast } from '@clarity-chat/react'
+
+// Add to app root
+function App() {
+  return (
+    <>
+      <MyApp />
+      <ClarityToaster position="bottom-right" richColors />
+    </>
+  )
+}
+
+// Use anywhere
+function MyComponent() {
+  const handleSave = async () => {
+    toast.promise(saveData(), {
+      loading: 'Saving...',
+      success: 'Saved successfully!',
+      error: 'Failed to save',
+    })
+  }
+
+  return <button onClick={handleSave}>Save</button>
+}
+```
+
+### TanStack Virtual Message List
+
+```tsx
+import { TanStackMessageList } from '@clarity-chat/react'
+
+function Chat({ messages }) {
+  return (
+    <TanStackMessageList
+      messages={messages}
+      renderMessage={(msg, idx) => <Message key={msg.id} message={msg} />}
+      autoScrollToBottom
+      smoothScroll
+      estimatedItemSize={120}
+    />
+  )
+}
+```
+
+### FlowToken Streaming (Optional)
+
+```tsx
+// First: npm install flowtoken
+import { FlowTokenStreamingText } from '@clarity-chat/react'
+
+function StreamingResponse({ content, isStreaming }) {
+  return (
+    <FlowTokenStreamingText
+      content={content}
+      isStreaming={isStreaming}
+      animation="blur-in" // fade | blur-in | drop-in | typewriter | slide-left
+      smooth
+    />
   )
 }
 ```
@@ -568,8 +675,30 @@ Full API compatibility with Vercel AI SDK UI hooks. Drop-in replacement for `use
 
 ### Bundle Size
 
-- Full bundle: ~350KB gzipped
-- Tree-shakeable: Import only what you need
+The library provides multiple entrypoints for optimal bundle size:
+
+| Entrypoint                         | Size (ESM) | Use Case                          |
+| ---------------------------------- | ---------- | --------------------------------- |
+| `@clarity-chat/react`              | ~600KB     | Full library with all features    |
+| `@clarity-chat/react/core`         | ~300KB     | Core components + hooks           |
+| `@clarity-chat/react/core-minimal` | ~30KB      | Just ClarityChat + useClarityChat |
+| `@clarity-chat/react/slim`         | ~276KB     | Optimized minimal bundle          |
+| `@clarity-chat/react/adapters`     | ~28KB      | LLM adapters only                 |
+
+**Recommended Import Patterns:**
+
+```tsx
+// Most apps: Use the default export
+import { ClarityChat, useClarityChat } from '@clarity-chat/react'
+
+// Performance-critical: Use core-minimal
+import { ClarityChat } from '@clarity-chat/react/core-minimal'
+
+// Custom integrations: Use adapters
+import { openAIAdapter, anthropicAdapter } from '@clarity-chat/react/adapters'
+```
+
+**Tree-shaking**: All entrypoints are tree-shakeable. Import only what you need.
 
 ## 📝 License
 

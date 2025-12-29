@@ -2,16 +2,9 @@ name: Documentation Artifact Detection
 
 on:
   pull_request:
-    paths:
-      - '**.md'
-      - '**.txt'
-      - 'docs/**'
   push:
     branches:
       - main
-    paths:
-      - '**.md'
-      - '**.txt'
 
 # Minimal global permissions
 permissions:
