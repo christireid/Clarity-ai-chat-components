@@ -133,7 +133,7 @@ describe('Documentation Integrity', () => {
   })
 
   describe('SEO Metadata Consistency', () => {
-    it('StructuredData.tsx contains correct counts', async () => {
+    it('StructuredData.tsx uses LIBRARY_STATS for counts', async () => {
       const structuredDataPath = path.join(
         DOCS_ROOT,
         'components/SEO/StructuredData.tsx'
@@ -149,10 +149,15 @@ describe('Documentation Integrity', () => {
 
       const content = fs.readFileSync(structuredDataPath, 'utf-8')
 
-      // Should contain current counts (using LIBRARY_STATS to stay in sync)
-      expect(content).toContain(`${LIBRARY_STATS.components} components`)
-      expect(content).toContain(`${LIBRARY_STATS.hooks} hooks`)
-      expect(content).toContain(`${LIBRARY_STATS.themes} pre-built themes`)
+      // Should import and use LIBRARY_STATS for centralized counts
+      expect(content).toContain('import { LIBRARY_STATS')
+      expect(content).toContain('LIBRARY_STATS.components')
+      expect(content).toContain('LIBRARY_STATS.hooks')
+      // Themes can use LIBRARY_STATS or LIBRARY_DESCRIPTIONS
+      expect(
+        content.includes('LIBRARY_STATS.themes') ||
+          content.includes('LIBRARY_DESCRIPTIONS')
+      ).toBe(true)
 
       // Should NOT contain deprecated counts
       for (const pattern of DEPRECATED_PATTERNS) {

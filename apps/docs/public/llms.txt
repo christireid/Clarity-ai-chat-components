@@ -1,6 +1,6 @@
 # Clarity Chat
 
-> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 190+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.
 
@@ -8,7 +8,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 Three main bundle options for different needs:
 
-- `@clarity-chat/react` (~120KB gzipped): Full library with all 200+ components
+- `@clarity-chat/react` (~120KB gzipped): Full library with all 190+ components
 - `@clarity-chat/react/core` (~60KB gzipped): Core chat components without dashboards/analytics
 - `@clarity-chat/react/core-minimal` (~30KB gzipped): Minimal bundle with lazy loading for features
 

@@ -146,7 +146,9 @@ describe('streaming utilities', () => {
       }
 
       const response = chunks.join('')
-      expect(response).toContain(`${LIBRARY_STATS.components} pre-built components`)
+      expect(response).toContain(
+        `${LIBRARY_STATS.components} pre-built components`
+      )
       expect(response).toContain('ChatWindow')
       expect(response).toContain('MessageList')
     })
@@ -162,7 +164,7 @@ describe('streaming utilities', () => {
       }
 
       const response = chunks.join('')
-      expect(response).toContain('35+ custom hooks')
+      expect(response).toContain(`${LIBRARY_STATS.hooks} custom hooks`)
       expect(response).toContain('useClarityChat')
     })
 

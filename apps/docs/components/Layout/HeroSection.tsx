@@ -389,7 +389,7 @@ export function HeroSection({
               >
                 <Sparkles className="w-4 h-4" />
               </motion.div>
-              <span>200+ Components · 95+ Hooks · 15 Themes</span>
+              <span>190+ Components · 95+ Hooks · 15 Themes</span>
             </motion.div>
             {showGitHubStars && <GitHubStarsBadge />}
           </div>

@@ -6,14 +6,14 @@
  * will automatically reflect the changes.
  *
  * Last verified: 2025-12-29
- * - Components: 258 files in packages/react/src/components/
- * - Hooks: 100 files matching use-*.ts in packages/react/src/hooks/
+ * - Components: 191 files in packages/react/src/components/ (excluding index.ts, test, stories, spec)
+ * - Hooks: 100 files matching use*.ts in packages/react/src/hooks/
  * - Themes: 15 presets in packages/react/src/theme/modern-presets/
  *
- * To re-verify counts, run:
- *   find packages/react/src/components -type f \( -name "*.tsx" -o -name "*.ts" \) ! -name "*.test.*" ! -name "*.stories.*" | wc -l
- *   find packages/react/src/hooks -type f -name "use*.ts" ! -name "*.test.*" | wc -l
- *   ls packages/react/src/theme/modern-presets/*.ts | grep -v index | grep -v base | wc -l
+ * To re-verify counts, run from packages/react/src:
+ *   find components -type f \( -name "*.tsx" -o -name "*.ts" \) ! -name "*.test.*" ! -name "*.stories.*" ! -name "*.spec.*" ! -name "index.ts" | wc -l
+ *   find hooks -type f -name "use*.ts" ! -name "*.test.*" | wc -l
+ *   ls theme/modern-presets/*.ts | grep -v index | grep -v base | wc -l
  */
 
 /**
@@ -22,7 +22,7 @@
  */
 export const LIBRARY_STATS = {
   /** Total component count (rounded down for marketing) */
-  components: '200+',
+  components: '190+',
   /** Total hook count (rounded down for marketing) */
   hooks: '95+',
   /** Exact theme preset count */
@@ -40,7 +40,7 @@ export const LIBRARY_STATS = {
  * These should match or exceed the marketing counts above
  */
 export const LIBRARY_STATS_EXACT = {
-  components: 258,
+  components: 191,
   hooks: 100,
   themes: 15,
   animations: 150,
@@ -72,7 +72,9 @@ export const LIBRARY_DESCRIPTIONS = {
  */
 export const DEPRECATED_PATTERNS = [
   /70\+\s*components?/i,
+  /200\+\s*components?/i,
   /35\+\s*hooks?/i,
+  /140\+\s*hooks?/i,
   /11\+?\s*themes?/i,
   /11\s*pre-?built/i,
 ] as const
