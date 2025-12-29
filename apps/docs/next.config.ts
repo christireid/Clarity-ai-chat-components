@@ -8,9 +8,30 @@ import createMDX from '@next/mdx'
  * - Turbopack support for faster development
  * - MDX support with Rust compiler
  * - Optimized package imports for tree-shaking
- * - Security headers
+ * - Comprehensive security headers (CSP, HSTS, etc.)
  * - Image optimization
  */
+
+// Content Security Policy - strict but allowing necessary resources
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: https: blob:;
+  font-src 'self' https://fonts.gstatic.com;
+  connect-src 'self' https://api.openai.com https://api.anthropic.com https://www.google-analytics.com wss:;
+  media-src 'self';
+  object-src 'none';
+  child-src 'none';
+  worker-src 'self' blob:;
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
+`
+  .replace(/\n/g, ' ')
+  .trim()
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
@@ -54,46 +75,100 @@ const nextConfig: NextConfig = {
     '@clarity-chat/types',
   ],
 
-  // TypeScript configuration
+  // TypeScript configuration - STRICT MODE ENABLED
+  // Type errors must be fixed before deployment
   typescript: {
-    // Note: Consider enabling type checking in CI/CD
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
-  // Note: ESLint configuration moved to eslint.config.js (Next.js 16)
+  // ESLint configuration - STRICT MODE ENABLED
+  eslint: {
+    ignoreDuringBuilds: false,
+    dirs: ['app', 'components', 'lib', 'hooks'],
+  },
 
   // Production optimizations
   compress: true,
   poweredByHeader: false,
+
+  // Disable source maps in production
+  productionBrowserSourceMaps: false,
 
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    dangerouslyAllowSVG: false,
+    contentDispositionType: 'attachment',
   },
 
-  // Security headers
+  // Comprehensive security headers
   async headers() {
     return [
       {
+        // Apply to all routes
         source: '/:path*',
         headers: [
+          // Prevent XSS attacks (legacy, but still useful)
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          // Prevent clickjacking
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          // Prevent MIME-type sniffing
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          // Enforce HTTPS with preload
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          // Strict referrer policy
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          // Permissions/Feature Policy
+          {
+            key: 'Permissions-Policy',
+            value:
+              'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+          // DNS prefetch control
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
           },
+          // Content Security Policy
           {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            key: 'Content-Security-Policy',
+            value: ContentSecurityPolicy,
           },
+        ],
+      },
+      {
+        // Additional headers for API routes
+        source: '/api/:path*',
+        headers: [
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
           {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          // Stricter CSP for API routes (no scripts/styles)
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'none'; frame-ancestors 'none'",
           },
         ],
       },
@@ -124,7 +199,7 @@ const nextConfig: NextConfig = {
   },
 
   // Webpack configuration for non-Turbopack builds
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Handle SVG imports
     config.module.rules.push({
       test: /\.svg$/,
@@ -150,6 +225,11 @@ const nextConfig: NextConfig = {
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],
       '.jsx': ['.jsx', '.tsx'],
+    }
+
+    // Security: Disable source maps in production
+    if (!dev && !isServer) {
+      config.devtool = false
     }
 
     return config
