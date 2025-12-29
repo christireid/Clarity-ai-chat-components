@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { motion, type HTMLMotionProps } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   createPulseAnimation,
   createShimmerAnimation,
@@ -39,6 +39,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   style,
   ...props
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   const roundedClasses = {
     none: 'rounded-none',
     sm: 'rounded-sm',
@@ -47,9 +50,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     full: 'rounded-full',
   }
 
-  // Shimmer gradient background
+  // Determine effective variant based on motion preferences
+  const effectiveVariant = prefersReducedMotion ? 'none' : variant
+
+  // Shimmer gradient background (only when not reduced motion)
   const shimmerStyle =
-    variant === 'shimmer'
+    effectiveVariant === 'shimmer'
       ? {
           backgroundImage:
             'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
@@ -58,9 +64,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       : {}
 
   const variants =
-    variant === 'pulse'
+    effectiveVariant === 'pulse'
       ? createPulseAnimation()
-      : variant === 'shimmer'
+      : effectiveVariant === 'shimmer'
         ? createShimmerAnimation()
         : undefined
 
@@ -71,7 +77,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     ...style,
   }
 
-  if (variant === 'none') {
+  if (effectiveVariant === 'none') {
     return (
       <motion.div
         className={cn(

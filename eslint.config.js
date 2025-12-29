@@ -34,6 +34,9 @@ const sharedRules = {
   'react/react-in-jsx-scope': 'off',
   'react/prop-types': 'off',
   'react-hooks/rules-of-hooks': 'error',
+  // Note: exhaustive-deps is intentionally off to avoid false positives with
+  // intentional dependency omissions. See React docs on when to omit dependencies.
+  // TODO: Consider enabling as 'warn' after comprehensive dependency audit.
   'react-hooks/exhaustive-deps': 'off',
   'jsx-a11y/alt-text': 'error',
   'jsx-a11y/aria-props': 'error',

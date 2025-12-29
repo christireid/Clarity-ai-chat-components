@@ -367,7 +367,8 @@ export function ErrorReporterProvider({
       try {
         activeProvidersRef.current.forEach((provider) => {
           try {
-            void Promise.resolve(provider.reportError(filteredReport)).catch(
+            // Fire-and-forget: errors are caught and logged
+            Promise.resolve(provider.reportError(filteredReport)).catch(
               (providerError) => {
                 ;(originalConsoleRef.current?.error ?? console.error)(
                   `Error reporting to provider ${provider.name}:`,
@@ -448,7 +449,8 @@ export function ErrorReporterProvider({
       try {
         activeProvidersRef.current.forEach((provider) => {
           try {
-            void Promise.resolve(provider.reportError(filteredReport)).catch(
+            // Fire-and-forget: errors are caught and logged
+            Promise.resolve(provider.reportError(filteredReport)).catch(
               (providerError) => {
                 ;(originalConsoleRef.current?.error ?? console.error)(
                   `Error reporting to provider ${provider.name}:`,

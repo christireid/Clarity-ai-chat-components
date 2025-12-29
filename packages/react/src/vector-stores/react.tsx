@@ -130,7 +130,10 @@ export function useVectorStore({
 
   React.useEffect(() => {
     if (autoInitialize) {
-      void initialize()
+      // Fire-and-forget: initialization errors are handled via state
+      initialize().catch(() => {
+        // Error state is already set by initialize()
+      })
     }
   }, [autoInitialize, initialize, configKey])
 
