@@ -1,6 +1,6 @@
 /**
  * Enterprise Domain
- * 
+ *
  * APIs for multi-tenancy, RBAC, audit, quotas, safety
  */
 
@@ -17,17 +17,12 @@ export {
 } from '../../enterprise/use-enterprise-auth'
 
 // Mid-level: Building blocks
-export { MultiTenancyProvider, useMultiTenancy } from '../../multi-tenancy/react'
+export {
+  MultiTenancyProvider,
+  useMultiTenancy,
+} from '../../multi-tenancy/react'
 export { RBACProvider, useRBAC } from '../../rbac/react'
 export { AuditLogger } from '../../audit/audit-logger'
-// TODO: Re-enable once SafetyChecker is implemented
-// export { SafetyChecker } from '../../safety/safety-checker'
-
-// Low-level: Primitives
-// TODO: Re-enable once enterprise utilities are implemented
-// export { createTenant } from '../../multi-tenancy/create-tenant'
-// export { checkPermission } from '../../rbac/check-permission'
-// export { logAuditEvent } from '../../audit/log-audit-event'
 
 // Re-export enterprise modules
 export * from '../../multi-tenancy'

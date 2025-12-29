@@ -48,10 +48,6 @@ export * from './theme'
 // Resilience Hooks
 export * from './resilience'
 
-// Performance Hooks
-// NOTE: Commenting out to avoid duplicate exports (useIntersectionObserver)
-// export * from './performance'
-
 // Dashboard Hooks
 export * from './dashboard'
 
@@ -64,5 +60,5 @@ export * from './context'
 // Model Hooks
 export * from './model'
 
-// Security Hooks (excluded from build due to cross-package dependencies)
-// export * from './security'
+// Security Hooks
+export * from './security'

@@ -42,7 +42,9 @@ const MessageContext = React.createContext<MessageContextValue | null>(null)
 function useMessageContext() {
   const context = React.useContext(MessageContext)
   if (!context) {
-    throw new Error('Message primitives must be used within ChatPrimitive.Message')
+    throw new Error(
+      'Message primitives must be used within ChatPrimitive.Message'
+    )
   }
   return context
 }
@@ -61,7 +63,18 @@ export interface ChatRootProps {
 }
 
 export const ChatRoot = React.forwardRef<HTMLDivElement, ChatRootProps>(
-  ({ children, messages = [], isLoading = false, onSend, asChild, className, ...props }, ref) => {
+  (
+    {
+      children,
+      messages = [],
+      isLoading = false,
+      onSend,
+      asChild,
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'div'
 
     return (
@@ -124,7 +137,10 @@ export interface ChatMessageProps {
 }
 
 export const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
-  ({ children, message, isStreaming = false, asChild, className, ...props }, ref) => {
+  (
+    { children, message, isStreaming = false, asChild, className, ...props },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'div'
 
     return (
@@ -156,24 +172,28 @@ export interface ChatMessageContentProps {
   children?: React.ReactNode
 }
 
-export const ChatMessageContent = React.forwardRef<HTMLDivElement, ChatMessageContentProps>(
-  ({ asChild, className, children, ...props }, ref) => {
-    const { message } = useMessageContext()
-    const Comp = asChild ? Slot : 'div'
+export const ChatMessageContent = React.forwardRef<
+  HTMLDivElement,
+  ChatMessageContentProps
+>(({ asChild, className, children, ...props }, ref) => {
+  const { message } = useMessageContext()
+  const Comp = asChild ? Slot : 'div'
 
-    const content = typeof message.content === 'string'
+  const content =
+    typeof message.content === 'string'
       ? message.content
       : Array.isArray(message.content)
-        ? message.content.map(part => typeof part === 'string' ? part : '').join('')
+        ? message.content
+            .map((part) => (typeof part === 'string' ? part : ''))
+            .join('')
         : ''
 
-    return (
-      <Comp ref={ref} className={className} {...props}>
-        {children ?? content}
-      </Comp>
-    )
-  }
-)
+  return (
+    <Comp ref={ref} className={className} {...props}>
+      {children ?? content}
+    </Comp>
+  )
+})
 ChatMessageContent.displayName = 'ChatPrimitive.MessageContent'
 
 // ============================================================================
@@ -186,30 +206,34 @@ export interface ChatMessageActionsProps {
   className?: string
 }
 
-export const ChatMessageActions = React.forwardRef<HTMLDivElement, ChatMessageActionsProps>(
-  ({ children, asChild, className, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'div'
+export const ChatMessageActions = React.forwardRef<
+  HTMLDivElement,
+  ChatMessageActionsProps
+>(({ children, asChild, className, ...props }, ref) => {
+  const Comp = asChild ? Slot : 'div'
 
-    return (
-      <Comp
-        ref={ref}
-        className={className}
-        role="group"
-        aria-label="Message actions"
-        {...props}
-      >
-        {children}
-      </Comp>
-    )
-  }
-)
+  return (
+    <Comp
+      ref={ref}
+      className={className}
+      role="group"
+      aria-label="Message actions"
+      {...props}
+    >
+      {children}
+    </Comp>
+  )
+})
 ChatMessageActions.displayName = 'ChatPrimitive.MessageActions'
 
 // ============================================================================
 // INPUT
 // ============================================================================
 
-export interface ChatInputProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onSubmit'> {
+export interface ChatInputProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'onSubmit'
+> {
   onSubmit?: (content: string) => void
   asChild?: boolean
 }
@@ -222,26 +246,24 @@ export const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
     const handleSubmit = React.useCallback(() => {
       const trimmed = value.trim()
       if (trimmed) {
-        (onSubmit ?? onSend)?.(trimmed)
+        ;(onSubmit ?? onSend)?.(trimmed)
         setValue('')
       }
     }, [value, onSubmit, onSend])
 
-    const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        handleSubmit()
-      }
-      onKeyDown?.(e)
-    }, [handleSubmit, onKeyDown])
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault()
+          handleSubmit()
+        }
+        onKeyDown?.(e)
+      },
+      [handleSubmit, onKeyDown]
+    )
 
     if (asChild) {
-      return (
-        <Slot
-          ref={ref as React.Ref<HTMLElement>}
-          {...props}
-        />
-      )
+      return <Slot ref={ref as React.Ref<HTMLElement>} {...props} />
     }
 
     return (
@@ -265,36 +287,43 @@ ChatInput.displayName = 'ChatPrimitive.Input'
 // ACTION BUTTONS
 // ============================================================================
 
-export interface ChatCopyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ChatCopyButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onCopy'
+> {
   onCopy?: (content: string) => void
   asChild?: boolean
 }
 
-export const ChatCopyButton = React.forwardRef<HTMLButtonElement, ChatCopyButtonProps>(
-  ({ onClick, onCopy, asChild, children, ...props }, ref) => {
-    const { message } = useMessageContext()
-    const Comp = asChild ? Slot : 'button'
+export const ChatCopyButton = React.forwardRef<
+  HTMLButtonElement,
+  ChatCopyButtonProps
+>(({ onClick, onCopy, asChild, children, ...props }, ref) => {
+  const { message } = useMessageContext()
+  const Comp = asChild ? Slot : 'button'
 
-    const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       const content = typeof message.content === 'string' ? message.content : ''
       navigator.clipboard.writeText(content)
       onCopy?.(content)
       onClick?.(e)
-    }, [message.content, onCopy, onClick])
+    },
+    [message.content, onCopy, onClick]
+  )
 
-    return (
-      <Comp
-        ref={ref}
-        type="button"
-        onClick={handleClick}
-        aria-label="Copy message"
-        {...props}
-      >
-        {children ?? 'Copy'}
-      </Comp>
-    )
-  }
-)
+  return (
+    <Comp
+      ref={ref}
+      type="button"
+      onClick={handleClick}
+      aria-label="Copy message"
+      {...props}
+    >
+      {children ?? 'Copy'}
+    </Comp>
+  )
+})
 ChatCopyButton.displayName = 'ChatPrimitive.CopyButton'
 
 export interface ChatRegenerateButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -302,31 +331,35 @@ export interface ChatRegenerateButtonProps extends React.ButtonHTMLAttributes<HT
   asChild?: boolean
 }
 
-export const ChatRegenerateButton = React.forwardRef<HTMLButtonElement, ChatRegenerateButtonProps>(
-  ({ onClick, onRegenerate, asChild, children, ...props }, ref) => {
-    const { message } = useMessageContext()
-    const Comp = asChild ? Slot : 'button'
+export const ChatRegenerateButton = React.forwardRef<
+  HTMLButtonElement,
+  ChatRegenerateButtonProps
+>(({ onClick, onRegenerate, asChild, children, ...props }, ref) => {
+  const { message } = useMessageContext()
+  const Comp = asChild ? Slot : 'button'
 
-    const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       if (message.id) {
         onRegenerate?.(message.id)
       }
       onClick?.(e)
-    }, [message.id, onRegenerate, onClick])
+    },
+    [message.id, onRegenerate, onClick]
+  )
 
-    return (
-      <Comp
-        ref={ref}
-        type="button"
-        onClick={handleClick}
-        aria-label="Regenerate message"
-        {...props}
-      >
-        {children ?? 'Regenerate'}
-      </Comp>
-    )
-  }
-)
+  return (
+    <Comp
+      ref={ref}
+      type="button"
+      onClick={handleClick}
+      aria-label="Regenerate message"
+      {...props}
+    >
+      {children ?? 'Regenerate'}
+    </Comp>
+  )
+})
 ChatRegenerateButton.displayName = 'ChatPrimitive.RegenerateButton'
 
 export interface ChatDeleteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -334,31 +367,35 @@ export interface ChatDeleteButtonProps extends React.ButtonHTMLAttributes<HTMLBu
   asChild?: boolean
 }
 
-export const ChatDeleteButton = React.forwardRef<HTMLButtonElement, ChatDeleteButtonProps>(
-  ({ onClick, onDelete, asChild, children, ...props }, ref) => {
-    const { message } = useMessageContext()
-    const Comp = asChild ? Slot : 'button'
+export const ChatDeleteButton = React.forwardRef<
+  HTMLButtonElement,
+  ChatDeleteButtonProps
+>(({ onClick, onDelete, asChild, children, ...props }, ref) => {
+  const { message } = useMessageContext()
+  const Comp = asChild ? Slot : 'button'
 
-    const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       if (message.id) {
         onDelete?.(message.id)
       }
       onClick?.(e)
-    }, [message.id, onDelete, onClick])
+    },
+    [message.id, onDelete, onClick]
+  )
 
-    return (
-      <Comp
-        ref={ref}
-        type="button"
-        onClick={handleClick}
-        aria-label="Delete message"
-        {...props}
-      >
-        {children ?? 'Delete'}
-      </Comp>
-    )
-  }
-)
+  return (
+    <Comp
+      ref={ref}
+      type="button"
+      onClick={handleClick}
+      aria-label="Delete message"
+      {...props}
+    >
+      {children ?? 'Delete'}
+    </Comp>
+  )
+})
 ChatDeleteButton.displayName = 'ChatPrimitive.DeleteButton'
 
 // ============================================================================
@@ -371,28 +408,29 @@ export interface ChatEmptyStateProps {
   className?: string
 }
 
-export const ChatEmptyState = React.forwardRef<HTMLDivElement, ChatEmptyStateProps>(
-  ({ children, asChild, className, ...props }, ref) => {
-    const { messages } = useChatContext()
-    const Comp = asChild ? Slot : 'div'
+export const ChatEmptyState = React.forwardRef<
+  HTMLDivElement,
+  ChatEmptyStateProps
+>(({ children, asChild, className, ...props }, ref) => {
+  const { messages } = useChatContext()
+  const Comp = asChild ? Slot : 'div'
 
-    if (messages.length > 0) {
-      return null
-    }
-
-    return (
-      <Comp
-        ref={ref}
-        className={className}
-        role="status"
-        aria-label="No messages yet"
-        {...props}
-      >
-        {children}
-      </Comp>
-    )
+  if (messages.length > 0) {
+    return null
   }
-)
+
+  return (
+    <Comp
+      ref={ref}
+      className={className}
+      role="status"
+      aria-label="No messages yet"
+      {...props}
+    >
+      {children}
+    </Comp>
+  )
+})
 ChatEmptyState.displayName = 'ChatPrimitive.EmptyState'
 
 // ============================================================================
@@ -405,27 +443,28 @@ export interface ChatLoadingIndicatorProps {
   className?: string
 }
 
-export const ChatLoadingIndicator = React.forwardRef<HTMLDivElement, ChatLoadingIndicatorProps>(
-  ({ children, asChild, className, ...props }, ref) => {
-    const { isLoading } = useChatContext()
-    const Comp = asChild ? Slot : 'div'
+export const ChatLoadingIndicator = React.forwardRef<
+  HTMLDivElement,
+  ChatLoadingIndicatorProps
+>(({ children, asChild, className, ...props }, ref) => {
+  const { isLoading } = useChatContext()
+  const Comp = asChild ? Slot : 'div'
 
-    if (!isLoading) {
-      return null
-    }
-
-    return (
-      <Comp
-        ref={ref}
-        className={className}
-        role="status"
-        aria-label="Loading"
-        aria-live="polite"
-        {...props}
-      >
-        {children}
-      </Comp>
-    )
+  if (!isLoading) {
+    return null
   }
-)
+
+  return (
+    <Comp
+      ref={ref}
+      className={className}
+      role="status"
+      aria-label="Loading"
+      aria-live="polite"
+      {...props}
+    >
+      {children}
+    </Comp>
+  )
+})
 ChatLoadingIndicator.displayName = 'ChatPrimitive.LoadingIndicator'

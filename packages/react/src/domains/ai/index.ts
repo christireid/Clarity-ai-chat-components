@@ -1,20 +1,11 @@
 /**
  * AI Infrastructure Domain
- * 
- * APIs for agents, tools, adapters, embeddings, vector stores, RAG
+ *
+ * Production-ready APIs for AI adapters, embeddings, and vector stores.
+ *
+ * NOTE: useAgent and useRAGPipeline are on the roadmap for v2.0.
+ * See: https://github.com/christireid/Clarity-ai-chat-components/issues
  */
-
-// Top-level: Drop-in ready APIs
-export {
-  useAgent,
-  type UseAgentOptions,
-  type UseAgentReturn,
-} from '../../hooks/use-agent'
-export {
-  useRAGPipeline,
-  type UseRAGPipelineOptions,
-  type UseRAGPipelineReturn,
-} from '../../hooks/use-rag-pipeline'
 
 // Mid-level: Building blocks
 export {
@@ -29,10 +20,7 @@ export {
 export { ReactAgent } from '../../agents/react-agent'
 
 // Low-level: Primitives
-// TODO: Re-enable once createAdapter is implemented
-// export { createAdapter } from '../../adapters/create-adapter'
 export { buildPrompt, buildModelPrompt } from '../../prompt/core/builder'
-// parseToolCall is available via AgentUtils.parseToolCall from agents/index
 
 // Re-export adapters, vector stores, embeddings, agents
 export * from '../../adapters'
