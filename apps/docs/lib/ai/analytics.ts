@@ -239,17 +239,18 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     // Get aggregate metrics
     const metrics = await this.redis.hgetall(this.getMetricsKey())
 
-    const totalQueries = parseInt((metrics?.totalQueries as string) || '0')
+    const totalQueries = parseInt((metrics?.totalQueries as string) || '0', 10)
     const totalCost = parseFloat((metrics?.totalCost as string) || '0')
-    const totalTokens = parseInt((metrics?.totalTokens as string) || '0')
+    const totalTokens = parseInt((metrics?.totalTokens as string) || '0', 10)
     const totalResponseTime = parseInt(
-      (metrics?.totalResponseTime as string) || '0'
+      (metrics?.totalResponseTime as string) || '0',
+      10
     )
-    const cacheHits = parseInt((metrics?.cacheHits as string) || '0')
-    const cacheMisses = parseInt((metrics?.cacheMisses as string) || '0')
-    const ragQueries = parseInt((metrics?.ragQueries as string) || '0')
-    const totalSources = parseInt((metrics?.totalSources as string) || '0')
-    const followUps = parseInt((metrics?.followUps as string) || '0')
+    const cacheHits = parseInt((metrics?.cacheHits as string) || '0', 10)
+    const cacheMisses = parseInt((metrics?.cacheMisses as string) || '0', 10)
+    const ragQueries = parseInt((metrics?.ragQueries as string) || '0', 10)
+    const totalSources = parseInt((metrics?.totalSources as string) || '0', 10)
+    const followUps = parseInt((metrics?.followUps as string) || '0', 10)
 
     // Calculate cache hit rate
     const cacheTotal = cacheHits + cacheMisses

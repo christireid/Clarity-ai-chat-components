@@ -3,15 +3,18 @@
  *
  * Comprehensive security layer providing:
  * - Input validation and sanitization
- * - XSS prevention
+ * - XSS prevention (via isomorphic-dompurify for SSR support)
  * - Content Security Policy helpers
  * - Encryption utilities
  * - Rate limiting
  * - Security headers
+ *
+ * @see https://github.com/cure53/DOMPurify
+ * @license MIT (DOMPurify)
  */
 
 import * as React from 'react'
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 
 /**
  * Security configuration

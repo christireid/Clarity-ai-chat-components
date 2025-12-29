@@ -54,3 +54,14 @@ export {
 
 // Animations
 export { ConfettiAnimation } from './confetti-animation'
+
+// FlowToken Integration (optional - requires 'flowtoken' package)
+export {
+  FlowTokenStreamingText,
+  FlowTokenMarkdown,
+  useFlowToken,
+  type FlowTokenAnimation,
+  type FlowTokenStreamingTextProps,
+  type FlowTokenMarkdownProps,
+  type UseFlowTokenReturn,
+} from './flowtoken-adapter'

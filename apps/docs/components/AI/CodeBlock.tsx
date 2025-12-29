@@ -72,8 +72,8 @@ export function CodeBlock({
     if (hash.startsWith('#L')) {
       const match = hash.match(/#L(\d+)(?:-L(\d+))?/)
       if (match) {
-        const start = parseInt(match[1])
-        const end = match[2] ? parseInt(match[2]) : start
+        const start = parseInt(match[1], 10)
+        const end = match[2] ? parseInt(match[2], 10) : start
         const lines = Array.from(
           { length: end - start + 1 },
           (_, i) => start + i
