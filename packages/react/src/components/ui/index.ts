@@ -80,4 +80,17 @@ export {
 export * from './progress'
 export * from './ripple'
 export * from './skeleton'
-export * from './toast'
+// Export toast module excluding 'toast' object to avoid conflict with sonner-toast
+export {
+  ToastItem,
+  ToastContainer,
+  ToastProvider,
+  useToast,
+  type ToastType,
+  type ToastPosition,
+  type Toast,
+  type ToastProps,
+  type ToastContainerProps,
+  type ToastContextValue,
+  type ToastProviderProps,
+} from './toast'

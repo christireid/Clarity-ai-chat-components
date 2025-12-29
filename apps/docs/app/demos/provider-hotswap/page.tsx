@@ -27,7 +27,10 @@ import {
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 // Simple auto-scroll hook
-function useAutoScroll() {
+function useAutoScroll(_options?: {
+  dependencies?: unknown[]
+  threshold?: number
+}) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({
