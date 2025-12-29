@@ -11,6 +11,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { EASING_FRAMER } from '../../animations/constants'
 
 interface RippleType {
@@ -116,6 +117,9 @@ export const Ripple: React.FC<RippleProps> = ({
   opacity = 0.3,
   duration = 600,
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <span
       className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none"
@@ -136,15 +140,26 @@ export const Ripple: React.FC<RippleProps> = ({
               backgroundColor: color || 'currentColor',
               opacity: opacity,
             }}
-            initial={{ scale: 0, opacity: opacity }}
-            animate={{ scale: 2, opacity: 0 }}
+            // Accessibility: Use simple fade when reduced motion is preferred
+            initial={
+              prefersReducedMotion
+                ? { opacity: opacity }
+                : { scale: 0, opacity: opacity }
+            }
+            animate={
+              prefersReducedMotion ? { opacity: 0 } : { scale: 2, opacity: 0 }
+            }
             exit={{ opacity: 0 }}
-            transition={{
-              // Framer Motion 12: Spring ripple expansion
-              type: 'spring',
-              damping: 15,
-              stiffness: 150,
-            }}
+            transition={
+              prefersReducedMotion
+                ? { duration: duration / 1000, ease: 'easeOut' }
+                : {
+                    // Framer Motion 12: Spring ripple expansion
+                    type: 'spring',
+                    damping: 15,
+                    stiffness: 150,
+                  }
+            }
           />
         ))}
       </AnimatePresence>
