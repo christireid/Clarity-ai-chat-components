@@ -1163,6 +1163,7 @@ _"Stop Building Chat UI. Start Shipping AI."_
 | 2025-12-19 | Examples Overhaul Phase 4 Complete - Created quickstart, headless-mode, fixed ai-research-platform | Engineering        |
 | 2025-12-19 | Examples Overhaul Phase 5 Complete - Added copy-paste demo hooks, refactored headless-mode         | Engineering        |
 | 2025-12-20 | OSS Package Expansion Analysis Complete - 10 packages evaluated, 5 recommended for implementation  | PM/Architect       |
+| 2025-12-20 | Extended OSS Analysis - 5 additional packages recommended (auto-animate, textarea-autosize, hotkeys, dropzone, fuse.js) | PM/Engineering |
 
 ---
 
@@ -1786,5 +1787,170 @@ All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
 | 2025-12-20 | Add isomorphic-dompurify | Enterprise security requirement | Security |
 | 2025-12-20 | Do not adopt assistant-ui | Competitive conflict | PM |
 | 2025-12-20 | Defer Zustand/Jotai | Internal only, not user-facing | Architect |
+
+---
+
+### H.10) Supplementary Package Analysis (Extended Research)
+
+Additional packages researched that could enhance chat library functionality:
+
+#### High-Value Additions (Recommended)
+
+| Package | License | Purpose | GTM Impact | Effort |
+| ------- | ------- | ------- | ---------- | ------ |
+| **[@formkit/auto-animate](https://auto-animate.formkit.com/)** | MIT | Zero-config list animations | HIGH | Small |
+| **[react-textarea-autosize](https://github.com/Andarist/react-textarea-autosize)** | MIT | Auto-resizing chat input | HIGH | Small |
+| **[react-hotkeys-hook](https://github.com/JohannesKlauss/react-hotkeys-hook)** | MIT | Keyboard shortcuts | MEDIUM | Small |
+| **[react-dropzone](https://react-dropzone.js.org/)** | MIT | File/image uploads | HIGH | Medium |
+| **[fuse.js](https://www.fusejs.io/)** | Apache-2.0 | Message search | MEDIUM | Small |
+| **[usehooks-ts](https://usehooks-ts.com/)** | MIT | Utility hooks collection | LOW | Small |
+
+#### Nice-to-Have (Future Consideration)
+
+| Package | License | Purpose | Notes |
+| ------- | ------- | ------- | ----- |
+| **[frimousse](https://frimousse.liveblocks.io/)** | MIT | Emoji picker (Radix-style) | For emoji reactions |
+| **[@dnd-kit/core](https://dndkit.com/)** | MIT | Drag and drop | Message reordering |
+| **[recharts](https://recharts.org/)** | MIT | Analytics charts | For analytics dashboard |
+| **[@lingui/react](https://lingui.dev/)** | MIT | i18n (lightweight) | Future internationalization |
+
+#### Detailed Evaluation: New High-Priority Packages
+
+##### 1. @formkit/auto-animate - Zero-Config List Animations
+
+**What it does**:
+- Adds smooth transitions when DOM children are added, removed, or moved
+- Single line of code: `const [parent] = useAutoAnimate()`
+- Works with any framework
+
+**How we would use it**:
+- Apply to `MessageList` component for smooth message additions
+- Apply to `ToolInvocationCard` for tool result animations
+- Makes chat feel more polished without custom animation code
+
+**Why we need it**:
+- **User pain**: Messages "pop in" abruptly
+- **Competitive**: ChatGPT has smooth message animations
+- **Effort**: ~1 hour to integrate
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+##### 2. react-textarea-autosize - Auto-Resizing Input
+
+**What it does**:
+- Drop-in replacement for `<textarea>`
+- Automatically grows with content
+- 1.3KB minified + gzipped
+
+**How we would use it**:
+- Replace textarea in `ChatInput` component
+- Improve multi-line message composition UX
+
+**Why we need it**:
+- **User pain**: Fixed-height input requires manual scrolling
+- **Industry standard**: All modern chat apps have this
+- **Effort**: ~30 minutes to integrate
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+##### 3. react-hotkeys-hook - Keyboard Shortcuts
+
+**What it does**:
+- Declarative keyboard shortcut handling
+- Scoped shortcuts (prevent collisions)
+- Hooks-based API
+
+**How we would use it**:
+- Cmd+Enter to send message
+- Escape to cancel editing
+- Cmd+K for command palette integration
+- Arrow keys for message navigation
+
+**Why we need it**:
+- **Power users**: Keyboard shortcuts expected
+- **Accessibility**: Keyboard navigation requirement
+- **Enterprise**: Professional UX
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+##### 4. react-dropzone - File Uploads
+
+**What it does**:
+- HTML5 drag-and-drop file zone
+- Click-to-upload fallback
+- File type/size validation
+
+**How we would use it**:
+- Enable file attachments in chat
+- Support image uploads for vision models
+- PDF/document uploads for RAG
+
+**Why we need it**:
+- **Feature gap**: No current attachment support
+- **Competitive**: All competitors support file uploads
+- **AI use case**: Vision models need image input
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+##### 5. fuse.js - Fuzzy Search
+
+**What it does**:
+- Lightweight fuzzy search (~5KB)
+- Zero dependencies
+- Typo-tolerant matching
+
+**How we would use it**:
+- Search through message history
+- Search tool results
+- Command palette filtering
+
+**Why we need it**:
+- **User pain**: Can't find previous messages
+- **Enterprise**: Large conversations need search
+- **Effort**: ~2 hours to integrate
+
+**Recommendation**: ✅ **IMPLEMENT NOW**
+
+---
+
+#### Updated Implementation Roadmap
+
+**Sprint 1 (Original + New)**:
+1. flowtoken (streaming animations)
+2. isomorphic-dompurify (XSS protection)
+3. Sonner (toast notifications)
+4. **@formkit/auto-animate** (list animations) ← NEW
+5. **react-textarea-autosize** (chat input) ← NEW
+
+**Sprint 2 (Original + New)**:
+1. TanStack Virtual (virtualization)
+2. react-resizable-panels (layouts)
+3. **react-hotkeys-hook** (keyboard shortcuts) ← NEW
+4. **react-dropzone** (file uploads) ← NEW
+5. **fuse.js** (message search) ← NEW
+
+**Estimated Total Effort**: 2-3 sprints (expanded from 1-2)
+
+---
+
+#### Updated Decision Log
+
+| Date | Decision | Rationale | Owner |
+| ---- | -------- | --------- | ----- |
+| 2025-12-20 | Add @formkit/auto-animate | Zero-effort polish, industry-standard feel | Engineering |
+| 2025-12-20 | Add react-textarea-autosize | Table stakes for chat input | Engineering |
+| 2025-12-20 | Add react-hotkeys-hook | Power user requirement, accessibility | Engineering |
+| 2025-12-20 | Add react-dropzone | File uploads required for AI chat | PM |
+| 2025-12-20 | Add fuse.js | Message search is expected feature | PM |
+| 2025-12-20 | Defer emoji picker | Nice-to-have, not critical | PM |
+| 2025-12-20 | Defer recharts | Only needed for analytics dashboard | PM |
 
 ---
