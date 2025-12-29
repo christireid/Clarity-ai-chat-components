@@ -430,26 +430,26 @@ export function useToast(): ToastContextValue {
 //   return toastContainerRoot
 // }
 
+/**
+ * Standalone toast object for fallback when ToastProvider is missing.
+ * Uses appropriate console methods for visibility.
+ * Note: For full toast UI, wrap your app with ToastProvider.
+ */
 export const toast = {
   success: (description: string, title?: string) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[Toast] Success:', title, description)
-    }
-    // Implementation would render toast outside React tree
+    // Use console.log for success - visible but not alarming
+    console.log('[Toast Success]', title ? `${title}:` : '', description)
   },
   error: (description: string, title?: string) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[Toast] Error:', title, description)
-    }
+    // Use console.error for errors - ensures visibility in console
+    console.error('[Toast Error]', title ? `${title}:` : '', description)
   },
   info: (description: string, title?: string) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[Toast] Info:', title, description)
-    }
+    // Use console.info for informational messages
+    console.info('[Toast Info]', title ? `${title}:` : '', description)
   },
   warning: (description: string, title?: string) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[Toast] Warning:', title, description)
-    }
+    // Use console.warn for warnings - orange in most consoles
+    console.warn('[Toast Warning]', title ? `${title}:` : '', description)
   },
 }

@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ModelSelector, StreamingMessage } from '@clarity-chat/react'
+import {
+  ModelSelector,
+  StreamingTextRenderer as StreamingMessage,
+} from '@clarity-chat/react/internal'
 import {
   useStreamingChat,
   type ChatMessage,

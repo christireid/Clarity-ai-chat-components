@@ -127,7 +127,44 @@ export * from './theme'
 export * from './components/ui'
 export * from './components/ai'
 export * from './components/context'
-export * from './components/code'
+// Note: Using explicit exports from './components/code' to avoid conflict with
+// getDarkThemes/getLightThemes exported from './theme'
+export {
+  CodeBlock,
+  type CodeBlockProps,
+  type CodeFontFamily,
+  StreamingCodeBlock,
+  type StreamingCodeBlockProps,
+  InlineCode,
+  type InlineCodeProps,
+  LineNumbers,
+  type LineNumbersProps,
+  CodeBlockHeader,
+  type CodeBlockHeaderProps,
+  CodeBlockCopyButton,
+  type CodeBlockCopyButtonProps,
+  CODE_THEMES,
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  getThemeDefinition,
+  isValidTheme,
+  type CodeThemeDefinition,
+  type CodeThemeName,
+  parseLineRanges,
+  escapeHtml,
+  normalizeLanguage,
+  detectLanguage,
+  getLanguageDisplayName,
+  extractLanguageFromClassName,
+  countLines,
+  truncateCode,
+  COMMON_LANGUAGES,
+  LANGUAGE_DISPLAY_NAMES,
+  type CommonLanguage,
+  // Rename conflicting theme functions to avoid collision with './theme' exports
+  getDarkThemes as getCodeDarkThemes,
+  getLightThemes as getCodeLightThemes,
+} from './components/code'
 export * from './components/conversation'
 export * from './components/feedback'
 export * from './components/media'

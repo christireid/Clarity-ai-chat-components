@@ -1,43 +1,40 @@
 /**
  * Clarity Chat Components Showcase
- * 
+ *
  * Interactive demonstration of all components, themes, and features
  */
 
 import React, { useState } from 'react'
+import { ThemeProvider, ChatWindow, TokenCounter } from '@clarity-chat/react'
 import {
-  ThemeProvider,
-  ChatWindow,
   ModelSelector,
   ContextManager,
   UsageDashboard,
-  ThemeSelector,
   VoiceInput,
-  TokenCounter,
   PerformanceDashboard,
   CustomerSupportTemplate,
   AIAssistantTemplate,
   CodeHelperTemplate,
   defaultLightTheme,
   defaultDarkTheme,
-  oceanTheme,
-  sunsetTheme,
-  forestTheme,
-  corporateTheme,
+  oceanLightTheme as oceanTheme,
+  sunsetLightTheme as sunsetTheme,
+  forestLightTheme as forestTheme,
+  slateLightTheme as corporateTheme,
   minimalLightTheme,
   minimalDarkTheme,
   vibrantLightTheme,
   vibrantDarkTheme,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 const themes = {
   'Default Light': defaultLightTheme,
   'Default Dark': defaultDarkTheme,
-  'Ocean': oceanTheme,
-  'Sunset': sunsetTheme,
-  'Forest': forestTheme,
-  'Corporate': corporateTheme,
+  Ocean: oceanTheme,
+  Sunset: sunsetTheme,
+  Forest: forestTheme,
+  Corporate: corporateTheme,
   'Minimal Light': minimalLightTheme,
   'Minimal Dark': minimalDarkTheme,
   'Vibrant Light': vibrantLightTheme,
@@ -87,7 +84,7 @@ Try sending a message below!`,
       content,
       timestamp: new Date(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
 
     // Simulate AI response
     setTimeout(() => {
@@ -97,7 +94,7 @@ Try sending a message below!`,
         content: `I received your message: "${content}". This is a demo response showcasing the chat interface. Try exploring different themes and features!`,
         timestamp: new Date(),
       }
-      setMessages(prev => [...prev, aiMessage])
+      setMessages((prev) => [...prev, aiMessage])
     }, 1000)
   }
 
@@ -114,7 +111,7 @@ Try sending a message below!`,
             />
           </div>
         )
-      
+
       case 'templates':
         return (
           <div className="templates-view">
@@ -136,7 +133,7 @@ Try sending a message below!`,
             </div>
           </div>
         )
-      
+
       case 'themes':
         return (
           <div className="themes-view">
@@ -162,7 +159,7 @@ Try sending a message below!`,
             </div>
           </div>
         )
-      
+
       case 'components':
         return (
           <div className="components-view">
@@ -199,7 +196,7 @@ Try sending a message below!`,
             </div>
           </div>
         )
-      
+
       default:
         return null
     }
@@ -244,25 +241,33 @@ Try sending a message below!`,
           <label>
             Current Theme:
             <select
-              value={Object.entries(themes).find(([_, t]) => t === selectedTheme)?.[0]}
-              onChange={(e) => setSelectedTheme(themes[e.target.value as keyof typeof themes])}
+              value={
+                Object.entries(themes).find(
+                  ([_, t]) => t === selectedTheme
+                )?.[0]
+              }
+              onChange={(e) =>
+                setSelectedTheme(themes[e.target.value as keyof typeof themes])
+              }
             >
-              {Object.keys(themes).map(name => (
-                <option key={name} value={name}>{name}</option>
+              {Object.keys(themes).map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
               ))}
             </select>
           </label>
         </div>
 
-        <main className="showcase-main">
-          {renderView()}
-        </main>
+        <main className="showcase-main">{renderView()}</main>
 
         <footer className="showcase-footer">
           <p>
             © 2024 Clarity Chat •{' '}
-            <a href="https://github.com/christireid/Clarity-ai-chat-components">GitHub</a> •{' '}
-            <a href="/docs">Documentation</a>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components">
+              GitHub
+            </a>{' '}
+            • <a href="/docs">Documentation</a>
           </p>
         </footer>
       </div>

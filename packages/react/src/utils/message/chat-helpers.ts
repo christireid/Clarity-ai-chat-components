@@ -16,6 +16,24 @@ import type {
 import { estimateTokens } from '../tokenization/estimator'
 
 /**
+ * Counter for unique message ID generation to prevent collisions
+ * when multiple messages are created in the same millisecond
+ */
+let messageIdCounter = 0
+
+/**
+ * Generate a unique message ID
+ * Uses timestamp + counter + random suffix for collision resistance
+ * @internal
+ */
+function generateMessageId(prefix: string): string {
+  const timestamp = Date.now()
+  const counter = messageIdCounter++
+  const random = Math.random().toString(36).substring(2, 6)
+  return `${prefix}-${timestamp}-${counter}-${random}`
+}
+
+/**
  * Convert CoreMessage to plain text
  */
 export function messageToText(message: CoreMessage): string {
@@ -235,13 +253,14 @@ export function mergeStreamingChunks(
 
 /**
  * Create a user message
+ * Auto-generates a unique ID if not provided
  */
 export function createUserMessage(
   content: string,
   options?: { id?: string }
 ): CoreMessage {
   return {
-    id: options?.id,
+    id: options?.id || generateMessageId('user'),
     role: 'user',
     content,
   }
@@ -249,13 +268,14 @@ export function createUserMessage(
 
 /**
  * Create an assistant message
+ * Auto-generates a unique ID if not provided
  */
 export function createAssistantMessage(
   content: string,
   options?: { id?: string; toolInvocations?: CoreMessage['toolInvocations'] }
 ): CoreMessage {
   return {
-    id: options?.id,
+    id: options?.id || generateMessageId('assistant'),
     role: 'assistant',
     content,
     toolInvocations: options?.toolInvocations,
@@ -264,13 +284,14 @@ export function createAssistantMessage(
 
 /**
  * Create a system message
+ * Auto-generates a unique ID if not provided
  */
 export function createSystemMessage(
   content: string,
   options?: { id?: string }
 ): CoreMessage {
   return {
-    id: options?.id,
+    id: options?.id || generateMessageId('system'),
     role: 'system',
     content,
   }
@@ -278,6 +299,7 @@ export function createSystemMessage(
 
 /**
  * Create a tool result message
+ * Auto-generates a unique ID if not provided
  */
 export function createToolResultMessage(
   toolCallId: string,
@@ -286,7 +308,7 @@ export function createToolResultMessage(
   options?: { id?: string }
 ): CoreMessage {
   return {
-    id: options?.id,
+    id: options?.id || generateMessageId('tool'),
     role: 'tool',
     content: [
       {

@@ -15,7 +15,15 @@ import { glob } from 'glob'
 
 interface SearchItem {
   title: string
-  type: 'component' | 'hook' | 'guide' | 'example' | 'cookbook' | 'concept' | 'deployment' | 'integration'
+  type:
+    | 'component'
+    | 'hook'
+    | 'guide'
+    | 'example'
+    | 'cookbook'
+    | 'concept'
+    | 'deployment'
+    | 'integration'
   href: string
   description: string
   category?: string
@@ -50,11 +58,16 @@ function getCategoryFromPath(filePath: string): string | undefined {
 /**
  * Extract metadata from a TypeScript file
  */
-function extractMetadata(content: string): { title?: string; description?: string } {
+function extractMetadata(content: string): {
+  title?: string
+  description?: string
+} {
   const metadata: { title?: string; description?: string } = {}
 
   // Try to extract from Next.js metadata export
-  const metadataMatch = content.match(/export\s+const\s+metadata[:\s]*=\s*{([^}]*)}/s)
+  const metadataMatch = content.match(
+    /export\s+const\s+metadata[:\s]*=\s*{([^}]*)}/s
+  )
   if (metadataMatch) {
     const metadataContent = metadataMatch[1]
 
@@ -88,10 +101,12 @@ function extractMetadata(content: string): { title?: string; description?: strin
 function pathToHref(filePath: string): string {
   const appDir = path.join(process.cwd(), 'app')
   const relativePath = path.relative(appDir, filePath)
-  const href = '/' + relativePath
-    .replace(/\\/g, '/')
-    .replace(/\/page\.(tsx|mdx)$/, '')
-    .replace(/^\//, '')
+  const href =
+    '/' +
+    relativePath
+      .replace(/\\/g, '/')
+      .replace(/\/page\.(tsx|mdx)$/, '')
+      .replace(/^\//, '')
 
   return href === '/' ? '/' : `/${href}`
 }
@@ -100,20 +115,16 @@ function pathToHref(filePath: string): string {
  * Main function to generate search index
  */
 async function generateSearchIndex() {
-  logger.debug('🔍 Scanning documentation pages...\n')
+  console.log('🔍 Scanning documentation pages...\n')
 
   const appDir = path.join(process.cwd(), 'app')
   const pattern = path.join(appDir, '**/page.{tsx,mdx}')
 
   const files = await glob(pattern, {
-    ignore: [
-      '**/node_modules/**',
-      '**/.next/**',
-      '**/dist/**',
-    ]
+    ignore: ['**/node_modules/**', '**/.next/**', '**/dist/**'],
   })
 
-  logger.debug(`Found ${files.length} pages\n`)
+  console.log(`Found ${files.length} pages\n`)
 
   const searchItems: SearchItem[] = []
   const skipped: string[] = []
@@ -148,7 +159,16 @@ async function generateSearchIndex() {
   // Sort by type, then by title
   searchItems.sort((a, b) => {
     if (a.type !== b.type) {
-      const typeOrder = ['guide', 'component', 'hook', 'example', 'cookbook', 'concept', 'deployment', 'integration']
+      const typeOrder = [
+        'guide',
+        'component',
+        'hook',
+        'example',
+        'cookbook',
+        'concept',
+        'deployment',
+        'integration',
+      ]
       return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type)
     }
     return a.title.localeCompare(b.title)
@@ -185,19 +205,35 @@ export const searchData: SearchItem[] = ${JSON.stringify(searchItems, null, 2)}
 
   fs.writeFileSync(outputPath, fileContent)
 
-  logger.debug('✅ Search index generated successfully!\n')
-  logger.debug(`📊 Statistics:`)
-  logger.debug(`   Total items: ${searchItems.length}`)
-  logger.debug(`   Components: ${searchItems.filter(i => i.type === 'component').length}`)
-  logger.debug(`   Hooks: ${searchItems.filter(i => i.type === 'hook').length}`)
-  logger.debug(`   Guides: ${searchItems.filter(i => i.type === 'guide').length}`)
-  logger.debug(`   Examples: ${searchItems.filter(i => i.type === 'example').length}`)
-  logger.debug(`   Cookbook: ${searchItems.filter(i => i.type === 'cookbook').length}`)
-  logger.debug(`   Concepts: ${searchItems.filter(i => i.type === 'concept').length}`)
-  logger.debug(`   Deployment: ${searchItems.filter(i => i.type === 'deployment').length}`)
-  logger.debug(`   Integrations: ${searchItems.filter(i => i.type === 'integration').length}`)
-  logger.debug(`   Skipped (no title): ${skipped.length}`)
-  logger.debug(`\n📁 Output: ${outputPath}`)
+  console.log('✅ Search index generated successfully!\n')
+  console.log(`📊 Statistics:`)
+  console.log(`   Total items: ${searchItems.length}`)
+  console.log(
+    `   Components: ${searchItems.filter((i) => i.type === 'component').length}`
+  )
+  console.log(
+    `   Hooks: ${searchItems.filter((i) => i.type === 'hook').length}`
+  )
+  console.log(
+    `   Guides: ${searchItems.filter((i) => i.type === 'guide').length}`
+  )
+  console.log(
+    `   Examples: ${searchItems.filter((i) => i.type === 'example').length}`
+  )
+  console.log(
+    `   Cookbook: ${searchItems.filter((i) => i.type === 'cookbook').length}`
+  )
+  console.log(
+    `   Concepts: ${searchItems.filter((i) => i.type === 'concept').length}`
+  )
+  console.log(
+    `   Deployment: ${searchItems.filter((i) => i.type === 'deployment').length}`
+  )
+  console.log(
+    `   Integrations: ${searchItems.filter((i) => i.type === 'integration').length}`
+  )
+  console.log(`   Skipped (no title): ${skipped.length}`)
+  console.log(`\n📁 Output: ${outputPath}`)
 }
 
 // Run the script
