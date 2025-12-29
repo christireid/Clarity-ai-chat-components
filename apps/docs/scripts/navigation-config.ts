@@ -45,12 +45,12 @@ export const navigationConfig: NavigationSection[] = [
         title: 'React Hooks',
         href: '/learn/concepts/hooks',
         description:
-          '35+ hooks for chat functionality, streaming, and state management',
+          '95+ hooks for chat functionality, streaming, and state management',
       },
       {
         title: 'Theming System',
         href: '/learn/concepts/theming',
-        description: '11+ pre-built themes with full customization support',
+        description: '15 pre-built themes with full customization support',
       },
       {
         title: 'Animations',

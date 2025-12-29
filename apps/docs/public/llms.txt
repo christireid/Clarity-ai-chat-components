@@ -33,8 +33,8 @@ Three main bundle options for different needs:
 ## Core Concepts
 
 - [Component System](https://clarity-chat.dev/learn/concepts/components): Understanding Clarity's composable component architecture
-- [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 35+ hooks for chat functionality, streaming, and state management
-- [Theming System](https://clarity-chat.dev/learn/concepts/theming): 11+ pre-built themes with full customization support
+- [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 95+ hooks for chat functionality, streaming, and state management
+- [Theming System](https://clarity-chat.dev/learn/concepts/theming): 15 pre-built themes with full customization support
 - [Animations](https://clarity-chat.dev/learn/concepts/animations): 150+ micro-interactions with Framer Motion
 - [Architecture](https://clarity-chat.dev/learn/architecture): Three-tier API design philosophy
 
