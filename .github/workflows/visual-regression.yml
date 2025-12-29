@@ -3,16 +3,8 @@ name: Visual Regression Testing
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'packages/**/src/**'
-      - 'apps/storybook/**'
-      - 'tests/visual/**'
   push:
     branches: [main]
-    paths:
-      - 'packages/**/src/**'
-      - 'apps/storybook/**'
-      - 'tests/visual/**'
 
 permissions:
   contents: read

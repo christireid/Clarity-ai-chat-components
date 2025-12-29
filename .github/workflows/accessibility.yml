@@ -3,16 +3,8 @@ name: Accessibility Tests
 on:
   push:
     branches: [main, develop]
-    paths:
-      - 'packages/**/src/**'
-      - 'apps/storybook/**'
-      - 'apps/docs/**'
   pull_request:
     branches: [main, develop]
-    paths:
-      - 'packages/**/src/**'
-      - 'apps/storybook/**'
-      - 'apps/docs/**'
   workflow_dispatch:
 
 permissions:
