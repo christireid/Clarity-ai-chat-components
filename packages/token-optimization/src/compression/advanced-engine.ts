@@ -1,11 +1,11 @@
 /**
  * Advanced Compression Engine
- * 
+ *
  * Enterprise-grade compression system with multiple strategies,
  * adaptive selection, and quality preservation
  */
 
-import { AdvancedTokenCounter, type ModelFamily, type ContentType } from './advanced-counter'
+import { AdvancedTokenCounter, type ContentType } from './advanced-counter'
 
 /**
  * Compression strategy interface
@@ -81,11 +81,18 @@ class ContentAnalyzer {
 
     // Calculate complexity based on various factors
     const vocabularySize = new Set(text.toLowerCase().split(/\s+/)).size
-    const avgWordLength = text.replace(/\s/g, '').length / text.split(/\s+/).length
+    const avgWordLength =
+      text.replace(/\s/g, '').length / text.split(/\s+/).length
     const punctuationDensity = (text.match(/[,.;:!?]/g) || []).length / length
 
-    const complexity = Math.min(1, (vocabularySize / 500 + avgWordLength / 10 + punctuationDensity * 5) / 3)
-    const structureScore = Math.min(1, (sentenceCount / 50 + paragraphCount / 10) / 2)
+    const complexity = Math.min(
+      1,
+      (vocabularySize / 500 + avgWordLength / 10 + punctuationDensity * 5) / 3
+    )
+    const structureScore = Math.min(
+      1,
+      (sentenceCount / 50 + paragraphCount / 10) / 2
+    )
 
     return {
       contentType,
@@ -132,7 +139,10 @@ export class TruncateStrategy implements CompressionStrategy {
     this.counter = new AdvancedTokenCounter()
   }
 
-  async compress(text: string, targetRatio: number): Promise<CompressionResult> {
+  async compress(
+    text: string,
+    targetRatio: number
+  ): Promise<CompressionResult> {
     const startTime = performance.now()
     const originalTokens = this.counter.count(text)
     const targetTokens = Math.floor(originalTokens * targetRatio)
@@ -158,7 +168,7 @@ export class TruncateStrategy implements CompressionStrategy {
 
   estimate(text: string, targetRatio: number): CompressionEstimate {
     const originalTokens = this.counter.count(text)
-    const targetTokens = Math.floor(originalTokens * targetRatio)
+    const _targetTokens = Math.floor(originalTokens * targetRatio)
 
     // Estimate based on content type
     const contentType = this.detectContentType(text)
@@ -195,8 +205,14 @@ export class TruncateStrategy implements CompressionStrategy {
     if (tokens <= maxTokens) return text
 
     // Analyze content structure
-    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0)
-    const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0)
+    const sentences = text
+      .split(/[.!?]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+    const paragraphs = text
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0)
 
     if (sentences.length <= 3) {
       // Short text - simple truncation
@@ -256,7 +272,11 @@ export class TruncateStrategy implements CompressionStrategy {
 
   private detectContentType(text: string): ContentType {
     // Simple content type detection
-    if (text.includes('function') || text.includes('const') || text.includes('class')) {
+    if (
+      text.includes('function') ||
+      text.includes('const') ||
+      text.includes('class')
+    ) {
       return 'code'
     }
     return 'prose'
@@ -267,11 +287,11 @@ export class TruncateStrategy implements CompressionStrategy {
     const originalWords = new Set(original.toLowerCase().split(/\s+/))
     const compressedWords = new Set(compressed.toLowerCase().split(/\s+/))
 
-    const retainedWords = Array.from(originalWords).filter(word => 
-      compressedWords.has(word) && word.length > 3
+    const retainedWords = Array.from(originalWords).filter(
+      (word) => compressedWords.has(word) && word.length > 3
     )
 
-    return Math.min(1, retainedWords.length / originalWords.size * 1.5)
+    return Math.min(1, (retainedWords.length / originalWords.size) * 1.5)
   }
 }
 
@@ -286,7 +306,10 @@ export class ExtractStrategy implements CompressionStrategy {
     this.counter = new AdvancedTokenCounter()
   }
 
-  async compress(text: string, targetRatio: number): Promise<CompressionResult> {
+  async compress(
+    text: string,
+    targetRatio: number
+  ): Promise<CompressionResult> {
     const startTime = performance.now()
     const originalTokens = this.counter.count(text)
     const targetTokens = Math.floor(originalTokens * targetRatio)
@@ -312,7 +335,7 @@ export class ExtractStrategy implements CompressionStrategy {
 
   estimate(text: string, targetRatio: number): CompressionEstimate {
     const contentType = this.detectContentType(text)
-    
+
     let achievableRatio = targetRatio
     let quality = 0.7
     let processingTime = Math.min(text.length / 500, 200)
@@ -365,7 +388,7 @@ export class ExtractStrategy implements CompressionStrategy {
 
     for (const line of lines) {
       const lineTokens = this.counter.count(line)
-      
+
       if (currentTokens + lineTokens > maxTokens) break
 
       // Keep important code elements
@@ -389,13 +412,16 @@ export class ExtractStrategy implements CompressionStrategy {
 
   private extractProseInformation(text: string, maxTokens: number): string {
     // Extract key sentences and important phrases
-    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0)
+    const sentences = text
+      .split(/[.!?]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
     const extracted: string[] = []
     let currentTokens = 0
 
     for (const sentence of sentences) {
       const sentenceTokens = this.counter.count(sentence)
-      
+
       if (currentTokens + sentenceTokens > maxTokens) break
 
       // Keep sentences with key information
@@ -412,7 +438,7 @@ export class ExtractStrategy implements CompressionStrategy {
     return extracted.join('. ') + '.'
   }
 
-  private extractGenericInformation(text: string, maxTokens: number): string {
+  private extractGenericInformation(text: string, _maxTokens: number): string {
     // Simple extraction - keep first and last parts
     const targetLength = Math.floor(text.length * 0.6)
     const firstPart = text.slice(0, Math.floor(targetLength * 0.7))
@@ -422,7 +448,11 @@ export class ExtractStrategy implements CompressionStrategy {
   }
 
   private detectContentType(text: string): ContentType {
-    if (text.includes('function') || text.includes('const') || text.includes('class')) {
+    if (
+      text.includes('function') ||
+      text.includes('const') ||
+      text.includes('class')
+    ) {
       return 'code'
     }
     return 'prose'
@@ -433,7 +463,7 @@ export class ExtractStrategy implements CompressionStrategy {
     const originalKeywords = this.extractKeywords(original)
     const extractedKeywords = this.extractKeywords(extracted)
 
-    const retainedKeywords = originalKeywords.filter(keyword => 
+    const retainedKeywords = originalKeywords.filter((keyword) =>
       extractedKeywords.includes(keyword)
     )
 
@@ -458,8 +488,28 @@ export class ExtractStrategy implements CompressionStrategy {
 
   private isStopWord(word: string): boolean {
     const stopWords = new Set([
-      'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-      'this', 'that', 'these', 'those', 'is', 'are', 'was', 'were', 'be', 'been',
+      'the',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
+      'this',
+      'that',
+      'these',
+      'those',
+      'is',
+      'are',
+      'was',
+      'were',
+      'be',
+      'been',
     ])
     return stopWords.has(word)
   }
@@ -477,32 +527,35 @@ export class AdaptiveStrategy implements CompressionStrategy {
   constructor() {
     this.counter = new AdvancedTokenCounter()
     this.analyzer = new ContentAnalyzer()
-    
+
     this.strategies = new Map()
     this.strategies.set('truncate', new TruncateStrategy())
     this.strategies.set('extract', new ExtractStrategy())
   }
 
-  async compress(text: string, targetRatio: number): Promise<CompressionResult> {
+  async compress(
+    text: string,
+    targetRatio: number
+  ): Promise<CompressionResult> {
     const analysis = this.analyzer.analyze(text)
-    
+
     // Select optimal strategy based on content analysis
     const strategy = this.selectStrategy(analysis, targetRatio)
-    
+
     return strategy.compress(text, targetRatio)
   }
 
   estimate(text: string, targetRatio: number): CompressionEstimate {
-    const analysis = this.analyzer.analyze(text)
-    
+    const _analysis = this.analyzer.analyze(text)
+
     // Get estimates from all strategies
     const estimates: CompressionEstimate[] = []
-    
+
     for (const strategy of this.strategies.values()) {
       try {
         const estimate = strategy.estimate(text, targetRatio)
         estimates.push(estimate)
-      } catch (error) {
+      } catch {
         // Strategy doesn't support estimation
         continue
       }
@@ -527,7 +580,10 @@ export class AdaptiveStrategy implements CompressionStrategy {
     return bestEstimate
   }
 
-  private selectStrategy(analysis: any, targetRatio: number): CompressionStrategy {
+  private selectStrategy(
+    analysis: any,
+    targetRatio: number
+  ): CompressionStrategy {
     const { contentType, complexity, structureScore, length } = analysis
 
     // Very short content - no compression needed
@@ -578,12 +634,13 @@ export class AdvancedCompressionEngine {
 
     this.counter = new AdvancedTokenCounter()
     this.analyzer = new ContentAnalyzer()
-    
+
     this.strategies = new Map()
     this.registerStrategies()
-    
-    this.defaultStrategy = this.strategies.get(this.config.defaultStrategy) || 
-                          this.strategies.get('adaptive')!
+
+    this.defaultStrategy =
+      this.strategies.get(this.config.defaultStrategy) ||
+      this.strategies.get('adaptive')!
   }
 
   /**
@@ -595,7 +652,7 @@ export class AdvancedCompressionEngine {
     strategy?: string
   ): Promise<CompressionResult> {
     const startTime = performance.now()
-    
+
     // Validate inputs
     if (!text || text.length === 0) {
       throw new Error('Cannot compress empty text')
@@ -625,15 +682,18 @@ export class AdvancedCompressionEngine {
     }
 
     // Select compression strategy
-    const selectedStrategy = strategy ? 
-      this.strategies.get(strategy) || this.defaultStrategy :
-      this.selectOptimalStrategy(text, targetRatio)
+    const selectedStrategy = strategy
+      ? this.strategies.get(strategy) || this.defaultStrategy
+      : this.selectOptimalStrategy(text, targetRatio)
 
     try {
       const result = await Promise.race([
         selectedStrategy.compress(text, targetRatio),
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Compression timeout')), this.config.maxProcessingTime)
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error('Compression timeout')),
+            this.config.maxProcessingTime
+          )
         ),
       ])
 
@@ -643,8 +703,11 @@ export class AdvancedCompressionEngine {
       if (result.quality < this.config.qualityThreshold) {
         // Try fallback strategy
         const fallbackStrategy = this.strategies.get('truncate')!
-        const fallbackResult = await fallbackStrategy.compress(text, targetRatio)
-        
+        const fallbackResult = await fallbackStrategy.compress(
+          text,
+          targetRatio
+        )
+
         return {
           ...fallbackResult,
           metadata: {
@@ -663,7 +726,6 @@ export class AdvancedCompressionEngine {
           strategy: selectedStrategy.name,
         },
       }
-
     } catch (error) {
       // Fallback to simple truncation
       console.warn(`Compression failed with ${selectedStrategy.name}:`, error)
@@ -691,12 +753,14 @@ export class AdvancedCompressionEngine {
     // Parallel processing with concurrency limit
     const concurrency = Math.min(4, texts.length) // Max 4 concurrent operations
     const results: CompressionResult[] = new Array(texts.length)
-    
+
     for (let i = 0; i < texts.length; i += concurrency) {
       const batch = texts.slice(i, i + concurrency)
-      const batchPromises = batch.map((text, index) => 
-        this.compress(text, targetRatio, strategy)
-          .then(result => ({ result, index: i + index }))
+      const batchPromises = batch.map((text, index) =>
+        this.compress(text, targetRatio, strategy).then((result) => ({
+          result,
+          index: i + index,
+        }))
       )
 
       const batchResults = await Promise.all(batchPromises)
@@ -716,9 +780,9 @@ export class AdvancedCompressionEngine {
     targetRatio: number = 0.7,
     strategy?: string
   ): Promise<CompressionEstimate> {
-    const selectedStrategy = strategy ? 
-      this.strategies.get(strategy) || this.defaultStrategy :
-      this.selectOptimalStrategy(text, targetRatio)
+    const selectedStrategy = strategy
+      ? this.strategies.get(strategy) || this.defaultStrategy
+      : this.selectOptimalStrategy(text, targetRatio)
 
     return selectedStrategy.estimate(text, targetRatio)
   }
@@ -726,15 +790,18 @@ export class AdvancedCompressionEngine {
   /**
    * Select optimal compression strategy based on content analysis
    */
-  private selectOptimalStrategy(text: string, targetRatio: number): CompressionStrategy {
+  private selectOptimalStrategy(
+    text: string,
+    targetRatio: number
+  ): CompressionStrategy {
     if (!this.config.adaptiveSelection) {
       return this.defaultStrategy
     }
 
     const analysis = this.analyzer.analyze(text)
-    
+
     // Strategy selection logic based on content characteristics
-    const { contentType, complexity, structureScore } = analysis
+    const { contentType, complexity: _complexity, structureScore } = analysis
 
     // Very short content
     if (text.length < 200) {
@@ -758,10 +825,14 @@ export class AdvancedCompressionEngine {
   /**
    * Fallback compression when primary strategies fail
    */
-  private fallbackCompression(text: string, targetRatio: number, startTime: number): CompressionResult {
+  private fallbackCompression(
+    text: string,
+    targetRatio: number,
+    startTime: number
+  ): CompressionResult {
     const originalTokens = this.counter.count(text)
-    const targetTokens = Math.floor(originalTokens * targetRatio)
-    
+    const _targetTokens = Math.floor(originalTokens * targetRatio)
+
     // Simple character-based truncation
     const truncated = text.slice(0, Math.floor(text.length * targetRatio))
     const truncatedTokens = this.counter.count(truncated)
