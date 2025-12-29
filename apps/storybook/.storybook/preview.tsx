@@ -36,6 +36,66 @@ const themePresets = getAllThemes()
   }))
   .sort((a, b) => a.title.localeCompare(b.title))
 
+/**
+ * Reduced Motion Effect Component
+ *
+ * Simulates the prefers-reduced-motion media query for accessibility testing.
+ * When enabled, forces reduced motion mode to help developers verify their
+ * components correctly respect the useReducedMotion hook (WCAG 2.3.3).
+ */
+function ReducedMotionEffect({ reduceMotion }: { reduceMotion: boolean }) {
+  React.useEffect(() => {
+    if (reduceMotion) {
+      // Add a data attribute that our CSS can hook into
+      document.documentElement.setAttribute('data-reduce-motion', 'true')
+      // Also inject a style tag to override the media query behavior
+      const styleId = 'storybook-reduce-motion'
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style')
+        style.id = styleId
+        style.textContent = `
+          /* Storybook Reduced Motion Override */
+          [data-reduce-motion="true"] *,
+          [data-reduce-motion="true"] *::before,
+          [data-reduce-motion="true"] *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        `
+        document.head.appendChild(style)
+      }
+    } else {
+      document.documentElement.removeAttribute('data-reduce-motion')
+      const styleEl = document.getElementById('storybook-reduce-motion')
+      if (styleEl) {
+        styleEl.remove()
+      }
+    }
+
+    return () => {
+      document.documentElement.removeAttribute('data-reduce-motion')
+      const styleEl = document.getElementById('storybook-reduce-motion')
+      if (styleEl) {
+        styleEl.remove()
+      }
+    }
+  }, [reduceMotion])
+
+  return null
+}
+
+const withReducedMotion: Decorator = (Story, context) => {
+  const reduceMotion = context.globals.reduceMotion === true
+
+  return (
+    <>
+      <ReducedMotionEffect reduceMotion={reduceMotion} />
+      <Story />
+    </>
+  )
+}
+
 const withTheme: Decorator = (Story, context) => {
   const mode = context.globals.themeMode ?? 'system'
   const preset =
@@ -200,9 +260,24 @@ const preview: Preview = {
     },
   },
 
-  decorators: [withTheme],
+  decorators: [withReducedMotion, withTheme],
 
   globalTypes: {
+    reduceMotion: {
+      name: 'Reduce Motion',
+      description:
+        'Simulate prefers-reduced-motion for accessibility testing (WCAG 2.3.3)',
+      defaultValue: false,
+      toolbar: {
+        icon: 'accessibility',
+        items: [
+          { value: false, title: 'Motion Enabled', icon: 'play' },
+          { value: true, title: 'Reduced Motion', icon: 'stop' },
+        ],
+        showName: true,
+        dynamicTitle: true,
+      },
+    },
     locale: {
       name: 'Locale',
       description: 'Internationalization locale',

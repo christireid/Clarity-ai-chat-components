@@ -143,7 +143,8 @@ export default [
       'clarity-animations/no-hardcoded-duration': 'warn',
       'clarity-animations/no-layout-animation': 'error',
       'clarity-animations/prefer-animation-library': 'warn',
-      'clarity-animations/require-reduced-motion': 'warn',
+      // WCAG 2.3.3: All animation components must support reduced motion
+      'clarity-animations/require-reduced-motion': 'error',
     },
   },
 
