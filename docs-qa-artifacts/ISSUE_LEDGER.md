@@ -22,6 +22,7 @@
 | 007 | Footer `/learn/concepts`      | Nav      | Low      | Footer link to `/learn/concepts` 404s                              | **Fixed**        |
 | 008 | Footer `/reference/utilities` | Nav      | Low      | Footer link to `/reference/utilities` - verified working           | **Verified**     |
 | 009 | `/learn/guides`               | Nav      | Med      | No index page for guides section                                   | **Fixed**        |
+| 010 | `/robots.txt`                 | SEO      | High     | HTTP 500 - conflicting public file and app route                   | **Fixed**        |
 
 ---
 
@@ -97,12 +98,34 @@ The request shiki/wasm matches serverExternalPackages...
 
 ---
 
+### Issue 010: /robots.txt returns HTTP 500
+
+**Severity**: High **Route**: `/robots.txt` **Repro Steps**:
+
+1. Navigate to http://localhost:3000/robots.txt
+2. Observe HTTP 500 error
+
+**Actual**:
+
+```
+Error: A conflicting public file and page file was found for path /robots.txt
+```
+
+**Root Cause**: Both `public/robots.txt` (static file) and `app/robots.ts` (dynamic route handler)
+existed, causing Next.js to fail when trying to resolve which one to serve.
+
+**Fix Applied**: Removed `public/robots.txt` to use the modern App Router convention
+(`app/robots.ts`) which provides environment-aware functionality (blocks crawlers in development,
+allows in production).
+
+---
+
 ## Summary
 
 ### Final Status
 
 - **Blocker**: 0 (1 fixed)
-- **High**: 0 (2 fixed)
+- **High**: 0 (3 fixed)
 - **Medium**: 0 (2 fixed, 2 verified, 1 acknowledged)
 - **Low**: 0 (1 fixed, 1 verified)
 - **Total Open**: 0
@@ -113,6 +136,8 @@ The request shiki/wasm matches serverExternalPackages...
    `/demos/accessibility-audit`
 2. **apps/docs/app/learn/concepts/page.tsx**: Created index page for Core Concepts section
 3. **apps/docs/app/learn/guides/page.tsx**: Created index page for Learn Guides section
+4. **apps/docs/public/robots.txt**: Removed conflicting static file (app/robots.ts is the canonical
+   source)
 
 ### Acknowledged (Non-blocking)
 
