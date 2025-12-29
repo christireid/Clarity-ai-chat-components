@@ -145,13 +145,17 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "framer-motion": "^12.23.25",
-    "flowtoken": "^1.0.0"
+    "flowtoken": "^1.0.0",
+    "mermaid": "^11.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
       "optional": true
     },
     "flowtoken": {
+      "optional": true
+    },
+    "mermaid": {
       "optional": true
     }
   },
@@ -167,14 +171,12 @@
     "@types/prismjs": "^1.26.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "dompurify": "^3.2.3",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.21.0",
     "js-tiktoken": "^1.0.21",
     "jszip": "^3.10.1",
     "katex": "^0.16.25",
     "lucide-react": "^0.556.0",
-    "mermaid": "^11.12.2",
     "prismjs": "^1.30.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
