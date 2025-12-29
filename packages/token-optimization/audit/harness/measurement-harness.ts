@@ -17,7 +17,11 @@ import type {
   MeasurementRunConfig,
   RunStatistics,
 } from './types'
-import { estimateTokens, createPayloadSnapshot } from './token-estimator'
+import {
+  estimateTokens,
+  createPayloadSnapshot,
+  calculateSavings,
+} from './token-estimator'
 
 /**
  * Configuration for the measurement harness

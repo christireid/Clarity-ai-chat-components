@@ -41,27 +41,28 @@ const flags = {
     | undefined,
 }
 
-// Optimization presets (TUNED for maximum measured savings)
+// Optimization presets (RUTHLESSLY TUNED for maximum measured savings)
 const PRESETS: Record<string, OptimizationConfig> = {
   conservative: {
     enablePromptCompression: true,
     compressionLevel: 'conservative',
     enableHistoryLimiting: true,
-    maxHistoryMessages: 8, // Lowered from 10
+    maxHistoryMessages: 6, // Lowered from 8
   },
   balanced: {
     enableToon: true,
     enablePromptCompression: true,
     compressionLevel: 'balanced',
     enableHistoryLimiting: true,
-    maxHistoryMessages: 5, // Lowered from 10 for better savings
+    maxHistoryMessages: 4, // Lowered from 5 for better savings
+    enablePIIRedaction: true,
   },
   aggressive: {
     enableToon: true,
     enablePromptCompression: true,
     compressionLevel: 'aggressive',
     enableHistoryLimiting: true,
-    maxHistoryMessages: 3, // Aggressive: only keep 3 turn pairs
+    maxHistoryMessages: 2, // ULTRA-AGGRESSIVE: only keep 2 turn pairs
     enableSemanticCaching: true,
     enablePIIRedaction: true,
     enablePrefilling: true,
