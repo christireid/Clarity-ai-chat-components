@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Share2, Twitter, Linkedin, Link2, Check, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 interface ShareButtonProps {
   title?: string
@@ -39,7 +40,7 @@ const shareOptions: ShareOption[] = [
 
 export function ShareButton({
   title = 'Share',
-  text = 'Check out Clarity Chat - 70+ production-ready React components for AI chat UIs 🚀',
+  text = `Check out Clarity Chat - ${LIBRARY_STATS.components} production-ready React components for AI chat UIs 🚀`,
   url,
   className,
   variant = 'inline',

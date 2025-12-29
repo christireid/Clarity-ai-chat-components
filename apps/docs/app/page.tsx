@@ -22,6 +22,7 @@ import {
   Layers,
   Smartphone,
 } from 'lucide-react'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function HomePage() {
   return (
@@ -36,7 +37,7 @@ export default function HomePage() {
             <span className="text-brand-500">That Don't Fight You</span>
           </>
         }
-        description="You've rebuilt chat from scratch three times already. Stop. 200+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
+        description="You've rebuilt chat from scratch three times already. Stop. 190+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
         installCommand="npm install @clarity-chat/react"
         primaryCta={{
           text: 'Get Started in 60s',
@@ -123,7 +124,7 @@ function CustomChat() {
           features={[
             {
               icon: <Layers className="w-8 h-8" />,
-              title: '200+ Components',
+              title: '190+ Components',
               description:
                 'From basic messages to advanced patterns like command palettes, drag & drop, and context menus.',
             },
@@ -136,8 +137,7 @@ function CustomChat() {
             {
               icon: <Palette className="w-8 h-8" />,
               title: 'Fully Customizable',
-              description:
-                'Built with Tailwind CSS. 13 themes included. Override any style. Dark mode by default.',
+              description: `Built with Tailwind CSS. ${LIBRARY_STATS.themes} themes included. Override any style. Dark mode by default.`,
             },
             {
               icon: <Accessibility className="w-8 h-8" />,

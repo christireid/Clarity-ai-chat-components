@@ -14,6 +14,7 @@ import {
   BarChart,
   Shield,
 } from 'lucide-react'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function ComponentsConceptPage() {
   return (
@@ -28,7 +29,7 @@ export default function ComponentsConceptPage() {
               Component System
             </h1>
             <p className="text-xl text-text-secondary leading-relaxed">
-              Clarity Chat ships 70+ composable components. This overview helps
+              Clarity Chat ships {LIBRARY_STATS.components} composable components. This overview helps
               you pick the right building blocks for conversations, streaming,
               analytics, and enterprise workflows.
             </p>

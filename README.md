@@ -7,7 +7,7 @@
 <h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>
 
 <p><strong>The most complete, production-ready AI chat component library for React.</strong><br/>
-249K+ lines of code. 200+ components. 140+ hooks. Trusted by developers worldwide.</p>
+249K+ lines of code. 200+ components. 95+ hooks. Trusted by developers worldwide.</p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -116,7 +116,7 @@ export default function App() {
 #### 🎨 **Components**
 
 - **200+** React components
-- **13** theme presets
+- **15** theme presets
 - **150+** animations
 - Virtual scrolling
 - Drag & drop support
@@ -126,7 +126,7 @@ export default function App() {
 
 #### ⚙️ **Hooks & Logic**
 
-- **140+** custom hooks
+- **95+** custom hooks
 - Streaming (SSE/WebSocket)
 - Token optimization
 - Error recovery
@@ -194,7 +194,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 // Security features: prompt injection detection, PII masking, jailbreak prevention
 ```
 
-### **🎨 Beautiful Design System** → _13 themes, 150+ animations_
+### **🎨 Beautiful Design System** → _15 themes, 150+ animations_
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
@@ -357,8 +357,8 @@ Battery-aware streaming, performance optimization, analytics
 │ Feature                 │ Clarity   │ ChatGPT  │ Claude   │ Gemini   │
 ├─────────────────────────┼───────────┼──────────┼──────────┼──────────┤
 │ Components              │ 200+      │ ❌        │ ❌        │ ❌        │
-│ Custom Hooks            │ 140+      │ ❌        │ ❌        │ ❌        │
-│ Themes                  │ 13        │ 1        │ 1        │ 1        │
+│ Custom Hooks            │ 95+       │ ❌        │ ❌        │ ❌        │
+│ Themes                  │ 15        │ 1        │ 1        │ 1        │
 │ Token Optimization      │ ✅ 60-90%  │ ❌        │ ❌        │ ❌        │
 │ Vector Stores           │ 4         │ ❌        │ ❌        │ ❌        │
 │ RAG Pipeline            │ ✅         │ ❌        │ ❌        │ ❌        │

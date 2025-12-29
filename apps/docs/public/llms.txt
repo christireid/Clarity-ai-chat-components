@@ -1,6 +1,6 @@
 # Clarity Chat
 
-> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ production-ready components, 140+ custom hooks, 11+ themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 190+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.
 
@@ -8,7 +8,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 Three main bundle options for different needs:
 
-- `@clarity-chat/react` (~120KB gzipped): Full library with all 200+ components
+- `@clarity-chat/react` (~120KB gzipped): Full library with all 190+ components
 - `@clarity-chat/react/core` (~60KB gzipped): Core chat components without dashboards/analytics
 - `@clarity-chat/react/core-minimal` (~30KB gzipped): Minimal bundle with lazy loading for features
 
@@ -33,8 +33,8 @@ Three main bundle options for different needs:
 ## Core Concepts
 
 - [Component System](https://clarity-chat.dev/learn/concepts/components): Understanding Clarity's composable component architecture
-- [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 35+ hooks for chat functionality, streaming, and state management
-- [Theming System](https://clarity-chat.dev/learn/concepts/theming): 11+ pre-built themes with full customization support
+- [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 95+ hooks for chat functionality, streaming, and state management
+- [Theming System](https://clarity-chat.dev/learn/concepts/theming): 15 pre-built themes with full customization support
 - [Animations](https://clarity-chat.dev/learn/concepts/animations): 150+ micro-interactions with Framer Motion
 - [Architecture](https://clarity-chat.dev/learn/architecture): Three-tier API design philosophy
 

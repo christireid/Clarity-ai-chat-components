@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { trackDemoViewed } from '@/lib/demos/analytics'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 interface BundleInfo {
   name: string
@@ -46,8 +47,8 @@ const competitors: BundleInfo[] = [
     gzipped: 8.5,
     color: 'bg-green-500',
     features: [
-      '70+ components',
-      '35+ hooks',
+      `${LIBRARY_STATS.components} components`,
+      `${LIBRARY_STATS.hooks} hooks`,
       'Memory',
       'Streaming',
       'Full theming',

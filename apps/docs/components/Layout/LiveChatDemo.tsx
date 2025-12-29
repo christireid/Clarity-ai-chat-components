@@ -39,7 +39,7 @@ const generateId = () => crypto.randomUUID()
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 200+ components and 140+ hooks!",
+    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 190+ components and 95+ hooks!",
     sender: 'bot',
     timestamp: new Date(Date.now() - 60000),
   },

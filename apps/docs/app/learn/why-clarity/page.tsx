@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export const metadata: Metadata = {
   title: 'Why Clarity Chat - Comparison & Benefits',
@@ -10,21 +11,21 @@ export const metadata: Metadata = {
 const features = [
   {
     name: 'Components',
-    clarity: '200+',
+    clarity: LIBRARY_STATS.components,
     vercelAI: '~10',
     chatUI: '~15',
     custom: '0',
   },
   {
     name: 'Hooks',
-    clarity: '140+',
+    clarity: LIBRARY_STATS.hooks,
     vercelAI: '~5',
     chatUI: '~3',
     custom: '0',
   },
   {
     name: 'Themes',
-    clarity: '11+',
+    clarity: String(LIBRARY_STATS.themes),
     vercelAI: '1',
     chatUI: '2',
     custom: '0',
@@ -117,7 +118,7 @@ const benefits = [
     title: 'Maintain Easily',
     description:
       'Comprehensive documentation, TypeScript support, and consistent APIs make maintenance a breeze.',
-    metric: '200+ documented components',
+    metric: `${LIBRARY_STATS.components} documented components`,
   },
 ]
 

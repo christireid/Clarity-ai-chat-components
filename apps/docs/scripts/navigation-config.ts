@@ -4,6 +4,7 @@
  */
 
 import type { NavigationSection } from './types'
+import { LIBRARY_STATS, LIBRARY_DESCRIPTIONS } from '../lib/library-stats'
 
 export const BASE_URL = 'https://clarity-chat.dev'
 
@@ -44,18 +45,17 @@ export const navigationConfig: NavigationSection[] = [
       {
         title: 'React Hooks',
         href: '/learn/concepts/hooks',
-        description:
-          '35+ hooks for chat functionality, streaming, and state management',
+        description: LIBRARY_DESCRIPTIONS.hooksDescription,
       },
       {
         title: 'Theming System',
         href: '/learn/concepts/theming',
-        description: '11+ pre-built themes with full customization support',
+        description: LIBRARY_DESCRIPTIONS.themesDescription,
       },
       {
         title: 'Animations',
         href: '/learn/concepts/animations',
-        description: '150+ micro-interactions with Framer Motion',
+        description: `${LIBRARY_STATS.animations} micro-interactions with Framer Motion`,
       },
       {
         title: 'Architecture',
@@ -467,7 +467,7 @@ export const navigationConfig: NavigationSection[] = [
 /**
  * Project description for llms.txt header
  */
-export const projectDescription = `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ production-ready components, 35+ custom hooks, 13 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+export const projectDescription = `Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 190+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.`
 

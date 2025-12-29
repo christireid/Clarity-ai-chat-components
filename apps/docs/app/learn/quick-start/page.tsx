@@ -12,6 +12,7 @@ import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { SuccessCelebration } from '@/components/Enhanced/SuccessCelebration'
 import { RelatedPages } from '@/components/Enhanced/RelatedPages'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export default function QuickStartPage() {
   return (
@@ -458,7 +459,7 @@ export default function App() {
                     Components
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Explore all 200+ components with interactive examples
+                    Explore all {LIBRARY_STATS.components} components with interactive examples
                   </p>
                 </a>
 

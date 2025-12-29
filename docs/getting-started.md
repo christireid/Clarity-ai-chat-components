@@ -407,7 +407,7 @@ function ChatWithTools() {
 
 ### Add a Theme
 
-Choose from 11 built-in themes:
+Choose from 15 built-in themes:
 
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'

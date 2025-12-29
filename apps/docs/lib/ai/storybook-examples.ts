@@ -2056,7 +2056,7 @@ export const storybookExamples: StorybookExample[] = [
     fileName: 'ColorsThemes.stories.tsx',
     storyPath: 'Foundation/ColorsThemes.stories.tsx',
     description:
-      '# Colors & Themes\n\nClarity Chat provides a comprehensive color system and theming architecture that makes it easy to create beautiful, consistent interfaces.\n\n## Design Philosophy\n\n- **Semantic Color Names** - Colors have meaning (brand, success, warning, error)\n- **Automatic Dark Mode** - Every theme includes dark mode variants\n- **Accessible Contrast** - All color combinations meet WCAG AA standards\n- **11+ Pre-built Themes** - Start with beautiful defaults\n- **Fully Customizable** - Create your own themes with ease\n\n## Color Palette\n\nOur color system is built on a consistent scale from 50 (lightest) to 950 (darkest), ensuring visual harmony across all themes.',
+      '# Colors & Themes\n\nClarity Chat provides a comprehensive color system and theming architecture that makes it easy to create beautiful, consistent interfaces.\n\n## Design Philosophy\n\n- **Semantic Color Names** - Colors have meaning (brand, success, warning, error)\n- **Automatic Dark Mode** - Every theme includes dark mode variants\n- **Accessible Contrast** - All color combinations meet WCAG AA standards\n- **15 Pre-built Themes** - Start with beautiful defaults\n- **Fully Customizable** - Create your own themes with ease\n\n## Color Palette\n\nOur color system is built on a consistent scale from 50 (lightest) to 950 (darkest), ensuring visual harmony across all themes.',
     variantCount: 7,
     variants: [
       'BrandColors',
@@ -2514,7 +2514,7 @@ export const storybookExamples: StorybookExample[] = [
     fileName: 'Playground.stories.tsx',
     storyPath: 'Welcome/Playground.stories.tsx',
     description:
-      '# Interactive Playground\n\nTry out Clarity Chat components in this interactive playground. Experiment with different configurations, themes, and features to see how they work together.\n\n## What You Can Do\n\n- **Test Components** - Try different component combinations\n- **Explore Themes** - Switch between 11+ built-in themes\n- **Customize Props** - Adjust component properties in real-time\n- **Copy Code** - Copy working examples to your project\n\n## Getting Started\n\nUse the controls below to configure the components and see live updates. All examples are production-ready and can be copied directly into your application.',
+      '# Interactive Playground\n\nTry out Clarity Chat components in this interactive playground. Experiment with different configurations, themes, and features to see how they work together.\n\n## What You Can Do\n\n- **Test Components** - Try different component combinations\n- **Explore Themes** - Switch between 15 built-in themes\n- **Customize Props** - Adjust component properties in real-time\n- **Copy Code** - Copy working examples to your project\n\n## Getting Started\n\nUse the controls below to configure the components and see live updates. All examples are production-ready and can be copied directly into your application.',
     variantCount: 1,
     variants: ['InteractiveChat'],
     examples: [

@@ -12,6 +12,7 @@ import {
   SoftwareLibraryStructuredData,
   DocumentationSiteStructuredData,
 } from '@/components/SEO/StructuredData'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 // Lazy load the AI assistant to reduce initial bundle size
 const DocsAssistant = dynamic(() =>
@@ -52,8 +53,7 @@ export const metadata: Metadata = {
     default: 'Clarity Chat UI - Beautiful, Accessible React Components',
     template: '%s | Clarity Chat UI',
   },
-  description:
-    'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 140+ hooks, and 150+ animations.',
+  description: `A comprehensive React UI library for building beautiful, accessible chat interfaces with ${LIBRARY_STATS.components} components, ${LIBRARY_STATS.hooks} hooks, and ${LIBRARY_STATS.animations} animations.`,
   keywords: [
     'react',
     'ui library',

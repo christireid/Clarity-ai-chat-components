@@ -163,12 +163,12 @@ const changelog: ChangelogEntry[] = [
     version: '1.7.0',
     date: '2025-10-15',
     title: 'Theming System',
-    description: 'Comprehensive theming with 11 built-in themes.',
+    description: 'Comprehensive theming with 15 built-in themes.',
     type: 'minor',
     changes: [
       {
         type: 'feature',
-        description: '11 built-in themes including dark mode variants',
+        description: '15 built-in themes including dark mode variants',
       },
       {
         type: 'feature',

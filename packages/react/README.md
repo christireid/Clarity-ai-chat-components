@@ -46,7 +46,7 @@ accessibility.
 
 - **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
 - **Layered architecture** - Start simple, scale to enterprise
-- **Beautiful UI** - 70+ production-ready components
+- **Beautiful UI** - 200+ production-ready components
 - **Built-in memory** - Three strategies for context retention
 - **Streaming** - SSE and WebSocket support
 - **Enterprise-ready** - RBAC, audit logging, multi-tenancy

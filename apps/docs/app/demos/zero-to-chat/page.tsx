@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 import { generateId, copyToClipboard, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
 import {
@@ -69,7 +70,7 @@ const demoResponses: Record<string, string> = {
   theme:
     'Theming is automatic! Use `theme="auto"` to respect system preferences, or set `theme="dark"` or `theme="light"`. You can also use CSS variables for complete customization.',
   features:
-    'Clarity Chat includes: ✨ Streaming support, 🎨 Theming & dark mode, ⌨️ Keyboard shortcuts, 📱 Mobile responsive, ♿ Accessibility (WCAG 2.1 AA), 🔧 70+ components, and much more!',
+    `Clarity Chat includes: ✨ Streaming support, 🎨 Theming & dark mode, ⌨️ Keyboard shortcuts, 📱 Mobile responsive, ♿ Accessibility (WCAG 2.1 AA), 🔧 ${LIBRARY_STATS.components} components, and much more!`,
   code: "The code you see is real! Just `npm install @clarity-chat/react`, import the component, and pass your API endpoint. That's it - you get a production-ready chat with all the polish.",
 }
 

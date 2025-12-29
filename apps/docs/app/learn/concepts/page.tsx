@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export const metadata: Metadata = {
   title: 'Core Concepts - Learn Clarity Chat',
@@ -88,7 +89,7 @@ export default function ConceptsPage() {
             >
               Component Reference
             </Link>{' '}
-            - Full API documentation for all 70+ components
+            - Full API documentation for all {LIBRARY_STATS.components} components
           </li>
           <li>
             <Link
@@ -97,7 +98,7 @@ export default function ConceptsPage() {
             >
               Hooks Reference
             </Link>{' '}
-            - Complete guide to all 35+ hooks
+            - Complete guide to all {LIBRARY_STATS.hooks} hooks
           </li>
           <li>
             <Link href="/examples" className="text-brand-500 hover:underline">
