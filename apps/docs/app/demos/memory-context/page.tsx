@@ -25,7 +25,10 @@ import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
 import { durations } from '@/lib/animations'
 
 // Simple auto-scroll hook (useAutoScroll not exported from @clarity-chat/react yet)
-function useAutoScroll() {
+function useAutoScroll(_options?: {
+  dependencies?: unknown[]
+  threshold?: number
+}) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({
