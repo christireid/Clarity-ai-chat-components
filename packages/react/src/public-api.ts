@@ -99,9 +99,34 @@ export {
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
 export { default as MessageList } from './components/chat/virtualized-message-list'
+export {
+  TanStackMessageList,
+  AutoTanStackMessageList,
+  useMessageListScrollControl,
+  useJumpToBottom,
+  type TanStackMessageListProps,
+  type AutoTanStackMessageListProps,
+  type UseMessageListScrollOptions,
+  type UseMessageListScrollReturn,
+  type UseJumpToBottomReturn,
+} from './components/chat/tanstack-message-list'
 export { StreamingMessage } from './components/message/streaming-message'
 export { ThinkingIndicator } from './components/message/thinking-indicator'
 export { TypingIndicator } from './components/message/typing-indicator'
+
+// Layouts
+export { ChatLayout, type ChatLayoutProps } from './components/chat/chat-layout'
+export {
+  ResizableChatLayout,
+  useResizableLayout,
+  ResizeHandle,
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+  type ResizableChatLayoutProps,
+  type ResizeHandleProps,
+  type ImperativePanelHandle,
+} from './components/chat/resizable-chat-layout'
 
 // ============================================================================
 // MEMORY SYSTEM
@@ -252,6 +277,15 @@ export {
   type ToastPosition,
   type Toast,
 } from './components/ui/toast'
+
+// Sonner-based toast (alternative, more feature-rich)
+export {
+  ClarityToaster,
+  toast,
+  type ClarityToasterProps,
+  type ToastOptions,
+  type PromiseToastOptions,
+} from './components/ui/sonner-toast'
 
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
