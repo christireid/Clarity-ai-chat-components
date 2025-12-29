@@ -1,10 +1,16 @@
 /**
  * Chat Hooks
  *
- * Core hooks for managing chat state, messages, and AI interactions.
+ * Three primary hooks for chat functionality:
+ * - `useClarityChat` - Main hook for chat with messages, streaming, memory
+ * - `useClarityObject` - Structured output generation
+ * - `useClarityChatWithTools` - Chat with tool/function calling
  */
 
-// Primary Chat Hooks
+// ============================================================================
+// PRIMARY HOOKS (Recommended)
+// ============================================================================
+
 export {
   useClarityChat,
   type UseClarityChatOptions,
@@ -30,40 +36,54 @@ export {
   type ExtractedToolResult,
 } from './use-clarity-chat-with-tools'
 
-// Enhanced Chat Hook
-export {
-  useChat as useChatEnhanced,
-  type UseChatOptions as UseChatEnhancedOptions,
-  type UseChatReturn as UseChatEnhancedReturn,
-  type CoreMessage,
-} from './use-chat-enhanced'
+// ============================================================================
+// UTILITY HOOKS
+// ============================================================================
 
-// Unified Chat Hook
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './use-chat-unified'
-
-// Legacy Chat Hook
-export {
-  useChat as useChatLegacy,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './use-chat'
-
-// Chat Handlers
 export {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
 } from './use-chat-handlers'
 
-// Additional Chat Hooks
-export * from './use-chat-simple'
-export * from './use-chat-composable'
 export * from './use-chat-history'
-
-// AI Hooks
 export * from './use-completion'
 export * from './use-assistant'
+
+// ============================================================================
+// CORE TYPES
+// ============================================================================
+
+export { type CoreMessage } from './use-chat-enhanced'
+
+// ============================================================================
+// DEPRECATED HOOKS (Will be removed in v2.0)
+// Use useClarityChat instead
+// ============================================================================
+
+/** @deprecated Use useClarityChat instead */
+export {
+  useChat as useChatEnhanced,
+  type UseChatOptions as UseChatEnhancedOptions,
+  type UseChatReturn as UseChatEnhancedReturn,
+} from './use-chat-enhanced'
+
+/** @deprecated Use useClarityChat instead */
+export {
+  useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from './use-chat-unified'
+
+/** @deprecated Use useClarityChat instead */
+export {
+  useChat as useChatLegacy,
+  type UseChatOptions as UseChatOptionsLegacy,
+  type UseChatReturn as UseChatReturnLegacy,
+} from './use-chat'
+
+/** @deprecated Use useClarityChat instead. ChatWindow accepts CoreMessage[] directly. */
+export * from './use-chat-simple'
+
+/** @deprecated Use useClarityChat with primitives instead */
+export * from './use-chat-composable'

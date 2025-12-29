@@ -80,24 +80,25 @@ export default function HomePage() {
 
           <CodeExample
             title="Your First Chat Window"
-            code={`import { ChatWindow, Message } from '@clarity-chat/react'
+            code={`import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
-function App() {
-  const [messages, setMessages] = useState<Message[]>([])
+// Production-ready chat in one line
+export default function App() {
+  return <ClarityChat api="/api/chat" />
+}
+
+// Need more control? Use the hook:
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+
+function CustomChat() {
+  const chat = useClarityChat({ api: '/api/chat' })
 
   return (
     <ChatWindow
-      messages={messages}
-      onSendMessage={(text) => {
-        setMessages([...messages, {
-          id: Date.now().toString(),
-          text,
-          sender: 'user',
-          timestamp: new Date(),
-        }])
-      }}
-      placeholder="Type your message..."
-      height="600px"
+      messages={chat.messages}
+      isLoading={chat.isLoading}
+      onSendMessage={(content) => chat.append({ role: 'user', content })}
     />
   )
 }`}

@@ -1,50 +1,40 @@
-# Getting Started with Clarity React Library
+# Getting Started with Clarity Chat
 
-Complete guide to getting started with Clarity's React library, covering all phases and features.
-
-## Quick Navigation
-
-- [Installation](#installation)
-- [Basic Chat](#basic-chat)
-- [Structured Output](#structured-output)
-- [Tool UI Registry](#tool-ui-registry)
-- [Memory Integration](#memory-integration)
-- [Examples](#examples)
-- [Next Steps](#next-steps)
+Build beautiful AI chat interfaces in React. Fast.
 
 ## Installation
 
 ```bash
 npm install @clarity-chat/react
-# or
-pnpm add @clarity-chat/react
-# or
-yarn add @clarity-chat/react
 ```
 
-## Basic Chat
-
-### Simple Chat with useClarityChat
+## Quickest Start (One Line)
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+Done. You have a production-ready chat with streaming, error handling, and accessibility.
+
+## More Control? Use the Hook
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
-    api: '/api/chat',
-  })
-
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
+  const chat = useClarityChat({ api: '/api/chat' })
 
   return (
     <ChatWindow
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })}
+      messages={chat.messages}
+      isLoading={chat.isLoading}
+      onSendMessage={(content) => chat.append({ role: 'user', content })}
     />
   )
 }

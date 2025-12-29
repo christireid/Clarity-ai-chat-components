@@ -19,7 +19,8 @@ import { z } from 'zod'
 
 /** Timeout for plugin lifecycle hooks (in ms) */
 const LIFECYCLE_HOOK_TIMEOUT_MS = parseInt(
-  process.env.MCP_PLUGIN_HOOK_TIMEOUT || '5000'
+  process.env.MCP_PLUGIN_HOOK_TIMEOUT || '5000',
+  10
 )
 
 /**

@@ -3,6 +3,7 @@
  */
 
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
 import type { DocFrontmatter } from '../types/index.js'
 
 /** Escape special characters in markdown table cells */
@@ -72,7 +73,9 @@ export function stringifyFrontmatter(
 ): string {
   // Remove undefined values to prevent YAML serialization errors
   const cleanData = removeUndefined(data)
-  return matter.stringify(content, cleanData)
+  // Use js-yaml directly to avoid gray-matter's dependency on removed safeDump
+  const yamlContent = yaml.dump(cleanData, { lineWidth: -1, noRefs: true })
+  return `---\n${yamlContent}---\n${content}`
 }
 
 /** Create a markdown table */

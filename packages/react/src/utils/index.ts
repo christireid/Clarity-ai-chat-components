@@ -35,10 +35,6 @@ export * from './api'
 // Resilience Utilities
 export * from './resilience'
 
-// Optimization Utilities
-// TODO: Re-enable after fixing kv-cache-prompt-builder module dependencies
-// export * from './optimization'
-
 // Tool Utilities
 export * from './tools'
 
@@ -46,7 +42,7 @@ export * from './tools'
 export * from './config'
 
 // Security Utilities
-// export * from './security'
+export * from './security'
 
 // Search Utilities
 export * from './search'

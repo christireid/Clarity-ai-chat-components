@@ -84,15 +84,6 @@ export type {
   ExtractedToolResult,
 } from './hooks/chat/use-clarity-chat-with-tools'
 
-// Commented out - modules not available
-// export type { UseAgentOptions, UseAgentReturn } from './hooks/chat/use-agent'
-
-// Commented out - modules not available
-// export type {
-//   UseRAGPipelineOptions,
-//   UseRAGPipelineReturn,
-// } from './hooks/chat/use-rag-pipeline'
-
 export type {
   UseMemoryStoreOptions,
   UseMemoryStoreReturn,

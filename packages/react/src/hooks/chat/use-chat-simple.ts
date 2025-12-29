@@ -75,12 +75,30 @@ export interface UseChatSimpleReturn {
 /**
  * useChatSimple - Simplified chat hook
  *
- * Returns messages in the correct format without manual conversion.
- * Provides a simpler API than useClarityChat for common use cases.
+ * @deprecated Use `useClarityChat` instead. ChatWindow now accepts CoreMessage[] directly,
+ * so message conversion is no longer needed. This hook will be removed in v2.0.
+ *
+ * Migration:
+ * ```tsx
+ * // Before
+ * const { messages, sendMessage } = useChatSimple({ api: '/api/chat' })
+ *
+ * // After
+ * const { messages, append } = useClarityChat({ api: '/api/chat' })
+ * // ChatWindow accepts messages directly, no conversion needed
+ * ```
  */
 export function useChatSimple(
   options: UseChatSimpleOptions
 ): UseChatSimpleReturn {
+  // Deprecation warning
+  if (process.env['NODE_ENV'] === 'development') {
+    console.warn(
+      '[Clarity Chat] useChatSimple is deprecated. Use useClarityChat instead. ' +
+      'ChatWindow now accepts CoreMessage[] directly. ' +
+      'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
+    )
+  }
   const {
     api,
     initialMessages = [],

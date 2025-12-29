@@ -1,6 +1,6 @@
 /**
  * Composable Chat Hooks - Easy way to combine multiple features
- * 
+ *
  * These hooks make it easy to compose multiple features together
  * without boilerplate.
  */
@@ -8,7 +8,11 @@
 'use client'
 
 import * as React from 'react'
-import { useChat, type UseChatOptions, type UseChatReturn } from './use-chat-unified'
+import {
+  useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from './use-chat-unified'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 
 /**
@@ -41,9 +45,9 @@ export interface ChatFeatures {
 
 /**
  * useChatComposable - Composable chat hook with feature flags
- * 
+ *
  * Easily combine multiple features with a simple configuration object.
- * 
+ *
  * @example
  * ```tsx
  * const chat = useChatComposable({
@@ -58,11 +62,22 @@ export interface ChatFeatures {
  * })
  * ```
  */
+/**
+ * @deprecated Use `useClarityChat` instead. This hook will be removed in v2.0.
+ */
 export function useChatComposable(
   options: UseChatOptions & {
     features?: ChatFeatures
   }
 ): UseChatReturn {
+  // Deprecation warning
+  if (process.env['NODE_ENV'] === 'development') {
+    console.warn(
+      '[Clarity Chat] useChatComposable is deprecated. Use useClarityChat with its built-in ' +
+        'memory and transport options instead. See: https://clarity-chat.dev/docs/hooks/use-clarity-chat'
+    )
+  }
+
   const { features, ...chatOptions } = options
 
   // Build options with features applied
@@ -96,9 +111,9 @@ export function useChatComposable(
 
 /**
  * useChatWithFeatures - Type-safe feature composition
- * 
+ *
  * Compose features with full type safety and autocomplete.
- * 
+ *
  * @example
  * ```tsx
  * const chat = useChatWithFeatures({
@@ -122,9 +137,7 @@ export function useChatWithFeatures(
   return useChatComposable({
     ...options,
     features: {
-      memory: options.memory
-        ? { enabled: true, ...options.memory }
-        : undefined,
+      memory: options.memory ? { enabled: true, ...options.memory } : undefined,
       persistence: options.persistence
         ? { enabled: true, ...options.persistence }
         : undefined,
@@ -143,7 +156,13 @@ export class ChatHookBuilder {
     this.options.api = api
   }
 
-  withMemory(strategy: 'sliding-window' | 'semantic-chunks' | 'vector-store' = 'vector-store', maxTokens?: number) {
+  withMemory(
+    strategy:
+      | 'sliding-window'
+      | 'semantic-chunks'
+      | 'vector-store' = 'vector-store',
+    maxTokens?: number
+  ) {
     this.features.memory = { enabled: true, strategy, maxTokens }
     return this
   }
@@ -173,7 +192,7 @@ export class ChatHookBuilder {
 
 /**
  * Create a chat hook builder
- * 
+ *
  * @example
  * ```tsx
  * const chat = createChatHook('/api/chat')

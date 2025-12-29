@@ -16,5 +16,4 @@ export {
   type EnvValidationOptions,
 } from './env-validation'
 
-// TODO: Re-enable after fixing runtime-validation module dependencies
-// export * from './runtime-validation'
+export * from './runtime-validation'
