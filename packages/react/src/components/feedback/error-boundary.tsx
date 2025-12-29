@@ -196,14 +196,18 @@ export class ErrorBoundary extends React.Component<
     const { hasError } = this.state
 
     // Reset error when resetKeys change
-    if (
-      hasError &&
-      resetKeys &&
-      prevProps.resetKeys &&
-      resetKeys.length === prevProps.resetKeys.length &&
-      resetKeys.some((key, index) => key !== prevProps.resetKeys![index])
-    ) {
-      this.reset()
+    if (hasError && resetKeys) {
+      const prevResetKeys = prevProps.resetKeys
+
+      // Reset if resetKeys array changed (length or any value)
+      const hasResetKeysChanged =
+        !prevResetKeys ||
+        resetKeys.length !== prevResetKeys.length ||
+        resetKeys.some((key, index) => key !== prevResetKeys[index])
+
+      if (hasResetKeysChanged) {
+        this.reset()
+      }
     }
   }
 

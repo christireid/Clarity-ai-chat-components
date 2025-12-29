@@ -12,28 +12,57 @@ on:
         default: 'false'
         type: boolean
 
+# Minimal global permissions - job-level for finer control
 permissions:
   contents: read
-  packages: write
-  id-token: write # Required for provenance
+
+# Prevent duplicate publish runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false # Don't cancel publishes in progress
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
 
 jobs:
   publish:
+    name: Publish Packages
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # Required for npm provenance
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            npm.pkg.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
         with:
-          version: 10
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://npm.pkg.github.com'
+          scope: '@clarity-chat'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -48,6 +77,13 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Lint
+        run: pnpm lint
+
+      - name: Security audit
+        run: pnpm audit --audit-level=high
+        continue-on-error: true # Don't block publish on moderate vulns
+
       - name: Publish (dry run)
         if: ${{ github.event.inputs.dry_run == 'true' }}
         run: |
@@ -60,13 +96,13 @@ jobs:
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           echo "📦 Publishing packages to GitHub Packages..."
-          pnpm -r publish --access restricted --no-git-checks
+          pnpm -r publish --access restricted --no-git-checks --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create release notes
         if: ${{ github.event.inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/') }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           generate_release_notes: true
           body: |
@@ -94,12 +130,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   verify:
+    name: Verify Published Packages
     needs: publish
     if: ${{ github.event.inputs.dry_run != 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      packages: read
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            npm.pkg.github.com:443
+            nodejs.org:443
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'

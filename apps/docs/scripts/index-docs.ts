@@ -77,7 +77,10 @@ function extractContentFromTSX(content: string): string {
 /**
  * Extract content from markdown files
  */
-function extractContentFromMarkdown(content: string): { content: string; metadata: any } {
+function extractContentFromMarkdown(content: string): {
+  content: string
+  metadata: any
+} {
   try {
     const { content: mdContent, data: frontMatter } = matter(content)
     return { content: mdContent, metadata: frontMatter }
@@ -114,13 +117,16 @@ function generateKeywords(content: string, title: string): string[] {
   const words = new Set<string>()
 
   // Add title words
-  title.toLowerCase().split(/\W+/).forEach(w => words.add(w))
+  title
+    .toLowerCase()
+    .split(/\W+/)
+    .forEach((w) => words.add(w))
 
   // Add significant words from content (length > 4, common in docs)
   const contentWords = content.toLowerCase().match(/\b\w{5,}\b/g) || []
   const wordFreq = new Map<string, number>()
 
-  contentWords.forEach(word => {
+  contentWords.forEach((word) => {
     wordFreq.set(word, (wordFreq.get(word) || 0) + 1)
   })
 
@@ -130,17 +136,38 @@ function generateKeywords(content: string, title: string): string[] {
     .slice(0, 20)
     .map(([word]) => word)
 
-  topWords.forEach(w => words.add(w))
+  topWords.forEach((w) => words.add(w))
 
   // Remove common English stop words
-  const stopWords = new Set(['that', 'this', 'with', 'from', 'have', 'will', 'your', 'their', 'which', 'these', 'those', 'about', 'would', 'there', 'could', 'should'])
-  return Array.from(words).filter(w => w.length > 3 && !stopWords.has(w))
+  const stopWords = new Set([
+    'that',
+    'this',
+    'with',
+    'from',
+    'have',
+    'will',
+    'your',
+    'their',
+    'which',
+    'these',
+    'those',
+    'about',
+    'would',
+    'there',
+    'could',
+    'should',
+  ])
+  return Array.from(words).filter((w) => w.length > 3 && !stopWords.has(w))
 }
 
 /**
  * Chunk content into smaller pieces (for better search)
  */
-function chunkContent(content: string, chunkSize = 1000, overlap = 200): string[] {
+function chunkContent(
+  content: string,
+  chunkSize = 1000,
+  overlap = 200
+): string[] {
   const chunks: string[] = []
   const sentences = content.split(/[.!?]+\s+/)
 
@@ -180,10 +207,12 @@ function getCategoryFromPath(filePath: string): DocChunk['category'] {
  */
 function pathToUrl(filePath: string, appDir: string): string {
   const relativePath = path.relative(appDir, filePath)
-  const url = '/' + relativePath
-    .replace(/\\/g, '/')
-    .replace(/\/page\.(tsx|mdx|md)$/, '')
-    .replace(/^\//, '')
+  const url =
+    '/' +
+    relativePath
+      .replace(/\\/g, '/')
+      .replace(/\/page\.(tsx|mdx|md)$/, '')
+      .replace(/^\//, '')
 
   return url === '/' ? '/' : `/${url}`
 }
@@ -191,11 +220,16 @@ function pathToUrl(filePath: string, appDir: string): string {
 /**
  * Extract metadata from file
  */
-function extractMetadata(content: string, filePath: string): { title?: string; description?: string } {
+function extractMetadata(
+  content: string,
+  filePath: string
+): { title?: string; description?: string } {
   const metadata: { title?: string; description?: string } = {}
 
   // Try Next.js metadata export
-  const metadataMatch = content.match(/export\s+const\s+metadata[:\s]*=\s*{([^}]*)}/s)
+  const metadataMatch = content.match(
+    /export\s+const\s+metadata[:\s]*=\s*{([^}]*)}/s
+  )
   if (metadataMatch) {
     const metadataContent = metadataMatch[1]
     const titleMatch = metadataContent.match(/title:\s*['"]([^'"]+)['"]/s)
@@ -215,7 +249,7 @@ function extractMetadata(content: string, filePath: string): { title?: string; d
     const basename = path.basename(path.dirname(filePath))
     metadata.title = basename
       .split('-')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ')
   }
 
@@ -226,19 +260,19 @@ function extractMetadata(content: string, filePath: string): { title?: string; d
  * Main indexing function
  */
 async function indexDocumentation() {
-  logger.debug('📚 Clarity Chat Documentation Indexer')
-  logger.debug('=====================================\n')
+  console.log('📚 Clarity Chat Documentation Indexer')
+  console.log('=====================================\n')
 
   const appDir = path.join(process.cwd(), 'app')
   const pattern = path.join(appDir, '**/page.{tsx,mdx}')
 
-  logger.debug('🔍 Scanning for documentation pages...\n')
+  console.log('🔍 Scanning for documentation pages...\n')
 
   const files = await glob(pattern, {
-    ignore: ['**/node_modules/**', '**/.next/**', '**/dist/**']
+    ignore: ['**/node_modules/**', '**/.next/**', '**/dist/**'],
   })
 
-  logger.debug(`Found ${files.length} documentation pages\n`)
+  console.log(`Found ${files.length} documentation pages\n`)
 
   const allChunks: DocChunk[] = []
   const stats: IndexStats = {
@@ -246,7 +280,7 @@ async function indexDocumentation() {
     totalChunks: 0,
     byCategory: {},
     avgChunkSize: 0,
-    totalSize: 0
+    totalSize: 0,
   }
 
   for (const filePath of files) {
@@ -255,7 +289,7 @@ async function indexDocumentation() {
       const meta = extractMetadata(rawContent, filePath)
 
       if (!meta.title) {
-        logger.debug(`⚠️  Skipping ${filePath} - no title found`)
+        console.log(`⚠️  Skipping ${filePath} - no title found`)
         continue
       }
 
@@ -269,7 +303,7 @@ async function indexDocumentation() {
       }
 
       if (!content || content.length < 100) {
-        logger.debug(`⚠️  Skipping ${filePath} - insufficient content`)
+        console.log(`⚠️  Skipping ${filePath} - insufficient content`)
         continue
       }
 
@@ -295,8 +329,8 @@ async function indexDocumentation() {
             lastUpdated: new Date().toISOString(),
             tags: keywords.slice(0, 10),
             section: idx === 0 ? undefined : `Part ${idx + 1}`,
-            headings: idx === 0 ? headings : []
-          }
+            headings: idx === 0 ? headings : [],
+          },
         })
 
         stats.totalSize += chunk.length
@@ -305,7 +339,7 @@ async function indexDocumentation() {
       stats.totalPages++
       stats.byCategory[category] = (stats.byCategory[category] || 0) + 1
 
-      logger.debug(`✅ ${meta.title} → ${chunks.length} chunks`)
+      console.log(`✅ ${meta.title} → ${chunks.length} chunks`)
     } catch (error) {
       console.error(`❌ Error processing ${filePath}:`, error)
     }
@@ -318,17 +352,17 @@ async function indexDocumentation() {
   const outputPath = path.join(process.cwd(), 'lib', 'ai', 'docs-index.json')
   await fs.writeFile(outputPath, JSON.stringify(allChunks, null, 2), 'utf-8')
 
-  logger.debug('\n📊 Indexing Statistics:')
-  logger.debug('=======================')
-  logger.debug(`Total Pages: ${stats.totalPages}`)
-  logger.debug(`Total Chunks: ${stats.totalChunks}`)
-  logger.debug(`Average Chunk Size: ${stats.avgChunkSize} characters`)
-  logger.debug(`\nBy Category:`)
+  console.log('\n📊 Indexing Statistics:')
+  console.log('=======================')
+  console.log(`Total Pages: ${stats.totalPages}`)
+  console.log(`Total Chunks: ${stats.totalChunks}`)
+  console.log(`Average Chunk Size: ${stats.avgChunkSize} characters`)
+  console.log(`\nBy Category:`)
   Object.entries(stats.byCategory).forEach(([cat, count]) => {
-    logger.debug(`  ${cat}: ${count}`)
+    console.log(`  ${cat}: ${count}`)
   })
-  logger.debug(`\n✅ Index saved to: ${outputPath}`)
-  logger.debug(`📦 Total index size: ${(stats.totalSize / 1024).toFixed(2)} KB`)
+  console.log(`\n✅ Index saved to: ${outputPath}`)
+  console.log(`📦 Total index size: ${(stats.totalSize / 1024).toFixed(2)} KB`)
 }
 
 // Run the indexer
