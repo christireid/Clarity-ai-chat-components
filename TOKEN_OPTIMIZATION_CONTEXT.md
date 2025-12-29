@@ -20,12 +20,12 @@ claude/token-optimization-upgrade-L0n45
 
 ### Current Dependencies
 
-| Package            | Version | Purpose                   | License    |
-| ------------------ | ------- | ------------------------- | ---------- |
-| `@dqbd/tiktoken`   | ^1.0.22 | OpenAI tokenizer bindings | MIT        |
-| `@tensorflow/tfjs` | ^4.15.0 | ML/embeddings support     | Apache-2.0 |
-| `crypto-js`        | ^4.2.0  | Cryptographic operations  | MIT        |
-| `lru-cache`        | ^10.0.0 | Efficient caching         | ISC        |
+| Package         | Version | Purpose                           | License |
+| --------------- | ------- | --------------------------------- | ------- |
+| `gpt-tokenizer` | ^2.8.0  | Accurate token counting (pure JS) | MIT     |
+| `llm-splitter`  | ^0.2.0  | Text chunking (100x < LangChain)  | MIT     |
+| `crypto-js`     | ^4.2.0  | Cryptographic operations          | MIT     |
+| `lru-cache`     | ^10.0.0 | Efficient caching                 | ISC     |
 
 ### Core Modules Inventory
 
@@ -34,12 +34,12 @@ claude/token-optimization-upgrade-L0n45
 | File                  | Exports                | Purpose                                  | Test Coverage            |
 | --------------------- | ---------------------- | ---------------------------------------- | ------------------------ |
 | `simple-counter.ts`   | `SimpleTokenCounter`   | Lightweight ~4 chars/token approximation | Yes                      |
-| `accurate-counter.ts` | `AccurateTokenCounter` | tiktoken-based accurate counting         | accurate-counter.test.ts |
+| `accurate-counter.ts` | `AccurateTokenCounter` | gpt-tokenizer-based accurate counting    | accurate-counter.test.ts |
 | `advanced-counter.ts` | `AdvancedTokenCounter` | Extended counting features               | Partial                  |
 
 **Key Methods (AccurateTokenCounter)**:
 
-- `count(text: string): number` - Accurate token count via tiktoken
+- `count(text: string): number` - Accurate token count via gpt-tokenizer
 - `countBatch(texts: string[]): number` - Batch counting
 - `estimate(text: string): number` - Fast estimation
 - `truncate(text: string, maxTokens: number): string` - Binary search truncation
@@ -180,8 +180,8 @@ Main orchestrator combining all techniques for 50-70% cost reduction.
 
 ### Known Limitations & Footguns
 
-1. **tiktoken dependency** - Large WASM bundle (~4MB), increases load time
-2. **TensorFlow.js** - Heavy dependency for embeddings (~2MB+), may not be needed for all use cases
+1. ~~**tiktoken dependency**~~ - **RESOLVED**: Replaced with gpt-tokenizer (~200KB pure JS)
+2. ~~**TensorFlow.js**~~ - **RESOLVED**: Replaced with @huggingface/transformers
 3. **No streaming token counting** - Counts full text, not incremental
 4. **LLMLingua integration** - Referenced but appears to be simulated, not actual Microsoft
    LLMLingua
@@ -627,7 +627,7 @@ Main orchestrator combining all techniques for 50-70% cost reduction.
 |  +------------+  +--------------+  +--------------+                 |
 |  | Token      |  | Semantic     |  | Intelligent  |                 |
 |  | Counter    |  | Cache        |  | Router       |                 |
-|  | (tiktoken) |  | (LRU+embed)  |  | (5 models)   |                 |
+|  |(gpt-token.)|  | (LRU+embed)  |  | (5 models)   |                 |
 |  +------------+  +--------------+  +--------------+                 |
 +---------------------------------------------------------------------+
 |  +------------+  +--------------+  +--------------+                 |

@@ -1,0 +1,3 @@
+# Audit output files (generated)
+*.csv
+*.jsonl

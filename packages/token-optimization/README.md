@@ -153,7 +153,7 @@ console.log(
 
 ### 1. AccurateTokenCounter
 
-High-performance token counting with tiktoken integration:
+High-performance token counting with gpt-tokenizer (20x smaller than tiktoken WASM):
 
 ```typescript
 const counter = new AccurateTokenCounter({

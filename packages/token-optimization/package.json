@@ -42,7 +42,8 @@
     "token-optimization",
     "llm",
     "compression",
-    "tiktoken",
+    "gpt-tokenizer",
+    "tokenizer",
     "security",
     "ai",
     "memory"
