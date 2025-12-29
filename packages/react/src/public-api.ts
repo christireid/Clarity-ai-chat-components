@@ -114,6 +114,17 @@ export { StreamingMessage } from './components/message/streaming-message'
 export { ThinkingIndicator } from './components/message/thinking-indicator'
 export { TypingIndicator } from './components/message/typing-indicator'
 
+// FlowToken Integration (optional - requires 'flowtoken' peer dependency)
+export {
+  FlowTokenStreamingText,
+  FlowTokenMarkdown,
+  useFlowToken,
+  type FlowTokenAnimation,
+  type FlowTokenStreamingTextProps,
+  type FlowTokenMarkdownProps,
+  type UseFlowTokenReturn,
+} from './components/message/flowtoken-adapter'
+
 // Layouts
 export { ChatLayout, type ChatLayoutProps } from './components/chat/chat-layout'
 export {

@@ -3,20 +3,21 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ClarityToaster, toast } from '../sonner-toast'
 
-// Mock sonner
-const mockToast = {
-  success: vi.fn().mockReturnValue('toast-1'),
-  error: vi.fn().mockReturnValue('toast-2'),
-  info: vi.fn().mockReturnValue('toast-3'),
-  warning: vi.fn().mockReturnValue('toast-4'),
-  loading: vi.fn().mockReturnValue('toast-5'),
-  promise: vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() }),
-  custom: vi.fn().mockReturnValue('toast-6'),
-  message: vi.fn().mockReturnValue('toast-7'),
-  dismiss: vi.fn(),
-}
+// Use vi.hoisted() to define mocks that will be hoisted with vi.mock
+const { mockToast } = vi.hoisted(() => ({
+  mockToast: {
+    success: vi.fn().mockReturnValue('toast-1'),
+    error: vi.fn().mockReturnValue('toast-2'),
+    info: vi.fn().mockReturnValue('toast-3'),
+    warning: vi.fn().mockReturnValue('toast-4'),
+    loading: vi.fn().mockReturnValue('toast-5'),
+    promise: vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() }),
+    custom: vi.fn().mockReturnValue('toast-6'),
+    message: vi.fn().mockReturnValue('toast-7'),
+    dismiss: vi.fn(),
+  },
+}))
 
 vi.mock('sonner', () => ({
   Toaster: ({ position, richColors, closeButton }: any) => (
@@ -29,6 +30,8 @@ vi.mock('sonner', () => ({
   ),
   toast: mockToast,
 }))
+
+import { ClarityToaster, toast } from '../sonner-toast'
 
 describe('ClarityToaster', () => {
   describe('Rendering', () => {
