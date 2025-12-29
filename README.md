@@ -234,7 +234,7 @@ const { messages, isStreaming, stop } = useClarityChat({
 <summary><strong>📋 Prerequisites</strong></summary>
 
 - Node.js 20+
-- React 19+
+- React 18+ or 19+ (both supported)
 - Modern browser (last 2 versions)
 
 </details>
@@ -356,8 +356,8 @@ Battery-aware streaming, performance optimization, analytics
 ┌─────────────────────────┬───────────┬──────────┬──────────┬──────────┐
 │ Feature                 │ Clarity   │ ChatGPT  │ Claude   │ Gemini   │
 ├─────────────────────────┼───────────┼──────────┼──────────┼──────────┤
-│ Components              │ 320+      │ ❌        │ ❌        │ ❌        │
-│ Custom Hooks            │ 139       │ ❌        │ ❌        │ ❌        │
+│ Components              │ 200+      │ ❌        │ ❌        │ ❌        │
+│ Custom Hooks            │ 140+      │ ❌        │ ❌        │ ❌        │
 │ Themes                  │ 13        │ 1        │ 1        │ 1        │
 │ Token Optimization      │ ✅ 60-90%  │ ❌        │ ❌        │ ❌        │
 │ Vector Stores           │ 4         │ ❌        │ ❌        │ ❌        │
@@ -378,11 +378,11 @@ Battery-aware streaming, performance optimization, analytics
 
 <div align="center">
 
-|                  Getting Started                  |                   Guides                    |                API Reference                |                 Examples                 |
-| :-----------------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :--------------------------------------: |
-|     [Quick Start](./docs/getting-started.md)      |      [Theming](./docs/architecture.md)      | [Components](./apps/docs/api/components.md) |         [Browse All](./examples)         |
-| [Installation](./apps/docs/guide/installation.md) |  [Token Optimization](./docs/cookbook.md)   |      [Hooks](./apps/docs/api/hooks.md)      |   [Basic Chat](./examples/basic-chat)    |
-|   [Migration](./docs/migrating-from-vercel.md)    | [Streaming](./apps/docs/guide/streaming.md) |  [Utilities](./apps/docs/api/utilities.md)  | [Advanced](./examples/advanced-features) |
+|               Getting Started                |                    Guides                    |                 API Reference                 |                 Examples                 |
+| :------------------------------------------: | :------------------------------------------: | :-------------------------------------------: | :--------------------------------------: |
+|   [Quick Start](./docs/getting-started.md)   |    [Architecture](./docs/architecture.md)    |    [React API](./packages/react/README.md)    |         [Browse All](./examples)         |
+|  [Best Practices](./docs/best-practices.md)  |   [Token Optimization](./docs/cookbook.md)   | [Hooks](./packages/react/src/hooks/README.md) |   [Basic Chat](./examples/basic-chat)    |
+| [Migration](./docs/migrating-from-vercel.md) | [Troubleshooting](./docs/TROUBLESHOOTING.md) | [Primitives](./packages/primitives/README.md) | [Advanced](./examples/advanced-features) |
 
 </div>
 
@@ -427,7 +427,7 @@ Battery-aware streaming, performance optimization, analytics
 <td align="center"><strong>2,767</strong><br/>Commits</td>
 <td align="center"><strong>80%+</strong><br/>Test Coverage</td>
 <td align="center"><strong>100%</strong><br/>TypeScript</td>
-<td align="center"><strong>~120KB</strong><br/>Bundle Size</td>
+<td align="center"><strong>~30KB</strong><br/>Core Bundle</td>
 </tr>
 </table>
 
