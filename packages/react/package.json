@@ -144,10 +144,14 @@
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "framer-motion": "^12.23.25"
+    "framer-motion": "^12.23.25",
+    "flowtoken": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
+      "optional": true
+    },
+    "flowtoken": {
       "optional": true
     }
   },

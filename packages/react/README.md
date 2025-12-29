@@ -24,20 +24,21 @@ export default function App() {
 }
 ```
 
-**That's it.** You now have a production-ready chat with streaming, error handling, and accessibility.
+**That's it.** You now have a production-ready chat with streaming, error handling, and
+accessibility.
 
 ---
 
 ## Why Clarity Chat?
 
-| Feature | Clarity Chat | DIY Solution |
-|---------|-------------|--------------|
-| Setup time | 1 line | Days |
-| Streaming | Built-in | Manual |
-| Memory management | 3 strategies | Build from scratch |
-| Accessibility | WCAG AAA | DIY |
-| Token optimization | Automatic | Manual |
-| Error recovery | Auto-retry | Custom logic |
+| Feature            | Clarity Chat | DIY Solution       |
+| ------------------ | ------------ | ------------------ |
+| Setup time         | 1 line       | Days               |
+| Streaming          | Built-in     | Manual             |
+| Memory management  | 3 strategies | Build from scratch |
+| Accessibility      | WCAG AAA     | DIY                |
+| Token optimization | Automatic    | Manual             |
+| Error recovery     | Auto-retry   | Custom logic       |
 
 ---
 
@@ -237,8 +238,7 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 
 ### Quick Start & Migration
 
-- **[Getting Started with Clarity Chat](../../docs/getting-started.md)** ⭐ - Quick
-  start guide
+- **[Getting Started with Clarity Chat](../../docs/getting-started.md)** ⭐ - Quick start guide
 - **[Clarity vs Vercel AI SDK UI](../../docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](../../docs/migrating-from-vercel.md)** - Migration guide
 
@@ -359,8 +359,26 @@ const { messages, toolInvocations, append } = useAssistant({
 - `ChatWindow` - Complete chat interface
 - `ChatInput` - Message input component
 - `AdvancedChatInput` - Enhanced input with attachments
-- `VirtualizedMessageList` - Optimized message list
+- `VirtualizedMessageList` - Optimized message list (react-window)
+- `TanStackMessageList` - Modern virtualized list (TanStack Virtual)
 - `StreamingMessage` - Real-time streaming display
+
+### Layout Components
+
+- `ChatLayout` - Basic layout with sidebar/header/footer
+- `ResizableChatLayout` - Resizable panel layout with drag handles
+- `Panel`, `PanelGroup`, `PanelResizeHandle` - Low-level resizable primitives
+
+### Toast Notifications
+
+- `ClarityToaster` - Sonner-powered toast container
+- `toast` API - `toast.success()`, `toast.error()`, `toast.info()`, `toast.warning()`,
+  `toast.promise()`
+
+### Streaming Animations (Optional)
+
+- `FlowTokenStreamingText` - Enhanced streaming with animations (requires `npm install flowtoken`)
+- `FlowTokenMarkdown` - Streaming markdown with animations
 
 ### Tool Components
 
@@ -374,6 +392,95 @@ const { messages, toolInvocations, append } = useAssistant({
 - `ErrorBoundary` - Error boundary wrapper
 - `RetryButton` - Retry action button
 - `NetworkStatus` - Connection status
+
+## 🆕 New Components (OSS Enhanced)
+
+### Resizable Chat Layout
+
+```tsx
+import { ResizableChatLayout } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ResizableChatLayout
+      sidebar={<ConversationList />}
+      header={<ChatHeader />}
+      defaultSidebarSize={25}
+      minSidebarSize={15}
+      maxSidebarSize={40}
+      collapsible
+      persistLayout
+    >
+      <ChatWindow {...chat} />
+    </ResizableChatLayout>
+  )
+}
+```
+
+### Toast Notifications (Sonner)
+
+```tsx
+import { ClarityToaster, toast } from '@clarity-chat/react'
+
+// Add to app root
+function App() {
+  return (
+    <>
+      <MyApp />
+      <ClarityToaster position="bottom-right" richColors />
+    </>
+  )
+}
+
+// Use anywhere
+function MyComponent() {
+  const handleSave = async () => {
+    toast.promise(saveData(), {
+      loading: 'Saving...',
+      success: 'Saved successfully!',
+      error: 'Failed to save',
+    })
+  }
+
+  return <button onClick={handleSave}>Save</button>
+}
+```
+
+### TanStack Virtual Message List
+
+```tsx
+import { TanStackMessageList } from '@clarity-chat/react'
+
+function Chat({ messages }) {
+  return (
+    <TanStackMessageList
+      messages={messages}
+      renderMessage={(msg, idx) => <Message key={msg.id} message={msg} />}
+      autoScrollToBottom
+      smoothScroll
+      estimatedItemSize={120}
+    />
+  )
+}
+```
+
+### FlowToken Streaming (Optional)
+
+```tsx
+// First: npm install flowtoken
+import { FlowTokenStreamingText } from '@clarity-chat/react'
+
+function StreamingResponse({ content, isStreaming }) {
+  return (
+    <FlowTokenStreamingText
+      content={content}
+      isStreaming={isStreaming}
+      animation="blur-in" // fade | blur-in | drop-in | typewriter | slide-left
+      smooth
+    />
+  )
+}
+```
 
 ## 🔧 Memory Strategies
 

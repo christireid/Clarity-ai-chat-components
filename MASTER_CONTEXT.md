@@ -1163,7 +1163,8 @@ _"Stop Building Chat UI. Start Shipping AI."_
 | 2025-12-19 | Examples Overhaul Phase 4 Complete - Created quickstart, headless-mode, fixed ai-research-platform | Engineering        |
 | 2025-12-19 | Examples Overhaul Phase 5 Complete - Added copy-paste demo hooks, refactored headless-mode         | Engineering        |
 | 2025-12-20 | OSS Package Expansion Analysis Complete - 10 packages evaluated, 5 recommended for implementation  | PM/Architect       |
-| 2025-12-20 | Extended OSS Analysis - Deep code review revealed library is more complete than assessed | PM/Engineering |
+| 2025-12-20 | Extended OSS Analysis - Deep code review revealed library is more complete than assessed           | PM/Engineering     |
+| 2025-12-29 | OSS Package Implementation Complete - All 5 recommended packages implemented and exported          | Engineering        |
 
 ---
 
@@ -1173,7 +1174,8 @@ _This document is continuously updated as the audit progresses._
 
 ## H) OPEN-SOURCE PACKAGE EXPANSION ANALYSIS
 
-> **Goal**: Evaluate open-source packages that could enhance Clarity Chat's value proposition while remaining license-safe for paid products.
+> **Goal**: Evaluate open-source packages that could enhance Clarity Chat's value proposition while
+> remaining license-safe for paid products.
 >
 > **Analysis Date**: 2025-12-20 | **Status**: Complete
 
@@ -1200,17 +1202,17 @@ _This document is continuously updated as the audit progresses._
 
 **High-Level Recommendations**:
 
-| Category            | Implement Now    | Revisit Later  | Do Not Adopt           |
-| ------------------- | ---------------- | -------------- | ---------------------- |
-| AI/Chat UX          | flowtoken        | assistant-ui   | -                      |
-| Performance         | TanStack Virtual | -              | -                      |
-| UI/Notifications    | Sonner           | -              | react-hot-toast        |
-| State Management    | -                | Zustand, Jotai | -                      |
-| Security            | isomorphic-dompurify | -          | -                      |
-| Panels/Layout       | react-resizable-panels | -        | -                      |
-| Form Validation     | -                | react-hook-form | -                     |
-| Date Utilities      | -                | date-fns       | moment.js              |
-| AI/LLM Integration  | -                | LangChain.js   | -                      |
+| Category           | Implement Now          | Revisit Later   | Do Not Adopt    |
+| ------------------ | ---------------------- | --------------- | --------------- |
+| AI/Chat UX         | flowtoken              | assistant-ui    | -               |
+| Performance        | TanStack Virtual       | -               | -               |
+| UI/Notifications   | Sonner                 | -               | react-hot-toast |
+| State Management   | -                      | Zustand, Jotai  | -               |
+| Security           | isomorphic-dompurify   | -               | -               |
+| Panels/Layout      | react-resizable-panels | -               | -               |
+| Form Validation    | -                      | react-hook-form | -               |
+| Date Utilities     | -                      | date-fns        | moment.js       |
+| AI/LLM Integration | -                      | LangChain.js    | -               |
 
 ---
 
@@ -1220,52 +1222,52 @@ _This document is continuously updated as the audit progresses._
 
 **@clarity-chat/react**:
 
-| Package | Purpose | License |
-| ------- | ------- | ------- |
-| @radix-ui/* | UI primitives | MIT |
-| framer-motion | Animations | MIT |
-| react-markdown | Markdown rendering | MIT |
-| shiki, prismjs, highlight.js | Syntax highlighting | MIT |
-| js-tiktoken | Token counting | MIT |
-| react-window | List virtualization | MIT |
-| zod | Schema validation | MIT |
-| lucide-react | Icons | ISC |
+| Package                      | Purpose             | License |
+| ---------------------------- | ------------------- | ------- |
+| @radix-ui/\*                 | UI primitives       | MIT     |
+| framer-motion                | Animations          | MIT     |
+| react-markdown               | Markdown rendering  | MIT     |
+| shiki, prismjs, highlight.js | Syntax highlighting | MIT     |
+| js-tiktoken                  | Token counting      | MIT     |
+| react-window                 | List virtualization | MIT     |
+| zod                          | Schema validation   | MIT     |
+| lucide-react                 | Icons               | ISC     |
 
 **@clarity-chat/primitives**:
 
-| Package | Purpose | License |
-| ------- | ------- | ------- |
-| cmdk | Command palette | MIT |
-| vaul | Drawer/sheet | MIT |
-| @radix-ui/* (full suite) | Dialog, dropdown, popover, etc. | MIT |
+| Package                   | Purpose                         | License |
+| ------------------------- | ------------------------------- | ------- |
+| cmdk                      | Command palette                 | MIT     |
+| vaul                      | Drawer/sheet                    | MIT     |
+| @radix-ui/\* (full suite) | Dialog, dropdown, popover, etc. | MIT     |
 
 **@clarity-chat/token-optimization**:
 
-| Package | Purpose | License |
-| ------- | ------- | ------- |
-| @dqbd/tiktoken | Accurate token counting | MIT |
-| @tensorflow/tfjs | ML compression | Apache-2.0 |
-| lru-cache | Caching | ISC |
+| Package          | Purpose                 | License    |
+| ---------------- | ----------------------- | ---------- |
+| @dqbd/tiktoken   | Accurate token counting | MIT        |
+| @tensorflow/tfjs | ML compression          | Apache-2.0 |
+| lru-cache        | Caching                 | ISC        |
 
 #### Identified Capability Gaps
 
-| Gap | Current State | User Pain | Opportunity |
-| --- | ------------- | --------- | ----------- |
-| Streaming text animations | Basic text append | Choppy UX, no visual polish | flowtoken could add professional animations |
-| Virtualization performance | react-window (adequate) | Large message lists slow | TanStack Virtual more modern/performant |
-| Toast notifications | Custom implementation | Maintenance burden | Sonner is industry standard |
-| XSS sanitization | Partial/manual | Security risk in markdown | isomorphic-dompurify is battle-tested |
-| Panel layouts | None | No resizable panels for dev tools | react-resizable-panels needed |
-| Form validation DX | Manual Zod integration | Boilerplate for complex forms | react-hook-form could simplify |
+| Gap                        | Current State           | User Pain                         | Opportunity                                 |
+| -------------------------- | ----------------------- | --------------------------------- | ------------------------------------------- |
+| Streaming text animations  | Basic text append       | Choppy UX, no visual polish       | flowtoken could add professional animations |
+| Virtualization performance | react-window (adequate) | Large message lists slow          | TanStack Virtual more modern/performant     |
+| Toast notifications        | Custom implementation   | Maintenance burden                | Sonner is industry standard                 |
+| XSS sanitization           | Partial/manual          | Security risk in markdown         | isomorphic-dompurify is battle-tested       |
+| Panel layouts              | None                    | No resizable panels for dev tools | react-resizable-panels needed               |
+| Form validation DX         | Manual Zod integration  | Boilerplate for complex forms     | react-hook-form could simplify              |
 
 #### Competitive Landscape
 
-| Competitor | Strength We're Missing |
-| ---------- | ---------------------- |
+| Competitor    | Strength We're Missing                         |
+| ------------- | ---------------------------------------------- |
 | Vercel AI SDK | Streaming UI components (`createStreamableUI`) |
-| assistant-ui | Radix-style composable chat primitives |
-| ChatGPT Web | Polished streaming text animations |
-| Linear/Slack | Professional toast/notification systems |
+| assistant-ui  | Radix-style composable chat primitives         |
+| ChatGPT Web   | Polished streaming text animations             |
+| Linear/Slack  | Professional toast/notification systems        |
 
 ---
 
@@ -1275,54 +1277,54 @@ All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
 
 #### Category 1: AI/Chat UX Enhancements
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [flowtoken](https://github.com/Ephibbs/flowtoken) | MIT | ~500 stars | Streaming text animations (fade, blur, typewriter) |
-| [assistant-ui](https://github.com/assistant-ui/assistant-ui) | MIT | 2k+ stars, 400k/mo downloads | Composable AI chat primitives, Radix-style |
-| [typeit-react](https://www.npmjs.com/package/typeit-react) | MIT | Popular | Typewriter effect for streaming |
+| Package                                                      | License | Stars/Downloads              | What It Solves                                     |
+| ------------------------------------------------------------ | ------- | ---------------------------- | -------------------------------------------------- |
+| [flowtoken](https://github.com/Ephibbs/flowtoken)            | MIT     | ~500 stars                   | Streaming text animations (fade, blur, typewriter) |
+| [assistant-ui](https://github.com/assistant-ui/assistant-ui) | MIT     | 2k+ stars, 400k/mo downloads | Composable AI chat primitives, Radix-style         |
+| [typeit-react](https://www.npmjs.com/package/typeit-react)   | MIT     | Popular                      | Typewriter effect for streaming                    |
 
 #### Category 2: Performance & Virtualization
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [@tanstack/react-virtual](https://github.com/TanStack/virtual) | MIT | 5k+ stars | Modern virtualization (10-15kb), headless |
-| [react-virtuoso](https://github.com/petyosi/react-virtuoso) | MIT | 5k+ stars | Most powerful virtual list |
+| Package                                                        | License | Stars/Downloads | What It Solves                            |
+| -------------------------------------------------------------- | ------- | --------------- | ----------------------------------------- |
+| [@tanstack/react-virtual](https://github.com/TanStack/virtual) | MIT     | 5k+ stars       | Modern virtualization (10-15kb), headless |
+| [react-virtuoso](https://github.com/petyosi/react-virtuoso)    | MIT     | 5k+ stars       | Most powerful virtual list                |
 
 #### Category 3: UI Primitives & Accessibility
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [sonner](https://github.com/emilkowalski/sonner) | MIT | 7M+/week | Opinionated toast notifications |
-| [react-resizable-panels](https://github.com/bvaughn/react-resizable-panels) | MIT | 5k+ stars | Resizable panel layouts |
-| [react-aria](https://react-spectrum.adobe.com/react-aria/) | Apache-2.0 | Adobe-backed | Accessibility primitives |
-| [ariakit](https://ariakit.org/) | MIT | 7k+ stars | Accessible UI primitives |
+| Package                                                                     | License    | Stars/Downloads | What It Solves                  |
+| --------------------------------------------------------------------------- | ---------- | --------------- | ------------------------------- |
+| [sonner](https://github.com/emilkowalski/sonner)                            | MIT        | 7M+/week        | Opinionated toast notifications |
+| [react-resizable-panels](https://github.com/bvaughn/react-resizable-panels) | MIT        | 5k+ stars       | Resizable panel layouts         |
+| [react-aria](https://react-spectrum.adobe.com/react-aria/)                  | Apache-2.0 | Adobe-backed    | Accessibility primitives        |
+| [ariakit](https://ariakit.org/)                                             | MIT        | 7k+ stars       | Accessible UI primitives        |
 
 #### Category 4: State Management
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [zustand](https://github.com/pmndrs/zustand) | MIT | 47k+ stars | Lightweight global state (~3KB) |
-| [jotai](https://github.com/pmndrs/jotai) | MIT | 18k+ stars | Atomic state, fine-grained reactivity |
+| Package                                      | License | Stars/Downloads | What It Solves                        |
+| -------------------------------------------- | ------- | --------------- | ------------------------------------- |
+| [zustand](https://github.com/pmndrs/zustand) | MIT     | 47k+ stars      | Lightweight global state (~3KB)       |
+| [jotai](https://github.com/pmndrs/jotai)     | MIT     | 18k+ stars      | Atomic state, fine-grained reactivity |
 
 #### Category 5: Security & Sanitization
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [isomorphic-dompurify](https://www.npmjs.com/package/isomorphic-dompurify) | MIT | Wrapper for DOMPurify | XSS sanitization (server + client) |
+| Package                                                                    | License | Stars/Downloads       | What It Solves                     |
+| -------------------------------------------------------------------------- | ------- | --------------------- | ---------------------------------- |
+| [isomorphic-dompurify](https://www.npmjs.com/package/isomorphic-dompurify) | MIT     | Wrapper for DOMPurify | XSS sanitization (server + client) |
 
 #### Category 6: Developer Experience
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [date-fns](https://github.com/date-fns/date-fns) | MIT | 34k+ stars | Modern date utilities, tree-shakeable |
-| [react-hook-form](https://github.com/react-hook-form/react-hook-form) | MIT | 41k+ stars | Form state with Zod integration |
-| [@hookform/resolvers](https://github.com/react-hook-form/resolvers) | MIT | Official | Zod/Yup validation resolvers |
+| Package                                                               | License | Stars/Downloads | What It Solves                        |
+| --------------------------------------------------------------------- | ------- | --------------- | ------------------------------------- |
+| [date-fns](https://github.com/date-fns/date-fns)                      | MIT     | 34k+ stars      | Modern date utilities, tree-shakeable |
+| [react-hook-form](https://github.com/react-hook-form/react-hook-form) | MIT     | 41k+ stars      | Form state with Zod integration       |
+| [@hookform/resolvers](https://github.com/react-hook-form/resolvers)   | MIT     | Official        | Zod/Yup validation resolvers          |
 
 #### Category 7: AI/LLM Tooling
 
-| Package | License | Stars/Downloads | What It Solves |
-| ------- | ------- | --------------- | -------------- |
-| [langchain](https://github.com/langchain-ai/langchainjs) | MIT | 12k+ stars | LLM chains, tools, agents |
+| Package                                                  | License | Stars/Downloads | What It Solves            |
+| -------------------------------------------------------- | ------- | --------------- | ------------------------- |
+| [langchain](https://github.com/langchain-ai/langchainjs) | MIT     | 12k+ stars      | LLM chains, tools, agents |
 
 ---
 
@@ -1650,26 +1652,26 @@ All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
 
 #### Would Users Notice This Improvement?
 
-| Package | User-Visible? | Strengthens Paid Value? | Table Stakes vs Differentiating |
-| ------- | ------------- | ----------------------- | ------------------------------- |
-| flowtoken | ✅ Yes | ✅ Yes (polish) | **Differentiating** |
-| TanStack Virtual | ⚠️ For large lists | ⚠️ Performance is expected | Table stakes |
-| Sonner | ⚠️ Subtly | ❌ No | Table stakes |
-| isomorphic-dompurify | ❌ No (security) | ✅ Yes (enterprise) | Table stakes |
-| react-resizable-panels | ✅ Yes | ✅ Yes (power users) | **Differentiating** |
-| Zustand | ❌ No | ❌ No | Internal only |
-| react-aria | ⚠️ For a11y users | ✅ Yes (compliance) | Table stakes |
-| date-fns | ❌ No | ❌ No | Internal only |
+| Package                | User-Visible?      | Strengthens Paid Value?    | Table Stakes vs Differentiating |
+| ---------------------- | ------------------ | -------------------------- | ------------------------------- |
+| flowtoken              | ✅ Yes             | ✅ Yes (polish)            | **Differentiating**             |
+| TanStack Virtual       | ⚠️ For large lists | ⚠️ Performance is expected | Table stakes                    |
+| Sonner                 | ⚠️ Subtly          | ❌ No                      | Table stakes                    |
+| isomorphic-dompurify   | ❌ No (security)   | ✅ Yes (enterprise)        | Table stakes                    |
+| react-resizable-panels | ✅ Yes             | ✅ Yes (power users)       | **Differentiating**             |
+| Zustand                | ❌ No              | ❌ No                      | Internal only                   |
+| react-aria             | ⚠️ For a11y users  | ✅ Yes (compliance)        | Table stakes                    |
+| date-fns               | ❌ No              | ❌ No                      | Internal only                   |
 
 #### Marketing/Docs Positioning
 
-| Package | How to Describe |
-| ------- | --------------- |
-| flowtoken | "ChatGPT-quality streaming animations out of the box" |
-| TanStack Virtual | "Handle 10,000+ messages without lag" |
-| Sonner | N/A (internal) |
-| isomorphic-dompurify | "Enterprise-grade security with built-in XSS protection" |
-| react-resizable-panels | "Customizable layouts for any workspace" |
+| Package                | How to Describe                                          |
+| ---------------------- | -------------------------------------------------------- |
+| flowtoken              | "ChatGPT-quality streaming animations out of the box"    |
+| TanStack Virtual       | "Handle 10,000+ messages without lag"                    |
+| Sonner                 | N/A (internal)                                           |
+| isomorphic-dompurify   | "Enterprise-grade security with built-in XSS protection" |
+| react-resizable-panels | "Customizable layouts for any workspace"                 |
 
 ---
 
@@ -1677,101 +1679,123 @@ All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
 
 #### ✅ Implement Now (P0)
 
-| Package | Effort | Impact | Next Step |
-| ------- | ------ | ------ | --------- |
-| **flowtoken** | Small | High | Add to `@clarity-chat/react`, expose `animationStyle` prop |
-| **TanStack Virtual** | Medium | Medium | Replace react-window in VirtualizedMessageList |
-| **Sonner** | Small | Medium | Replace custom toast, export Toaster |
-| **isomorphic-dompurify** | Small | High | Integrate into MarkdownRendererEnhanced |
-| **react-resizable-panels** | Small | Medium | Add ResizableChatLayout component |
+| Package                    | Effort | Impact | Next Step                                                  |
+| -------------------------- | ------ | ------ | ---------------------------------------------------------- |
+| **flowtoken**              | Small  | High   | Add to `@clarity-chat/react`, expose `animationStyle` prop |
+| **TanStack Virtual**       | Medium | Medium | Replace react-window in VirtualizedMessageList             |
+| **Sonner**                 | Small  | Medium | Replace custom toast, export Toaster                       |
+| **isomorphic-dompurify**   | Small  | High   | Integrate into MarkdownRendererEnhanced                    |
+| **react-resizable-panels** | Small  | Medium | Add ResizableChatLayout component                          |
 
 **Estimated Total Effort**: 1-2 sprints
 
 #### ⏸️ Revisit Later (P1/P2)
 
-| Package | Reason to Wait |
-| ------- | -------------- |
-| **Zustand** | Internal only, significant refactor |
-| **Jotai** | Same as Zustand |
-| **react-aria** | Radix already provides good a11y |
-| **date-fns** | Low priority, nice to have |
-| **react-hook-form** | Only needed for complex forms |
-| **LangChain.js** | Write integration guide first |
+| Package             | Reason to Wait                      |
+| ------------------- | ----------------------------------- |
+| **Zustand**         | Internal only, significant refactor |
+| **Jotai**           | Same as Zustand                     |
+| **react-aria**      | Radix already provides good a11y    |
+| **date-fns**        | Low priority, nice to have          |
+| **react-hook-form** | Only needed for complex forms       |
+| **LangChain.js**    | Write integration guide first       |
 
 #### ❌ Do Not Adopt
 
-| Package | Reason |
-| ------- | ------ |
-| **assistant-ui** | Direct competitor, undermines differentiation |
-| **moment.js** | Deprecated, use date-fns instead |
-| **react-hot-toast** | Sonner is better |
+| Package             | Reason                                        |
+| ------------------- | --------------------------------------------- |
+| **assistant-ui**    | Direct competitor, undermines differentiation |
+| **moment.js**       | Deprecated, use date-fns instead              |
+| **react-hot-toast** | Sonner is better                              |
 
 ---
 
 ### H.7) Implementation Roadmap
 
-#### Sprint 1: Core DX Improvements
+#### Sprint 1: Core DX Improvements ✅ COMPLETE (2025-12-29)
 
-1. **flowtoken integration**
-   - Add dependency: `pnpm add flowtoken`
-   - Wrap in `StreamingMessage` component
-   - Add `animationStyle` prop (fade | blur | typewriter | slide | none)
-   - Update Storybook stories
+1. **flowtoken integration** ✅ COMPLETE
+   - Created `FlowTokenStreamingText` and `FlowTokenMarkdown` components
+   - Dynamic import with graceful fallback when not installed
+   - Added `useFlowToken` hook for checking availability
+   - Supports: fade, blur-in, drop-in, typewriter, slide-left, word-pull-up, flip, gradual-spacing
+   - **File**: `packages/react/src/components/message/flowtoken-adapter.tsx`
 
-2. **isomorphic-dompurify integration**
-   - Add dependency: `pnpm add isomorphic-dompurify`
-   - Integrate into `MarkdownRendererEnhanced`
-   - Add configurable sanitization options
+2. **isomorphic-dompurify integration** ✅ COMPLETE
+   - Updated `security.ts` to use isomorphic-dompurify
+   - SSR-compatible XSS sanitization
+   - **File**: `packages/react/src/utils/security.ts`
 
-3. **Sonner migration**
-   - Add dependency: `pnpm add sonner`
-   - Replace internal toast implementation
-   - Export `Toaster` component
-   - Maintain backward compatibility
+3. **Sonner migration** ✅ COMPLETE
+   - Created `ClarityToaster` component
+   - Created `toast` API (success, error, info, warning, loading, promise, custom, dismiss)
+   - Maintains backward compatibility with existing toast system
+   - **File**: `packages/react/src/components/ui/sonner-toast.tsx`
 
-#### Sprint 2: Performance & Layout
+#### Sprint 2: Performance & Layout ✅ COMPLETE (2025-12-29)
 
-1. **TanStack Virtual migration**
-   - Add dependency: `pnpm add @tanstack/react-virtual`
-   - Migrate `VirtualizedMessageList`
-   - Add dynamic row height support
-   - Performance benchmarking
+1. **TanStack Virtual migration** ✅ COMPLETE
+   - Created `TanStackMessageList` component (parallel to existing react-window)
+   - Created `AutoTanStackMessageList` with auto-virtualization threshold
+   - Added `useMessageListScrollControl` and `useJumpToBottom` hooks
+   - Built-in dynamic height measurement
+   - **File**: `packages/react/src/components/chat/tanstack-message-list.tsx`
 
-2. **react-resizable-panels integration**
-   - Add dependency: `pnpm add react-resizable-panels`
-   - Create `ResizableChatLayout` component
-   - Add to dev-tools for debugging panels
-   - Document advanced layouts
+2. **react-resizable-panels integration** ✅ COMPLETE
+   - Created `ResizableChatLayout` component
+   - Features: persistence, collapsing, custom sizing, sidebar position
+   - Added `useResizableLayout` hook for programmatic control
+   - Re-exports `Panel`, `PanelGroup`, `PanelResizeHandle` for custom layouts
+   - **File**: `packages/react/src/components/chat/resizable-chat-layout.tsx`
+
+#### Implementation Summary
+
+| Package                 | Status      | Component/File                                   |
+| ----------------------- | ----------- | ------------------------------------------------ |
+| flowtoken               | ✅ Complete | `FlowTokenStreamingText`, `FlowTokenMarkdown`    |
+| isomorphic-dompurify    | ✅ Complete | `security.ts` updated                            |
+| sonner                  | ✅ Complete | `ClarityToaster`, `toast` API                    |
+| @tanstack/react-virtual | ✅ Complete | `TanStackMessageList`, `AutoTanStackMessageList` |
+| react-resizable-panels  | ✅ Complete | `ResizableChatLayout`, `useResizableLayout`      |
+
+All packages are exported from `@clarity-chat/react` public API.
 
 ---
 
 ### H.8) Sources & References
 
 **AI Chat Libraries**:
+
 - [assistant-ui](https://github.com/assistant-ui/assistant-ui) - Y Combinator backed
 - [flowtoken](https://github.com/Ephibbs/flowtoken) - LLM streaming animations
 - [NLUX](https://www.nlkit.com/blog/react-js-lib-to-build-ai-chatbots) - Zero-dependency chatbot UI
 
 **Performance**:
+
 - [TanStack Virtual](https://tanstack.com/virtual/latest) - Modern virtualization
 - [react-virtuoso](https://github.com/petyosi/react-virtuoso) - Powerful virtual list
 
 **UI/UX**:
+
 - [Sonner](https://sonner.emilkowal.ski/) - Toast notifications
 - [react-resizable-panels](https://react-resizable-panels.vercel.app/) - Panel layouts
 
 **Accessibility**:
+
 - [React Aria](https://react-spectrum.adobe.com/react-aria/) - Adobe accessibility
 - [ARIAKit](https://ariakit.org/) - Accessible components
 
 **Security**:
+
 - [DOMPurify](https://github.com/cure53/DOMPurify) - XSS sanitization
 - [isomorphic-dompurify](https://www.npmjs.com/package/isomorphic-dompurify) - SSR-compatible
 
 **State Management**:
+
 - [Zustand vs Jotai](https://dev.to/hijazi313/state-management-in-2025-when-to-use-context-redux-zustand-or-jotai-2d2k)
 
 **AI/LLM**:
+
 - [LangChain.js](https://github.com/langchain-ai/langchainjs) - LLM framework
 - [AI SDK by Vercel](https://ai-sdk.dev/) - AI toolkit
 
@@ -1779,14 +1803,14 @@ All packages below are verified **MIT, Apache-2.0, BSD, or ISC** licensed.
 
 ### H.9) Decision Log
 
-| Date | Decision | Rationale | Owner |
-| ---- | -------- | --------- | ----- |
-| 2025-12-20 | Add flowtoken for streaming animations | Differentiating feature, low risk | PM |
-| 2025-12-20 | Migrate to TanStack Virtual | Modern architecture, better perf | Architect |
-| 2025-12-20 | Replace toast with Sonner | Reduce maintenance, industry standard | Engineering |
-| 2025-12-20 | Add isomorphic-dompurify | Enterprise security requirement | Security |
-| 2025-12-20 | Do not adopt assistant-ui | Competitive conflict | PM |
-| 2025-12-20 | Defer Zustand/Jotai | Internal only, not user-facing | Architect |
+| Date       | Decision                               | Rationale                             | Owner       |
+| ---------- | -------------------------------------- | ------------------------------------- | ----------- |
+| 2025-12-20 | Add flowtoken for streaming animations | Differentiating feature, low risk     | PM          |
+| 2025-12-20 | Migrate to TanStack Virtual            | Modern architecture, better perf      | Architect   |
+| 2025-12-20 | Replace toast with Sonner              | Reduce maintenance, industry standard | Engineering |
+| 2025-12-20 | Add isomorphic-dompurify               | Enterprise security requirement       | Security    |
+| 2025-12-20 | Do not adopt assistant-ui              | Competitive conflict                  | PM          |
+| 2025-12-20 | Defer Zustand/Jotai                    | Internal only, not user-facing        | Architect   |
 
 ---
 
@@ -1798,18 +1822,19 @@ Additional packages researched that could enhance chat library functionality.
 
 After thorough code review, the library is **more complete than initially assessed**:
 
-| Feature | Status | Current Implementation |
-| ------- | ------ | ---------------------- |
-| Auto-resize textarea | ✅ DONE | Custom `autoResize` prop on Textarea component |
-| File uploads | ✅ DONE | AdvancedChatInput with drag-and-drop + file input |
-| List animations | ✅ DONE | Extensive framer-motion usage in MessageList |
-| Keyboard shortcuts | ✅ DONE | Cmd+K, Escape, Enter handlers in MessageSearch |
-| Message search | ✅ DONE | `useDeferredSearch` with Levenshtein fuzzy matching |
-| Clipboard copy | ✅ DONE | Message actions with copy functionality |
-| Search history | ✅ DONE | LocalStorage-persisted search history |
-| Regex search | ✅ DONE | Optional regex mode in useDeferredSearch |
+| Feature              | Status  | Current Implementation                              |
+| -------------------- | ------- | --------------------------------------------------- |
+| Auto-resize textarea | ✅ DONE | Custom `autoResize` prop on Textarea component      |
+| File uploads         | ✅ DONE | AdvancedChatInput with drag-and-drop + file input   |
+| List animations      | ✅ DONE | Extensive framer-motion usage in MessageList        |
+| Keyboard shortcuts   | ✅ DONE | Cmd+K, Escape, Enter handlers in MessageSearch      |
+| Message search       | ✅ DONE | `useDeferredSearch` with Levenshtein fuzzy matching |
+| Clipboard copy       | ✅ DONE | Message actions with copy functionality             |
+| Search history       | ✅ DONE | LocalStorage-persisted search history               |
+| Regex search         | ✅ DONE | Optional regex mode in useDeferredSearch            |
 
 **Key Finding**: The `useDeferredSearch` hook (`use-deferred-search.tsx`) already implements:
+
 - Fuzzy matching using Levenshtein distance
 - React 18 deferred values for non-blocking UI
 - Match highlighting with precise indices
@@ -1823,44 +1848,47 @@ This is equivalent to or better than fuse.js for the chat use case.
 
 After deep code review, only minor enhancements remain:
 
-| Package | License | Purpose | GTM Impact | Effort | Status |
-| ------- | ------- | ------- | ---------- | ------ | ------ |
-| **[usehooks-ts](https://usehooks-ts.com/)** | MIT | Additional utility hooks | LOW | Small | OPTIONAL |
+| Package                                     | License | Purpose                  | GTM Impact | Effort | Status   |
+| ------------------------------------------- | ------- | ------------------------ | ---------- | ------ | -------- |
+| **[usehooks-ts](https://usehooks-ts.com/)** | MIT     | Additional utility hooks | LOW        | Small  | OPTIONAL |
 
 #### Already Covered (No Action Needed)
 
-| Package | Why Not Needed |
-| ------- | -------------- |
-| fuse.js | `useDeferredSearch` already has Levenshtein fuzzy matching |
-| @formkit/auto-animate | framer-motion already provides superior animations |
-| react-textarea-autosize | Custom autoResize implementation already exists |
-| react-dropzone | AdvancedChatInput already has full file upload support |
-| react-hotkeys-hook | Keyboard shortcuts already implemented in search components |
+| Package                 | Why Not Needed                                              |
+| ----------------------- | ----------------------------------------------------------- |
+| fuse.js                 | `useDeferredSearch` already has Levenshtein fuzzy matching  |
+| @formkit/auto-animate   | framer-motion already provides superior animations          |
+| react-textarea-autosize | Custom autoResize implementation already exists             |
+| react-dropzone          | AdvancedChatInput already has full file upload support      |
+| react-hotkeys-hook      | Keyboard shortcuts already implemented in search components |
 
 #### Nice-to-Have (Future Consideration)
 
-| Package | License | Purpose | Notes |
-| ------- | ------- | ------- | ----- |
-| **[frimousse](https://frimousse.liveblocks.io/)** | MIT | Emoji picker (Radix-style) | For emoji reactions |
-| **[@dnd-kit/core](https://dndkit.com/)** | MIT | Drag and drop | Message reordering |
-| **[recharts](https://recharts.org/)** | MIT | Analytics charts | For analytics dashboard |
-| **[@lingui/react](https://lingui.dev/)** | MIT | i18n (lightweight) | Future internationalization |
+| Package                                           | License | Purpose                    | Notes                       |
+| ------------------------------------------------- | ------- | -------------------------- | --------------------------- |
+| **[frimousse](https://frimousse.liveblocks.io/)** | MIT     | Emoji picker (Radix-style) | For emoji reactions         |
+| **[@dnd-kit/core](https://dndkit.com/)**          | MIT     | Drag and drop              | Message reordering          |
+| **[recharts](https://recharts.org/)**             | MIT     | Analytics charts           | For analytics dashboard     |
+| **[@lingui/react](https://lingui.dev/)**          | MIT     | i18n (lightweight)         | Future internationalization |
 
 #### Detailed Evaluation: New High-Priority Packages
 
 ##### 1. @formkit/auto-animate - Zero-Config List Animations
 
 **What it does**:
+
 - Adds smooth transitions when DOM children are added, removed, or moved
 - Single line of code: `const [parent] = useAutoAnimate()`
 - Works with any framework
 
 **How we would use it**:
+
 - Apply to `MessageList` component for smooth message additions
 - Apply to `ToolInvocationCard` for tool result animations
 - Makes chat feel more polished without custom animation code
 
 **Why we need it**:
+
 - **User pain**: Messages "pop in" abruptly
 - **Competitive**: ChatGPT has smooth message animations
 - **Effort**: ~1 hour to integrate
@@ -1872,15 +1900,18 @@ After deep code review, only minor enhancements remain:
 ##### 2. react-textarea-autosize - Auto-Resizing Input
 
 **What it does**:
+
 - Drop-in replacement for `<textarea>`
 - Automatically grows with content
 - 1.3KB minified + gzipped
 
 **How we would use it**:
+
 - Replace textarea in `ChatInput` component
 - Improve multi-line message composition UX
 
 **Why we need it**:
+
 - **User pain**: Fixed-height input requires manual scrolling
 - **Industry standard**: All modern chat apps have this
 - **Effort**: ~30 minutes to integrate
@@ -1892,17 +1923,20 @@ After deep code review, only minor enhancements remain:
 ##### 3. react-hotkeys-hook - Keyboard Shortcuts
 
 **What it does**:
+
 - Declarative keyboard shortcut handling
 - Scoped shortcuts (prevent collisions)
 - Hooks-based API
 
 **How we would use it**:
+
 - Cmd+Enter to send message
 - Escape to cancel editing
 - Cmd+K for command palette integration
 - Arrow keys for message navigation
 
 **Why we need it**:
+
 - **Power users**: Keyboard shortcuts expected
 - **Accessibility**: Keyboard navigation requirement
 - **Enterprise**: Professional UX
@@ -1914,16 +1948,19 @@ After deep code review, only minor enhancements remain:
 ##### 4. react-dropzone - File Uploads
 
 **What it does**:
+
 - HTML5 drag-and-drop file zone
 - Click-to-upload fallback
 - File type/size validation
 
 **How we would use it**:
+
 - Enable file attachments in chat
 - Support image uploads for vision models
 - PDF/document uploads for RAG
 
 **Why we need it**:
+
 - **Feature gap**: No current attachment support
 - **Competitive**: All competitors support file uploads
 - **AI use case**: Vision models need image input
@@ -1935,16 +1972,19 @@ After deep code review, only minor enhancements remain:
 ##### 5. fuse.js - Fuzzy Search
 
 **What it does**:
+
 - Lightweight fuzzy search (~5KB)
 - Zero dependencies
 - Typo-tolerant matching
 
 **How we would use it**:
+
 - Search through message history
 - Search tool results
 - Command palette filtering
 
 **Why we need it**:
+
 - **User pain**: Can't find previous messages
 - **Enterprise**: Large conversations need search
 - **Effort**: ~2 hours to integrate
@@ -1956,6 +1996,7 @@ After deep code review, only minor enhancements remain:
 #### Revised Implementation Roadmap (After Deep Code Review)
 
 **Sprint 1: Core Improvements (Original Analysis Remains Valid)**:
+
 1. flowtoken (streaming animations) - NEW differentiating feature
 2. isomorphic-dompurify (XSS protection) - Enterprise security requirement
 3. Sonner (toast notifications) - REPLACE custom toast system
@@ -1963,6 +2004,7 @@ After deep code review, only minor enhancements remain:
 5. react-resizable-panels (layouts) - NEW for dev tools
 
 **NOT NEEDED (Already Fully Implemented)**:
+
 - ~~fuse.js~~ → Custom `useDeferredSearch` has Levenshtein fuzzy matching
 - ~~@formkit/auto-animate~~ → framer-motion already in use
 - ~~react-textarea-autosize~~ → Custom autoResize prop exists
@@ -1971,23 +2013,26 @@ After deep code review, only minor enhancements remain:
 
 **Estimated Total Effort**: 1 sprint (original Sprint 1 packages only)
 
-**Key Insight**: The library is significantly more feature-complete than initially assessed. The deep code review revealed sophisticated implementations for search, keyboard shortcuts, file uploads, and animations that match or exceed what OSS packages would provide.
+**Key Insight**: The library is significantly more feature-complete than initially assessed. The
+deep code review revealed sophisticated implementations for search, keyboard shortcuts, file
+uploads, and animations that match or exceed what OSS packages would provide.
 
 ---
 
 #### Updated Decision Log (After Deep Code Review)
 
-| Date | Decision | Rationale | Owner |
-| ---- | -------- | --------- | ----- |
-| 2025-12-20 | Skip fuse.js | `useDeferredSearch` already has Levenshtein fuzzy matching | Engineering |
-| 2025-12-20 | Skip @formkit/auto-animate | framer-motion already provides animations | Engineering |
-| 2025-12-20 | Skip react-textarea-autosize | Custom autoResize implementation exists | Engineering |
-| 2025-12-20 | Skip react-dropzone | AdvancedChatInput already has file upload | Engineering |
-| 2025-12-20 | Skip react-hotkeys-hook | Keyboard shortcuts already in MessageSearch | Engineering |
-| 2025-12-20 | Defer emoji picker (frimousse) | Nice-to-have, not critical path | PM |
-| 2025-12-20 | Defer recharts | Only needed for analytics dashboard | PM |
+| Date       | Decision                       | Rationale                                                  | Owner       |
+| ---------- | ------------------------------ | ---------------------------------------------------------- | ----------- |
+| 2025-12-20 | Skip fuse.js                   | `useDeferredSearch` already has Levenshtein fuzzy matching | Engineering |
+| 2025-12-20 | Skip @formkit/auto-animate     | framer-motion already provides animations                  | Engineering |
+| 2025-12-20 | Skip react-textarea-autosize   | Custom autoResize implementation exists                    | Engineering |
+| 2025-12-20 | Skip react-dropzone            | AdvancedChatInput already has file upload                  | Engineering |
+| 2025-12-20 | Skip react-hotkeys-hook        | Keyboard shortcuts already in MessageSearch                | Engineering |
+| 2025-12-20 | Defer emoji picker (frimousse) | Nice-to-have, not critical path                            | PM          |
+| 2025-12-20 | Defer recharts                 | Only needed for analytics dashboard                        | PM          |
 
 **REVISED RECOMMENDATION**: Focus on original Sprint 1 packages only:
+
 - flowtoken (streaming animations) - Genuine differentiator
 - isomorphic-dompurify (XSS) - Enterprise requirement
 - Sonner (toast) - Industry standard replacement
