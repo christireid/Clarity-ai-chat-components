@@ -93,7 +93,7 @@ export function DocumentViewer({
             <a
               href={sourceUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
             >
               View Source ↗

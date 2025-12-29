@@ -269,7 +269,8 @@ export function createMessageKey(
     return `msg-${simpleHash(content)}`
   }
 
-  return `msg-${Date.now()}`
+  // Fallback with timestamp + random suffix to prevent collisions
+  return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
 }
 
 /**

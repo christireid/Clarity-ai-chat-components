@@ -115,8 +115,8 @@ export async function POST(request: NextRequest) {
     // Check rate limit
     const rateLimit = checkRateLimit(
       identifier,
-      parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
-      parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000')
+      parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+      parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10)
     )
 
     if (!rateLimit.allowed) {
@@ -252,15 +252,25 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    // Log full error server-side for debugging
+    logger.error('API error:', error)
 
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    // Only expose error details in development
+    const isDev = process.env.NODE_ENV === 'development'
+    const errorResponse: {
+      error: string
+      message?: string
+      requestId?: string
+    } = {
+      error: 'Internal server error',
+      requestId: crypto.randomUUID(), // For log correlation
+    }
+
+    if (isDev && error instanceof Error) {
+      errorResponse.message = error.message
+    }
+
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
@@ -920,17 +930,62 @@ export async function GET() {
 }
 
 /**
+ * Get allowed CORS origin from request
+ * Only allow same-origin requests or explicitly configured domains
+ */
+function getAllowedOrigin(request?: Request): string {
+  const origin = request?.headers.get('origin') || ''
+
+  // Allow configured domains (set via environment variable)
+  const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+
+  // Always allow same-origin (empty origin header)
+  if (!origin) {
+    return ''
+  }
+
+  // Check if origin is in allowed list
+  if (allowedOrigins.includes(origin)) {
+    return origin
+  }
+
+  // In development, allow localhost
+  if (
+    process.env.NODE_ENV === 'development' &&
+    (origin.startsWith('http://localhost:') ||
+      origin.startsWith('http://127.0.0.1:'))
+  ) {
+    return origin
+  }
+
+  // Default: reject cross-origin requests by not setting header
+  return ''
+}
+
+/**
  * OPTIONS /api/docs-assistant
  *
- * CORS preflight
+ * CORS preflight - restricted to allowed origins only
  */
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const allowedOrigin = getAllowedOrigin(request)
+
+  const headers: Record<string, string> = {
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400', // 24 hours
+  }
+
+  if (allowedOrigin) {
+    headers['Access-Control-Allow-Origin'] = allowedOrigin
+    headers['Vary'] = 'Origin'
+  }
+
   return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    status: 204,
+    headers,
   })
 }

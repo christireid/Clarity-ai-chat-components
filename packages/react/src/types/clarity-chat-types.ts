@@ -205,11 +205,28 @@ export function extractTextContent(message: CoreMessage): string {
 }
 
 /**
+ * Counter for unique ID generation to prevent collisions
+ * when multiple messages are created in the same millisecond
+ */
+let messageIdCounter = 0
+
+/**
+ * Generate a unique message ID
+ * Uses timestamp + counter + random suffix for collision resistance
+ */
+function generateMessageId(prefix: string): string {
+  const timestamp = Date.now()
+  const counter = messageIdCounter++
+  const random = Math.random().toString(36).substring(2, 6)
+  return `${prefix}-${timestamp}-${counter}-${random}`
+}
+
+/**
  * Create a user message
  */
 export function createUserMessage(content: string, id?: string): CoreMessage {
   return {
-    id: id || `user-${Date.now()}`,
+    id: id || generateMessageId('user'),
     role: 'user',
     content,
   }
@@ -223,7 +240,7 @@ export function createAssistantMessage(
   id?: string
 ): CoreMessage {
   return {
-    id: id || `assistant-${Date.now()}`,
+    id: id || generateMessageId('assistant'),
     role: 'assistant',
     content,
   }
@@ -234,7 +251,7 @@ export function createAssistantMessage(
  */
 export function createSystemMessage(content: string, id?: string): CoreMessage {
   return {
-    id: id || `system-${Date.now()}`,
+    id: id || generateMessageId('system'),
     role: 'system',
     content,
   }

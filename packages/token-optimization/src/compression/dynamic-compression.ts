@@ -370,26 +370,24 @@ export class DynamicCompressionEngine {
           ],
         }
 
-      case 'alternative':
-        {
-          const alternativeStrategy =
-            await this.findAlternativeStrategy(strategy)
-          if (alternativeStrategy) {
-            const alternativeCompressed = await this.applyCompression(
-              originalContent,
-              alternativeStrategy,
-              await this.contentAnalyzer.analyze(originalContent)
-            )
+      case 'alternative': {
+        const alternativeStrategy = await this.findAlternativeStrategy(strategy)
+        if (alternativeStrategy) {
+          const alternativeCompressed = await this.applyCompression(
+            originalContent,
+            alternativeStrategy,
+            await this.contentAnalyzer.analyze(originalContent)
+          )
 
-            return {
-              content: alternativeCompressed,
-              recommendations: [
-                `Switched to ${alternativeStrategy.name} strategy`,
-              ],
-            }
+          return {
+            content: alternativeCompressed,
+            recommendations: [
+              `Switched to ${alternativeStrategy.name} strategy`,
+            ],
           }
         }
         break
+      }
 
       case 'none':
       default:

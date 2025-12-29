@@ -13,7 +13,7 @@
     "test:generate-data": "node scripts/generate-test-data.js"
   },
   "dependencies": {
-    "next": "^16.0.7",
+    "next": "^16.0.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^2.10.3",

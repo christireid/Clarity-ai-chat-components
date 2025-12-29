@@ -9,8 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clarity-chat/error-handling": "workspace:*",
+    "@clarity-chat/memory": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/token-optimization": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
