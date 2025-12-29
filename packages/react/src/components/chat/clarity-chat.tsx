@@ -150,19 +150,8 @@ export function ClarityChat({
   onDeleteMessage,
   ...hookOptions
 }: ClarityChatProps) {
-  // Validate required prop with helpful error message
-  if (!api || typeof api !== 'string' || api.trim().length === 0) {
-    throw new Error(
-      'ClarityChat: "api" prop is required.\n' +
-        'Please provide your API endpoint URL.\n\n' +
-        'Example:\n' +
-        '  <ClarityChat api="/api/chat" />\n\n' +
-        'Or use environment variable:\n' +
-        '  CLARITY_CHAT_API=/api/chat\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/getting-started'
-    )
-  }
-
+  // Note: API validation is handled by useClarityChat hook via validateApiEndpoint()
+  // which provides a ComponentError with helpful messaging and security checks
   const toast = useToast()
 
   const chat = useClarityChat({

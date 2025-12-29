@@ -98,7 +98,9 @@ export function extractTextContent(
       .join(' ')
   }
 
-  return JSON.stringify(content)
+  // Return empty string for unknown content types (safer than JSON.stringify
+  // which could expose raw objects in unexpected ways)
+  return ''
 }
 
 /**
