@@ -1,6 +1,6 @@
 /**
  * Basic Usage Example
- * 
+ *
  * Demonstrates the core Clarity Memory API
  */
 
@@ -28,8 +28,10 @@ async function basicExample() {
   // Recall memories
   const results = await memory.recall('user preferences')
   console.log('Found memories:', results.length)
-  results.forEach(result => {
-    console.log(`- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`)
+  results.forEach((result) => {
+    console.log(
+      `- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`
+    )
   })
 
   // Get optimized context
@@ -84,11 +86,14 @@ async function withEmbeddingsExample() {
     minConfidence: 0.5,
   })
 
-  console.log('Semantic search results:', results.map(r => ({
-    content: r.memory.content,
-    score: r.score,
-    relevance: r.relevance,
-  })))
+  console.log(
+    'Semantic search results:',
+    results.map((r) => ({
+      content: r.memory.content,
+      score: r.score,
+      relevance: r.relevance,
+    }))
+  )
 
   await memory.close()
 }
@@ -96,5 +101,5 @@ async function withEmbeddingsExample() {
 // Run examples if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   basicExample().catch(console.error)
-  void withEmbeddingsExample().catch(console.error)
+  withEmbeddingsExample().catch(console.error)
 }

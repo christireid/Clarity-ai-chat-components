@@ -309,7 +309,7 @@ export class WeaviateVectorStore implements VectorStore {
     ids: string[]
     nextToken?: string
   }> {
-    const offset = paginationToken ? parseInt(paginationToken) : 0
+    const offset = paginationToken ? parseInt(paginationToken, 10) : 0
 
     const gqlQuery = `
       {

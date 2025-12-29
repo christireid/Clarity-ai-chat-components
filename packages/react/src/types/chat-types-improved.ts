@@ -93,13 +93,13 @@ export interface Chat extends ChatState, ChatActions {
 /**
  * Helper type for component props that accept message handlers
  */
-// eslint-disable-next-line
+
 export type WithMessageHandlers<T = {}> = T & MessageHandlers
 
 /**
  * Helper type for component props that accept chat config
  */
-// eslint-disable-next-line
+
 export type WithChatConfig<T = {}> = T & ChatConfig
 
 /**

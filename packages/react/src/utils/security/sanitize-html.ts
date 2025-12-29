@@ -207,6 +207,7 @@ function sanitizeStyleAttribute(style: string): string {
       // Additional check for dangerous values
       if (
         !value.includes('expression') &&
+        // eslint-disable-next-line no-script-url -- This is a security check, not code execution
         !value.includes('javascript:') &&
         !value.includes('url(')
       ) {

@@ -1125,7 +1125,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
                             setFilters((prev) => ({
                               ...prev,
                               minTokens: e.target.value
-                                ? parseInt(e.target.value)
+                                ? parseInt(e.target.value, 10)
                                 : undefined,
                             }))
                           }
@@ -1139,7 +1139,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
                             setFilters((prev) => ({
                               ...prev,
                               maxTokens: e.target.value
-                                ? parseInt(e.target.value)
+                                ? parseInt(e.target.value, 10)
                                 : undefined,
                             }))
                           }

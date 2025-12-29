@@ -325,16 +325,20 @@ export function useSafeAreaInsets() {
 
     setInsets({
       top: parseInt(
-        computedStyle.getPropertyValue('--safe-area-inset-top') || '0'
+        computedStyle.getPropertyValue('--safe-area-inset-top') || '0',
+        10
       ),
       right: parseInt(
-        computedStyle.getPropertyValue('--safe-area-inset-right') || '0'
+        computedStyle.getPropertyValue('--safe-area-inset-right') || '0',
+        10
       ),
       bottom: parseInt(
-        computedStyle.getPropertyValue('--safe-area-inset-bottom') || '0'
+        computedStyle.getPropertyValue('--safe-area-inset-bottom') || '0',
+        10
       ),
       left: parseInt(
-        computedStyle.getPropertyValue('--safe-area-inset-left') || '0'
+        computedStyle.getPropertyValue('--safe-area-inset-left') || '0',
+        10
       ),
     })
   }, [])

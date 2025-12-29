@@ -155,7 +155,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         console.warn('[useChat] Failed to load persisted messages:', error)
       }
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   // Auto-scroll effect
   React.useEffect(() => {

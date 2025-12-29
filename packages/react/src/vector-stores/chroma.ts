@@ -329,7 +329,7 @@ export class ChromaVectorStore implements VectorStore {
       await this.initialize()
     }
 
-    const offset = paginationToken ? parseInt(paginationToken) : 0
+    const offset = paginationToken ? parseInt(paginationToken, 10) : 0
 
     const response = await fetch(
       `${this.endpoint}/api/v1/collections/${this.collectionId}/get`,

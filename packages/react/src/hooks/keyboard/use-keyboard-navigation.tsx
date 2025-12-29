@@ -89,7 +89,7 @@ function detectMacPlatform(): boolean {
   }
 
   // Modern API (Chrome 90+, Edge 90+)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const userAgentData = (navigator as any).userAgentData
   if (userAgentData?.platform) {
     return /macOS|iOS/i.test(userAgentData.platform)

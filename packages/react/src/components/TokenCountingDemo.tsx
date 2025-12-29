@@ -429,7 +429,7 @@ export const TokenCountingDemo: React.FC<TokenDemoProps> = ({
                 max="10000"
                 value={tokenCount}
                 onChange={(e) => {
-                  const budget = parseInt(e.target.value)
+                  const budget = parseInt(e.target.value, 10)
                   const percentage = Math.min(100, (tokenCount / budget) * 100)
                   // You could add budget validation logic here
                 }}

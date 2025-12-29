@@ -385,7 +385,7 @@ export function ConversationSharing({
                 value={maxViews || ''}
                 onChange={(e) =>
                   setMaxViews(
-                    e.target.value ? parseInt(e.target.value) : undefined
+                    e.target.value ? parseInt(e.target.value, 10) : undefined
                   )
                 }
                 placeholder="Unlimited"

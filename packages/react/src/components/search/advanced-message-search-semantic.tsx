@@ -913,7 +913,7 @@ export function SemanticMessageSearch({
                                 hybrid: {
                                   ...prev.hybrid,
                                   semanticWeight:
-                                    parseInt(e.target.value) / 100,
+                                    parseInt(e.target.value, 10) / 100,
                                 },
                               }))
                             }
@@ -949,7 +949,7 @@ export function SemanticMessageSearch({
                               setLocalConfig((prev) => ({
                                 ...prev,
                                 similarityThreshold:
-                                  parseInt(e.target.value) / 100,
+                                  parseInt(e.target.value, 10) / 100,
                               }))
                             }
                             className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-violet-500"
@@ -969,7 +969,7 @@ export function SemanticMessageSearch({
                             onChange={(e) =>
                               setLocalConfig((prev) => ({
                                 ...prev,
-                                maxResults: parseInt(e.target.value) || 10,
+                                maxResults: parseInt(e.target.value, 10) || 10,
                               }))
                             }
                             className="h-8"
