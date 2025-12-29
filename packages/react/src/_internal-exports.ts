@@ -678,7 +678,17 @@ export {
 export * from './components/ui/skeleton'
 export * from './components/ui/animated-dots'
 export * from './components/ui/animated-list'
-export * from './components/ui/toast'
+// Note: Using explicit exports from toast to avoid conflict with sonner-toast's `toast` export
+export {
+  useToast,
+  ToastProvider,
+  ToastContainer,
+  type ToastContextValue,
+  type ToastProviderProps,
+  type ToastType,
+  type ToastPosition,
+  type Toast,
+} from './components/ui/toast'
 export * from './components/ui/progress'
 export * from './components/ui/feedback-animation'
 export * from './components/ui/interactive-card'

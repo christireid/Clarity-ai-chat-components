@@ -159,7 +159,7 @@ function getLuminance(color: string): number {
     const matches = color.match(/\d+/g)
     if (matches && matches.length >= 3) {
       const [r, g, b] = matches.map((c) => {
-        const val = parseInt(c) / 255
+        const val = parseInt(c, 10) / 255
         return val <= 0.03928
           ? val / 12.92
           : Math.pow((val + 0.055) / 1.055, 2.4)

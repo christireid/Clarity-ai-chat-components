@@ -18,6 +18,7 @@ import {
   EyeOff,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from '@/components/Layout/hooks'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
@@ -103,6 +104,7 @@ export default function MemoryContextDemo() {
     '3',
   ])
   const isMountedRef = useMountedRef()
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     trackDemoViewed('memory-context')
@@ -344,8 +346,16 @@ export default function MemoryContextDemo() {
                 {messages.map((message) => (
                   <motion.div
                     key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={
+                      prefersReducedMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, y: 10 }
+                    }
+                    animate={
+                      prefersReducedMotion
+                        ? { opacity: 1 }
+                        : { opacity: 1, y: 0 }
+                    }
                     className={`flex items-start gap-3 ${
                       message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
@@ -392,7 +402,11 @@ export default function MemoryContextDemo() {
                         <motion.div
                           key={i}
                           className="w-2 h-2 rounded-full bg-rose-500"
-                          animate={{ y: [0, -4, 0] }}
+                          animate={
+                            prefersReducedMotion
+                              ? { opacity: [0.5, 1, 0.5] }
+                              : { y: [0, -4, 0] }
+                          }
                           transition={{
                             duration: durations.slower,
                             repeat: Infinity,
@@ -439,9 +453,19 @@ export default function MemoryContextDemo() {
             {showMemoryPanel && (
               <ScrollReveal delay={0.2}>
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
+                  initial={
+                    prefersReducedMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, x: 20 }
+                  }
+                  animate={
+                    prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }
+                  }
+                  exit={
+                    prefersReducedMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, x: 20 }
+                  }
                   className="space-y-4"
                 >
                   <div className="p-6 rounded-xl bg-bg-secondary border border-border">
@@ -457,12 +481,20 @@ export default function MemoryContextDemo() {
                         return (
                           <motion.div
                             key={item.id}
-                            animate={{
-                              scale: isActive ? 1.02 : 1,
-                              borderColor: isActive
-                                ? 'rgb(244, 63, 94)'
-                                : 'transparent',
-                            }}
+                            animate={
+                              prefersReducedMotion
+                                ? {
+                                    borderColor: isActive
+                                      ? 'rgb(244, 63, 94)'
+                                      : 'transparent',
+                                  }
+                                : {
+                                    scale: isActive ? 1.02 : 1,
+                                    borderColor: isActive
+                                      ? 'rgb(244, 63, 94)'
+                                      : 'transparent',
+                                  }
+                            }
                             className={`p-3 rounded-lg border-2 transition-all ${
                               isActive
                                 ? 'bg-rose-50 dark:bg-rose-950 border-rose-500'
@@ -486,8 +518,16 @@ export default function MemoryContextDemo() {
                               </div>
                               {isActive && (
                                 <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
+                                  initial={
+                                    prefersReducedMotion
+                                      ? { opacity: 0 }
+                                      : { scale: 0 }
+                                  }
+                                  animate={
+                                    prefersReducedMotion
+                                      ? { opacity: 1 }
+                                      : { scale: 1 }
+                                  }
                                   className="w-2 h-2 rounded-full bg-rose-500"
                                 />
                               )}

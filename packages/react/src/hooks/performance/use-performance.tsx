@@ -281,7 +281,6 @@ export function useLazyLoad<T>(
     return () => {
       cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps) // Loader accessed via ref
 
   return { data, loading, error }

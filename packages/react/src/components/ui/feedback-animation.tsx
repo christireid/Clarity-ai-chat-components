@@ -9,7 +9,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -52,6 +52,9 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
   onComplete,
   className,
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   React.useEffect(() => {
     if (show && duration > 0) {
       const timer = setTimeout(() => {
@@ -80,9 +83,15 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
+          initial={
+            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5 }
+          }
+          animate={
+            prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+          }
+          exit={
+            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }
+          }
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
             ease: EASING_FRAMER.spring,
@@ -94,12 +103,16 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
           )}
         >
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
+            initial={
+              prefersReducedMotion ? { opacity: 0 } : { scale: 0, rotate: -180 }
+            }
+            animate={
+              prefersReducedMotion ? { opacity: 1 } : { scale: 1, rotate: 0 }
+            }
             transition={{
               duration: ANIMATION_DURATION.slow / 1000,
               ease: EASING_FRAMER.spring,
-              delay: 0.1,
+              delay: prefersReducedMotion ? 0 : 0.1,
             }}
           >
             <Icon size={48} />
@@ -107,9 +120,9 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
 
           {message && (
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
               className="text-sm font-medium"
             >
               {message}
@@ -129,13 +142,22 @@ export const SuccessCheckmark: React.FC<{
   size?: number
   className?: string
 }> = ({ show, size = 48, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ scale: 0, rotate: -45 }}
-          animate={{ scale: 1, rotate: 0 }}
-          exit={{ scale: 0, rotate: 45 }}
+          initial={
+            prefersReducedMotion ? { opacity: 0 } : { scale: 0, rotate: -45 }
+          }
+          animate={
+            prefersReducedMotion ? { opacity: 1 } : { scale: 1, rotate: 0 }
+          }
+          exit={
+            prefersReducedMotion ? { opacity: 0 } : { scale: 0, rotate: 45 }
+          }
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
             ease: EASING_FRAMER.spring,
@@ -157,6 +179,8 @@ export const ErrorShake: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ trigger, children, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const [key, setKey] = React.useState(0)
 
   React.useEffect(() => {
@@ -169,7 +193,7 @@ export const ErrorShake: React.FC<{
     <motion.div
       key={key}
       animate={
-        trigger
+        trigger && !prefersReducedMotion
           ? {
               x: [-10, 10, -10, 10, -5, 5, 0],
             }
@@ -194,10 +218,13 @@ export const PulseAttention: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ active, children, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       animate={
-        active
+        active && !prefersReducedMotion
           ? {
               scale: [1, 1.05, 1],
               opacity: [1, 0.8, 1],
@@ -224,6 +251,8 @@ export const RippleEffect: React.FC<{
   color?: string
   className?: string
 }> = ({ trigger, color = 'currentColor', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const [ripples, setRipples] = React.useState<number[]>([])
 
   React.useEffect(() => {
@@ -248,8 +277,14 @@ export const RippleEffect: React.FC<{
         {ripples.map((id) => (
           <motion.div
             key={id}
-            initial={{ scale: 0, opacity: 0.6 }}
-            animate={{ scale: 2.5, opacity: 0 }}
+            initial={
+              prefersReducedMotion
+                ? { opacity: 0.6 }
+                : { scale: 0, opacity: 0.6 }
+            }
+            animate={
+              prefersReducedMotion ? { opacity: 0 } : { scale: 2.5, opacity: 0 }
+            }
             exit={{ opacity: 0 }}
             transition={{ duration: durations.slower, ease: EASING_FRAMER.out }}
             className="absolute inset-0 rounded-full border-4"
@@ -269,10 +304,13 @@ export const ConfettiEffect: React.FC<{
   count?: number
   className?: string
 }> = ({ trigger, count = 20, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const [particles, setParticles] = React.useState<number[]>([])
 
   React.useEffect(() => {
-    if (trigger) {
+    // Skip animation entirely when reduced motion is preferred
+    if (trigger && !prefersReducedMotion) {
       const newParticles = Array.from({ length: count }, (_, i) => i)
       setParticles(newParticles)
 
@@ -280,7 +318,12 @@ export const ConfettiEffect: React.FC<{
         setParticles([])
       }, 2000)
     }
-  }, [trigger, count])
+  }, [trigger, count, prefersReducedMotion])
+
+  // Don't render confetti when reduced motion is preferred
+  if (prefersReducedMotion) {
+    return null
+  }
 
   return (
     <div
@@ -337,10 +380,13 @@ export const GlowEffect: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ active, color = 'rgb(var(--primary))', children, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       animate={
-        active
+        active && !prefersReducedMotion
           ? {
               boxShadow: [
                 `0 0 0 0 ${color}00`,
@@ -370,18 +416,23 @@ export const BounceIn: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ show, children, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{
-            scale: [0, 1.2, 0.9, 1.05, 1],
-          }}
-          exit={{ scale: 0 }}
+          initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0 }}
+          animate={
+            prefersReducedMotion
+              ? { opacity: 1 }
+              : { scale: [0, 1.2, 0.9, 1.05, 1] }
+          }
+          exit={prefersReducedMotion ? { opacity: 0 } : { scale: 0 }}
           transition={{
             duration: durations.slow,
-            times: [0, 0.4, 0.6, 0.8, 1],
+            times: prefersReducedMotion ? undefined : [0, 0.4, 0.6, 0.8, 1],
             ease: EASING_FRAMER.out,
           }}
           className={className}
@@ -403,6 +454,9 @@ export const SlideNotification: React.FC<{
   position?: 'top' | 'bottom'
   className?: string
 }> = ({ show, message, type = 'info', position = 'top', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   const Icon = {
     success: CheckCircleIcon,
     error: XCircleIcon,
@@ -424,7 +478,7 @@ export const SlideNotification: React.FC<{
         <motion.div
           initial={{
             opacity: 0,
-            y: position === 'top' ? -20 : 20,
+            y: prefersReducedMotion ? 0 : position === 'top' ? -20 : 20,
           }}
           animate={{
             opacity: 1,
@@ -432,7 +486,7 @@ export const SlideNotification: React.FC<{
           }}
           exit={{
             opacity: 0,
-            y: position === 'top' ? -20 : 20,
+            y: prefersReducedMotion ? 0 : position === 'top' ? -20 : 20,
           }}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,

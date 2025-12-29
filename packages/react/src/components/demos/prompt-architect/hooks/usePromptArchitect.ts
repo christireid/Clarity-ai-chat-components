@@ -787,7 +787,7 @@ export function usePromptArchitect(
   // Load from storage on mount
   React.useEffect(() => {
     loadFromStorage()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   // ==========================================================================
   // RETURN

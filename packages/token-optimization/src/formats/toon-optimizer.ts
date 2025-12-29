@@ -1,6 +1,6 @@
 /**
  * TOON (Token-Oriented Object Notation) Optimizer
- * 
+ *
  * Implements the TOON format for 30-60% token savings vs JSON
  * Combines YAML-like indentation with CSV-style tabular arrays
  */
@@ -25,7 +25,7 @@ export class ToonOptimizer {
       maxArraySizeForTable: 100,
       preserveKeys: false,
       compactNumbers: true,
-      quoteStrings: false
+      quoteStrings: false,
     }).convertToToon(data)
   }
 
@@ -46,7 +46,7 @@ export class ToonOptimizer {
     // Convert object to TOON format
     for (const [key, value] of Object.entries(data)) {
       const toonKey = this.formatKey(key)
-      
+
       if (Array.isArray(value) && this.shouldUseTableFormat(value)) {
         // Convert to TOON table format
         lines.push(this.convertToTable(toonKey, value, indent))
@@ -74,7 +74,7 @@ export class ToonOptimizer {
 
     const lines: string[] = []
     const indentStr = '  '.repeat(indent)
-    
+
     arr.forEach((item) => {
       if (typeof item === 'object' && item !== null) {
         // Complex item
@@ -105,13 +105,13 @@ export class ToonOptimizer {
 
     const keys = this.extractKeys(arr[0])
     const indentStr = '  '.repeat(indent)
-    
+
     // Table header with count and field names
     let result = `${indentStr}${name}[${arr.length}]{${keys.join(',')}}:\n`
-    
+
     // Convert each row to comma-separated values
     arr.forEach((item) => {
-      const values = keys.map(key => {
+      const values = keys.map((key) => {
         const value = this.getNestedValue(item, key)
         return this.formatTableValue(value)
       })
@@ -128,7 +128,7 @@ export class ToonOptimizer {
     if (!this.config.enableArrayTables) return false
     if (arr.length === 0) return true
     if (arr.length > this.config.maxArraySizeForTable) return false
-    
+
     return this.isUniformArray(arr)
   }
 
@@ -137,15 +137,20 @@ export class ToonOptimizer {
    */
   private isUniformArray(arr: any[]): boolean {
     if (arr.length === 0) return true
-    
+
     // All items must be objects
-    if (!arr.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+    if (
+      !arr.every(
+        (item) =>
+          typeof item === 'object' && item !== null && !Array.isArray(item)
+      )
+    ) {
       return false
     }
 
     // All objects must have the same keys
     const firstKeys = Object.keys(arr[0]).sort()
-    return arr.every(item => {
+    return arr.every((item) => {
       const itemKeys = Object.keys(item).sort()
       return JSON.stringify(firstKeys) === JSON.stringify(itemKeys)
     })
@@ -156,11 +161,15 @@ export class ToonOptimizer {
    */
   private extractKeys(obj: any, prefix: string = ''): string[] {
     const keys: string[] = []
-    
+
     Object.entries(obj).forEach(([key, value]) => {
       const fullKey = prefix ? `${prefix}.${key}` : key
-      
-      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
         // Nested object
         keys.push(...this.extractKeys(value, fullKey))
       } else {
@@ -168,7 +177,7 @@ export class ToonOptimizer {
         keys.push(fullKey)
       }
     })
-    
+
     return keys
   }
 
@@ -185,12 +194,13 @@ export class ToonOptimizer {
   private formatTableValue(value: any): string {
     if (value === null || value === undefined) return ''
     if (typeof value === 'boolean') return value ? 'true' : 'false'
-    if (typeof value === 'number') return this.config.compactNumbers ? value.toString() : value.toString()
+    if (typeof value === 'number')
+      return this.config.compactNumbers ? value.toString() : value.toString()
     if (typeof value === 'string') {
       // Remove quotes if configured
       return this.config.quoteStrings ? `"${value}"` : value
     }
-    
+
     // Complex objects as JSON
     return JSON.stringify(value)
   }
@@ -201,11 +211,12 @@ export class ToonOptimizer {
   private formatPrimitive(value: any): string {
     if (value === null || value === undefined) return 'null'
     if (typeof value === 'boolean') return value ? 'true' : 'false'
-    if (typeof value === 'number') return this.config.compactNumbers ? value.toString() : value.toString()
+    if (typeof value === 'number')
+      return this.config.compactNumbers ? value.toString() : value.toString()
     if (typeof value === 'string') {
       return this.config.quoteStrings ? `"${value}"` : value
     }
-    
+
     return JSON.stringify(value)
   }
 
@@ -228,7 +239,10 @@ export class ToonOptimizer {
   /**
    * Parse TOON lines recursively
    */
-  private parseToonLines(lines: string[], startIndent: number): { result: any; nextIndex: number } {
+  private parseToonLines(
+    lines: string[],
+    startIndent: number
+  ): { result: any; nextIndex: number } {
     const result: any = {}
     let i = 0
 
@@ -240,7 +254,7 @@ export class ToonOptimizer {
       }
 
       const currentIndent = this.getIndentLevel(line)
-      
+
       if (currentIndent < startIndent) {
         // Back to parent level
         return { result, nextIndex: i }
@@ -259,7 +273,10 @@ export class ToonOptimizer {
           i = arrayResult.nextIndex - 1
         } else if (parsed.isNested) {
           // Handle nested object
-          const nestedResult = this.parseToonLines(lines.slice(i + 1), currentIndent + 1)
+          const nestedResult = this.parseToonLines(
+            lines.slice(i + 1),
+            currentIndent + 1
+          )
           result[parsed.key] = nestedResult.result
           i += nestedResult.nextIndex
         } else {
@@ -279,14 +296,17 @@ export class ToonOptimizer {
    */
   private parseLine(line: string): LineParse {
     const trimmed = line.trim()
-    
+
     // Check for table format: key[count]{fields}:
     const tableMatch = trimmed.match(/^(\w+)\[(\d+)\]\{([^}]+)\}:\s*$/)
     if (tableMatch) {
       return {
         key: tableMatch[1],
         table: true,
-        tableData: { count: parseInt(tableMatch[2]), fields: tableMatch[3].split(',') }
+        tableData: {
+          count: parseInt(tableMatch[2], 10),
+          fields: tableMatch[3].split(','),
+        },
       }
     }
 
@@ -297,7 +317,7 @@ export class ToonOptimizer {
         key: kvMatch[1],
         value: this.parseValue(kvMatch[2]),
         isArray: kvMatch[2].startsWith('-'),
-        isNested: !kvMatch[2] || kvMatch[2] === ''
+        isNested: !kvMatch[2] || kvMatch[2] === '',
       }
     }
 
@@ -305,7 +325,7 @@ export class ToonOptimizer {
     return {
       key: 'item',
       value: this.parseValue(trimmed.replace(/^-\s*/, '')),
-      isArray: true
+      isArray: true,
     }
   }
 
@@ -322,14 +342,18 @@ export class ToonOptimizer {
   /**
    * Parse array
    */
-  private parseArray(lines: string[], startIndex: number, baseIndent: number): { result: any[]; nextIndex: number } {
+  private parseArray(
+    lines: string[],
+    startIndex: number,
+    baseIndent: number
+  ): { result: any[]; nextIndex: number } {
     const result: any[] = []
     let i = startIndex
 
     while (i < lines.length) {
       const line = lines[i]
       const currentIndent = this.getIndentLevel(line)
-      
+
       if (currentIndent <= baseIndent) {
         break
       }
@@ -352,10 +376,10 @@ export class ToonOptimizer {
     if (value === 'null') return null
     if (value === 'true') return true
     if (value === 'false') return false
-    if (/^\d+$/.test(value)) return parseInt(value)
+    if (/^\d+$/.test(value)) return parseInt(value, 10)
     if (/^\d+\.\d+$/.test(value)) return parseFloat(value)
     if (value.startsWith('"') && value.endsWith('"')) return value.slice(1, -1)
-    
+
     return value
   }
 
@@ -373,15 +397,15 @@ export class ToonOptimizer {
   static calculateSavings(json: string, toon: string): SavingsInfo {
     const jsonTokens = Math.ceil(json.length / 4) // Approximate
     const toonTokens = Math.ceil(toon.length / 4) // Approximate
-    
+
     const savings = jsonTokens - toonTokens
     const percentage = jsonTokens > 0 ? (savings / jsonTokens) * 100 : 0
-    
+
     return {
       jsonTokens,
       toonTokens,
       savings,
-      percentage: Math.round(percentage * 100) / 100
+      percentage: Math.round(percentage * 100) / 100,
     }
   }
 
@@ -393,20 +417,20 @@ export class ToonOptimizer {
       // Ensure uniform structure for arrays
       const firstItem = data[0]
       const keys = Object.keys(firstItem).sort()
-      
-      return data.map(item => {
+
+      return data.map((item) => {
         const uniformItem: any = {}
-        keys.forEach(key => {
+        keys.forEach((key) => {
           uniformItem[key] = item[key] ?? null
         })
         return uniformItem
       })
     }
-    
+
     if (typeof data === 'object' && data !== null) {
       // Optimize nested structures
       const optimized: any = {}
-      
+
       Object.entries(data).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           optimized[key] = this.optimizeDataStructure(value)
@@ -416,10 +440,10 @@ export class ToonOptimizer {
           optimized[key] = value
         }
       })
-      
+
       return optimized
     }
-    
+
     return data
   }
 }

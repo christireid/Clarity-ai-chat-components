@@ -6,7 +6,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   createStaggerContainerVariant,
   createStaggerChildVariant,
@@ -45,7 +45,14 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
   className,
   delay = 0,
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const containerVariants = createStaggerContainerVariant(stagger, delay)
+
+  // When reduced motion is preferred, render without animation
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <motion.div
@@ -83,7 +90,14 @@ export const AnimatedListItem: React.FC<AnimatedListItemProps> = ({
   className,
   layout = false,
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const itemVariants = createStaggerChildVariant(variant, duration)
+
+  // When reduced motion is preferred, render without animation
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <motion.div className={className} variants={itemVariants} layout={layout}>
@@ -100,7 +114,14 @@ export const FadePresence: React.FC<{
   duration?: AnimationDuration
   className?: string
 }> = ({ children, duration = 'normal', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const variants = createFadeVariant(duration)
+
+  // When reduced motion is preferred, render without animation
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -133,7 +154,27 @@ export const SlidePresence: React.FC<{
   duration = 'normal',
   className,
 }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const variants = createSlideVariant(direction, distance, duration)
+  // Use fade-only variant when reduced motion is preferred
+  const fadeVariants = createFadeVariant(duration)
+
+  if (prefersReducedMotion) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          className={className}
+          variants={fadeVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -159,7 +200,27 @@ export const ScalePresence: React.FC<{
   duration?: AnimationDuration
   className?: string
 }> = ({ children, initialScale = 0.9, duration = 'fast', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const variants = createScaleVariant(initialScale, duration)
+  // Use fade-only variant when reduced motion is preferred
+  const fadeVariants = createFadeVariant(duration)
+
+  if (prefersReducedMotion) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          className={className}
+          variants={fadeVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -186,10 +247,17 @@ export const ConditionalPresence: React.FC<{
   direction?: 'up' | 'down' | 'left' | 'right'
   className?: string
 }> = ({ children, show, variant = 'fade', direction = 'up', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
+  // Use fade-only when reduced motion is preferred (for slide/scale)
+  const effectiveVariant =
+    prefersReducedMotion && variant !== 'fade' ? 'fade' : variant
+
   const variants =
-    variant === 'fade'
+    effectiveVariant === 'fade'
       ? createFadeVariant()
-      : variant === 'slide'
+      : effectiveVariant === 'slide'
         ? createSlideVariant(direction)
         : createScaleVariant()
 
@@ -219,7 +287,14 @@ export const StaggerContainer: React.FC<{
   delay?: number
   className?: string
 }> = ({ children, stagger = 'normal', delay = 0, className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const variants = createStaggerContainerVariant(stagger, delay)
+
+  // When reduced motion is preferred, render without stagger animation
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <motion.div
@@ -244,7 +319,21 @@ export const AnimatedGrid: React.FC<{
   stagger?: StaggerTiming
   className?: string
 }> = ({ children, columns = 3, gap = 4, stagger = 'fast', className }) => {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
   const variants = createStaggerContainerVariant(stagger)
+
+  // When reduced motion is preferred, render without stagger animation
+  if (prefersReducedMotion) {
+    return (
+      <div
+        className={cn(`grid gap-${gap}`, className)}
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
+        {children}
+      </div>
+    )
+  }
 
   return (
     <motion.div

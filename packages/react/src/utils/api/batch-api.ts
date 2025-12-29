@@ -360,7 +360,8 @@ export class BatchRequestManager {
    * warnings when the manager is destroyed or the queue is cleared.
    */
   enqueueRequest(request: BatchRequest): void {
-    void this.addRequest(request).catch(() => {})
+    // Fire-and-forget: rejections are silently swallowed
+    this.addRequest(request).catch(() => {})
   }
 
   /**
@@ -412,7 +413,7 @@ export class BatchRequestManager {
     // Process batch (in a real implementation, this would call the provider API)
     // Note: Processing is intentionally not awaited to allow non-blocking batch submission.
     // The simulation yields to the event loop so callers can observe `pending` first.
-    void this.processBatch(job, requests).catch((error) => {
+    this.processBatch(job, requests).catch((error) => {
       job.status = 'failed'
       job.error = error instanceof Error ? error.message : String(error)
       this.config.onStatusChange(job)

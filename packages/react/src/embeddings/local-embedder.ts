@@ -114,7 +114,7 @@ function generateFallbackEmbedding(text: string, dimensions: number): number[] {
     const trigram = normalizedText.substring(i, i + 3)
     let trigramHash = 0
     for (let j = 0; j < trigram.length; j++) {
-      trigramHash = ((trigramHash << 5) - trigramHash) + trigram.charCodeAt(j)
+      trigramHash = (trigramHash << 5) - trigramHash + trigram.charCodeAt(j)
     }
     const idx = Math.abs(trigramHash) % dimensions
     embedding[idx] += 1
@@ -124,7 +124,7 @@ function generateFallbackEmbedding(text: string, dimensions: number): number[] {
   for (const word of words) {
     let wordHash = 0
     for (let i = 0; i < word.length; i++) {
-      wordHash = ((wordHash << 5) - wordHash) + word.charCodeAt(i)
+      wordHash = (wordHash << 5) - wordHash + word.charCodeAt(i)
     }
 
     // Distribute word features across multiple dimensions
@@ -232,8 +232,11 @@ export class LocalEmbedder {
       const usePackage = '@tensorflow-models/universal-sentence-encoder'
 
       // Dynamic import with runtime-determined module name
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      const dynamicImport = new Function('moduleName', 'return import(moduleName)')
+
+      const dynamicImport = new Function(
+        'moduleName',
+        'return import(moduleName)'
+      )
       const tf = await dynamicImport(tfPackage).catch(() => null)
 
       if (!tf) {
@@ -349,7 +352,9 @@ export class LocalEmbedder {
 
     for (let i = 0; i < texts.length; i += batchSize) {
       const batch = texts.slice(i, i + batchSize)
-      const batchResults = await Promise.all(batch.map((text) => this.embed(text)))
+      const batchResults = await Promise.all(
+        batch.map((text) => this.embed(text))
+      )
       results.push(...batchResults)
     }
 
@@ -369,7 +374,11 @@ export class LocalEmbedder {
           ? this.stats.totalGenerationTimeMs / this.stats.totalGenerated
           : 0,
       modelLoaded: this.modelLoaded,
-      method: this.modelLoaded ? 'tensorflow' : this.config.useFallback ? 'fallback' : 'none',
+      method: this.modelLoaded
+        ? 'tensorflow'
+        : this.config.useFallback
+          ? 'fallback'
+          : 'none',
     }
   }
 
@@ -408,7 +417,9 @@ export class LocalEmbedder {
 /**
  * Create a local embedder with the given configuration
  */
-export function createLocalEmbedder(config?: LocalEmbedderConfig): LocalEmbedder {
+export function createLocalEmbedder(
+  config?: LocalEmbedderConfig
+): LocalEmbedder {
   return new LocalEmbedder(config)
 }
 

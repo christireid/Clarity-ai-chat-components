@@ -26,39 +26,228 @@ interface Feature {
 
 const features: Feature[] = [
   // Core Features
-  { name: 'One-line setup', category: 'Setup', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'full', 'ai-elements': 'partial', llamaindex: 'full', 'llm-ui': 'none' },
-  { name: 'CLI installer', category: 'Setup', clarity: 'full', 'assistant-ui': 'partial', copilotkit: 'partial', 'ai-elements': 'full', llamaindex: 'full', 'llm-ui': 'none' },
-  { name: 'AI SDK compatible', category: 'Setup', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'full', 'ai-elements': 'full', llamaindex: 'full', 'llm-ui': 'full' },
+  {
+    name: 'One-line setup',
+    category: 'Setup',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'full',
+    'ai-elements': 'partial',
+    llamaindex: 'full',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'CLI installer',
+    category: 'Setup',
+    clarity: 'full',
+    'assistant-ui': 'partial',
+    copilotkit: 'partial',
+    'ai-elements': 'full',
+    llamaindex: 'full',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'AI SDK compatible',
+    category: 'Setup',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'full',
+    'ai-elements': 'full',
+    llamaindex: 'full',
+    'llm-ui': 'full',
+  },
 
   // Streaming
-  { name: 'SSE streaming', category: 'Streaming', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'full', 'ai-elements': 'full', llamaindex: 'full', 'llm-ui': 'full' },
-  { name: '60fps smoothing', category: 'Streaming', clarity: 'full', 'assistant-ui': 'none', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'full' },
-  { name: 'WebSocket support', category: 'Streaming', clarity: 'full', 'assistant-ui': 'partial', copilotkit: 'full', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
+  {
+    name: 'SSE streaming',
+    category: 'Streaming',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'full',
+    'ai-elements': 'full',
+    llamaindex: 'full',
+    'llm-ui': 'full',
+  },
+  {
+    name: '60fps smoothing',
+    category: 'Streaming',
+    clarity: 'full',
+    'assistant-ui': 'none',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'full',
+  },
+  {
+    name: 'WebSocket support',
+    category: 'Streaming',
+    clarity: 'full',
+    'assistant-ui': 'partial',
+    copilotkit: 'full',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
 
   // Components
-  { name: 'Drop-in chat', category: 'Components', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'full', 'ai-elements': 'partial', llamaindex: 'full', 'llm-ui': 'none' },
-  { name: 'Composable primitives', category: 'Components', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'partial', 'ai-elements': 'partial', llamaindex: 'partial', 'llm-ui': 'full' },
-  { name: 'Tool calling UI', category: 'Components', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'full', 'ai-elements': 'partial', llamaindex: 'partial', 'llm-ui': 'full' },
-  { name: 'Mermaid diagrams', category: 'Components', clarity: 'full', 'assistant-ui': 'none', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'LaTeX/math', category: 'Components', clarity: 'full', 'assistant-ui': 'partial', copilotkit: 'partial', 'ai-elements': 'partial', llamaindex: 'full', 'llm-ui': 'partial' },
+  {
+    name: 'Drop-in chat',
+    category: 'Components',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'full',
+    'ai-elements': 'partial',
+    llamaindex: 'full',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Composable primitives',
+    category: 'Components',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'partial',
+    'ai-elements': 'partial',
+    llamaindex: 'partial',
+    'llm-ui': 'full',
+  },
+  {
+    name: 'Tool calling UI',
+    category: 'Components',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'full',
+    'ai-elements': 'partial',
+    llamaindex: 'partial',
+    'llm-ui': 'full',
+  },
+  {
+    name: 'Mermaid diagrams',
+    category: 'Components',
+    clarity: 'full',
+    'assistant-ui': 'none',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'LaTeX/math',
+    category: 'Components',
+    clarity: 'full',
+    'assistant-ui': 'partial',
+    copilotkit: 'partial',
+    'ai-elements': 'partial',
+    llamaindex: 'full',
+    'llm-ui': 'partial',
+  },
 
   // Memory & Context
-  { name: 'Memory strategies', category: 'Memory', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'Token optimization', category: 'Memory', clarity: 'full', 'assistant-ui': 'none', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'Context compression', category: 'Memory', clarity: 'full', 'assistant-ui': 'none', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'partial', 'llm-ui': 'none' },
+  {
+    name: 'Memory strategies',
+    category: 'Memory',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Token optimization',
+    category: 'Memory',
+    clarity: 'full',
+    'assistant-ui': 'none',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Context compression',
+    category: 'Memory',
+    clarity: 'full',
+    'assistant-ui': 'none',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'partial',
+    'llm-ui': 'none',
+  },
 
   // Enterprise
-  { name: 'RBAC', category: 'Enterprise', clarity: 'full', 'assistant-ui': 'partial', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'Multi-tenancy', category: 'Enterprise', clarity: 'full', 'assistant-ui': 'partial', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'Analytics', category: 'Enterprise', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'partial', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
+  {
+    name: 'RBAC',
+    category: 'Enterprise',
+    clarity: 'full',
+    'assistant-ui': 'partial',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Multi-tenancy',
+    category: 'Enterprise',
+    clarity: 'full',
+    'assistant-ui': 'partial',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Analytics',
+    category: 'Enterprise',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'partial',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
 
   // Performance
-  { name: 'Virtualized lists', category: 'Performance', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
-  { name: 'Offline support', category: 'Performance', clarity: 'full', 'assistant-ui': 'none', copilotkit: 'none', 'ai-elements': 'none', llamaindex: 'none', 'llm-ui': 'none' },
+  {
+    name: 'Virtualized lists',
+    category: 'Performance',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Offline support',
+    category: 'Performance',
+    clarity: 'full',
+    'assistant-ui': 'none',
+    copilotkit: 'none',
+    'ai-elements': 'none',
+    llamaindex: 'none',
+    'llm-ui': 'none',
+  },
 
   // Accessibility
-  { name: 'WCAG AAA', category: 'Accessibility', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'partial', 'ai-elements': 'partial', llamaindex: 'partial', 'llm-ui': 'none' },
-  { name: 'Keyboard nav', category: 'Accessibility', clarity: 'full', 'assistant-ui': 'full', copilotkit: 'partial', 'ai-elements': 'partial', llamaindex: 'partial', 'llm-ui': 'none' },
+  {
+    name: 'WCAG AAA',
+    category: 'Accessibility',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'partial',
+    'ai-elements': 'partial',
+    llamaindex: 'partial',
+    'llm-ui': 'none',
+  },
+  {
+    name: 'Keyboard nav',
+    category: 'Accessibility',
+    clarity: 'full',
+    'assistant-ui': 'full',
+    copilotkit: 'partial',
+    'ai-elements': 'partial',
+    llamaindex: 'partial',
+    'llm-ui': 'none',
+  },
 ]
 
 function FeatureIcon({ support }: { support: FeatureSupport }) {
@@ -72,9 +261,17 @@ function FeatureIcon({ support }: { support: FeatureSupport }) {
   }
 }
 
-function FeatureCell({ support, isClarity }: { support: FeatureSupport; isClarity?: boolean }) {
+function FeatureCell({
+  support,
+  isClarity,
+}: {
+  support: FeatureSupport
+  isClarity?: boolean
+}) {
   return (
-    <td className={`px-4 py-3 text-center ${isClarity ? 'bg-brand-50 dark:bg-brand-950/30' : ''}`}>
+    <td
+      className={`px-4 py-3 text-center ${isClarity ? 'bg-brand-50 dark:bg-brand-950/30' : ''}`}
+    >
       <div className="flex justify-center">
         <FeatureIcon support={support} />
       </div>
@@ -97,8 +294,8 @@ export default function WhyClarityPage() {
             Why Clarity Chat?
           </h1>
           <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-            See how Clarity Chat compares to other React AI chat libraries.
-            We built what we needed—and couldn't find elsewhere.
+            See how Clarity Chat compares to other React AI chat libraries. We
+            built what we needed—and couldn't find elsewhere.
           </p>
         </div>
 
@@ -108,7 +305,8 @@ export default function WhyClarityPage() {
             <div className="text-3xl mb-3">💰</div>
             <h3 className="font-bold text-lg mb-2">Token Optimization</h3>
             <p className="text-sm text-text-secondary">
-              Built-in memory compression and context management saves 60-90% on API costs.
+              Built-in memory compression and context management saves 60-90% on
+              API costs.
               <strong className="block mt-2">No competitor has this.</strong>
             </p>
           </div>
@@ -117,8 +315,8 @@ export default function WhyClarityPage() {
             <div className="text-3xl mb-3">🎯</div>
             <h3 className="font-bold text-lg mb-2">Ship Fast, Scale Later</h3>
             <p className="text-sm text-text-secondary">
-              One line to working chat. Composable primitives when you need control.
-              Enterprise features when you scale.
+              One line to working chat. Composable primitives when you need
+              control. Enterprise features when you scale.
             </p>
           </div>
 
@@ -126,7 +324,8 @@ export default function WhyClarityPage() {
             <div className="text-3xl mb-3">✨</div>
             <h3 className="font-bold text-lg mb-2">60fps Streaming</h3>
             <p className="text-sm text-text-secondary">
-              Smooth character-by-character rendering like llm-ui, but integrated into a complete component library.
+              Smooth character-by-character rendering like llm-ui, but
+              integrated into a complete component library.
             </p>
           </div>
         </div>
@@ -141,7 +340,9 @@ export default function WhyClarityPage() {
                   <th
                     key={c.slug}
                     className={`px-4 py-4 text-center font-semibold whitespace-nowrap ${
-                      c.slug === 'clarity' ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300' : ''
+                      c.slug === 'clarity'
+                        ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
+                        : ''
                     }`}
                   >
                     {c.name}
@@ -153,15 +354,23 @@ export default function WhyClarityPage() {
               {categories.map((category) => (
                 <>
                   <tr key={`cat-${category}`} className="bg-bg-secondary/50">
-                    <td colSpan={competitors.length + 1} className="px-4 py-2 font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                    <td
+                      colSpan={competitors.length + 1}
+                      className="px-4 py-2 font-semibold text-text-secondary text-xs uppercase tracking-wider"
+                    >
                       {category}
                     </td>
                   </tr>
                   {features
                     .filter((f) => f.category === category)
                     .map((feature) => (
-                      <tr key={feature.name} className="border-b border-border/50 hover:bg-bg-secondary/30">
-                        <td className="px-4 py-3 font-medium">{feature.name}</td>
+                      <tr
+                        key={feature.name}
+                        className="border-b border-border/50 hover:bg-bg-secondary/30"
+                      >
+                        <td className="px-4 py-3 font-medium">
+                          {feature.name}
+                        </td>
                         <FeatureCell support={feature.clarity} isClarity />
                         <FeatureCell support={feature['assistant-ui']} />
                         <FeatureCell support={feature.copilotkit} />

@@ -53,7 +53,7 @@ export interface UseClarityObjectOptions<TInput = any> {
   initialInput?: TInput
 
   /** Custom headers */
-  // eslint-disable-next-line no-undef
+
   headers?: HeadersInit
 
   /** Additional body data */

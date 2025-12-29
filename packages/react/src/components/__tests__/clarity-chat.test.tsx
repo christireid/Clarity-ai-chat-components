@@ -8,19 +8,31 @@ import userEvent from '@testing-library/user-event'
 import { ClarityChat } from '../chat/clarity-chat'
 import { ToastProvider } from '../ui/toast'
 
-// Mock the useClarityChat hook
+// Mock the useClarityChat hook with validation
 vi.mock('../../hooks/use-clarity-chat', () => ({
-  useClarityChat: vi.fn(() => ({
-    messages: [],
-    isLoading: false,
-    error: null,
-    append: vi.fn(),
-    setMessages: vi.fn(),
-    reload: vi.fn(),
-    stop: vi.fn(),
-    input: '',
-    setInput: vi.fn(),
-  })),
+  useClarityChat: vi.fn((options: { api?: string } = {}) => {
+    // Replicate the validation logic from the real hook
+    if (
+      !options.api ||
+      typeof options.api !== 'string' ||
+      options.api.trim().length === 0
+    ) {
+      throw new Error(
+        'ClarityChat: "api" prop is required. Provide a valid API endpoint URL.'
+      )
+    }
+    return {
+      messages: [],
+      isLoading: false,
+      error: null,
+      append: vi.fn(),
+      setMessages: vi.fn(),
+      reload: vi.fn(),
+      stop: vi.fn(),
+      input: '',
+      setInput: vi.fn(),
+    }
+  }),
 }))
 
 // Import the mocked hook for test manipulation
@@ -34,7 +46,7 @@ function renderWithProviders(ui: React.ReactElement) {
 }
 
 describe('ClarityChat', () => {
-  const defaultMockReturn = {
+  const createMockReturn = () => ({
     messages: [],
     isLoading: false,
     error: null,
@@ -44,11 +56,24 @@ describe('ClarityChat', () => {
     stop: vi.fn(),
     input: '',
     setInput: vi.fn(),
-  }
+  })
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseClarityChat.mockReturnValue(defaultMockReturn)
+    // Use mockImplementation to preserve validation logic while allowing customization
+    mockUseClarityChat.mockImplementation((options: { api?: string } = {}) => {
+      // Replicate the validation logic from the real hook
+      if (
+        !options.api ||
+        typeof options.api !== 'string' ||
+        options.api.trim().length === 0
+      ) {
+        throw new Error(
+          'ClarityChat: "api" prop is required. Provide a valid API endpoint URL.'
+        )
+      }
+      return createMockReturn()
+    })
   })
 
   describe('Required props validation', () => {
@@ -149,7 +174,7 @@ describe('ClarityChat', () => {
         { role: 'assistant' as const, content: 'Hi there!' },
       ]
       mockUseClarityChat.mockReturnValue({
-        ...defaultMockReturn,
+        ...createMockReturn(),
         messages,
       })
 
@@ -163,7 +188,7 @@ describe('ClarityChat', () => {
 
     it('should pass isLoading to ChatWindow', () => {
       mockUseClarityChat.mockReturnValue({
-        ...defaultMockReturn,
+        ...createMockReturn(),
         isLoading: true,
       })
 
@@ -179,7 +204,7 @@ describe('ClarityChat', () => {
     it('should initialize with append function from hook', () => {
       const mockAppend = vi.fn().mockResolvedValue(undefined)
       mockUseClarityChat.mockReturnValue({
-        ...defaultMockReturn,
+        ...createMockReturn(),
         append: mockAppend,
       })
 
@@ -237,7 +262,7 @@ describe('ClarityChat', () => {
       const mockOnClear = vi.fn()
 
       mockUseClarityChat.mockReturnValue({
-        ...defaultMockReturn,
+        ...createMockReturn(),
         setMessages: mockSetMessages,
         messages: [{ role: 'user' as const, content: 'Test' }],
       })

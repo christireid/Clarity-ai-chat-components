@@ -93,13 +93,11 @@ function ProductRecommendations() {
 
   return (
     <div>
-      <button onClick={() => run({ query: 'gaming laptops' })}>
-        Generate Products
-      </button>
+      <button onClick={() => run({ query: 'gaming laptops' })}>Generate Products</button>
       {isLoading && <div>Generating...</div>}
       {object && (
         <div>
-          {object.map(product => (
+          {object.map((product) => (
             <div key={product.name}>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
@@ -146,7 +144,7 @@ function ChatWithTools() {
 
   return (
     <div>
-      {toolInvocations.map(invocation => (
+      {toolInvocations.map((invocation) => (
         <ClarityToolResult
           key={invocation.toolCallId}
           registry={toolRegistry}
@@ -240,12 +238,12 @@ import { streamText } from 'ai'
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
-  
+
   const result = await streamText({
     model: openai('gpt-4'),
     messages,
   })
-  
+
   return result.toDataStreamResponse()
 }
 ```
@@ -258,17 +256,19 @@ import { generateObject } from 'ai'
 
 export async function POST(req: Request) {
   const { input } = await req.json()
-  
+
   const result = await generateObject({
     model: openai('gpt-4'),
-    schema: z.array(z.object({
-      name: z.string(),
-      price: z.number(),
-      description: z.string(),
-    })),
+    schema: z.array(
+      z.object({
+        name: z.string(),
+        price: z.number(),
+        description: z.string(),
+      })
+    ),
     prompt: `Generate product recommendations for: ${input.query}`,
   })
-  
+
   return Response.json({ object: result.object })
 }
 ```
@@ -286,11 +286,9 @@ const { error, append } = useClarityChat({
   },
 })
 
-{error && (
-  <div className="error">
-    Error: {error.message}
-  </div>
-)}
+{
+  error && <div className="error">Error: {error.message}</div>
+}
 ```
 
 ### Loading States
@@ -300,7 +298,9 @@ const { isLoading, messages } = useClarityChat({
   api: '/api/chat',
 })
 
-{isLoading && <LoadingIndicator />}
+{
+  isLoading && <LoadingIndicator />
+}
 ```
 
 ### Form Handling

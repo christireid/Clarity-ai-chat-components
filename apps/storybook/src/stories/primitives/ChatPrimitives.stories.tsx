@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import {
-  ChatPrimitive,
-  type CoreMessage,
-} from '@clarity-chat/react'
+import { ChatPrimitive, type CoreMessage } from '@clarity-chat/react'
 import { useState } from 'react'
 
 /**
@@ -70,9 +67,19 @@ export default meta
 // Sample messages for stories
 const sampleMessages: CoreMessage[] = [
   { id: '1', role: 'user', content: 'Hello, can you help me with React?' },
-  { id: '2', role: 'assistant', content: 'Of course! I\'d be happy to help you with React. What would you like to know?' },
+  {
+    id: '2',
+    role: 'assistant',
+    content:
+      "Of course! I'd be happy to help you with React. What would you like to know?",
+  },
   { id: '3', role: 'user', content: 'How do I use useEffect correctly?' },
-  { id: '4', role: 'assistant', content: 'useEffect is a React hook for handling side effects. Here are the key patterns:\n\n1. **Run once on mount**: `useEffect(() => { ... }, [])`\n2. **Run when dependencies change**: `useEffect(() => { ... }, [dep1, dep2])`\n3. **Cleanup**: Return a function from useEffect to clean up.\n\nWould you like me to show you a specific example?' },
+  {
+    id: '4',
+    role: 'assistant',
+    content:
+      'useEffect is a React hook for handling side effects. Here are the key patterns:\n\n1. **Run once on mount**: `useEffect(() => { ... }, [])`\n2. **Run when dependencies change**: `useEffect(() => { ... }, [dep1, dep2])`\n3. **Cleanup**: Return a function from useEffect to clean up.\n\nWould you like me to show you a specific example?',
+  },
 ]
 
 // ============================================================================
@@ -179,16 +186,14 @@ function CustomStyledDemo() {
     >
       <ChatPrimitive.Messages className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.map((msg) => (
-          <ChatPrimitive.Message
-            key={msg.id}
-            message={msg}
-            className="group"
-          >
+          <ChatPrimitive.Message key={msg.id} message={msg} className="group">
             <div className="flex items-start gap-3">
               {/* Avatar */}
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
-                  msg.role === 'user' ? 'bg-purple-500' : 'bg-gradient-to-br from-pink-500 to-purple-500'
+                  msg.role === 'user'
+                    ? 'bg-purple-500'
+                    : 'bg-gradient-to-br from-pink-500 to-purple-500'
                 }`}
               >
                 {msg.role === 'user' ? 'U' : 'AI'}
@@ -234,7 +239,8 @@ export const CustomStyling: StoryObj = {
   parameters: {
     docs: {
       description: {
-        story: 'Primitives are completely unstyled - apply any design you want.',
+        story:
+          'Primitives are completely unstyled - apply any design you want.',
       },
     },
   },
@@ -266,11 +272,17 @@ export const EmptyState: StoryObj = {
 
 export const LoadingState: StoryObj = {
   render: () => (
-    <ChatPrimitive.Root messages={sampleMessages.slice(0, 2)} isLoading={true} className="h-[300px] border rounded-lg">
+    <ChatPrimitive.Root
+      messages={sampleMessages.slice(0, 2)}
+      isLoading={true}
+      className="h-[300px] border rounded-lg"
+    >
       <ChatPrimitive.Messages className="flex-1 overflow-y-auto p-4 space-y-4">
         {sampleMessages.slice(0, 2).map((msg) => (
           <ChatPrimitive.Message key={msg.id} message={msg}>
-            <div className={`p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-500 text-white ml-auto' : 'bg-gray-100'} max-w-[80%]`}>
+            <div
+              className={`p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-500 text-white ml-auto' : 'bg-gray-100'} max-w-[80%]`}
+            >
               <ChatPrimitive.MessageContent />
             </div>
           </ChatPrimitive.Message>
@@ -280,9 +292,18 @@ export const LoadingState: StoryObj = {
       <ChatPrimitive.LoadingIndicator className="p-4 border-t">
         <div className="flex items-center gap-2 text-gray-500">
           <div className="flex gap-1">
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <span
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '0ms' }}
+            />
+            <span
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '150ms' }}
+            />
+            <span
+              className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+              style={{ animationDelay: '300ms' }}
+            />
           </div>
           <span>AI is thinking...</span>
         </div>

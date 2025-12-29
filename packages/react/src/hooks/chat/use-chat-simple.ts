@@ -95,8 +95,8 @@ export function useChatSimple(
   if (process.env['NODE_ENV'] === 'development') {
     console.warn(
       '[Clarity Chat] useChatSimple is deprecated. Use useClarityChat instead. ' +
-      'ChatWindow now accepts CoreMessage[] directly. ' +
-      'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
+        'ChatWindow now accepts CoreMessage[] directly. ' +
+        'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
     )
   }
   const {

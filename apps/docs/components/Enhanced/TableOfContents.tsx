@@ -15,7 +15,10 @@ interface TableOfContentsProps {
   className?: string
 }
 
-export function TableOfContents({ headings: propHeadings, className }: TableOfContentsProps) {
+export function TableOfContents({
+  headings: propHeadings,
+  className,
+}: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([])
   const [activeId, setActiveId] = useState<string>('')
   const pathname = usePathname()
@@ -28,17 +31,20 @@ export function TableOfContents({ headings: propHeadings, className }: TableOfCo
 
     // Auto-detect headings from the page
     const headingElements = document.querySelectorAll('h2, h3, h4')
-    const detectedHeadings: Heading[] = Array.from(headingElements).map((el) => {
-      const id = el.id || el.textContent?.toLowerCase().replace(/\s+/g, '-') || ''
-      if (!el.id) {
-        el.id = id
+    const detectedHeadings: Heading[] = Array.from(headingElements).map(
+      (el) => {
+        const id =
+          el.id || el.textContent?.toLowerCase().replace(/\s+/g, '-') || ''
+        if (!el.id) {
+          el.id = id
+        }
+        return {
+          id,
+          text: el.textContent || '',
+          level: parseInt(el.tagName.charAt(1), 10),
+        }
       }
-      return {
-        id,
-        text: el.textContent || '',
-        level: parseInt(el.tagName.charAt(1)),
-      }
-    })
+    )
 
     setHeadings(detectedHeadings)
   }, [propHeadings, pathname])
@@ -112,7 +118,10 @@ export function TableOfContents({ headings: propHeadings, className }: TableOfCo
                   e.preventDefault()
                   const element = document.getElementById(heading.id)
                   if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    element.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    })
                     // Update URL without scrolling
                     window.history.pushState(null, '', `#${heading.id}`)
                   }

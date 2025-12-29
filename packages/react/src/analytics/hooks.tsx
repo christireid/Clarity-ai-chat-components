@@ -1,6 +1,6 @@
 /**
  * Analytics Hooks
- * 
+ *
  * Convenience hooks for common analytics patterns
  */
 
@@ -10,7 +10,7 @@ import { AnalyticsEvents } from './types'
 
 /**
  * Track when a component mounts
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
@@ -19,17 +19,20 @@ import { AnalyticsEvents } from './types'
  * }
  * ```
  */
-export function useTrackMount(eventName: string, properties?: Record<string, any>) {
+export function useTrackMount(
+  eventName: string,
+  properties?: Record<string, any>
+) {
   const { track } = useAnalytics()
-  
+
   React.useEffect(() => {
     track(eventName, properties)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 }
 
 /**
  * Track when a component unmounts
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
@@ -38,29 +41,32 @@ export function useTrackMount(eventName: string, properties?: Record<string, any
  * }
  * ```
  */
-export function useTrackUnmount(eventName: string, properties?: Record<string, any> | (() => Record<string, any>)) {
+export function useTrackUnmount(
+  eventName: string,
+  properties?: Record<string, any> | (() => Record<string, any>)
+) {
   const { track } = useAnalytics()
-  
+
   React.useEffect(() => {
     return () => {
       const props = typeof properties === 'function' ? properties() : properties
       track(eventName, props)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 }
 
 /**
  * Track when a value changes
- * 
+ *
  * @example
  * ```tsx
  * function SearchInput() {
  *   const [query, setQuery] = useState('')
- *   
- *   useTrackChange('search_query_changed', query, { 
- *     query_length: query.length 
+ *
+ *   useTrackChange('search_query_changed', query, {
+ *     query_length: query.length
  *   })
- *   
+ *
  *   return <input value={query} onChange={e => setQuery(e.target.value)} />
  * }
  * ```
@@ -72,10 +78,11 @@ export function useTrackChange(
 ) {
   const { track } = useAnalytics()
   const prevValue = React.useRef(value)
-  
+
   React.useEffect(() => {
     if (prevValue.current !== value) {
-      const props = typeof properties === 'function' ? properties(value) : properties
+      const props =
+        typeof properties === 'function' ? properties(value) : properties
       track(eventName, { value, ...props })
       prevValue.current = value
     }
@@ -84,7 +91,7 @@ export function useTrackChange(
 
 /**
  * Track visibility changes (element enters/leaves viewport)
- * 
+ *
  * @example
  * ```tsx
  * function Banner() {
@@ -101,35 +108,32 @@ export function useTrackVisibility<T extends HTMLElement = HTMLDivElement>(
   const { track } = useAnalytics()
   const ref = React.useRef<T | null>(null)
   const hasTracked = React.useRef(false)
-  
+
   React.useEffect(() => {
     const element = ref.current
     if (!element) return
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        if (entry && entry.isIntersecting && !hasTracked.current) {
-          track(eventName, properties)
-          hasTracked.current = true
-        }
-      },
-      options
-    )
-    
+
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0]
+      if (entry && entry.isIntersecting && !hasTracked.current) {
+        track(eventName, properties)
+        hasTracked.current = true
+      }
+    }, options)
+
     observer.observe(element)
-    
+
     return () => {
       observer.disconnect()
     }
   }, [eventName, properties, track, options])
-  
+
   return ref
 }
 
 /**
  * Track click events
- * 
+ *
  * @example
  * ```tsx
  * function Button() {
@@ -140,13 +144,16 @@ export function useTrackVisibility<T extends HTMLElement = HTMLDivElement>(
  */
 export function useTrackClick(
   eventName: string,
-  properties?: Record<string, any> | ((event: React.MouseEvent) => Record<string, any>)
+  properties?:
+    | Record<string, any>
+    | ((event: React.MouseEvent) => Record<string, any>)
 ) {
   const { track } = useAnalytics()
-  
+
   return React.useCallback(
     (event: React.MouseEvent) => {
-      const props = typeof properties === 'function' ? properties(event) : properties
+      const props =
+        typeof properties === 'function' ? properties(event) : properties
       track(eventName, props)
     },
     [eventName, properties, track]
@@ -155,12 +162,12 @@ export function useTrackClick(
 
 /**
  * Track form submissions
- * 
+ *
  * @example
  * ```tsx
  * function ContactForm() {
  *   const handleSubmit = useTrackSubmit('form_submitted', { form_name: 'contact' })
- *   
+ *
  *   return (
  *     <form onSubmit={handleSubmit}>
  *       <input name="email" />
@@ -172,13 +179,16 @@ export function useTrackClick(
  */
 export function useTrackSubmit(
   eventName: string,
-  properties?: Record<string, any> | ((event: React.FormEvent) => Record<string, any>)
+  properties?:
+    | Record<string, any>
+    | ((event: React.FormEvent) => Record<string, any>)
 ) {
   const { track } = useAnalytics()
-  
+
   return React.useCallback(
     (event: React.FormEvent) => {
-      const props = typeof properties === 'function' ? properties(event) : properties
+      const props =
+        typeof properties === 'function' ? properties(event) : properties
       track(eventName, props)
     },
     [eventName, properties, track]
@@ -187,12 +197,12 @@ export function useTrackSubmit(
 
 /**
  * Track errors
- * 
+ *
  * @example
  * ```tsx
  * function DataFetcher() {
  *   const trackError = useTrackError()
- *   
+ *
  *   const fetchData = async () => {
  *     try {
  *       await api.getData()
@@ -200,19 +210,20 @@ export function useTrackSubmit(
  *       trackError(error, { context: 'data_fetch' })
  *     }
  *   }
- *   
+ *
  *   return <button onClick={fetchData}>Fetch</button>
  * }
  * ```
  */
 export function useTrackError() {
   const { track } = useAnalytics()
-  
+
   return React.useCallback(
     (error: Error | unknown, properties?: Record<string, any>) => {
-      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
       const errorStack = error instanceof Error ? error.stack : undefined
-      
+
       track(AnalyticsEvents.ERROR_OCCURRED, {
         error: errorMessage,
         stack: errorStack,
@@ -225,18 +236,18 @@ export function useTrackError() {
 
 /**
  * Track timing/performance metrics
- * 
+ *
  * @example
  * ```tsx
  * function DataLoader() {
  *   const { startTimer, endTimer } = useTrackTiming()
- *   
+ *
  *   const loadData = async () => {
  *     startTimer('data_load')
  *     await fetchData()
  *     endTimer('data_load', { data_size: '1MB' })
  *   }
- *   
+ *
  *   return <button onClick={loadData}>Load Data</button>
  * }
  * ```
@@ -244,11 +255,11 @@ export function useTrackError() {
 export function useTrackTiming() {
   const { track } = useAnalytics()
   const timers = React.useRef<Record<string, number>>({})
-  
+
   const startTimer = React.useCallback((timerName: string) => {
     timers.current[timerName] = performance.now()
   }, [])
-  
+
   const endTimer = React.useCallback(
     (timerName: string, properties?: Record<string, any>) => {
       const startTime = timers.current[timerName]
@@ -256,10 +267,10 @@ export function useTrackTiming() {
         console.warn(`Timer "${timerName}" was not started`)
         return
       }
-      
+
       const duration = performance.now() - startTime
       delete timers.current[timerName]
-      
+
       track(AnalyticsEvents.PERFORMANCE_MEASURED, {
         timer_name: timerName,
         duration_ms: Math.round(duration),
@@ -268,24 +279,24 @@ export function useTrackTiming() {
     },
     [track]
   )
-  
+
   return { startTimer, endTimer }
 }
 
 /**
  * Track feature usage with debouncing
- * 
+ *
  * Useful for tracking frequent user actions without overwhelming analytics
- * 
+ *
  * @example
  * ```tsx
  * function SearchInput() {
  *   const trackSearch = useTrackFeature('search_used', 500)
- *   
+ *
  *   const handleChange = (e) => {
  *     trackSearch({ query: e.target.value })
  *   }
- *   
+ *
  *   return <input onChange={handleChange} />
  * }
  * ```
@@ -293,13 +304,13 @@ export function useTrackTiming() {
 export function useTrackFeature(eventName: string, debounceMs: number = 0) {
   const { track } = useAnalytics()
   const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-  
+
   return React.useCallback(
     (properties?: Record<string, any>) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      
+
       if (debounceMs > 0) {
         timeoutRef.current = setTimeout(() => {
           track(eventName, properties)
@@ -314,9 +325,9 @@ export function useTrackFeature(eventName: string, debounceMs: number = 0) {
 
 /**
  * Track scroll depth
- * 
+ *
  * Tracks when user scrolls to certain percentages of the page
- * 
+ *
  * @example
  * ```tsx
  * function Article() {
@@ -332,15 +343,20 @@ export function useTrackScrollDepth(
 ) {
   const { track } = useAnalytics()
   const trackedThresholds = React.useRef<Set<number>>(new Set())
-  
+
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      const scrollHeight =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight
       const scrollPercentage = (scrollTop / scrollHeight) * 100
-      
-      thresholds.forEach(threshold => {
-        if (scrollPercentage >= threshold && !trackedThresholds.current.has(threshold)) {
+
+      thresholds.forEach((threshold) => {
+        if (
+          scrollPercentage >= threshold &&
+          !trackedThresholds.current.has(threshold)
+        ) {
           trackedThresholds.current.add(threshold)
           track(eventName, {
             scroll_depth: threshold,
@@ -349,9 +365,9 @@ export function useTrackScrollDepth(
         }
       })
     }
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true })
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
@@ -360,7 +376,7 @@ export function useTrackScrollDepth(
 
 /**
  * Track time spent on page
- * 
+ *
  * @example
  * ```tsx
  * function ArticlePage() {
@@ -369,10 +385,13 @@ export function useTrackScrollDepth(
  * }
  * ```
  */
-export function useTrackTimeOnPage(eventName: string, properties?: Record<string, any>) {
+export function useTrackTimeOnPage(
+  eventName: string,
+  properties?: Record<string, any>
+) {
   const { track } = useAnalytics()
   const startTime = React.useRef(Date.now())
-  
+
   React.useEffect(() => {
     return () => {
       const timeSpent = Date.now() - startTime.current
@@ -382,5 +401,5 @@ export function useTrackTimeOnPage(eventName: string, properties?: Record<string
         ...properties,
       })
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 }

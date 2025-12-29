@@ -468,7 +468,6 @@ export function useDashboardData<T>(
       isMountedRef.current = false
       clearTimers()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Refetch on dependency changes
@@ -477,7 +476,6 @@ export function useDashboardData<T>(
       log('Dependencies changed, refetching...')
       refetch()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
   // Staleness timer (scheduled after commit, not during fetch).

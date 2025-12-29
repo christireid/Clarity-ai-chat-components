@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { toast } from '@/lib/toast'
 import { buttonAnimation } from '@/lib/animations'
 import { motion } from 'framer-motion'
+import { useReducedMotion } from '@/components/Layout/hooks'
 
 export default function Error({
   error,
@@ -12,6 +13,8 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   useEffect(() => {
     console.error('Application error:', error)
     toast.error(error.message || 'An unexpected error occurred', {
@@ -23,8 +26,8 @@ export default function Error({
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+        animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         className="text-center"
       >
         <h2 className="text-2xl font-bold mb-4 text-red-600 dark:text-red-400">
@@ -35,9 +38,9 @@ export default function Error({
         </p>
         <motion.button
           onClick={reset}
-          variants={buttonAnimation}
-          whileHover="hover"
-          whileTap="tap"
+          variants={prefersReducedMotion ? undefined : buttonAnimation}
+          whileHover={prefersReducedMotion ? undefined : 'hover'}
+          whileTap={prefersReducedMotion ? undefined : 'tap'}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
         >
           Try again

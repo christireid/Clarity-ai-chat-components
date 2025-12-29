@@ -276,12 +276,27 @@ export default function App() {
 
               <TryItOut title="Try it out">
                 <p className="text-text-secondary mb-4">
-                  This pattern gives you full control over the chat while keeping it simple:
+                  This pattern gives you full control over the chat while
+                  keeping it simple:
                 </p>
                 <ul className="space-y-2 text-text-secondary">
-                  <li>✓ <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">useClarityChat</code> manages all state, streaming, and API calls</li>
-                  <li>✓ <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">ChatWindow</code> accepts messages directly - no conversion needed</li>
-                  <li>✓ Add memory, tools, or custom behavior via hook options</li>
+                  <li>
+                    ✓{' '}
+                    <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                      useClarityChat
+                    </code>{' '}
+                    manages all state, streaming, and API calls
+                  </li>
+                  <li>
+                    ✓{' '}
+                    <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                      ChatWindow
+                    </code>{' '}
+                    accepts messages directly - no conversion needed
+                  </li>
+                  <li>
+                    ✓ Add memory, tools, or custom behavior via hook options
+                  </li>
                 </ul>
               </TryItOut>
 

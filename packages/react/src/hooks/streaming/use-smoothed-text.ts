@@ -172,7 +172,8 @@ export function useSmoothedText(
 
         // Calculate chars to reveal this frame
         // Speed up if buffer is getting large
-        const speedMultiplier = buffered > maxBuffer ? catchUpCharsPerFrame : charsPerFrame
+        const speedMultiplier =
+          buffered > maxBuffer ? catchUpCharsPerFrame : charsPerFrame
         const charsToReveal = Math.min(speedMultiplier, buffered)
 
         return currentIndex + charsToReveal

@@ -14,6 +14,7 @@ import {
   Code2,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useReducedMotion } from '@/components/Layout/hooks'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { TypingIndicator } from '@clarity-chat/react'
 import { generateId, sleep } from '@/lib/demos/utils'
@@ -160,6 +161,7 @@ export default function ProviderHotswapDemo() {
   const [switchCount, setSwitchCount] = useState(0)
   const isMountedRef = useMountedRef()
   const { copy, isCopied } = useCopyToClipboard()
+  const prefersReducedMotion = useReducedMotion()
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -373,8 +375,16 @@ export default function ProviderHotswapDemo() {
                   return (
                     <motion.div
                       key={message.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={
+                        prefersReducedMotion
+                          ? { opacity: 0 }
+                          : { opacity: 0, y: 10 }
+                      }
+                      animate={
+                        prefersReducedMotion
+                          ? { opacity: 1 }
+                          : { opacity: 1, y: 0 }
+                      }
                       className={`flex items-start gap-3 ${
                         message.sender === 'user' ? 'flex-row-reverse' : ''
                       }`}

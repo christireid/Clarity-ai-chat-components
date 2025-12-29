@@ -9,7 +9,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
@@ -52,6 +52,9 @@ export const InteractiveCard = React.memo(function InteractiveCard({
   ref,
   ...props
 }: InteractiveCardProps) {
+  // Accessibility: Respect user's reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   const [isHovered, setIsHovered] = React.useState(false)
   const [ripples, setRipples] = React.useState<
     { x: number; y: number; id: number }[]
@@ -75,27 +78,35 @@ export const InteractiveCard = React.memo(function InteractiveCard({
     onCardClick?.()
   }
 
-  const hoverVariants = {
-    none: {},
-    subtle: {
-      y: -2,
-      boxShadow:
-        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
-    },
-    medium: {
-      y: -4,
-      boxShadow:
-        '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
-    },
-    strong: {
-      y: -8,
-      boxShadow:
-        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
-    },
-  }
+  // Accessibility: Use minimal animations when reduced motion is preferred
+  const hoverVariants = prefersReducedMotion
+    ? {
+        none: {},
+        subtle: { boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' },
+        medium: { boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' },
+        strong: { boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' },
+      }
+    : {
+        none: {},
+        subtle: {
+          y: -2,
+          boxShadow:
+            '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+        },
+        medium: {
+          y: -4,
+          boxShadow:
+            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+        },
+        strong: {
+          y: -8,
+          boxShadow:
+            '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+        },
+      }
 
   // Extract HTML event handlers that conflict with Framer Motion props
   const {
@@ -127,11 +138,16 @@ export const InteractiveCard = React.memo(function InteractiveCard({
 
   // Leveraging Framer Motion v12's improved type inference
   // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
+  // Accessibility: Disable scale transform when reduced motion is preferred
   const animateValue: import('framer-motion').TargetAndTransition | undefined =
     isHovered && !disabled && interactive
       ? ({
           ...hoverVariants[hoverIntensity],
-          scale: hoverIntensity !== 'none' ? 1.02 : 1,
+          scale: prefersReducedMotion
+            ? 1
+            : hoverIntensity !== 'none'
+              ? 1.02
+              : 1,
         } as import('framer-motion').TargetAndTransition)
       : (_animate as import('framer-motion').TargetAndTransition | undefined)
 
@@ -163,15 +179,16 @@ export const InteractiveCard = React.memo(function InteractiveCard({
         }
       }}
       animate={animateValue}
+      // Accessibility: Disable tap scale when reduced motion is preferred
       whileTap={
-        !disabled && interactive
+        !disabled && interactive && !prefersReducedMotion
           ? { scale: 0.98, transition: { duration: durations.fast } }
           : undefined
       }
       {...motionProps}
     >
-      {/* Ripple effects */}
-      {showRipple && (
+      {/* Ripple effects - Accessibility: Use fade only when reduced motion */}
+      {showRipple && !prefersReducedMotion && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {ripples.map((ripple) => (
             <motion.div
@@ -185,14 +202,28 @@ export const InteractiveCard = React.memo(function InteractiveCard({
           ))}
         </div>
       )}
+      {/* Accessibility: Simple opacity fade for ripple when reduced motion is preferred */}
+      {showRipple && prefersReducedMotion && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {ripples.map((ripple) => (
+            <motion.div
+              key={ripple.id}
+              initial={{ opacity: 0.3 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: durations.normal }}
+              className="absolute inset-0 bg-primary/10"
+            />
+          ))}
+        </div>
+      )}
 
       {/* Content */}
       {children}
 
-      {/* Selected indicator */}
+      {/* Selected indicator - Accessibility: instant appearance when reduced motion */}
       {selected && (
         <motion.div
-          initial={{ scaleX: 0 }}
+          initial={prefersReducedMotion ? { scaleX: 1 } : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
           className="absolute top-0 left-0 right-0 h-1 bg-primary origin-left"
         />

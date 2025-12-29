@@ -149,7 +149,7 @@ export function safeEvaluate(code: string): SafeEvaluateResult {
     const wrappedCode = `"use strict"; return (${trimmedCode})`
 
     // Create function with limited scope
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+
     const sandboxedFn = new Function(...globalNames, wrappedCode)
 
     // Execute with timeout protection

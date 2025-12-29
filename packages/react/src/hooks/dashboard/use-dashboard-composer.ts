@@ -419,7 +419,6 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       }
       staleTimeoutsRef.current.clear()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Check for all success

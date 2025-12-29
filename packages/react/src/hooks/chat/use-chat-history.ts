@@ -33,7 +33,7 @@ function getIsMac(): boolean {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') {
     return false
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const userAgentData = (navigator as any).userAgentData
   if (userAgentData?.platform) {
     return /macOS|iOS/i.test(userAgentData.platform)
@@ -63,9 +63,15 @@ export interface ChatHistoryOptions {
   /** Callback when messages change */
   onChange?: (messages: ChatMessage[]) => void
   /** Callback on undo */
-  onUndo?: (previousMessages: ChatMessage[], restoredMessages: ChatMessage[]) => void
+  onUndo?: (
+    previousMessages: ChatMessage[],
+    restoredMessages: ChatMessage[]
+  ) => void
   /** Callback on redo */
-  onRedo?: (previousMessages: ChatMessage[], restoredMessages: ChatMessage[]) => void
+  onRedo?: (
+    previousMessages: ChatMessage[],
+    restoredMessages: ChatMessage[]
+  ) => void
 }
 
 export interface ChatHistoryState {
@@ -77,9 +83,13 @@ export interface UseChatHistoryReturn {
   /** Current messages */
   messages: ChatMessage[]
   /** Add a single message */
-  addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }) => void
+  addMessage: (
+    message: Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }
+  ) => void
   /** Add multiple messages at once */
-  addMessages: (messages: Array<Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }>) => void
+  addMessages: (
+    messages: Array<Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }>
+  ) => void
   /** Update an existing message */
   updateMessage: (id: string, updates: Partial<Omit<ChatMessage, 'id'>>) => void
   /** Remove a message */
@@ -200,7 +210,11 @@ export function useChatHistory(
 
   // Add multiple messages
   const addMessages = React.useCallback(
-    (newMessages: Array<Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }>) => {
+    (
+      newMessages: Array<
+        Omit<ChatMessage, 'id' | 'timestamp'> & { id?: string }
+      >
+    ) => {
       if (newMessages.length === 0) return
       saveToHistory()
       const messagesWithIds = newMessages.map((m) => ({
@@ -272,7 +286,10 @@ export function useChatHistory(
     if (history.length === 0) return
 
     const previousState = history[history.length - 1]!
-    const currentState = { messages: cloneMessages(messages), timestamp: Date.now() }
+    const currentState = {
+      messages: cloneMessages(messages),
+      timestamp: Date.now(),
+    }
 
     setHistory((prev) => prev.slice(0, -1))
     setFuture((prev) => [...prev, currentState])
@@ -286,7 +303,10 @@ export function useChatHistory(
     if (future.length === 0) return
 
     const nextState = future[future.length - 1]!
-    const currentState = { messages: cloneMessages(messages), timestamp: Date.now() }
+    const currentState = {
+      messages: cloneMessages(messages),
+      timestamp: Date.now(),
+    }
 
     setFuture((prev) => prev.slice(0, -1))
     setHistory((prev) => [...prev, currentState])
