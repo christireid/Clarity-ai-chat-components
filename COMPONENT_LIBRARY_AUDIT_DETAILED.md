@@ -31,18 +31,22 @@ hardening cycles were completed with 25+ critical fixes implemented.
 14. ✅ **Added configurable ARIA props** to ChatInput (id, aria-label)
 15. ✅ **Added tabIndex for skip link targeting** on key regions
 16. ✅ **Deprecated hooks properly documented** with clear migration paths
+17. ✅ **Fixed no-void lint violations** in ErrorReporter, batch-api, and vector-stores
+18. ✅ **Added reduced-motion support** to Skeleton component (WCAG 2.3.3)
+19. ✅ **Documented exhaustive-deps** decision in ESLint config with actionable TODO
+20. ✅ **Lint warnings reduced** from 500 to 494
 
-### Updated Score: **4.3 / 5.0** (↑ from 3.8)
+### Updated Score: **4.35 / 5.0** (↑ from 3.8)
 
 **Score Breakdown:**
 
-- Functionality/Correctness (25%): 4.3 → Weighted: 1.08
-- Best Practices (20%): 4.2 → Weighted: 0.84
+- Functionality/Correctness (25%): 4.4 → Weighted: 1.10
+- Best Practices (20%): 4.3 → Weighted: 0.86
 - API Ergonomics (20%): 4.4 → Weighted: 0.88
-- Code Cleanliness (10%): 4.0 → Weighted: 0.40
+- Code Cleanliness (10%): 4.1 → Weighted: 0.41
 - Maintainability (15%): 4.3 → Weighted: 0.65
 - Competitiveness (10%): 4.5 → Weighted: 0.45
-- **Total: 4.30/5.0**
+- **Total: 4.35/5.0**
 
 ---
 
