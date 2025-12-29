@@ -28,10 +28,21 @@ vi.mock('framer-motion', () => ({
       className,
       variants,
       ref,
+      // Filter out framer-motion specific props that shouldn't go to DOM
+      layout: _layout,
+      initial: _initial,
+      animate: _animate,
+      exit: _exit,
+      transition: _transition,
       ...props
     }: React.HTMLAttributes<HTMLDivElement> & {
       variants?: object
       ref?: React.Ref<HTMLDivElement>
+      layout?: boolean
+      initial?: object | string
+      animate?: object | string
+      exit?: object | string
+      transition?: object
     }) {
       return (
         <div
@@ -758,5 +769,218 @@ describe('WCAG 2.3.3 Compliance', () => {
     expect(screen.getByRole('listitem')).toBeInTheDocument()
     expect(screen.getByRole('button')).toBeInTheDocument()
     expect(screen.getAllByRole('gridcell')).toHaveLength(2)
+  })
+})
+
+describe('Edge Cases', () => {
+  beforeEach(() => {
+    mockReducedMotion = false
+  })
+
+  describe('empty and null children', () => {
+    it('AnimatedList handles empty children', () => {
+      const { container } = render(<AnimatedList>{null}</AnimatedList>)
+      expect(container.firstChild).toBeInTheDocument()
+    })
+
+    it('AnimatedList handles undefined children', () => {
+      const { container } = render(<AnimatedList>{undefined}</AnimatedList>)
+      expect(container.firstChild).toBeInTheDocument()
+    })
+
+    it('AnimatedGrid handles empty children gracefully', () => {
+      const { container } = render(
+        <AnimatedGrid columns={2}>{null}</AnimatedGrid>
+      )
+      expect(container.firstChild).toBeInTheDocument()
+    })
+
+    it('StaggerContainer handles no children', () => {
+      const { container } = render(<StaggerContainer>{null}</StaggerContainer>)
+      expect(container.firstChild).toBeInTheDocument()
+    })
+
+    it('ConditionalPresence handles null children when shown', () => {
+      const { container } = render(
+        <ConditionalPresence show={true}>{null}</ConditionalPresence>
+      )
+      expect(container).toBeInTheDocument()
+    })
+  })
+
+  describe('multiple children', () => {
+    it('AnimatedList renders multiple children correctly', () => {
+      render(
+        <AnimatedList>
+          <div data-testid="item-1">Item 1</div>
+          <div data-testid="item-2">Item 2</div>
+          <div data-testid="item-3">Item 3</div>
+        </AnimatedList>
+      )
+
+      expect(screen.getByTestId('item-1')).toBeInTheDocument()
+      expect(screen.getByTestId('item-2')).toBeInTheDocument()
+      expect(screen.getByTestId('item-3')).toBeInTheDocument()
+    })
+
+    it('AnimatedGrid renders correct number of children', () => {
+      render(
+        <AnimatedGrid columns={3}>
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} data-testid={`cell-${i}`}>
+              Cell {i}
+            </div>
+          ))}
+        </AnimatedGrid>
+      )
+
+      for (let i = 0; i < 9; i++) {
+        expect(screen.getByTestId(`cell-${i}`)).toBeInTheDocument()
+      }
+    })
+  })
+
+  describe('rapid re-rendering', () => {
+    it('AnimatedList handles rapid className changes', () => {
+      const { rerender, container } = render(
+        <AnimatedList className="class-1">
+          <div>Item</div>
+        </AnimatedList>
+      )
+
+      rerender(
+        <AnimatedList className="class-2">
+          <div>Item</div>
+        </AnimatedList>
+      )
+
+      rerender(
+        <AnimatedList className="class-3">
+          <div>Item</div>
+        </AnimatedList>
+      )
+
+      const motionDiv = getMotionContainer(container)
+      expect(motionDiv).toHaveClass('class-3')
+    })
+
+    it('ConditionalPresence handles rapid show/hide toggling', () => {
+      const { rerender } = render(
+        <ConditionalPresence show={true}>
+          <div data-testid="content">Content</div>
+        </ConditionalPresence>
+      )
+
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+
+      rerender(
+        <ConditionalPresence show={false}>
+          <div data-testid="content">Content</div>
+        </ConditionalPresence>
+      )
+
+      rerender(
+        <ConditionalPresence show={true}>
+          <div data-testid="content">Content</div>
+        </ConditionalPresence>
+      )
+
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+
+    it('SlidePresence handles rapid direction changes', () => {
+      const { rerender, container } = render(
+        <SlidePresence direction="up" distance={20}>
+          <div>Content</div>
+        </SlidePresence>
+      )
+
+      rerender(
+        <SlidePresence direction="down" distance={20}>
+          <div>Content</div>
+        </SlidePresence>
+      )
+
+      rerender(
+        <SlidePresence direction="left" distance={20}>
+          <div>Content</div>
+        </SlidePresence>
+      )
+
+      const motionDiv = getMotionContainer(container)
+      const variants = JSON.parse(
+        motionDiv.getAttribute('data-variants') || '{}'
+      )
+
+      expect(variants.initial).toHaveProperty('x', -20)
+    })
+  })
+
+  describe('unmount behavior', () => {
+    it('AnimatedList unmounts cleanly', () => {
+      const { unmount } = render(
+        <AnimatedList>
+          <div data-testid="child">Item</div>
+        </AnimatedList>
+      )
+
+      expect(screen.getByTestId('child')).toBeInTheDocument()
+      unmount()
+      expect(screen.queryByTestId('child')).not.toBeInTheDocument()
+    })
+
+    it('ConditionalPresence unmounts cleanly', () => {
+      const { unmount } = render(
+        <ConditionalPresence show={true}>
+          <div data-testid="child">Content</div>
+        </ConditionalPresence>
+      )
+
+      expect(screen.getByTestId('child')).toBeInTheDocument()
+      unmount()
+      expect(screen.queryByTestId('child')).not.toBeInTheDocument()
+    })
+
+    it('AnimatedGrid unmounts cleanly with many children', () => {
+      const { unmount } = render(
+        <AnimatedGrid columns={3}>
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} data-testid={`cell-${i}`}>
+              Cell {i}
+            </div>
+          ))}
+        </AnimatedGrid>
+      )
+
+      expect(screen.getByTestId('cell-0')).toBeInTheDocument()
+      unmount()
+      expect(screen.queryByTestId('cell-0')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('reduced motion toggle during lifecycle', () => {
+    it('handles reduced motion change after initial render', () => {
+      mockReducedMotion = false
+      const { rerender, container } = render(
+        <AnimatedList className="test-list">
+          <div data-testid="child">Item</div>
+        </AnimatedList>
+      )
+
+      // Initially should use motion
+      expect(hasMotionDiv(container)).toBe(true)
+
+      // Simulate preference change
+      mockReducedMotion = true
+      rerender(
+        <AnimatedList className="test-list">
+          <div data-testid="child">Item</div>
+        </AnimatedList>
+      )
+
+      // Should now be static
+      expect(hasMotionDiv(container)).toBe(false)
+      expect(screen.getByTestId('child')).toBeInTheDocument()
+    })
   })
 })

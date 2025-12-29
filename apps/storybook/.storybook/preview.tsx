@@ -42,13 +42,30 @@ const themePresets = getAllThemes()
  * Simulates the prefers-reduced-motion media query for accessibility testing.
  * When enabled, forces reduced motion mode to help developers verify their
  * components correctly respect the useReducedMotion hook (WCAG 2.3.3).
+ *
+ * This component does three things:
+ * 1. Sets a data attribute for CSS-based detection
+ * 2. Injects CSS to disable animations
+ * 3. Mocks window.matchMedia so useReducedMotion hook returns the correct value
  */
 function ReducedMotionEffect({ reduceMotion }: { reduceMotion: boolean }) {
+  // Store original matchMedia reference
+  const originalMatchMediaRef = React.useRef<typeof window.matchMedia | null>(
+    null
+  )
+
   React.useEffect(() => {
+    // Store original matchMedia if not already stored
+    if (!originalMatchMediaRef.current) {
+      originalMatchMediaRef.current = window.matchMedia
+    }
+    const originalMatchMedia = originalMatchMediaRef.current
+
     if (reduceMotion) {
       // Add a data attribute that our CSS can hook into
       document.documentElement.setAttribute('data-reduce-motion', 'true')
-      // Also inject a style tag to override the media query behavior
+
+      // Inject CSS to override animations
       const styleId = 'storybook-reduce-motion'
       if (!document.getElementById(styleId)) {
         const style = document.createElement('style')
@@ -65,7 +82,45 @@ function ReducedMotionEffect({ reduceMotion }: { reduceMotion: boolean }) {
         `
         document.head.appendChild(style)
       }
+
+      // Mock matchMedia to return true for reduced-motion query
+      // This ensures useReducedMotion hook returns the correct value
+      window.matchMedia = (query: string): MediaQueryList => {
+        if (query === '(prefers-reduced-motion: reduce)') {
+          const listeners: Array<(e: MediaQueryListEvent) => void> = []
+          return {
+            matches: true,
+            media: query,
+            onchange: null,
+            addListener: (cb: (e: MediaQueryListEvent) => void) =>
+              listeners.push(cb),
+            removeListener: (cb: (e: MediaQueryListEvent) => void) => {
+              const idx = listeners.indexOf(cb)
+              if (idx > -1) listeners.splice(idx, 1)
+            },
+            addEventListener: (
+              _: string,
+              cb: (e: MediaQueryListEvent) => void
+            ) => listeners.push(cb),
+            removeEventListener: (
+              _: string,
+              cb: (e: MediaQueryListEvent) => void
+            ) => {
+              const idx = listeners.indexOf(cb)
+              if (idx > -1) listeners.splice(idx, 1)
+            },
+            dispatchEvent: () => true,
+          } as MediaQueryList
+        }
+        // For other queries, use original matchMedia
+        return originalMatchMedia(query)
+      }
     } else {
+      // Restore original matchMedia
+      if (originalMatchMediaRef.current) {
+        window.matchMedia = originalMatchMediaRef.current
+      }
+
       document.documentElement.removeAttribute('data-reduce-motion')
       const styleEl = document.getElementById('storybook-reduce-motion')
       if (styleEl) {
@@ -74,6 +129,10 @@ function ReducedMotionEffect({ reduceMotion }: { reduceMotion: boolean }) {
     }
 
     return () => {
+      // Restore original matchMedia on cleanup
+      if (originalMatchMediaRef.current) {
+        window.matchMedia = originalMatchMediaRef.current
+      }
       document.documentElement.removeAttribute('data-reduce-motion')
       const styleEl = document.getElementById('storybook-reduce-motion')
       if (styleEl) {

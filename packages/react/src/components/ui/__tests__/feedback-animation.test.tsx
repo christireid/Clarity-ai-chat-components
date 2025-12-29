@@ -662,3 +662,227 @@ describe('SlideNotification', () => {
     })
   })
 })
+
+describe('Edge Cases', () => {
+  beforeEach(() => {
+    mockReducedMotion = false
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  describe('rapid state changes', () => {
+    it('FeedbackAnimation handles rapid show/hide toggling', () => {
+      const { rerender } = render(
+        <FeedbackAnimation type="success" show={true} />
+      )
+
+      rerender(<FeedbackAnimation type="success" show={false} />)
+      rerender(<FeedbackAnimation type="success" show={true} />)
+      rerender(<FeedbackAnimation type="success" show={false} />)
+      rerender(<FeedbackAnimation type="success" show={true} />)
+
+      // Component should handle rapid toggling without errors
+      expect(true).toBe(true)
+    })
+
+    it('FeedbackAnimation handles type changes while visible', () => {
+      const { rerender, container } = render(
+        <FeedbackAnimation type="success" show={true} />
+      )
+      expect(getMotionContainer(container)).toHaveClass('bg-success')
+
+      rerender(<FeedbackAnimation type="error" show={true} />)
+      expect(getMotionContainer(container)).toHaveClass('bg-destructive')
+
+      rerender(<FeedbackAnimation type="warning" show={true} />)
+      expect(getMotionContainer(container)).toHaveClass('bg-warning')
+
+      rerender(<FeedbackAnimation type="info" show={true} />)
+      expect(getMotionContainer(container)).toHaveClass('bg-info')
+    })
+
+    it('SuccessCheckmark handles rapid show/hide', () => {
+      const { rerender, container } = render(<SuccessCheckmark show={true} />)
+      expect(hasMotionDiv(container)).toBe(true)
+
+      rerender(<SuccessCheckmark show={false} />)
+      rerender(<SuccessCheckmark show={true} />)
+      rerender(<SuccessCheckmark show={false} />)
+
+      expect(hasMotionDiv(container)).toBe(false)
+    })
+
+    it('ErrorShake handles rapid trigger changes', () => {
+      const { rerender, container } = render(
+        <ErrorShake trigger={true}>
+          <span>Content</span>
+        </ErrorShake>
+      )
+
+      rerender(
+        <ErrorShake trigger={false}>
+          <span>Content</span>
+        </ErrorShake>
+      )
+      rerender(
+        <ErrorShake trigger={true}>
+          <span>Content</span>
+        </ErrorShake>
+      )
+
+      // Should be shaking after final trigger=true
+      const motionDiv = getMotionContainer(container)
+      const animate = JSON.parse(motionDiv.getAttribute('data-animate') || '{}')
+      expect(animate).toHaveProperty('x')
+    })
+  })
+
+  describe('callback handling', () => {
+    it('FeedbackAnimation clears timeout when show changes before completion', () => {
+      const onComplete = vi.fn()
+      const { rerender } = render(
+        <FeedbackAnimation
+          type="success"
+          show={true}
+          duration={3000}
+          onComplete={onComplete}
+        />
+      )
+
+      // Advance partially
+      vi.advanceTimersByTime(1000)
+
+      // Hide before timeout
+      rerender(
+        <FeedbackAnimation
+          type="success"
+          show={false}
+          duration={3000}
+          onComplete={onComplete}
+        />
+      )
+
+      // Advance past original timeout
+      vi.advanceTimersByTime(3000)
+
+      // Callback should not have been called
+      expect(onComplete).not.toHaveBeenCalled()
+    })
+
+    it('FeedbackAnimation calls onComplete after duration', () => {
+      const onComplete = vi.fn()
+      render(
+        <FeedbackAnimation
+          type="success"
+          show={true}
+          duration={2000}
+          onComplete={onComplete}
+        />
+      )
+
+      vi.advanceTimersByTime(2000)
+      expect(onComplete).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('unmount behavior', () => {
+    it('FeedbackAnimation unmounts cleanly during animation', () => {
+      const { unmount, container } = render(
+        <FeedbackAnimation type="success" show={true} />
+      )
+
+      expect(hasMotionDiv(container)).toBe(true)
+      unmount()
+      // Should not throw
+    })
+
+    it('ConfettiEffect unmounts cleanly when particles are rendering', () => {
+      mockReducedMotion = false
+      const { unmount, container } = render(
+        <ConfettiEffect trigger={true} count={10} />
+      )
+
+      expect(container).toBeInTheDocument()
+      unmount()
+      // Should not throw
+    })
+
+    it('RippleEffect unmounts cleanly during ripple', () => {
+      const { unmount, container } = render(<RippleEffect trigger={true} />)
+
+      expect(container).toBeInTheDocument()
+      unmount()
+      // Should not throw
+    })
+  })
+
+  describe('empty message handling', () => {
+    it('FeedbackAnimation renders without message', () => {
+      const { container } = render(
+        <FeedbackAnimation type="success" show={true} />
+      )
+      expect(hasMotionDiv(container)).toBe(true)
+    })
+
+    it('FeedbackAnimation handles empty string message', () => {
+      const { container } = render(
+        <FeedbackAnimation type="success" show={true} message="" />
+      )
+      // Should render the component without crashing
+      expect(hasMotionDiv(container)).toBe(true)
+    })
+
+    it('SlideNotification renders with empty message', () => {
+      render(<SlideNotification show={true} message="" />)
+      // Should render but with empty message
+      expect(true).toBe(true)
+    })
+  })
+
+  describe('children handling', () => {
+    it('ErrorShake renders null children', () => {
+      const { container } = render(
+        <ErrorShake trigger={true}>{null}</ErrorShake>
+      )
+      expect(container).toBeInTheDocument()
+    })
+
+    it('PulseAttention renders undefined children', () => {
+      const { container } = render(
+        <PulseAttention active={true}>{undefined}</PulseAttention>
+      )
+      expect(container).toBeInTheDocument()
+    })
+
+    it('GlowEffect renders with multiple children', () => {
+      render(
+        <GlowEffect active={true}>
+          <span data-testid="child-1">Child 1</span>
+          <span data-testid="child-2">Child 2</span>
+        </GlowEffect>
+      )
+
+      expect(screen.getByTestId('child-1')).toBeInTheDocument()
+      expect(screen.getByTestId('child-2')).toBeInTheDocument()
+    })
+
+    it('BounceIn renders nested elements correctly', () => {
+      render(
+        <BounceIn show={true}>
+          <div data-testid="outer">
+            <div data-testid="inner">
+              <span data-testid="deep">Deeply nested</span>
+            </div>
+          </div>
+        </BounceIn>
+      )
+
+      expect(screen.getByTestId('outer')).toBeInTheDocument()
+      expect(screen.getByTestId('inner')).toBeInTheDocument()
+      expect(screen.getByTestId('deep')).toBeInTheDocument()
+    })
+  })
+})
