@@ -128,10 +128,11 @@ describe('Integration Tests - Token Optimization Suite', () => {
 
   describe('useTokenPerformance Integration', () => {
     beforeEach(() => {
-      vi.useFakeTimers()
+      vi.useFakeTimers({ shouldAdvanceTime: true })
     })
 
     afterEach(() => {
+      vi.runOnlyPendingTimers()
       vi.useRealTimers()
     })
 

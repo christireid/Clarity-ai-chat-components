@@ -80,15 +80,17 @@ export {
 export * from './progress'
 export * from './ripple'
 export * from './skeleton'
-// Note: Using explicit exports from ./toast to avoid conflict with sonner-toast's `toast` export
-// The toast.tsx has a console fallback `toast` object, while sonner-toast.tsx has the full Sonner toast
+// Export toast module excluding 'toast' object to avoid conflict with sonner-toast
 export {
-  useToast,
-  ToastProvider,
+  ToastItem,
   ToastContainer,
-  type ToastContextValue,
-  type ToastProviderProps,
+  ToastProvider,
+  useToast,
   type ToastType,
   type ToastPosition,
   type Toast,
+  type ToastProps,
+  type ToastContainerProps,
+  type ToastContextValue,
+  type ToastProviderProps,
 } from './toast'

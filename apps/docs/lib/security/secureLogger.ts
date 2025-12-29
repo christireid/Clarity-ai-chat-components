@@ -32,15 +32,17 @@ export class SecureLogger {
  * Log API errors with context
  */
 export function logApiError(
-  error: Error,
   context: string,
-  request: Request | null
+  error: unknown,
+  details?: Record<string, unknown>
 ) {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const errorStack = error instanceof Error ? error.stack : undefined
+
   logger.error(`[${context}] API Error:`, {
-    message: error.message,
-    stack: error.stack,
-    url: request?.url,
-    method: request?.method,
+    message: errorMessage,
+    stack: errorStack,
+    ...details,
   })
 }
 

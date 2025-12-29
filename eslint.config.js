@@ -7,6 +7,7 @@ import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
 import storybook from 'eslint-plugin-storybook'
 import globals from 'globals'
 import clarityAnimations from './eslint-plugin-clarity-animations/index.js'
+import clarityDeprecations from './eslint-plugin-clarity-deprecations/index.mjs'
 
 // Security-focused rules to catch common vulnerabilities
 const securityRules = {
@@ -120,6 +121,7 @@ export default [
     plugins: {
       ...sharedPlugins,
       'clarity-animations': clarityAnimations,
+      'clarity-deprecations': clarityDeprecations,
     },
     settings: {
       react: { version: '19.0' },
@@ -145,6 +147,9 @@ export default [
       'clarity-animations/prefer-animation-library': 'warn',
       // WCAG 2.3.3: All animation components must support reduced motion
       'clarity-animations/require-reduced-motion': 'error',
+      // Clarity Deprecations rules - catch deprecated hook imports
+      'clarity-deprecations/no-deprecated-hooks': 'warn',
+      'clarity-deprecations/no-deprecated-hook-calls': 'warn',
     },
   },
 

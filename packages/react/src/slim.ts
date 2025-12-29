@@ -7,7 +7,6 @@
  *
  * Use this when you only need:
  * - Drop-in ClarityChat component
- * - Basic useChat hook
  * - Core useClarityChat hook
  *
  * @example
@@ -22,10 +21,10 @@
  *
  * @example
  * ```tsx
- * import { useChat } from '@clarity-chat/react/slim'
+ * import { useClarityChat } from '@clarity-chat/react/slim'
  *
  * function ChatPage() {
- *   const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+ *   const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
  *   // ...
  * }
  * ```

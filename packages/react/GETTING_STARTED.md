@@ -1,50 +1,40 @@
-# Getting Started with Clarity React Library
+# Getting Started with Clarity Chat
 
-Complete guide to getting started with Clarity's React library, covering all phases and features.
-
-## Quick Navigation
-
-- [Installation](#installation)
-- [Basic Chat](#basic-chat)
-- [Structured Output](#structured-output)
-- [Tool UI Registry](#tool-ui-registry)
-- [Memory Integration](#memory-integration)
-- [Examples](#examples)
-- [Next Steps](#next-steps)
+Build beautiful AI chat interfaces in React. Fast.
 
 ## Installation
 
 ```bash
 npm install @clarity-chat/react
-# or
-pnpm add @clarity-chat/react
-# or
-yarn add @clarity-chat/react
 ```
 
-## Basic Chat
-
-### Simple Chat with useClarityChat
+## Quickest Start (One Line)
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+Done. You have a production-ready chat with streaming, error handling, and accessibility.
+
+## More Control? Use the Hook
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
-    api: '/api/chat',
-  })
-
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
+  const chat = useClarityChat({ api: '/api/chat' })
 
   return (
     <ChatWindow
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })}
+      messages={chat.messages}
+      isLoading={chat.isLoading}
+      onSendMessage={(content) => chat.append({ role: 'user', content })}
     />
   )
 }
@@ -103,13 +93,11 @@ function ProductRecommendations() {
 
   return (
     <div>
-      <button onClick={() => run({ query: 'gaming laptops' })}>
-        Generate Products
-      </button>
+      <button onClick={() => run({ query: 'gaming laptops' })}>Generate Products</button>
       {isLoading && <div>Generating...</div>}
       {object && (
         <div>
-          {object.map(product => (
+          {object.map((product) => (
             <div key={product.name}>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
@@ -156,7 +144,7 @@ function ChatWithTools() {
 
   return (
     <div>
-      {toolInvocations.map(invocation => (
+      {toolInvocations.map((invocation) => (
         <ClarityToolResult
           key={invocation.toolCallId}
           registry={toolRegistry}
@@ -250,12 +238,12 @@ import { streamText } from 'ai'
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
-  
+
   const result = await streamText({
     model: openai('gpt-4'),
     messages,
   })
-  
+
   return result.toDataStreamResponse()
 }
 ```
@@ -268,17 +256,19 @@ import { generateObject } from 'ai'
 
 export async function POST(req: Request) {
   const { input } = await req.json()
-  
+
   const result = await generateObject({
     model: openai('gpt-4'),
-    schema: z.array(z.object({
-      name: z.string(),
-      price: z.number(),
-      description: z.string(),
-    })),
+    schema: z.array(
+      z.object({
+        name: z.string(),
+        price: z.number(),
+        description: z.string(),
+      })
+    ),
     prompt: `Generate product recommendations for: ${input.query}`,
   })
-  
+
   return Response.json({ object: result.object })
 }
 ```
@@ -296,11 +286,9 @@ const { error, append } = useClarityChat({
   },
 })
 
-{error && (
-  <div className="error">
-    Error: {error.message}
-  </div>
-)}
+{
+  error && <div className="error">Error: {error.message}</div>
+}
 ```
 
 ### Loading States
@@ -310,7 +298,9 @@ const { isLoading, messages } = useClarityChat({
   api: '/api/chat',
 })
 
-{isLoading && <LoadingIndicator />}
+{
+  isLoading && <LoadingIndicator />
+}
 ```
 
 ### Form Handling
