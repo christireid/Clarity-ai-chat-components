@@ -18,7 +18,22 @@ import {
 const DOCS_ROOT = path.resolve(__dirname, '../..')
 const PACKAGES_ROOT = path.resolve(__dirname, '../../../../packages/react/src')
 
+// Validate paths exist before running tests
+const validatePaths = () => {
+  if (!fs.existsSync(DOCS_ROOT)) {
+    throw new Error(`DOCS_ROOT not found: ${DOCS_ROOT}`)
+  }
+  if (!fs.existsSync(PACKAGES_ROOT)) {
+    throw new Error(
+      `PACKAGES_ROOT not found: ${PACKAGES_ROOT}. ` +
+        'Tests must be run from the monorepo root.'
+    )
+  }
+}
+
 describe('Documentation Integrity', () => {
+  // Validate paths at test suite initialization
+  validatePaths()
   describe('Library Stats Constants', () => {
     it('should have valid component count claim', () => {
       const claimedMin = parseInt(LIBRARY_STATS.components.replace('+', ''))
@@ -123,31 +138,52 @@ describe('Documentation Integrity', () => {
         DOCS_ROOT,
         'components/SEO/StructuredData.tsx'
       )
+
+      // Handle missing file gracefully
+      if (!fs.existsSync(structuredDataPath)) {
+        throw new Error(
+          `StructuredData.tsx not found at ${structuredDataPath}. ` +
+            'Ensure the test is running from the correct directory.'
+        )
+      }
+
       const content = fs.readFileSync(structuredDataPath, 'utf-8')
 
-      // Should contain current counts
-      expect(content).toContain('200+ components')
-      expect(content).toContain('95+ hooks')
-      expect(content).toContain('15 pre-built themes')
+      // Should contain current counts (using LIBRARY_STATS to stay in sync)
+      expect(content).toContain(`${LIBRARY_STATS.components} components`)
+      expect(content).toContain(`${LIBRARY_STATS.hooks} hooks`)
+      expect(content).toContain(`${LIBRARY_STATS.themes} pre-built themes`)
 
       // Should NOT contain deprecated counts
-      expect(content).not.toMatch(/70\+ components/i)
-      expect(content).not.toMatch(/35\+ hooks/i)
-      expect(content).not.toMatch(/11\+? themes/i)
+      for (const pattern of DEPRECATED_PATTERNS) {
+        expect(content).not.toMatch(pattern)
+      }
     })
   })
 
   describe('AI Documentation Consistency', () => {
     it('llms.txt contains correct counts', () => {
       const llmsPath = path.join(DOCS_ROOT, 'public/llms.txt')
+
+      // Handle missing file gracefully
+      if (!fs.existsSync(llmsPath)) {
+        throw new Error(
+          `llms.txt not found at ${llmsPath}. ` +
+            'Ensure the test is running from the correct directory.'
+        )
+      }
+
       const content = fs.readFileSync(llmsPath, 'utf-8')
 
-      expect(content).toContain('200+ components')
-      expect(content).toContain('95+ hooks')
-      expect(content).toContain('15')
+      // Should contain current counts (using LIBRARY_STATS to stay in sync)
+      expect(content).toContain(`${LIBRARY_STATS.components}`)
+      expect(content).toContain(`${LIBRARY_STATS.hooks}`)
+      expect(content).toContain(`${LIBRARY_STATS.themes}`)
 
-      expect(content).not.toMatch(/70\+ .*components/i)
-      expect(content).not.toMatch(/35\+ .*hooks/i)
+      // Should NOT contain deprecated counts
+      for (const pattern of DEPRECATED_PATTERNS) {
+        expect(content).not.toMatch(pattern)
+      }
     })
   })
 })

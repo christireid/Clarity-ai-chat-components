@@ -5,10 +5,15 @@
  * Update these values when the library grows, and all documentation
  * will automatically reflect the changes.
  *
- * Last verified: 2024-12-29
+ * Last verified: 2025-12-29
  * - Components: 258 files in packages/react/src/components/
  * - Hooks: 100 files matching use-*.ts in packages/react/src/hooks/
  * - Themes: 15 presets in packages/react/src/theme/modern-presets/
+ *
+ * To re-verify counts, run:
+ *   find packages/react/src/components -type f \( -name "*.tsx" -o -name "*.ts" \) ! -name "*.test.*" ! -name "*.stories.*" | wc -l
+ *   find packages/react/src/hooks -type f -name "use*.ts" ! -name "*.test.*" | wc -l
+ *   ls packages/react/src/theme/modern-presets/*.ts | grep -v index | grep -v base | wc -l
  */
 
 /**
@@ -32,7 +37,7 @@ export const LIBRARY_STATS = {
 
 /**
  * Exact counts for internal use and validation
- * Updated by running: pnpm run count:library-assets
+ * These should match or exceed the marketing counts above
  */
 export const LIBRARY_STATS_EXACT = {
   components: 258,
