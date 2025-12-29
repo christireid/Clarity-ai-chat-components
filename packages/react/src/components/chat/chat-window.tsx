@@ -430,6 +430,17 @@ export function ChatWindow({
 
   const [input, setInput] = React.useState('')
 
+  // Accessibility: Track the latest message for screen reader announcements
+  const [lastAnnouncedMessageId, setLastAnnouncedMessageId] = React.useState<
+    string | null
+  >(null)
+  const liveRegionRef = React.useRef<HTMLDivElement>(null)
+
+  // Unique IDs for skip link targets
+  const chatWindowId = React.useId()
+  const messagesId = `${chatWindowId}-messages`
+  const inputId = `${chatWindowId}-input`
+
   // Convert CoreMessage[] to Message[] if needed
   // Check if first message has 'content' property that could be string or array
   // CoreMessage has content: string | Array<...>, Message has content: string
@@ -489,6 +500,41 @@ export function ChatWindow({
       ? null
       : `${normalizedMessages.length} ${normalizedMessages.length === 1 ? 'message' : 'messages'}`
 
+  // Accessibility: Announce new messages to screen readers
+  React.useEffect(() => {
+    if (normalizedMessages.length === 0) return
+
+    const latestMessage = normalizedMessages[normalizedMessages.length - 1]
+    if (!latestMessage || latestMessage.id === lastAnnouncedMessageId) return
+
+    // Only announce completed messages (not streaming)
+    if (latestMessage.status === 'streaming') return
+
+    setLastAnnouncedMessageId(latestMessage.id)
+
+    // Construct announcement text
+    const roleLabel = latestMessage.role === 'assistant' ? 'Assistant' : 'You'
+    const contentPreview =
+      typeof latestMessage.content === 'string'
+        ? latestMessage.content.slice(0, 100) +
+          (latestMessage.content.length > 100 ? '...' : '')
+        : 'Message received'
+
+    // Update the live region for screen reader announcement
+    if (liveRegionRef.current) {
+      liveRegionRef.current.textContent = `${roleLabel} said: ${contentPreview}`
+    }
+  }, [normalizedMessages, lastAnnouncedMessageId])
+
+  // Accessibility: Announce loading state changes
+  React.useEffect(() => {
+    if (liveRegionRef.current) {
+      if (isLoading) {
+        liveRegionRef.current.textContent = 'AI is generating a response...'
+      }
+    }
+  }, [isLoading])
+
   return (
     <Card
       className={cn(
@@ -497,9 +543,46 @@ export function ChatWindow({
         'border-border/30',
         'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
         'backdrop-blur-sm',
+        'relative', // For skip link positioning
         className
       )}
+      role="region"
+      aria-label={sessionTitle}
     >
+      {/* Accessibility: Skip Links Navigation */}
+      <nav
+        className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:top-0 focus-within:left-0 focus-within:right-0 focus-within:z-50 focus-within:bg-background focus-within:p-2 focus-within:border-b"
+        aria-label="Skip links"
+      >
+        <ul className="flex gap-4 justify-center">
+          <li>
+            <a
+              href={`#${messagesId}`}
+              className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+            >
+              Skip to messages
+            </a>
+          </li>
+          <li>
+            <a
+              href={`#${inputId}`}
+              className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+            >
+              Skip to chat input
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Accessibility: Live Region for Screen Reader Announcements */}
+      <div
+        ref={liveRegionRef}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      />
+
       {/* Optional Header */}
       {showHeader && (
         <motion.div
@@ -709,6 +792,7 @@ export function ChatWindow({
 
       <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
         <MessageList
+          id={messagesId}
           messages={normalizedMessages}
           isLoading={isLoading}
           onMessageCopy={onMessageCopy}
@@ -723,6 +807,9 @@ export function ChatWindow({
           onCancelEdit={onCancelEdit}
           emptyState={effectiveEmptyState}
           className="flex-1 min-h-0"
+          aria-label="Chat messages"
+          role="log"
+          aria-live="polite"
         />
 
         {/* Follow-up Suggestions - 2024 AI UX Pattern */}
@@ -765,10 +852,12 @@ export function ChatWindow({
         </AnimatePresence>
 
         <ChatInput
+          id={inputId}
           value={input}
           onChange={setInput}
           onSubmit={handleSubmit}
           disabled={isLoading}
+          aria-label="Type your message"
         />
       </div>
     </Card>

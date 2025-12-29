@@ -73,6 +73,14 @@ export interface MessageListProps {
    */
   announceNewMessages?: boolean
   className?: string
+  /** HTML id attribute for skip link targeting */
+  id?: string
+  /** ARIA role for the message list container */
+  role?: 'log' | 'feed' | 'list' | 'region'
+  /** ARIA label for screen readers */
+  'aria-label'?: string
+  /** ARIA live region behavior */
+  'aria-live'?: 'polite' | 'assertive' | 'off'
 }
 
 /**
@@ -129,6 +137,10 @@ export function MessageList({
   showTimeSeparators = true,
   announceNewMessages = true,
   className,
+  id,
+  role = 'log',
+  'aria-label': ariaLabel,
+  'aria-live': ariaLive = 'polite',
 }: MessageListProps) {
   // Runtime validation with actionable error messages
   if (!Array.isArray(messages)) {
@@ -255,12 +267,14 @@ export function MessageList({
 
   return (
     <div
+      id={id}
       className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
-      role="log"
-      aria-label="Chat messages"
-      aria-live="polite"
+      role={role}
+      aria-label={ariaLabel ?? 'Chat messages'}
+      aria-live={ariaLive}
       aria-relevant="additions"
       aria-busy={isStreaming}
+      tabIndex={-1} // Allow focus for skip link targeting
     >
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}

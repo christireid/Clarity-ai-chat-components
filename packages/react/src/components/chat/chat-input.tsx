@@ -32,6 +32,10 @@ export interface ChatInputProps {
   /** Enable focus ring glow animation */
   glowOnFocus?: boolean
   className?: string
+  /** HTML id attribute for skip link targeting */
+  id?: string
+  /** ARIA label for screen readers */
+  'aria-label'?: string
 }
 
 /**
@@ -146,6 +150,8 @@ export function ChatInput({
   animateHeight = true,
   glowOnFocus = true,
   className,
+  id,
+  'aria-label': ariaLabel,
 }: ChatInputProps) {
   // Development-only runtime validation (removed from production for performance)
   if (process.env.NODE_ENV === 'development') {
@@ -304,6 +310,7 @@ export function ChatInput({
 
   return (
     <motion.div
+      id={id}
       className={cn(
         'relative flex flex-col gap-3 px-5 py-4',
         'border-t border-border/60',
@@ -315,6 +322,7 @@ export function ChatInput({
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
+      tabIndex={-1} // Allow focus for skip link targeting
     >
       <div className="flex gap-3 items-end">
         {/* Textarea Container with smooth expand/contract */}
@@ -333,7 +341,7 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             maxLength={validMaxLength}
-            aria-label="Message"
+            aria-label={ariaLabel ?? 'Message'}
             aria-disabled={disabled}
             aria-invalid={isOverLimit}
             aria-errormessage={isOverLimit ? 'char-limit-error' : undefined}
