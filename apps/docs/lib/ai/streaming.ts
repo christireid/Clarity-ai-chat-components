@@ -9,6 +9,7 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
+import { LIBRARY_STATS } from '@/lib/library-stats'
 
 export interface StreamChunk {
   type:
@@ -468,14 +469,14 @@ export async function* streamFromDemo(
 
     // Components
     components:
-      'Clarity Chat provides **200+ pre-built components**:\n\n**Core Components:**\n- `<ClarityChat />` - Drop-in complete chat UI\n- `<ChatWindow />` - Main chat interface\n- `<ChatInput />` - Message input with auto-resize\n- `<MessageList />` - Virtualized message container\n- `<Message />` - Individual message display\n\n**Advanced Components:**\n- `<VoiceInput />` - Speech-to-text\n- `<FileUpload />` - Drag & drop file attachments\n- `<CommandPalette />` - Cmd+K interface\n- `<TokenCounter />` - Real-time token tracking\n- `<PromptSuggestions />` - AI-generated follow-ups\n\n📖 **Learn more**: [Component Reference](/reference/components)',
+      `Clarity Chat provides **${LIBRARY_STATS.components} pre-built components**:\n\n**Core Components:**\n- `<ClarityChat />` - Drop-in complete chat UI\n- `<ChatWindow />` - Main chat interface\n- `<ChatInput />` - Message input with auto-resize\n- `<MessageList />` - Virtualized message container\n- `<Message />` - Individual message display\n\n**Advanced Components:**\n- `<VoiceInput />` - Speech-to-text\n- `<FileUpload />` - Drag & drop file attachments\n- `<CommandPalette />` - Cmd+K interface\n- `<TokenCounter />` - Real-time token tracking\n- `<PromptSuggestions />` - AI-generated follow-ups\n\n📖 **Learn more**: [Component Reference](/reference/components)',
 
     // Hooks
-    hook: 'Clarity Chat includes **95+ custom hooks**:\n\n**Core Hooks:**\n```tsx\nimport {\n  useClarityChat,    // Main chat hook\n  useStreamingSSE,   // SSE streaming\n  useTokenTracker,   // Token counting\n  useMessageOps,     // Edit/delete/regenerate\n} from "@clarity-chat/react"\n```\n\n**Utility Hooks:**\n- `useAutoScroll()` - Smart scrolling\n- `useClipboard()` - Copy-paste support\n- `useLocalStorage()` - Persistence\n- `useReducedMotion()` - Accessibility\n\n📖 **Learn more**: [Hooks Reference](/reference/hooks)',
+    hook: `Clarity Chat includes **${LIBRARY_STATS.hooks} custom hooks**:\n\n**Core Hooks:**\n```tsx\nimport {\n  useClarityChat,    // Main chat hook\n  useStreamingSSE,   // SSE streaming\n  useTokenTracker,   // Token counting\n  useMessageOps,     // Edit/delete/regenerate\n} from "@clarity-chat/react"\n```\n\n**Utility Hooks:**\n- `useAutoScroll()` - Smart scrolling\n- `useClipboard()` - Copy-paste support\n- `useLocalStorage()` - Persistence\n- `useReducedMotion()` - Accessibility\n\n📖 **Learn more**: [Hooks Reference](/reference/hooks)',
 
     // Theming
     theme:
-      'Customize Clarity Chat with **15 built-in themes** or create your own:\n\n```tsx\nimport { ClarityChat, themes } from "@clarity-chat/react"\n\n// Use a preset theme\n<ClarityChat theme={themes.dark} />\n\n// Or customize with CSS variables\n<ClarityChat\n  style={{\n    "--cc-primary": "#6366f1",\n    "--cc-bg": "#0f172a",\n  }}\n/>\n```\n\n**Available themes:** light, dark, system, ocean, forest, sunset, midnight, lavender, slate, rose, emerald\n\n📖 **Learn more**: [Theming Guide](/guides/theming)',
+      `Customize Clarity Chat with **${LIBRARY_STATS.themes} built-in themes** or create your own:\n\n```tsx\nimport { ClarityChat, themes } from "@clarity-chat/react"\n\n// Use a preset theme\n<ClarityChat theme={themes.dark} />\n\n// Or customize with CSS variables\n<ClarityChat\n  style={{\n    "--cc-primary": "#6366f1",\n    "--cc-bg": "#0f172a",\n  }}\n/>\n```\n\n**Available themes:** light, dark, system, ocean, forest, sunset, midnight, lavender, slate, rose, emerald\n\n📖 **Learn more**: [Theming Guide](/guides/theming)',
 
     // Memory
     memory:
@@ -517,8 +518,8 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
 **📚 Documentation Topics:**
 - Installation & getting started
 - Streaming messages (SSE/WebSocket)
-- Available components (200+)
-- Hooks reference (95+)
+- Available components (${LIBRARY_STATS.components})
+- Hooks reference (${LIBRARY_STATS.hooks})
 - Theming & customization
 - Memory & conversation history
 - Token optimization

@@ -16,6 +16,7 @@ import {
   handleStreamError,
   withRetry,
 } from '../streaming'
+import { LIBRARY_STATS } from '../../library-stats'
 
 describe('streaming utilities', () => {
   const originalEnv = process.env
@@ -145,7 +146,7 @@ describe('streaming utilities', () => {
       }
 
       const response = chunks.join('')
-      expect(response).toContain('200+ pre-built components')
+      expect(response).toContain(`${LIBRARY_STATS.components} pre-built components`)
       expect(response).toContain('ChatWindow')
       expect(response).toContain('MessageList')
     })

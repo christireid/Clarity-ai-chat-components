@@ -4,6 +4,7 @@
  */
 
 import type { NavigationSection } from './types'
+import { LIBRARY_STATS, LIBRARY_DESCRIPTIONS } from '../lib/library-stats'
 
 export const BASE_URL = 'https://clarity-chat.dev'
 
@@ -45,17 +46,17 @@ export const navigationConfig: NavigationSection[] = [
         title: 'React Hooks',
         href: '/learn/concepts/hooks',
         description:
-          '95+ hooks for chat functionality, streaming, and state management',
+          LIBRARY_DESCRIPTIONS.hooksDescription,
       },
       {
         title: 'Theming System',
         href: '/learn/concepts/theming',
-        description: '15 pre-built themes with full customization support',
+        description: LIBRARY_DESCRIPTIONS.themesDescription,
       },
       {
         title: 'Animations',
         href: '/learn/concepts/animations',
-        description: '150+ micro-interactions with Framer Motion',
+        description: `${LIBRARY_STATS.animations} micro-interactions with Framer Motion`,
       },
       {
         title: 'Architecture',

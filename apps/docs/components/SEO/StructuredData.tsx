@@ -11,6 +11,7 @@
  */
 
 import { getStableTimestamp } from '@/lib/ai/types'
+import { LIBRARY_STATS, LIBRARY_DESCRIPTIONS } from '@/lib/library-stats'
 
 export interface StructuredDataProps {
   type?:
@@ -41,7 +42,7 @@ export interface StructuredDataProps {
 export function StructuredData({
   type = 'website',
   title = 'Clarity Chat UI - Beautiful, Accessible React Components',
-  description = 'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 95+ hooks, and 150+ animations.',
+  description = `A comprehensive React UI library for building beautiful, accessible chat interfaces with ${LIBRARY_STATS.components} components, ${LIBRARY_STATS.hooks} hooks, and ${LIBRARY_STATS.animations} animations.`,
   url = 'https://clarity-chat.dev',
   componentName,
   category,
@@ -353,7 +354,7 @@ export function SoftwareLibraryStructuredData() {
     name: 'Clarity Chat',
     alternateName: '@clarity-chat/react',
     description:
-      'Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ components, 95+ hooks, 15 themes, and comprehensive token optimization.',
+      LIBRARY_DESCRIPTIONS.metaDescription,
     url: 'https://clarity-chat.dev',
     codeRepository: 'https://github.com/christireid/Clarity-ai-chat-components',
     programmingLanguage: [
@@ -411,7 +412,7 @@ export function SoftwareLibraryStructuredData() {
       {
         '@type': 'SoftwareSourceCode',
         name: 'Themes',
-        description: '15 pre-built themes with full customization support',
+        description: LIBRARY_DESCRIPTIONS.themesDescription,
       },
       {
         '@type': 'SoftwareSourceCode',
@@ -465,14 +466,14 @@ export function DocumentationSiteStructuredData() {
           position: 2,
           name: 'Components',
           url: 'https://clarity-chat.dev/reference/components',
-          description: 'API reference for all 200+ components',
+          description: `API reference for all ${LIBRARY_STATS.components} components`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Hooks',
           url: 'https://clarity-chat.dev/reference/hooks',
-          description: 'API reference for all 95+ hooks',
+          description: `API reference for all ${LIBRARY_STATS.hooks} hooks`,
         },
         {
           '@type': 'ListItem',

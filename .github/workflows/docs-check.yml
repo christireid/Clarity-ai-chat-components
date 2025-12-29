@@ -106,3 +106,57 @@ jobs:
 
       - name: Validate code examples
         run: pnpm --filter @clarity-chat/docs validate:examples
+
+  check-documentation-counts:
+    name: Check Documentation Counts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for deprecated component counts
+        run: |
+          echo "Checking for deprecated '70+ components' pattern..."
+          if grep -rE "70\+\s*(components?|Components?)" apps/docs/app/ apps/docs/components/ apps/docs/public/*.txt 2>/dev/null | grep -v "SALES_DECK"; then
+            echo "❌ Found deprecated '70+ components' pattern in user-facing docs"
+            exit 1
+          fi
+          echo "✅ No deprecated component counts found"
+
+      - name: Check for deprecated hook counts
+        run: |
+          echo "Checking for deprecated '35+ hooks' pattern..."
+          if grep -rE "35\+\s*(hooks?|Hooks?)" apps/docs/app/ apps/docs/components/ apps/docs/public/*.txt 2>/dev/null | grep -v "SALES_DECK"; then
+            echo "❌ Found deprecated '35+ hooks' pattern in user-facing docs"
+            exit 1
+          fi
+          echo "✅ No deprecated hook counts found"
+
+      - name: Check for deprecated theme counts
+        run: |
+          echo "Checking for deprecated '11 themes' pattern..."
+          if grep -rE "11\+?\s*(themes?|pre-?built)" apps/docs/app/ apps/docs/components/ apps/docs/public/*.txt 2>/dev/null | grep -v "SALES_DECK"; then
+            echo "❌ Found deprecated '11 themes' pattern in user-facing docs"
+            exit 1
+          fi
+          echo "✅ No deprecated theme counts found"
+
+      - name: Verify current counts are present
+        run: |
+          echo "Verifying current counts in key files..."
+
+          # Check homepage
+          if ! grep -q "200+ components" apps/docs/app/page.tsx; then
+            echo "❌ Homepage missing '200+ components'"
+            exit 1
+          fi
+
+          # Check llms.txt
+          if ! grep -q "200+ production-ready components" apps/docs/public/llms.txt 2>/dev/null && \
+             ! grep -q "200+ components" apps/docs/public/llms.txt 2>/dev/null; then
+            echo "❌ llms.txt missing current component count"
+            exit 1
+          fi
+
+          echo "✅ Current counts verified in key files"
