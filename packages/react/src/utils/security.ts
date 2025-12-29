@@ -1,6 +1,6 @@
 /**
  * Clarity Chat - Security Utilities
- * 
+ *
  * Comprehensive security layer providing:
  * - Input validation and sanitization
  * - XSS prevention
@@ -10,6 +10,7 @@
  * - Security headers
  */
 
+import * as React from 'react'
 import DOMPurify from 'dompurify'
 
 /**
@@ -187,7 +188,12 @@ export class SecurityManager {
   /**
    * Rate limiting for user actions
    */
-  checkRateLimit(userId: string, action: string, limit: number = 10, windowMs: number = 60000): boolean {
+  checkRateLimit(
+    userId: string,
+    action: string,
+    limit: number = 10,
+    windowMs: number = 60000
+  ): boolean {
     if (!this.config.enableRateLimit) return true
 
     const key = `${userId}:${action}`
@@ -195,7 +201,9 @@ export class SecurityManager {
     const windowStart = now - windowMs
 
     const attempts = this.rateLimitMap.get(key) || []
-    const recentAttempts = attempts.filter(timestamp => timestamp > windowStart)
+    const recentAttempts = attempts.filter(
+      (timestamp) => timestamp > windowStart
+    )
 
     if (recentAttempts.length >= limit) {
       return false
@@ -269,7 +277,7 @@ export class SecurityManager {
     try {
       const parsed = new URL(url)
       const allowedProtocols = ['http:', 'https:']
-      
+
       if (!allowedProtocols.includes(parsed.protocol)) {
         return false
       }
@@ -308,7 +316,9 @@ export class SecurityManager {
   generateSecureToken(length: number = 32): string {
     const array = new Uint8Array(length)
     crypto.getRandomValues(array)
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join(
+      ''
+    )
   }
 }
 
@@ -322,7 +332,7 @@ export const securityManager = new SecurityManager()
  */
 export function useSecurity(config?: Partial<SecurityConfig>) {
   const [security] = React.useState(() => new SecurityManager(config))
-  
+
   return {
     validateInput: security.validateChatInput.bind(security),
     sanitize: security.sanitizeInput.bind(security),

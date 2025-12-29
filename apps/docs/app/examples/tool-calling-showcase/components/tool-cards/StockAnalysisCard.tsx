@@ -9,6 +9,7 @@
 
 import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { durations } from '@/lib/animations'
 import {
   TrendingUp,
   ChevronDown,

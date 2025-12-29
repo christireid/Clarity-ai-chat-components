@@ -26,92 +26,294 @@ const questions: Question[] = [
     id: 'start',
     question: 'What are you trying to build?',
     options: [
-      { label: 'A complete chat interface', value: 'chat', next: 'chat-features' },
-      { label: 'Structured data extraction from AI', value: 'structured', result: [
-        { hook: 'useClarityObject', href: '/reference/hooks/use-clarity-object', description: 'Generate structured JSON from AI responses', why: 'Best for extracting typed data from AI' }
-      ]},
+      {
+        label: 'A complete chat interface',
+        value: 'chat',
+        next: 'chat-features',
+      },
+      {
+        label: 'Structured data extraction from AI',
+        value: 'structured',
+        result: [
+          {
+            hook: 'useClarityObject',
+            href: '/reference/hooks/use-clarity-object',
+            description: 'Generate structured JSON from AI responses',
+            why: 'Best for extracting typed data from AI',
+          },
+        ],
+      },
       { label: 'AI agent with tools', value: 'agent', next: 'agent-type' },
-      { label: 'Data persistence/storage', value: 'storage', next: 'storage-type' },
+      {
+        label: 'Data persistence/storage',
+        value: 'storage',
+        next: 'storage-type',
+      },
       { label: 'UI enhancements', value: 'ui', next: 'ui-type' },
-      { label: 'Analytics/monitoring', value: 'analytics', result: [
-        { hook: 'useDashboardData', href: '/reference/hooks/use-dashboard-data', description: 'Data fetching with auto-refresh for dashboards', why: 'Provides loading states, caching, and polling' },
-        { hook: 'useTokenTracker', href: '/reference/hooks/use-token-tracker', description: 'Track token usage across messages', why: 'Monitor costs and context window usage' }
-      ]},
+      {
+        label: 'Analytics/monitoring',
+        value: 'analytics',
+        result: [
+          {
+            hook: 'useDashboardData',
+            href: '/reference/hooks/use-dashboard-data',
+            description: 'Data fetching with auto-refresh for dashboards',
+            why: 'Provides loading states, caching, and polling',
+          },
+          {
+            hook: 'useTokenTracker',
+            href: '/reference/hooks/use-token-tracker',
+            description: 'Track token usage across messages',
+            why: 'Monitor costs and context window usage',
+          },
+        ],
+      },
     ],
   },
   {
     id: 'chat-features',
     question: 'What features do you need?',
     options: [
-      { label: 'Just basic chat (messages, streaming)', value: 'basic', result: [
-        { hook: 'useClarityChat', href: '/reference/hooks/use-clarity-chat', description: 'Primary chat hook with streaming and memory', why: 'Recommended starting point for all chat apps' }
-      ]},
-      { label: 'Chat with memory/context awareness', value: 'memory', result: [
-        { hook: 'useClarityChat', href: '/reference/hooks/use-clarity-chat', description: 'Primary chat hook with built-in memory options', why: 'Has memory: { strategy: "vector-store" } option' },
-        { hook: 'useMemoryContext', href: '/reference/hooks/use-memory-context', description: 'Direct memory operations (add, query, delete)', why: 'Use when you need fine-grained memory control' }
-      ]},
-      { label: 'Chat with function calling/tools', value: 'tools', result: [
-        { hook: 'useClarityChatWithTools', href: '/reference/hooks/use-clarity-chat-with-tools', description: 'Chat with tool UI registry integration', why: 'Automatically renders tool results with custom components' }
-      ]},
-      { label: 'High-performance chat for enterprise', value: 'performance', result: [
-        { hook: 'useChatOptimized', href: '/reference/hooks/use-chat-optimized', description: 'Optimized variant with memoization and batching', why: 'Reduces re-renders for complex dashboards' },
-        { hook: 'useTokenOptimizationEnhanced', href: '/reference/hooks/use-token-optimization-enhanced', description: 'Advanced token management', why: 'Context compression and budget management' }
-      ]},
+      {
+        label: 'Just basic chat (messages, streaming)',
+        value: 'basic',
+        result: [
+          {
+            hook: 'useClarityChat',
+            href: '/reference/hooks/use-clarity-chat',
+            description: 'Primary chat hook with streaming and memory',
+            why: 'Recommended starting point for all chat apps',
+          },
+        ],
+      },
+      {
+        label: 'Chat with memory/context awareness',
+        value: 'memory',
+        result: [
+          {
+            hook: 'useClarityChat',
+            href: '/reference/hooks/use-clarity-chat',
+            description: 'Primary chat hook with built-in memory options',
+            why: 'Has memory: { strategy: "vector-store" } option',
+          },
+          {
+            hook: 'useMemoryContext',
+            href: '/reference/hooks/use-memory-context',
+            description: 'Direct memory operations (add, query, delete)',
+            why: 'Use when you need fine-grained memory control',
+          },
+        ],
+      },
+      {
+        label: 'Chat with function calling/tools',
+        value: 'tools',
+        result: [
+          {
+            hook: 'useClarityChatWithTools',
+            href: '/reference/hooks/use-clarity-chat-with-tools',
+            description: 'Chat with tool UI registry integration',
+            why: 'Automatically renders tool results with custom components',
+          },
+        ],
+      },
+      {
+        label: 'High-performance chat for enterprise',
+        value: 'performance',
+        result: [
+          {
+            hook: 'useChatOptimized',
+            href: '/reference/hooks/use-chat-optimized',
+            description: 'Optimized variant with memoization and batching',
+            why: 'Reduces re-renders for complex dashboards',
+          },
+          {
+            hook: 'useTokenOptimizationEnhanced',
+            href: '/reference/hooks/use-token-optimization-enhanced',
+            description: 'Advanced token management',
+            why: 'Context compression and budget management',
+          },
+        ],
+      },
     ],
   },
   {
     id: 'agent-type',
     question: 'What kind of agent capabilities?',
     options: [
-      { label: 'Simple tool calling', value: 'tools', result: [
-        { hook: 'useClarityChatWithTools', href: '/reference/hooks/use-clarity-chat-with-tools', description: 'Chat with tool result rendering', why: 'Maps tool names to React components' },
-        { hook: 'useAssistant', href: '/reference/hooks/use-assistant', description: 'OpenAI Assistants API integration', why: 'For OpenAI-specific assistant features' }
-      ]},
-      { label: 'RAG (retrieval augmented generation)', value: 'rag', result: [
-        { hook: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline', description: 'Complete RAG pipeline management', why: 'Handles chunking, embedding, retrieval' },
-        { hook: 'useVectorStore', href: '/reference/hooks/use-vector-store', description: 'Vector store operations', why: 'For custom RAG implementations' },
-        { hook: 'useEmbeddings', href: '/reference/hooks/use-embeddings', description: 'Generate text embeddings', why: 'Client-side embedding generation with caching' }
-      ]},
-      { label: 'Multi-step agent workflows', value: 'workflow', result: [
-        { hook: 'useAgent', href: '/reference/hooks/use-agent', description: 'Stateful agent with tool execution', why: 'For complex multi-step agent workflows' }
-      ]},
+      {
+        label: 'Simple tool calling',
+        value: 'tools',
+        result: [
+          {
+            hook: 'useClarityChatWithTools',
+            href: '/reference/hooks/use-clarity-chat-with-tools',
+            description: 'Chat with tool result rendering',
+            why: 'Maps tool names to React components',
+          },
+          {
+            hook: 'useAssistant',
+            href: '/reference/hooks/use-assistant',
+            description: 'OpenAI Assistants API integration',
+            why: 'For OpenAI-specific assistant features',
+          },
+        ],
+      },
+      {
+        label: 'RAG (retrieval augmented generation)',
+        value: 'rag',
+        result: [
+          {
+            hook: 'useRAGPipeline',
+            href: '/reference/hooks/use-rag-pipeline',
+            description: 'Complete RAG pipeline management',
+            why: 'Handles chunking, embedding, retrieval',
+          },
+          {
+            hook: 'useVectorStore',
+            href: '/reference/hooks/use-vector-store',
+            description: 'Vector store operations',
+            why: 'For custom RAG implementations',
+          },
+          {
+            hook: 'useEmbeddings',
+            href: '/reference/hooks/use-embeddings',
+            description: 'Generate text embeddings',
+            why: 'Client-side embedding generation with caching',
+          },
+        ],
+      },
+      {
+        label: 'Multi-step agent workflows',
+        value: 'workflow',
+        result: [
+          {
+            hook: 'useAgent',
+            href: '/reference/hooks/use-agent',
+            description: 'Stateful agent with tool execution',
+            why: 'For complex multi-step agent workflows',
+          },
+        ],
+      },
     ],
   },
   {
     id: 'storage-type',
     question: 'What kind of data are you storing?',
     options: [
-      { label: 'Small settings/preferences (<5MB)', value: 'small', result: [
-        { hook: 'useLocalStorage', href: '/reference/hooks/use-local-storage', description: 'Simple localStorage wrapper with SSR safety', why: 'Best for small, simple data' }
-      ]},
-      { label: 'Large conversations or files (>5MB)', value: 'large', result: [
-        { hook: 'useIndexedDB', href: '/reference/hooks/use-indexed-db', description: 'IndexedDB for large data with fallback', why: 'Handles large data, supports queries' }
-      ]},
-      { label: 'AI memories/context', value: 'memory', result: [
-        { hook: 'useMemoryContext', href: '/reference/hooks/use-memory-context', description: 'Memory operations within MemoryProvider', why: 'Purpose-built for AI memory management' }
-      ]},
+      {
+        label: 'Small settings/preferences (<5MB)',
+        value: 'small',
+        result: [
+          {
+            hook: 'useLocalStorage',
+            href: '/reference/hooks/use-local-storage',
+            description: 'Simple localStorage wrapper with SSR safety',
+            why: 'Best for small, simple data',
+          },
+        ],
+      },
+      {
+        label: 'Large conversations or files (>5MB)',
+        value: 'large',
+        result: [
+          {
+            hook: 'useIndexedDB',
+            href: '/reference/hooks/use-indexed-db',
+            description: 'IndexedDB for large data with fallback',
+            why: 'Handles large data, supports queries',
+          },
+        ],
+      },
+      {
+        label: 'AI memories/context',
+        value: 'memory',
+        result: [
+          {
+            hook: 'useMemoryContext',
+            href: '/reference/hooks/use-memory-context',
+            description: 'Memory operations within MemoryProvider',
+            why: 'Purpose-built for AI memory management',
+          },
+        ],
+      },
     ],
   },
   {
     id: 'ui-type',
     question: 'What UI enhancement do you need?',
     options: [
-      { label: 'Keyboard shortcuts', value: 'keyboard', result: [
-        { hook: 'useKeyboardShortcuts', href: '/reference/hooks/use-keyboard-shortcuts', description: 'Global keyboard shortcut handling', why: 'Handles modifier keys, prevents conflicts' },
-        { hook: 'useCommandPalette', href: '/reference/hooks/use-command-palette', description: 'Cmd+K command palette state', why: 'Includes shortcut display helper' }
-      ]},
-      { label: 'Theming/styling', value: 'theming', result: [
-        { hook: 'useTheme', href: '/reference/hooks/use-theme', description: 'Theme switching and detection', why: 'Dark/light mode management' },
-        { hook: 'useDesignTokens', href: '/reference/hooks/use-design-tokens', description: 'Access design system tokens', why: 'For consistent custom styling' }
-      ]},
-      { label: 'Mobile optimizations', value: 'mobile', result: [
-        { hook: 'useMobileOptimization', href: '/reference/hooks/use-mobile-optimization', description: 'Mobile-specific optimizations', why: 'Touch handling, viewport adjustments' },
-        { hook: 'useMobileKeyboard', href: '/reference/hooks/use-mobile-keyboard', description: 'Mobile keyboard handling', why: 'Input focus and resize handling' }
-      ]},
-      { label: 'Streaming text display', value: 'streaming', result: [
-        { hook: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui', description: 'UI state for streaming content', why: 'Smooth typing effects and transitions' },
-        { hook: 'useRealisticTyping', href: '/reference/hooks/use-realistic-typing', description: 'Realistic typing animation', why: 'Human-like character-by-character display' }
-      ]},
+      {
+        label: 'Keyboard shortcuts',
+        value: 'keyboard',
+        result: [
+          {
+            hook: 'useKeyboardShortcuts',
+            href: '/reference/hooks/use-keyboard-shortcuts',
+            description: 'Global keyboard shortcut handling',
+            why: 'Handles modifier keys, prevents conflicts',
+          },
+          {
+            hook: 'useCommandPalette',
+            href: '/reference/hooks/use-command-palette',
+            description: 'Cmd+K command palette state',
+            why: 'Includes shortcut display helper',
+          },
+        ],
+      },
+      {
+        label: 'Theming/styling',
+        value: 'theming',
+        result: [
+          {
+            hook: 'useTheme',
+            href: '/reference/hooks/use-theme',
+            description: 'Theme switching and detection',
+            why: 'Dark/light mode management',
+          },
+          {
+            hook: 'useDesignTokens',
+            href: '/reference/hooks/use-design-tokens',
+            description: 'Access design system tokens',
+            why: 'For consistent custom styling',
+          },
+        ],
+      },
+      {
+        label: 'Mobile optimizations',
+        value: 'mobile',
+        result: [
+          {
+            hook: 'useMobileOptimization',
+            href: '/reference/hooks/use-mobile-optimization',
+            description: 'Mobile-specific optimizations',
+            why: 'Touch handling, viewport adjustments',
+          },
+          {
+            hook: 'useMobileKeyboard',
+            href: '/reference/hooks/use-mobile-keyboard',
+            description: 'Mobile keyboard handling',
+            why: 'Input focus and resize handling',
+          },
+        ],
+      },
+      {
+        label: 'Streaming text display',
+        value: 'streaming',
+        result: [
+          {
+            hook: 'useStreamableUI',
+            href: '/reference/hooks/use-streamable-ui',
+            description: 'UI state for streaming content',
+            why: 'Smooth typing effects and transitions',
+          },
+          {
+            hook: 'useRealisticTyping',
+            href: '/reference/hooks/use-realistic-typing',
+            description: 'Realistic typing animation',
+            why: 'Human-like character-by-character display',
+          },
+        ],
+      },
     ],
   },
 ]
@@ -139,21 +341,30 @@ export default function HookSelectorPage() {
   // Announce question changes to screen readers
   useEffect(() => {
     if (question && !results) {
-      setAnnouncement(`Question ${history.length + 1}: ${question.question}. ${question.options.length} options available. Use arrow keys to navigate, Enter to select.`)
+      setAnnouncement(
+        `Question ${history.length + 1}: ${question.question}. ${question.options.length} options available. Use arrow keys to navigate, Enter to select.`
+      )
     } else if (results) {
-      setAnnouncement(`Found ${results.length} recommended hooks. ${results[0]?.hook} is the best match.`)
+      setAnnouncement(
+        `Found ${results.length} recommended hooks. ${results[0]?.hook} is the best match.`
+      )
     }
   }, [question, results, history.length])
 
-  const handleSelect = useCallback((option: (typeof questions)[0]['options'][0]) => {
-    if (option.result) {
-      setResults(option.result)
-      setAnnouncement(`Selected ${option.label}. Showing ${option.result.length} recommended hooks.`)
-    } else if (option.next) {
-      setHistory([...history, currentQuestion])
-      setCurrentQuestion(option.next)
-    }
-  }, [history, currentQuestion])
+  const handleSelect = useCallback(
+    (option: (typeof questions)[0]['options'][0]) => {
+      if (option.result) {
+        setResults(option.result)
+        setAnnouncement(
+          `Selected ${option.label}. Showing ${option.result.length} recommended hooks.`
+        )
+      } else if (option.next) {
+        setHistory([...history, currentQuestion])
+        setCurrentQuestion(option.next)
+      }
+    },
+    [history, currentQuestion]
+  )
 
   const handleBack = useCallback(() => {
     if (history.length > 0) {
@@ -173,48 +384,54 @@ export default function HookSelectorPage() {
     setAnnouncement('Wizard reset. Starting from the beginning.')
   }, [])
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!question || results) return
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!question || results) return
 
-    const optionsCount = question.options.length
+      const optionsCount = question.options.length
 
-    switch (e.key) {
-      case 'ArrowDown':
-      case 'ArrowRight':
-        e.preventDefault()
-        const nextIndex = (focusedIndex + 1) % optionsCount
-        setFocusedIndex(nextIndex)
-        optionsRef.current[nextIndex]?.focus()
-        break
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        e.preventDefault()
-        const prevIndex = (focusedIndex - 1 + optionsCount) % optionsCount
-        setFocusedIndex(prevIndex)
-        optionsRef.current[prevIndex]?.focus()
-        break
-      case 'Enter':
-      case ' ':
-        e.preventDefault()
-        handleSelect(question.options[focusedIndex])
-        break
-      case 'Escape':
-        e.preventDefault()
-        handleBack()
-        break
-      case 'Home':
-        e.preventDefault()
-        setFocusedIndex(0)
-        optionsRef.current[0]?.focus()
-        break
-      case 'End':
-        e.preventDefault()
-        const lastIndex = optionsCount - 1
-        setFocusedIndex(lastIndex)
-        optionsRef.current[lastIndex]?.focus()
-        break
-    }
-  }, [question, results, focusedIndex, handleSelect, handleBack])
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': {
+          e.preventDefault()
+          const nextIndex = (focusedIndex + 1) % optionsCount
+          setFocusedIndex(nextIndex)
+          optionsRef.current[nextIndex]?.focus()
+          break
+        }
+        case 'ArrowUp':
+        case 'ArrowLeft': {
+          e.preventDefault()
+          const prevIndex = (focusedIndex - 1 + optionsCount) % optionsCount
+          setFocusedIndex(prevIndex)
+          optionsRef.current[prevIndex]?.focus()
+          break
+        }
+        case 'Enter':
+        case ' ':
+          e.preventDefault()
+          handleSelect(question.options[focusedIndex])
+          break
+        case 'Escape':
+          e.preventDefault()
+          handleBack()
+          break
+        case 'Home':
+          e.preventDefault()
+          setFocusedIndex(0)
+          optionsRef.current[0]?.focus()
+          break
+        case 'End': {
+          e.preventDefault()
+          const lastIndex = optionsCount - 1
+          setFocusedIndex(lastIndex)
+          optionsRef.current[lastIndex]?.focus()
+          break
+        }
+      }
+    },
+    [question, results, focusedIndex, handleSelect, handleBack]
+  )
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -268,10 +485,7 @@ export default function HookSelectorPage() {
             />
           </div>
 
-          <h2
-            id="question-heading"
-            className="text-2xl font-semibold mb-6"
-          >
+          <h2 id="question-heading" className="text-2xl font-semibold mb-6">
             {question?.question}
           </h2>
 
@@ -285,7 +499,9 @@ export default function HookSelectorPage() {
               <button
                 key={option.value}
                 id={`option-${index}`}
-                ref={(el) => { optionsRef.current[index] = el }}
+                ref={(el) => {
+                  optionsRef.current[index] = el
+                }}
                 onClick={() => handleSelect(option)}
                 onFocus={() => setFocusedIndex(index)}
                 role="option"
@@ -318,8 +534,19 @@ export default function HookSelectorPage() {
             role="alert"
           >
             <div className="flex items-center gap-2 text-green-700 dark:text-green-300 font-semibold mb-1">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
               Recommended Hooks
             </div>
@@ -328,7 +555,11 @@ export default function HookSelectorPage() {
             </p>
           </div>
 
-          <ul className="space-y-4" role="list" aria-label="Hook recommendations">
+          <ul
+            className="space-y-4"
+            role="list"
+            aria-label="Hook recommendations"
+          >
             {results.map((result, i) => (
               <li key={result.hook}>
                 <Link
@@ -343,15 +574,30 @@ export default function HookSelectorPage() {
                             Best Match
                           </span>
                         )}
-                        <h3 className="text-lg font-mono font-semibold">{result.hook}</h3>
+                        <h3 className="text-lg font-mono font-semibold">
+                          {result.hook}
+                        </h3>
                       </div>
-                      <p className="text-muted-foreground mb-2">{result.description}</p>
+                      <p className="text-muted-foreground mb-2">
+                        {result.description}
+                      </p>
                       <p className="text-sm">
                         <span className="font-medium">Why:</span> {result.why}
                       </p>
                     </div>
-                    <svg className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </div>
                 </Link>

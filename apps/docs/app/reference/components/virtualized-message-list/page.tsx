@@ -5,7 +5,7 @@ import {
   ToastProvider,
   VirtualizedMessageList,
   Message,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -198,7 +198,7 @@ render(<Example />)`}
         <ScrollReveal delay={0.4}>
           <h2 id="import">Import</h2>
           <EnhancedCodeBlock
-            code={`import { VirtualizedMessageList } from '@clarity-chat/react'
+            code={`import { VirtualizedMessageList } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'`}
             language="tsx"
           />
@@ -215,7 +215,7 @@ import type { Message as MessageType } from '@clarity-chat/types'`}
           <ComponentPreview
             title="Simple Virtualized List"
             description="Rendering 100 messages with virtual scrolling"
-            code={`import { VirtualizedMessageList, Message } from '@clarity-chat/react'
+            code={`import { VirtualizedMessageList, Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function SimpleVirtualizedList() {

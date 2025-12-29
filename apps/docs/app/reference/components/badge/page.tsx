@@ -643,7 +643,7 @@ render(<ChatBadges />)`}
 
         <h3>Badge with Tooltip</h3>
         <pre>
-          <code>{`import { Badge, Tooltip } from '@clarity-chat/react'
+          <code>{`import { Badge, Tooltip } from '@clarity-chat/react/internal'
 
 <Tooltip content="5 unread messages">
   <Badge variant="error">5</Badge>
@@ -652,7 +652,7 @@ render(<ChatBadges />)`}
 
         <h3>Animated Count Changes</h3>
         <pre>
-          <code>{`import { Badge } from '@clarity-chat/react'
+          <code>{`import { Badge } from '@clarity-chat/react/internal'
 import { motion, AnimatePresence } from 'framer-motion'
 
 function AnimatedBadge({ count }) {
@@ -761,7 +761,7 @@ function AnimatedBadge({ count }) {
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { Badge, BadgeProps } from '@clarity-chat/react'
+          <code>{`import { Badge, BadgeProps } from '@clarity-chat/react/internal'
 
 interface BadgeProps {
   children: React.ReactNode

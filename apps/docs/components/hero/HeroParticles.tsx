@@ -13,6 +13,7 @@ import {
 } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { logger } from '@/lib/logger'
 import * as THREE from 'three'
 import { createNoise3D, type NoiseFunction3D } from 'simplex-noise'
 import { cn } from '@/lib/utils'
@@ -594,8 +595,11 @@ export function HeroParticles({
   const isDark = useIsDark()
   const { isAvailable: webglAvailable, isChecked: webglChecked } =
     useWebGLAvailable()
-  const { count: responsiveCount, shouldRender, device } =
-    useResponsiveParticles(customCount)
+  const {
+    count: responsiveCount,
+    shouldRender,
+    device,
+  } = useResponsiveParticles(customCount)
   const {
     interactionRef,
     handleMouseMove,

@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -186,7 +186,7 @@ pnpm add @clarity-chat/react`}
               </p>
 
               <EnhancedCodeBlock
-                code={`import { ClarityChat } from '@clarity-chat/react'
+                code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -256,7 +256,7 @@ export default App`}
 
               <EnhancedCodeBlock
                 code={`import { useState } from 'react'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 import '@clarity-chat/react/styles.css'
 

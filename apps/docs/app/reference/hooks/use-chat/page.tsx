@@ -23,7 +23,10 @@ export default function UseChatPage() {
         <p>
           <strong>Prefer useClarityChat:</strong> The <code>useChat</code> hook
           is a low-level primitive. For most use cases, we recommend using{' '}
-          <a href="/reference/hooks/use-clarity-chat" className="text-brand-500 hover:underline font-semibold">
+          <a
+            href="/reference/hooks/use-clarity-chat"
+            className="text-brand-500 hover:underline font-semibold"
+          >
             useClarityChat
           </a>{' '}
           instead, which provides memory integration, token optimization, and a
@@ -52,7 +55,7 @@ export default function UseChatPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useChat } from '@clarity-chat/react'
+            <code>{`import { useChat } from '@clarity-chat/react/internal'
 
 function ChatComponent() {
   const {

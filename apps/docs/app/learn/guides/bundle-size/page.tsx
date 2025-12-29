@@ -6,7 +6,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 
 const entryPointComparison: Prop[] = [
   {
@@ -132,7 +132,7 @@ export default function BundleSizeGuidePage() {
               Best for: Full-featured apps that use most components
             </p>
             <EnhancedCodeBlock
-              code={`import { ClarityChat } from '@clarity-chat/react'
+              code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
               language="tsx"
               showCopyButton
@@ -183,7 +183,9 @@ import '@clarity-chat/react/styles.css'`}
           functions.
         </p>
 
-        <h3 className="text-2xl font-semibold mb-4">Included in core-minimal</h3>
+        <h3 className="text-2xl font-semibold mb-4">
+          Included in core-minimal
+        </h3>
 
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
@@ -525,9 +527,7 @@ npm run analyze`}
           </div>
 
           <div className="p-6 rounded-lg bg-bg-secondary border border-border">
-            <h3 className="font-semibold text-lg mb-2">
-              2. Preload on idle
-            </h3>
+            <h3 className="font-semibold text-lg mb-2">2. Preload on idle</h3>
             <p className="text-text-secondary">
               Use <code>requestIdleCallback</code> or FeatureLoader's{' '}
               <code>preloadOnIdle</code> to load features during idle time.

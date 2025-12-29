@@ -98,7 +98,7 @@ export default function PerformanceAnalyticsDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display performance dashboard with default configuration:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function ChatWithPerformance() {
   return (
@@ -125,7 +125,7 @@ render(<ChatWithPerformance />)`}
         <h2>Web Vitals Monitoring</h2>
         <p>Monitor Core Web Vitals (LCP, FID, FCP, CLS, TTFB, INP):</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function WebVitalsDashboard() {
   return (
@@ -147,7 +147,7 @@ function WebVitalsDashboard() {
         <h2>Component Metrics</h2>
         <p>Track component render performance:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function ComponentMetricsDashboard() {
   return (
@@ -169,7 +169,7 @@ function ComponentMetricsDashboard() {
         <h2>Network Monitoring</h2>
         <p>Monitor network request performance:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function NetworkDashboard() {
   return (
@@ -191,7 +191,7 @@ function NetworkDashboard() {
         <h2>Memory and FPS Tracking</h2>
         <p>Track memory usage and frame rate:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function MemoryFPSDashboard() {
   return (
@@ -217,7 +217,7 @@ function MemoryFPSDashboard() {
         <h2>Custom Data</h2>
         <p>Provide custom performance data:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard, type PerformanceAnalytics } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard, type PerformanceAnalytics } from '@clarity-chat/react/internal'
 
 function CustomDataDashboard() {
   const [data, setData] = React.useState<PerformanceAnalytics>({
@@ -262,7 +262,7 @@ function CustomDataDashboard() {
         <h2>Compact Mode</h2>
         <p>Use compact mode for minimal UI footprint:</p>
         <CodePlayground
-          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+          initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function CompactDashboard() {
   return (

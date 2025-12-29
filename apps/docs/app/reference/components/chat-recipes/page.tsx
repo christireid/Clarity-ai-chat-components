@@ -4,7 +4,7 @@ import {
   ChatWithMemory,
   ChatComplete,
   ChatWithAnalytics,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'

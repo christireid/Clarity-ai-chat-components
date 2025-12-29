@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'useClipboard Hook | Clarity Chat',
-  description: 'Hook for clipboard operations with copy/paste functionality and user feedback.'
+  description:
+    'Hook for clipboard operations with copy/paste functionality and user feedback.',
 }
 
 export default function UseClipboardPage() {
@@ -10,7 +11,8 @@ export default function UseClipboardPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">useClipboard Hook</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        React hook for clipboard operations with copy/paste functionality, success feedback, and error handling.
+        React hook for clipboard operations with copy/paste functionality,
+        success feedback, and error handling.
       </p>
 
       <section className="mb-12">
@@ -28,7 +30,8 @@ export default function UseClipboardPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
-          <pre className="text-sm overflow-x-auto"><code>{`import { useClipboard } from '@clarity-chat/react'
+          <pre className="text-sm overflow-x-auto">
+            <code>{`import { useClipboard } from '@clarity-chat/react/internal'
 
 function CopyButton({ text }) {
   const { copy, copied, error } = useClipboard({
@@ -41,7 +44,8 @@ function CopyButton({ text }) {
       {error && <span>Failed to copy</span>}
     </button>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </section>
     </div>

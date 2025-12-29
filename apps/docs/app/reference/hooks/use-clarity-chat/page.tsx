@@ -14,8 +14,9 @@ export default function UseClarityChatPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useClarityChat</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Primary React hook for building chat interfaces with message management,
-          streaming responses, memory integration, and AI model integration.
+          Primary React hook for building chat interfaces with message
+          management, streaming responses, memory integration, and AI model
+          integration.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
@@ -27,7 +28,7 @@ export default function UseClarityChatPage() {
       <section className="mb-12 p-6 bg-muted rounded-xl">
         <h2 className="text-xl font-bold mb-4">Quick Start</h2>
         <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm mb-4">
-          <code>{`import { useClarityChat } from '@clarity-chat/react'
+          <code>{`import { useClarityChat } from '@clarity-chat/react/internal'
 
 const { messages, append, isLoading } = useClarityChat({
   api: '/api/chat'
@@ -37,9 +38,15 @@ const { messages, append, isLoading } = useClarityChat({
 await append({ role: 'user', content: 'Hello!' })`}</code>
         </pre>
         <div className="flex flex-wrap gap-2 text-sm">
-          <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">Streaming</span>
-          <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">Memory</span>
-          <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">Multi-model</span>
+          <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
+            Streaming
+          </span>
+          <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+            Memory
+          </span>
+          <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
+            Multi-model
+          </span>
         </div>
       </section>
 
@@ -48,7 +55,9 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <h3 className="font-semibold text-green-600 dark:text-green-400 mb-2">Use This When:</h3>
+            <h3 className="font-semibold text-green-600 dark:text-green-400 mb-2">
+              Use This When:
+            </h3>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li>Building a new chat interface from scratch</li>
               <li>You need memory/context persistence across sessions</li>
@@ -58,11 +67,37 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold text-red-600 dark:text-red-400 mb-2">Consider Alternatives When:</h3>
+            <h3 className="font-semibold text-red-600 dark:text-red-400 mb-2">
+              Consider Alternatives When:
+            </h3>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              <li>You need tool/function calling → <Link href="/reference/hooks/use-clarity-chat-with-tools" className="text-brand-600 hover:underline">useClarityChatWithTools</Link></li>
-              <li>You need structured JSON output → <Link href="/reference/hooks/use-clarity-object" className="text-brand-600 hover:underline">useClarityObject</Link></li>
-              <li>You need fine-grained streaming control → <Link href="/reference/hooks/use-streaming-sse" className="text-brand-600 hover:underline">useStreamingSSE</Link></li>
+              <li>
+                You need tool/function calling →{' '}
+                <Link
+                  href="/reference/hooks/use-clarity-chat-with-tools"
+                  className="text-brand-600 hover:underline"
+                >
+                  useClarityChatWithTools
+                </Link>
+              </li>
+              <li>
+                You need structured JSON output →{' '}
+                <Link
+                  href="/reference/hooks/use-clarity-object"
+                  className="text-brand-600 hover:underline"
+                >
+                  useClarityObject
+                </Link>
+              </li>
+              <li>
+                You need fine-grained streaming control →{' '}
+                <Link
+                  href="/reference/hooks/use-streaming-sse"
+                  className="text-brand-600 hover:underline"
+                >
+                  useStreamingSSE
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -99,7 +134,7 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
         <div className="space-y-6">
           <CollapsibleSection title="Simple Chat" defaultOpen={true}>
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function ChatComponent() {
@@ -122,13 +157,16 @@ function ChatComponent() {
             />
           </CollapsibleSection>
 
-          <CollapsibleSection title="With Handlers (Recommended)" badge="Best Practice">
+          <CollapsibleSection
+            title="With Handlers (Recommended)"
+            badge="Best Practice"
+          >
             <CodePlayground
               code={`import {
   useClarityChat,
   useChatHandlers,
   ChatWindow
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function ChatComponent() {
   const chat = useClarityChat({
@@ -157,7 +195,7 @@ function ChatComponent() {
         <div className="space-y-4">
           <CollapsibleSection title="With Memory Integration" badge="Pro">
             <CodePlayground
-              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
+              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react/internal'
 
 function ChatWithMemory() {
   const chat = useClarityChat({
@@ -196,9 +234,12 @@ function App() {
             />
           </CollapsibleSection>
 
-          <CollapsibleSection title="With Prompt Optimization" badge="Cost Saving">
+          <CollapsibleSection
+            title="With Prompt Optimization"
+            badge="Cost Saving"
+          >
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const chat = useClarityChat({
@@ -233,7 +274,7 @@ function OptimizedChat() {
 
           <CollapsibleSection title="With WebSocket Transport">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function WebSocketChat() {
   const chat = useClarityChat({
@@ -259,7 +300,7 @@ function WebSocketChat() {
 
           <CollapsibleSection title="Error Handling">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function ChatWithErrorHandling() {
   const chat = useClarityChat({
@@ -310,33 +351,44 @@ function ChatWithErrorHandling() {
                     <td className="p-3 font-mono text-sm">api</td>
                     <td className="p-3 font-mono text-sm">string</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> API endpoint URL for chat requests.
+                      <strong>Required.</strong> API endpoint URL for chat
+                      requests.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">memory</td>
-                    <td className="p-3 font-mono text-sm">ClarityMemoryOptions</td>
+                    <td className="p-3 font-mono text-sm">
+                      ClarityMemoryOptions
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Memory integration configuration.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">transport</td>
-                    <td className="p-3 font-mono text-sm">'sse' | 'websocket'</td>
+                    <td className="p-3 font-mono text-sm">
+                      'sse' | 'websocket'
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Transport protocol. Default: 'sse'.
                     </td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-mono text-sm">promptOptimization</td>
-                    <td className="p-3 font-mono text-sm">ClarityPromptOptimizationOptions</td>
+                    <td className="p-3 font-mono text-sm">
+                      promptOptimization
+                    </td>
+                    <td className="p-3 font-mono text-sm">
+                      ClarityPromptOptimizationOptions
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Token budget management configuration.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">onError</td>
-                    <td className="p-3 font-mono text-sm">(error: Error) =&gt; void</td>
+                    <td className="p-3 font-mono text-sm">
+                      (error: Error) =&gt; void
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Error callback handler.
                     </td>
@@ -366,7 +418,9 @@ function ChatWithErrorHandling() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">append</td>
-                    <td className="p-3 font-mono text-sm">(message) =&gt; Promise</td>
+                    <td className="p-3 font-mono text-sm">
+                      (message) =&gt; Promise
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Add message and trigger AI response.
                     </td>
@@ -381,25 +435,33 @@ function ChatWithErrorHandling() {
                   <tr>
                     <td className="p-3 font-mono text-sm">error</td>
                     <td className="p-3 font-mono text-sm">Error | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Last error, if any.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Last error, if any.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">memoryInfo</td>
-                    <td className="p-3 font-mono text-sm">ClarityChatMemoryInfo</td>
+                    <td className="p-3 font-mono text-sm">
+                      ClarityChatMemoryInfo
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Memory statistics and context.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">tokenStats</td>
-                    <td className="p-3 font-mono text-sm">TokenStats | undefined</td>
+                    <td className="p-3 font-mono text-sm">
+                      TokenStats | undefined
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Token usage statistics.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">setMessages</td>
-                    <td className="p-3 font-mono text-sm">(messages) =&gt; void</td>
+                    <td className="p-3 font-mono text-sm">
+                      (messages) =&gt; void
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Directly set messages array.
                     </td>
@@ -422,8 +484,9 @@ function ChatWithErrorHandling() {
         <CollapsibleSection title="Migration from useChat" badge="Legacy">
           <div className="bg-muted p-6 rounded-lg">
             <p className="mb-4">
-              If you're using the legacy <code className="bg-background px-2 py-1 rounded">useChat</code> hook,
-              migrating is straightforward:
+              If you're using the legacy{' '}
+              <code className="bg-background px-2 py-1 rounded">useChat</code>{' '}
+              hook, migrating is straightforward:
             </p>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
@@ -444,7 +507,9 @@ function ChatWithErrorHandling() {
               </div>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              <strong>Key Change:</strong> <code className="bg-background px-1 rounded">apiEndpoint</code> → <code className="bg-background px-1 rounded">api</code>
+              <strong>Key Change:</strong>{' '}
+              <code className="bg-background px-1 rounded">apiEndpoint</code> →{' '}
+              <code className="bg-background px-1 rounded">api</code>
             </p>
           </div>
         </CollapsibleSection>
@@ -454,21 +519,29 @@ function ChatWithErrorHandling() {
         <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
         <div className="space-y-4">
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Use useChatHandlers for Simpler Integration</h3>
+            <h3 className="font-semibold mb-2">
+              Use useChatHandlers for Simpler Integration
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Use <code className="bg-muted px-1 rounded">useChatHandlers</code> for
-              pre-configured handlers that work seamlessly with <code className="bg-muted px-1 rounded">ChatWindow</code>.
+              Use <code className="bg-muted px-1 rounded">useChatHandlers</code>{' '}
+              for pre-configured handlers that work seamlessly with{' '}
+              <code className="bg-muted px-1 rounded">ChatWindow</code>.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Enable Memory for Long Conversations</h3>
+            <h3 className="font-semibold mb-2">
+              Enable Memory for Long Conversations
+            </h3>
             <p className="text-sm text-muted-foreground">
               For conversations beyond the token limit, enable memory with{' '}
-              <code className="bg-muted px-1 rounded">vector-store</code> strategy.
+              <code className="bg-muted px-1 rounded">vector-store</code>{' '}
+              strategy.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Use Prompt Optimization for Cost Savings</h3>
+            <h3 className="font-semibold mb-2">
+              Use Prompt Optimization for Cost Savings
+            </h3>
             <p className="text-sm text-muted-foreground">
               Enable prompt optimization to reduce API costs by 30-50%.
             </p>

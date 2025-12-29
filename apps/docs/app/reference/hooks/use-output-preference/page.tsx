@@ -59,7 +59,7 @@ export default function UseOutputPreferencePage() {
         <h2>Basic Usage</h2>
         <p>Manage output preference with default configuration:</p>
         <CodePlayground
-          initialCode={`import { useOutputPreference } from '@clarity-chat/react'
+          initialCode={`import { useOutputPreference } from '@clarity-chat/react/internal'
 
 function ChatWithPreference() {
   const {
@@ -91,7 +91,7 @@ function ChatWithPreference() {
         <h2>With Token Calculation</h2>
         <p>Calculate optimal token limits based on model capacity:</p>
         <CodePlayground
-          initialCode={`import { useOutputPreference } from '@clarity-chat/react'
+          initialCode={`import { useOutputPreference } from '@clarity-chat/react/internal'
 
 function TokenAwarePreference() {
   const { preferenceValue, maxTokens } = useOutputPreference({
@@ -121,7 +121,7 @@ function TokenAwarePreference() {
         <h2>Preference Values</h2>
         <p>Access calculated preference values:</p>
         <CodePlayground
-          initialCode={`import { useOutputPreference } from '@clarity-chat/react'
+          initialCode={`import { useOutputPreference } from '@clarity-chat/react/internal'
 
 function PreferenceValues() {
   const { preferenceValue } = useOutputPreference()

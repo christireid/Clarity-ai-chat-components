@@ -85,7 +85,7 @@ export default function EmailIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with email providers:</p>
         <CodePlayground
-          initialCode={`import { EmailIntegration } from '@clarity-chat/react'
+          initialCode={`import { EmailIntegration } from '@clarity-chat/react/internal'
 
 function EmailView() {
   return (
@@ -114,7 +114,7 @@ function EmailView() {
         <h2>Email Composer</h2>
         <p>Send emails from chat:</p>
         <CodePlayground
-          initialCode={`import { EmailIntegration } from '@clarity-chat/react'
+          initialCode={`import { EmailIntegration } from '@clarity-chat/react/internal'
 
 function WithComposer() {
   return (
@@ -139,7 +139,7 @@ function WithComposer() {
         <h2>Email Notifications</h2>
         <p>Show email notifications:</p>
         <CodePlayground
-          initialCode={`import { EmailIntegration } from '@clarity-chat/react'
+          initialCode={`import { EmailIntegration } from '@clarity-chat/react/internal'
 
 function WithNotifications() {
   return (
@@ -165,7 +165,7 @@ function WithNotifications() {
         <h2>Email Search</h2>
         <p>Search email threads:</p>
         <CodePlayground
-          initialCode={`import { EmailIntegration, useEmailIntegration } from '@clarity-chat/react'
+          initialCode={`import { EmailIntegration, useEmailIntegration } from '@clarity-chat/react/internal'
 
 function EmailSearch() {
   const { searchThreads } = useEmailIntegration()

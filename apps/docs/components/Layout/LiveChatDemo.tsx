@@ -17,7 +17,7 @@ import {
   useAutoScroll,
   useStreaming,
   TypingIndicator,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'

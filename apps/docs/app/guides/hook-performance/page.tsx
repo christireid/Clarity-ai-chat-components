@@ -38,7 +38,7 @@ export default function HookPerformancePage() {
         <p>Optimize hook dependencies:</p>
         <CodePlayground
           initialCode={`import { useMemo, useCallback } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const [messages, setMessages] = useState([])
@@ -84,7 +84,7 @@ function BadExample() {
         <p>Memoize expensive hook computations:</p>
         <CodePlayground
           initialCode={`import { useMemo } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function MemoizedResults() {
   const optimization = useTokenOptimizationEnhanced({
@@ -126,7 +126,7 @@ function FilteredMessages() {
         <h2>Avoiding Unnecessary Hook Calls</h2>
         <p>Avoid calling hooks unnecessarily:</p>
         <CodePlayground
-          initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 // ✅ Good: Conditional logic inside hook
 function ConditionalOptimization({ enableOptimization }: { enableOptimization: boolean }) {
@@ -177,7 +177,7 @@ function SmartOptimization() {
   useClarityChat,
   useTokenOptimizationEnhanced,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // ✅ Good: Compose hooks in order
 function ComposedHooks() {
@@ -233,7 +233,7 @@ function ChatWithOptimization() {
         <p>Measure hook performance:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 function MeasuredOptimization() {
   const startTime = useRef(Date.now())

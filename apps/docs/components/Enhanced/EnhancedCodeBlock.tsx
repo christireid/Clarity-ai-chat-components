@@ -5,7 +5,7 @@ import { Highlight, themes } from 'prism-react-renderer'
 import { useTheme } from 'next-themes'
 import { Check, Copy, Terminal, ExternalLink } from 'lucide-react'
 import clsx from 'clsx'
-import { useToast } from '@clarity-chat/react'
+import { useToast } from '@clarity-chat/react/internal'
 
 interface EnhancedCodeBlockProps {
   code: string
@@ -67,7 +67,10 @@ export function EnhancedCodeBlock({
     return isDark ? themes.nightOwl : themes.nightOwlLight
   }, [theme])
 
-  const highlightLinesSet = useMemo(() => new Set(highlightLines), [highlightLines])
+  const highlightLinesSet = useMemo(
+    () => new Set(highlightLines),
+    [highlightLines]
+  )
 
   return (
     <div

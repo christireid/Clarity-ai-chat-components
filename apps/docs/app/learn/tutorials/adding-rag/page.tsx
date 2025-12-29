@@ -326,7 +326,7 @@ render(<RAGChat />)`}
       <section className="docs-section">
         <h2>Step 6: Add Citation Display</h2>
         <pre>
-          <code>{`import { Message, CitationCard } from '@clarity-chat/react'
+          <code>{`import { Message, CitationCard } from '@clarity-chat/react/internal'
 
 function MessageWithCitations({ message }) {
   // Extract citations from message

@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Theme Selector Component | Clarity Chat',
-  description: 'UI component for selecting and switching between theme presets with visual previews.',
+  description:
+    'UI component for selecting and switching between theme presets with visual previews.',
 }
 
 export default function ThemeSelectorPage() {
@@ -10,19 +11,24 @@ export default function ThemeSelectorPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Theme Selector</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        A flexible theme selection component with visual previews, available in list and dropdown variants.
+        A flexible theme selection component with visual previews, available in
+        list and dropdown variants.
       </p>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Overview</h2>
         <p className="text-muted-foreground mb-4">
-          The Theme Selector component provides an intuitive interface for choosing between built-in theme presets.
-          It features visual color previews, horizontal/vertical layouts, keyboard navigation, and active theme indication.
+          The Theme Selector component provides an intuitive interface for
+          choosing between built-in theme presets. It features visual color
+          previews, horizontal/vertical layouts, keyboard navigation, and active
+          theme indication.
         </p>
-        
+
         <h3 className="text-xl font-semibold mb-3 mt-6">Key Features</h3>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Visual theme preview with primary, secondary, and background colors</li>
+          <li>
+            Visual theme preview with primary, secondary, and background colors
+          </li>
           <li>Horizontal or vertical layout orientations</li>
           <li>Dropdown variant for compact spaces</li>
           <li>Active theme highlighting with checkmark</li>
@@ -37,7 +43,7 @@ export default function ThemeSelectorPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemeSelector, ThemeSelectorDropdown } from '@clarity-chat/react'
+            <code>{`import { ThemeSelector, ThemeSelectorDropdown } from '@clarity-chat/react/internal'
 
 // List layout
 <ThemeSelector 
@@ -75,7 +81,9 @@ export default function ThemeSelectorPage() {
               </tr>
               <tr className="border-b">
                 <td className="p-2 font-mono text-sm">orientation</td>
-                <td className="p-2 font-mono text-sm">'horizontal' | 'vertical'</td>
+                <td className="p-2 font-mono text-sm">
+                  'horizontal' | 'vertical'
+                </td>
                 <td className="p-2 font-mono text-sm">'vertical'</td>
                 <td className="p-2">Layout direction</td>
               </tr>

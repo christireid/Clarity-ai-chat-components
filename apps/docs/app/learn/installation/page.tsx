@@ -302,7 +302,7 @@ module.exports = {
         <p className="mb-4">Test your installation with a simple component:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react'
+          code={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function App() {
   return (

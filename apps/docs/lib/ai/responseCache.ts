@@ -7,6 +7,7 @@
 
 import { Redis } from '@upstash/redis'
 import crypto from 'crypto'
+import { logger } from '@/lib/logger'
 
 export interface CachedResponse {
   query: string
@@ -93,7 +94,10 @@ export class RedisResponseCache implements ResponseCache {
     return `${prefix}:stats`
   }
 
-  async get(query: string, contextHash?: string): Promise<CachedResponse | null> {
+  async get(
+    query: string,
+    contextHash?: string
+  ): Promise<CachedResponse | null> {
     const key = this.getCacheKey(query, contextHash)
     const cached = await this.redis.get(key)
 
@@ -183,7 +187,10 @@ export class LocalResponseCache implements ResponseCache {
   private cache: Map<string, CachedResponse> = new Map()
   private stats = { hits: 0, misses: 0 }
 
-  async get(query: string, contextHash?: string): Promise<CachedResponse | null> {
+  async get(
+    query: string,
+    contextHash?: string
+  ): Promise<CachedResponse | null> {
     const key = generateCacheKey(query, contextHash)
     const cached = this.cache.get(key)
 
@@ -192,12 +199,16 @@ export class LocalResponseCache implements ResponseCache {
       cached.hits++
       this.stats.hits++
 
-      logger.debug(`✅ Cache HIT (local) for query: "${query.substring(0, 50)}..."`)
+      logger.debug(
+        `✅ Cache HIT (local) for query: "${query.substring(0, 50)}..."`
+      )
       return cached
     }
 
     this.stats.misses++
-    logger.debug(`❌ Cache MISS (local) for query: "${query.substring(0, 50)}..."`)
+    logger.debug(
+      `❌ Cache MISS (local) for query: "${query.substring(0, 50)}..."`
+    )
     return null
   }
 
@@ -224,7 +235,9 @@ export class LocalResponseCache implements ResponseCache {
 
     this.cache.set(key, cachedResponse)
 
-    logger.debug(`💾 Cached response (local) for query: "${query.substring(0, 50)}..."`)
+    logger.debug(
+      `💾 Cached response (local) for query: "${query.substring(0, 50)}..."`
+    )
 
     // Auto-cleanup: remove oldest entries if cache grows too large
     if (this.cache.size > 100) {
@@ -268,10 +281,10 @@ export function getResponseCache(): ResponseCache {
     process.env.NODE_ENV === 'production'
 
   if (useRedis) {
-    logger.debug('Using Redis response cache (Upstash)')
+    // Using Redis response cache (Upstash)
     return new RedisResponseCache()
   } else {
-    logger.debug('Using local response cache (development mode)')
+    // Using local response cache (development mode)
     return new LocalResponseCache()
   }
 }
@@ -281,6 +294,9 @@ export function getResponseCache(): ResponseCache {
  * Uses source URLs to create a stable hash
  */
 export function generateContextHash(sources: Array<{ url: string }>): string {
-  const urls = sources.map(s => s.url).sort().join(',')
+  const urls = sources
+    .map((s) => s.url)
+    .sort()
+    .join(',')
   return crypto.createHash('md5').update(urls).digest('hex').substring(0, 8)
 }

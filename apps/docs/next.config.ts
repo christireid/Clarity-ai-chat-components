@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
+  // Server-side external packages
+  serverExternalPackages: ['tiktoken'],
+
+  // Typed routes for compile-time Link validation (Next.js 16 - moved from experimental)
+  typedRoutes: true,
+
   // Turbopack configuration (Next.js 16 - stable)
   turbopack: {
     rules: {
@@ -24,9 +30,6 @@ const nextConfig: NextConfig = {
       },
     },
   },
-
-  // Typed routes for compile-time Link validation (Next.js 16 - moved from experimental)
-  typedRoutes: true,
 
   // Experimental features
   experimental: {
@@ -97,19 +100,10 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Redirects for confusing guides section
+  // Redirects for legacy routes
   async redirects() {
     return [
-      {
-        source: '/guides',
-        destination: '/learn/guides',
-        permanent: true,
-      },
-      {
-        source: '/guides/prompt-testing',
-        destination: '/learn/guides/prompt-testing',
-        permanent: true,
-      },
+      // Redirect /guides sub-routes that have been moved to /learn/guides
       {
         source: '/guides/testing',
         destination: '/learn/guides/testing',
@@ -120,26 +114,37 @@ const nextConfig: NextConfig = {
         destination: '/learn/guides/accessibility',
         permanent: true,
       },
+      // Redirect legacy /concepts routes
       {
         source: '/concepts/animations',
         destination: '/learn/concepts/animations',
-        permanent: true,
-      },
-      {
-        source: '/demos/accessibility-audit',
-        destination: '/learn/demos/accessibility-audit',
         permanent: true,
       },
     ]
   },
 
   // Webpack configuration for non-Turbopack builds
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Handle SVG imports
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     })
+
+    // Handle WASM for tiktoken
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    }
+
+    // Add fallback for tiktoken WASM files
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      }
+    }
 
     // Optimize module resolution
     config.resolve.extensionAlias = {

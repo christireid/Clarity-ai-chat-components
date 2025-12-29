@@ -13,26 +13,28 @@ export default function CachingStrategiesPage() {
       <h1>Caching Strategies Recipe</h1>
 
       <p className="lead">
-        Implement intelligent caching to reduce API costs, improve response times, and
-        provide offline support for your AI chat application.
+        Implement intelligent caching to reduce API costs, improve response
+        times, and provide offline support for your AI chat application.
       </p>
 
       <Callout type="info" title="Cost Savings">
         <p>
-          Effective caching can reduce LLM API costs by 40-60% by avoiding redundant
-          requests for similar queries.
+          Effective caching can reduce LLM API costs by 40-60% by avoiding
+          redundant requests for similar queries.
         </p>
       </Callout>
 
       <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">Quick Start with useSmartCache</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          Quick Start with useSmartCache
+        </h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The easiest way to add caching is with our built-in hook:
         </p>
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react'
+          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react/internal'
 
 function CachedChat() {
   const cache = useSmartCache({
@@ -71,7 +73,7 @@ function CachedChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { createCacheProvider } from '@clarity-chat/react'
+          code={`import { createCacheProvider } from '@clarity-chat/react/internal'
 
 // Layer 1: In-memory cache (fastest, limited size)
 const memoryCache = createCacheProvider({
@@ -113,7 +115,7 @@ const cache = createCacheProvider({
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react'
+          code={`import { useSmartCache } from '@clarity-chat/react/internal'
 
 const cache = useSmartCache({
   // Use embeddings for similarity matching
@@ -147,14 +149,16 @@ const cache = useSmartCache({
       </section>
 
       <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">Response Streaming with Cache</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          Response Streaming with Cache
+        </h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Cache streaming responses for instant replay:
         </p>
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react'
+          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react/internal'
 
 function StreamingCachedChat() {
   const cache = useSmartCache({
@@ -264,7 +268,10 @@ logger.debug({
             <strong>useSmartCache Hook</strong>
             <span>Full API reference</span>
           </a>
-          <a href="/reference/hooks/use-token-optimization" className="docs-card">
+          <a
+            href="/reference/hooks/use-token-optimization"
+            className="docs-card"
+          >
             <strong>useTokenOptimization</strong>
             <span>Reduce token usage</span>
           </a>

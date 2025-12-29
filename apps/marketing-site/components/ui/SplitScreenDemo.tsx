@@ -38,6 +38,7 @@ const ChatMessage = ({
   content: string
   isStreaming?: boolean
 }) => (
+  /* eslint-disable-next-line clarity-animations/prefer-animation-library -- Chat message animation */
   <motion.div
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
@@ -126,6 +127,7 @@ const DemoSteps = [
           role="assistant"
           content="Nice to meet you, Sarah! I've saved that to my memory."
         />
+        {/* eslint-disable-next-line clarity-animations/prefer-animation-library -- Demo indicator animation */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -241,6 +243,7 @@ export default function SplitScreenDemo() {
           </div>
           <div className="pl-10">
             <AnimatePresence mode="wait">
+              {/* eslint-disable-next-line clarity-animations/prefer-animation-library -- Step transition animation */}
               <motion.div
                 key={activeStep}
                 initial={{ opacity: 0, y: 5 }}
@@ -328,6 +331,7 @@ export default function SplitScreenDemo() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:linear-gradient(to_bottom,transparent,black_10%)]" />
 
           <AnimatePresence mode="wait">
+            {/* eslint-disable-next-line clarity-animations/prefer-animation-library -- Chat panel transition animation */}
             <motion.div
               key={activeStep}
               initial={{ opacity: 0, scale: 0.98 }}

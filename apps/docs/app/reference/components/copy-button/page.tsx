@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Copy Button | Clarity Chat',
-  description: 'One-click copy to clipboard button with success feedback.'
+  description: 'One-click copy to clipboard button with success feedback.',
 }
 
 export default function CopyButtonPage() {
@@ -10,7 +10,8 @@ export default function CopyButtonPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Copy Button</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Accessible copy-to-clipboard button with visual success feedback using the useClipboard hook.
+        Accessible copy-to-clipboard button with visual success feedback using
+        the useClipboard hook.
       </p>
 
       <section className="mb-12">
@@ -29,7 +30,7 @@ export default function CopyButtonPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { CopyButton } from '@clarity-chat/react'
+          <code>{`import { CopyButton } from '@clarity-chat/react/internal'
 
 <CopyButton 
   text="Hello, world!" 
@@ -96,7 +97,14 @@ export default function CopyButtonPage() {
       <section>
         <h2 className="text-3xl font-semibold mb-4">Related</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><a href="/reference/hooks/use-clipboard" className="text-primary hover:underline">useClipboard Hook</a></li>
+          <li>
+            <a
+              href="/reference/hooks/use-clipboard"
+              className="text-primary hover:underline"
+            >
+              useClipboard Hook
+            </a>
+          </li>
         </ul>
       </section>
     </div>

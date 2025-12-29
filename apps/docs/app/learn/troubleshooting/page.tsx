@@ -29,7 +29,7 @@ export default function TroubleshootingPage() {
         </Callout>
         <pre>
           <code>{`// Add to your app
-import { enableDebugMode } from '@clarity-chat/react'
+import { enableDebugMode } from '@clarity-chat/react/internal'
 
 if (process.env.NODE_ENV === 'development') {
   enableDebugMode({
@@ -265,7 +265,7 @@ export async function POST(req: Request) {
         </p>
         <pre>
           <code>{`// Use virtualization for long message lists
-import { VirtualizedMessageList } from '@clarity-chat/react'
+import { VirtualizedMessageList } from '@clarity-chat/react/internal'
 
 <VirtualizedMessageList
   messages={messages}
@@ -274,7 +274,7 @@ import { VirtualizedMessageList } from '@clarity-chat/react'
 />
 
 // Enable message optimization
-import { MessageOptimized } from '@clarity-chat/react'
+import { MessageOptimized } from '@clarity-chat/react/internal'
 
 <MessageOptimized
   content={message.content}
@@ -422,7 +422,7 @@ const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text
         </p>
         <pre>
           <code>{`// Wrap app with ThemeProvider
-import { ThemeProvider } from '@clarity-chat/react'
+import { ThemeProvider } from '@clarity-chat/react/internal'
 
 export default function App() {
   return (
@@ -581,7 +581,7 @@ export async function POST(req: Request) {
         <h3>Enable Verbose Logging</h3>
         <pre>
           <code>{`// Log all events
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 <ChatWindow
   onDebug={(event, data) => {
@@ -611,7 +611,7 @@ import { ChatWindow } from '@clarity-chat/react'
 
         <h3>Error Boundaries</h3>
         <pre>
-          <code>{`import { ErrorBoundary } from '@clarity-chat/react'
+          <code>{`import { ErrorBoundary } from '@clarity-chat/react/internal'
 
 <ErrorBoundary
   fallback={(error, reset) => (

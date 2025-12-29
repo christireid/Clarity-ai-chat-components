@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Error Boundary Enhanced | Clarity Chat',
-  description: 'Enhanced error boundary with error tracking, user feedback, and automatic reporting.'
+  description:
+    'Enhanced error boundary with error tracking, user feedback, and automatic reporting.',
 }
 
 export default function ErrorBoundaryEnhancedPage() {
@@ -10,7 +11,8 @@ export default function ErrorBoundaryEnhancedPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">Error Boundary Enhanced</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Production-ready error boundary with automatic error reporting, user feedback collection, and customizable fallback UI.
+        Production-ready error boundary with automatic error reporting, user
+        feedback collection, and customizable fallback UI.
       </p>
 
       <section className="mb-12">
@@ -29,7 +31,8 @@ export default function ErrorBoundaryEnhancedPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
-          <pre className="text-sm overflow-x-auto"><code>{`import { ErrorBoundaryEnhanced } from '@clarity-chat/react'
+          <pre className="text-sm overflow-x-auto">
+            <code>{`import { ErrorBoundaryEnhanced } from '@clarity-chat/react/internal'
 
 <ErrorBoundaryEnhanced
   enableFeedback
@@ -40,7 +43,8 @@ export default function ErrorBoundaryEnhancedPage() {
   }}
 >
   <YourApp />
-</ErrorBoundaryEnhanced>`}</code></pre>
+</ErrorBoundaryEnhanced>`}</code>
+          </pre>
         </div>
       </section>
     </div>

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, AgentRunFeed } from '@clarity-chat/react'
-import type { AgentRunStep } from '@clarity-chat/react'
+import { ToastProvider, AgentRunFeed } from '@clarity-chat/react/internal'
+import type { AgentRunStep } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -227,8 +227,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
-import type { AgentRunStep } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+import type { AgentRunStep } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -243,8 +243,8 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Agent Feed"
           description="Basic agent execution steps"
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
-import type { AgentRunStep } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+import type { AgentRunStep } from '@clarity-chat/react/internal'
 
 function SimpleAgentFeed() {
   const steps: AgentRunStep[] = [
@@ -279,7 +279,7 @@ function SimpleAgentFeed() {
         <ComponentPreview
           title="Live Execution"
           description="Real-time step updates as agent executes"
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { useState, useEffect } from 'react'
 
 function LiveAgentExecution() {
@@ -338,7 +338,7 @@ function LiveAgentExecution() {
         <p>Enable retry for failed steps and log viewing:</p>
 
         <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function AgentWithRetry() {
@@ -427,7 +427,7 @@ function AgentWithRetry() {
         <p>Steps can include additional information:</p>
 
         <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 
 function DetailedSteps() {
   const steps: AgentRunStep[] = [
@@ -479,7 +479,7 @@ function DetailedSteps() {
         <p>Stream agent steps from LangChain:</p>
 
         <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
+          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { AgentExecutor } from 'langchain/agents'
 import { useState } from 'react'
 
@@ -517,8 +517,8 @@ function LangChainAgent() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { AgentRunFeed } from '@clarity-chat/react'
-import type { AgentRunStep } from '@clarity-chat/react'
+import { AgentRunFeed } from '@clarity-chat/react/internal'
+import type { AgentRunStep } from '@clarity-chat/react/internal'
 
 function CompleteAgentFeed() {
   const [steps, setSteps] = useState<AgentRunStep[]>([])

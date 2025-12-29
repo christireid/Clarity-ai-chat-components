@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Clock, Plus, Trash2, ChevronLeft } from 'lucide-react'
-import { useReducedMotion } from '@clarity-chat/react'
+import { useReducedMotion } from '@clarity-chat/react/internal'
 import { drawerTransition, durations } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { ConversationBranch } from './hooks/useBranching'

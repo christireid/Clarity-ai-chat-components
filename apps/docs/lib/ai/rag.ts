@@ -9,6 +9,7 @@ import { generateEmbedding } from './embeddings'
 import { getVectorStore, type SearchResult } from './vectorStore'
 import { SYSTEM_PROMPT, getContextualPrompt, formatSources } from './prompts'
 import { searchDocumentation, formatSearchResultsForRAG } from './keywordSearch'
+import { logger } from '@/lib/logger'
 
 export interface RAGContext {
   /** The user's question */
@@ -41,11 +42,7 @@ export async function retrieveRelevantDocs(
   query: string,
   options: RAGOptions = {}
 ): Promise<SearchResult[]> {
-  const {
-    topK = 5,
-    minScore = 0.7,
-    currentPath,
-  } = options
+  const { topK = 5, minScore = 0.7, currentPath } = options
 
   try {
     // First, try keyword search (fast and doesn't require API calls)
@@ -56,7 +53,9 @@ export async function retrieveRelevantDocs(
     })
 
     if (keywordResults.length > 0) {
-      logger.debug(`Found ${keywordResults.length} results using keyword search`)
+      logger.debug(
+        `Found ${keywordResults.length} results using keyword search`
+      )
 
       // Convert keyword search results to SearchResult format
       const searchResults: SearchResult[] = keywordResults.map((result) => ({
@@ -73,7 +72,9 @@ export async function retrieveRelevantDocs(
     }
 
     // Fallback to embeddings-based search if keyword search returns no results
-    logger.debug('Keyword search returned no results, trying embeddings search...')
+    logger.debug(
+      'Keyword search returned no results, trying embeddings search...'
+    )
 
     // Generate embedding for the query
     const queryEmbedding = await generateEmbedding(query)
@@ -113,7 +114,10 @@ export async function retrieveRelevantDocs(
 /**
  * Build context from retrieved documents
  */
-export function buildContext(sources: SearchResult[], maxLength = 4000): string {
+export function buildContext(
+  sources: SearchResult[],
+  maxLength = 4000
+): string {
   if (sources.length === 0) {
     return 'No relevant documentation found for this query.'
   }
@@ -122,11 +126,12 @@ export function buildContext(sources: SearchResult[], maxLength = 4000): string 
   let currentLength = context.length
 
   for (const source of sources) {
-    const section = `## ${source.title} (Score: ${(source.score * 100).toFixed(1)}%)\n`
-      + `**Category:** ${source.category}\n`
-      + `**URL:** ${source.url}\n\n`
-      + `${source.content}\n\n`
-      + '---\n\n'
+    const section =
+      `## ${source.title} (Score: ${(source.score * 100).toFixed(1)}%)\n` +
+      `**Category:** ${source.category}\n` +
+      `**URL:** ${source.url}\n\n` +
+      `${source.content}\n\n` +
+      '---\n\n'
 
     // Check if adding this section would exceed max length
     if (currentLength + section.length > maxLength) {
@@ -187,11 +192,14 @@ export function formatRAGPrompt(ragContext: RAGContext): string {
   if (sources.length > 0) {
     prompt += `I found ${sources.length} relevant documentation sections to help answer this question:\n\n`
     prompt += ragContext.context
-    prompt += '\n\nPlease provide a helpful answer based on the documentation above. '
-    prompt += 'Include code examples where appropriate and link to relevant pages.\n'
+    prompt +=
+      '\n\nPlease provide a helpful answer based on the documentation above. '
+    prompt +=
+      'Include code examples where appropriate and link to relevant pages.\n'
   } else {
     prompt += 'I could not find specific documentation for this query. '
-    prompt += 'Please provide a general answer or suggest where the user might find this information.\n'
+    prompt +=
+      'Please provide a general answer or suggest where the user might find this information.\n'
   }
 
   return prompt
@@ -267,7 +275,9 @@ export function calculateRelevanceScore(
   // Boost score if query terms appear in title (exact match)
   const queryTerms = query.toLowerCase().split(/\s+/)
   const titleLower = source.title.toLowerCase()
-  const titleMatches = queryTerms.filter((term) => titleLower.includes(term)).length
+  const titleMatches = queryTerms.filter((term) =>
+    titleLower.includes(term)
+  ).length
   score += (titleMatches / queryTerms.length) * 0.1
 
   // Boost score for certain categories based on query
@@ -282,7 +292,9 @@ export function calculateRelevanceScore(
   }
 
   // Boost score for recent documents
-  const daysSinceUpdate = (Date.now() - new Date(source.metadata.lastUpdated).getTime()) / (1000 * 60 * 60 * 24)
+  const daysSinceUpdate =
+    (Date.now() - new Date(source.metadata.lastUpdated).getTime()) /
+    (1000 * 60 * 60 * 24)
   if (daysSinceUpdate < 7) {
     score += 0.02 // Recently updated
   }
@@ -360,7 +372,8 @@ export function formatCitations(sources: SearchResult[]): Citation[] {
   return sources.map((source, index) => ({
     id: `citation-${index}`,
     source: source.title,
-    chunkText: source.content.slice(0, 200) + (source.content.length > 200 ? '...' : ''),
+    chunkText:
+      source.content.slice(0, 200) + (source.content.length > 200 ? '...' : ''),
     url: source.url,
     confidence: source.score,
   }))

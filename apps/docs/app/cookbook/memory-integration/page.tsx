@@ -39,7 +39,7 @@ export default function MemoryIntegrationPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -124,7 +124,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, append, memoryInfo } = useClarityChat({
@@ -163,7 +163,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function Chat() {
@@ -204,7 +204,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Backend Persistence</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function Chat() {
@@ -254,7 +254,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages, memoryInfo, memoryErrorInfo } = useClarityChat({

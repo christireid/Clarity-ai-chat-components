@@ -143,7 +143,7 @@ export default function UseTokenOptimizationEnhancedPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -186,7 +186,7 @@ function OptimizedChat() {
       {stats && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
           <p>Total Tokens Saved: {stats.overall.totalTokensSaved}</p>
-          <p>Total Cost Saved: ${stats.overall.totalCostSaved.toFixed(2)}</p>
+          <p>Total Cost Saved: \${stats.overall.totalCostSaved.toFixed(2)}</p>
           <p>Average Savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
         </div>
       )}
@@ -269,7 +269,7 @@ function OptimizedChat() {
           for structured data.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function ToonOptimized() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -310,7 +310,7 @@ function ToonOptimized() {
           (Anthropic/OpenAI).
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function CachedChat() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -345,7 +345,7 @@ function CachedChat() {
           Cache responses based on semantic similarity for 40-60% savings.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function SemanticCachedChat() {
   const { optimizeData, stats } = useTokenOptimizationEnhanced({
@@ -379,7 +379,7 @@ function SemanticCachedChat() {
           Track costs in real-time and see savings from optimizations.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 
 function CostTrackedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -418,12 +418,12 @@ function CostTrackedChat() {
       {stats && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
           <h3>Cost Breakdown</h3>
-          <p>Total Cost: ${stats.costs.totalCost.toFixed(4)}</p>
-          <p>Input Cost: ${stats.costs.inputCost.toFixed(4)}</p>
-          <p>Output Cost: ${stats.costs.outputCost.toFixed(4)}</p>
-          <p>Cached Cost: ${stats.costs.cachedCost.toFixed(4)}</p>
+          <p>Total Cost: \${stats.costs.totalCost.toFixed(4)}</p>
+          <p>Input Cost: \${stats.costs.inputCost.toFixed(4)}</p>
+          <p>Output Cost: \${stats.costs.outputCost.toFixed(4)}</p>
+          <p>Cached Cost: \${stats.costs.cachedCost.toFixed(4)}</p>
           <p className="text-green-600">
-            Savings: ${stats.costs.savingsFromOptimization.toFixed(4)}
+            Savings: \${stats.costs.savingsFromOptimization.toFixed(4)}
           </p>
         </div>
       )}

@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Next.js Integration - Clarity Chat',
-  description: 'Complete guide for integrating Clarity Chat with Next.js 15 App Router and Pages Router.',
+  description:
+    'Complete guide for integrating Clarity Chat with Next.js 15 App Router and Pages Router.',
 }
 
 export default function NextJSIntegrationPage() {
@@ -15,7 +16,8 @@ export default function NextJSIntegrationPage() {
         <span className="docs-badge">Integration</span>
         <h1>Next.js Integration</h1>
         <p className="docs-lead">
-          Complete guide for integrating Clarity Chat with Next.js 15 App Router and Pages Router.
+          Complete guide for integrating Clarity Chat with Next.js 15 App Router
+          and Pages Router.
         </p>
       </div>
 
@@ -25,19 +27,17 @@ export default function NextJSIntegrationPage() {
         <p>
           <strong>1. Install package:</strong>
         </p>
-        <CodeBlock
-          language="bash"
-          code={`npm install @clarity-chat/react`}
-        />
+        <CodeBlock language="bash" code={`npm install @clarity-chat/react`} />
 
         <p>
-          <strong>2. Create client component</strong> (<code>app/components/Chat.tsx</code>):
+          <strong>2. Create client component</strong> (
+          <code>app/components/Chat.tsx</code>):
         </p>
         <CodeBlock
           language="tsx"
           code={`'use client'
 
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 
@@ -79,7 +79,8 @@ export function Chat() {
         />
 
         <p>
-          <strong>3. Create API route</strong> (<code>app/api/chat/route.ts</code>):
+          <strong>3. Create API route</strong> (
+          <code>app/api/chat/route.ts</code>):
         </p>
         <CodeBlock
           language="tsx"
@@ -125,7 +126,9 @@ export default function Home() {
       <section className="docs-section">
         <h2>Streaming with SSE</h2>
         <p>
-          For real-time streaming responses, see the <a href="/examples/streaming">Streaming Chat Demo</a> for complete implementation details.
+          For real-time streaming responses, see the{' '}
+          <a href="/examples/streaming">Streaming Chat Demo</a> for complete
+          implementation details.
         </p>
       </section>
 
@@ -134,27 +137,33 @@ export default function Home() {
         <p>
           Create <code>.env.local</code>:
         </p>
-        <CodeBlock
-          language="env"
-          code={`OPENAI_API_KEY=sk-...`}
-        />
+        <CodeBlock language="env" code={`OPENAI_API_KEY=sk-...`} />
       </section>
 
       <section className="docs-section">
         <h2>Deployment</h2>
         <h3>Vercel</h3>
-        <CodeBlock
-          language="bash"
-          code={`vercel`}
-        />
+        <CodeBlock language="bash" code={`vercel`} />
       </section>
 
       <section className="docs-section">
         <h2>Examples</h2>
         <ul>
-          <li><a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat">Basic Chat</a></li>
-          <li><a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat">Streaming Chat</a></li>
-          <li><a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support">Customer Support</a></li>
+          <li>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat">
+              Basic Chat
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat">
+              Streaming Chat
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support">
+              Customer Support
+            </a>
+          </li>
         </ul>
       </section>
     </div>

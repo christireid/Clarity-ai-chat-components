@@ -8,10 +8,10 @@
  */
 
 import { useState, useCallback, useRef, useMemo } from 'react'
-import { useLocalStorage } from '@clarity-chat/react'
-import { useClipboard } from '@clarity-chat/react'
-import { useRetryWithBackoff } from '@clarity-chat/react'
-import { useVoiceInput } from '@clarity-chat/react'
+import { useLocalStorage } from '@clarity-chat/react/internal'
+import { useClipboard } from '@clarity-chat/react/internal'
+import { useRetryWithBackoff } from '@clarity-chat/react/internal'
+import { useVoiceInput } from '@clarity-chat/react/internal'
 
 // ============================================================================
 // TYPES

@@ -7,7 +7,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 
 const useMessageOperationsProps: Prop[] = [
   {
@@ -61,15 +61,15 @@ export default function HooksPage() {
   return (
     <ToastProvider>
       <Breadcrumbs />
-      
+
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
           Hooks API Reference
         </h1>
-        
+
         <p className="text-xl text-text-secondary leading-relaxed">
-          Complete API reference for all React hooks available in Clarity Chat. Hooks provide
-          a clean, composable API for building chat interfaces.
+          Complete API reference for all React hooks available in Clarity Chat.
+          Hooks provide a clean, composable API for building chat interfaces.
         </p>
       </div>
 
@@ -94,19 +94,34 @@ export default function HooksPage() {
               Not sure which hook to use?
             </h3>
             <p className="text-text-secondary">
-              Try our interactive Hook Selector wizard to find the right hook for your use case.
+              Try our interactive Hook Selector wizard to find the right hook
+              for your use case.
             </p>
           </div>
-          <svg className="w-6 h-6 ml-auto text-brand-500 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-6 h-6 ml-auto text-brand-500 group-hover:translate-x-1 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </div>
       </Link>
 
       <Callout type="info" className="mb-8">
         <p>
-          <strong>Note:</strong> All hooks are client-side only and must be used within components
-          marked with <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">'use client'</code>.
+          <strong>Note:</strong> All hooks are client-side only and must be used
+          within components marked with{' '}
+          <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+            'use client'
+          </code>
+          .
         </p>
       </Callout>
 
@@ -114,7 +129,8 @@ export default function HooksPage() {
       <section className="my-12">
         <h2 className="text-3xl font-bold mb-6">Architecture Overview</h2>
         <p className="text-text-secondary mb-6">
-          Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities:
+          Clarity Chat hooks are organized into three architecture layers, from
+          high-level drop-in solutions to low-level utilities:
         </p>
 
         <div className="border rounded-xl p-6 bg-gradient-to-b from-bg-secondary/50 to-transparent">
@@ -127,10 +143,16 @@ export default function HooksPage() {
               <span className="text-sm text-text-secondary">Drop-in Ready</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <Link href="/reference/hooks/use-clarity-chat" className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-clarity-chat"
+                className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors"
+              >
                 useClarityChat
               </Link>
-              <Link href="/reference/hooks/use-clarity-object" className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-clarity-object"
+                className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors"
+              >
                 useClarityObject
               </Link>
             </div>
@@ -138,8 +160,18 @@ export default function HooksPage() {
 
           {/* Arrow */}
           <div className="flex justify-center my-4">
-            <svg className="w-6 h-6 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <svg
+              className="w-6 h-6 text-text-secondary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </div>
 
@@ -149,19 +181,33 @@ export default function HooksPage() {
               <div className="px-3 py-1 bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 rounded-full text-sm font-semibold">
                 Mid-Level
               </div>
-              <span className="text-sm text-text-secondary">Composable Building Blocks</span>
+              <span className="text-sm text-text-secondary">
+                Composable Building Blocks
+              </span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <Link href="/reference/hooks/use-chat-enhanced" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-chat-enhanced"
+                className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors"
+              >
                 useChatEnhanced
               </Link>
-              <Link href="/reference/hooks/use-clarity-chat-with-tools" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-clarity-chat-with-tools"
+                className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors"
+              >
                 useClarityChatWithTools
               </Link>
-              <Link href="/reference/hooks/use-memory-context" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-memory-context"
+                className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors"
+              >
                 useMemoryContext
               </Link>
-              <Link href="/reference/hooks/use-streaming-sse" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+              <Link
+                href="/reference/hooks/use-streaming-sse"
+                className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors"
+              >
                 useStreamingSSE
               </Link>
             </div>
@@ -169,8 +215,18 @@ export default function HooksPage() {
 
           {/* Arrow */}
           <div className="flex justify-center my-4">
-            <svg className="w-6 h-6 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <svg
+              className="w-6 h-6 text-text-secondary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </div>
 
@@ -180,19 +236,33 @@ export default function HooksPage() {
               <div className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
                 Low-Level
               </div>
-              <span className="text-sm text-text-secondary">Utilities & Primitives</span>
+              <span className="text-sm text-text-secondary">
+                Utilities & Primitives
+              </span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <Link href="/reference/hooks/use-debounce" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Link
+                href="/reference/hooks/use-debounce"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 useDebounce
               </Link>
-              <Link href="/reference/hooks/use-local-storage" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Link
+                href="/reference/hooks/use-local-storage"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 useLocalStorage
               </Link>
-              <Link href="/reference/hooks/use-indexed-db" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Link
+                href="/reference/hooks/use-indexed-db"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 useIndexedDB
               </Link>
-              <Link href="/reference/hooks/use-design-tokens" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Link
+                href="/reference/hooks/use-design-tokens"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 useDesignTokens
               </Link>
             </div>
@@ -200,7 +270,9 @@ export default function HooksPage() {
         </div>
 
         <p className="text-sm text-text-secondary mt-4">
-          <strong>Tip:</strong> Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control.
+          <strong>Tip:</strong> Start with top-level hooks for most use cases.
+          Compose mid-level hooks for custom behavior. Use low-level utilities
+          for fine-grained control.
         </p>
       </section>
 
@@ -212,8 +284,12 @@ export default function HooksPage() {
           <div>
             <h3 className="text-2xl font-semibold mb-4">useClarityChat</h3>
             <p className="text-text-secondary mb-6">
-              Primary hook for chat functionality with memory integration, streaming, and AI interactions. 
-              <strong className="text-brand-500"> Recommended for all new projects.</strong>
+              Primary hook for chat functionality with memory integration,
+              streaming, and AI interactions.
+              <strong className="text-brand-500">
+                {' '}
+                Recommended for all new projects.
+              </strong>
             </p>
             <div className="mt-4">
               <Link
@@ -227,10 +303,13 @@ export default function HooksPage() {
 
           {/* useTokenOptimizationEnhanced */}
           <div>
-            <h3 className="text-2xl font-semibold mb-4">useTokenOptimizationEnhanced</h3>
+            <h3 className="text-2xl font-semibold mb-4">
+              useTokenOptimizationEnhanced
+            </h3>
             <p className="text-text-secondary mb-6">
-              Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. 
-              Save 50-90% on AI costs.
+              Comprehensive token optimization with TOON, prompt caching,
+              semantic caching, and real-time cost tracking. Save 50-90% on AI
+              costs.
             </p>
             <div className="mt-4">
               <Link
@@ -244,13 +323,16 @@ export default function HooksPage() {
 
           {/* useMessageOperations */}
           <div>
-            <h3 className="text-2xl font-semibold mb-4">useMessageOperations</h3>
+            <h3 className="text-2xl font-semibold mb-4">
+              useMessageOperations
+            </h3>
             <p className="text-text-secondary mb-6">
-              Manage message operations like edit, regenerate, delete, and undo/redo.
+              Manage message operations like edit, regenerate, delete, and
+              undo/redo.
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useMessageOperations } from '@clarity-chat/react'
+              code={`import { useMessageOperations } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatComponent() {
@@ -290,46 +372,110 @@ function ChatComponent() {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-bg-secondary border-b border-border">
-                      <th className="text-left p-4 font-semibold text-text-primary">Name</th>
-                      <th className="text-left p-4 font-semibold text-text-primary">Type</th>
-                      <th className="text-left p-4 font-semibold text-text-primary">Description</th>
+                      <th className="text-left p-4 font-semibold text-text-primary">
+                        Name
+                      </th>
+                      <th className="text-left p-4 font-semibold text-text-primary">
+                        Type
+                      </th>
+                      <th className="text-left p-4 font-semibold text-text-primary">
+                        Description
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">editMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string, content: string) {'=>'} void</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Edit a message by ID</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">editMessage</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          (id: string, content: string) {'=>'} void
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Edit a message by ID
+                      </td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">regenerateMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) {'=>'} void</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Regenerate a message</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">
+                          regenerateMessage
+                        </code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          (id: string) {'=>'} void
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Regenerate a message
+                      </td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">deleteMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) {'=>'} void</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Delete a message</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">deleteMessage</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          (id: string) {'=>'} void
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Delete a message
+                      </td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">undo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() {'=>'} void</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Undo last operation</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">undo</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          () {'=>'} void
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Undo last operation
+                      </td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">redo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() {'=>'} void</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Redo last undone operation</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">redo</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          () {'=>'} void
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Redo last undone operation
+                      </td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4"><code className="text-sm font-mono">canUndo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">boolean</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Whether undo is available</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">canUndo</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          boolean
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Whether undo is available
+                      </td>
                     </tr>
                     <tr>
-                      <td className="p-4"><code className="text-sm font-mono">canRedo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">boolean</code></td>
-                      <td className="p-4 text-sm text-text-secondary">Whether redo is available</td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono">canRedo</code>
+                      </td>
+                      <td className="p-4">
+                        <code className="text-sm font-mono text-brand-500">
+                          boolean
+                        </code>
+                      </td>
+                      <td className="p-4 text-sm text-text-secondary">
+                        Whether redo is available
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -345,7 +491,7 @@ function ChatComponent() {
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useStreamingChat } from '@clarity-chat/react'
+              code={`import { useStreamingChat } from '@clarity-chat/react/internal'
 
 function StreamingChat() {
   const {
@@ -386,7 +532,7 @@ function StreamingChat() {
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
+              code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
 
 function ChatWithTracking() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -424,10 +570,12 @@ function ChatWithTracking() {
 
       <section className="my-12">
         <h2 className="text-3xl font-bold mb-6">Utility Hooks</h2>
-        
+
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 rounded-lg bg-bg-secondary border border-border">
-            <h4 className="font-semibold text-text-primary mb-2">useLocalStorage</h4>
+            <h4 className="font-semibold text-text-primary mb-2">
+              useLocalStorage
+            </h4>
             <p className="text-sm text-text-secondary mb-4">
               Persist state to localStorage with automatic serialization.
             </p>
@@ -439,7 +587,9 @@ function ChatWithTracking() {
           </div>
 
           <div className="p-6 rounded-lg bg-bg-secondary border border-border">
-            <h4 className="font-semibold text-text-primary mb-2">useIndexedDB</h4>
+            <h4 className="font-semibold text-text-primary mb-2">
+              useIndexedDB
+            </h4>
             <p className="text-sm text-text-secondary mb-4">
               Store large data in IndexedDB for offline support.
             </p>
@@ -451,7 +601,9 @@ function ChatWithTracking() {
           </div>
 
           <div className="p-6 rounded-lg bg-bg-secondary border border-border">
-            <h4 className="font-semibold text-text-primary mb-2">useAutoScroll</h4>
+            <h4 className="font-semibold text-text-primary mb-2">
+              useAutoScroll
+            </h4>
             <p className="text-sm text-text-secondary mb-4">
               Automatically scroll to bottom when new messages arrive.
             </p>
@@ -463,7 +615,9 @@ function ChatWithTracking() {
           </div>
 
           <div className="p-6 rounded-lg bg-bg-secondary border border-border">
-            <h4 className="font-semibold text-text-primary mb-2">useErrorRecovery</h4>
+            <h4 className="font-semibold text-text-primary mb-2">
+              useErrorRecovery
+            </h4>
             <p className="text-sm text-text-secondary mb-4">
               Handle errors with automatic retry and recovery.
             </p>
@@ -478,8 +632,14 @@ function ChatWithTracking() {
 
       <Callout type="tip">
         <p>
-          <strong>Learn more:</strong> Check out the <a href="/learn/concepts/hooks" className="text-brand-500 hover:underline">Hooks Concept Guide</a> for
-          detailed explanations and composition patterns.
+          <strong>Learn more:</strong> Check out the{' '}
+          <a
+            href="/learn/concepts/hooks"
+            className="text-brand-500 hover:underline"
+          >
+            Hooks Concept Guide
+          </a>{' '}
+          for detailed explanations and composition patterns.
         </p>
       </Callout>
     </ToastProvider>

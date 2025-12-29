@@ -7,6 +7,7 @@
 
 import fs from 'fs'
 import path from 'path'
+import { logger } from '@/lib/logger'
 
 interface DocChunk {
   id: string
@@ -63,14 +64,17 @@ function tokenize(text: string): string[] {
     .toLowerCase()
     .replace(/[^\w\s-]/g, ' ') // Replace punctuation with spaces
     .split(/\s+/)
-    .filter(word => word.length > 2) // Filter out very short words
+    .filter((word) => word.length > 2) // Filter out very short words
 }
 
 /**
  * Calculate keyword match score
  */
-function calculateKeywordScore(queryTokens: string[], keywords: string[]): number {
-  const keywordSet = new Set(keywords.map(k => k.toLowerCase()))
+function calculateKeywordScore(
+  queryTokens: string[],
+  keywords: string[]
+): number {
+  const keywordSet = new Set(keywords.map((k) => k.toLowerCase()))
   let matches = 0
 
   for (const token of queryTokens) {
@@ -79,7 +83,10 @@ function calculateKeywordScore(queryTokens: string[], keywords: string[]): numbe
     } else {
       // Check for partial matches
       for (const keyword of keywords) {
-        if (keyword.toLowerCase().includes(token) || token.includes(keyword.toLowerCase())) {
+        if (
+          keyword.toLowerCase().includes(token) ||
+          token.includes(keyword.toLowerCase())
+        ) {
           matches += 0.5
           break
         }
@@ -118,9 +125,11 @@ function calculateTitleScore(queryTokens: string[], title: string): number {
   let partialMatches = 0
 
   for (const queryToken of queryTokens) {
-    if (titleTokens.some(t => t === queryToken)) {
+    if (titleTokens.some((t) => t === queryToken)) {
       exactMatches++
-    } else if (titleTokens.some(t => t.includes(queryToken) || queryToken.includes(t))) {
+    } else if (
+      titleTokens.some((t) => t.includes(queryToken) || queryToken.includes(t))
+    ) {
       partialMatches++
     }
   }
@@ -131,13 +140,18 @@ function calculateTitleScore(queryTokens: string[], title: string): number {
 /**
  * Calculate heading match score
  */
-function calculateHeadingScore(queryTokens: string[], headings: string[] = []): number {
+function calculateHeadingScore(
+  queryTokens: string[],
+  headings: string[] = []
+): number {
   let score = 0
 
   for (const heading of headings) {
     const headingTokens = tokenize(heading)
     for (const queryToken of queryTokens) {
-      if (headingTokens.some(t => t === queryToken || t.includes(queryToken))) {
+      if (
+        headingTokens.some((t) => t === queryToken || t.includes(queryToken))
+      ) {
         score += 1
       }
     }
@@ -161,7 +175,11 @@ function calculatePathBoost(chunk: DocChunk, currentPath?: string): number {
   const pathSegments = currentPath.split('/').filter(Boolean)
   const chunkSegments = chunk.url.split('/').filter(Boolean)
 
-  if (pathSegments.length > 0 && chunkSegments.length > 0 && pathSegments[0] === chunkSegments[0]) {
+  if (
+    pathSegments.length > 0 &&
+    chunkSegments.length > 0 &&
+    pathSegments[0] === chunkSegments[0]
+  ) {
     return 1
   }
 
@@ -175,12 +193,7 @@ export function searchDocumentation(
   query: string,
   options: SearchOptions = {}
 ): SearchResult[] {
-  const {
-    topK = 5,
-    minScore = 0.1,
-    category,
-    currentPath,
-  } = options
+  const { topK = 5, minScore = 0.1, category, currentPath } = options
 
   // Load index
   const allChunks = loadDocumentationIndex()
@@ -210,16 +223,19 @@ export function searchDocumentation(
     const titleScore = calculateTitleScore(queryTokens, chunk.title)
     const keywordScore = calculateKeywordScore(queryTokens, chunk.keywords)
     const contentScore = calculateContentScore(queryTokens, chunk.content)
-    const headingScore = calculateHeadingScore(queryTokens, chunk.metadata.headings)
+    const headingScore = calculateHeadingScore(
+      queryTokens,
+      chunk.metadata.headings
+    )
     const pathBoost = calculatePathBoost(chunk, currentPath)
 
     // Weighted total score
     const totalScore =
-      titleScore * 3 +      // Title matches are most important
-      keywordScore * 2 +    // Keywords are very important
-      headingScore * 1.5 +  // Headings are important
-      contentScore * 1 +    // Content matches
-      pathBoost             // Context boost
+      titleScore * 3 + // Title matches are most important
+      keywordScore * 2 + // Keywords are very important
+      headingScore * 1.5 + // Headings are important
+      contentScore * 1 + // Content matches
+      pathBoost // Context boost
 
     if (totalScore > minScore) {
       results.push({
@@ -258,7 +274,7 @@ export function formatSearchResultsForRAG(results: SearchResult[]): {
     }
   }
 
-  const sources = results.map(r => ({
+  const sources = results.map((r) => ({
     url: r.chunk.url,
     title: r.chunk.title,
     score: r.score,
@@ -276,9 +292,10 @@ export function formatSearchResultsForRAG(results: SearchResult[]): {
 
     // Add content (truncate if too long)
     const maxContentLength = 500
-    const content = chunk.content.length > maxContentLength
-      ? chunk.content.substring(0, maxContentLength) + '...'
-      : chunk.content
+    const content =
+      chunk.content.length > maxContentLength
+        ? chunk.content.substring(0, maxContentLength) + '...'
+        : chunk.content
 
     contextPart += content + '\n\n'
 
@@ -308,7 +325,7 @@ export function getRelatedDocumentation(
   const section = pathSegments[0]
 
   const related = allChunks
-    .filter(chunk => {
+    .filter((chunk) => {
       const chunkSegments = chunk.url.split('/').filter(Boolean)
       return chunkSegments[0] === section && chunk.url !== currentPath
     })

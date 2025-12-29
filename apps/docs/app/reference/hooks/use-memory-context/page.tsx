@@ -14,8 +14,8 @@ export default function UseMemoryContextPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useMemoryContext</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Access the memory context provided by MemoryProvider. Use this hook to add, query,
-          update, and manage AI memories in your components.
+          Access the memory context provided by MemoryProvider. Use this hook to
+          add, query, update, and manage AI memories in your components.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Mid-Level (Composable) •{' '}
@@ -26,24 +26,45 @@ export default function UseMemoryContextPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Building chat applications that need to remember user preferences across sessions</li>
-          <li>Implementing personalized AI responses based on conversation history</li>
-          <li>Creating context-aware features that retrieve relevant past information</li>
-          <li>Managing long-term facts and knowledge within your application</li>
+          <li>
+            Building chat applications that need to remember user preferences
+            across sessions
+          </li>
+          <li>
+            Implementing personalized AI responses based on conversation history
+          </li>
+          <li>
+            Creating context-aware features that retrieve relevant past
+            information
+          </li>
+          <li>
+            Managing long-term facts and knowledge within your application
+          </li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>For simple chat without memory needs - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> directly</li>
-          <li>For temporary session-only data - use React state or <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code></li>
-          <li>Outside of a <code className="bg-muted px-2 py-1 rounded">MemoryProvider</code> - the hook will return null</li>
+          <li>
+            For simple chat without memory needs - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useClarityChat</code>{' '}
+            directly
+          </li>
+          <li>
+            For temporary session-only data - use React state or{' '}
+            <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code>
+          </li>
+          <li>
+            Outside of a{' '}
+            <code className="bg-muted px-2 py-1 rounded">MemoryProvider</code> -
+            the hook will return null
+          </li>
         </ul>
       </section>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react'
+          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react/internal'
 
 function ChatWithMemory() {
   const memory = useMemoryContext()
@@ -90,7 +111,10 @@ function App() {
         <h2 className="text-3xl font-semibold mb-4">API Reference</h2>
 
         <div className="space-y-4">
-          <CollapsibleSection title="Return Value (MemoryContextValue)" defaultOpen={true}>
+          <CollapsibleSection
+            title="Return Value (MemoryContextValue)"
+            defaultOpen={true}
+          >
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
@@ -110,28 +134,38 @@ function App() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">addMemory</td>
-                    <td className="p-3 font-mono text-sm">(content, type, scope, metadata?) =&gt; Promise&lt;MemoryItem&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (content, type, scope, metadata?) =&gt;
+                      Promise&lt;MemoryItem&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Add a new memory item.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">query</td>
-                    <td className="p-3 font-mono text-sm">(query: MemoryQuery) =&gt; Promise&lt;MemorySearchResult[]&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (query: MemoryQuery) =&gt;
+                      Promise&lt;MemorySearchResult[]&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Search for relevant memories.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">updateMemory</td>
-                    <td className="p-3 font-mono text-sm">(id, updates) =&gt; Promise&lt;MemoryItem | null&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (id, updates) =&gt; Promise&lt;MemoryItem | null&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Update an existing memory.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">deleteMemory</td>
-                    <td className="p-3 font-mono text-sm">(id) =&gt; Promise&lt;boolean&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (id) =&gt; Promise&lt;boolean&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Delete a memory by ID.
                     </td>
@@ -154,35 +188,45 @@ function App() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">promoteMemory</td>
-                    <td className="p-3 font-mono text-sm">(id, targetScope) =&gt; Promise&lt;MemoryItem | null&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (id, targetScope) =&gt; Promise&lt;MemoryItem | null&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Promote memory to a different scope.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">compressMemory</td>
-                    <td className="p-3 font-mono text-sm">(id, ratio?) =&gt; Promise&lt;MemoryItem | null&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (id, ratio?) =&gt; Promise&lt;MemoryItem | null&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Compress a memory to save tokens.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">getStats</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; MemoryStats</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; MemoryStats
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Get memory usage statistics.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">getContext</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; MemoryContext</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; MemoryContext
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Get current memory context.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">subscribe</td>
-                    <td className="p-3 font-mono text-sm">(eventType, listener) =&gt; () =&gt; void</td>
+                    <td className="p-3 font-mono text-sm">
+                      (eventType, listener) =&gt; () =&gt; void
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Subscribe to memory events.
                     </td>
@@ -197,10 +241,22 @@ function App() {
       <section className="mb-12">
         <CollapsibleSection title="Memory Types" defaultOpen={true}>
           <ul className="space-y-2 text-sm">
-            <li><code className="bg-muted px-2 py-1 rounded">preference</code> - User preferences</li>
-            <li><code className="bg-muted px-2 py-1 rounded">fact</code> - Factual information</li>
-            <li><code className="bg-muted px-2 py-1 rounded">context</code> - Contextual information</li>
-            <li><code className="bg-muted px-2 py-1 rounded">task</code> - Task-related memories</li>
+            <li>
+              <code className="bg-muted px-2 py-1 rounded">preference</code> -
+              User preferences
+            </li>
+            <li>
+              <code className="bg-muted px-2 py-1 rounded">fact</code> - Factual
+              information
+            </li>
+            <li>
+              <code className="bg-muted px-2 py-1 rounded">context</code> -
+              Contextual information
+            </li>
+            <li>
+              <code className="bg-muted px-2 py-1 rounded">task</code> -
+              Task-related memories
+            </li>
           </ul>
         </CollapsibleSection>
       </section>
@@ -209,7 +265,9 @@ function App() {
         <CollapsibleSection title="Advanced Examples" badge="Pro">
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-2">Subscribing to Memory Events</h4>
+              <h4 className="font-semibold mb-2">
+                Subscribing to Memory Events
+              </h4>
               <CodePlayground
                 code={`const memory = useMemoryContext()
 
