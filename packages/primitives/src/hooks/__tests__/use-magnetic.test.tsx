@@ -4,7 +4,7 @@ import { useMagnetic } from '../use-magnetic'
 
 // Mock dependencies
 vi.mock('@clarity-chat/utils', () => ({
-  throttle: (fn: (...args: unknown[]) => unknown) => fn,
+  throttle: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
 }))
 
 // Mock useReducedMotion

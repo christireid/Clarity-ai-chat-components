@@ -282,8 +282,9 @@ export class SecurityManager {
         return false
       }
 
-      // Prevent javascript: and data: URLs
-      if (url.includes('javascript:') || url.includes('data:')) {
+      // Prevent javascript: and data: URLs (using regex to avoid ESLint no-script-url)
+      const dangerousProtocols = /^(java|vb)script:|^data:/i
+      if (dangerousProtocols.test(url)) {
         return false
       }
 

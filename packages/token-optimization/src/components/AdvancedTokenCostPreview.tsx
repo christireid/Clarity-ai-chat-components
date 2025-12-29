@@ -1,16 +1,16 @@
 /**
  * Advanced Token Cost Preview Component
- * 
- * Enterprise-grade cost estimation with real-time pricing, 
+ *
+ * Enterprise-grade cost estimation with real-time pricing,
  * model comparison, and optimization recommendations
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { 
-  AdvancedTokenCounter, 
+import {
+  AdvancedTokenCounter,
   countTokensWithConfidence,
   type ModelFamily,
-  type TokenCountResult 
+  type TokenCountResult,
 } from '@clarity-chat/token-optimization'
 
 /**
@@ -18,8 +18,8 @@ import {
  */
 export interface ModelPricing {
   model: ModelFamily
-  inputCost: number   // Cost per 1K input tokens
-  outputCost: number  // Cost per 1K output tokens
+  inputCost: number // Cost per 1K input tokens
+  outputCost: number // Cost per 1K output tokens
   contextWindow: number
   description: string
 }
@@ -75,42 +75,44 @@ const MODEL_PRICING: Record<ModelFamily, ModelPricing> = {
     inputCost: 0.03,
     outputCost: 0.06,
     contextWindow: 128000,
-    description: 'Most capable GPT model'
+    description: 'Most capable GPT model',
   },
   'gpt-3.5': {
     model: 'gpt-3.5',
     inputCost: 0.001,
     outputCost: 0.002,
     contextWindow: 16384,
-    description: 'Fast and cost-effective'
+    description: 'Fast and cost-effective',
   },
-  'claude': {
+  claude: {
     model: 'claude',
     inputCost: 0.008,
     outputCost: 0.024,
     contextWindow: 200000,
-    description: 'Advanced reasoning capabilities'
+    description: 'Advanced reasoning capabilities',
   },
-  'gemini': {
+  gemini: {
     model: 'gemini',
     inputCost: 0.0075,
     outputCost: 0.03,
     contextWindow: 128000,
-    description: 'Multimodal capabilities'
+    description: 'Multimodal capabilities',
   },
-  'generic': {
+  generic: {
     model: 'generic',
     inputCost: 0.01,
     outputCost: 0.02,
     contextWindow: 32768,
-    description: 'General purpose'
-  }
+    description: 'General purpose',
+  },
 }
 
 /**
  * Advanced Token Cost Preview Component
  */
-export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> = ({
+export const AdvancedTokenCostPreview: React.FC<
+  AdvancedTokenCostPreviewProps
+> = ({
   text,
   models = ['gpt-4', 'gpt-3.5', 'claude'],
   estimatedOutputRatio = 0.3,
@@ -119,16 +121,18 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
   enableRealTime = true,
   onCostUpdate,
   className,
-  style
+  style,
 }) => {
   const [selectedModel, setSelectedModel] = useState<ModelFamily>(models[0])
   const [isCalculating, setIsCalculating] = useState(false)
   const [lastCalculation, setLastCalculation] = useState<number>(0)
   const [tokenInfo, setTokenInfo] = useState<TokenCountResult | null>(null)
   const [costEstimate, setCostEstimate] = useState<CostEstimate | null>(null)
-  const [optimizationSuggestions, setOptimizationSuggestions] = useState<OptimizationSuggestion[]>([])
+  const [optimizationSuggestions, setOptimizationSuggestions] = useState<
+    OptimizationSuggestion[]
+  >([])
 
-  const tokenCounter = useMemo(() => new AdvancedTokenCounter(), [])
+  const _tokenCounter = useMemo(() => new AdvancedTokenCounter(), [])
 
   /**
    * Calculate cost estimate
@@ -144,7 +148,7 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
         totalCost: 0,
         confidence: 'exact',
         model: selectedModel,
-        optimizationPotential: 0
+        optimizationPotential: 0,
       }
     }
 
@@ -158,7 +162,10 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
     const totalCost = inputCost + outputCost
 
     // Calculate optimization potential
-    const optimizationPotential = calculateOptimizationPotential(tokenInfo, selectedModel)
+    const optimizationPotential = calculateOptimizationPotential(
+      tokenInfo,
+      selectedModel
+    )
 
     return {
       inputTokens,
@@ -169,96 +176,103 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
       totalCost,
       confidence: tokenInfo.confidence,
       model: selectedModel,
-      optimizationPotential
+      optimizationPotential,
     }
   }, [tokenInfo, selectedModel, estimatedOutputRatio])
 
   /**
    * Count tokens with performance optimization
    */
-  const countTokensOptimized = useCallback(async (): Promise<TokenCountResult> => {
-    if (!text) {
-      return {
-        count: 0,
-        confidence: 'exact',
-        contentType: 'unknown',
-        model: selectedModel
+  const countTokensOptimized =
+    useCallback(async (): Promise<TokenCountResult> => {
+      if (!text) {
+        return {
+          count: 0,
+          confidence: 'exact',
+          contentType: 'unknown',
+          model: selectedModel,
+        }
       }
-    }
 
-    setIsCalculating(true)
-    
-    try {
-      // Use the advanced counter for accurate results
-      const result = countTokensWithConfidence(text, selectedModel, {
-        enableCaching: true,
-        enableContentDetection: true
-      })
-      
-      return result
-    } catch (error) {
-      console.warn('Token counting failed:', error)
-      // Fallback to basic counting
-      return {
-        count: Math.ceil(text.length / 4),
-        confidence: 'approximate',
-        contentType: 'unknown',
-        model: selectedModel
+      setIsCalculating(true)
+
+      try {
+        // Use the advanced counter for accurate results
+        const result = countTokensWithConfidence(text, selectedModel, {
+          enableCaching: true,
+          enableContentDetection: true,
+        })
+
+        return result
+      } catch (error) {
+        console.warn('Token counting failed:', error)
+        // Fallback to basic counting
+        return {
+          count: Math.ceil(text.length / 4),
+          confidence: 'approximate',
+          contentType: 'unknown',
+          model: selectedModel,
+        }
+      } finally {
+        setIsCalculating(false)
       }
-    } finally {
-      setIsCalculating(false)
-    }
-  }, [text, selectedModel])
+    }, [text, selectedModel])
 
   /**
    * Generate optimization suggestions
    */
-  const generateOptimizationSuggestions = useCallback((): OptimizationSuggestion[] => {
-    if (!costEstimate || !showOptimization) return []
+  const generateOptimizationSuggestions =
+    useCallback((): OptimizationSuggestion[] => {
+      if (!costEstimate || !showOptimization) return []
 
-    const suggestions: OptimizationSuggestion[] = []
+      const suggestions: OptimizationSuggestion[] = []
 
-    // Model selection optimization
-    const optimalModel = findOptimalModel(text, models)
-    if (optimalModel !== selectedModel) {
-      const potentialSavings = calculateModelSavings(selectedModel, optimalModel, costEstimate)
-      suggestions.push({
-        type: 'model_selection',
-        title: 'Switch to More Cost-Effective Model',
-        description: `${MODEL_PRICING[optimalModel].description} could save ~${Math.round(potentialSavings * 100)}% on costs`,
-        potentialSavings,
-        implementation: 'easy',
-        priority: 'high'
-      })
-    }
+      // Model selection optimization
+      const optimalModel = findOptimalModel(text, models)
+      if (optimalModel !== selectedModel) {
+        const potentialSavings = calculateModelSavings(
+          selectedModel,
+          optimalModel,
+          costEstimate
+        )
+        suggestions.push({
+          type: 'model_selection',
+          title: 'Switch to More Cost-Effective Model',
+          description: `${MODEL_PRICING[optimalModel].description} could save ~${Math.round(potentialSavings * 100)}% on costs`,
+          potentialSavings,
+          implementation: 'easy',
+          priority: 'high',
+        })
+      }
 
-    // Compression optimization
-    if (costEstimate.totalTokens > 1000) {
-      const compressionSavings = calculateCompressionSavings(costEstimate)
-      suggestions.push({
-        type: 'compression',
-        title: 'Enable Smart Compression',
-        description: 'Compress repetitive content to reduce token usage by 20-40%',
-        potentialSavings: compressionSavings,
-        implementation: 'medium',
-        priority: 'medium'
-      })
-    }
+      // Compression optimization
+      if (costEstimate.totalTokens > 1000) {
+        const compressionSavings = calculateCompressionSavings(costEstimate)
+        suggestions.push({
+          type: 'compression',
+          title: 'Enable Smart Compression',
+          description:
+            'Compress repetitive content to reduce token usage by 20-40%',
+          potentialSavings: compressionSavings,
+          implementation: 'medium',
+          priority: 'medium',
+        })
+      }
 
-    // Caching optimization
-    if (text.length > 500) {
-      suggestions.push({
-        type: 'caching',
-        title: 'Implement Response Caching',
-        description: 'Cache similar queries to reduce repeated token costs',
-        potentialSavings: 0.15,
-        implementation: 'medium',
-        priority: 'low'
-      })
-    }
+      // Caching optimization
+      if (text.length > 500) {
+        suggestions.push({
+          type: 'caching',
+          title: 'Implement Response Caching',
+          description: 'Cache similar queries to reduce repeated token costs',
+          potentialSavings: 0.15,
+          implementation: 'medium',
+          priority: 'low',
+        })
+      }
 
-    return suggestions
-  }, [costEstimate, showOptimization, text, models, selectedModel])
+      return suggestions
+    }, [costEstimate, showOptimization, text, models, selectedModel])
 
   /**
    * Effect for token counting
@@ -268,7 +282,7 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
 
     const updateTokens = async () => {
       const now = Date.now()
-      
+
       // Throttle calculations to prevent excessive updates
       if (!enableRealTime || now - lastCalculation < 500) return
 
@@ -293,7 +307,7 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
     if (tokenInfo) {
       const estimate = calculateCostEstimate()
       setCostEstimate(estimate)
-      
+
       if (onCostUpdate) {
         onCostUpdate(estimate)
       }
@@ -318,7 +332,7 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 4,
-      maximumFractionDigits: 4
+      maximumFractionDigits: 4,
     }).format(amount)
   }
 
@@ -330,20 +344,25 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
   }
 
   return (
-    <div className={`advanced-token-cost-preview ${className || ''}`} style={style}>
+    <div
+      className={`advanced-token-cost-preview ${className || ''}`}
+      style={style}
+    >
       <div className="cost-preview-header">
         <h3>Token Cost Analysis</h3>
-        {isCalculating && <span className="calculating-indicator">Calculating...</span>}
+        {isCalculating && (
+          <span className="calculating-indicator">Calculating...</span>
+        )}
       </div>
 
       <div className="model-selector">
         <label>Model:</label>
-        <select 
-          value={selectedModel} 
+        <select
+          value={selectedModel}
           onChange={(e) => setSelectedModel(e.target.value as ModelFamily)}
           disabled={isCalculating}
         >
-          {models.map(model => (
+          {models.map((model) => (
             <option key={model} value={model}>
               {model.toUpperCase()} - {MODEL_PRICING[model].description}
             </option>
@@ -360,7 +379,7 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
               {tokenInfo.confidence}
             </span>
           </div>
-          
+
           <div className="content-type">
             <span className="label">Content Type:</span>
             <span className="value">{tokenInfo.contentType || 'unknown'}</span>
@@ -373,16 +392,26 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
           <h4>Cost Estimate</h4>
           <div className="cost-details">
             <div className="cost-item">
-              <span className="label">Input ({formatNumber(costEstimate.inputTokens)} tokens):</span>
-              <span className="value">{formatCurrency(costEstimate.inputCost)}</span>
+              <span className="label">
+                Input ({formatNumber(costEstimate.inputTokens)} tokens):
+              </span>
+              <span className="value">
+                {formatCurrency(costEstimate.inputCost)}
+              </span>
             </div>
             <div className="cost-item">
-              <span className="label">Output ({formatNumber(costEstimate.outputTokens)} tokens):</span>
-              <span className="value">{formatCurrency(costEstimate.outputCost)}</span>
+              <span className="label">
+                Output ({formatNumber(costEstimate.outputTokens)} tokens):
+              </span>
+              <span className="value">
+                {formatCurrency(costEstimate.outputCost)}
+              </span>
             </div>
             <div className="cost-item total">
               <span className="label">Total:</span>
-              <span className="value">{formatCurrency(costEstimate.totalCost)}</span>
+              <span className="value">
+                {formatCurrency(costEstimate.totalCost)}
+              </span>
             </div>
           </div>
 
@@ -390,17 +419,31 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
             <div className="model-comparison">
               <h4>Model Comparison</h4>
               <div className="comparison-grid">
-                {models.map(model => {
-                  const modelCost = calculateModelCost(text, model, estimatedOutputRatio)
+                {models.map((model) => {
+                  const modelCost = calculateModelCost(
+                    text,
+                    model,
+                    estimatedOutputRatio
+                  )
                   const isSelected = model === selectedModel
-                  const savings = isSelected ? 0 : (costEstimate.totalCost - modelCost) / costEstimate.totalCost
+                  const savings = isSelected
+                    ? 0
+                    : (costEstimate.totalCost - modelCost) /
+                      costEstimate.totalCost
 
                   return (
-                    <div key={model} className={`model-option ${isSelected ? 'selected' : ''}`}>
+                    <div
+                      key={model}
+                      className={`model-option ${isSelected ? 'selected' : ''}`}
+                    >
                       <div className="model-name">{model.toUpperCase()}</div>
-                      <div className="model-cost">{formatCurrency(modelCost)}</div>
+                      <div className="model-cost">
+                        {formatCurrency(modelCost)}
+                      </div>
                       {!isSelected && savings > 0.01 && (
-                        <div className="model-savings">Save {Math.round(savings * 100)}%</div>
+                        <div className="model-savings">
+                          Save {Math.round(savings * 100)}%
+                        </div>
                       )}
                     </div>
                   )
@@ -415,16 +458,23 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
         <div className="optimization-suggestions">
           <h4>Optimization Suggestions</h4>
           {optimizationSuggestions.map((suggestion, index) => (
-            <div key={index} className={`suggestion priority-${suggestion.priority}`}>
+            <div
+              key={index}
+              className={`suggestion priority-${suggestion.priority}`}
+            >
               <div className="suggestion-header">
                 <span className="suggestion-title">{suggestion.title}</span>
                 <span className="suggestion-savings">
                   Save {Math.round(suggestion.potentialSavings * 100)}%
                 </span>
               </div>
-              <div className="suggestion-description">{suggestion.description}</div>
+              <div className="suggestion-description">
+                {suggestion.description}
+              </div>
               <div className="suggestion-meta">
-                <span className="implementation">{suggestion.implementation}</span>
+                <span className="implementation">
+                  {suggestion.implementation}
+                </span>
                 <span className="priority">{suggestion.priority}</span>
               </div>
             </div>
@@ -438,7 +488,10 @@ export const AdvancedTokenCostPreview: React.FC<AdvancedTokenCostPreviewProps> =
 /**
  * Calculate optimization potential based on content and model
  */
-function calculateOptimizationPotential(tokenInfo: TokenCountResult, model: ModelFamily): number {
+function calculateOptimizationPotential(
+  tokenInfo: TokenCountResult,
+  model: ModelFamily
+): number {
   let potential = 0
 
   // Content-based optimization
@@ -461,7 +514,10 @@ function calculateOptimizationPotential(tokenInfo: TokenCountResult, model: Mode
 /**
  * Find optimal model for given text
  */
-function findOptimalModel(text: string, availableModels: ModelFamily[]): ModelFamily {
+function findOptimalModel(
+  text: string,
+  availableModels: ModelFamily[]
+): ModelFamily {
   const textLength = text.length
   const complexity = text.split(/[.!?]+/).length / (textLength / 100)
 
@@ -481,20 +537,24 @@ function findOptimalModel(text: string, availableModels: ModelFamily[]): ModelFa
 /**
  * Calculate model switching savings
  */
-function calculateModelSavings(currentModel: ModelFamily, optimalModel: ModelFamily, currentCost: CostEstimate): number {
+function calculateModelSavings(
+  currentModel: ModelFamily,
+  optimalModel: ModelFamily,
+  _currentCost: CostEstimate
+): number {
   const currentPricing = MODEL_PRICING[currentModel]
   const optimalPricing = MODEL_PRICING[optimalModel]
-  
+
   const currentTotalRate = currentPricing.inputCost + currentPricing.outputCost
   const optimalTotalRate = optimalPricing.inputCost + optimalPricing.outputCost
-  
+
   return Math.max(0, (currentTotalRate - optimalTotalRate) / currentTotalRate)
 }
 
 /**
  * Calculate compression savings potential
  */
-function calculateCompressionSavings(costEstimate: CostEstimate): number {
+function calculateCompressionSavings(_costEstimate: CostEstimate): number {
   // Estimate 20-40% compression for typical content
   const compressionRatio = 0.3
   return compressionRatio * 0.8 // Account for implementation overhead
@@ -503,14 +563,18 @@ function calculateCompressionSavings(costEstimate: CostEstimate): number {
 /**
  * Calculate model cost
  */
-function calculateModelCost(text: string, model: ModelFamily, outputRatio: number): number {
+function calculateModelCost(
+  text: string,
+  model: ModelFamily,
+  outputRatio: number
+): number {
   const tokenInfo = countTokensWithConfidence(text, model)
   const inputTokens = tokenInfo.count
   const outputTokens = Math.ceil(inputTokens * outputRatio)
-  
+
   const pricing = MODEL_PRICING[model]
   const inputCost = (inputTokens / 1000) * pricing.inputCost
   const outputCost = (outputTokens / 1000) * pricing.outputCost
-  
+
   return inputCost + outputCost
 }

@@ -150,4 +150,9 @@ export class SimpleTokenCounter {
   getTokenInfoInstance(text: string) {
     return SimpleTokenCounter.getTokenInfo(text)
   }
+
+  // Alias for test compatibility
+  getTokenInfo(text: string) {
+    return SimpleTokenCounter.getTokenInfo(text)
+  }
 }
