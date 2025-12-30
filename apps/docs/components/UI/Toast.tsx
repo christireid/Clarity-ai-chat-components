@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react'
-import { fadeIn, slideInRight, durations, springs } from '@/lib/animations'
+import { fadeIn, slideInRight, durations, easings } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { ToastType } from '@/lib/toast'
 
@@ -88,7 +88,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       }}
       transition={{
         duration: durations.fast,
-        ease: springs.smooth.ease,
+        ease: easings.easeOut,
       }}
       className={cn(
         'relative flex items-start gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',

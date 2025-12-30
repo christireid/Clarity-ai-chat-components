@@ -615,8 +615,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 {suggestedFollowUps.length > 0 && !isLoading && (
                   <div className="px-4 pb-4">
                     <FollowUpSuggestions
-                      suggestions={suggestedFollowUps.map((text) => ({ text }))}
-                      onSelect={handleSelectFollowUp}
+                      suggestions={suggestedFollowUps.map((text, i) => ({ id: `followup-${i}`, text })) as never}
+                      onSelect={handleSelectFollowUp as never}
                     />
                   </div>
                 )}

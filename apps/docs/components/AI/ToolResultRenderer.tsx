@@ -12,7 +12,7 @@
  */
 
 import { useState, useEffect, useRef, memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import {
   Box,
   GitBranch,
@@ -130,8 +130,8 @@ const TOOL_ICONS: Record<string, typeof Box> = {
 }
 
 // Animation variants for reduced motion support
-const toolUseVariants = createSlideVariant('up', 10, 'fast')
-const toolUseVariantsReduced = createFadeVariant('fast')
+const toolUseVariants: Variants = createSlideVariant('up', 10, 'fast')
+const toolUseVariantsReduced: Variants = createFadeVariant('fast')
 
 export const ToolUseIndicator = memo(function ToolUseIndicator({
   toolUse,
