@@ -130,8 +130,8 @@ const TOOL_ICONS: Record<string, typeof Box> = {
 }
 
 // Animation variants for reduced motion support
-const toolUseVariants: Variants = createSlideVariant('up', 10, 'fast')
-const toolUseVariantsReduced: Variants = createFadeVariant('fast')
+const toolUseVariants = createSlideVariant('up', 10, 'fast') as unknown as Variants
+const toolUseVariantsReduced = createFadeVariant('fast') as unknown as Variants
 
 export const ToolUseIndicator = memo(function ToolUseIndicator({
   toolUse,

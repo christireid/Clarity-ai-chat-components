@@ -25,7 +25,8 @@ vi.mock('../hooks/useParticlesEngine', () => ({
   useParticlesEngine: vi.fn(() => ({
     isInitialized: true,
     error: null,
-    isLoading: false,
+    isInitializing: false,
+    hasError: false,
   })),
 }))
 
@@ -70,7 +71,8 @@ beforeEach(() => {
   mockUseParticlesEngine.mockReturnValue({
     isInitialized: true,
     error: null,
-    isLoading: false,
+    isInitializing: false,
+    hasError: false,
   })
 })
 
@@ -92,7 +94,8 @@ describe('AnimatedBackground', () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: false,
         error: null,
-        isLoading: true,
+        isInitializing: true,
+        hasError: false,
       })
 
       render(
@@ -108,7 +111,8 @@ describe('AnimatedBackground', () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: true,
         error: null,
-        isLoading: false,
+        isInitializing: false,
+    hasError: false,
       })
 
       render(
@@ -218,7 +222,8 @@ describe('AnimatedBackground', () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: false,
         error: initError,
-        isLoading: false,
+        isInitializing: false,
+    hasError: false,
       })
 
       render(
@@ -236,7 +241,8 @@ describe('AnimatedBackground', () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: true,
         error: null,
-        isLoading: false,
+        isInitializing: false,
+    hasError: false,
       })
 
       render(
