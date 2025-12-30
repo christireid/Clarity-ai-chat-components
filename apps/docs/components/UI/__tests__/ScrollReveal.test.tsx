@@ -204,7 +204,7 @@ describe('ScrollReveal Component', () => {
 
   describe('Edge Cases', () => {
     it('handles empty children', () => {
-      const { container } = render(<ScrollReveal></ScrollReveal>)
+      const { container } = render(<ScrollReveal><span /></ScrollReveal>)
       expect(container).toBeInTheDocument()
     })
 

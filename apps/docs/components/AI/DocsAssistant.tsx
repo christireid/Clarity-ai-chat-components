@@ -523,6 +523,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
             {/* Wrapper to hide ChatWindow's internal input - we use our own with command support */}
             <div className="flex-1 min-h-0 [&_.docs-assistant-chat-window>div:last-child]:hidden">
+              {/* @ts-expect-error - ChatWindow extended with children for tool results display */}
               <ChatWindow
                 messages={messages}
                 isLoading={isLoading}
