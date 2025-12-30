@@ -18,20 +18,27 @@ import { openInCodeSandbox } from '@/lib/sandbox-export'
 const CodeEditor = dynamic(() => import('./CodeEditor'), { ssr: false })
 
 interface CodePlaygroundProps {
-  initialCode: string
+  initialCode?: string
+  /** @deprecated Use initialCode instead */
+  code?: string
   title?: string
   dependencies?: Record<string, string>
   onCodeChange?: (code: string) => void
   className?: string
+  /** @deprecated height is set automatically */
+  height?: string
 }
 
 export function CodePlayground({
-  initialCode,
+  initialCode: initialCodeProp,
+  code: codeProp,
   title = 'Clarity Chat Example',
   dependencies = {},
   onCodeChange,
   className,
 }: CodePlaygroundProps) {
+  // Support both 'code' and 'initialCode' props for backward compatibility
+  const initialCode = initialCodeProp ?? codeProp ?? ''
   const [code, setCode] = useState(initialCode)
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
   const [editorSize, setEditorSize] = useState(50)

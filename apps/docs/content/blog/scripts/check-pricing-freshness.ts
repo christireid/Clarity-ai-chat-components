@@ -16,6 +16,20 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 // =============================================================================
+// LOGGER
+// =============================================================================
+
+/**
+ * Simple logger for the pricing freshness checker script
+ */
+const logger = {
+  debug: (...args: unknown[]) => console.debug('[DEBUG]', ...args),
+  info: (...args: unknown[]) => console.info('[INFO]', ...args),
+  warn: (...args: unknown[]) => console.warn('[WARN]', ...args),
+  error: (...args: unknown[]) => console.error('[ERROR]', ...args),
+}
+
+// =============================================================================
 // CONFIGURATION
 // =============================================================================
 

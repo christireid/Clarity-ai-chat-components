@@ -16,7 +16,7 @@ function BasicInputDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    logger.debug('Sending:', text)
+    console.log('Sending:', text)
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
@@ -39,7 +39,7 @@ function CharacterLimitDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    logger.debug('Sending:', text)
+    console.log('Sending:', text)
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
   }, [])
@@ -167,7 +167,7 @@ export default function ChatInputPage() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = async (text) => {
-    logger.debug('Sending:', text)
+    console.log('Sending:', text)
     await new Promise(resolve => setTimeout(resolve, 1000))
     setValue('')
   }
@@ -212,7 +212,7 @@ function SimpleChatInput() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    logger.debug('Sending:', text)
+    console.log('Sending:', text)
     // Send to your API
     await fetch('/api/chat', {
       method: 'POST',

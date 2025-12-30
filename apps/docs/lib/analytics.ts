@@ -64,8 +64,9 @@ export function usePerformanceMonitoring() {
       try {
         const fidObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
+            const fidEntry = entry as PerformanceEventTiming
             metricsRef.current.firstInputDelay =
-              entry.processingStart - entry.startTime
+              fidEntry.processingStart - fidEntry.startTime
           }
         })
         fidObserver.observe({ entryTypes: ['first-input'] })
@@ -78,8 +79,13 @@ export function usePerformanceMonitoring() {
         let clsValue = 0
         const clsObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value
+            // Cast to LayoutShift interface for CLS-specific properties
+            const layoutShiftEntry = entry as PerformanceEntry & {
+              hadRecentInput?: boolean
+              value?: number
+            }
+            if (!layoutShiftEntry.hadRecentInput) {
+              clsValue += layoutShiftEntry.value ?? 0
             }
           }
           metricsRef.current.cumulativeLayoutShift = clsValue

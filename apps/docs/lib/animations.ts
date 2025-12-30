@@ -147,6 +147,78 @@ export const slideInRight: Variants = {
   exit: { opacity: 0, x: 20 },
 }
 
+/**
+ * Fade in from left (alias for slideInLeft with different naming)
+ */
+export const fadeInLeft: Variants = {
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -20 },
+}
+
+/**
+ * Fade in from right (alias for slideInRight with different naming)
+ */
+export const fadeInRight: Variants = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 20 },
+}
+
+/**
+ * Slide up into view
+ */
+export const slideUp: Variants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+}
+
+/**
+ * Slide down into view
+ */
+export const slideDown: Variants = {
+  initial: { opacity: 0, y: -20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 10 },
+}
+
+/**
+ * Scale up animation
+ */
+export const scaleUp: Variants = {
+  initial: { opacity: 0, scale: 0.8 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.8 },
+}
+
+/**
+ * Scale down animation
+ */
+export const scaleDown: Variants = {
+  initial: { opacity: 0, scale: 1.2 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 1.2 },
+}
+
+/**
+ * Rotate in animation
+ */
+export const rotateIn: Variants = {
+  initial: { opacity: 0, rotate: -15 },
+  animate: { opacity: 1, rotate: 0 },
+  exit: { opacity: 0, rotate: 15 },
+}
+
+/**
+ * Scroll reveal animation (for use with whileInView)
+ */
+export const scrollReveal: Variants = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-100px' } as unknown as never,
+}
+
 // =============================================================================
 // INTERACTIVE ANIMATIONS
 // =============================================================================
@@ -242,32 +314,32 @@ export const staggerItem: Variants = {
  * Fade in when scrolling into view
  * Use with whileInView prop
  */
-export const scrollFadeIn: Variants = {
+export const scrollFadeIn = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-100px' },
   transition: { duration: durations.moderate, ease: easings.easeOut },
-}
+} as const
 
 /**
  * Scale up when scrolling into view
  */
-export const scrollScaleIn: Variants = {
+export const scrollScaleIn = {
   initial: { opacity: 0, scale: 0.9 },
   whileInView: { opacity: 1, scale: 1 },
   viewport: { once: true, margin: '-50px' },
   transition: springs.smooth,
-}
+} as const
 
 /**
  * Blur in when scrolling into view (for images, media)
  */
-export const scrollBlurIn: Variants = {
+export const scrollBlurIn = {
   initial: { opacity: 0, filter: 'blur(8px)' },
   whileInView: { opacity: 1, filter: 'blur(0px)' },
   viewport: { once: true, margin: '-100px' },
   transition: { duration: durations.slow, ease: easings.easeOut },
-}
+} as const
 
 // =============================================================================
 // PAGE TRANSITIONS
@@ -440,7 +512,7 @@ export const createSlideVariant = (
   direction: 'up' | 'down' | 'left' | 'right' = 'up',
   distance: number = 20,
   duration: keyof typeof durations = 'normal'
-): Variants => {
+) => {
   const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
   const value =
     direction === 'down' || direction === 'right' ? distance : -distance
@@ -457,7 +529,7 @@ export const createSlideVariant = (
       [axis]: -value,
       transition: { duration: durations[duration], ease: easings.easeOut },
     },
-  }
+  } as const
 }
 
 // =============================================================================
@@ -508,8 +580,15 @@ export default {
   fadeInUp,
   fadeInDown,
   fadeInScale,
+  fadeInLeft,
+  fadeInRight,
   slideInLeft,
   slideInRight,
+  slideUp,
+  slideDown,
+  scaleUp,
+  scaleDown,
+  rotateIn,
 
   // Interactive
   buttonTap,
@@ -530,6 +609,7 @@ export default {
   scrollFadeIn,
   scrollScaleIn,
   scrollBlurIn,
+  scrollReveal,
 
   // Page transitions
   pageTransition,

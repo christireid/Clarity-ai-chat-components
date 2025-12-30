@@ -1,7 +1,14 @@
 'use client'
 
-import { useEffect, useCallback, createContext, useContext, type ReactNode } from 'react'
+import {
+  useEffect,
+  useCallback,
+  createContext,
+  useContext,
+  type ReactNode,
+} from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { logger } from '@/lib/logger'
 
 interface AnalyticsEvent {
   name: string
@@ -105,7 +112,8 @@ export function AnalyticsProvider({
   useEffect(() => {
     if (!enabled) return
 
-    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
+    const url =
+      pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
     trackPageView(url)
   }, [pathname, searchParams, trackPageView, enabled])
 
@@ -129,7 +137,11 @@ export function AnalyticsProvider({
  * </head>
  * ```
  */
-export function GoogleAnalyticsScript({ measurementId }: { measurementId: string }) {
+export function GoogleAnalyticsScript({
+  measurementId,
+}: {
+  measurementId: string
+}) {
   if (!measurementId || process.env.NODE_ENV !== 'production') {
     return null
   }
@@ -186,7 +198,11 @@ export function useDocAnalytics() {
       },
 
       // Feedback events
-      feedback: (type: 'positive' | 'negative', pageId: string, comment?: string) => {
+      feedback: (
+        type: 'positive' | 'negative',
+        pageId: string,
+        comment?: string
+      ) => {
         trackEvent({
           name: 'feedback_submit',
           properties: {

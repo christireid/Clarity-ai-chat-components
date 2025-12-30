@@ -216,8 +216,8 @@ export async function* streamFromClaudeWithTools(
   const anthropic = new Anthropic({ apiKey })
 
   // Import tool handlers dynamically to avoid circular deps
-  const tools = await import('./tools')
-  const executeToolCall = tools.executeToolCall
+  const toolsModule = await import('./tools')
+  const executeToolCall = toolsModule.executeToolCall
 
   try {
     // Extract system message if present
@@ -274,8 +274,8 @@ export async function* streamFromClaudeWithTools(
           // Execute the tool
           try {
             const toolResult = await executeToolCall(
-              block.name as tools.ToolName,
-              block.input as Record<string, unknown>
+              block.name as Parameters<typeof executeToolCall>[0],
+              block.input as Parameters<typeof executeToolCall>[1]
             )
 
             // Emit tool result for UI to render
@@ -321,8 +321,8 @@ export async function* streamFromClaudeWithTools(
         if (block.type === 'tool_use') {
           try {
             const result = await executeToolCall(
-              block.name as tools.ToolName,
-              block.input as Record<string, unknown>
+              block.name as Parameters<typeof executeToolCall>[0],
+              block.input as Parameters<typeof executeToolCall>[1]
             )
             toolResults.push({
               type: 'tool_result',

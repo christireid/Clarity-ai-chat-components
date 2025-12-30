@@ -31,7 +31,7 @@ function BasicWebSocketDemo() {
   } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org', // Public echo server for demo
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
     onError: (err) => {
       console.error('WebSocket Error:', err)
@@ -358,7 +358,7 @@ export default function UseStreamingWebSocketPage() {
   const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org',
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -411,7 +411,7 @@ function SimpleWebSocket() {
   } = useStreamingWebSocket({
     url: 'wss://api.example.com/ws',
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -453,7 +453,7 @@ function AutoConnectWebSocket() {
     url: 'wss://api.example.com/ws',
     connectOnMount: true, // Connect automatically
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -543,7 +543,7 @@ function WebSocketWithReconnect() {
     reconnectDelay: 1000,
     maxReconnectDelay: 30000,
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
       console.error('Max reconnection attempts reached')
@@ -623,13 +623,13 @@ function WebSocketWithMessageHandling() {
     onMessage: (msg: WebSocketMessage) => {
       switch (msg.type) {
         case 'text':
-          logger.debug('Text message:', msg.data)
+          console.log('Text message:', msg.data)
           break
         case 'binary':
-          logger.debug('Binary message:', msg.raw)
+          console.log('Binary message:', msg.raw)
           break
         case 'blob':
-          logger.debug('Blob message:', msg.raw)
+          console.log('Blob message:', msg.raw)
           break
       }
     },
@@ -731,13 +731,13 @@ function CompleteWebSocketExample() {
     enableHeartbeat: true,
     heartbeatInterval: 30000,
     onMessage: (msg: WebSocketMessage) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
     onError: (err) => {
       console.error('WebSocket Error:', err)
     },
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+      console.log(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
     },
   })
 

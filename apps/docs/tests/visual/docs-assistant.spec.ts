@@ -157,13 +157,7 @@ test.describe('DocsAssistant Visual Tests', () => {
   })
 
   test('accessibility audit', async ({ page }) => {
-    // Basic accessibility checks
-    const accessibilityTree = await page.accessibility.snapshot()
-    console.log(
-      'Accessibility tree:',
-      JSON.stringify(accessibilityTree, null, 2)
-    )
-
+    // Basic accessibility checks using locators (page.accessibility is deprecated)
     // Check for main landmark
     const main = page.locator('main')
     await expect(main).toBeVisible()
@@ -171,6 +165,23 @@ test.describe('DocsAssistant Visual Tests', () => {
     // Check for proper heading hierarchy
     const h1 = page.locator('h1').first()
     await expect(h1).toBeVisible()
+
+    // Verify page has accessible name
+    const pageTitle = await page.title()
+    expect(pageTitle).toBeTruthy()
+
+    // Check for skip link or navigation landmark
+    const nav = page.locator('nav').first()
+    const hasNav = await nav.isVisible().catch(() => false)
+    console.log('Has navigation landmark:', hasNav)
+
+    // Log ARIA landmarks found
+    const landmarks = await page
+      .locator(
+        '[role="main"], [role="navigation"], [role="banner"], main, nav, header'
+      )
+      .count()
+    console.log('ARIA landmarks found:', landmarks)
   })
 })
 

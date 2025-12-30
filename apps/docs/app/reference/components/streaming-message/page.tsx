@@ -59,7 +59,7 @@ function StreamingWithToolsDemo() {
   ])
 
   const handleToolApprove = useCallback((tool: ToolCall) => {
-    logger.debug('Tool approved:', tool)
+    console.log('Tool approved:', tool)
   }, [])
 
   return (
@@ -300,7 +300,7 @@ function StreamingWithTools() {
 
   const handleToolApprove = (tool: ToolCall) => {
     // Execute the tool
-    logger.debug('Approved:', tool)
+    console.log('Approved:', tool)
   }
 
   return (
@@ -310,7 +310,7 @@ function StreamingWithTools() {
       toolCalls={toolCalls}
       showTools
       onToolApprove={handleToolApprove}
-      onToolReject={(tool) => logger.debug('Rejected:', tool)}
+      onToolReject={(tool) => console.log('Rejected:', tool)}
     />
   )
 }`}
@@ -497,7 +497,7 @@ function CompleteStreamingExample() {
 
   const handleToolApprove = useCallback((tool: ToolCall) => {
     // Execute tool
-    logger.debug('Executing tool:', tool)
+    console.log('Executing tool:', tool)
   }, [])
 
   return (
@@ -511,7 +511,7 @@ function CompleteStreamingExample() {
       showCitations
       showTools
       onToolApprove={handleToolApprove}
-      onToolReject={(tool) => logger.debug('Rejected:', tool)}
+      onToolReject={(tool) => console.log('Rejected:', tool)}
     />
   )
 }`}

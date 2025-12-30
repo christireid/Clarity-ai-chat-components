@@ -45,11 +45,11 @@ function MessageWithActionsDemo() {
 
   const handleCopy = useCallback((content: string) => {
     navigator.clipboard.writeText(content)
-    logger.debug('Copied:', content)
+    console.log('Copied:', content)
   }, [])
 
   const handleFeedback = useCallback((type: 'up' | 'down') => {
-    logger.debug('Feedback:', type)
+    console.log('Feedback:', type)
     setMessage((prev) => ({
       ...prev,
       feedback: { type, timestamp: new Date() },
@@ -62,10 +62,10 @@ function MessageWithActionsDemo() {
         message={message}
         onCopy={handleCopy}
         onFeedback={handleFeedback}
-        onRetry={() => logger.debug('Retry')}
-        onEdit={() => logger.debug('Edit')}
-        onRegenerate={() => logger.debug('Regenerate')}
-        onDelete={() => logger.debug('Delete')}
+        onRetry={() => console.log('Retry')}
+        onEdit={() => console.log('Edit')}
+        onRegenerate={() => console.log('Regenerate')}
+        onDelete={() => console.log('Delete')}
       />
     </div>
   )
@@ -204,7 +204,7 @@ export default function MessagePage() {
   return (
     <Message
       message={message}
-      onCopy={(content) => logger.debug('Copied:', content)}
+      onCopy={(content) => console.log('Copied:', content)}
     />
   )
 }
@@ -280,11 +280,11 @@ function MessageWithActions() {
     <Message
       message={message}
       onCopy={(content) => navigator.clipboard.writeText(content)}
-      onFeedback={(type) => logger.debug('Feedback:', type)}
-      onRetry={() => logger.debug('Retry')}
-      onEdit={(id) => logger.debug('Edit:', id)}
-      onRegenerate={(id) => logger.debug('Regenerate:', id)}
-      onDelete={(id) => logger.debug('Delete:', id)}
+      onFeedback={(type) => console.log('Feedback:', type)}
+      onRetry={() => console.log('Retry')}
+      onEdit={(id) => console.log('Edit:', id)}
+      onRegenerate={(id) => console.log('Regenerate:', id)}
+      onDelete={(id) => console.log('Delete:', id)}
     />
   )
 }`}
@@ -389,7 +389,7 @@ function ErrorMessage() {
       errorDetails="Network error: Failed to connect to server"
       onRetry={() => {
         // Retry the message
-        logger.debug('Retrying...')
+        console.log('Retrying...')
       }}
     />
   )
@@ -587,7 +587,7 @@ const example = 'code blocks work too!'
       }}
       onFeedback={(type) => {
         // Send feedback to analytics
-        logger.debug('Feedback:', type)
+        console.log('Feedback:', type)
       }}
       onRetry={() => {
         // Retry message generation
