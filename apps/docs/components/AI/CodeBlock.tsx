@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { durations } from '@/lib/animations'
 import {
   Check,
   Copy,

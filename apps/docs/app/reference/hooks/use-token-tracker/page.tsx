@@ -310,7 +310,7 @@ export default function UseTokenTrackerPage() {
   return (
     <div>
       <p>Tokens: {tokens}</p>
-      <p>Cost: ${estimatedCost.toFixed(4)}</p>
+      <p>Cost: \${estimatedCost.toFixed(4)}</p>
       {isNearLimit && <p>⚠️ Near limit</p>}
       <button onClick={() => addMessage({ role: 'user', content: 'Hello' })}>
         Add Message
@@ -367,7 +367,7 @@ function BasicTracker() {
   return (
     <div>
       <p>Tokens: {tokens} ({percentage.toFixed(1)}%)</p>
-      <p>Cost: ${estimatedCost.toFixed(4)}</p>
+      <p>Cost: \${estimatedCost.toFixed(4)}</p>
       {isNearLimit && <p>⚠️ Warning: Near limit</p>}
     </div>
   )
@@ -418,9 +418,9 @@ function CostTracking() {
   return (
     <div>
       <div>
-        <p>GPT-4: ${gpt4.estimatedCost.toFixed(4)}</p>
-        <p>GPT-3.5: ${gpt35.estimatedCost.toFixed(4)}</p>
-        <p>Claude: ${claude.estimatedCost.toFixed(4)}</p>
+        <p>GPT-4: \${gpt4.estimatedCost.toFixed(4)}</p>
+        <p>GPT-3.5: \${gpt35.estimatedCost.toFixed(4)}</p>
+        <p>Claude: \${claude.estimatedCost.toFixed(4)}</p>
       </div>
     </div>
   )
@@ -450,7 +450,7 @@ function CustomPricing() {
   return (
     <div>
       <p>Tokens: {tokens}</p>
-      <p>Cost: ${estimatedCost.toFixed(4)}</p>
+      <p>Cost: \${estimatedCost.toFixed(4)}</p>
     </div>
   )
 }`}
@@ -608,7 +608,7 @@ function CompleteTrackerExample() {
       <div className="p-4 bg-muted rounded">
         <div className="flex items-center justify-between mb-2">
           <span className="font-semibold">Token Usage</span>
-          <span className={\`font-bold ${
+          <span className={\`font-bold \${
             isCritical
               ? 'text-red-600'
               : isNearLimit
@@ -620,7 +620,7 @@ function CompleteTrackerExample() {
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
-            className={\`h-2 rounded-full transition-all ${
+            className={\`h-2 rounded-full transition-all \${
               isCritical
                 ? 'bg-red-600'
                 : isNearLimit
@@ -634,7 +634,7 @@ function CompleteTrackerExample() {
           <p>Total: {tokens} tokens</p>
           <p>Input: {inputTokens} tokens</p>
           <p>Output: {outputTokens} tokens</p>
-          <p>Estimated Cost: ${estimatedCost.toFixed(4)}</p>
+          <p>Estimated Cost: \${estimatedCost.toFixed(4)}</p>
         </div>
       </div>
 

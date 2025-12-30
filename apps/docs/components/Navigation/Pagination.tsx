@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { durations } from '@/lib/animations'
 
 interface PaginationProps {
   prev?: {

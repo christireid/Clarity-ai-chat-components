@@ -9,7 +9,7 @@ import {
   ExternalLink,
   Copy,
   Check,
-  RotateCcw,
+  RotateCw,
 } from 'lucide-react'
 import { useClipboard } from '@clarity-chat/react/internal'
 import { openInCodeSandbox } from '@/lib/sandbox-export'
@@ -226,7 +226,7 @@ export function CodePlayground({
             aria-label="Reset code"
             disabled={code === initialCode}
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCw className="w-4 h-4" />
             <span className="hidden sm:inline">Reset</span>
           </button>
 
