@@ -17,7 +17,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
         value: reducedMotion ? 0 : 50,
         density: {
           enable: true,
-          value_area: 800,
+          area: 800,
         },
       },
       color: {
@@ -73,7 +73,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
         onClick: {
           enable: false,
         },
-        resize: true,
+        resize: { enable: true },
       },
       modes: {
         grab: {
@@ -161,7 +161,7 @@ export function createLightModeConfig(reducedMotion: boolean): ISourceOptions {
         onClick: {
           enable: false,
         },
-        resize: true,
+        resize: { enable: true },
       },
       modes: {
         grab: {
