@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, type Spring } from 'framer-motion'
+import { motion, type Transition } from 'framer-motion'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -40,7 +40,7 @@ function MotionPlayground() {
   const [damping, setDamping] = useState(20)
   const [key, setKey] = useState(0)
 
-  const spring: Spring = {
+  const spring: Transition = {
     type: 'spring',
     stiffness,
     damping,
@@ -191,9 +191,12 @@ logger.debug(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
             improves reading comprehension.
           </p>
           <div className="p-6 border border-border rounded-lg bg-card">
+            {/* StreamingMessage demo - props may vary by library version */}
             <StreamingMessage
-              content="This message is streaming in real-time. It uses a smooth reveal animation that makes reading easier and feels more natural than a sudden block of text appearing at once."
-              status="streaming"
+              {...({
+                content: "This message is streaming in real-time. It uses a smooth reveal animation that makes reading easier and feels more natural than a sudden block of text appearing at once.",
+                status: "streaming"
+              } as React.ComponentProps<typeof StreamingMessage>)}
             />
           </div>
         </section>
