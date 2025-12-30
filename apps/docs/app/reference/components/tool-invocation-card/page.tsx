@@ -2,16 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { ToastProvider, ToolInvocationCard } from '@clarity-chat/react/internal'
-
-// Local type definition (type is declared but not exported from library)
-interface ToolCall {
-  id: string
-  type: 'function'
-  function: {
-    name: string
-    arguments: string // JSON string
-  }
-}
+import type { ToolCall } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'

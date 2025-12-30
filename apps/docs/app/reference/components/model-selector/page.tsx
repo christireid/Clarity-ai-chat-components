@@ -2,21 +2,7 @@
 
 import { useState } from 'react'
 import { ModelSelector } from '@clarity-chat/react/internal'
-
-// Local type definition matching library's ModelInfo
-interface ModelInfo {
-  id: string
-  name: string
-  provider: 'openai' | 'anthropic' | 'google'
-  speed: 'fast' | 'medium' | 'slow'
-  cost: 'low' | 'medium' | 'high'
-  quality: 'good' | 'excellent' | 'best'
-  contextWindow: number
-  description?: string
-  maxTokens?: number
-  vision?: boolean
-  toolCalling?: boolean
-}
+import type { ModelInfo } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'

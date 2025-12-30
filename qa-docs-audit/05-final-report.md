@@ -129,23 +129,30 @@ The following issues were addressed or remain as technical debt:
 
 ## Files Modified
 
-| File                                              | Change Type                                   |
-| ------------------------------------------------- | --------------------------------------------- |
-| `lib/ai/feedbackStore.ts`                         | Added logger import                           |
-| `lib/ai/sessionStore.ts`                          | Added logger import                           |
-| `lib/ai/streaming.ts`                             | Fixed variable redeclaration, type references |
-| `lib/ai/tokenUtils.test.ts`                       | Added logger import                           |
-| `lib/ai/__tests__/chat-analytics.test.ts`         | Fixed NODE_ENV assignments                    |
-| `lib/ai/promptValidation.test.ts`                 | Fixed NODE_ENV assignments                    |
-| `lib/analytics.ts`                                | Fixed PerformanceEntry types                  |
-| `lib/animations.ts`                               | Added missing exports, fixed types            |
-| `content/blog/scripts/check-pricing-freshness.ts` | Added local logger                            |
-| `components/Analytics/Analytics.tsx`              | Added logger import                           |
-| `components/Playground/CodePlayground.tsx`        | Added prop aliases                            |
-| `components/Navigation/Pagination.tsx`            | Added prop alias                              |
-| `tests/visual/docs-assistant.spec.ts`             | Fixed accessibility API                       |
-| `types/vitest.d.ts`                               | Created for jest-dom types                    |
-| 9 reference page files                            | Replaced logger with console.log              |
+| File                                                     | Change Type                                   |
+| -------------------------------------------------------- | --------------------------------------------- |
+| `lib/ai/feedbackStore.ts`                                | Added logger import                           |
+| `lib/ai/sessionStore.ts`                                 | Added logger import                           |
+| `lib/ai/streaming.ts`                                    | Fixed variable redeclaration, type references |
+| `lib/ai/tokenUtils.test.ts`                              | Added logger import                           |
+| `lib/ai/__tests__/chat-analytics.test.ts`                | Fixed NODE_ENV assignments                    |
+| `lib/ai/promptValidation.test.ts`                        | Fixed NODE_ENV assignments                    |
+| `lib/analytics.ts`                                       | Fixed PerformanceEntry types                  |
+| `lib/animations.ts`                                      | Added missing exports, fixed types            |
+| `content/blog/scripts/check-pricing-freshness.ts`        | Added local logger                            |
+| `components/Analytics/Analytics.tsx`                     | Added logger import                           |
+| `components/Playground/CodePlayground.tsx`               | Added prop aliases                            |
+| `components/Navigation/Pagination.tsx`                   | Added prop alias                              |
+| `tests/visual/docs-assistant.spec.ts`                    | Fixed accessibility API                       |
+| `types/vitest.d.ts`                                      | Created for jest-dom types                    |
+| `types/demo-types.ts`                                    | Created shared demo types (Session 4)         |
+| `.github/workflows/docs-check.yml`                       | Added docs typecheck job (Session 4)          |
+| `app/reference/components/tool-invocation-card/page.tsx` | Import from shared demo-types                 |
+| `app/reference/components/model-selector/page.tsx`       | Import from shared demo-types                 |
+| `app/reference/components/agent-run-feed/page.tsx`       | Import from shared demo-types                 |
+| `app/reference/components/streaming-message/page.tsx`    | Import from shared demo-types                 |
+| `app/reference/components/advanced-chat-input/page.tsx`  | Import from shared demo-types                 |
+| 9 reference page files                                   | Replaced logger with console.log              |
 
 ## Verification
 
@@ -166,12 +173,45 @@ The following issues were addressed or remain as technical debt:
 - Vitest test suite: Compatible with jest-dom matchers
 - Test files properly configured with vi.stubEnv
 
+## Strategic Improvements (Session 4)
+
+### Option C: CI Type-Check Gate ✅ IMPLEMENTED
+
+Added explicit TypeScript type checking to `docs-check.yml` workflow:
+
+- Runs on all `apps/docs/**` and `packages/**` changes
+- Builds dependencies before checking
+- Provides summary in GitHub Actions UI
+- Prevents regression of 100% error-free status
+
+### Option E: Shared Demo Types File ✅ IMPLEMENTED
+
+Created `apps/docs/types/demo-types.ts` to consolidate duplicated type definitions:
+
+- **ToolCall** - OpenAI function call format
+- **Citation** - RAG source references
+- **ModelInfo** - AI model metadata
+- **AgentRunStep** - Agent execution steps
+- **OptimizationMetrics** - Token savings breakdown
+- **SavedPrompt** - Prompt templates
+- **CommandItem** - Command palette items
+- **InputSuggestion** - Autocomplete suggestions
+- **DemoMessage** - Chat message structure
+
+Updated reference pages to import from shared types:
+
+- `tool-invocation-card/page.tsx`
+- `model-selector/page.tsx`
+- `agent-run-feed/page.tsx`
+- `streaming-message/page.tsx`
+- `advanced-chat-input/page.tsx`
+
 ## Recommendations
 
 ### Immediate Actions
 
-1. Run full test suite and address any failures
-2. Add CI/CD type checking to prevent regressions
+1. ✅ Add CI/CD type checking to prevent regressions - **DONE**
+2. Run full test suite and address any failures
 3. Review and merge changes
 
 ### Short-term (Completed in This Audit)
@@ -180,13 +220,16 @@ The following issues were addressed or remain as technical debt:
 2. ✅ tsparticles upgraded with proper type configuration
 3. ✅ Three.js JSX type augmentations created
 4. ✅ All demo/reference pages updated with correct types
+5. ✅ Shared demo types file created (consolidates 14 local type definitions)
+6. ✅ CI type-check gate added to docs-check workflow
 
 ### Long-term
 
-1. Consider migrating to stricter TypeScript configuration
-2. Add runtime validation for external API contracts
-3. Implement comprehensive E2E test coverage
-4. Consider exporting commonly used types from library (MessageAttachment, ToolCall, etc.)
+1. **Option A: Export types from library** - Export ToolCall, ModelInfo, AgentRunStep, etc. from
+   `@clarity-chat/react/internal`
+2. Consider migrating to stricter TypeScript configuration
+3. Add runtime validation for external API contracts
+4. Implement comprehensive E2E test coverage
 
 ## Artifacts
 

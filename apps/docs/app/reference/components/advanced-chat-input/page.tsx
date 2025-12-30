@@ -2,28 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react/internal'
-
-// Local type definitions for demo purposes (types declared but not exported from library)
-interface MessageAttachment {
-  id: string
-  type: 'image' | 'document' | 'video' | 'audio' | 'link'
-  url: string
-  name: string
-  size?: number
-  mimeType?: string
-}
-
-interface SavedPrompt {
-  id: string
-  name: string
-  content: string
-}
-
-interface InputSuggestion {
-  id: string
-  text: string
-  description?: string
-}
+import type { MessageAttachment, InputSuggestion } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'

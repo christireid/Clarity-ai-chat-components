@@ -2,18 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { ToastProvider, AgentRunFeed } from '@clarity-chat/react/internal'
-
-// Local type definition (type is declared but not exported from library)
-interface AgentRunStep {
-  id: string
-  title: string
-  detail?: string
-  status: 'pending' | 'running' | 'succeeded' | 'failed'
-  tool?: string
-  startedAt: Date
-  completedAt?: Date
-  outputPreview?: string
-}
+import type { AgentRunStep } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
