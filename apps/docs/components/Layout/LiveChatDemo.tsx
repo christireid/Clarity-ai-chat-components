@@ -59,8 +59,7 @@ const SUGGESTIONS = [
 const MemoizedReactMarkdown = memo(
   ReactMarkdown,
   (prevProps, nextProps) =>
-    prevProps.children === nextProps.children &&
-    prevProps.className === nextProps.className
+    prevProps.children === nextProps.children
 )
 
 export function LiveChatDemo() {

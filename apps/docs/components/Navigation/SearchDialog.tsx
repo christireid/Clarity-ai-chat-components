@@ -33,6 +33,7 @@ import {
   staggerItem,
   springs,
   durations,
+  easings,
 } from '@/lib/animations'
 import { toast } from '@/lib/toast'
 
@@ -221,7 +222,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{
               duration: durations.normal,
-              ease: springs.smooth.ease,
+              ease: easings.easeOut,
             }}
             className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4 z-50"
             onKeyDown={handleKeyDown}
@@ -295,7 +296,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 ) : (
                   <motion.div
                     className="space-y-4"
-                    variants={staggerContainer}
+                    variants={staggerContainer()}
                     initial="initial"
                     animate="animate"
                   >

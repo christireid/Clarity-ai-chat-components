@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
-import { fadeIn, slideUp, springs, durations } from '@/lib/animations'
+import { fadeIn, slideUp, springs, durations, easings } from '@/lib/animations'
 import { ReactNode } from 'react'
 
 interface PageTransitionProps {
@@ -69,7 +69,7 @@ export function PageTransition({
         variants={variants[mode]}
         transition={{
           duration,
-          ease: springs.smooth.ease,
+          ease: easings.easeOut,
         }}
       >
         {children}
@@ -112,7 +112,7 @@ export function PageSection({
       transition={{
         delay,
         duration: durations.normal,
-        ease: springs.smooth.ease,
+        ease: easings.easeOut,
       }}
     >
       {children}

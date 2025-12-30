@@ -57,7 +57,7 @@ export interface CommandMenuProps {
   filter: string
   triggerType: '/' | '@' | null
   position?: { top: number; left: number }
-  inputRef?: React.RefObject<HTMLTextAreaElement>
+  inputRef?: React.RefObject<HTMLTextAreaElement | null>
 }
 
 // ============================================================================

@@ -1,10 +1,23 @@
-import type { ISourceOptions } from '@tsparticles/engine'
+import type { ISourceOptions, RecursivePartial } from '@tsparticles/engine'
+
+// Type helper for particle options with flexible density config
+type ParticleOptions = RecursivePartial<ISourceOptions> & {
+  particles?: {
+    number?: {
+      density?: {
+        enable?: boolean
+        area?: number
+        value_area?: number
+      }
+    }
+  }
+}
 
 /**
  * Creates dark mode particle configuration
  * Glowing nodes with connecting lines for cyberpunk aesthetic
  */
-export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
+export function createDarkModeConfig(reducedMotion: boolean): ParticleOptions {
   return {
     background: {
       color: {
@@ -92,7 +105,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
  * Creates light mode particle configuration
  * Subtle flowing mesh with soft gradient waves
  */
-export function createLightModeConfig(reducedMotion: boolean): ISourceOptions {
+export function createLightModeConfig(reducedMotion: boolean): ParticleOptions {
   return {
     background: {
       color: {

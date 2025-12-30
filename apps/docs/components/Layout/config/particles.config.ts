@@ -1,9 +1,21 @@
 import type { IOptions, RecursivePartial } from '@tsparticles/engine'
 
+// Extended type to allow area property in density config
+type ParticleConfig = RecursivePartial<IOptions> & {
+  particles?: {
+    number?: {
+      density?: {
+        enable?: boolean
+        area?: number
+      }
+    }
+  }
+}
+
 /**
  * Base particle configuration shared between dark and light modes.
  */
-const baseConfig: RecursivePartial<IOptions> = {
+const baseConfig: ParticleConfig = {
   background: {
     color: {
       value: 'transparent',
@@ -40,7 +52,7 @@ const baseConfig: RecursivePartial<IOptions> = {
  * Dark mode particle configuration.
  * Features: Glowing nodes with vibrant blue colors, more particles, higher opacity.
  */
-export const darkParticlesConfig: RecursivePartial<IOptions> = {
+export const darkParticlesConfig: ParticleConfig = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
@@ -107,7 +119,7 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
  * Light mode particle configuration.
  * Features: Subtle mesh with softer colors, fewer particles, lower opacity.
  */
-export const lightParticlesConfig: RecursivePartial<IOptions> = {
+export const lightParticlesConfig: ParticleConfig = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
