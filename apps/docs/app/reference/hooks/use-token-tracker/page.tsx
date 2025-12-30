@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, useTokenTracker } from '@clarity-chat/react/internal'
+import { useTokenTracker } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -281,28 +281,27 @@ const useTokenTrackerReturnProps: Prop[] = [
 
 export default function UseTokenTrackerPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>useTokenTracker</h1>
+      <h1>useTokenTracker</h1>
 
-        <p className="lead">
-          A production-ready hook for tracking token usage, estimating costs,
-          and managing context window limits in AI conversations. Provides
-          real-time token counting, automatic model pricing lookup, and
-          threshold-based alerts.
+      <p className="lead">
+        A production-ready hook for tracking token usage, estimating costs, and
+        managing context window limits in AI conversations. Provides real-time
+        token counting, automatic model pricing lookup, and threshold-based
+        alerts.
+      </p>
+
+      <ViewInStorybook component="useTokenTracker" />
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Track token usage and costs! Add messages and see real-time updates.
         </p>
-
-        <ViewInStorybook component="useTokenTracker" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Track token usage and costs! Add messages and see real-time updates.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const { tokens, estimatedCost, isNearLimit, addMessage } = useTokenTracker({
     modelName: 'gpt-4',
   })
@@ -320,25 +319,25 @@ export default function UseTokenTrackerPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
-import type { UseTokenTrackerOptions, UseTokenTrackerReturn, MessageWithTokens } from '@clarity-chat/react'`}
-          language="tsx"
         />
+      </section>
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="import">Import</h2>
 
-        <p>Track token usage and costs for a conversation:</p>
+      <EnhancedCodeBlock
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+import type { UseTokenTrackerOptions, UseTokenTrackerReturn, MessageWithTokens } from '@clarity-chat/react'`}
+        language="tsx"
+      />
 
-        <ComponentPreview
-          title="Basic Token Tracker"
-          description="Track tokens and costs with automatic model pricing"
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+      <h2 id="basic-usage">Basic Usage</h2>
+
+      <p>Track token usage and costs for a conversation:</p>
+
+      <ComponentPreview
+        title="Basic Token Tracker"
+        description="Track tokens and costs with automatic model pricing"
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function BasicTracker() {
@@ -372,16 +371,16 @@ function BasicTracker() {
     </div>
   )
 }`}
-        >
-          <BasicTrackerDemo />
-        </ComponentPreview>
+      >
+        <BasicTrackerDemo />
+      </ComponentPreview>
 
-        <h2 id="check-before-sending">Check Before Sending</h2>
+      <h2 id="check-before-sending">Check Before Sending</h2>
 
-        <p>Check if a message would exceed the token limit:</p>
+      <p>Check if a message would exceed the token limit:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
 
 function CheckBeforeSend() {
   const { canSend, estimateTokens, addMessage } = useTokenTracker({
@@ -399,16 +398,16 @@ function CheckBeforeSend() {
 
   return <button onClick={() => handleSend('Hello')}>Send</button>
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="cost-tracking">Cost Tracking</h2>
+      <h2 id="cost-tracking">Cost Tracking</h2>
 
-        <p>Track costs for different models:</p>
+      <p>Track costs for different models:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
 
 function CostTracking() {
   const gpt4 = useTokenTracker({ modelName: 'gpt-4' })
@@ -425,16 +424,16 @@ function CostTracking() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="custom-pricing">Custom Pricing</h2>
+      <h2 id="custom-pricing">Custom Pricing</h2>
 
-        <p>Override automatic pricing with custom costs:</p>
+      <p>Override automatic pricing with custom costs:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
 
 function CustomPricing() {
   const {
@@ -454,16 +453,16 @@ function CustomPricing() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="threshold-alerts">Threshold Alerts</h2>
+      <h2 id="threshold-alerts">Threshold Alerts</h2>
 
-        <p>Get alerts when approaching token limits:</p>
+      <p>Get alerts when approaching token limits:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useTokenTracker } from '@clarity-chat/react/internal'
 
 function ThresholdAlerts() {
   const {
@@ -492,68 +491,68 @@ function ThresholdAlerts() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="options">Options</h2>
+      <h2 id="options">Options</h2>
 
-        <PropsTable props={useTokenTrackerOptionsProps} />
+      <PropsTable props={useTokenTrackerOptionsProps} />
 
-        <h2 id="return-values">Return Values</h2>
+      <h2 id="return-values">Return Values</h2>
 
-        <PropsTable props={useTokenTrackerReturnProps} />
+      <PropsTable props={useTokenTrackerReturnProps} />
 
-        <h2 id="message-with-tokens-type">MessageWithTokens Type</h2>
+      <h2 id="message-with-tokens-type">MessageWithTokens Type</h2>
 
-        <p>
-          The <code>MessageWithTokens</code> type structure:
-        </p>
+      <p>
+        The <code>MessageWithTokens</code> type structure:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`interface MessageWithTokens {
+      <EnhancedCodeBlock
+        code={`interface MessageWithTokens {
   role: 'user' | 'assistant' | 'system'
   content: string
   tokens?: number // Optional pre-computed token count
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="supported-models">Supported Models</h2>
+      <h2 id="supported-models">Supported Models</h2>
 
-        <p>Automatic pricing and limits are available for:</p>
+      <p>Automatic pricing and limits are available for:</p>
 
-        <ul>
-          <li>
-            <strong>GPT-4:</strong> 8192 tokens, $0.00003/$0.00006 per token
-          </li>
-          <li>
-            <strong>GPT-4 Turbo:</strong> 128000 tokens, $0.00001/$0.00003 per
-            token
-          </li>
-          <li>
-            <strong>GPT-3.5 Turbo:</strong> 16385 tokens, $0.0000005/$0.0000015
-            per token
-          </li>
-          <li>
-            <strong>Claude 3 Opus:</strong> 200000 tokens, $0.000015/$0.000075
-            per token
-          </li>
-          <li>
-            <strong>Claude 3 Sonnet:</strong> 200000 tokens, $0.000003/$0.000015
-            per token
-          </li>
-          <li>
-            <strong>Claude 3 Haiku:</strong> 200000 tokens,
-            $0.00000025/$0.00000125 per token
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>GPT-4:</strong> 8192 tokens, $0.00003/$0.00006 per token
+        </li>
+        <li>
+          <strong>GPT-4 Turbo:</strong> 128000 tokens, $0.00001/$0.00003 per
+          token
+        </li>
+        <li>
+          <strong>GPT-3.5 Turbo:</strong> 16385 tokens, $0.0000005/$0.0000015
+          per token
+        </li>
+        <li>
+          <strong>Claude 3 Opus:</strong> 200000 tokens, $0.000015/$0.000075 per
+          token
+        </li>
+        <li>
+          <strong>Claude 3 Sonnet:</strong> 200000 tokens, $0.000003/$0.000015
+          per token
+        </li>
+        <li>
+          <strong>Claude 3 Haiku:</strong> 200000 tokens,
+          $0.00000025/$0.00000125 per token
+        </li>
+      </ul>
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useCallback } from 'react'
 import { useTokenTracker } from '@clarity-chat/react/internal'
 import type { MessageWithTokens } from '@clarity-chat/react/internal'
 
@@ -701,75 +700,73 @@ function CompleteTrackerExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="best-practices">Best Practices</h2>
+      <h2 id="best-practices">Best Practices</h2>
 
-        <ul>
-          <li>
-            <strong>Use model name:</strong> Provide <code>modelName</code> for
-            automatic pricing and limits
-          </li>
-          <li>
-            <strong>Check before sending:</strong> Use <code>canSend</code> to
-            prevent exceeding limits
-          </li>
-          <li>
-            <strong>Monitor thresholds:</strong> Set{' '}
-            <code>warningThreshold</code> and <code>criticalThreshold</code> for
-            alerts
-          </li>
-          <li>
-            <strong>Track costs:</strong> Use <code>estimatedCost</code> to show
-            users API costs
-          </li>
-          <li>
-            <strong>Suggest pruning:</strong> Check <code>suggestPruning</code>{' '}
-            to prompt users to trim history
-          </li>
-          <li>
-            <strong>Pre-compute tokens:</strong> Provide <code>tokens</code> in
-            messages for better performance
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>Use model name:</strong> Provide <code>modelName</code> for
+          automatic pricing and limits
+        </li>
+        <li>
+          <strong>Check before sending:</strong> Use <code>canSend</code> to
+          prevent exceeding limits
+        </li>
+        <li>
+          <strong>Monitor thresholds:</strong> Set <code>warningThreshold</code>{' '}
+          and <code>criticalThreshold</code> for alerts
+        </li>
+        <li>
+          <strong>Track costs:</strong> Use <code>estimatedCost</code> to show
+          users API costs
+        </li>
+        <li>
+          <strong>Suggest pruning:</strong> Check <code>suggestPruning</code> to
+          prompt users to trim history
+        </li>
+        <li>
+          <strong>Pre-compute tokens:</strong> Provide <code>tokens</code> in
+          messages for better performance
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
-            </a>{' '}
-            - Comprehensive token optimization
-          </li>
-          <li>
-            <a href="/reference/hooks/use-token-budget-monitor">
-              useTokenBudgetMonitor
-            </a>{' '}
-            - Real-time budget monitoring with auto-trimming
-          </li>
-          <li>
-            <a href="/guides/token-optimization">Token Optimization Guide</a> -
-            Token management strategies
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/hooks/use-token-optimization-enhanced">
+            useTokenOptimizationEnhanced
+          </a>{' '}
+          - Comprehensive token optimization
+        </li>
+        <li>
+          <a href="/reference/hooks/use-token-budget-monitor">
+            useTokenBudgetMonitor
+          </a>{' '}
+          - Real-time budget monitoring with auto-trimming
+        </li>
+        <li>
+          <a href="/guides/token-optimization">Token Optimization Guide</a> -
+          Token management strategies
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'useTokenBudgetMonitor',
-            href: '/reference/hooks/use-token-budget-monitor',
-          }}
-          next={{
-            title: 'useTokenOptimization',
-            href: '/reference/hooks/use-token-optimization',
-          }}
-        />
+      <Pagination
+        previous={{
+          title: 'useTokenBudgetMonitor',
+          href: '/reference/hooks/use-token-budget-monitor',
+        }}
+        next={{
+          title: 'useTokenOptimization',
+          href: '/reference/hooks/use-token-optimization',
+        }}
+      />
 
-        {/* Feedback Widget */}
-        <FeedbackWidget pageId="use-token-tracker" className="mt-12" />
-      </>
-    </ToastProvider>
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="use-token-tracker" className="mt-12" />
+    </>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, AgentRunFeed } from '@clarity-chat/react/internal'
+import { AgentRunFeed } from '@clarity-chat/react/internal'
 import type { AgentRunStep } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -166,37 +166,36 @@ const agentRunFeedProps: Prop[] = [
 
 export default function AgentRunFeedPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>AgentRunFeed</h1>
+      <h1>AgentRunFeed</h1>
 
-        <p className="lead">
-          Display AI agent execution steps in real-time, showing tool calls,
-          reasoning, and multi-step workflows. Perfect for debugging agents or
-          showing users what's happening behind the scenes.
+      <p className="lead">
+        Display AI agent execution steps in real-time, showing tool calls,
+        reasoning, and multi-step workflows. Perfect for debugging agents or
+        showing users what's happening behind the scenes.
+      </p>
+
+      <Callout type="info">
+        <p>
+          <strong>What's an AI Agent?</strong> An agent can use tools (call
+          APIs, search databases, run code) to solve problems. Unlike simple
+          chatbots, agents make plans and take multiple steps. AgentRunFeed
+          visualizes these steps as they happen.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            <strong>What's an AI Agent?</strong> An agent can use tools (call
-            APIs, search databases, run code) to solve problems. Unlike simple
-            chatbots, agents make plans and take multiple steps. AgentRunFeed
-            visualizes these steps as they happen.
-          </p>
-        </Callout>
+      <ViewInStorybook component="AgentRunFeed" />
 
-        <ViewInStorybook component="AgentRunFeed" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Watch an agent execute steps in real-time! See how it progresses
-            through the workflow.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Watch an agent execute steps in real-time! See how it progresses
+          through the workflow.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const [steps, setSteps] = React.useState([])
 
   React.useEffect(() => {
@@ -221,29 +220,29 @@ export default function AgentRunFeedPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
+        />
+      </section>
 
-        <h2 id="import">Import</h2>
+      <h2 id="import">Import</h2>
 
-        <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import type { AgentRunStep } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
-          language="tsx"
-        />
+        language="tsx"
+      />
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          AgentRunFeed displays a list of agent execution steps with status
-          indicators:
-        </p>
+      <p>
+        AgentRunFeed displays a list of agent execution steps with status
+        indicators:
+      </p>
 
-        <ComponentPreview
-          title="Simple Agent Feed"
-          description="Basic agent execution steps"
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Simple Agent Feed"
+        description="Basic agent execution steps"
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import type { AgentRunStep } from '@clarity-chat/react/internal'
 
 function SimpleAgentFeed() {
@@ -268,18 +267,18 @@ function SimpleAgentFeed() {
 
   return <AgentRunFeed steps={steps} />
 }`}
-        >
-          <BasicAgentFeedDemo />
-        </ComponentPreview>
+      >
+        <BasicAgentFeedDemo />
+      </ComponentPreview>
 
-        <h2 id="live-execution">Live Agent Execution</h2>
+      <h2 id="live-execution">Live Agent Execution</h2>
 
-        <p>Update steps in real-time as the agent executes:</p>
+      <p>Update steps in real-time as the agent executes:</p>
 
-        <ComponentPreview
-          title="Live Execution"
-          description="Real-time step updates as agent executes"
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Live Execution"
+        description="Real-time step updates as agent executes"
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { useState, useEffect } from 'react'
 
 function LiveAgentExecution() {
@@ -329,16 +328,16 @@ function LiveAgentExecution() {
     />
   )
 }`}
-        >
-          <LiveAgentFeedDemo />
-        </ComponentPreview>
+      >
+        <LiveAgentFeedDemo />
+      </ComponentPreview>
 
-        <h2 id="with-retry">With Retry and Logs</h2>
+      <h2 id="with-retry">With Retry and Logs</h2>
 
-        <p>Enable retry for failed steps and log viewing:</p>
+      <p>Enable retry for failed steps and log viewing:</p>
 
-        <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function AgentWithRetry() {
@@ -399,35 +398,35 @@ function AgentWithRetry() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="status-indicators">Status Indicators</h2>
+      <h2 id="status-indicators">Status Indicators</h2>
 
-        <p>Each step displays a status badge with appropriate colors:</p>
+      <p>Each step displays a status badge with appropriate colors:</p>
 
-        <ul>
-          <li>
-            <strong>pending:</strong> Queued (blue badge, spinner icon)
-          </li>
-          <li>
-            <strong>running:</strong> In progress (blue badge, pulsing icon)
-          </li>
-          <li>
-            <strong>succeeded:</strong> Completed (green badge, checkmark icon)
-          </li>
-          <li>
-            <strong>failed:</strong> Failed (red badge, X icon)
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>pending:</strong> Queued (blue badge, spinner icon)
+        </li>
+        <li>
+          <strong>running:</strong> In progress (blue badge, pulsing icon)
+        </li>
+        <li>
+          <strong>succeeded:</strong> Completed (green badge, checkmark icon)
+        </li>
+        <li>
+          <strong>failed:</strong> Failed (red badge, X icon)
+        </li>
+      </ul>
 
-        <h2 id="step-details">Step Details</h2>
+      <h2 id="step-details">Step Details</h2>
 
-        <p>Steps can include additional information:</p>
+      <p>Steps can include additional information:</p>
 
-        <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 
 function DetailedSteps() {
   const steps: AgentRunStep[] = [
@@ -445,22 +444,22 @@ function DetailedSteps() {
 
   return <AgentRunFeed steps={steps} />
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="props">Props</h2>
+      <h2 id="props">Props</h2>
 
-        <PropsTable props={agentRunFeedProps} />
+      <PropsTable props={agentRunFeedProps} />
 
-        <h2 id="agent-run-step-type">AgentRunStep Type</h2>
+      <h2 id="agent-run-step-type">AgentRunStep Type</h2>
 
-        <p>
-          The <code>AgentRunStep</code> type structure:
-        </p>
+      <p>
+        The <code>AgentRunStep</code> type structure:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`interface AgentRunStep {
+      <EnhancedCodeBlock
+        code={`interface AgentRunStep {
   id: string
   title: string
   detail?: string
@@ -470,16 +469,16 @@ function DetailedSteps() {
   completedAt?: Date
   outputPreview?: string
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="integration-with-langchain">Integration with LangChain</h2>
+      <h2 id="integration-with-langchain">Integration with LangChain</h2>
 
-        <p>Stream agent steps from LangChain:</p>
+      <p>Stream agent steps from LangChain:</p>
 
-        <EnhancedCodeBlock
-          code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
 import { AgentExecutor } from 'langchain/agents'
 import { useState } from 'react'
 
@@ -509,14 +508,14 @@ function LangChainAgent() {
 
   return <AgentRunFeed steps={steps} />
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useEffect, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useEffect, useCallback } from 'react'
 import { AgentRunFeed } from '@clarity-chat/react/internal'
 import type { AgentRunStep } from '@clarity-chat/react/internal'
 
@@ -607,95 +606,92 @@ function CompleteAgentFeed() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="best-practices">Best Practices</h2>
+      <h2 id="best-practices">Best Practices</h2>
 
-        <ul>
-          <li>
-            <strong>Update in real-time:</strong> Update steps as the agent
-            executes for best UX
-          </li>
-          <li>
-            <strong>Show tool names:</strong> Include <code>tool</code> property
-            so users understand what's happening
-          </li>
-          <li>
-            <strong>Include timing:</strong> Provide <code>startedAt</code> and{' '}
-            <code>completedAt</code> for performance debugging
-          </li>
-          <li>
-            <strong>Provide retry:</strong> Enable retry for failed steps to
-            improve reliability
-          </li>
-          <li>
-            <strong>Add log viewing:</strong> Provide detailed logs for
-            debugging complex issues
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>Update in real-time:</strong> Update steps as the agent
+          executes for best UX
+        </li>
+        <li>
+          <strong>Show tool names:</strong> Include <code>tool</code> property
+          so users understand what's happening
+        </li>
+        <li>
+          <strong>Include timing:</strong> Provide <code>startedAt</code> and{' '}
+          <code>completedAt</code> for performance debugging
+        </li>
+        <li>
+          <strong>Provide retry:</strong> Enable retry for failed steps to
+          improve reliability
+        </li>
+        <li>
+          <strong>Add log viewing:</strong> Provide detailed logs for debugging
+          complex issues
+        </li>
+      </ul>
 
-        <Callout type="tip">
-          <p>
-            <strong>UX Consideration:</strong> For end users, you might want to
-            hide this by default and show a simple loading spinner. Expose this
-            view in "advanced" or "debug" mode.
-          </p>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          <strong>UX Consideration:</strong> For end users, you might want to
+          hide this by default and show a simple loading spinner. Expose this
+          view in "advanced" or "debug" mode.
+        </p>
+      </Callout>
 
-        <h2 id="accessibility">Accessibility</h2>
+      <h2 id="accessibility">Accessibility</h2>
 
-        <p>AgentRunFeed is built with accessibility in mind:</p>
+      <p>AgentRunFeed is built with accessibility in mind:</p>
 
-        <ul>
-          <li>✅ Semantic HTML structure (ordered list)</li>
-          <li>✅ ARIA labels for status indicators</li>
-          <li>✅ Keyboard navigation for buttons</li>
-          <li>✅ Screen reader announcements for status changes</li>
-          <li>✅ Focus management</li>
-        </ul>
+      <ul>
+        <li>✅ Semantic HTML structure (ordered list)</li>
+        <li>✅ ARIA labels for status indicators</li>
+        <li>✅ Keyboard navigation for buttons</li>
+        <li>✅ Screen reader announcements for status changes</li>
+        <li>✅ Focus management</li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/components/tool-invocation-card">
-              ToolInvocationCard
-            </a>{' '}
-            - Individual tool call details
-          </li>
-          <li>
-            <a href="/reference/components/clarity-tool-result">
-              ClarityToolResult
-            </a>{' '}
-            - Render tool results with custom UI
-          </li>
-          <li>
-            <a href="/reference/components/streaming-message">
-              StreamingMessage
-            </a>{' '}
-            - Display streaming responses
-          </li>
-          <li>
-            <a href="/reference/components/thinking-indicator">
-              ThinkingIndicator
-            </a>{' '}
-            - Simple "AI is thinking" loader
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/components/tool-invocation-card">
+            ToolInvocationCard
+          </a>{' '}
+          - Individual tool call details
+        </li>
+        <li>
+          <a href="/reference/components/clarity-tool-result">
+            ClarityToolResult
+          </a>{' '}
+          - Render tool results with custom UI
+        </li>
+        <li>
+          <a href="/reference/components/streaming-message">StreamingMessage</a>{' '}
+          - Display streaming responses
+        </li>
+        <li>
+          <a href="/reference/components/thinking-indicator">
+            ThinkingIndicator
+          </a>{' '}
+          - Simple "AI is thinking" loader
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'ToolInvocationCard',
-            href: '/reference/components/tool-invocation-card',
-          }}
-          next={{
-            title: 'ClarityToolResult',
-            href: '/reference/components/clarity-tool-result',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'ToolInvocationCard',
+          href: '/reference/components/tool-invocation-card',
+        }}
+        next={{
+          title: 'ClarityToolResult',
+          href: '/reference/components/clarity-tool-result',
+        }}
+      />
+    </>
   )
 }

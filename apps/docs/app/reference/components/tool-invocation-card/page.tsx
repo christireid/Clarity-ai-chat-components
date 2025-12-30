@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ToolInvocationCard } from '@clarity-chat/react/internal'
+import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import type { ToolCall } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -153,41 +153,40 @@ const toolInvocationCardProps: Prop[] = [
 
 export default function ToolInvocationCardPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>ToolInvocationCard</h1>
+      <h1>ToolInvocationCard</h1>
 
-        <p className="lead">
-          A component for displaying tool/function calls with approval workflow,
-          execution status, and result visualization. Perfect for showing AI
-          agent tool usage in conversations.
+      <p className="lead">
+        A component for displaying tool/function calls with approval workflow,
+        execution status, and result visualization. Perfect for showing AI agent
+        tool usage in conversations.
+      </p>
+
+      <Callout type="info">
+        <p>
+          ToolInvocationCard is used to display individual tool calls. For
+          displaying multiple agent steps, use{' '}
+          <a href="/reference/components/agent-run-feed">AgentRunFeed</a>. For
+          rendering tool results with custom UI, use{' '}
+          <a href="/reference/components/clarity-tool-result">
+            ClarityToolResult
+          </a>
+          .
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            ToolInvocationCard is used to display individual tool calls. For
-            displaying multiple agent steps, use{' '}
-            <a href="/reference/components/agent-run-feed">AgentRunFeed</a>. For
-            rendering tool results with custom UI, use{' '}
-            <a href="/reference/components/clarity-tool-result">
-              ClarityToolResult
-            </a>
-            .
-          </p>
-        </Callout>
+      <ViewInStorybook component="ToolInvocationCard" />
 
-        <ViewInStorybook component="ToolInvocationCard" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try approving a tool call and watch it execute! See how the status
-            changes through the workflow.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Try approving a tool call and watch it execute! See how the status
+          changes through the workflow.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const toolCall = {
     id: 'call-1',
     type: 'function',
@@ -209,29 +208,29 @@ export default function ToolInvocationCardPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
+        />
+      </section>
 
-        <h2 id="import">Import</h2>
+      <h2 id="import">Import</h2>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import type { ToolCall } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
-          language="tsx"
-        />
+        language="tsx"
+      />
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          ToolInvocationCard displays a tool call with its function name and
-          arguments:
-        </p>
+      <p>
+        ToolInvocationCard displays a tool call with its function name and
+        arguments:
+      </p>
 
-        <ComponentPreview
-          title="Simple Tool Card"
-          description="Basic tool call display"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Simple Tool Card"
+        description="Basic tool call display"
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import type { ToolCall } from '@clarity-chat/react/internal'
 
 function SimpleToolCard() {
@@ -251,21 +250,21 @@ function SimpleToolCard() {
     />
   )
 }`}
-        >
-          <BasicToolCardDemo />
-        </ComponentPreview>
+      >
+        <BasicToolCardDemo />
+      </ComponentPreview>
 
-        <h2 id="approval-workflow">Approval Workflow</h2>
+      <h2 id="approval-workflow">Approval Workflow</h2>
 
-        <p>
-          Enable approval workflow to require user confirmation before tool
-          execution:
-        </p>
+      <p>
+        Enable approval workflow to require user confirmation before tool
+        execution:
+      </p>
 
-        <ComponentPreview
-          title="With Approval Workflow"
-          description="Tool call requiring user approval"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="With Approval Workflow"
+        description="Tool call requiring user approval"
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function ToolWithApproval() {
@@ -305,19 +304,19 @@ function ToolWithApproval() {
     />
   )
 }`}
-        >
-          <ToolCardWithApprovalDemo />
-        </ComponentPreview>
+      >
+        <ToolCardWithApprovalDemo />
+      </ComponentPreview>
 
-        <h2 id="status-states">Status States</h2>
+      <h2 id="status-states">Status States</h2>
 
-        <p>
-          ToolInvocationCard supports multiple status states with appropriate
-          visual indicators:
-        </p>
+      <p>
+        ToolInvocationCard supports multiple status states with appropriate
+        visual indicators:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 // Pending - awaiting approval
 <ToolInvocationCard
@@ -352,36 +351,36 @@ function ToolWithApproval() {
   error="Failed to connect to API"
   onRetry={() => console.log('Retry')}
 />`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="tip">
-          <p>
-            <strong>Status Badge Colors:</strong>
-          </p>
-          <ul>
-            <li>
-              <strong>pending/rejected:</strong> Warning (yellow)
-            </li>
-            <li>
-              <strong>approved/executing:</strong> Info (blue)
-            </li>
-            <li>
-              <strong>success:</strong> Success (green)
-            </li>
-            <li>
-              <strong>error:</strong> Destructive (red)
-            </li>
-          </ul>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          <strong>Status Badge Colors:</strong>
+        </p>
+        <ul>
+          <li>
+            <strong>pending/rejected:</strong> Warning (yellow)
+          </li>
+          <li>
+            <strong>approved/executing:</strong> Info (blue)
+          </li>
+          <li>
+            <strong>success:</strong> Success (green)
+          </li>
+          <li>
+            <strong>error:</strong> Destructive (red)
+          </li>
+        </ul>
+      </Callout>
 
-        <h2 id="with-results">Displaying Results</h2>
+      <h2 id="with-results">Displaying Results</h2>
 
-        <p>Show tool execution results in an expandable section:</p>
+      <p>Show tool execution results in an expandable section:</p>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 function ToolWithResult() {
   const toolCall: ToolCall = {
@@ -409,16 +408,16 @@ function ToolWithResult() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="error-handling">Error Handling</h2>
+      <h2 id="error-handling">Error Handling</h2>
 
-        <p>Display error messages and provide retry functionality:</p>
+      <p>Display error messages and provide retry functionality:</p>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 function ToolWithError() {
   const toolCall: ToolCall = {
@@ -444,16 +443,16 @@ function ToolWithError() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="custom-formatting">Custom Argument Formatting</h2>
+      <h2 id="custom-formatting">Custom Argument Formatting</h2>
 
-        <p>Control how arguments are displayed:</p>
+      <p>Control how arguments are displayed:</p>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 // Formatted JSON (default)
 <ToolInvocationCard
@@ -466,22 +465,22 @@ function ToolWithError() {
   toolCall={toolCall}
   formatArguments={false} // Show raw string
 />`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="props">Props</h2>
+      <h2 id="props">Props</h2>
 
-        <PropsTable props={toolInvocationCardProps} />
+      <PropsTable props={toolInvocationCardProps} />
 
-        <h2 id="tool-call-type">ToolCall Type</h2>
+      <h2 id="tool-call-type">ToolCall Type</h2>
 
-        <p>
-          The <code>ToolCall</code> type structure:
-        </p>
+      <p>
+        The <code>ToolCall</code> type structure:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`interface ToolCall {
+      <EnhancedCodeBlock
+        code={`interface ToolCall {
   id: string
   type: 'function'
   function: {
@@ -489,14 +488,14 @@ function ToolWithError() {
     arguments: string // JSON string
   }
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useCallback } from 'react'
 import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import type { ToolCall } from '@clarity-chat/react/internal'
 
@@ -565,24 +564,24 @@ function CompleteToolCard() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="warning">
-          <p>
-            <strong>Note:</strong> The API endpoint{' '}
-            <code>/api/process-payment</code> is a placeholder. You'll need to
-            implement your own backend endpoint for tool execution.
-          </p>
-        </Callout>
+      <Callout type="warning">
+        <p>
+          <strong>Note:</strong> The API endpoint{' '}
+          <code>/api/process-payment</code> is a placeholder. You'll need to
+          implement your own backend endpoint for tool execution.
+        </p>
+      </Callout>
 
-        <h2 id="integration-with-streaming">Integration with Streaming</h2>
+      <h2 id="integration-with-streaming">Integration with Streaming</h2>
 
-        <p>ToolInvocationCard works seamlessly with streaming messages:</p>
+      <p>ToolInvocationCard works seamlessly with streaming messages:</p>
 
-        <EnhancedCodeBlock
-          code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react/internal'
 import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function StreamingWithTools() {
@@ -606,60 +605,57 @@ function StreamingWithTools() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="accessibility">Accessibility</h2>
+      <h2 id="accessibility">Accessibility</h2>
 
-        <p>ToolInvocationCard is built with accessibility in mind:</p>
+      <p>ToolInvocationCard is built with accessibility in mind:</p>
 
-        <ul>
-          <li>✅ Semantic HTML structure</li>
-          <li>✅ ARIA labels for all interactive elements</li>
-          <li>✅ Keyboard navigation for buttons</li>
-          <li>✅ Status announcements for screen readers</li>
-          <li>✅ Focus management</li>
-        </ul>
+      <ul>
+        <li>✅ Semantic HTML structure</li>
+        <li>✅ ARIA labels for all interactive elements</li>
+        <li>✅ Keyboard navigation for buttons</li>
+        <li>✅ Status announcements for screen readers</li>
+        <li>✅ Focus management</li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> -
-            Display multiple agent execution steps
-          </li>
-          <li>
-            <a href="/reference/components/clarity-tool-result">
-              ClarityToolResult
-            </a>{' '}
-            - Render tool results with custom UI
-          </li>
-          <li>
-            <a href="/reference/components/streaming-message">
-              StreamingMessage
-            </a>{' '}
-            - Display streaming responses with tool calls
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat-with-tools">
-              useClarityChatWithTools
-            </a>{' '}
-            - Hook for tool-enabled chat
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/components/agent-run-feed">AgentRunFeed</a> -
+          Display multiple agent execution steps
+        </li>
+        <li>
+          <a href="/reference/components/clarity-tool-result">
+            ClarityToolResult
+          </a>{' '}
+          - Render tool results with custom UI
+        </li>
+        <li>
+          <a href="/reference/components/streaming-message">StreamingMessage</a>{' '}
+          - Display streaming responses with tool calls
+        </li>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat-with-tools">
+            useClarityChatWithTools
+          </a>{' '}
+          - Hook for tool-enabled chat
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'StreamingMessage',
-            href: '/reference/components/streaming-message',
-          }}
-          next={{
-            title: 'AgentRunFeed',
-            href: '/reference/components/agent-run-feed',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'StreamingMessage',
+          href: '/reference/components/streaming-message',
+        }}
+        next={{
+          title: 'AgentRunFeed',
+          href: '/reference/components/agent-run-feed',
+        }}
+      />
+    </>
   )
 }

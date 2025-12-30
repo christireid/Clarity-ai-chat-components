@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, useStreamingSSE } from '@clarity-chat/react/internal'
+import { useStreamingSSE } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -252,37 +252,36 @@ const useStreamingSSEReturnProps: Prop[] = [
 
 export default function UseStreamingSSEPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>useStreamingSSE</h1>
+      <h1>useStreamingSSE</h1>
 
-        <p className="lead">
-          A production-ready hook for Server-Sent Events (SSE) streaming with
-          automatic reconnection, authentication handling, event parsing, and
-          network status detection.
+      <p className="lead">
+        A production-ready hook for Server-Sent Events (SSE) streaming with
+        automatic reconnection, authentication handling, event parsing, and
+        network status detection.
+      </p>
+
+      <Callout type="info">
+        <p>
+          For chat streaming, use{' '}
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
+          <code>transport: 'sse'</code>. useStreamingSSE is for custom SSE
+          implementations.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            For chat streaming, use{' '}
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
-            <code>transport: 'sse'</code>. useStreamingSSE is for custom SSE
-            implementations.
-          </p>
-        </Callout>
+      <ViewInStorybook component="useStreamingSSE" />
 
-        <ViewInStorybook component="useStreamingSSE" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try connecting to an SSE stream! See how events are received and
-            status changes.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Try connecting to an SSE stream! See how events are received and
+          status changes.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const { status, data, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
@@ -305,25 +304,25 @@ export default function UseStreamingSSEPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
-import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@clarity-chat/react'`}
-          language="tsx"
         />
+      </section>
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="import">Import</h2>
 
-        <p>Connect to an SSE endpoint and receive streaming events:</p>
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@clarity-chat/react'`}
+        language="tsx"
+      />
 
-        <ComponentPreview
-          title="Simple SSE Connection"
-          description="Basic SSE connection with manual connect/disconnect"
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <h2 id="basic-usage">Basic Usage</h2>
+
+      <p>Connect to an SSE endpoint and receive streaming events:</p>
+
+      <ComponentPreview
+        title="Simple SSE Connection"
+        description="Basic SSE connection with manual connect/disconnect"
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function SimpleSSE() {
@@ -353,16 +352,16 @@ function SimpleSSE() {
     </div>
   )
 }`}
-        >
-          <BasicSSEDemo />
-        </ComponentPreview>
+      >
+        <BasicSSEDemo />
+      </ComponentPreview>
 
-        <h2 id="with-post-request">With POST Request</h2>
+      <h2 id="with-post-request">With POST Request</h2>
 
-        <p>Send data with POST request:</p>
+      <p>Send data with POST request:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithPost() {
   const {
@@ -394,16 +393,16 @@ function SSEWithPost() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="authentication">Authentication</h2>
+      <h2 id="authentication">Authentication</h2>
 
-        <p>Add authentication token or use cookie-based auth:</p>
+      <p>Add authentication token or use cookie-based auth:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithAuth() {
   const userToken = 'your-auth-token'
@@ -431,16 +430,16 @@ function SSEWithAuth() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="automatic-reconnection">Automatic Reconnection</h2>
+      <h2 id="automatic-reconnection">Automatic Reconnection</h2>
 
-        <p>Configure automatic reconnection with exponential backoff:</p>
+      <p>Configure automatic reconnection with exponential backoff:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithReconnect() {
   const {
@@ -471,24 +470,24 @@ function SSEWithReconnect() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="tip">
-          <p>
-            Reconnection delay increases exponentially: 1s → 2s → 4s → 8s → 16s
-            → 30s (max). This prevents overwhelming the server while ensuring
-            eventual reconnection.
-          </p>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          Reconnection delay increases exponentially: 1s → 2s → 4s → 8s → 16s →
+          30s (max). This prevents overwhelming the server while ensuring
+          eventual reconnection.
+        </p>
+      </Callout>
 
-        <h2 id="event-handling">Event Handling</h2>
+      <h2 id="event-handling">Event Handling</h2>
 
-        <p>Handle different event types:</p>
+      <p>Handle different event types:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 import type { SSEEvent } from '@clarity-chat/react/internal'
 
 function SSEWithEventHandling() {
@@ -527,16 +526,16 @@ function SSEWithEventHandling() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="resume-from-event-id">Resume from Event ID</h2>
+      <h2 id="resume-from-event-id">Resume from Event ID</h2>
 
-        <p>Resume streaming from the last event ID after reconnection:</p>
+      <p>Resume streaming from the last event ID after reconnection:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithResume() {
   const {
@@ -558,26 +557,26 @@ function SSEWithResume() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="options">Options</h2>
+      <h2 id="options">Options</h2>
 
-        <PropsTable props={useStreamingSSEOptionsProps} />
+      <PropsTable props={useStreamingSSEOptionsProps} />
 
-        <h2 id="return-values">Return Values</h2>
+      <h2 id="return-values">Return Values</h2>
 
-        <PropsTable props={useStreamingSSEReturnProps} />
+      <PropsTable props={useStreamingSSEReturnProps} />
 
-        <h2 id="sse-event-type">SSEEvent Type</h2>
+      <h2 id="sse-event-type">SSEEvent Type</h2>
 
-        <p>
-          The <code>SSEEvent</code> type structure:
-        </p>
+      <p>
+        The <code>SSEEvent</code> type structure:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`interface SSEEvent {
+      <EnhancedCodeBlock
+        code={`interface SSEEvent {
   /** Event type (e.g., "message", "error", "done") */
   type: string
   /** Event data (pre-parsed if JSON) */
@@ -589,14 +588,14 @@ function SSEWithResume() {
   /** Retry interval suggested by server */
   retry?: number
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useEffect, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useEffect, useCallback } from 'react'
 import { useStreamingSSE } from '@clarity-chat/react/internal'
 import type { SSEEvent } from '@clarity-chat/react/internal'
 
@@ -685,24 +684,24 @@ function CompleteSSEExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="warning">
-          <p>
-            <strong>Note:</strong> The API endpoint{' '}
-            <code>/api/chat/stream</code> is a placeholder. You'll need to
-            implement your own SSE endpoint that sends Server-Sent Events.
-          </p>
-        </Callout>
+      <Callout type="warning">
+        <p>
+          <strong>Note:</strong> The API endpoint <code>/api/chat/stream</code>{' '}
+          is a placeholder. You'll need to implement your own SSE endpoint that
+          sends Server-Sent Events.
+        </p>
+      </Callout>
 
-        <h2 id="server-implementation">Server Implementation Example</h2>
+      <h2 id="server-implementation">Server Implementation Example</h2>
 
-        <p>Example Next.js API route for SSE:</p>
+      <p>Example Next.js API route for SSE:</p>
 
-        <EnhancedCodeBlock
-          code={`// app/api/stream/route.ts
+      <EnhancedCodeBlock
+        code={`// app/api/stream/route.ts
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -744,101 +743,97 @@ export async function POST(req: Request) {
     },
   })
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="status-values">Status Values</h2>
+      <h2 id="status-values">Status Values</h2>
 
-        <p>Connection status can be one of:</p>
+      <p>Connection status can be one of:</p>
 
-        <ul>
-          <li>
-            <strong>idle:</strong> Not connected, ready to connect
-          </li>
-          <li>
-            <strong>connecting:</strong> Establishing connection
-          </li>
-          <li>
-            <strong>connected:</strong> Connection established, waiting for
-            events
-          </li>
-          <li>
-            <strong>streaming:</strong> Actively receiving events
-          </li>
-          <li>
-            <strong>error:</strong> Connection error occurred
-          </li>
-          <li>
-            <strong>closed:</strong> Connection closed
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>idle:</strong> Not connected, ready to connect
+        </li>
+        <li>
+          <strong>connecting:</strong> Establishing connection
+        </li>
+        <li>
+          <strong>connected:</strong> Connection established, waiting for events
+        </li>
+        <li>
+          <strong>streaming:</strong> Actively receiving events
+        </li>
+        <li>
+          <strong>error:</strong> Connection error occurred
+        </li>
+        <li>
+          <strong>closed:</strong> Connection closed
+        </li>
+      </ul>
 
-        <h2 id="best-practices">Best Practices</h2>
+      <h2 id="best-practices">Best Practices</h2>
 
-        <ul>
-          <li>
-            <strong>Clean up on unmount:</strong> Always call{' '}
-            <code>disconnect()</code> in cleanup
-          </li>
-          <li>
-            <strong>Handle errors:</strong> Provide <code>onError</code>{' '}
-            callback for error handling
-          </li>
-          <li>
-            <strong>Monitor status:</strong> Use <code>status</code> to show
-            connection state in UI
-          </li>
-          <li>
-            <strong>Use reconnection:</strong> Enable <code>autoReconnect</code>{' '}
-            for production apps
-          </li>
-          <li>
-            <strong>Resume support:</strong> Enable{' '}
-            <code>resumeFromLastEventId</code> if server supports it
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>Clean up on unmount:</strong> Always call{' '}
+          <code>disconnect()</code> in cleanup
+        </li>
+        <li>
+          <strong>Handle errors:</strong> Provide <code>onError</code> callback
+          for error handling
+        </li>
+        <li>
+          <strong>Monitor status:</strong> Use <code>status</code> to show
+          connection state in UI
+        </li>
+        <li>
+          <strong>Use reconnection:</strong> Enable <code>autoReconnect</code>{' '}
+          for production apps
+        </li>
+        <li>
+          <strong>Resume support:</strong> Enable{' '}
+          <code>resumeFromLastEventId</code> if server supports it
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/hooks/use-streaming-websocket">
-              useStreamingWebSocket
-            </a>{' '}
-            - WebSocket streaming hook
-          </li>
-          <li>
-            <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> -
-            UI state for streaming
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
-            Chat hook with SSE support
-          </li>
-          <li>
-            <a href="/reference/components/streaming-message">
-              StreamingMessage
-            </a>{' '}
-            - Display streaming content
-          </li>
-          <li>
-            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket
-            comparison
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/hooks/use-streaming-websocket">
+            useStreamingWebSocket
+          </a>{' '}
+          - WebSocket streaming hook
+        </li>
+        <li>
+          <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> - UI
+          state for streaming
+        </li>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat
+          hook with SSE support
+        </li>
+        <li>
+          <a href="/reference/components/streaming-message">StreamingMessage</a>{' '}
+          - Display streaming content
+        </li>
+        <li>
+          <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket
+          comparison
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'useClarityObject',
-            href: '/reference/hooks/use-clarity-object',
-          }}
-          next={{
-            title: 'useStreamingWebSocket',
-            href: '/reference/hooks/use-streaming-websocket',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'useClarityObject',
+          href: '/reference/hooks/use-clarity-object',
+        }}
+        next={{
+          title: 'useStreamingWebSocket',
+          href: '/reference/hooks/use-streaming-websocket',
+        }}
+      />
+    </>
   )
 }

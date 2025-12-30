@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { ToastProvider, CommandPalette } from '@clarity-chat/react/internal'
+import { CommandPalette } from '@clarity-chat/react/internal'
 import type { CommandItem } from '@clarity-chat/react/internal'
 import { Badge } from '@clarity-chat/primitives'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -169,7 +169,7 @@ const commandPaletteProps: Prop[] = [
 
 export default function CommandPalettePage() {
   return (
-    <ToastProvider>
+    <>
       <div className="docs-content">
         <Breadcrumbs />
 
@@ -393,6 +393,6 @@ import type { CommandItem } from '@clarity-chat/react'`}
           }}
         />
       </div>
-    </ToastProvider>
+    </>
   )
 }

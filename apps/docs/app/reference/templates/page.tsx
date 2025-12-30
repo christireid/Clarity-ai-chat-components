@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { ToastProvider } from '@clarity-chat/react'
 
 const templates = [
   {
@@ -73,7 +72,7 @@ const templates = [
 
 export default function TemplatesPage() {
   return (
-    <ToastProvider>
+    <>
       <Breadcrumbs />
 
       <div className="mb-8">
@@ -143,6 +142,6 @@ export default function TemplatesPage() {
           for guides on building custom solutions.
         </p>
       </Callout>
-    </ToastProvider>
+    </>
   )
 }

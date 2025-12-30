@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, useStreamableUI } from '@clarity-chat/react/internal'
+import { useStreamableUI } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -196,36 +196,35 @@ const useStreamableUIStateProps: Prop[] = [
 
 export default function UseStreamableUIPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>useStreamableUI</h1>
+      <h1>useStreamableUI</h1>
 
-        <p className="lead">
-          A flexible hook for managing UI state from various streaming sources
-          including StreamableValue, AsyncIterable, Promise, and ReadableStream.
-          Perfect for handling incremental updates from AI responses.
+      <p className="lead">
+        A flexible hook for managing UI state from various streaming sources
+        including StreamableValue, AsyncIterable, Promise, and ReadableStream.
+        Perfect for handling incremental updates from AI responses.
+      </p>
+
+      <Callout type="info">
+        <p>
+          This hook is designed to work with Vercel AI SDK's{' '}
+          <code>StreamableValue</code> and other streaming sources. It
+          automatically handles subscription, transformation, and completion
+          detection.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            This hook is designed to work with Vercel AI SDK's{' '}
-            <code>StreamableValue</code> and other streaming sources. It
-            automatically handles subscription, transformation, and completion
-            detection.
-          </p>
-        </Callout>
+      <ViewInStorybook component="useStreamableUI" />
 
-        <ViewInStorybook component="useStreamableUI" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try streaming values! See how values accumulate and status changes.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Try streaming values! See how values accumulate and status changes.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const [source, setSource] = useState(null)
   
   const { values, latest, status, isStreaming } = useStreamableUI(source, {
@@ -261,25 +260,25 @@ export default function UseStreamableUIPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
-import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat/react'`}
-          language="tsx"
         />
+      </section>
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="import">Import</h2>
 
-        <p>Stream values from an AsyncIterable:</p>
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat/react'`}
+        language="tsx"
+      />
 
-        <ComponentPreview
-          title="Simple Streaming"
-          description="Basic streaming from AsyncIterable"
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <h2 id="basic-usage">Basic Usage</h2>
+
+      <p>Stream values from an AsyncIterable:</p>
+
+      <ComponentPreview
+        title="Simple Streaming"
+        description="Basic streaming from AsyncIterable"
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function SimpleStreaming() {
   const stream = {
@@ -308,16 +307,16 @@ function SimpleStreaming() {
     </div>
   )
 }`}
-        >
-          <BasicStreamableUIDemo />
-        </ComponentPreview>
+      >
+        <BasicStreamableUIDemo />
+      </ComponentPreview>
 
-        <h2 id="with-streamable-value">With StreamableValue</h2>
+      <h2 id="with-streamable-value">With StreamableValue</h2>
 
-        <p>Use with Vercel AI SDK's StreamableValue:</p>
+      <p>Use with Vercel AI SDK's StreamableValue:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { createStreamableValue } from 'ai/rsc'
 
 function StreamableValueExample() {
@@ -340,16 +339,16 @@ function StreamableValueExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="with-promise">With Promise</h2>
+      <h2 id="with-promise">With Promise</h2>
 
-        <p>Handle a Promise that resolves to a value:</p>
+      <p>Handle a Promise that resolves to a value:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function PromiseExample() {
@@ -379,16 +378,16 @@ function PromiseExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="with-readable-stream">With ReadableStream</h2>
+      <h2 id="with-readable-stream">With ReadableStream</h2>
 
-        <p>Stream from a ReadableStream (e.g., from fetch):</p>
+      <p>Stream from a ReadableStream (e.g., from fetch):</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function ReadableStreamExample() {
@@ -424,16 +423,16 @@ function ReadableStreamExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="append-vs-replace">Append vs Replace Mode</h2>
+      <h2 id="append-vs-replace">Append vs Replace Mode</h2>
 
-        <p>Control how values are accumulated:</p>
+      <p>Control how values are accumulated:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function AppendMode() {
   const stream = createAsyncIterable(['a', 'b', 'c'])
@@ -456,16 +455,16 @@ function ReplaceMode() {
 
   return <p>{values.join(', ')}</p> // "c"
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="transformation">Transformation</h2>
+      <h2 id="transformation">Transformation</h2>
 
-        <p>Transform incoming values (e.g., decode binary, parse JSON):</p>
+      <p>Transform incoming values (e.g., decode binary, parse JSON):</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function TransformExample() {
   const stream = createAsyncIterable([
@@ -499,16 +498,16 @@ function TransformExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="completion-detection">Completion Detection</h2>
+      <h2 id="completion-detection">Completion Detection</h2>
 
-        <p>Detect when streaming is complete:</p>
+      <p>Detect when streaming is complete:</p>
 
-        <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function CompletionExample() {
   const stream = createAsyncIterable(['Hello', ' ', 'World', null])
@@ -531,45 +530,45 @@ function CompletionExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="options">Options</h2>
+      <h2 id="options">Options</h2>
 
-        <PropsTable props={useStreamableUIOptionsProps} />
+      <PropsTable props={useStreamableUIOptionsProps} />
 
-        <h2 id="return-values">Return Values</h2>
+      <h2 id="return-values">Return Values</h2>
 
-        <PropsTable props={useStreamableUIStateProps} />
+      <PropsTable props={useStreamableUIStateProps} />
 
-        <h2 id="supported-sources">Supported Sources</h2>
+      <h2 id="supported-sources">Supported Sources</h2>
 
-        <p>useStreamableUI supports the following source types:</p>
+      <p>useStreamableUI supports the following source types:</p>
 
-        <ul>
-          <li>
-            <strong>StreamableValue:</strong> Vercel AI SDK's streamable value
-            with subscribe/onDone
-          </li>
-          <li>
-            <strong>AsyncIterable:</strong> Any async iterable (generators,
-            async generators)
-          </li>
-          <li>
-            <strong>Promise:</strong> Promise that resolves to a value
-          </li>
-          <li>
-            <strong>ReadableStream:</strong> Browser ReadableStream API
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>StreamableValue:</strong> Vercel AI SDK's streamable value
+          with subscribe/onDone
+        </li>
+        <li>
+          <strong>AsyncIterable:</strong> Any async iterable (generators, async
+          generators)
+        </li>
+        <li>
+          <strong>Promise:</strong> Promise that resolves to a value
+        </li>
+        <li>
+          <strong>ReadableStream:</strong> Browser ReadableStream API
+        </li>
+      </ul>
 
-        <h2 id="streamable-value-interface">StreamableValue Interface</h2>
+      <h2 id="streamable-value-interface">StreamableValue Interface</h2>
 
-        <p>For StreamableValue-like objects, the hook expects:</p>
+      <p>For StreamableValue-like objects, the hook expects:</p>
 
-        <EnhancedCodeBlock
-          code={`interface StreamableValueLike<T> {
+      <EnhancedCodeBlock
+        code={`interface StreamableValueLike<T> {
   value?: T | null
   /** Subscribe to incremental updates */
   subscribe: (listener: (value: T) => void) => void | (() => void)
@@ -578,14 +577,14 @@ function CompletionExample() {
   /** Hint that streaming completed */
   done?: boolean
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useCallback } from 'react'
 import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function CompleteStreamableUIExample() {
@@ -681,98 +680,95 @@ function CompleteStreamableUIExample() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="status-values">Status Values</h2>
+      <h2 id="status-values">Status Values</h2>
 
-        <p>Streaming status can be one of:</p>
+      <p>Streaming status can be one of:</p>
 
-        <ul>
-          <li>
-            <strong>idle:</strong> No source provided or stream not started
-          </li>
-          <li>
-            <strong>streaming:</strong> Actively receiving values
-          </li>
-          <li>
-            <strong>complete:</strong> Stream completed successfully
-          </li>
-          <li>
-            <strong>error:</strong> Stream error occurred
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>idle:</strong> No source provided or stream not started
+        </li>
+        <li>
+          <strong>streaming:</strong> Actively receiving values
+        </li>
+        <li>
+          <strong>complete:</strong> Stream completed successfully
+        </li>
+        <li>
+          <strong>error:</strong> Stream error occurred
+        </li>
+      </ul>
 
-        <h2 id="best-practices">Best Practices</h2>
+      <h2 id="best-practices">Best Practices</h2>
 
-        <ul>
-          <li>
-            <strong>Use append mode for tokens:</strong> When streaming text
-            tokens, use <code>mode: 'append'</code>
-          </li>
-          <li>
-            <strong>Use replace mode for updates:</strong> When streaming
-            complete objects that replace each other
-          </li>
-          <li>
-            <strong>Transform binary data:</strong> Use <code>transform</code>{' '}
-            to decode Uint8Array chunks
-          </li>
-          <li>
-            <strong>Handle completion:</strong> Use <code>completeWhen</code> or
-            rely on stream completion
-          </li>
-          <li>
-            <strong>Clean up:</strong> The hook automatically cleans up
-            subscriptions when source changes
-          </li>
-          <li>
-            <strong>Error handling:</strong> Always provide <code>onError</code>{' '}
-            callback
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>Use append mode for tokens:</strong> When streaming text
+          tokens, use <code>mode: 'append'</code>
+        </li>
+        <li>
+          <strong>Use replace mode for updates:</strong> When streaming complete
+          objects that replace each other
+        </li>
+        <li>
+          <strong>Transform binary data:</strong> Use <code>transform</code> to
+          decode Uint8Array chunks
+        </li>
+        <li>
+          <strong>Handle completion:</strong> Use <code>completeWhen</code> or
+          rely on stream completion
+        </li>
+        <li>
+          <strong>Clean up:</strong> The hook automatically cleans up
+          subscriptions when source changes
+        </li>
+        <li>
+          <strong>Error handling:</strong> Always provide <code>onError</code>{' '}
+          callback
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> -
-            SSE streaming hook
-          </li>
-          <li>
-            <a href="/reference/hooks/use-streaming-websocket">
-              useStreamingWebSocket
-            </a>{' '}
-            - WebSocket streaming hook
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
-            Chat hook with streaming support
-          </li>
-          <li>
-            <a href="/reference/components/streaming-message">
-              StreamingMessage
-            </a>{' '}
-            - Display streaming content
-          </li>
-          <li>
-            <a href="/guides/streaming">Streaming Guide</a> - Streaming patterns
-            and best practices
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> - SSE
+          streaming hook
+        </li>
+        <li>
+          <a href="/reference/hooks/use-streaming-websocket">
+            useStreamingWebSocket
+          </a>{' '}
+          - WebSocket streaming hook
+        </li>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat
+          hook with streaming support
+        </li>
+        <li>
+          <a href="/reference/components/streaming-message">StreamingMessage</a>{' '}
+          - Display streaming content
+        </li>
+        <li>
+          <a href="/guides/streaming">Streaming Guide</a> - Streaming patterns
+          and best practices
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'useStreamingWebSocket',
-            href: '/reference/hooks/use-streaming-websocket',
-          }}
-          next={{
-            title: 'useClarityChat',
-            href: '/reference/hooks/use-clarity-chat',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'useStreamingWebSocket',
+          href: '/reference/hooks/use-streaming-websocket',
+        }}
+        next={{
+          title: 'useClarityChat',
+          href: '/reference/hooks/use-clarity-chat',
+        }}
+      />
+    </>
   )
 }

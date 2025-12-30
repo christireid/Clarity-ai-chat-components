@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, Message } from '@clarity-chat/react/internal'
+import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -160,37 +160,36 @@ const messageProps: Prop[] = [
 
 export default function MessagePage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>Message</h1>
+      <h1>Message</h1>
 
-        <p className="lead">
-          A low-level component for rendering individual chat messages with
-          markdown support, actions (copy, feedback, retry, edit, delete), and
-          smooth animations.
+      <p className="lead">
+        A low-level component for rendering individual chat messages with
+        markdown support, actions (copy, feedback, retry, edit, delete), and
+        smooth animations.
+      </p>
+
+      <Callout type="info">
+        <p>
+          For displaying multiple messages, use the{' '}
+          <a href="/reference/components/message-list">MessageList</a>{' '}
+          component. For complete chat interfaces, use{' '}
+          <a href="/reference/components/clarity-chat">ClarityChat</a>.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            For displaying multiple messages, use the{' '}
-            <a href="/reference/components/message-list">MessageList</a>{' '}
-            component. For complete chat interfaces, use{' '}
-            <a href="/reference/components/clarity-chat">ClarityChat</a>.
-          </p>
-        </Callout>
+      <ViewInStorybook component="Message" />
 
-        <ViewInStorybook component="Message" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the Message component! Try different configurations
-            and see how it renders.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Experiment with the Message component! Try different configurations
+          and see how it renders.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const message = {
     id: '1',
     chatId: 'demo',
@@ -210,29 +209,29 @@ export default function MessagePage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
+        />
+      </section>
 
-        <h2 id="import">Import</h2>
+      <h2 id="import">Import</h2>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 import '@clarity-chat/react/styles.css'`}
-          language="tsx"
-        />
+        language="tsx"
+      />
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          Message is a controlled component that accepts a <code>Message</code>{' '}
-          object from <code>@clarity-chat/types</code>:
-        </p>
+      <p>
+        Message is a controlled component that accepts a <code>Message</code>{' '}
+        object from <code>@clarity-chat/types</code>:
+      </p>
 
-        <ComponentPreview
-          title="Simple Message"
-          description="A basic message with default styling"
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Simple Message"
+        description="A basic message with default styling"
+        code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function SimpleMessage() {
@@ -248,21 +247,21 @@ function SimpleMessage() {
 
   return <Message message={message} />
 }`}
-        >
-          <BasicMessageDemo />
-        </ComponentPreview>
+      >
+        <BasicMessageDemo />
+      </ComponentPreview>
 
-        <h2 id="message-actions">Message Actions</h2>
+      <h2 id="message-actions">Message Actions</h2>
 
-        <p>
-          Enable message actions by providing callback functions. The component
-          automatically shows action buttons on hover:
-        </p>
+      <p>
+        Enable message actions by providing callback functions. The component
+        automatically shows action buttons on hover:
+      </p>
 
-        <ComponentPreview
-          title="With All Actions"
-          description="Message with copy, feedback, retry, edit, regenerate, and delete actions"
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="With All Actions"
+        description="Message with copy, feedback, retry, edit, regenerate, and delete actions"
+        code={`import { Message } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function MessageWithActions() {
@@ -288,19 +287,19 @@ function MessageWithActions() {
     />
   )
 }`}
-        >
-          <MessageWithActionsDemo />
-        </ComponentPreview>
+      >
+        <MessageWithActionsDemo />
+      </ComponentPreview>
 
-        <h2 id="markdown-rendering">Markdown Rendering</h2>
+      <h2 id="markdown-rendering">Markdown Rendering</h2>
 
-        <p>
-          Message automatically renders markdown content with syntax
-          highlighting for code blocks:
-        </p>
+      <p>
+        Message automatically renders markdown content with syntax highlighting
+        for code blocks:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 
 function MarkdownMessage() {
   const message: MessageType = {
@@ -325,28 +324,27 @@ function greet(name: string) {
 
   return <Message message={message} />
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="tip">
-          <p>
-            Message uses <code>react-markdown</code> with{' '}
-            <code>remark-gfm</code> for GitHub Flavored Markdown and{' '}
-            <code>rehype-highlight</code> for syntax highlighting. All markdown
-            features are supported.
-          </p>
-        </Callout>
-
-        <h2 id="streaming-messages">Streaming Messages</h2>
-
+      <Callout type="tip">
         <p>
-          Messages with <code>status: 'streaming'</code> automatically show a
-          streaming indicator:
+          Message uses <code>react-markdown</code> with <code>remark-gfm</code>{' '}
+          for GitHub Flavored Markdown and <code>rehype-highlight</code> for
+          syntax highlighting. All markdown features are supported.
         </p>
+      </Callout>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <h2 id="streaming-messages">Streaming Messages</h2>
+
+      <p>
+        Messages with <code>status: 'streaming'</code> automatically show a
+        streaming indicator:
+      </p>
+
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 
 function StreamingMessage() {
   const message: MessageType = {
@@ -361,16 +359,16 @@ function StreamingMessage() {
 
   return <Message message={message} />
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="error-messages">Error Messages</h2>
+      <h2 id="error-messages">Error Messages</h2>
 
-        <p>Display error information for failed messages:</p>
+      <p>Display error information for failed messages:</p>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 
 function ErrorMessage() {
   const message: MessageType = {
@@ -394,19 +392,19 @@ function ErrorMessage() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="message-grouping">Message Grouping</h2>
+      <h2 id="message-grouping">Message Grouping</h2>
 
-        <p>
-          Group consecutive messages from the same sender for better visual
-          organization:
-        </p>
+      <p>
+        Group consecutive messages from the same sender for better visual
+        organization:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 
 function GroupedMessages() {
   const messages: MessageType[] = [
@@ -447,42 +445,42 @@ function GroupedMessages() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="info">
-          <p>
-            <a href="/reference/components/message-list">MessageList</a>{' '}
-            automatically handles message grouping for you. You only need to set
-            these props when building custom message lists.
-          </p>
-        </Callout>
+      <Callout type="info">
+        <p>
+          <a href="/reference/components/message-list">MessageList</a>{' '}
+          automatically handles message grouping for you. You only need to set
+          these props when building custom message lists.
+        </p>
+      </Callout>
 
-        <h2 id="customization">Customization</h2>
+      <h2 id="customization">Customization</h2>
 
-        <p>Hide avatars or timestamps, or apply custom styling:</p>
+      <p>Hide avatars or timestamps, or apply custom styling:</p>
 
-        <EnhancedCodeBlock
-          code={`<Message
+      <EnhancedCodeBlock
+        code={`<Message
   message={message}
   showAvatar={false}      // Hide avatar
   showTimestamp={false}   // Hide timestamp
   className="custom-message" // Custom CSS class
 />`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="feedback-animations">Feedback Animations</h2>
+      <h2 id="feedback-animations">Feedback Animations</h2>
 
-        <p>
-          When feedback is provided, Message shows a confetti animation for
-          positive feedback:
-        </p>
+      <p>
+        When feedback is provided, Message shows a confetti animation for
+        positive feedback:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 
 function MessageWithFeedback() {
   const [message, setMessage] = useState<MessageType>({
@@ -510,22 +508,22 @@ function MessageWithFeedback() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="props">Props</h2>
+      <h2 id="props">Props</h2>
 
-        <PropsTable props={messageProps} />
+      <PropsTable props={messageProps} />
 
-        <h2 id="message-type">Message Type</h2>
+      <h2 id="message-type">Message Type</h2>
 
-        <p>
-          The <code>Message</code> type from <code>@clarity-chat/types</code>:
-        </p>
+      <p>
+        The <code>Message</code> type from <code>@clarity-chat/types</code>:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`interface Message {
+      <EnhancedCodeBlock
+        code={`interface Message {
   id: string
   chatId: string
   role: 'user' | 'assistant' | 'system'
@@ -538,14 +536,14 @@ function MessageWithFeedback() {
   updatedAt: Date
   editHistory?: MessageEdit[]
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function CompleteMessageExample() {
@@ -597,78 +595,75 @@ const example = 'code blocks work too!'
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="accessibility">Accessibility</h2>
+      <h2 id="accessibility">Accessibility</h2>
 
-        <p>Message is built with accessibility in mind:</p>
+      <p>Message is built with accessibility in mind:</p>
 
-        <ul>
-          <li>✅ Semantic HTML structure</li>
-          <li>✅ ARIA labels for all interactive elements</li>
-          <li>✅ Keyboard navigation for actions</li>
-          <li>✅ Focus indicators</li>
-          <li>✅ Screen reader announcements for feedback</li>
-          <li>✅ Proper heading hierarchy in markdown content</li>
-        </ul>
+      <ul>
+        <li>✅ Semantic HTML structure</li>
+        <li>✅ ARIA labels for all interactive elements</li>
+        <li>✅ Keyboard navigation for actions</li>
+        <li>✅ Focus indicators</li>
+        <li>✅ Screen reader announcements for feedback</li>
+        <li>✅ Proper heading hierarchy in markdown content</li>
+      </ul>
 
-        <h2 id="performance">Performance</h2>
+      <h2 id="performance">Performance</h2>
 
-        <p>Message is optimized for performance:</p>
+      <p>Message is optimized for performance:</p>
 
-        <ul>
-          <li>
-            <strong>React 19 optimizations:</strong> Automatic memoization of
-            event handlers
-          </li>
-          <li>
-            <strong>Lazy markdown parsing:</strong> Markdown is only parsed when
-            needed
-          </li>
-          <li>
-            <strong>Efficient re-renders:</strong> Only re-renders when message
-            data changes
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>React 19 optimizations:</strong> Automatic memoization of
+          event handlers
+        </li>
+        <li>
+          <strong>Lazy markdown parsing:</strong> Markdown is only parsed when
+          needed
+        </li>
+        <li>
+          <strong>Efficient re-renders:</strong> Only re-renders when message
+          data changes
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/components/message-list">MessageList</a> -
-            Display multiple messages
-          </li>
-          <li>
-            <a href="/reference/components/virtualized-message-list">
-              VirtualizedMessageList
-            </a>{' '}
-            - For large message lists
-          </li>
-          <li>
-            <a href="/reference/components/streaming-message">
-              StreamingMessage
-            </a>{' '}
-            - Specialized component for streaming
-          </li>
-          <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> -
-            Complete chat interface
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/components/message-list">MessageList</a> - Display
+          multiple messages
+        </li>
+        <li>
+          <a href="/reference/components/virtualized-message-list">
+            VirtualizedMessageList
+          </a>{' '}
+          - For large message lists
+        </li>
+        <li>
+          <a href="/reference/components/streaming-message">StreamingMessage</a>{' '}
+          - Specialized component for streaming
+        </li>
+        <li>
+          <a href="/reference/components/chat-window">ChatWindow</a> - Complete
+          chat interface
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'AdvancedChatInput',
-            href: '/reference/components/advanced-chat-input',
-          }}
-          next={{
-            title: 'MessageList',
-            href: '/reference/components/message-list',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'AdvancedChatInput',
+          href: '/reference/components/advanced-chat-input',
+        }}
+        next={{
+          title: 'MessageList',
+          href: '/reference/components/message-list',
+        }}
+      />
+    </>
   )
 }

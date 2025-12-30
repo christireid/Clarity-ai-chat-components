@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { ToastProvider } from '@clarity-chat/react'
 
 const apiCategories = [
   {
@@ -47,7 +46,7 @@ const apiCategories = [
 
 export default function ApiReferencePage() {
   return (
-    <ToastProvider>
+    <>
       <Breadcrumbs />
 
       <div className="mb-8">
@@ -122,6 +121,6 @@ export default function ApiReferencePage() {
           for common patterns and usage examples.
         </p>
       </Callout>
-    </ToastProvider>
+    </>
   )
 }

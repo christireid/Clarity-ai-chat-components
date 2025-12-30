@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider, useClarityObject } from '@clarity-chat/react/internal'
+import { useClarityObject } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -184,42 +184,39 @@ const useClarityObjectReturnProps: Prop[] = [
 
 export default function UseClarityObjectPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>useClarityObject</h1>
+      <h1>useClarityObject</h1>
 
-        <p className="lead">
-          Hook for generating structured objects from AI models with full type
-          safety. Supports both streaming and non-streaming object generation.
+      <p className="lead">
+        Hook for generating structured objects from AI models with full type
+        safety. Supports both streaming and non-streaming object generation.
+      </p>
+
+      <Callout type="info">
+        <p>
+          <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready)
+          <br />
+          <strong>Domain:</strong> Tools & Agents
+          <br />
+          <br />
+          This is the recommended way to generate type-safe structured data from
+          AI. For tool calling, use <code>useClarityChatWithTools</code>{' '}
+          instead.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready)
-            <br />
-            <strong>Domain:</strong> Tools & Agents
-            <br />
-            <br />
-            This is the recommended way to generate type-safe structured data
-            from AI. For tool calling, use <code>
-              useClarityChatWithTools
-            </code>{' '}
-            instead.
-          </p>
-        </Callout>
+      <ViewInStorybook component="useClarityObject" />
 
-        <ViewInStorybook component="useClarityObject" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the useClarityObject hook! Generate structured
-            objects with type safety.
-          </p>
-          <CodePlayground
-            initialCode={`interface Product {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Experiment with the useClarityObject hook! Generate structured objects
+          with type safety.
+        </p>
+        <CodePlayground
+          initialCode={`interface Product {
   name: string
   price: number
   description: string
@@ -251,27 +248,27 @@ function Example() {
 }
 
 render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react'`}
-          language="tsx"
         />
+      </section>
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="import">Import</h2>
 
-        <p>
-          Define your object type and use the hook to generate structured data
-          from AI:
-        </p>
+      <EnhancedCodeBlock
+        code={`import { useClarityObject } from '@clarity-chat/react'`}
+        language="tsx"
+      />
 
-        <ComponentPreview
-          title="Product Recommendations"
-          description="Generate type-safe product recommendations"
-          code={`interface Product {
+      <h2 id="basic-usage">Basic Usage</h2>
+
+      <p>
+        Define your object type and use the hook to generate structured data
+        from AI:
+      </p>
+
+      <ComponentPreview
+        title="Product Recommendations"
+        description="Generate type-safe product recommendations"
+        code={`interface Product {
   name: string
   price: number
   description: string
@@ -303,29 +300,29 @@ function ProductRecommendations() {
     </div>
   )
 }`}
-        >
-          <ProductDemo />
-        </ComponentPreview>
+      >
+        <ProductDemo />
+      </ComponentPreview>
 
-        <Callout type="warning">
-          <p>
-            <strong>Note:</strong> The demo above uses a placeholder API
-            endpoint. In a real application, you'll need to implement the{' '}
-            <code>/api/generate-products</code> route. See the{' '}
-            <a href="#examples">Next.js API Route Example</a> below for a
-            complete implementation.
-          </p>
-        </Callout>
-
-        <h2 id="type-safety">Type Safety</h2>
-
+      <Callout type="warning">
         <p>
-          The hook is fully type-safe. TypeScript will enforce the structure of
-          your generated objects:
+          <strong>Note:</strong> The demo above uses a placeholder API endpoint.
+          In a real application, you'll need to implement the{' '}
+          <code>/api/generate-products</code> route. See the{' '}
+          <a href="#examples">Next.js API Route Example</a> below for a complete
+          implementation.
         </p>
+      </Callout>
 
-        <EnhancedCodeBlock
-          code={`interface User {
+      <h2 id="type-safety">Type Safety</h2>
+
+      <p>
+        The hook is fully type-safe. TypeScript will enforce the structure of
+        your generated objects:
+      </p>
+
+      <EnhancedCodeBlock
+        code={`interface User {
   name: string
   email: string
   age: number
@@ -350,16 +347,16 @@ function UserGenerator() {
 
   return <div>...</div>
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="with-streaming">With Streaming</h2>
+      <h2 id="with-streaming">With Streaming</h2>
 
-        <p>Enable streaming for real-time updates during generation:</p>
+      <p>Enable streaming for real-time updates during generation:</p>
 
-        <EnhancedCodeBlock
-          code={`const { object, run, isLoading, error } = useClarityObject<Product[]>({
+      <EnhancedCodeBlock
+        code={`const { object, run, isLoading, error } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   stream: true,
   onProgress: (chunk) => {
@@ -370,18 +367,16 @@ function UserGenerator() {
     logger.debug('Generation complete:', object)
   },
 })`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="with-input">Dynamic Input</h2>
+      <h2 id="with-input">Dynamic Input</h2>
 
-        <p>
-          Update input dynamically and run generation with different values:
-        </p>
+      <p>Update input dynamically and run generation with different values:</p>
 
-        <EnhancedCodeBlock
-          code={`function DynamicGenerator() {
+      <EnhancedCodeBlock
+        code={`function DynamicGenerator() {
   const { input, setInput, object, run } = useClarityObject<Product[]>({
     api: '/api/generate-products',
     initialInput: { query: 'laptops' },
@@ -402,16 +397,16 @@ function UserGenerator() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="error-handling">Error Handling</h2>
+      <h2 id="error-handling">Error Handling</h2>
 
-        <p>Handle errors gracefully with proper user feedback:</p>
+      <p>Handle errors gracefully with proper user feedback:</p>
 
-        <EnhancedCodeBlock
-          code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
+      <EnhancedCodeBlock
+        code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   onError: (error) => {
     console.error('Generation error:', error)
@@ -439,30 +434,30 @@ function UserGenerator() {
     </button>
   </div>
 )}`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="options">Options</h2>
+      <h2 id="options">Options</h2>
 
-        <PropsTable
-          props={useClarityObjectOptionsProps}
-          title="useClarityObject Options"
-        />
+      <PropsTable
+        props={useClarityObjectOptionsProps}
+        title="useClarityObject Options"
+      />
 
-        <h2 id="return-values">Return Values</h2>
+      <h2 id="return-values">Return Values</h2>
 
-        <PropsTable
-          props={useClarityObjectReturnProps}
-          title="useClarityObject Return"
-        />
+      <PropsTable
+        props={useClarityObjectReturnProps}
+        title="useClarityObject Return"
+      />
 
-        <h2 id="examples">Examples</h2>
+      <h2 id="examples">Examples</h2>
 
-        <h3>Complete Example with All Features</h3>
+      <h3>Complete Example with All Features</h3>
 
-        <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { useClarityObject } from '@clarity-chat/react/internal'
 
 interface BlogPost {
   title: string
@@ -532,14 +527,14 @@ function BlogPostGenerator() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h3>Next.js API Route Example</h3>
+      <h3>Next.js API Route Example</h3>
 
-        <EnhancedCodeBlock
-          code={`// app/api/generate-products/route.ts
+      <EnhancedCodeBlock
+        code={`// app/api/generate-products/route.ts
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -605,58 +600,58 @@ export async function POST(req: Request) {
     )
   }
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="success">
-          <p>
-            <strong>Great job!</strong> You now know how to use the
-            useClarityObject hook for type-safe structured output generation.
-            Check out{' '}
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> for
-            conversational AI, or explore{' '}
-            <a href="/reference/hooks/use-clarity-chat-with-tools">
-              useClarityChatWithTools
-            </a>{' '}
-            for tool calling.
-          </p>
-        </Callout>
-
-        <h2 id="best-practices">Best Practices</h2>
-
-        <ul>
-          <li>
-            <strong>Define clear interfaces:</strong> Use TypeScript interfaces
-            to define your object structure clearly.
-          </li>
-          <li>
-            <strong>Handle errors:</strong> Always provide error handling with
-            the <code>error</code> state and <code>onError</code> callback.
-          </li>
-          <li>
-            <strong>Use streaming for long operations:</strong> Enable streaming
-            for better UX when generation takes time.
-          </li>
-          <li>
-            <strong>Validate responses:</strong> Add runtime validation with Zod
-            for extra safety (see example below).
-          </li>
-          <li>
-            <strong>Reset state when needed:</strong> Use the <code>reset</code>{' '}
-            function to clear state between generations.
-          </li>
-        </ul>
-
-        <h3>Runtime Validation with Zod</h3>
-
+      <Callout type="success">
         <p>
-          While TypeScript provides compile-time type safety, Zod adds runtime
-          validation to ensure AI-generated data matches your schema:
+          <strong>Great job!</strong> You now know how to use the
+          useClarityObject hook for type-safe structured output generation.
+          Check out{' '}
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> for
+          conversational AI, or explore{' '}
+          <a href="/reference/hooks/use-clarity-chat-with-tools">
+            useClarityChatWithTools
+          </a>{' '}
+          for tool calling.
         </p>
+      </Callout>
 
-        <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react/internal'
+      <h2 id="best-practices">Best Practices</h2>
+
+      <ul>
+        <li>
+          <strong>Define clear interfaces:</strong> Use TypeScript interfaces to
+          define your object structure clearly.
+        </li>
+        <li>
+          <strong>Handle errors:</strong> Always provide error handling with the{' '}
+          <code>error</code> state and <code>onError</code> callback.
+        </li>
+        <li>
+          <strong>Use streaming for long operations:</strong> Enable streaming
+          for better UX when generation takes time.
+        </li>
+        <li>
+          <strong>Validate responses:</strong> Add runtime validation with Zod
+          for extra safety (see example below).
+        </li>
+        <li>
+          <strong>Reset state when needed:</strong> Use the <code>reset</code>{' '}
+          function to clear state between generations.
+        </li>
+      </ul>
+
+      <h3>Runtime Validation with Zod</h3>
+
+      <p>
+        While TypeScript provides compile-time type safety, Zod adds runtime
+        validation to ensure AI-generated data matches your schema:
+      </p>
+
+      <EnhancedCodeBlock
+        code={`import { useClarityObject } from '@clarity-chat/react/internal'
 import { z } from 'zod'
 
 // Define Zod schema for runtime validation
@@ -724,51 +719,49 @@ function ValidatedProductGenerator() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="tip">
-          <p>
-            <strong>Zod + TypeScript = Maximum Safety</strong>
-            <br />
-            Using Zod provides both compile-time AND runtime type safety. This
-            is especially important for AI-generated content which may not
-            always match your expected schema. Install with:{' '}
-            <code>npm install zod</code>
-          </p>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          <strong>Zod + TypeScript = Maximum Safety</strong>
+          <br />
+          Using Zod provides both compile-time AND runtime type safety. This is
+          especially important for AI-generated content which may not always
+          match your expected schema. Install with: <code>npm install zod</code>
+        </p>
+      </Callout>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
-            Conversational AI hook
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat-with-tools">
-              useClarityChatWithTools
-            </a>{' '}
-            - Tool calling hook
-          </li>
-          <li>
-            <a href="/learn/guides/typescript">TypeScript Guide</a> - Type
-            safety patterns
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+          Conversational AI hook
+        </li>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat-with-tools">
+            useClarityChatWithTools
+          </a>{' '}
+          - Tool calling hook
+        </li>
+        <li>
+          <a href="/learn/guides/typescript">TypeScript Guide</a> - Type safety
+          patterns
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'useClarityChat',
-            href: '/reference/hooks/use-clarity-chat',
-          }}
-          next={{
-            title: 'useChatHandlers',
-            href: '/reference/hooks/use-chat-handlers',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'useClarityChat',
+          href: '/reference/hooks/use-clarity-chat',
+        }}
+        next={{
+          title: 'useChatHandlers',
+          href: '/reference/hooks/use-chat-handlers',
+        }}
+      />
+    </>
   )
 }

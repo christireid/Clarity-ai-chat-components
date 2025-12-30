@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ChatInput } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -133,37 +133,36 @@ const chatInputProps: Prop[] = [
 
 export default function ChatInputPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>ChatInput</h1>
+      <h1>ChatInput</h1>
 
-        <p className="lead">
-          A composable chat input component with character counting, validation,
-          smooth animations, and keyboard shortcuts. Perfect for building custom
-          chat interfaces.
+      <p className="lead">
+        A composable chat input component with character counting, validation,
+        smooth animations, and keyboard shortcuts. Perfect for building custom
+        chat interfaces.
+      </p>
+
+      <Callout type="info">
+        <p>
+          For drop-in usage with built-in state management, use the{' '}
+          <a href="/reference/components/clarity-chat">ClarityChat</a> component
+          instead. ChatInput is ideal when you need more control over the input
+          behavior.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            For drop-in usage with built-in state management, use the{' '}
-            <a href="/reference/components/clarity-chat">ClarityChat</a>{' '}
-            component instead. ChatInput is ideal when you need more control
-            over the input behavior.
-          </p>
-        </Callout>
+      <ViewInStorybook component="ChatInput" />
 
-        <ViewInStorybook component="ChatInput" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the ChatInput component! Try typing, test character
-            limits, and see the animations in action.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Experiment with the ChatInput component! Try typing, test character
+          limits, and see the animations in action.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = async (text) => {
@@ -184,28 +183,28 @@ export default function ChatInputPage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
-import '@clarity-chat/react/styles.css'`}
-          language="tsx"
         />
+      </section>
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="import">Import</h2>
 
-        <p>
-          ChatInput is a controlled component that requires <code>value</code>,{' '}
-          <code>onChange</code>, and <code>onSubmit</code> props:
-        </p>
+      <EnhancedCodeBlock
+        code={`import { ChatInput } from '@clarity-chat/react/internal'
+import '@clarity-chat/react/styles.css'`}
+        language="tsx"
+      />
 
-        <ComponentPreview
-          title="Simple Chat Input"
-          description="A basic chat input with submit handling"
-          code={`import { useState, useCallback } from 'react'
+      <h2 id="basic-usage">Basic Usage</h2>
+
+      <p>
+        ChatInput is a controlled component that requires <code>value</code>,{' '}
+        <code>onChange</code>, and <code>onSubmit</code> props:
+      </p>
+
+      <ComponentPreview
+        title="Simple Chat Input"
+        description="A basic chat input with submit handling"
+        code={`import { useState, useCallback } from 'react'
 import { ChatInput } from '@clarity-chat/react/internal'
 
 function SimpleChatInput() {
@@ -230,21 +229,21 @@ function SimpleChatInput() {
     />
   )
 }`}
-        >
-          <BasicInputDemo />
-        </ComponentPreview>
+      >
+        <BasicInputDemo />
+      </ComponentPreview>
 
-        <h2 id="character-limit">Character Limit</h2>
+      <h2 id="character-limit">Character Limit</h2>
 
-        <p>
-          Set a maximum character count with visual feedback. The counter shows
-          progress and changes color as you approach the limit:
-        </p>
+      <p>
+        Set a maximum character count with visual feedback. The counter shows
+        progress and changes color as you approach the limit:
+      </p>
 
-        <ComponentPreview
-          title="With Character Limit"
-          description="Character counter with warning threshold"
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="With Character Limit"
+        description="Character counter with warning threshold"
+        code={`import { ChatInput } from '@clarity-chat/react/internal'
 
 function ChatWithLimit() {
   const [value, setValue] = useState('')
@@ -260,38 +259,37 @@ function ChatWithLimit() {
     />
   )
 }`}
-        >
-          <CharacterLimitDemo />
-        </ComponentPreview>
+      >
+        <CharacterLimitDemo />
+      </ComponentPreview>
 
-        <Callout type="tip">
-          <p>
-            <strong>Character Counter States:</strong>
-          </p>
-          <ul>
-            <li>
-              <strong>Normal (0-79%):</strong> Blue color, normal font weight
-            </li>
-            <li>
-              <strong>Warning (80-99%):</strong> Yellow color, medium font
-              weight
-            </li>
-            <li>
-              <strong>Over Limit (100%+):</strong> Red color, bold font, pulsing
-              animation
-            </li>
-          </ul>
-        </Callout>
-
-        <h2 id="async-submit">Async Submit</h2>
-
+      <Callout type="tip">
         <p>
-          The <code>onSubmit</code> callback can be async. The button
-          automatically shows loading, success, and error states:
+          <strong>Character Counter States:</strong>
         </p>
+        <ul>
+          <li>
+            <strong>Normal (0-79%):</strong> Blue color, normal font weight
+          </li>
+          <li>
+            <strong>Warning (80-99%):</strong> Yellow color, medium font weight
+          </li>
+          <li>
+            <strong>Over Limit (100%+):</strong> Red color, bold font, pulsing
+            animation
+          </li>
+        </ul>
+      </Callout>
 
-        <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+      <h2 id="async-submit">Async Submit</h2>
+
+      <p>
+        The <code>onSubmit</code> callback can be async. The button
+        automatically shows loading, success, and error states:
+      </p>
+
+      <EnhancedCodeBlock
+        code={`import { ChatInput } from '@clarity-chat/react/internal'
 
 function ChatWithAsyncSubmit() {
   const [value, setValue] = useState('')
@@ -325,25 +323,25 @@ function ChatWithAsyncSubmit() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="info">
-          <p>
-            <strong>Button States:</strong> The submit button automatically
-            transitions through states: <code>idle</code> → <code>loading</code>{' '}
-            → <code>success</code> or <code>error</code>. You don't need to
-            manage these states manually.
-          </p>
-        </Callout>
+      <Callout type="info">
+        <p>
+          <strong>Button States:</strong> The submit button automatically
+          transitions through states: <code>idle</code> → <code>loading</code> →{' '}
+          <code>success</code> or <code>error</code>. You don't need to manage
+          these states manually.
+        </p>
+      </Callout>
 
-        <h2 id="disabled-state">Disabled State</h2>
+      <h2 id="disabled-state">Disabled State</h2>
 
-        <p>Disable the input during loading or when chat is unavailable:</p>
+      <p>Disable the input during loading or when chat is unavailable:</p>
 
-        <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { ChatInput } from '@clarity-chat/react/internal'
 import { useClarityChat } from '@clarity-chat/react/internal'
 
 function ChatWithDisabledState() {
@@ -362,16 +360,16 @@ function ChatWithDisabledState() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="customization">Customization</h2>
+      <h2 id="customization">Customization</h2>
 
-        <p>Customize animations and appearance:</p>
+      <p>Customize animations and appearance:</p>
 
-        <EnhancedCodeBlock
-          code={`<ChatInput
+      <EnhancedCodeBlock
+        code={`<ChatInput
   value={value}
   onChange={setValue}
   onSubmit={handleSubmit}
@@ -380,50 +378,44 @@ function ChatWithDisabledState() {
   glowOnFocus={false}    // Disable focus glow
   className="custom-input" // Custom styling
 />`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+      <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 
-        <p>ChatInput supports the following keyboard shortcuts:</p>
+      <p>ChatInput supports the following keyboard shortcuts:</p>
 
-        <ul>
-          <li>
-            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-              Enter
-            </kbd>{' '}
-            - Submit message (if valid and not over limit)
-          </li>
-          <li>
-            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-              Shift
-            </kbd>{' '}
-            +{' '}
-            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-              Enter
-            </kbd>{' '}
-            - Insert new line
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd>{' '}
+          - Submit message (if valid and not over limit)
+        </li>
+        <li>
+          <kbd className="px-2 py-1 text-xs border rounded bg-muted">Shift</kbd>{' '}
+          +{' '}
+          <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd>{' '}
+          - Insert new line
+        </li>
+      </ul>
 
-        <Callout type="tip">
-          <p>
-            When the input exceeds <code>maxLength</code>, pressing Enter
-            triggers a shake animation to indicate the message is too long.
-          </p>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          When the input exceeds <code>maxLength</code>, pressing Enter triggers
+          a shake animation to indicate the message is too long.
+        </p>
+      </Callout>
 
-        <h2 id="props">Props</h2>
+      <h2 id="props">Props</h2>
 
-        <PropsTable props={chatInputProps} />
+      <PropsTable props={chatInputProps} />
 
-        <h2 id="examples">Complete Examples</h2>
+      <h2 id="examples">Complete Examples</h2>
 
-        <h3>With useClarityChat Hook</h3>
+      <h3>With useClarityChat Hook</h3>
 
-        <EnhancedCodeBlock
-          code={`import { useState } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState } from 'react'
 import { ChatInput, useClarityChat } from '@clarity-chat/react/internal'
 
 function ChatWithHook() {
@@ -448,14 +440,14 @@ function ChatWithHook() {
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h3>With Validation</h3>
+      <h3>With Validation</h3>
 
-        <EnhancedCodeBlock
-          code={`import { useState } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState } from 'react'
 import { ChatInput } from '@clarity-chat/react/internal'
 
 function ChatWithValidation() {
@@ -487,76 +479,74 @@ function ChatWithValidation() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="accessibility">Accessibility</h2>
+      <h2 id="accessibility">Accessibility</h2>
 
-        <p>ChatInput is built with accessibility in mind:</p>
+      <p>ChatInput is built with accessibility in mind:</p>
 
-        <ul>
-          <li>✅ Full keyboard navigation support</li>
-          <li>✅ ARIA labels on submit button reflect current state</li>
-          <li>✅ Screen reader announcements for state changes</li>
-          <li>✅ Focus indicators meet WCAG 2.1 AA standards</li>
-          <li>✅ Error messages are programmatically associated</li>
-          <li>✅ Character counter is accessible to screen readers</li>
-        </ul>
+      <ul>
+        <li>✅ Full keyboard navigation support</li>
+        <li>✅ ARIA labels on submit button reflect current state</li>
+        <li>✅ Screen reader announcements for state changes</li>
+        <li>✅ Focus indicators meet WCAG 2.1 AA standards</li>
+        <li>✅ Error messages are programmatically associated</li>
+        <li>✅ Character counter is accessible to screen readers</li>
+      </ul>
 
-        <h2 id="performance">Performance</h2>
+      <h2 id="performance">Performance</h2>
 
-        <p>ChatInput is optimized for performance:</p>
+      <p>ChatInput is optimized for performance:</p>
 
-        <ul>
-          <li>
-            <strong>React 19 optimizations:</strong> Automatic memoization of
-            event handlers
-          </li>
-          <li>
-            <strong>Debounced animations:</strong> Smooth transitions without
-            performance impact
-          </li>
-          <li>
-            <strong>Efficient re-renders:</strong> Only re-renders when
-            necessary
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>React 19 optimizations:</strong> Automatic memoization of
+          event handlers
+        </li>
+        <li>
+          <strong>Debounced animations:</strong> Smooth transitions without
+          performance impact
+        </li>
+        <li>
+          <strong>Efficient re-renders:</strong> Only re-renders when necessary
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/components/advanced-chat-input">
-              AdvancedChatInput
-            </a>{' '}
-            - Enhanced version with file uploads, mentions, and commands
-          </li>
-          <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> -
-            Complete chat interface that includes ChatInput
-          </li>
-          <li>
-            <a href="/reference/components/clarity-chat">ClarityChat</a> -
-            Drop-in component with built-in input
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
-            Chat state hook for integration
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/components/advanced-chat-input">
+            AdvancedChatInput
+          </a>{' '}
+          - Enhanced version with file uploads, mentions, and commands
+        </li>
+        <li>
+          <a href="/reference/components/chat-window">ChatWindow</a> - Complete
+          chat interface that includes ChatInput
+        </li>
+        <li>
+          <a href="/reference/components/clarity-chat">ClarityChat</a> - Drop-in
+          component with built-in input
+        </li>
+        <li>
+          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat
+          state hook for integration
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'ChatWindow',
-            href: '/reference/components/chat-window',
-          }}
-          next={{
-            title: 'AdvancedChatInput',
-            href: '/reference/components/advanced-chat-input',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'ChatWindow',
+          href: '/reference/components/chat-window',
+        }}
+        next={{
+          title: 'AdvancedChatInput',
+          href: '/reference/components/advanced-chat-input',
+        }}
+      />
+    </>
   )
 }

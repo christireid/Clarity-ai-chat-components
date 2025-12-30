@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { ToastProvider, StreamingMessage } from '@clarity-chat/react/internal'
+import { StreamingMessage } from '@clarity-chat/react/internal'
 import type { ToolCall, Citation } from '@/types/demo-types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -159,37 +159,35 @@ const streamingMessageProps: Prop[] = [
 
 export default function StreamingMessagePage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
+    <>
+      <Breadcrumbs />
 
-        <h1>StreamingMessage</h1>
+      <h1>StreamingMessage</h1>
 
-        <p className="lead">
-          A specialized component for displaying AI responses with
-          token-by-token streaming, tool calls, thinking steps, citations, and
-          error handling. Perfect for real-time AI interactions.
+      <p className="lead">
+        A specialized component for displaying AI responses with token-by-token
+        streaming, tool calls, thinking steps, citations, and error handling.
+        Perfect for real-time AI interactions.
+      </p>
+
+      <Callout type="info">
+        <p>
+          StreamingMessage is designed specifically for streaming responses. For
+          regular messages, use the{' '}
+          <a href="/reference/components/message">Message</a> component instead.
         </p>
+      </Callout>
 
-        <Callout type="info">
-          <p>
-            StreamingMessage is designed specifically for streaming responses.
-            For regular messages, use the{' '}
-            <a href="/reference/components/message">Message</a> component
-            instead.
-          </p>
-        </Callout>
+      <ViewInStorybook component="StreamingMessage" />
 
-        <ViewInStorybook component="StreamingMessage" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Watch a message stream in real-time! See how content appears token
-            by token.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Watch a message stream in real-time! See how content appears token by
+          token.
+        </p>
+        <CodePlayground
+          initialCode={`function Example() {
   const [content, setContent] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(true)
 
@@ -217,29 +215,29 @@ export default function StreamingMessagePage() {
 }
 
 render(<Example />)`}
-          />
-        </section>
+        />
+      </section>
 
-        <h2 id="import">Import</h2>
+      <h2 id="import">Import</h2>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 import type { ToolCall, Citation } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
-          language="tsx"
-        />
+        language="tsx"
+      />
 
-        <h2 id="basic-usage">Basic Usage</h2>
+      <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          StreamingMessage displays content as it streams in, with a blinking
-          cursor indicator:
-        </p>
+      <p>
+        StreamingMessage displays content as it streams in, with a blinking
+        cursor indicator:
+      </p>
 
-        <ComponentPreview
-          title="Simple Streaming Message"
-          description="Basic streaming with token-by-token display"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Simple Streaming Message"
+        description="Basic streaming with token-by-token display"
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 import { useState, useEffect } from 'react'
 
 function SimpleStreaming() {
@@ -270,20 +268,20 @@ function SimpleStreaming() {
     />
   )
 }`}
-        >
-          <BasicStreamingDemo />
-        </ComponentPreview>
+      >
+        <BasicStreamingDemo />
+      </ComponentPreview>
 
-        <h2 id="with-tool-calls">With Tool Calls</h2>
+      <h2 id="with-tool-calls">With Tool Calls</h2>
 
-        <p>
-          Display tool calls made during streaming with approve/reject buttons:
-        </p>
+      <p>
+        Display tool calls made during streaming with approve/reject buttons:
+      </p>
 
-        <ComponentPreview
-          title="Streaming with Tool Calls"
-          description="Tool calls with approval workflow"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <ComponentPreview
+        title="Streaming with Tool Calls"
+        description="Tool calls with approval workflow"
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 import type { ToolCall } from '@clarity-chat/react/internal'
 
 function StreamingWithTools() {
@@ -314,16 +312,16 @@ function StreamingWithTools() {
     />
   )
 }`}
-        >
-          <StreamingWithToolsDemo />
-        </ComponentPreview>
+      >
+        <StreamingWithToolsDemo />
+      </ComponentPreview>
 
-        <h2 id="with-citations">With Citations</h2>
+      <h2 id="with-citations">With Citations</h2>
 
-        <p>Display citations and sources referenced in the response:</p>
+      <p>Display citations and sources referenced in the response:</p>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 import type { Citation } from '@clarity-chat/react/internal'
 
 function StreamingWithCitations() {
@@ -352,16 +350,16 @@ function StreamingWithCitations() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="with-thinking-steps">With Thinking Steps</h2>
+      <h2 id="with-thinking-steps">With Thinking Steps</h2>
 
-        <p>Show chain-of-thought reasoning steps during AI processing:</p>
+      <p>Show chain-of-thought reasoning steps during AI processing:</p>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 
 function StreamingWithThinking() {
   const thinkingSteps = [
@@ -381,16 +379,16 @@ function StreamingWithThinking() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="error-handling">Error Handling</h2>
+      <h2 id="error-handling">Error Handling</h2>
 
-        <p>Display error messages when streaming fails:</p>
+      <p>Display error messages when streaming fails:</p>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 
 function StreamingWithError() {
   return (
@@ -401,19 +399,19 @@ function StreamingWithError() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="partial-json">Partial JSON Rendering</h2>
+      <h2 id="partial-json">Partial JSON Rendering</h2>
 
-        <p>
-          StreamingMessage automatically detects and renders partial JSON during
-          streaming:
-        </p>
+      <p>
+        StreamingMessage automatically detects and renders partial JSON during
+        streaming:
+      </p>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 
 function StreamingJSON() {
   const [content, setContent] = useState('{"name": "John", "age": 30')
@@ -428,22 +426,22 @@ function StreamingJSON() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="tip">
-          <p>
-            StreamingMessage uses smart JSON parsing to extract complete JSON
-            objects from partial streams, displaying them formatted while
-            showing remaining text separately.
-          </p>
-        </Callout>
+      <Callout type="tip">
+        <p>
+          StreamingMessage uses smart JSON parsing to extract complete JSON
+          objects from partial streams, displaying them formatted while showing
+          remaining text separately.
+        </p>
+      </Callout>
 
-        <h2 id="complete-example">Complete Example</h2>
+      <h2 id="complete-example">Complete Example</h2>
 
-        <EnhancedCodeBlock
-          code={`import { useState, useEffect, useCallback } from 'react'
+      <EnhancedCodeBlock
+        code={`import { useState, useEffect, useCallback } from 'react'
 import { StreamingMessage } from '@clarity-chat/react/internal'
 import type { ToolCall, Citation } from '@clarity-chat/react/internal'
 
@@ -515,20 +513,20 @@ function CompleteStreamingExample() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="props">Props</h2>
+      <h2 id="props">Props</h2>
 
-        <PropsTable props={streamingMessageProps} />
+      <PropsTable props={streamingMessageProps} />
 
-        <h2 id="types">TypeScript Types</h2>
+      <h2 id="types">TypeScript Types</h2>
 
-        <h3>ToolCall</h3>
+      <h3>ToolCall</h3>
 
-        <EnhancedCodeBlock
-          code={`interface ToolCall {
+      <EnhancedCodeBlock
+        code={`interface ToolCall {
   id: string
   type: 'function'
   function: {
@@ -536,14 +534,14 @@ function CompleteStreamingExample() {
     arguments: string // JSON string
   }
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h3>Citation</h3>
+      <h3>Citation</h3>
 
-        <EnhancedCodeBlock
-          code={`interface Citation {
+      <EnhancedCodeBlock
+        code={`interface Citation {
   id: string
   source: string
   chunkText: string
@@ -551,16 +549,16 @@ function CompleteStreamingExample() {
   metadata?: Record<string, unknown>
   url?: string
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <h2 id="integration-with-hooks">Integration with Hooks</h2>
+      <h2 id="integration-with-hooks">Integration with Hooks</h2>
 
-        <p>StreamingMessage works seamlessly with streaming hooks:</p>
+      <p>StreamingMessage works seamlessly with streaming hooks:</p>
 
-        <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+      <EnhancedCodeBlock
+        code={`import { StreamingMessage } from '@clarity-chat/react/internal'
 import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function StreamingWithHook() {
@@ -578,86 +576,85 @@ function StreamingWithHook() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+        language="tsx"
+        showLineNumbers
+      />
 
-        <Callout type="info">
-          <p>
-            See the{' '}
-            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> and{' '}
-            <a href="/reference/hooks/use-streaming-websocket">
-              useStreamingWebSocket
-            </a>{' '}
-            hooks for complete streaming integration examples.
-          </p>
-        </Callout>
+      <Callout type="info">
+        <p>
+          See the{' '}
+          <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> and{' '}
+          <a href="/reference/hooks/use-streaming-websocket">
+            useStreamingWebSocket
+          </a>{' '}
+          hooks for complete streaming integration examples.
+        </p>
+      </Callout>
 
-        <h2 id="accessibility">Accessibility</h2>
+      <h2 id="accessibility">Accessibility</h2>
 
-        <p>StreamingMessage is built with accessibility in mind:</p>
+      <p>StreamingMessage is built with accessibility in mind:</p>
 
-        <ul>
-          <li>✅ ARIA live regions for streaming content</li>
-          <li>✅ Screen reader announcements for tool calls</li>
-          <li>✅ Keyboard navigation for tool approval/rejection</li>
-          <li>✅ Focus management</li>
-          <li>✅ Error announcements</li>
-        </ul>
+      <ul>
+        <li>✅ ARIA live regions for streaming content</li>
+        <li>✅ Screen reader announcements for tool calls</li>
+        <li>✅ Keyboard navigation for tool approval/rejection</li>
+        <li>✅ Focus management</li>
+        <li>✅ Error announcements</li>
+      </ul>
 
-        <h2 id="performance">Performance</h2>
+      <h2 id="performance">Performance</h2>
 
-        <p>StreamingMessage is optimized for performance:</p>
+      <p>StreamingMessage is optimized for performance:</p>
 
-        <ul>
-          <li>
-            <strong>Efficient rendering:</strong> Only re-renders when content
-            changes
-          </li>
-          <li>
-            <strong>Memoized parsing:</strong> JSON parsing is memoized to avoid
-            re-parsing
-          </li>
-          <li>
-            <strong>Smooth animations:</strong> Streaming cursor and transitions
-            are optimized
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <strong>Efficient rendering:</strong> Only re-renders when content
+          changes
+        </li>
+        <li>
+          <strong>Memoized parsing:</strong> JSON parsing is memoized to avoid
+          re-parsing
+        </li>
+        <li>
+          <strong>Smooth animations:</strong> Streaming cursor and transitions
+          are optimized
+        </li>
+      </ul>
 
-        <h2 id="related">Related</h2>
+      <h2 id="related">Related</h2>
 
-        <ul>
-          <li>
-            <a href="/reference/components/message">Message</a> - For
-            non-streaming messages
-          </li>
-          <li>
-            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> -
-            SSE streaming hook
-          </li>
-          <li>
-            <a href="/reference/hooks/use-streaming-websocket">
-              useStreamingWebSocket
-            </a>{' '}
-            - WebSocket streaming hook
-          </li>
-          <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> -
-            Complete chat interface
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <a href="/reference/components/message">Message</a> - For
+          non-streaming messages
+        </li>
+        <li>
+          <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> - SSE
+          streaming hook
+        </li>
+        <li>
+          <a href="/reference/hooks/use-streaming-websocket">
+            useStreamingWebSocket
+          </a>{' '}
+          - WebSocket streaming hook
+        </li>
+        <li>
+          <a href="/reference/components/chat-window">ChatWindow</a> - Complete
+          chat interface
+        </li>
+      </ul>
 
-        <Pagination
-          previous={{
-            title: 'VirtualizedMessageList',
-            href: '/reference/components/virtualized-message-list',
-          }}
-          next={{
-            title: 'Hooks Overview',
-            href: '/reference/hooks',
-          }}
-        />
-      </>
-    </ToastProvider>
+      <Pagination
+        previous={{
+          title: 'VirtualizedMessageList',
+          href: '/reference/components/virtualized-message-list',
+        }}
+        next={{
+          title: 'Hooks Overview',
+          href: '/reference/hooks',
+        }}
+      />
+    </>
   )
 }

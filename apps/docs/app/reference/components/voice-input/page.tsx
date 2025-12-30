@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ToastProvider, VoiceInput } from '@clarity-chat/react/internal'
+import { VoiceInput } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -154,7 +154,7 @@ const voiceInputProps: Prop[] = [
 
 export default function VoiceInputPage() {
   return (
-    <ToastProvider>
+    <>
       <div className="docs-content">
         <Breadcrumbs />
 
@@ -464,6 +464,6 @@ function Chat() {
           }}
         />
       </div>
-    </ToastProvider>
+    </>
   )
 }

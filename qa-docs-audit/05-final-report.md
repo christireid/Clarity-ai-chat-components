@@ -206,6 +206,32 @@ Updated reference pages to import from shared types:
 - `streaming-message/page.tsx`
 - `advanced-chat-input/page.tsx`
 
+### Option D: Hoist ToastProvider to Layout ✅ IMPLEMENTED
+
+Removed redundant `ToastProvider` wrappers from 18 reference pages since `ToastProvider` is already
+provided at the root level in `providers.tsx`:
+
+**Component Pages (11 files):**
+
+- `voice-input`, `command-palette`, `chat-window`, `chat-input`
+- `message-list`, `message`, `streaming-message`
+- `tool-invocation-card`, `agent-run-feed`, `advanced-chat-input`, `model-selector`
+
+**Hook Pages (4 files):**
+
+- `use-token-tracker`, `use-streaming-sse`, `use-clarity-object`, `use-streamable-ui`
+- `hooks/page.tsx` (overview)
+
+**Other Reference Pages (3 files):**
+
+- `services`, `api`, `templates`
+
+**Benefits:**
+
+- Reduced boilerplate in reference pages
+- Single source of truth for toast configuration
+- Smaller bundle size per page
+
 ## Recommendations
 
 ### Immediate Actions
@@ -222,6 +248,7 @@ Updated reference pages to import from shared types:
 4. ✅ All demo/reference pages updated with correct types
 5. ✅ Shared demo types file created (consolidates 14 local type definitions)
 6. ✅ CI type-check gate added to docs-check workflow
+7. ✅ ToastProvider hoisted to root layout (removed from 18 reference pages)
 
 ### Long-term
 
