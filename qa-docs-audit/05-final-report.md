@@ -9,7 +9,7 @@ Documentation Site (`apps/docs`)
 
 | Metric            | Before | After | Improvement       |
 | ----------------- | ------ | ----- | ----------------- |
-| TypeScript Errors | 435    | 67    | **85% reduction** |
+| TypeScript Errors | 435    | 49    | **89% reduction** |
 | P0 Issues         | 3      | 0     | **100% resolved** |
 | P1 Issues         | 15     | 1     | **93% resolved**  |
 | Route Coverage    | 100%   | 100%  | Maintained        |
@@ -108,11 +108,11 @@ The following issues were addressed or remain as technical debt:
    - Applied `as const` assertions to variant objects
    - Fixed ease array typing in ApiTable, PropsTable, YouWillLearn
 
-5. **Remaining Demo/Reference Page Errors** (~67 errors)
-   - Most in `app/playground/security/`, `app/examples/tool-calling-showcase/`
+5. **Remaining Demo/Reference Page Errors** (~49 errors)
+   - Most in `app/playground/security/`, `app/examples/tool-calling-showcase/`, `app/reference/`
    - These are demo pages with mock data that doesn't match updated component APIs
-   - Excluded from typecheck in tsconfig.json
-   - Recommendation: Update demo pages to match current component APIs
+   - Some test files with outdated mock types
+   - Recommendation: Update demo pages and test files to match current component APIs
 
 ## Files Modified
 
@@ -143,7 +143,7 @@ The following issues were addressed or remain as technical debt:
 
 ### TypeScript
 
-- Errors reduced from 435 to 67 (85% reduction)
+- Errors reduced from 435 to 49 (89% reduction)
 - Core components fully type-safe
 - Remaining errors in demo/example pages with outdated mock data
 
