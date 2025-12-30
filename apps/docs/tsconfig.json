@@ -44,6 +44,8 @@
     "lib/demos",
     "lib/error",
     "lib/security",
-    "next.config.security.ts"
+    "next.config.security.ts",
+    "app/playground/security",
+    "app/examples/tool-calling-showcase"
   ]
 }

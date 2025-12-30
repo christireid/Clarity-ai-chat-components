@@ -6,7 +6,8 @@ import {
 } from '@clarity-chat/react/internal'
 // Use local stub to avoid tiktoken WASM issues with Turbopack
 import { useTokenTrackerStub as useTokenTracker } from './useTokenTrackerStub'
-import type { Message, AIStatus, Citation } from '@clarity-chat/types'
+import type { Message, AIStatus } from '@clarity-chat/types'
+import type { Citation } from '@/lib/ai/rag'
 import type {
   StreamingStatus,
   SavedConversation,

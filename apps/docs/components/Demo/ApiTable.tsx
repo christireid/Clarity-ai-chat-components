@@ -24,11 +24,11 @@ const containerVariants = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: [0.25, 0.1, 0.25, 1] as const,
       staggerChildren: 0.05,
     },
   },
-}
+} as const
 
 const rowVariants = {
   hidden: { opacity: 0, x: -10 },
@@ -37,10 +37,10 @@ const rowVariants = {
     x: 0,
     transition: {
       duration: 0.3,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: [0.25, 0.1, 0.25, 1] as const,
     },
   },
-}
+} as const
 
 export function ApiTable({ title = 'Props', data, className }: ApiTableProps) {
   return (

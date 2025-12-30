@@ -2,34 +2,29 @@
  * Three.js JSX Type Declarations for @react-three/fiber
  *
  * Extends JSX.IntrinsicElements with Three.js components
- * Using generic object types to avoid complex type resolution issues
+ * Note: These augment the types from @react-three/fiber
  */
 
-declare namespace JSX {
-  interface IntrinsicElements {
-    // Geometry elements
-    bufferGeometry: Record<string, unknown>
-    bufferAttribute: Record<string, unknown>
+// Import React to enable module augmentation
+import type { RefObject } from 'react'
 
-    // Object3D elements
-    points: Record<string, unknown>
-    mesh: Record<string, unknown>
-    group: Record<string, unknown>
-    line: Record<string, unknown>
+// Type for Three.js elements - allows any props and ref types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ThreeElementProps = { ref?: RefObject<any>; [key: string]: unknown }
 
-    // Material elements
-    shaderMaterial: Record<string, unknown>
-    meshBasicMaterial: Record<string, unknown>
-    meshStandardMaterial: Record<string, unknown>
-    pointsMaterial: Record<string, unknown>
+// Augment the React module's JSX namespace
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      // Geometry elements
+      bufferGeometry: ThreeElementProps
+      bufferAttribute: ThreeElementProps
 
-    // Light elements
-    ambientLight: Record<string, unknown>
-    directionalLight: Record<string, unknown>
-    pointLight: Record<string, unknown>
+      // Object3D elements
+      points: ThreeElementProps
 
-    // Camera elements
-    perspectiveCamera: Record<string, unknown>
-    orthographicCamera: Record<string, unknown>
+      // Shader material
+      shaderMaterial: ThreeElementProps
+    }
   }
 }

@@ -328,8 +328,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   )
 
   const handleSelectFollowUp = useCallback(
-    (text: string) => {
-      handleSendMessage(text)
+    (suggestion: { text: string }) => {
+      handleSendMessage(suggestion.text)
     },
     [handleSendMessage]
   )
@@ -502,14 +502,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             </AnimatePresence>
 
             {/* Token Counter */}
-            {tokenTracker.tokens > 0 && (
+            {tokenTracker.tokenCount > 0 && (
               <div className="absolute top-2 left-4 z-10 max-w-[200px] mt-8 lg:mt-0 lg:left-32">
                 <TokenCounter
-                  currentTokens={tokenTracker.tokens}
+                  currentTokens={tokenTracker.tokenCount}
                   maxTokens={MODEL_MAX_TOKENS}
                   costPerToken={TOKEN_COST_PER_TOKEN}
                   showWarning={
-                    tokenTracker.isNearLimit || tokenTracker.isCritical
+                    tokenTracker.isWarning || tokenTracker.isCritical
                   }
                   warningThreshold={TOKEN_WARNING_THRESHOLD}
                   criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
@@ -615,7 +615,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 {suggestedFollowUps.length > 0 && !isLoading && (
                   <div className="px-4 pb-4">
                     <FollowUpSuggestions
-                      suggestions={suggestedFollowUps}
+                      suggestions={suggestedFollowUps.map((text) => ({ text }))}
                       onSelect={handleSelectFollowUp}
                     />
                   </div>

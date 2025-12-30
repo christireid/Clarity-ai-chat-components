@@ -14,11 +14,11 @@ const containerVariants = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: [0.25, 0.1, 0.25, 1] as const,
       staggerChildren: 0.08,
     },
   },
-}
+} as const
 
 const itemVariants = {
   hidden: { opacity: 0, x: -10 },
@@ -27,10 +27,10 @@ const itemVariants = {
     x: 0,
     transition: {
       duration: 0.3,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: [0.25, 0.1, 0.25, 1] as const,
     },
   },
-}
+} as const
 
 export function YouWillLearn({ items }: YouWillLearnProps) {
   return (

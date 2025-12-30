@@ -50,6 +50,11 @@ export interface ToastOptions {
   duration?: number
 
   /**
+   * Optional description/subtitle for the toast
+   */
+  description?: string
+
+  /**
    * Optional action button
    */
   action?: ToastAction

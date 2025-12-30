@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import {
   Check,
   Copy,
@@ -252,6 +252,11 @@ export function CodeBlock({
     )
   }, [])
 
+  // Pre-compute lines for use in effects and render
+  const lines = code.split('\n')
+  const highlightedLines = highlightedCode.split('\n')
+  const isTallCodeBlock = lines.length > 20
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -304,10 +309,6 @@ export function CodeBlock({
     lines.length,
     updateUrlHash,
   ])
-
-  const lines = code.split('\n')
-  const highlightedLines = highlightedCode.split('\n')
-  const isTallCodeBlock = lines.length > 20
 
   return (
     <motion.div

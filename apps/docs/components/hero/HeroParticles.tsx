@@ -1,3 +1,4 @@
+/// <reference path="../../types/three-jsx.d.ts" />
 'use client'
 
 import {

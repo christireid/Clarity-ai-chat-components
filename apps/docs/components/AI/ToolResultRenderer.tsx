@@ -130,8 +130,8 @@ const TOOL_ICONS: Record<string, typeof Box> = {
 }
 
 // Animation variants for reduced motion support
-const toolUseVariants = createSlideVariant('up', 10, 'fast', 'out')
-const toolUseVariantsReduced = createFadeVariant('fast', 'out')
+const toolUseVariants = createSlideVariant('up', 10, 'fast')
+const toolUseVariantsReduced = createFadeVariant('fast')
 
 export const ToolUseIndicator = memo(function ToolUseIndicator({
   toolUse,
@@ -268,7 +268,7 @@ const MermaidDiagram = memo(function MermaidDiagram({
 // ============================================================================
 
 // Use fade animation for expandable sections (avoids layout thrashing with height)
-const expandVariants = createFadeVariant('fast', 'out')
+const expandVariants = createFadeVariant('fast')
 
 const APIDocRenderer = memo(function APIDocRenderer({
   result,
@@ -597,7 +597,7 @@ export const ToolResultRenderer = memo(function ToolResultRenderer({
   // Render based on tool type
   switch (result.tool_name) {
     case 'generate_diagram': {
-      const diagramResult = toolResult as DiagramResult
+      const diagramResult = toolResult as unknown as DiagramResult
       return (
         <MermaidDiagram
           code={diagramResult.mermaid_code}
@@ -609,19 +609,19 @@ export const ToolResultRenderer = memo(function ToolResultRenderer({
     case 'lookup_component':
       return (
         <APIDocRenderer
-          result={toolResult as ComponentResult}
+          result={toolResult as unknown as ComponentResult}
           type="component"
         />
       )
 
     case 'lookup_hook':
-      return <APIDocRenderer result={toolResult as HookResult} type="hook" />
+      return <APIDocRenderer result={toolResult as unknown as HookResult} type="hook" />
 
     case 'generate_code_example':
-      return <CodeExampleRenderer result={toolResult as CodeExampleResult} />
+      return <CodeExampleRenderer result={toolResult as unknown as CodeExampleResult} />
 
     case 'calculate_bundle_impact':
-      return <BundleImpactRenderer result={toolResult as BundleImpactResult} />
+      return <BundleImpactRenderer result={toolResult as unknown as BundleImpactResult} />
 
     default:
       // Fallback: render as JSON
