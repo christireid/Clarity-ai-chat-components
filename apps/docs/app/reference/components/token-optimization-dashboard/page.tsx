@@ -12,21 +12,26 @@ import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Callout } from '@/components/MDX/Callout'
 
 function DashboardDemo() {
-  // Mock data for the dashboard
-  const mockStats = {
-    totalSavings: 154200,
-    compressionRatio: 0.65,
-    monthlyBudget: 1000000,
-    usedTokens: 450000,
+  // Mock data matching OptimizationMetrics type
+  const mockMetrics = {
+    totalTokens: 1000000,
+    tokensSaved: 154200,
+    costSaved: 15.42,
+    savingsPercent: 30,
+    breakdown: {
+      promptCompression: { tokens: 4000, percent: 27 },
+      caching: { hits: 120, savings: 5000 },
+      modelRouting: { savings: 3000, percent: 40 },
+      responseLimiting: { tokens: 2000, percent: 15 },
+      batching: { requests: 50, savings: 800 },
+      throttling: { callsSaved: 200 },
+      referencing: { bytesSaved: 50000, percent: 60 },
+    },
   }
 
   return (
     <div className="w-full border border-border rounded-xl overflow-hidden bg-background shadow-sm">
-      <TokenOptimizationDashboard
-        stats={mockStats}
-        period="last-30-days"
-        showCharts={true}
-      />
+      <TokenOptimizationDashboard metrics={mockMetrics} />
     </div>
   )
 }

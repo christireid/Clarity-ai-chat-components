@@ -71,7 +71,9 @@ function BasicFileUploadDemo() {
 
       return files.map((file) => ({
         id: Math.random().toString(36).substring(7),
-        type: file.type.startsWith('image/') ? 'image' : 'file',
+        type: file.type.startsWith('image/')
+          ? ('image' as const)
+          : ('document' as const),
         url: URL.createObjectURL(file),
         name: file.name,
         size: file.size,

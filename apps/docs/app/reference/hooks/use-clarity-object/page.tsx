@@ -294,7 +294,7 @@ function ProductRecommendations() {
           {object.map((product) => (
             <div key={\`\${product.name}-\${product.price}\`}>
               <h3>{product.name}</h3>
-              <p>${product.price}</p>
+              <p>\${product.price}</p>
               <p>{product.description}</p>
             </div>
           ))}

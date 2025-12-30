@@ -2,7 +2,24 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { ToastProvider, StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+
+// Local type definitions for demo purposes (matches OpenAI function call format)
+interface ToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string // JSON string
+  }
+}
+
+interface Citation {
+  id: string
+  source: string
+  chunkText: string
+  confidence?: number
+  url?: string
+}
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'

@@ -2,11 +2,28 @@
 
 import { useState, useCallback } from 'react'
 import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react/internal'
-import type {
-  MessageAttachment,
-  SavedPrompt,
-  InputSuggestion,
-} from '@clarity-chat/react/internal'
+
+// Local type definitions for demo purposes (types declared but not exported from library)
+interface MessageAttachment {
+  id: string
+  type: 'image' | 'document' | 'video' | 'audio' | 'link'
+  url: string
+  name: string
+  size?: number
+  mimeType?: string
+}
+
+interface SavedPrompt {
+  id: string
+  name: string
+  content: string
+}
+
+interface InputSuggestion {
+  id: string
+  text: string
+  description?: string
+}
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -53,7 +70,9 @@ function FileUploadDemo() {
 
       return files.map((file) => ({
         id: `${Date.now()}-${file.name}`,
-        type: file.type.startsWith('image/') ? 'image' : 'document',
+        type: file.type.startsWith('image/')
+          ? ('image' as const)
+          : ('document' as const),
         name: file.name,
         size: file.size,
         mimeType: file.type,

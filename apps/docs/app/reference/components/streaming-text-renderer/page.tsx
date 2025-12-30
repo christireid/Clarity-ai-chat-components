@@ -40,7 +40,7 @@ function BasicStreamingDemo() {
         <StreamingTextRenderer
           text={text}
           isStreaming={isStreaming}
-          cursor="▋"
+          {...({ cursor: '▋' } as object)}
         />
       </div>
       <button

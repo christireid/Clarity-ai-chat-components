@@ -21,7 +21,7 @@ function BasicBuilderDemo() {
       name: 'topic',
       label: 'Topic',
       type: 'text' as const,
-      required: true,
+      required: true as const,
       placeholder: 'e.g. Quantum Physics',
     },
     {
@@ -34,7 +34,7 @@ function BasicBuilderDemo() {
         { value: 'casual', label: 'Casual' },
         { value: 'funny', label: 'Funny' },
       ],
-      required: true,
+      required: true as const,
     },
     {
       id: 'details',
@@ -42,6 +42,7 @@ function BasicBuilderDemo() {
       label: 'Additional Details',
       type: 'textarea' as const,
       rows: 3,
+      required: false as const,
     },
   ]
 

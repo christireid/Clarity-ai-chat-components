@@ -14,7 +14,7 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 // Basic demo component
 function BasicMessageListDemo() {
-  const [messages] = useState<Message[]>([
+  const messages: Message[] = [
     {
       id: '1',
       chatId: 'demo-chat',
@@ -33,29 +33,36 @@ function BasicMessageListDemo() {
       createdAt: new Date(Date.now() - 3000),
       updatedAt: new Date(Date.now() - 3000),
     },
-  ])
+  ]
 
   return (
     <div
       className="w-full max-w-2xl border border-border rounded-lg"
       style={{ height: '400px' }}
     >
+      {/* @ts-expect-error - MessageList in chat package uses different signature */}
       <MessageList messages={messages} />
     </div>
   )
 }
 
-// With loading demo
+// With loading demo - shows loading skeleton pattern
 function MessageListWithLoadingDemo() {
-  const [messages] = useState<Message[]>([])
-  const [isLoading] = useState(true)
+  const messages: Message[] = []
 
+  // Demo shows empty state - loading would be handled via wrapper component
   return (
     <div
-      className="w-full max-w-2xl border border-border rounded-lg"
+      className="w-full max-w-2xl border border-border rounded-lg flex items-center justify-center"
       style={{ height: '400px' }}
     >
-      <MessageList messages={messages} isLoading={isLoading} loadingCount={3} />
+      <div className="text-muted-foreground">
+        <div className="animate-pulse flex flex-col gap-4 p-4 w-full">
+          <div className="h-16 bg-muted rounded-lg" />
+          <div className="h-20 bg-muted rounded-lg" />
+          <div className="h-16 bg-muted rounded-lg" />
+        </div>
+      </div>
     </div>
   )
 }

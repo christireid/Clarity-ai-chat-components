@@ -16,12 +16,18 @@ let callTimestamps: number[] = []
 function checkRateLimit(): void {
   const now = Date.now()
   // Remove timestamps outside the window
-  callTimestamps = callTimestamps.filter(ts => now - ts < RATE_LIMIT_WINDOW_MS)
+  callTimestamps = callTimestamps.filter(
+    (ts) => now - ts < RATE_LIMIT_WINDOW_MS
+  )
 
   if (callTimestamps.length >= RATE_LIMIT_MAX_CALLS) {
     const oldestCall = Math.min(...callTimestamps)
-    const waitTime = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - oldestCall)) / 1000)
-    throw new Error(`Finnhub rate limit exceeded. Please wait ${waitTime} seconds.`)
+    const waitTime = Math.ceil(
+      (RATE_LIMIT_WINDOW_MS - (now - oldestCall)) / 1000
+    )
+    throw new Error(
+      `Finnhub rate limit exceeded. Please wait ${waitTime} seconds.`
+    )
   }
 
   callTimestamps.push(now)
@@ -29,19 +35,21 @@ function checkRateLimit(): void {
 
 function validateApiKey(): void {
   if (!FINNHUB_API_KEY) {
-    throw new Error('FINNHUB_API_KEY environment variable is not configured. Please add it to your .env.local file.')
+    throw new Error(
+      'FINNHUB_API_KEY environment variable is not configured. Please add it to your .env.local file.'
+    )
   }
 }
 
 interface FinnhubQuote {
-  c: number  // Current price
-  d: number  // Change
+  c: number // Current price
+  d: number // Change
   dp: number // Percent change
-  h: number  // High price of the day
-  l: number  // Low price of the day
-  o: number  // Open price of the day
+  h: number // High price of the day
+  l: number // Low price of the day
+  o: number // Open price of the day
   pc: number // Previous close price
-  t: number  // Timestamp
+  t: number // Timestamp
 }
 
 interface FinnhubCandle {
@@ -84,14 +92,17 @@ interface FinnhubBasicFinancials {
     '52WeekHigh': number
     '52WeekLow': number
     '10DayAverageTradingVolume': number
-    'peBasicExclExtraTTM': number
-    'epsBasicExclExtraItemsTTM': number
+    peBasicExclExtraTTM: number
+    epsBasicExclExtraItemsTTM: number
     [key: string]: number | string
   }
   series: Record<string, unknown>
 }
 
-async function fetchFinnhub<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+async function fetchFinnhub<T>(
+  endpoint: string,
+  params: Record<string, string> = {}
+): Promise<T> {
   // Validate API key is configured
   validateApiKey()
 
@@ -110,12 +121,18 @@ async function fetchFinnhub<T>(endpoint: string, params: Record<string, string> 
 
   if (!response.ok) {
     if (response.status === 429) {
-      throw new Error('Finnhub API rate limit exceeded. Please try again in a moment.')
+      throw new Error(
+        'Finnhub API rate limit exceeded. Please try again in a moment.'
+      )
     }
     if (response.status === 401) {
-      throw new Error('Invalid Finnhub API key. Please check your configuration.')
+      throw new Error(
+        'Invalid Finnhub API key. Please check your configuration.'
+      )
     }
-    throw new Error(`Finnhub API error: ${response.status} ${response.statusText}`)
+    throw new Error(
+      `Finnhub API error: ${response.status} ${response.statusText}`
+    )
   }
 
   return response.json()
@@ -131,21 +148,29 @@ export async function getQuote(symbol: string): Promise<FinnhubQuote> {
 /**
  * Search for symbols
  */
-export async function searchSymbols(query: string): Promise<FinnhubSearchResult> {
+export async function searchSymbols(
+  query: string
+): Promise<FinnhubSearchResult> {
   return fetchFinnhub<FinnhubSearchResult>('/search', { q: query })
 }
 
 /**
  * Get company profile
  */
-export async function getCompanyProfile(symbol: string): Promise<FinnhubCompanyProfile> {
-  return fetchFinnhub<FinnhubCompanyProfile>('/stock/profile2', { symbol: symbol.toUpperCase() })
+export async function getCompanyProfile(
+  symbol: string
+): Promise<FinnhubCompanyProfile> {
+  return fetchFinnhub<FinnhubCompanyProfile>('/stock/profile2', {
+    symbol: symbol.toUpperCase(),
+  })
 }
 
 /**
  * Get basic financials
  */
-export async function getBasicFinancials(symbol: string): Promise<FinnhubBasicFinancials> {
+export async function getBasicFinancials(
+  symbol: string
+): Promise<FinnhubBasicFinancials> {
   return fetchFinnhub<FinnhubBasicFinancials>('/stock/metric', {
     symbol: symbol.toUpperCase(),
     metric: 'all',
@@ -201,7 +226,9 @@ function getFromTimestamp(timeframe: string): number {
 /**
  * Get resolution for timeframe
  */
-function getResolution(timeframe: string): '1' | '5' | '15' | '30' | '60' | 'D' | 'W' | 'M' {
+function getResolution(
+  timeframe: string
+): '1' | '5' | '15' | '30' | '60' | 'D' | 'W' | 'M' {
   switch (timeframe) {
     case '1D':
       return '5'
@@ -230,12 +257,16 @@ import type {
   FinancialData,
   ChartData,
   ChartDataPoint,
+  PriceHistoryPoint,
 } from './types'
 
 /**
  * Search for tickers using real Finnhub data
  */
-export async function searchTickerReal(query: string, limit = 5): Promise<TickerSearchResult> {
+export async function searchTickerReal(
+  query: string,
+  limit = 5
+): Promise<TickerSearchResult> {
   try {
     const result = await searchSymbols(query)
 
@@ -244,15 +275,21 @@ export async function searchTickerReal(query: string, limit = 5): Promise<Ticker
       .map((item) => ({
         symbol: item.symbol,
         name: item.description,
-        type: item.type === 'Common Stock' ? 'stock' : item.type === 'ETP' ? 'etf' : 'stock',
-        exchange: item.displaySymbol.includes('.') ? item.displaySymbol.split('.')[1] : 'US',
+        type:
+          item.type === 'Common Stock'
+            ? 'stock'
+            : item.type === 'ETP'
+              ? 'etf'
+              : 'stock',
+        exchange: item.displaySymbol.includes('.')
+          ? item.displaySymbol.split('.')[1]
+          : 'US',
         matchScore: 100, // Finnhub doesn't provide match score
       }))
 
     return {
       query,
       matches,
-      timestamp: new Date().toISOString(),
     }
   } catch (error) {
     console.error('Finnhub search error:', error)
@@ -263,7 +300,9 @@ export async function searchTickerReal(query: string, limit = 5): Promise<Ticker
 /**
  * Get financials using real Finnhub data
  */
-export async function getFinancialsReal(symbol: string): Promise<FinancialData> {
+export async function getFinancialsReal(
+  symbol: string
+): Promise<FinancialData> {
   try {
     const [quote, profile, metrics] = await Promise.all([
       getQuote(symbol),
@@ -274,18 +313,35 @@ export async function getFinancialsReal(symbol: string): Promise<FinancialData> 
     const metric = metrics.metric
 
     // Generate price history from recent data
-    const priceHistory = [
-      { timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.98 },
-      { timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.99 },
-      { timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc },
-      { timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), price: quote.o },
-      { timestamp: new Date().toISOString(), price: quote.c },
+    const priceHistory: PriceHistoryPoint[] = [
+      {
+        date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        price: quote.pc * 0.98,
+        volume: 0,
+      },
+      {
+        date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        price: quote.pc * 0.99,
+        volume: 0,
+      },
+      {
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        price: quote.pc,
+        volume: 0,
+      },
+      {
+        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        price: quote.o,
+        volume: 0,
+      },
+      { date: new Date().toISOString(), price: quote.c, volume: 0 },
     ]
 
     return {
       symbol: symbol.toUpperCase(),
       name: profile.name || symbol,
       currentPrice: quote.c,
+      previousClose: quote.pc,
       change: quote.d,
       changePercent: quote.dp,
       metrics: {
@@ -293,6 +349,7 @@ export async function getFinancialsReal(symbol: string): Promise<FinancialData> 
         marketCap: formatMarketCap(profile.marketCapitalization),
         volume: formatVolume(metric['10DayAverageTradingVolume'] || 0),
         eps: metric['epsBasicExclExtraItemsTTM'] || 0,
+        dividendYield: 0,
         high52Week: metric['52WeekHigh'] || quote.h,
         low52Week: metric['52WeekLow'] || quote.l,
       },
@@ -337,6 +394,7 @@ export async function getChartReal(
       symbol: symbol.toUpperCase(),
       name: (profile as FinnhubCompanyProfile).name || symbol,
       timeframe,
+      chartType: 'line',
       currentPrice: quote.c,
       change: quote.d,
       changePercent: quote.dp,

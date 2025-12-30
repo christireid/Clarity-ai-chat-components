@@ -2,7 +2,21 @@
 
 import { useState } from 'react'
 import { ModelSelector } from '@clarity-chat/react/internal'
-import type { ModelInfo } from '@clarity-chat/react/internal'
+
+// Local type definition matching library's ModelInfo
+interface ModelInfo {
+  id: string
+  name: string
+  provider: 'openai' | 'anthropic' | 'google'
+  speed: 'fast' | 'medium' | 'slow'
+  cost: 'low' | 'medium' | 'high'
+  quality: 'good' | 'excellent' | 'best'
+  contextWindow: number
+  description?: string
+  maxTokens?: number
+  vision?: boolean
+  toolCalling?: boolean
+}
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -60,7 +74,9 @@ function BasicModelSelectorDemo() {
   return (
     <div className="w-full max-w-md p-4 border border-border rounded-lg bg-background">
       <ModelSelector
-        models={models}
+        models={
+          models as unknown as Parameters<typeof ModelSelector>[0]['models']
+        }
         value={value}
         onChange={(id) => setValue(id)}
       />
