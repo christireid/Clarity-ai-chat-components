@@ -1,7 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import type { UseTokenThrottleConfig, UseTokenThrottleReturn, ThrottleState } from './types'
+import type {
+  UseTokenThrottleConfig,
+  UseTokenThrottleReturn,
+  ThrottleState,
+} from './types'
 
 /**
  * useTokenThrottle - Rate limiting and token budgeting
@@ -94,17 +98,28 @@ export function useTokenThrottle(
   })
 
   // Category usage tracking
-  const [categoryUsage, setCategoryUsage] = React.useState<Record<string, number>>({})
+  const [categoryUsage, setCategoryUsage] = React.useState<
+    Record<string, number>
+  >({})
 
   // Queue for pending requests
-  const queueRef = React.useRef<Array<{
-    resolve: (value: { granted: boolean; grantedCount: number; waitTimeMs: number; reason?: string }) => void
-    count: number
-    category?: string
-  }>>([])
+  const queueRef = React.useRef<
+    Array<{
+      resolve: (value: {
+        granted: boolean
+        grantedCount: number
+        waitTimeMs: number
+        reason?: 'quota_exceeded' | 'queued' | 'degraded'
+      }) => void
+      count: number
+      category?: string
+    }>
+  >([])
 
   // Timer refs for resetting periods
-  const minuteTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
+  const minuteTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(
+    null
+  )
   const hourTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
   const dayTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -243,8 +258,12 @@ export function useTokenThrottle(
           tokensUsedThisHour: prev.tokensUsedThisHour + tokens,
           tokensUsedThisDay: prev.tokensUsedThisDay + tokens,
           tokensRemaining: {
-            minute: (limits.perMinute ?? Infinity) - prev.tokensUsedThisMinute - tokens,
-            hour: (limits.perHour ?? Infinity) - prev.tokensUsedThisHour - tokens,
+            minute:
+              (limits.perMinute ?? Infinity) -
+              prev.tokensUsedThisMinute -
+              tokens,
+            hour:
+              (limits.perHour ?? Infinity) - prev.tokensUsedThisHour - tokens,
             day: (limits.perDay ?? Infinity) - prev.tokensUsedThisDay - tokens,
           },
         }
@@ -298,7 +317,8 @@ export function useTokenThrottle(
       // Check category budget
       if (category && budgets[category]) {
         const budget = budgets[category]
-        const totalBudget = (limits.perDay ?? Infinity) * (budget.allocation / 100)
+        const totalBudget =
+          (limits.perDay ?? Infinity) * (budget.allocation / 100)
         const used = categoryUsage[category] ?? 0
 
         if (used + count > totalBudget) {
@@ -411,7 +431,8 @@ export function useTokenThrottle(
         return { used: 0, remaining: Infinity, percentUsed: 0 }
       }
 
-      const totalBudget = (limits.perDay ?? Infinity) * (budget.allocation / 100)
+      const totalBudget =
+        (limits.perDay ?? Infinity) * (budget.allocation / 100)
       const used = categoryUsage[category] ?? 0
       const remaining = Math.max(0, totalBudget - used)
       const percentUsed = totalBudget > 0 ? (used / totalBudget) * 100 : 0

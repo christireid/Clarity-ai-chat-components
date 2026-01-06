@@ -1,7 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import type { UseEmbeddingCacheConfig, UseEmbeddingCacheReturn, EmbeddingResult } from './types'
+import type {
+  UseEmbeddingCacheConfig,
+  UseEmbeddingCacheReturn,
+  EmbeddingResult,
+} from './types'
 
 /**
  * Simple LRU cache for embeddings
@@ -133,7 +137,9 @@ export function useEmbeddingCache(
   const cacheRef = React.useRef<EmbeddingCache | null>(null)
 
   // Pipeline ref for Transformers.js (lazy loaded)
-  const pipelineRef = React.useRef<((text: string) => Promise<Float32Array>) | null>(null)
+  const pipelineRef = React.useRef<
+    ((text: string) => Promise<Float32Array>) | null
+  >(null)
 
   // State
   const [isModelLoaded, setIsModelLoaded] = React.useState(false)
@@ -167,6 +173,7 @@ export function useEmbeddingCache(
       // Attempt to dynamically load Transformers.js
       // This allows the hook to work even if the package isn't installed
       try {
+        // @ts-expect-error - Optional dependency, may not be installed
         const { pipeline } = await import('@xenova/transformers')
         setLoadProgress(50)
 
@@ -177,7 +184,10 @@ export function useEmbeddingCache(
         setLoadProgress(90)
 
         pipelineRef.current = async (text: string): Promise<Float32Array> => {
-          const output = await extractor(text, { pooling: 'mean', normalize: config.normalize ?? true })
+          const output = await extractor(text, {
+            pooling: 'mean',
+            normalize: config.normalize ?? true,
+          })
           return new Float32Array(output.data)
         }
 
@@ -192,14 +202,16 @@ export function useEmbeddingCache(
           const embedding = new Float32Array(384)
           let hash = 0
           for (let i = 0; i < text.length; i++) {
-            hash = ((hash << 5) - hash) + text.charCodeAt(i)
+            hash = (hash << 5) - hash + text.charCodeAt(i)
             hash = hash & hash
           }
           for (let i = 0; i < 384; i++) {
             embedding[i] = Math.sin(hash * (i + 1) * 0.01) * 0.5
           }
           // Normalize
-          const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0))
+          const norm = Math.sqrt(
+            embedding.reduce((sum, val) => sum + val * val, 0)
+          )
           if (norm > 0) {
             for (let i = 0; i < embedding.length; i++) {
               embedding[i] /= norm
@@ -238,7 +250,13 @@ export function useEmbeddingCache(
       // Check cache
       const cached = cacheRef.current?.get(text)
       if (cached) {
-        setCacheStats(cacheRef.current?.getStats() ?? { size: 0, hitRate: 0, memoryUsageMB: 0 })
+        setCacheStats(
+          cacheRef.current?.getStats() ?? {
+            size: 0,
+            hitRate: 0,
+            memoryUsageMB: 0,
+          }
+        )
         return {
           embedding: cached,
           text,
@@ -252,7 +270,13 @@ export function useEmbeddingCache(
 
       // Store in cache
       cacheRef.current?.set(text, embedding)
-      setCacheStats(cacheRef.current?.getStats() ?? { size: 0, hitRate: 0, memoryUsageMB: 0 })
+      setCacheStats(
+        cacheRef.current?.getStats() ?? {
+          size: 0,
+          hitRate: 0,
+          memoryUsageMB: 0,
+        }
+      )
 
       return {
         embedding,

@@ -20,9 +20,7 @@ const defaultSummarizer = async (messages: ChatMessage[]): Promise<string> => {
   const summaryParts = messages.map((msg) => {
     const role = msg.role === 'assistant' ? 'AI' : msg.role
     const truncated =
-      msg.content.length > 200
-        ? msg.content.slice(0, 200) + '...'
-        : msg.content
+      msg.content.length > 200 ? msg.content.slice(0, 200) + '...' : msg.content
     return `${role}: ${truncated}`
   })
   return `Previous conversation summary:\n${summaryParts.join('\n')}`
@@ -117,17 +115,24 @@ export function useContextWindow(
     return Math.ceil(text.length / 4)
   }, [])
 
-  const countChatTokens = React.useCallback((messages: ChatMessage[]): number => {
-    if (counterRef.current) {
-      return counterRef.current.countChat(messages)
-    }
-    return messages.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4, 3)
-  }, [])
+  const countChatTokens = React.useCallback(
+    (messages: ChatMessage[]): number => {
+      if (counterRef.current) {
+        return counterRef.current.countChat(messages)
+      }
+      return messages.reduce(
+        (sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4,
+        3
+      )
+    },
+    []
+  )
 
   // State
   const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [summary, setSummary] = React.useState<string | null>(null)
-  const [strategy, setStrategy] = React.useState<ContextStrategy>(initialStrategy)
+  const [strategy, setStrategy] =
+    React.useState<ContextStrategy>(initialStrategy)
   const [summarizedCount, setSummarizedCount] = React.useState(0)
   const [truncatedCount, setTruncatedCount] = React.useState(0)
 
@@ -155,7 +160,15 @@ export function useContextWindow(
       truncatedCount,
       summarizedCount,
     }),
-    [messages, summary, totalTokens, availableTokens, utilizationPercent, truncatedCount, summarizedCount]
+    [
+      messages,
+      summary,
+      totalTokens,
+      availableTokens,
+      utilizationPercent,
+      truncatedCount,
+      summarizedCount,
+    ]
   )
 
   /**
@@ -321,12 +334,13 @@ export function useContextWindow(
     // If we have a summary, prepend it as a system message
     if (newSummary) {
       const summaryMessage: ChatMessage = {
-        id: 'context-summary',
         role: 'system',
         content: newSummary,
       }
       // Insert after any existing system messages
-      const systemCount = optimizedMessages.filter((m) => m.role === 'system').length
+      const systemCount = optimizedMessages.filter(
+        (m) => m.role === 'system'
+      ).length
       optimizedMessages = [
         ...optimizedMessages.slice(0, systemCount),
         summaryMessage,
@@ -386,12 +400,15 @@ export function useContextWindow(
   /**
    * Import state
    */
-  const importState = React.useCallback((newState: ContextWindowState): void => {
-    setMessages(newState.messages)
-    setSummary(newState.summary)
-    setSummarizedCount(newState.summarizedCount)
-    setTruncatedCount(newState.truncatedCount)
-  }, [])
+  const importState = React.useCallback(
+    (newState: ContextWindowState): void => {
+      setMessages(newState.messages)
+      setSummary(newState.summary)
+      setSummarizedCount(newState.summarizedCount)
+      setTruncatedCount(newState.truncatedCount)
+    },
+    []
+  )
 
   return {
     state,

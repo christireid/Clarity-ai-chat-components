@@ -14,7 +14,13 @@ import {
   isValidModelId,
   type ModelId,
 } from '../../utils/tokenization/model-registry'
-import type { UseCostEstimatorConfig, UseCostEstimatorReturn, CostEstimate, CostTracking, ModelIdentifier } from './types'
+import type {
+  UseCostEstimatorConfig,
+  UseCostEstimatorReturn,
+  CostEstimate,
+  CostTracking,
+  ModelIdentifier,
+} from './types'
 
 /**
  * useCostEstimator - Real-time cost estimation and tracking
@@ -85,32 +91,45 @@ export function useCostEstimator(
   })
 
   // Custom pricing overrides
-  const [customPricing, setCustomPricing] = React.useState<
-    Record<string, { inputPer1M: number; outputPer1M: number }>
-  >(pricingOverrides)
+  const [customPricing, setCustomPricing] =
+    React.useState<Record<string, { inputPer1M: number; outputPer1M: number }>>(
+      pricingOverrides
+    )
 
   // Tracking history for persistence
-  const trackingHistoryRef = React.useRef<Array<{
-    timestamp: Date
-    inputTokens: number
-    outputTokens: number
-    model: string
-    cost: number
-    category?: string
-  }>>([])
+  const trackingHistoryRef = React.useRef<
+    Array<{
+      timestamp: Date
+      inputTokens: number
+      outputTokens: number
+      model: string
+      cost: number
+      category?: string
+    }>
+  >([])
 
   // Initialize optimizer and load persisted data
   React.useEffect(() => {
     const optimizerConfig: CostAwareConfig = {
-      budgetLimit: Infinity,
-      budgetPeriod: 'monthly',
-      costThresholds: {
+      totalBudget: Infinity,
+      enableCostPrediction: true,
+      enableBudgetTracking: true,
+      enableCostOptimization: true,
+      costWeights: {
+        tokenCost: 1,
+        processingCost: 0.1,
+        storageCost: 0.05,
+        networkCost: 0.05,
+      },
+      budgetAlertThresholds: {
         warning: 0.8,
         critical: 0.95,
+        emergency: 0.99,
       },
-      enableCostTracking: true,
-      enableBudgetAlerts: true,
-      optimizationLevel: 'balanced',
+      enableRealTimeCostTracking: true,
+      enableCostForecasting: false,
+      enableAutomaticOptimization: true,
+      optimizationStrategy: 'balanced',
     }
 
     optimizerRef.current = new CostAwareOptimizer(optimizerConfig)
@@ -180,15 +199,12 @@ export function useCostEstimator(
   /**
    * Count tokens using AccurateTokenCounter
    */
-  const countTokens = React.useCallback(
-    (text: string): number => {
-      if (counterRef.current) {
-        return counterRef.current.count(text)
-      }
-      return Math.ceil(text.length / 4)
-    },
-    []
-  )
+  const countTokens = React.useCallback((text: string): number => {
+    if (counterRef.current) {
+      return counterRef.current.count(text)
+    }
+    return Math.ceil(text.length / 4)
+  }, [])
 
   /**
    * Estimate cost for input
@@ -253,9 +269,10 @@ export function useCostEstimator(
       // Calculate cost
       const inputCost = (params.inputTokens * pricing.inputPer1M) / 1_000_000
       const outputCost = (params.outputTokens * pricing.outputPer1M) / 1_000_000
-      const cachedCost = params.cachedTokens && pricing.cachedInputPer1M
-        ? (params.cachedTokens * pricing.cachedInputPer1M) / 1_000_000
-        : 0
+      const cachedCost =
+        params.cachedTokens && pricing.cachedInputPer1M
+          ? (params.cachedTokens * pricing.cachedInputPer1M) / 1_000_000
+          : 0
       const totalCost = inputCost + outputCost + cachedCost
 
       // Add to tracking history
@@ -282,7 +299,8 @@ export function useCostEstimator(
           byCategory: params.category
             ? {
                 ...prev.byCategory,
-                [params.category]: (prev.byCategory[params.category] ?? 0) + totalCost,
+                [params.category]:
+                  (prev.byCategory[params.category] ?? 0) + totalCost,
               }
             : prev.byCategory,
         }
@@ -290,7 +308,10 @@ export function useCostEstimator(
         // Persist if enabled
         if (trackingPersistence && typeof localStorage !== 'undefined') {
           try {
-            localStorage.setItem('clarity-tokens-cost-tracking', JSON.stringify(updated))
+            localStorage.setItem(
+              'clarity-tokens-cost-tracking',
+              JSON.stringify(updated)
+            )
           } catch {
             // Ignore errors
           }
@@ -323,7 +344,10 @@ export function useCostEstimator(
    * Update custom pricing
    */
   const updatePricing = React.useCallback(
-    (model: string, pricing: { inputPer1M: number; outputPer1M: number }): void => {
+    (
+      model: string,
+      pricing: { inputPer1M: number; outputPer1M: number }
+    ): void => {
       setCustomPricing((prev) => ({
         ...prev,
         [model]: pricing,
