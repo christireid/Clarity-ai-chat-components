@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useCostEstimator } from '../use-cost-estimator'
 
-// Mock the clarity-tokens package
-vi.mock('@clarity-chat/clarity-tokens', () => ({
+// Mock the token-optimization package
+vi.mock('@clarity-chat/token-optimization', () => ({
   calculateCost: vi.fn((inputTokens: number, outputTokens: number) => ({
     inputCost: inputTokens * 0.0000025,
     outputCost: outputTokens * 0.00001,

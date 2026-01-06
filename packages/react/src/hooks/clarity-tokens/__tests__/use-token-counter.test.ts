@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useTokenCounter } from '../use-token-counter'
 
-// Mock the clarity-tokens package
-vi.mock('@clarity-chat/clarity-tokens', () => ({
+// Mock the token-optimization package
+vi.mock('@clarity-chat/token-optimization', () => ({
   countTokens: vi.fn((text: string) => Math.ceil(text.length / 4)),
   countChatTokens: vi.fn((messages: Array<{ content: string }>) =>
     messages.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4, 3)

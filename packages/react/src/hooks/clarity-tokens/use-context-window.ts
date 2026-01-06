@@ -1,18 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import {
-  countChatTokens,
-  countTokens,
-  getModelEncoding,
-  truncateToTokenLimit,
-} from '@clarity-chat/clarity-tokens'
-import type { ChatMessage, TokenEncoding } from '@clarity-chat/clarity-tokens'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
 import type {
   UseContextWindowConfig,
   UseContextWindowReturn,
   ContextWindowState,
   ContextStrategy,
+  TokenEncoding,
 } from './types'
 
 /**
@@ -96,6 +92,38 @@ export function useContextWindow(
     preserveRecentCount = 4,
   } = config
 
+  // Token counter ref
+  const counterRef = React.useRef<AccurateTokenCounter | null>(null)
+
+  // Initialize token counter
+  React.useEffect(() => {
+    counterRef.current = new AccurateTokenCounter({
+      model: 'gpt-4o',
+      enableCaching: true,
+    })
+
+    return () => {
+      if (counterRef.current) {
+        counterRef.current.destroy()
+      }
+    }
+  }, [])
+
+  // Token counting helpers
+  const countTokens = React.useCallback((text: string): number => {
+    if (counterRef.current) {
+      return counterRef.current.count(text)
+    }
+    return Math.ceil(text.length / 4)
+  }, [])
+
+  const countChatTokens = React.useCallback((messages: ChatMessage[]): number => {
+    if (counterRef.current) {
+      return counterRef.current.countChat(messages)
+    }
+    return messages.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4, 3)
+  }, [])
+
   // State
   const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [summary, setSummary] = React.useState<string | null>(null)
@@ -103,17 +131,14 @@ export function useContextWindow(
   const [summarizedCount, setSummarizedCount] = React.useState(0)
   const [truncatedCount, setTruncatedCount] = React.useState(0)
 
-  // Encoding for token counting (default to cl100k_base)
-  const encoding: TokenEncoding = 'cl100k_base'
-
   // Calculate total tokens
   const totalTokens = React.useMemo(() => {
-    let tokens = countChatTokens(messages, encoding)
+    let tokens = countChatTokens(messages)
     if (summary) {
-      tokens += countTokens(summary, encoding)
+      tokens += countTokens(summary)
     }
     return tokens
-  }, [messages, summary])
+  }, [messages, summary, countChatTokens, countTokens])
 
   // Available tokens
   const availableTokens = maxTokens - reservedTokens - totalTokens
@@ -138,9 +163,9 @@ export function useContextWindow(
    */
   const estimateMessageTokens = React.useCallback(
     (message: ChatMessage): number => {
-      return countTokens(message.content, encoding) + 4 // Add overhead
+      return countTokens(message.content) + 4 // Add overhead
     },
-    []
+    [countTokens]
   )
 
   /**
@@ -309,7 +334,7 @@ export function useContextWindow(
       ]
     }
 
-    const optimizedTokens = countChatTokens(optimizedMessages, encoding)
+    const optimizedTokens = countChatTokens(optimizedMessages)
 
     return {
       messages: optimizedMessages,
@@ -325,6 +350,7 @@ export function useContextWindow(
     applyBufferStrategy,
     applyWindowStrategy,
     applySummaryBufferStrategy,
+    countChatTokens,
   ])
 
   /**

@@ -1,22 +1,22 @@
 'use client'
 
 import * as React from 'react'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
 import {
-  countTokens,
-  countChatTokens,
-  checkWithinLimit,
+  MODEL_REGISTRY,
   getModelConfig,
-  getModelEncoding,
-} from '@clarity-chat/clarity-tokens'
-import type { ChatMessage } from '@clarity-chat/clarity-tokens'
+  type ModelId,
+  type TokenizerEncoding,
+} from '../../utils/tokenization/model-registry'
 import type { UseTokenCounterConfig, UseTokenCounterReturn } from './types'
 
 /**
  * useTokenCounter - Real-time token counting with model-aware encoding
  *
- * Provides synchronous and debounced token counting for text inputs,
- * chat message arrays, and streaming content. Uses gpt-tokenizer's
- * optimized `isWithinTokenLimit()` for efficient limit checking.
+ * Wraps the AccurateTokenCounter from @clarity-chat/token-optimization to provide
+ * React-friendly token counting with caching, debouncing, and streaming support.
+ * Uses gpt-tokenizer's optimized `isWithinTokenLimit()` for efficient limit checking.
  *
  * @param config - Configuration options
  * @returns Token counting utilities and state
@@ -78,9 +78,34 @@ export function useTokenCounter(
 ): UseTokenCounterReturn {
   const { model, debounceMs = 150, includeMessageOverhead = true } = config
 
-  // Get model configuration
-  const modelConfig = React.useMemo(() => getModelConfig(model), [model])
-  const encoding = React.useMemo(() => getModelEncoding(model), [model])
+  // Get model configuration from existing registry
+  const modelConfig = React.useMemo(() => {
+    if (model in MODEL_REGISTRY) {
+      return getModelConfig(model as ModelId)
+    }
+    // Fallback for unknown models
+    return {
+      contextWindow: 128000,
+      encoding: 'cl100k_base' as TokenizerEncoding,
+    }
+  }, [model])
+
+  // Create AccurateTokenCounter instance from token-optimization package
+  const counterRef = React.useRef<AccurateTokenCounter | null>(null)
+
+  React.useEffect(() => {
+    counterRef.current = new AccurateTokenCounter({
+      model: model,
+      enableCaching: true,
+      cacheSize: 1000,
+    })
+
+    return () => {
+      if (counterRef.current) {
+        counterRef.current.destroy()
+      }
+    }
+  }, [model])
 
   // State
   const [tokenCount, setTokenCount] = React.useState(0)
@@ -88,40 +113,55 @@ export function useTokenCounter(
   const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   /**
-   * Synchronous token count (cached internally)
+   * Synchronous token count using AccurateTokenCounter
    */
   const countTokensSync = React.useCallback(
     (text: string): number => {
-      return countTokens(text, encoding)
+      if (!counterRef.current) {
+        // Fallback estimation if counter not ready
+        return Math.ceil(text.length / 4)
+      }
+      return counterRef.current.count(text)
     },
-    [encoding]
+    []
   )
 
   /**
-   * Count tokens for chat messages
+   * Count tokens for chat messages using AccurateTokenCounter
    */
   const countChatTokensSync = React.useCallback(
     (messages: ChatMessage[]): number => {
+      if (!counterRef.current) {
+        // Fallback estimation
+        return messages.reduce(
+          (sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4,
+          3
+        )
+      }
+
       if (includeMessageOverhead) {
-        return countChatTokens(messages, encoding)
+        return counterRef.current.countChat(messages)
       }
       // Without overhead, just sum content tokens
       return messages.reduce(
-        (sum, msg) => sum + countTokens(msg.content, encoding),
+        (sum, msg) => sum + counterRef.current!.count(msg.content),
         0
       )
     },
-    [encoding, includeMessageOverhead]
+    [includeMessageOverhead]
   )
 
   /**
-   * Check if text is within token limit (optimized)
+   * Check if text is within token limit using AccurateTokenCounter (optimized)
    */
   const isWithinLimitCheck = React.useCallback(
     (text: string, limit: number): boolean => {
-      return checkWithinLimit(text, limit, encoding)
+      if (!counterRef.current) {
+        return Math.ceil(text.length / 4) <= limit
+      }
+      return counterRef.current.isWithinLimit(text, limit)
     },
-    [encoding]
+    []
   )
 
   /**
@@ -136,10 +176,14 @@ export function useTokenCounter(
 
       // Debounce the token count update
       debounceTimerRef.current = setTimeout(() => {
-        setTokenCount(countTokens(text, encoding))
+        if (counterRef.current) {
+          setTokenCount(counterRef.current.count(text))
+        } else {
+          setTokenCount(Math.ceil(text.length / 4))
+        }
       }, debounceMs)
     },
-    [encoding, debounceMs]
+    [debounceMs]
   )
 
   /**
@@ -147,10 +191,12 @@ export function useTokenCounter(
    */
   const onStreamChunk = React.useCallback(
     (chunk: string): void => {
-      const chunkTokens = countTokens(chunk, encoding)
+      const chunkTokens = counterRef.current
+        ? counterRef.current.count(chunk)
+        : Math.ceil(chunk.length / 4)
       setStreamTokenCount((prev) => prev + chunkTokens)
     },
-    [encoding]
+    []
   )
 
   /**
@@ -179,6 +225,6 @@ export function useTokenCounter(
     onStreamChunk,
     resetStreamCount,
     modelMaxTokens: modelConfig.contextWindow,
-    encodingName: encoding,
+    encodingName: modelConfig.encoding,
   }
 }

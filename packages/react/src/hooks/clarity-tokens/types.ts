@@ -2,25 +2,134 @@
  * ClarityTokens React Hooks - Type Definitions
  *
  * Type definitions for all ClarityTokens React hooks.
+ * Uses types from @clarity-chat/token-optimization and local MODEL_REGISTRY.
  */
 
-import type {
-  ModelIdentifier,
-  TokenEncoding,
-  ChatMessage,
-  CostEstimate,
-  CostTracking,
-  CacheStats,
-  CompressionResult,
-  CompressionStrategy,
-  EmbeddingResult,
-  VectorSearchResult,
-  ThrottleState,
-  StreamState,
-  StreamMetrics,
-  OptimizationLevel,
-  GlobalOptimizationStats,
-} from '@clarity-chat/clarity-tokens'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
+import type { ModelId, TokenizerEncoding } from '../../utils/tokenization/model-registry'
+
+// Re-export types for convenience
+export type { ChatMessage } from '@clarity-chat/token-optimization'
+export type { ModelId, TokenizerEncoding } from '../../utils/tokenization/model-registry'
+
+// =============================================================================
+// Shared Types (defined locally to avoid duplicate package dependency)
+// =============================================================================
+
+/** Model identifier - supports all models in MODEL_REGISTRY plus custom strings */
+export type ModelIdentifier = ModelId | string
+
+/** Token encoding type */
+export type TokenEncoding = TokenizerEncoding | string
+
+/** Cost estimate result */
+export interface CostEstimate {
+  inputCost: number
+  outputCost: number
+  totalCost: number
+  currency: string
+  breakdown: {
+    inputTokens: number
+    outputTokens: number
+    cachedTokens: number
+    pricePerInputToken: number
+    pricePerOutputToken: number
+  }
+}
+
+/** Cost tracking data */
+export interface CostTracking {
+  today: number
+  thisWeek: number
+  thisMonth: number
+  allTime: number
+  byModel: Record<string, number>
+  byCategory: Record<string, number>
+}
+
+/** Cache statistics */
+export interface CacheStats {
+  totalEntries: number
+  hitRate: number
+  totalTokensSaved: number
+  totalCostSaved: number
+  avgSearchTimeMs: number
+}
+
+/** Compression strategy */
+export type CompressionStrategy = 'heuristic' | 'extractive' | 'model' | 'auto'
+
+/** Compression result */
+export interface CompressionResult {
+  original: string
+  compressed: string
+  compressionRatio: number
+  tokensSaved: number
+  strategy: CompressionStrategy
+  qualityScore: number
+}
+
+/** Embedding result */
+export interface EmbeddingResult {
+  embedding: Float32Array
+  text: string
+  tokenCount: number
+  cached: boolean
+}
+
+/** Vector search result */
+export interface VectorSearchResult {
+  id: string
+  text?: string
+  similarity: number
+  metadata: Record<string, unknown>
+}
+
+/** Throttle state */
+export interface ThrottleState {
+  tokensUsedThisMinute: number
+  tokensUsedThisHour: number
+  tokensUsedThisDay: number
+  tokensRemaining: {
+    minute: number
+    hour: number
+    day: number
+  }
+  queuedRequests: number
+  isThrottled: boolean
+  nextAvailableAt: Date | null
+}
+
+/** Stream state */
+export interface StreamState {
+  content: string
+  isStreaming: boolean
+  tokenCount: number
+  chunkCount: number
+  startTime: Date | null
+  tokensPerSecond: number
+}
+
+/** Stream metrics */
+export interface StreamMetrics {
+  totalChunks: number
+  totalRenders: number
+  renderReduction: number
+  avgChunkLatencyMs: number
+}
+
+/** Optimization level */
+export type OptimizationLevel = 'none' | 'light' | 'balanced' | 'aggressive' | 'maximum'
+
+/** Global optimization statistics */
+export interface GlobalOptimizationStats {
+  totalTokensSaved: number
+  totalCostSaved: number
+  cacheHits: number
+  cacheMisses: number
+  compressionRatio: number
+  averageLatencyMs: number
+}
 
 // =============================================================================
 // useTokenCounter Types

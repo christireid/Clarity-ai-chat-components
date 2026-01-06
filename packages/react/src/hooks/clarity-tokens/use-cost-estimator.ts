@@ -2,25 +2,26 @@
 
 import * as React from 'react'
 import {
-  calculateCost,
-  estimateCostFromText,
-  estimateCostFromMessages,
-  formatCost as formatCostUtil,
-  CostTracker,
+  CostAwareOptimizer,
+  AccurateTokenCounter,
+  type CostAwareConfig,
+  type BudgetStatus,
+} from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
+import {
+  MODEL_REGISTRY,
   getModelConfig,
-  storeCostTracking,
-  getCostTracking,
-  isIndexedDBAvailable,
-} from '@clarity-chat/clarity-tokens'
-import type { ModelIdentifier, ChatMessage, CostEstimate, CostTracking } from '@clarity-chat/clarity-tokens'
-import type { UseCostEstimatorConfig, UseCostEstimatorReturn } from './types'
+  isValidModelId,
+  type ModelId,
+} from '../../utils/tokenization/model-registry'
+import type { UseCostEstimatorConfig, UseCostEstimatorReturn, CostEstimate, CostTracking, ModelIdentifier } from './types'
 
 /**
  * useCostEstimator - Real-time cost estimation and tracking
  *
- * Estimates costs before API calls and tracks actual spending.
- * Maintains up-to-date pricing for OpenAI, Anthropic, Google,
- * and custom models. Supports persistent tracking.
+ * Wraps CostAwareOptimizer from @clarity-chat/token-optimization and uses
+ * the existing MODEL_REGISTRY for accurate pricing. Estimates costs before
+ * API calls and tracks actual spending.
  *
  * @param config - Configuration options
  * @returns Cost estimation utilities and tracking data
@@ -58,32 +59,6 @@ import type { UseCostEstimatorConfig, UseCostEstimatorReturn } from './types'
  *   )
  * }
  * ```
- *
- * @example
- * ```tsx
- * // Compare costs across models
- * function ModelComparison() {
- *   const { estimate, getModelPricing } = useCostEstimator()
- *
- *   const models = ['gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet']
- *
- *   return (
- *     <table>
- *       {models.map(model => {
- *         const pricing = getModelPricing(model)
- *         const cost = estimate({ inputText: myText, model })
- *         return (
- *           <tr key={model}>
- *             <td>{model}</td>
- *             <td>${pricing.inputPer1M}/1M input</td>
- *             <td>${cost.totalCost.toFixed(4)}</td>
- *           </tr>
- *         )
- *       })}
- *     </table>
- *   )
- * }
- * ```
  */
 export function useCostEstimator(
   config: UseCostEstimatorConfig = {}
@@ -95,8 +70,9 @@ export function useCostEstimator(
     trackingPersistence = true,
   } = config
 
-  // Cost tracker instance
-  const trackerRef = React.useRef<CostTracker | null>(null)
+  // Cost optimizer and token counter refs
+  const optimizerRef = React.useRef<CostAwareOptimizer | null>(null)
+  const counterRef = React.useRef<AccurateTokenCounter | null>(null)
 
   // State
   const [tracking, setTracking] = React.useState<CostTracking>({
@@ -113,27 +89,106 @@ export function useCostEstimator(
     Record<string, { inputPer1M: number; outputPer1M: number }>
   >(pricingOverrides)
 
-  // Initialize tracker and load persisted data
+  // Tracking history for persistence
+  const trackingHistoryRef = React.useRef<Array<{
+    timestamp: Date
+    inputTokens: number
+    outputTokens: number
+    model: string
+    cost: number
+    category?: string
+  }>>([])
+
+  // Initialize optimizer and load persisted data
   React.useEffect(() => {
-    const initTracker = async () => {
-      let initialData: CostTracking | null = null
+    const optimizerConfig: CostAwareConfig = {
+      budgetLimit: Infinity,
+      budgetPeriod: 'monthly',
+      costThresholds: {
+        warning: 0.8,
+        critical: 0.95,
+      },
+      enableCostTracking: true,
+      enableBudgetAlerts: true,
+      optimizationLevel: 'balanced',
+    }
 
-      if (trackingPersistence && isIndexedDBAvailable()) {
-        try {
-          initialData = await getCostTracking()
-        } catch {
-          // Ignore IndexedDB errors
+    optimizerRef.current = new CostAwareOptimizer(optimizerConfig)
+    counterRef.current = new AccurateTokenCounter({
+      model: defaultModel,
+      enableCaching: true,
+    })
+
+    // Load persisted tracking data
+    if (trackingPersistence && typeof localStorage !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('clarity-tokens-cost-tracking')
+        if (stored) {
+          const data = JSON.parse(stored)
+          setTracking(data)
         }
-      }
-
-      trackerRef.current = new CostTracker(initialData ?? undefined)
-      if (initialData) {
-        setTracking(initialData)
+      } catch {
+        // Ignore errors
       }
     }
 
-    void initTracker()
-  }, [trackingPersistence])
+    return () => {
+      if (counterRef.current) {
+        counterRef.current.destroy()
+      }
+    }
+  }, [defaultModel, trackingPersistence])
+
+  /**
+   * Get model pricing from MODEL_REGISTRY or custom overrides
+   */
+  const getModelPricingInternal = React.useCallback(
+    (model: ModelIdentifier) => {
+      // Check custom pricing first
+      const custom = customPricing[model]
+      if (custom) {
+        return {
+          inputPer1M: custom.inputPer1M,
+          outputPer1M: custom.outputPer1M,
+          cachedInputPer1M: undefined,
+          contextWindow: 128000,
+        }
+      }
+
+      // Use existing MODEL_REGISTRY
+      if (isValidModelId(model)) {
+        const modelConfig = getModelConfig(model as ModelId)
+        return {
+          inputPer1M: modelConfig.inputCostPer1M,
+          outputPer1M: modelConfig.outputCostPer1M,
+          cachedInputPer1M: modelConfig.cachedInputCostPer1M,
+          contextWindow: modelConfig.contextWindow,
+        }
+      }
+
+      // Fallback for unknown models
+      return {
+        inputPer1M: 1.0,
+        outputPer1M: 2.0,
+        cachedInputPer1M: undefined,
+        contextWindow: 128000,
+      }
+    },
+    [customPricing]
+  )
+
+  /**
+   * Count tokens using AccurateTokenCounter
+   */
+  const countTokens = React.useCallback(
+    (text: string): number => {
+      if (counterRef.current) {
+        return counterRef.current.count(text)
+      }
+      return Math.ceil(text.length / 4)
+    },
+    []
+  )
 
   /**
    * Estimate cost for input
@@ -148,45 +203,38 @@ export function useCostEstimator(
     }): CostEstimate => {
       const model = params.model ?? defaultModel
       const expectedOutput = params.expectedOutputTokens ?? 500
+      const pricing = getModelPricingInternal(model)
 
-      // Check for custom pricing
-      const customPrice = customPricing[model]
-      if (customPrice) {
-        // Use custom pricing calculation
-        const inputTokens = params.inputTokens ?? 0
-        const inputCost = (inputTokens * customPrice.inputPer1M) / 1_000_000
-        const outputCost = (expectedOutput * customPrice.outputPer1M) / 1_000_000
-
-        return {
-          inputCost,
-          outputCost,
-          totalCost: inputCost + outputCost,
-          currency: 'USD',
-          breakdown: {
-            inputTokens,
-            outputTokens: expectedOutput,
-            cachedTokens: 0,
-            pricePerInputToken: customPrice.inputPer1M / 1_000_000,
-            pricePerOutputToken: customPrice.outputPer1M / 1_000_000,
-          },
-        }
-      }
-
-      if (params.messages) {
-        return estimateCostFromMessages(params.messages, model, expectedOutput)
-      }
-
+      // Calculate input tokens
+      let inputTokens = params.inputTokens ?? 0
       if (params.inputText) {
-        return estimateCostFromText(params.inputText, model, expectedOutput)
+        inputTokens = countTokens(params.inputText)
+      } else if (params.messages) {
+        inputTokens = params.messages.reduce(
+          (sum, msg) => sum + countTokens(msg.content) + 4, // +4 for message overhead
+          3 // +3 for conversation overhead
+        )
       }
 
-      if (params.inputTokens) {
-        return calculateCost(params.inputTokens, expectedOutput, model)
-      }
+      // Calculate costs
+      const inputCost = (inputTokens * pricing.inputPer1M) / 1_000_000
+      const outputCost = (expectedOutput * pricing.outputPer1M) / 1_000_000
 
-      return calculateCost(0, expectedOutput, model)
+      return {
+        inputCost,
+        outputCost,
+        totalCost: inputCost + outputCost,
+        currency: 'USD',
+        breakdown: {
+          inputTokens,
+          outputTokens: expectedOutput,
+          cachedTokens: 0,
+          pricePerInputToken: pricing.inputPer1M / 1_000_000,
+          pricePerOutputToken: pricing.outputPer1M / 1_000_000,
+        },
+      }
     },
-    [defaultModel, customPricing]
+    [defaultModel, getModelPricingInternal, countTokens]
   )
 
   /**
@@ -200,18 +248,58 @@ export function useCostEstimator(
       model: ModelIdentifier
       category?: string
     }): void => {
-      if (!trackerRef.current) return
+      const pricing = getModelPricingInternal(params.model)
 
-      trackerRef.current.recordCost(params)
-      const newTracking = trackerRef.current.getTracking()
-      setTracking(newTracking)
+      // Calculate cost
+      const inputCost = (params.inputTokens * pricing.inputPer1M) / 1_000_000
+      const outputCost = (params.outputTokens * pricing.outputPer1M) / 1_000_000
+      const cachedCost = params.cachedTokens && pricing.cachedInputPer1M
+        ? (params.cachedTokens * pricing.cachedInputPer1M) / 1_000_000
+        : 0
+      const totalCost = inputCost + outputCost + cachedCost
 
-      // Persist if enabled
-      if (trackingPersistence && isIndexedDBAvailable()) {
-        void storeCostTracking(newTracking).catch(() => {})
-      }
+      // Add to tracking history
+      trackingHistoryRef.current.push({
+        timestamp: new Date(),
+        inputTokens: params.inputTokens,
+        outputTokens: params.outputTokens,
+        model: params.model,
+        cost: totalCost,
+        category: params.category,
+      })
+
+      // Update tracking state
+      setTracking((prev) => {
+        const updated: CostTracking = {
+          today: prev.today + totalCost,
+          thisWeek: prev.thisWeek + totalCost,
+          thisMonth: prev.thisMonth + totalCost,
+          allTime: prev.allTime + totalCost,
+          byModel: {
+            ...prev.byModel,
+            [params.model]: (prev.byModel[params.model] ?? 0) + totalCost,
+          },
+          byCategory: params.category
+            ? {
+                ...prev.byCategory,
+                [params.category]: (prev.byCategory[params.category] ?? 0) + totalCost,
+              }
+            : prev.byCategory,
+        }
+
+        // Persist if enabled
+        if (trackingPersistence && typeof localStorage !== 'undefined') {
+          try {
+            localStorage.setItem('clarity-tokens-cost-tracking', JSON.stringify(updated))
+          } catch {
+            // Ignore errors
+          }
+        }
+
+        return updated
+      })
     },
-    [trackingPersistence]
+    [getModelPricingInternal, trackingPersistence]
   )
 
   /**
@@ -226,25 +314,9 @@ export function useCostEstimator(
       cachedInputPer1M?: number
       contextWindow: number
     } => {
-      // Check custom pricing first
-      const custom = customPricing[model]
-      if (custom) {
-        return {
-          inputPer1M: custom.inputPer1M,
-          outputPer1M: custom.outputPer1M,
-          contextWindow: 4096, // Default for custom models
-        }
-      }
-
-      const config = getModelConfig(model)
-      return {
-        inputPer1M: config.inputPer1M,
-        outputPer1M: config.outputPer1M,
-        cachedInputPer1M: config.cachedInputPer1M,
-        contextWindow: config.contextWindow,
-      }
+      return getModelPricingInternal(model)
     },
-    [customPricing]
+    [getModelPricingInternal]
   )
 
   /**
@@ -265,7 +337,13 @@ export function useCostEstimator(
    */
   const formatCost = React.useCallback(
     (amount: number): string => {
-      return formatCostUtil(amount, currency)
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 4,
+        maximumFractionDigits: 6,
+      })
+      return formatter.format(amount)
     },
     [currency]
   )
@@ -275,28 +353,45 @@ export function useCostEstimator(
    */
   const exportTracking = React.useCallback(
     (format: 'json' | 'csv'): string => {
-      if (!trackerRef.current) {
-        return format === 'json' ? '{}' : ''
-      }
+      const history = trackingHistoryRef.current
 
       if (format === 'json') {
-        return trackerRef.current.exportAsJson()
+        return JSON.stringify({ tracking, history }, null, 2)
       }
-      return trackerRef.current.exportAsCsv()
+
+      // CSV format
+      const headers = 'timestamp,model,inputTokens,outputTokens,cost,category\n'
+      const rows = history
+        .map(
+          (entry) =>
+            `${entry.timestamp.toISOString()},${entry.model},${entry.inputTokens},${entry.outputTokens},${entry.cost.toFixed(6)},${entry.category ?? ''}`
+        )
+        .join('\n')
+
+      return headers + rows
     },
-    []
+    [tracking]
   )
 
   /**
    * Reset tracking
    */
   const resetTracking = React.useCallback((): void => {
-    if (trackerRef.current) {
-      trackerRef.current.reset()
-      setTracking(trackerRef.current.getTracking())
+    trackingHistoryRef.current = []
+    setTracking({
+      today: 0,
+      thisWeek: 0,
+      thisMonth: 0,
+      allTime: 0,
+      byModel: {},
+      byCategory: {},
+    })
 
-      if (trackingPersistence && isIndexedDBAvailable()) {
-        void storeCostTracking(trackerRef.current.getTracking()).catch(() => {})
+    if (trackingPersistence && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem('clarity-tokens-cost-tracking')
+      } catch {
+        // Ignore errors
       }
     }
   }, [trackingPersistence])

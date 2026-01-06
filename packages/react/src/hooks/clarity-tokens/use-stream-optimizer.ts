@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { countTokens } from '@clarity-chat/clarity-tokens'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import type {
   UseStreamOptimizerConfig,
   UseStreamOptimizerReturn,
@@ -105,6 +105,35 @@ export function useStreamOptimizer(
     enableTokenCounting = false,
   } = config
 
+  // Token counter ref (only created if token counting is enabled)
+  const counterRef = React.useRef<AccurateTokenCounter | null>(null)
+
+  // Initialize token counter if needed
+  React.useEffect(() => {
+    if (enableTokenCounting && !counterRef.current) {
+      counterRef.current = new AccurateTokenCounter({
+        model: 'gpt-4o',
+        enableCaching: true,
+      })
+    }
+
+    return () => {
+      if (counterRef.current) {
+        counterRef.current.destroy()
+        counterRef.current = null
+      }
+    }
+  }, [enableTokenCounting])
+
+  // Helper to count tokens
+  const countTokens = React.useCallback((text: string): number => {
+    if (counterRef.current) {
+      return counterRef.current.count(text)
+    }
+    // Fallback estimation
+    return Math.ceil(text.length / 4)
+  }, [])
+
   // State
   const [state, setState] = React.useState<StreamState>({
     content: '',
@@ -187,7 +216,7 @@ export function useStreamOptimizer(
     })
 
     bufferRef.current = ''
-  }, [enableTokenCounting, state.startTime])
+  }, [enableTokenCounting, countTokens, state.startTime])
 
   /**
    * Check if should flush based on strategy

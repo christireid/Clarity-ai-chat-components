@@ -1,17 +1,24 @@
 'use client'
 
 import * as React from 'react'
-import { createPromptCompressor, PromptCompressor } from '@clarity-chat/clarity-tokens'
-import type { CompressionResult, CompressionStrategy, ChatMessage } from '@clarity-chat/clarity-tokens'
-import type { UsePromptCompressorConfig, UsePromptCompressorReturn } from './types'
+import {
+  DynamicCompressionEngine,
+  type DynamicCompressionConfig,
+  type CompressionResult as TokenOptCompressionResult,
+  type CompressionStrategy as TokenOptCompressionStrategy,
+} from '@clarity-chat/token-optimization'
+import type { ChatMessage } from '@clarity-chat/token-optimization'
+import type { UsePromptCompressorConfig, UsePromptCompressorReturn, CompressionResult, CompressionStrategy } from './types'
 
 /**
  * usePromptCompressor - Client-side prompt compression
  *
- * Implements tiered compression strategies for reducing token usage:
+ * Wraps the DynamicCompressionEngine from @clarity-chat/token-optimization to provide
+ * React-friendly compression with tiered strategies:
  * - Heuristic (2-3x): Fast, rule-based compression
- * - Extractive (3-5x): TF-IDF based sentence selection
- * - Auto: Selects best strategy based on input
+ * - Semantic (3-5x): Semantic similarity-based compression
+ * - Syntactic: Structure-preserving compression
+ * - Hybrid: Combined strategies for best results
  *
  * @param config - Configuration options
  * @returns Compression utilities and state
@@ -51,48 +58,65 @@ import type { UsePromptCompressorConfig, UsePromptCompressorReturn } from './typ
  *   )
  * }
  * ```
- *
- * @example
- * ```tsx
- * // Compress entire message history
- * function CompressHistory() {
- *   const { compressMessages } = usePromptCompressor()
- *
- *   const optimizeContext = async (messages: ChatMessage[]) => {
- *     const { messages: compressed, totalSaved, compressionRatio } =
- *       await compressMessages(messages)
- *
- *     console.log(`Saved ${totalSaved} tokens (${compressionRatio}x compression)`)
- *     return compressed
- *   }
- * }
- * ```
  */
 export function usePromptCompressor(
   config: UsePromptCompressorConfig = {}
 ): UsePromptCompressorReturn {
   // Compressor ref
-  const compressorRef = React.useRef<PromptCompressor | null>(null)
+  const compressorRef = React.useRef<DynamicCompressionEngine | null>(null)
 
   // State
   const [isCompressing, setIsCompressing] = React.useState(false)
   const [isModelLoaded, setIsModelLoaded] = React.useState(false)
 
-  // Initialize compressor
+  // Map our strategy to token-optimization strategy type
+  const mapStrategy = React.useCallback(
+    (strategy?: CompressionStrategy): TokenOptCompressionStrategy[] => {
+      const baseStrategy: TokenOptCompressionStrategy = {
+        name: strategy ?? 'auto',
+        type: strategy === 'heuristic' ? 'syntactic' :
+              strategy === 'extractive' ? 'semantic' :
+              strategy === 'model' ? 'llmlingua' : 'hybrid',
+        compressionRatio: config.targetRatio ?? 0.5,
+        qualityScore: config.qualityThreshold ?? 0.85,
+        processingTime: 100,
+        contentTypes: ['text', 'code', 'mixed'],
+        complexity: 'medium',
+        resourceRequirements: {
+          memory: 100,
+          cpu: 1,
+          time: 100,
+          cost: 0,
+        },
+      }
+      return [baseStrategy]
+    },
+    [config.targetRatio, config.qualityThreshold]
+  )
+
+  // Initialize compressor using DynamicCompressionEngine from token-optimization
   React.useEffect(() => {
-    compressorRef.current = createPromptCompressor({
-      targetRatio: config.targetRatio,
-      strategy: config.strategy,
-      preserveStructure: config.preserveStructure,
-      minTokens: config.minTokens,
-      qualityThreshold: config.qualityThreshold,
-    })
+    const compressionConfig: DynamicCompressionConfig = {
+      targetQuality: config.qualityThreshold ?? 0.85,
+      maxCompressionRatio: config.targetRatio ?? 0.5,
+      enableAdaptiveCompression: true,
+      enableContentAwareCompression: config.preserveStructure ?? true,
+      enableQualityMonitoring: true,
+      compressionStrategies: mapStrategy(config.strategy),
+      qualityThreshold: config.qualityThreshold ?? 0.85,
+      fallbackStrategy: 'minimal',
+      enableRealTimeFeedback: false,
+    }
+
+    compressorRef.current = new DynamicCompressionEngine(compressionConfig)
+    setIsModelLoaded(true)
   }, [
     config.targetRatio,
     config.strategy,
     config.preserveStructure,
     config.minTokens,
     config.qualityThreshold,
+    mapStrategy,
   ])
 
   /**
@@ -110,8 +134,16 @@ export function usePromptCompressor(
       setIsCompressing(true)
 
       try {
-        const result = compressorRef.current.compress(text, overrideConfig)
-        return result
+        const result: TokenOptCompressionResult = await compressorRef.current.compress(text)
+
+        return {
+          original: result.originalContent,
+          compressed: result.compressedContent,
+          compressionRatio: result.compressionRatio,
+          tokensSaved: result.tokensSaved,
+          strategy: result.strategyUsed as CompressionStrategy,
+          qualityScore: result.qualityScore,
+        }
       } finally {
         setIsCompressing(false)
       }
@@ -137,20 +169,30 @@ export function usePromptCompressor(
       setIsCompressing(true)
 
       try {
-        const result = compressorRef.current.compressMessages(
-          messages.map((m) => ({ role: m.role, content: m.content }))
-        )
+        let totalSaved = 0
+        let totalOriginalTokens = 0
+        let totalCompressedTokens = 0
 
-        // Map back to ChatMessage format
-        const compressedMessages = messages.map((original, i) => ({
-          ...original,
-          content: result.messages[i]?.content ?? original.content,
-        }))
+        const compressedMessages = await Promise.all(
+          messages.map(async (msg) => {
+            const result = await compressorRef.current!.compress(msg.content)
+            totalSaved += result.tokensSaved
+            totalOriginalTokens += Math.ceil(msg.content.length / 4) // Estimate
+            totalCompressedTokens += Math.ceil(result.compressedContent.length / 4)
+
+            return {
+              ...msg,
+              content: result.compressedContent,
+            }
+          })
+        )
 
         return {
           messages: compressedMessages,
-          totalSaved: result.totalSaved,
-          compressionRatio: result.compressionRatio,
+          totalSaved,
+          compressionRatio: totalOriginalTokens > 0
+            ? totalCompressedTokens / totalOriginalTokens
+            : 1,
         }
       } finally {
         setIsCompressing(false)
@@ -170,18 +212,17 @@ export function usePromptCompressor(
         throw new Error('Compressor not initialized')
       }
 
-      // For now, just yield the full compressed result
-      // A real implementation would process chunks incrementally
-      const result = compressorRef.current.compress(text)
+      // Compress the full text
+      const result = await compressorRef.current.compress(text)
 
       // Simulate chunked output
       const chunkSize = 100
       let position = 0
 
-      while (position < result.compressed.length) {
-        const chunk = result.compressed.slice(position, position + chunkSize)
+      while (position < result.compressedContent.length) {
+        const chunk = result.compressedContent.slice(position, position + chunkSize)
         const progress = Math.min(
-          (position + chunkSize) / result.compressed.length,
+          (position + chunkSize) / result.compressedContent.length,
           1
         )
         yield { chunk, progress }
@@ -195,8 +236,7 @@ export function usePromptCompressor(
    * Load model (for model-based compression)
    */
   const loadModel = React.useCallback(async (): Promise<void> => {
-    // Model-based compression would require loading a model
-    // For now, mark as loaded since we're using heuristic/extractive
+    // DynamicCompressionEngine doesn't require explicit model loading
     setIsModelLoaded(true)
   }, [])
 
@@ -215,7 +255,19 @@ export function usePromptCompressor(
         throw new Error('Compressor not initialized')
       }
 
-      return compressorRef.current.analyzeCompressibility(text)
+      // Perform a quick compression to analyze
+      const result = await compressorRef.current.compress(text)
+
+      // Determine recommended strategy based on results
+      const recommendedStrategy: CompressionStrategy =
+        result.compressionRatio < 0.3 ? 'extractive' :
+        result.compressionRatio < 0.6 ? 'heuristic' : 'auto'
+
+      return {
+        estimatedRatio: result.compressionRatio,
+        recommendedStrategy,
+        redundancyScore: 1 - result.qualityMetrics.informationRetention,
+      }
     },
     []
   )

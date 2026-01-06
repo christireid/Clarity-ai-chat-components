@@ -1,13 +1,151 @@
 'use client'
 
 import * as React from 'react'
-import { createResponseCache, ResponseCacheManager } from '@clarity-chat/clarity-tokens'
-import type { CacheStats } from '@clarity-chat/clarity-tokens'
 import type {
   UseResponseCacheConfig,
   UseResponseCacheReturn,
   CachedResponse,
+  CacheStats,
 } from './types'
+
+/**
+ * Simple in-memory cache manager
+ */
+class ResponseCacheManager<T> {
+  private cache: Map<string, {
+    data: T
+    cachedAt: Date
+    expiresAt: Date
+    tags: string[]
+    hitCount: number
+  }>
+  private maxEntries: number
+  private defaultTTLMs: number
+  private hits: number = 0
+  private misses: number = 0
+
+  constructor(maxEntries: number = 1000, defaultTTLMs: number = 3600000) {
+    this.cache = new Map()
+    this.maxEntries = maxEntries
+    this.defaultTTLMs = defaultTTLMs
+  }
+
+  async search(key: string): Promise<{
+    isHit: boolean
+    entry: {
+      response: T
+      metadata: {
+        createdAt: Date
+        expiresAt: Date
+        tags: string[]
+        hitCount: number
+      }
+    } | null
+  }> {
+    const entry = this.cache.get(key)
+    if (entry && entry.expiresAt > new Date()) {
+      this.hits++
+      entry.hitCount++
+      return {
+        isHit: true,
+        entry: {
+          response: entry.data,
+          metadata: {
+            createdAt: entry.cachedAt,
+            expiresAt: entry.expiresAt,
+            tags: entry.tags,
+            hitCount: entry.hitCount,
+          },
+        },
+      }
+    }
+    this.misses++
+    if (entry) {
+      this.cache.delete(key) // Remove expired
+    }
+    return { isHit: false, entry: null }
+  }
+
+  async set(
+    key: string,
+    value: T,
+    options?: { ttlMs?: number; tags?: string[] }
+  ): Promise<void> {
+    if (this.cache.size >= this.maxEntries) {
+      // Remove oldest entry
+      const oldestKey = this.cache.keys().next().value
+      if (oldestKey) {
+        this.cache.delete(oldestKey)
+      }
+    }
+
+    const ttl = options?.ttlMs ?? this.defaultTTLMs
+    this.cache.set(key, {
+      data: value,
+      cachedAt: new Date(),
+      expiresAt: new Date(Date.now() + ttl),
+      tags: options?.tags ?? [],
+      hitCount: 0,
+    })
+  }
+
+  async invalidate(key: string): Promise<void> {
+    this.cache.delete(key)
+  }
+
+  async invalidateByTag(tag: string): Promise<number> {
+    let count = 0
+    for (const [key, entry] of this.cache) {
+      if (entry.tags.includes(tag)) {
+        this.cache.delete(key)
+        count++
+      }
+    }
+    return count
+  }
+
+  async invalidateByPattern(pattern: RegExp): Promise<number> {
+    let count = 0
+    for (const key of this.cache.keys()) {
+      if (pattern.test(key)) {
+        this.cache.delete(key)
+        count++
+      }
+    }
+    return count
+  }
+
+  async clear(): Promise<void> {
+    this.cache.clear()
+    this.hits = 0
+    this.misses = 0
+  }
+
+  async getOrRevalidate(
+    key: string,
+    revalidate: () => Promise<T>
+  ): Promise<{ data: T; source: 'cache' | 'fresh' | 'stale' }> {
+    const result = await this.search(key)
+    if (result.isHit && result.entry) {
+      return { data: result.entry.response, source: 'cache' }
+    }
+
+    const freshData = await revalidate()
+    await this.set(key, freshData)
+    return { data: freshData, source: 'fresh' }
+  }
+
+  async getStats(): Promise<CacheStats> {
+    const total = this.hits + this.misses
+    return {
+      totalEntries: this.cache.size,
+      hitRate: total > 0 ? this.hits / total : 0,
+      totalTokensSaved: 0, // Would need token counting
+      totalCostSaved: 0, // Would need cost calculation
+      avgSearchTimeMs: 0, // Would need timing
+    }
+  }
+}
 
 /**
  * useResponseCache - Intelligent response caching with TTL and invalidation
@@ -23,7 +161,7 @@ import type {
  * function CachedChat() {
  *   const cache = useResponseCache<string>({
  *     defaultTTLMs: 3600000, // 1 hour
- *     storageBackend: 'indexeddb',
+ *     storageBackend: 'memory',
  *     staleWhileRevalidate: true,
  *   })
  *
@@ -49,28 +187,6 @@ import type {
  *   )
  * }
  * ```
- *
- * @example
- * ```tsx
- * // Tag-based invalidation
- * function DocumentChat() {
- *   const cache = useResponseCache()
- *
- *   const handleQuery = async (docId: string, query: string) => {
- *     const cacheKey = `${docId}:${query}`
- *
- *     await cache.set(cacheKey, response, {
- *       tags: [`doc:${docId}`, 'queries'],
- *     })
- *   }
- *
- *   const handleDocumentUpdate = async (docId: string) => {
- *     // Invalidate all cached queries for this document
- *     const count = await cache.invalidateByTag(`doc:${docId}`)
- *     console.log(`Invalidated ${count} cached responses`)
- *   }
- * }
- * ```
  */
 export function useResponseCache<T = string>(
   config: UseResponseCacheConfig = {}
@@ -89,7 +205,10 @@ export function useResponseCache<T = string>(
 
   // Initialize cache
   React.useEffect(() => {
-    cacheRef.current = createResponseCache<T>(config)
+    cacheRef.current = new ResponseCacheManager<T>(
+      config.maxEntries ?? 1000,
+      config.defaultTTLMs ?? 3600000
+    )
 
     // Update stats periodically
     const updateStats = async () => {
@@ -123,9 +242,9 @@ export function useResponseCache<T = string>(
         return {
           data: result.entry.response,
           cachedAt: result.entry.metadata.createdAt,
-          expiresAt: result.entry.metadata.expiresAt!,
+          expiresAt: result.entry.metadata.expiresAt,
           isStale:
-            result.entry.metadata.expiresAt! < new Date() &&
+            result.entry.metadata.expiresAt < new Date() &&
             !!config.staleWhileRevalidate,
           tags: result.entry.metadata.tags ?? [],
           hitCount: result.entry.metadata.hitCount,
