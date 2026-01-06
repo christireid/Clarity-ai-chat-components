@@ -159,6 +159,7 @@
     }
   },
   "dependencies": {
+    "@clarity-chat/clarity-tokens": "workspace:*",
     "@clarity-chat/license": "workspace:*",
     "@clarity-chat/memory": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
