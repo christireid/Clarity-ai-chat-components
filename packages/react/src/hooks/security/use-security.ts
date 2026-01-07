@@ -30,7 +30,7 @@ import {
 import type {
   SafetyMessage,
   OutputValidationResult,
-} from '../safety/jailbreak-prevention'
+} from '../../safety/jailbreak-prevention'
 
 /**
  * useSecurity Hook

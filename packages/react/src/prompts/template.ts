@@ -76,11 +76,8 @@ export class PromptTemplateEngine {
       }
     }
 
-    const result: PromptRenderResult = {
-      prompt: templateStr,
-      usedVariables: [],
-      success: true,
-    }
+    // Use mutable working object during processing
+    const usedVariables: string[] = []
 
     // Extract all variables from template
     const variablePattern = new RegExp(
@@ -124,10 +121,13 @@ export class PromptTemplateEngine {
       }
 
       if (errors.length > 0) {
-        result.errors = errors
-        result.missingVariables = missing
-        result.success = false
-        return result
+        return {
+          prompt: '',
+          usedVariables: [],
+          errors,
+          missingVariables: missing,
+          success: false,
+        }
       }
     }
 
@@ -138,7 +138,7 @@ export class PromptTemplateEngine {
       const value = this.resolveVariable(varName, options.variables)
 
       if (value !== undefined) {
-        result.usedVariables.push(varName)
+        usedVariables.push(varName)
 
         const varPattern = new RegExp(
           `${this.escapeRegExp(delimiter.start)}\\s*${this.escapeRegExp(varName)}\\s*${this.escapeRegExp(delimiter.end)}`,
@@ -155,8 +155,11 @@ export class PromptTemplateEngine {
       rendered = rendered.trim()
     }
 
-    result.prompt = rendered
-    return result
+    return {
+      prompt: rendered,
+      usedVariables,
+      success: true,
+    }
   }
 
   /**

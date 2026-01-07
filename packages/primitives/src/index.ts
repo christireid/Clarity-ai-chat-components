@@ -205,6 +205,17 @@ export {
   DrawerDescription as ShadcnDrawerDescription,
 } from './components/ui/drawer'
 
+// Tabs
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+
+// Also export with Shadcn prefix for backward compatibility
+export {
+  Tabs as ShadcnTabs,
+  TabsList as ShadcnTabsList,
+  TabsTrigger as ShadcnTabsTrigger,
+  TabsContent as ShadcnTabsContent,
+} from './components/ui/tabs'
+
 // ============================================================================
 // Other Components (Not replaced by shadcn)
 // ============================================================================

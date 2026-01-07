@@ -241,7 +241,9 @@ export function usePromptPlayground(
   })
 
   // Debounce timer ref
-  const debounceRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
 
   // Refs to avoid stale closures in performRender
   const stateRef = React.useRef(state)
@@ -285,12 +287,12 @@ export function usePromptPlayground(
         output: result.prompt,
         tokenCount,
         costEstimate,
-        errors: result.errors || [],
+        errors: result.errors ? [...result.errors] : [],
         isRendering: false,
       }))
 
       if (result.errors && result.errors.length > 0) {
-        errorCallback?.(result.errors)
+        errorCallback?.([...result.errors])
       } else {
         renderCallback?.(result)
       }

@@ -326,7 +326,7 @@ export function PromptVariablesEditor({
                 <Reorder.Item
                   key={variable._key}
                   value={variable}
-                  disabled={!allowReorder || readOnly}
+                  drag={allowReorder && !readOnly}
                   className="list-none"
                 >
                   <motion.div
