@@ -196,3 +196,6 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     chat, // Full access to underlying hook for advanced use cases
   }
 }
+
+// Re-export as useClarityChat for compatibility with ESLint auto-fix rules
+export { useChat as useClarityChat }
