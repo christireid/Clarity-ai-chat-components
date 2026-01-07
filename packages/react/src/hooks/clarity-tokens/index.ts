@@ -50,11 +50,11 @@ export {
 export type {
   // Request/Response
   Role,
-  ChatMessage as CoreChatMessage,
+  ChatMessage as ClarityTokensChatMessage,
   Provider,
   LLMRequest,
   LLMResponse,
-  TokenUsage,
+  TokenUsage as ClarityTokensTokenUsage,
   CacheInfo,
   // Middleware
   Middleware,
@@ -191,7 +191,8 @@ export type {
   GlobalOptimizationStats,
   ModelIdentifier,
   TokenEncoding,
-  ChatMessage,
+  // Note: ChatMessage is not re-exported here to avoid conflict with ./hooks/chat
+  // Use ClarityTokensChatMessage from pipeline types instead
   ModelId,
   TokenizerEncoding,
 } from './types'
