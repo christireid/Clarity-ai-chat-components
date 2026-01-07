@@ -12,13 +12,16 @@ import type {
  * Simple in-memory cache manager
  */
 class ResponseCacheManager<T> {
-  private cache: Map<string, {
-    data: T
-    cachedAt: Date
-    expiresAt: Date
-    tags: string[]
-    hitCount: number
-  }>
+  private cache: Map<
+    string,
+    {
+      data: T
+      cachedAt: Date
+      expiresAt: Date
+      tags: string[]
+      hitCount: number
+    }
+  >
   private maxEntries: number
   private defaultTTLMs: number
   private hits: number = 0
@@ -218,7 +221,9 @@ export function useResponseCache<T = string>(
       }
     }
 
-    void updateStats()
+    updateStats().catch(() => {
+      // Silently ignore stats update failures
+    })
 
     return () => {
       cacheRef.current = null

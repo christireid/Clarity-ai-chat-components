@@ -1,80 +1,113 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useCostEstimator } from '../use-cost-estimator'
 
 // Mock the token-optimization package
-vi.mock('@clarity-chat/token-optimization', () => ({
-  calculateCost: vi.fn((inputTokens: number, outputTokens: number) => ({
-    inputCost: inputTokens * 0.0000025,
-    outputCost: outputTokens * 0.00001,
-    totalCost: inputTokens * 0.0000025 + outputTokens * 0.00001,
-    currency: 'USD',
-    breakdown: {
-      inputTokens,
-      outputTokens,
-      cachedTokens: 0,
-      pricePerInputToken: 0.0000025,
-      pricePerOutputToken: 0.00001,
-    },
-  })),
-  estimateCostFromText: vi.fn((text: string) => ({
-    inputCost: (text.length / 4) * 0.0000025,
-    outputCost: 500 * 0.00001,
-    totalCost: (text.length / 4) * 0.0000025 + 500 * 0.00001,
-    currency: 'USD',
-    breakdown: {
-      inputTokens: Math.ceil(text.length / 4),
-      outputTokens: 500,
-      cachedTokens: 0,
-      pricePerInputToken: 0.0000025,
-      pricePerOutputToken: 0.00001,
-    },
-  })),
-  estimateCostFromMessages: vi.fn((messages: Array<{ content: string }>) => ({
-    inputCost: messages.reduce((sum, m) => sum + m.content.length / 4, 0) * 0.0000025,
-    outputCost: 500 * 0.00001,
-    totalCost: 0.01,
-    currency: 'USD',
-    breakdown: {
-      inputTokens: 100,
-      outputTokens: 500,
-      cachedTokens: 0,
-      pricePerInputToken: 0.0000025,
-      pricePerOutputToken: 0.00001,
-    },
-  })),
-  formatCost: vi.fn((amount: number, currency: string) => `$${amount.toFixed(4)}`),
-  CostTracker: vi.fn().mockImplementation(() => ({
-    recordCost: vi.fn().mockReturnValue({
+vi.mock('@clarity-chat/token-optimization', () => {
+  // Mock classes for constructors
+  class MockCostAwareOptimizer {
+    estimateCost() {
+      return {
+        inputCost: 0.001,
+        outputCost: 0.005,
+        totalCost: 0.006,
+        currency: 'USD',
+        breakdown: { inputTokens: 100, outputTokens: 500, cachedTokens: 0 },
+      }
+    }
+    estimateFromText(text: string) {
+      return {
+        inputCost: (text.length / 4) * 0.0000025,
+        outputCost: 500 * 0.00001,
+        totalCost: 0.01,
+        currency: 'USD',
+        breakdown: {
+          inputTokens: Math.ceil(text.length / 4),
+          outputTokens: 500,
+        },
+      }
+    }
+    estimateFromMessages() {
+      return {
+        inputCost: 0.001,
+        outputCost: 0.005,
+        totalCost: 0.006,
+        currency: 'USD',
+        breakdown: { inputTokens: 100, outputTokens: 500 },
+      }
+    }
+  }
+
+  class MockAccurateTokenCounter {
+    count(text: string) {
+      return Math.ceil(text.length / 4)
+    }
+    countTokens(text: string) {
+      return Math.ceil(text.length / 4)
+    }
+    countChat() {
+      return 100
+    }
+  }
+
+  return {
+    calculateCost: (inputTokens: number, outputTokens: number) => ({
+      inputCost: inputTokens * 0.0000025,
+      outputCost: outputTokens * 0.00001,
+      totalCost: inputTokens * 0.0000025 + outputTokens * 0.00001,
+      currency: 'USD',
+      breakdown: {
+        inputTokens,
+        outputTokens,
+        cachedTokens: 0,
+        pricePerInputToken: 0.0000025,
+        pricePerOutputToken: 0.00001,
+      },
+    }),
+    estimateCostFromText: (text: string) => ({
+      inputCost: (text.length / 4) * 0.0000025,
+      outputCost: 500 * 0.00001,
+      totalCost: (text.length / 4) * 0.0000025 + 500 * 0.00001,
+      currency: 'USD',
+      breakdown: {
+        inputTokens: Math.ceil(text.length / 4),
+        outputTokens: 500,
+        cachedTokens: 0,
+        pricePerInputToken: 0.0000025,
+        pricePerOutputToken: 0.00001,
+      },
+    }),
+    estimateCostFromMessages: () => ({
       inputCost: 0.001,
       outputCost: 0.005,
-      totalCost: 0.006,
+      totalCost: 0.01,
       currency: 'USD',
-      breakdown: {},
+      breakdown: {
+        inputTokens: 100,
+        outputTokens: 500,
+        cachedTokens: 0,
+        pricePerInputToken: 0.0000025,
+        pricePerOutputToken: 0.00001,
+      },
     }),
-    getTracking: vi.fn().mockReturnValue({
-      today: 0.006,
-      thisWeek: 0.006,
-      thisMonth: 0.006,
-      allTime: 0.006,
-      byModel: { 'gpt-4o': 0.006 },
-      byCategory: {},
+    formatCost: (amount: number) => `$${amount.toFixed(4)}`,
+    getModelConfig: () => ({
+      inputPer1M: 2.5,
+      outputPer1M: 10.0,
+      cachedInputPer1M: 1.25,
+      contextWindow: 128000,
+      encoding: 'o200k_base',
     }),
-    reset: vi.fn(),
-    exportAsJson: vi.fn().mockReturnValue('{}'),
-    exportAsCsv: vi.fn().mockReturnValue(''),
-  })),
-  getModelConfig: vi.fn(() => ({
-    inputPer1M: 2.5,
-    outputPer1M: 10.0,
-    cachedInputPer1M: 1.25,
-    contextWindow: 128000,
-    encoding: 'o200k_base',
-  })),
-  storeCostTracking: vi.fn().mockResolvedValue(undefined),
-  getCostTracking: vi.fn().mockResolvedValue(null),
-  isIndexedDBAvailable: vi.fn().mockReturnValue(false),
-}))
+    storeCostTracking: () => Promise.resolve(undefined),
+    getCostTracking: () => Promise.resolve(null),
+    isIndexedDBAvailable: () => false,
+    CostAwareOptimizer: MockCostAwareOptimizer,
+    AccurateTokenCounter: MockAccurateTokenCounter,
+  }
+})
 
 describe('useCostEstimator', () => {
   beforeEach(() => {
@@ -157,9 +190,7 @@ describe('useCostEstimator', () => {
 
   describe('cost formatting', () => {
     it('should format cost for display', () => {
-      const { result } = renderHook(() =>
-        useCostEstimator({ currency: 'USD' })
-      )
+      const { result } = renderHook(() => useCostEstimator({ currency: 'USD' }))
 
       const formatted = result.current.formatCost(0.0023)
       expect(formatted).toMatch(/\$/)

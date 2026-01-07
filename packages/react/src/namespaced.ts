@@ -44,7 +44,7 @@ import {
 
 // Import hooks
 import {
-  useChat,
+  useClarityChat,
   type UseChatOptions,
   type UseChatReturn,
 } from './hooks/chat/use-chat-unified'

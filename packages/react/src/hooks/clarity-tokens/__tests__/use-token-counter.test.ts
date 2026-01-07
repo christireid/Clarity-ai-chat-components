@@ -1,24 +1,67 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useTokenCounter } from '../use-token-counter'
 
 // Mock the token-optimization package
-vi.mock('@clarity-chat/token-optimization', () => ({
-  countTokens: vi.fn((text: string) => Math.ceil(text.length / 4)),
-  countChatTokens: vi.fn((messages: Array<{ content: string }>) =>
-    messages.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4, 3)
-  ),
-  checkWithinLimit: vi.fn(
-    (text: string, limit: number) => Math.ceil(text.length / 4) <= limit
-  ),
-  getModelConfig: vi.fn(() => ({
-    contextWindow: 128000,
-    inputPer1M: 2.5,
-    outputPer1M: 10.0,
-    encoding: 'o200k_base',
-  })),
-  getModelEncoding: vi.fn(() => 'o200k_base'),
-}))
+vi.mock('@clarity-chat/token-optimization', () => {
+  // Define mock class inside factory function (required due to hoisting)
+  class MockAccurateTokenCounter {
+    count(text: string) {
+      return Math.ceil(text.length / 4)
+    }
+    countTokens(text: string) {
+      return Math.ceil(text.length / 4)
+    }
+    countChatTokens(messages: Array<{ content: string }>) {
+      return messages.reduce(
+        (sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4,
+        3
+      )
+    }
+    countChat(messages: Array<{ content: string }>) {
+      return messages.reduce(
+        (sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4,
+        3
+      )
+    }
+    checkWithinLimit(text: string, limit: number) {
+      return Math.ceil(text.length / 4) <= limit
+    }
+    isWithinLimit(text: string, limit: number) {
+      return Math.ceil(text.length / 4) <= limit
+    }
+    getModelConfig() {
+      return {
+        contextWindow: 128000,
+        inputPer1M: 2.5,
+        outputPer1M: 10.0,
+        encoding: 'o200k_base',
+      }
+    }
+  }
+
+  return {
+    countTokens: (text: string) => Math.ceil(text.length / 4),
+    countChatTokens: (messages: Array<{ content: string }>) =>
+      messages.reduce(
+        (sum, msg) => sum + Math.ceil(msg.content.length / 4) + 4,
+        3
+      ),
+    checkWithinLimit: (text: string, limit: number) =>
+      Math.ceil(text.length / 4) <= limit,
+    getModelConfig: () => ({
+      contextWindow: 128000,
+      inputPer1M: 2.5,
+      outputPer1M: 10.0,
+      encoding: 'o200k_base',
+    }),
+    getModelEncoding: () => 'o200k_base',
+    AccurateTokenCounter: MockAccurateTokenCounter,
+  }
+})
 
 describe('useTokenCounter', () => {
   beforeEach(() => {
@@ -32,9 +75,7 @@ describe('useTokenCounter', () => {
 
   describe('initialization', () => {
     it('should initialize with default values', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       expect(result.current.tokenCount).toBe(0)
       expect(result.current.streamTokenCount).toBe(0)
@@ -43,9 +84,7 @@ describe('useTokenCounter', () => {
     })
 
     it('should provide countTokens function', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       expect(typeof result.current.countTokens).toBe('function')
     })
@@ -53,18 +92,14 @@ describe('useTokenCounter', () => {
 
   describe('token counting', () => {
     it('should count tokens synchronously', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       const count = result.current.countTokens('Hello, world!')
       expect(count).toBeGreaterThan(0)
     })
 
     it('should count chat message tokens', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       const messages = [
         { id: '1', role: 'user' as const, content: 'Hello!' },
@@ -101,9 +136,7 @@ describe('useTokenCounter', () => {
 
   describe('limit checking', () => {
     it('should check if text is within limit', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       expect(result.current.isWithinLimit('Short text', 100)).toBe(true)
     })
@@ -111,9 +144,7 @@ describe('useTokenCounter', () => {
 
   describe('streaming', () => {
     it('should count streaming tokens', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       act(() => {
         result.current.onStreamChunk('Hello ')
@@ -124,9 +155,7 @@ describe('useTokenCounter', () => {
     })
 
     it('should reset stream count', () => {
-      const { result } = renderHook(() =>
-        useTokenCounter({ model: 'gpt-4o' })
-      )
+      const { result } = renderHook(() => useTokenCounter({ model: 'gpt-4o' }))
 
       act(() => {
         result.current.onStreamChunk('Hello world!')
