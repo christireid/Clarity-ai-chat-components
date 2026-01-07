@@ -5,6 +5,7 @@ import { TrustBlock } from "@/components/marketing/trust-block"
 import { FeaturesBento } from "@/components/marketing/features-bento"
 import { ChatDemoSection } from "@/components/marketing/chat-demo-section"
 import { ServicesSection } from "@/components/marketing/services-section"
+import { ProcessSection } from "@/components/marketing/process-section"
 import { PricingSection } from "@/components/marketing/pricing-section"
 import { ContactSection } from "@/components/marketing/contact-section"
 import { FinalCTASection } from "@/components/marketing/final-cta-section"
@@ -17,7 +18,7 @@ export default function Home() {
         {/* Hero with 3D particle field */}
         <HeroSection />
 
-        {/* Trust block with stats and testimonials */}
+        {/* Trust block with stats */}
         <TrustBlock />
 
         {/* Interactive product demo */}
@@ -34,6 +35,9 @@ export default function Home() {
         <div id="services">
           <ServicesSection />
         </div>
+
+        {/* Process section */}
+        <ProcessSection />
 
         {/* Pricing */}
         <PricingSection />
