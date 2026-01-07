@@ -10,64 +10,9 @@ import {
   Brain,
   Shield,
   Code2,
+  Box,
+  Palette,
 } from "lucide-react"
-
-const features = [
-  {
-    icon: Zap,
-    title: "Lightning Fast",
-    description: "50ms average interaction time with optimistic UI updates",
-    size: "small",
-    highlight: "50ms",
-  },
-  {
-    icon: Coins,
-    title: "Token Optimization",
-    description:
-      "KV-cache alignment, semantic caching, and dynamic output limits save 40-60% on API costs",
-    size: "large",
-    highlight: "40-60%",
-    visual: "token-chart",
-  },
-  {
-    icon: Radio,
-    title: "Streaming Excellence",
-    description:
-      "SSE & WebSocket hooks with real-time UI updates and optimistic rendering for seamless chat experiences",
-    size: "large",
-    highlight: "Real-time",
-    visual: "streaming",
-  },
-  {
-    icon: Accessibility,
-    title: "Accessible",
-    description: "WCAG 2.1 AA compliant with full keyboard navigation",
-    size: "small",
-    highlight: "WCAG 2.1",
-  },
-  {
-    icon: Plug,
-    title: "Multi-Provider",
-    description: "OpenAI, Anthropic Claude, Google Gemini with one unified API",
-    size: "medium",
-    highlight: "Unified API",
-  },
-  {
-    icon: Brain,
-    title: "Memory Management",
-    description:
-      "Conversation context, sliding window, and hybrid summarization strategies",
-    size: "medium",
-    highlight: "Smart Context",
-  },
-  {
-    icon: Shield,
-    title: "Enterprise Ready",
-    description: "TypeScript strict mode, 181/181 tests passing, battle-tested",
-    size: "medium",
-    highlight: "181 tests",
-  },
-]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -142,6 +87,24 @@ function StreamingVisual() {
   )
 }
 
+// Component count visualization
+function ComponentGrid() {
+  return (
+    <div className="mt-4 grid grid-cols-8 gap-1">
+      {[...Array(24)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="aspect-square rounded-sm bg-primary"
+          initial={{ opacity: 0, scale: 0 }}
+          whileInView={{ opacity: 0.3 + (i % 3) * 0.2, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 + i * 0.02 }}
+        />
+      ))}
+    </div>
+  )
+}
+
 export function FeaturesBento() {
   return (
     <section className="relative py-24 overflow-hidden">
@@ -162,7 +125,7 @@ export function FeaturesBento() {
             <span className="gradient-text">Clarity Chat</span>
           </h2>
           <p className="text-body-large text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to build production-ready AI chat interfaces
+            The most complete AI chat component library available
           </p>
         </motion.div>
 
@@ -174,23 +137,22 @@ export function FeaturesBento() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {/* Row 1 */}
+          {/* Row 1 - Components count */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl"
           >
             <div className="feature-icon w-12 h-12 rounded-xl mb-4">
-              <Zap className="w-6 h-6 text-primary" />
+              <Box className="w-6 h-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Lightning Fast</h3>
+            <h3 className="font-semibold mb-2">200+ Components</h3>
             <p className="text-sm text-muted-foreground">
-              50ms average interaction time
+              Production-ready UI components
             </p>
-            <div className="mt-4">
-              <span className="text-3xl font-bold gradient-text">50ms</span>
-            </div>
+            <ComponentGrid />
           </motion.div>
 
+          {/* Token Optimization - Large */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl md:col-span-2 lg:col-span-2"
@@ -200,37 +162,44 @@ export function FeaturesBento() {
             </div>
             <h3 className="font-semibold mb-2">Token Optimization</h3>
             <p className="text-sm text-muted-foreground">
-              KV-cache alignment, semantic caching, dynamic output limits
+              Built-in budget tracking, KV-cache alignment, and semantic caching
             </p>
             <div className="flex items-baseline gap-2 mt-4">
               <span className="text-4xl font-bold gradient-text-gold">
-                40-60%
+                60-90%
               </span>
               <span className="text-muted-foreground">cost savings</span>
             </div>
             <TokenChart />
           </motion.div>
 
+          {/* Themes */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl"
           >
             <div className="feature-icon w-12 h-12 rounded-xl mb-4">
-              <Accessibility className="w-6 h-6 text-primary" />
+              <Palette className="w-6 h-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Accessible</h3>
+            <h3 className="font-semibold mb-2">15 Theme Presets</h3>
             <p className="text-sm text-muted-foreground">
-              WCAG 2.1 AA compliant
+              Instant customization
             </p>
-            <div className="mt-4 flex items-center gap-2">
-              <span className="text-2xl font-bold gradient-text">AA</span>
-              <span className="text-sm text-muted-foreground">
-                keyboard-first
-              </span>
+            <div className="mt-4 flex gap-1">
+              {["bg-primary", "bg-secondary", "bg-accent", "bg-emerald-500", "bg-rose-500"].map((bg, i) => (
+                <motion.div
+                  key={i}
+                  className={`w-6 h-6 rounded-full ${bg}`}
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                />
+              ))}
             </div>
           </motion.div>
 
-          {/* Row 2 */}
+          {/* Row 2 - Streaming */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl md:col-span-2 lg:col-span-2"
@@ -240,12 +209,12 @@ export function FeaturesBento() {
             </div>
             <h3 className="font-semibold mb-2">Streaming Excellence</h3>
             <p className="text-sm text-muted-foreground">
-              SSE & WebSocket hooks with real-time UI updates and optimistic
-              rendering
+              SSE & WebSocket hooks with real-time UI updates and optimistic rendering
             </p>
             <StreamingVisual />
           </motion.div>
 
+          {/* Multi-Provider */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl"
@@ -255,9 +224,9 @@ export function FeaturesBento() {
             </div>
             <h3 className="font-semibold mb-2">Multi-Provider</h3>
             <p className="text-sm text-muted-foreground">
-              OpenAI, Claude, Gemini
+              One API, any provider
             </p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               {["OpenAI", "Claude", "Gemini"].map((provider) => (
                 <span
                   key={provider}
@@ -269,6 +238,7 @@ export function FeaturesBento() {
             </div>
           </motion.div>
 
+          {/* Memory */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl"
@@ -276,9 +246,9 @@ export function FeaturesBento() {
             <div className="feature-icon w-12 h-12 rounded-xl mb-4">
               <Brain className="w-6 h-6 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Memory Management</h3>
+            <h3 className="font-semibold mb-2">Built-in Memory</h3>
             <p className="text-sm text-muted-foreground">
-              Smart context windows
+              Zero-config persistence
             </p>
             <div className="mt-4">
               <div className="flex gap-1">
@@ -294,7 +264,31 @@ export function FeaturesBento() {
             </div>
           </motion.div>
 
-          {/* Row 3 */}
+          {/* Row 3 - Accessibility */}
+          <motion.div
+            variants={itemVariants}
+            className="bento-card p-6 rounded-2xl md:col-span-2 lg:col-span-2"
+          >
+            <div className="feature-icon w-12 h-12 rounded-xl mb-4">
+              <Accessibility className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="font-semibold mb-2">WCAG AAA Accessible</h3>
+            <p className="text-sm text-muted-foreground">
+              Full keyboard navigation, screen reader support, high contrast modes
+            </p>
+            <div className="mt-4 flex items-center gap-4">
+              <span className="text-3xl font-bold gradient-text">AAA</span>
+              <div className="h-8 w-px bg-border" />
+              <div className="flex items-center gap-2">
+                <kbd className="px-2 py-1 bg-muted rounded text-xs">Tab</kbd>
+                <span className="text-sm text-muted-foreground">
+                  Keyboard-first
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Test Coverage */}
           <motion.div
             variants={itemVariants}
             className="bento-card p-6 rounded-2xl md:col-span-2 lg:col-span-2"
@@ -304,12 +298,17 @@ export function FeaturesBento() {
             </div>
             <h3 className="font-semibold mb-2">Enterprise Ready</h3>
             <p className="text-sm text-muted-foreground">
-              TypeScript strict mode, comprehensive test coverage
+              100% TypeScript strict mode, comprehensive test coverage
             </p>
             <div className="mt-4 flex items-center gap-4">
               <div>
-                <span className="text-3xl font-bold gradient-text">181</span>
-                <span className="text-muted-foreground">/181 tests</span>
+                <span className="text-3xl font-bold gradient-text">313</span>
+                <span className="text-muted-foreground"> tests</span>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <div>
+                <span className="text-3xl font-bold gradient-text">80%+</span>
+                <span className="text-muted-foreground"> coverage</span>
               </div>
               <div className="h-8 w-px bg-border" />
               <div className="flex items-center gap-2">
@@ -321,9 +320,27 @@ export function FeaturesBento() {
             </div>
           </motion.div>
 
+          {/* Hooks count */}
           <motion.div
             variants={itemVariants}
-            className="bento-card p-6 rounded-2xl md:col-span-2 lg:col-span-2"
+            className="bento-card p-6 rounded-2xl"
+          >
+            <div className="feature-icon w-12 h-12 rounded-xl mb-4">
+              <Zap className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="font-semibold mb-2">95+ Hooks</h3>
+            <p className="text-sm text-muted-foreground">
+              Full headless control
+            </p>
+            <div className="mt-4">
+              <span className="text-3xl font-bold gradient-text">95+</span>
+            </div>
+          </motion.div>
+
+          {/* DX */}
+          <motion.div
+            variants={itemVariants}
+            className="bento-card p-6 rounded-2xl lg:col-span-3"
           >
             <div className="feature-icon w-12 h-12 rounded-xl mb-4">
               <Code2 className="w-6 h-6 text-primary" />
@@ -334,13 +351,24 @@ export function FeaturesBento() {
             </p>
             <div className="code-block rounded-lg p-4 text-sm font-mono">
               <div className="text-muted-foreground">
-                {"// That's all you need"}
+                {"// Full chat UI in one line"}
               </div>
               <div>
-                <span className="text-primary">const</span>
-                {" { messages, send } = "}
-                <span className="text-secondary">useChat</span>
-                {"();"}
+                <span className="text-primary">import</span>
+                {" { "}
+                <span className="text-secondary">ClarityChat</span>
+                {" } "}
+                <span className="text-primary">from</span>
+                <span className="text-accent"> '@clarity-chat/react'</span>
+              </div>
+              <div className="mt-2">
+                {"<"}
+                <span className="text-secondary">ClarityChat</span>
+                {" "}
+                <span className="text-accent">preset</span>
+                {"="}
+                <span className="text-accent">"professional"</span>
+                {" />"}
               </div>
             </div>
           </motion.div>
