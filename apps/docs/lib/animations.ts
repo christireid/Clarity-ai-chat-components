@@ -13,6 +13,19 @@
 
 import { Variants, Transition } from 'framer-motion'
 
+// Type for scroll animation configs that include viewport and transition at root level
+// Using separate interface to avoid Variants index signature conflicts
+interface ScrollAnimationConfig {
+  initial: Record<string, unknown>
+  whileInView: Record<string, unknown>
+  viewport?: {
+    once?: boolean
+    margin?: string
+    amount?: number | 'some' | 'all'
+  }
+  transition?: Transition | Record<string, unknown>
+}
+
 // =============================================================================
 // EASING CURVES
 // =============================================================================
@@ -242,7 +255,7 @@ export const staggerItem: Variants = {
  * Fade in when scrolling into view
  * Use with whileInView prop
  */
-export const scrollFadeIn: Variants = {
+export const scrollFadeIn: ScrollAnimationConfig = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-100px' },
@@ -252,7 +265,7 @@ export const scrollFadeIn: Variants = {
 /**
  * Scale up when scrolling into view
  */
-export const scrollScaleIn: Variants = {
+export const scrollScaleIn: ScrollAnimationConfig = {
   initial: { opacity: 0, scale: 0.9 },
   whileInView: { opacity: 1, scale: 1 },
   viewport: { once: true, margin: '-50px' },
@@ -262,7 +275,7 @@ export const scrollScaleIn: Variants = {
 /**
  * Blur in when scrolling into view (for images, media)
  */
-export const scrollBlurIn: Variants = {
+export const scrollBlurIn: ScrollAnimationConfig = {
   initial: { opacity: 0, filter: 'blur(8px)' },
   whileInView: { opacity: 1, filter: 'blur(0px)' },
   viewport: { once: true, margin: '-100px' },
@@ -441,22 +454,25 @@ export const createSlideVariant = (
   distance: number = 20,
   duration: keyof typeof durations = 'normal'
 ): Variants => {
-  const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
-  const value =
-    direction === 'down' || direction === 'right' ? distance : -distance
+  const transitionConfig = {
+    duration: durations[duration],
+    ease: easings.easeOut,
+  }
 
-  return {
-    initial: { opacity: 0, [axis]: value },
-    animate: {
-      opacity: 1,
-      [axis]: 0,
-      transition: { duration: durations[duration], ease: easings.easeOut },
-    },
-    exit: {
-      opacity: 0,
-      [axis]: -value,
-      transition: { duration: durations[duration], ease: easings.easeOut },
-    },
+  if (direction === 'up' || direction === 'down') {
+    const value = direction === 'down' ? distance : -distance
+    return {
+      initial: { opacity: 0, y: value },
+      animate: { opacity: 1, y: 0, transition: transitionConfig },
+      exit: { opacity: 0, y: -value, transition: transitionConfig },
+    }
+  } else {
+    const value = direction === 'right' ? distance : -distance
+    return {
+      initial: { opacity: 0, x: value },
+      animate: { opacity: 1, x: 0, transition: transitionConfig },
+      exit: { opacity: 0, x: -value, transition: transitionConfig },
+    }
   }
 }
 

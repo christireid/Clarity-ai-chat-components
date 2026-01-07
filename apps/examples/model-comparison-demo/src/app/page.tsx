@@ -220,7 +220,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="border-t dark:border-gray-700 pt-4">
                   <StreamingMessage
-                    content={leftResponse}
+                    text={leftResponse}
                     isStreaming={isLeftStreaming}
                   />
                 </div>
@@ -302,7 +302,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="border-t dark:border-gray-700 pt-4">
                   <StreamingMessage
-                    content={rightResponse}
+                    text={rightResponse}
                     isStreaming={isRightStreaming}
                   />
                 </div>

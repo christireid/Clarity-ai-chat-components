@@ -9,6 +9,7 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
+import type { ToolName } from './tools'
 
 export interface StreamChunk {
   type:
@@ -204,7 +205,7 @@ export async function* streamFromClaudeWithTools(
     model = 'claude-3-5-sonnet-20241022',
     temperature = 0.7,
     maxTokens = 4000,
-    tools = [],
+    tools: providedTools = [],
   } = options
 
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -216,8 +217,8 @@ export async function* streamFromClaudeWithTools(
   const anthropic = new Anthropic({ apiKey })
 
   // Import tool handlers dynamically to avoid circular deps
-  const tools = await import('./tools')
-  const executeToolCall = tools.executeToolCall
+  const toolsModule = await import('./tools')
+  const executeToolCall = toolsModule.executeToolCall
 
   try {
     // Extract system message if present
@@ -230,7 +231,7 @@ export async function* streamFromClaudeWithTools(
       max_tokens: maxTokens,
       temperature,
       system: systemMessage,
-      tools: tools.length > 0 ? tools : undefined,
+      tools: providedTools.length > 0 ? providedTools : undefined,
       messages: conversationMessages.map((m) => ({
         role: m.role === 'user' ? 'user' : 'assistant',
         content: m.content,
@@ -274,8 +275,8 @@ export async function* streamFromClaudeWithTools(
           // Execute the tool
           try {
             const toolResult = await executeToolCall(
-              block.name as tools.ToolName,
-              block.input as Record<string, unknown>
+              block.name as ToolName,
+              block.input as Parameters<typeof executeToolCall>[1]
             )
 
             // Emit tool result for UI to render
@@ -321,8 +322,8 @@ export async function* streamFromClaudeWithTools(
         if (block.type === 'tool_use') {
           try {
             const result = await executeToolCall(
-              block.name as tools.ToolName,
-              block.input as Record<string, unknown>
+              block.name as ToolName,
+              block.input as Parameters<typeof executeToolCall>[1]
             )
             toolResults.push({
               type: 'tool_result',
@@ -366,7 +367,7 @@ export async function* streamFromClaudeWithTools(
         max_tokens: maxTokens,
         temperature,
         system: systemMessage,
-        tools: tools.length > 0 ? tools : undefined,
+        tools: providedTools.length > 0 ? providedTools : undefined,
         messages: continuationMessages,
       })
 

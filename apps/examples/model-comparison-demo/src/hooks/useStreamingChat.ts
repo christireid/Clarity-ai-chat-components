@@ -8,7 +8,17 @@ export interface ModelConfig {
   name: string
   [key: string]: any
 }
-export type ModelMetadata = ModelConfig
+// ModelMetadata compatible with ModelInfo from @clarity-chat/react
+export interface ModelMetadata {
+  id: string
+  name: string
+  provider: 'openai' | 'anthropic' | 'google'
+  speed: 'fast' | 'medium' | 'slow'
+  cost: 'low' | 'medium' | 'high'
+  quality: 'good' | 'excellent' | 'best'
+  contextWindow: number
+  description?: string
+}
 
 interface StreamChunk {
   type: 'token' | 'tool_call' | 'thinking' | 'citation' | 'done' | 'error'

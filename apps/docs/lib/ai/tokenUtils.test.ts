@@ -13,6 +13,7 @@ import {
   suggestTokenEstimate,
 } from './tokenUtils'
 import { PROMPT_TEMPLATES } from './promptTemplates'
+import { logger } from '@/lib/logger'
 
 // ============================================================================
 // estimateTokens Tests
