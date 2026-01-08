@@ -313,3 +313,38 @@ export * from './agents/tool-ui-registry'
 // ============================================================================
 // Note: Animation exports are already in public-api, additional internal
 // animation utilities can be imported directly from './animations'
+
+// ============================================================================
+// APP API ESCAPE HATCHES (For advanced customization)
+// ============================================================================
+// These utilities allow advanced users to customize the unified ClarityChatApp
+// without using the full component. Use these if you need fine-grained control
+// over configuration resolution or need to build custom integrations.
+export {
+  // Configuration resolution
+  resolveConfig,
+  isFeatureEnabled,
+  describeActiveFeatures,
+  createPresetConfig,
+  mergeConfigs,
+  ConfigValidationError,
+  type ResolveConfigOptions,
+} from './app-api/resolve-config'
+
+// Default configurations (for overriding specific defaults)
+export {
+  DEFAULT_FEATURE_FLAGS,
+  DEFAULT_MEMORY_CONFIG,
+  DEFAULT_TOKEN_OPTIMIZATION_CONFIG,
+  DEFAULT_TOOLS_CONFIG,
+  DEFAULT_RAG_CONFIG,
+  DEFAULT_SAFETY_CONFIG,
+  DEFAULT_OBSERVABILITY_CONFIG,
+  DEFAULT_UI_CONFIG,
+  DEFAULT_ERROR_RECOVERY_CONFIG,
+  DEFAULT_STREAMING_CONFIG,
+  PRESET_DEFINITIONS,
+  DEFAULT_RESOLVED_CONFIG,
+  MODEL_TOKEN_BUDGETS,
+  getModelTokenBudget,
+} from './app-api/defaults'

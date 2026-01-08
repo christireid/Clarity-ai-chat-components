@@ -1,10 +1,24 @@
 'use client'
 
 /**
- * @clarity-chat/react - Public API
+ * @clarity-chat/react - Public API (Legacy)
  *
  * This file defines the intentional public API surface for Clarity Chat.
  * Only exports in this file are considered stable and supported.
+ *
+ * **RECOMMENDED**: For new projects, use the unified App API instead:
+ * ```tsx
+ * import { ClarityChatApp, useClarityChatApp } from '@clarity-chat/react'
+ *
+ * // Basic usage - streaming chat in 3 minutes
+ * <ClarityChatApp api="/api/chat" />
+ *
+ * // With memory enabled (one flag)
+ * <ClarityChatApp api="/api/chat" features={{ memory: true }} />
+ *
+ * // Enterprise preset with all features
+ * <ClarityChatApp api="/api/chat" preset="enterprise" />
+ * ```
  *
  * For internal utilities, import from '@clarity-chat/react/internal' (not recommended).
  *
@@ -15,7 +29,7 @@
 // CORE COMPONENTS (The essentials - what 90% of users need)
 // ============================================================================
 
-// Primary drop-in component
+// Primary drop-in component (Legacy - consider using ClarityChatApp from app-api instead)
 export { ClarityChat } from './components/chat/clarity-chat'
 export type { ClarityChatProps } from './components/chat/clarity-chat'
 
