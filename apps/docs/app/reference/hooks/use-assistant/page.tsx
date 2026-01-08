@@ -184,7 +184,7 @@ function Assistant() {
           Experiment with useAssistant:
         </p>
         <CodePlayground
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          initialCode={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Example() {
   const { messages, append, status, toolInvocations } = useAssistant({

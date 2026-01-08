@@ -36,7 +36,7 @@ export default function StateManagementPatternsPage() {
         <h2>Message State Management</h2>
         <p>Manage message state with hooks:</p>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useClarityChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithState() {
@@ -69,7 +69,7 @@ function ChatWithState() {
         <h2>Conversation State</h2>
         <p>Manage conversation state:</p>
         <CodePlayground
-          code={`import { useState, useEffect } from 'react'
+          initialCode={`import { useState, useEffect } from 'react'
 import { useClarityChat } from '@clarity-chat/react/internal'
 
 function ConversationManager() {
@@ -113,7 +113,7 @@ function ConversationManager() {
         <h2>Global State with Context</h2>
         <p>Use Context for global state:</p>
         <CodePlayground
-          code={`import { createContext, useContext, useState } from 'react'
+          initialCode={`import { createContext, useContext, useState } from 'react'
 import { useClarityChat } from '@clarity-chat/react/internal'
 
 interface ChatContextType {
@@ -156,7 +156,7 @@ function ChatComponent() {
         <h2>State Persistence</h2>
         <p>Persist state to localStorage or IndexedDB:</p>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useLocalStorage } from '@clarity-chat/react/internal'
 
 function PersistentChat() {
@@ -189,7 +189,7 @@ function PersistentChat() {
         <h2>State Synchronization</h2>
         <p>Sync state across multiple components:</p>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useTokenTracker } from '@clarity-chat/react/internal'
 
 function SyncedChat() {
@@ -216,7 +216,7 @@ function SyncedChat() {
         <h2>Optimistic Updates</h2>
         <p>Use optimistic updates for better UX:</p>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useClarityChat } from '@clarity-chat/react/internal'
 import { useOptimistic } from 'react'
 
 function OptimisticChat() {

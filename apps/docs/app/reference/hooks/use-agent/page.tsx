@@ -134,7 +134,7 @@ function AgentChat() {
           Experiment with useAgent:
         </p>
         <CodePlayground
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          initialCode={`import { useAgent } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

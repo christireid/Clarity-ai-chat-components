@@ -37,7 +37,7 @@ export default function AccessibilityPatternsPage() {
         <h2>ARIA Attributes</h2>
         <p>Add ARIA attributes for accessibility:</p>
         <CodePlayground
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function AccessibleChat() {
   return (
@@ -84,7 +84,7 @@ function AccessibleMessage({ message }: { message: Message }) {
         <h2>Keyboard Navigation</h2>
         <p>Implement keyboard navigation:</p>
         <CodePlayground
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatInput } from '@clarity-chat/react/internal'
 import { useKeyboardNavigation } from '@clarity-chat/react/internal'
 
 function KeyboardAccessibleChat() {
@@ -132,7 +132,7 @@ function KeyboardAccessibleChat() {
         <h2>Screen Reader Support</h2>
         <p>Support screen readers:</p>
         <CodePlayground
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function ScreenReaderChat() {
   const [announcements, setAnnouncements] = useState([])
@@ -191,7 +191,7 @@ function AccessibleMessage({ message }: { message: Message }) {
         <h2>Focus Management</h2>
         <p>Manage focus for accessibility:</p>
         <CodePlayground
-          code={`import { useEffect, useRef } from 'react'
+          initialCode={`import { useEffect, useRef } from 'react'
 import { ChatWindow } from '@clarity-chat/react/internal'
 
 function FocusManagedChat() {
@@ -242,7 +242,7 @@ function FocusManagedChat() {
         <h2>WCAG Compliance</h2>
         <p>Ensure WCAG compliance:</p>
         <CodePlayground
-          code={`// WCAG 2.1 AA compliance checklist
+          initialCode={`// WCAG 2.1 AA compliance checklist
 
 function WCAGCompliantChat() {
   return (

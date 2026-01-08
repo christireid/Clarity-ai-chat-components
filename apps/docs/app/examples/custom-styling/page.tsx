@@ -48,7 +48,7 @@ export default function CustomStylingExamplePage() {
         </p>
 
         <CodePlayground
-          code={`function CSSVariablesExample() {
+          initialCode={`function CSSVariablesExample() {
   const messages = [
     {
       id: '1',
@@ -136,7 +136,7 @@ render(<CSSVariablesExample />)`}
         </p>
 
         <CodePlayground
-          code={`function TailwindExample() {
+          initialCode={`function TailwindExample() {
   const messages = [
     {
       id: '1',
@@ -181,7 +181,7 @@ render(<TailwindExample />)`}
         </p>
 
         <CodePlayground
-          code={`import './custom-chat.css' // Your custom styles
+          initialCode={`import './custom-chat.css' // Your custom styles
 
 function CustomCSSExample() {
   const messages = [
@@ -288,7 +288,7 @@ render(<CustomCSSExample />)`}
         </p>
 
         <CodePlayground
-          code={`import { useState } from 'react'
+          initialCode={`import { useState } from 'react'
 
 const themes = {
   twitter: {
@@ -427,7 +427,7 @@ export default BrandThemesExample`}
         <p>Implement dark mode with automatic system preference detection.</p>
 
         <CodePlayground
-          code={`import { useState, useEffect } from 'react'
+          initialCode={`import { useState, useEffect } from 'react'
 
 function DarkModeExample() {
   const [isDark, setIsDark] = useState(false)
@@ -520,7 +520,7 @@ render(<DarkModeExample />)`}
         <p>Create stunning gradient-based themes for modern, vibrant UIs.</p>
 
         <CodePlayground
-          code={`function GradientThemeExample() {
+          initialCode={`function GradientThemeExample() {
   const messages = [
     {
       id: '1',
@@ -623,7 +623,7 @@ render(<GradientThemeExample />)`}
         <p>Style individual message components with custom renderers.</p>
 
         <CodePlayground
-          code={`function CustomMessageStyling() {
+          initialCode={`function CustomMessageStyling() {
   const messages = [
     {
       id: '1',

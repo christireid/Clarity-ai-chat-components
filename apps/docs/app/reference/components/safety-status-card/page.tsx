@@ -40,7 +40,7 @@ export default function SafetyStatusCardPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function BasicSafety() {
+          initialCode={`function BasicSafety() {
   const checks = [
     {
       id: '1',
@@ -77,7 +77,7 @@ render(<BasicSafety />)`}
       <section className="docs-section">
         <h2>With Warnings and Failures</h2>
         <CodePlayground
-          code={`function SafetyIssues() {
+          initialCode={`function SafetyIssues() {
   const checks = [
     {
       id: '1',

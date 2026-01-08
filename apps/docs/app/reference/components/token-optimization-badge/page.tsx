@@ -21,7 +21,7 @@ export default function TokenOptimizationBadgePage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <TokenOptimizationBadge savingsPercent={37} />

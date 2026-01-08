@@ -33,7 +33,7 @@ export default function AdvancedAgentWorkflowCookbook() {
       <section className="docs-section">
         <h2>Complete Example</h2>
         <CodePlayground
-          code={`function ResearchAgent() {
+          initialCode={`function ResearchAgent() {
   const tools = [
     {
       name: 'web_search',

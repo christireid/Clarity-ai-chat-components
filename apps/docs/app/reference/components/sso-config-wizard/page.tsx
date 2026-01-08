@@ -66,7 +66,7 @@ export default function SSOConfigWizardPage() {
         <h2>Basic Usage</h2>
         <p>Configure SSO for a tenant:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 
 function SSOSetup({ tenantId }: { tenantId: string }) {
   return (
@@ -95,7 +95,7 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
         <h2>SAML Configuration</h2>
         <p>Configure SAML SSO:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 
 function SAMLSetup({ tenantId }: { tenantId: string }) {
   return (
@@ -120,7 +120,7 @@ function SAMLSetup({ tenantId }: { tenantId: string }) {
         <h2>OIDC Configuration</h2>
         <p>Configure OIDC SSO:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 
 function OIDCSetup({ tenantId }: { tenantId: string }) {
   return (
@@ -145,7 +145,7 @@ function OIDCSetup({ tenantId }: { tenantId: string }) {
         <h2>OAuth Configuration</h2>
         <p>Configure OAuth SSO:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 
 function OAuthSetup({ tenantId }: { tenantId: string }) {
   return (

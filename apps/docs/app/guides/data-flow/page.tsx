@@ -36,7 +36,7 @@ export default function DataFlowPage() {
         <h2>Message Flow</h2>
         <p>Complete message flow from input to display:</p>
         <CodePlayground
-          code={`// 1. User types message
+          initialCode={`// 1. User types message
 ChatInput
   ↓ onChange
   value state updated
@@ -72,7 +72,7 @@ Stream completes
         <h2>State Management Flow</h2>
         <p>How state flows through components:</p>
         <CodePlayground
-          code={`// State flow example
+          initialCode={`// State flow example
 useClarityChat hook
   ↓ manages
 messages: Message[]
@@ -104,7 +104,7 @@ Final message state`}
         <h2>Streaming Flow</h2>
         <p>How streaming responses flow:</p>
         <CodePlayground
-          code={`// Streaming data flow
+          initialCode={`// Streaming data flow
 API Response (Stream)
   ↓
 useStreaming hook
@@ -136,7 +136,7 @@ component re-render`}
         <h2>Memory Flow</h2>
         <p>How memory flows through the system:</p>
         <CodePlayground
-          code={`// Memory flow
+          initialCode={`// Memory flow
 MemoryProvider (context)
   ↓ provides
 memory state
@@ -159,7 +159,7 @@ Next request includes updated memory`}
         <h2>Token Optimization Flow</h2>
         <p>How token optimization flows:</p>
         <CodePlayground
-          code={`// Token optimization flow
+          initialCode={`// Token optimization flow
 messages: Message[]
   ↓ passed to
 useTokenOptimizationEnhanced
@@ -183,7 +183,7 @@ Lower costs`}
         <h2>Error Flow</h2>
         <p>How errors flow through the system:</p>
         <CodePlayground
-          code={`// Error flow
+          initialCode={`// Error flow
 API call fails
   ↓
 useClarityChat catches error

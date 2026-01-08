@@ -123,7 +123,7 @@ export default function MobileOptimizedMessagePage() {
         <h2>Basic Usage</h2>
         <p>Use mobile-optimized message component:</p>
         <CodePlayground
-          code={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function MobileMessage({ message }: { message: Message }) {
@@ -149,7 +149,7 @@ function MobileMessage({ message }: { message: Message }) {
         <h2>Mobile Chat Window</h2>
         <p>Complete mobile-optimized chat window:</p>
         <CodePlayground
-          code={`import { MobileChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileChatWindow } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function MobileChat({ messages }: { messages: Message[] }) {
@@ -179,7 +179,7 @@ function MobileChat({ messages }: { messages: Message[] }) {
         <h2>Swipe Gestures</h2>
         <p>Configure swipe actions:</p>
         <CodePlayground
-          code={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
 
 function WithSwipeActions({ message }: { message: Message }) {
   return (
@@ -217,7 +217,7 @@ function WithSwipeActions({ message }: { message: Message }) {
         <h2>Pull-to-Refresh</h2>
         <p>Enable pull-to-refresh:</p>
         <CodePlayground
-          code={`import { MobileChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileChatWindow } from '@clarity-chat/react/internal'
 
 function WithRefresh({ messages }: { messages: Message[] }) {
   return (
@@ -240,7 +240,7 @@ function WithRefresh({ messages }: { messages: Message[] }) {
         <h2>Haptic Feedback</h2>
         <p>Enable haptic feedback for better UX:</p>
         <CodePlayground
-          code={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
 
 function WithHaptics({ message }: { message: Message }) {
   return (
@@ -263,7 +263,7 @@ function WithHaptics({ message }: { message: Message }) {
         <h2>Large Tap Targets</h2>
         <p>Use large tap targets for better mobile UX:</p>
         <CodePlayground
-          code={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
+          initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react/internal'
 
 function LargeTargets({ message }: { message: Message }) {
   return (

@@ -90,7 +90,7 @@ export default function DocumentIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with document platforms:</p>
         <CodePlayground
-          code={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
 
 function DocumentSelector() {
   return (
@@ -114,7 +114,7 @@ function DocumentSelector() {
         <h2>Custom Fetch Functions</h2>
         <p>Provide custom fetch and list functions:</p>
         <CodePlayground
-          code={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
 
 function CustomIntegration() {
   return (
@@ -138,7 +138,7 @@ function CustomIntegration() {
         <h2>Document Export</h2>
         <p>Export documents in various formats:</p>
         <CodePlayground
-          code={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
 
 function WithExport() {
   return (
@@ -161,7 +161,7 @@ function WithExport() {
         <h2>Multi-Select</h2>
         <p>Enable multi-select for multiple documents:</p>
         <CodePlayground
-          code={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
 
 function MultiSelectDocs() {
   return (
@@ -181,7 +181,7 @@ function MultiSelectDocs() {
         <h2>RAG Integration</h2>
         <p>Use documents for RAG (Retrieval-Augmented Generation):</p>
         <CodePlayground
-          code={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function RAGIntegration() {
   const { extractChunks } = useDocumentIntegration()

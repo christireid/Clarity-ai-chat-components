@@ -40,7 +40,7 @@ export default function SessionSummaryCardPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function SimpleSummary() {
+          initialCode={`function SimpleSummary() {
   const summary = {
     title: 'Conversation Summary',
     highlights: [
@@ -76,7 +76,7 @@ render(<SimpleSummary />)`}
       <section className="docs-section">
         <h2>With Metrics and Trends</h2>
         <CodePlayground
-          code={`function TrendingSummary() {
+          initialCode={`function TrendingSummary() {
   const summary = {
     title: 'Support Session Recap',
     highlights: [

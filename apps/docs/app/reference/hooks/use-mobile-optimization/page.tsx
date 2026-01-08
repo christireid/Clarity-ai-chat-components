@@ -38,7 +38,7 @@ export default function UseMobileOptimizationPage() {
         <h2>Basic Usage</h2>
         <p>Get mobile optimization utilities:</p>
         <CodePlayground
-          code={`import { useMobileOptimization } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileOptimization } from '@clarity-chat/react/internal'
 
 function MobileChat() {
   const {
@@ -75,7 +75,7 @@ function MobileChat() {
         <h2>Haptic Feedback</h2>
         <p>Trigger haptic feedback for better mobile UX:</p>
         <CodePlayground
-          code={`import { useMobileOptimization } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileOptimization } from '@clarity-chat/react/internal'
 
 function WithHaptics() {
   const { triggerHaptic } = useMobileOptimization()
@@ -97,7 +97,7 @@ function WithHaptics() {
         <h2>Scroll Locking</h2>
         <p>Lock scroll when keyboard is visible:</p>
         <CodePlayground
-          code={`import { useMobileOptimization } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileOptimization } from '@clarity-chat/react/internal'
 
 function ScrollLocked() {
   const { isKeyboardVisible, lockScroll, unlockScroll } = useMobileOptimization()
@@ -119,7 +119,7 @@ function ScrollLocked() {
         <h2>Orientation Detection</h2>
         <p>Detect device orientation:</p>
         <CodePlayground
-          code={`import { useMobileOptimization } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileOptimization } from '@clarity-chat/react/internal'
 
 function OrientationAware() {
   const { isPortrait, isLandscape } = useMobileOptimization()

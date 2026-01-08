@@ -263,7 +263,7 @@ Instructions:
       <section className="docs-section">
         <h2>Step 5: Add Document Upload UI</h2>
         <CodePlayground
-          code={`'use client'
+          initialCode={`'use client'
 import { useChat } from 'ai/react'
 import { useState } from 'react'
 

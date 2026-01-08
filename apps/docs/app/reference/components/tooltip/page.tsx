@@ -38,7 +38,7 @@ export default function TooltipPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function BasicTooltips() {
+          initialCode={`function BasicTooltips() {
   return (
     <div className="flex items-center gap-4">
       <Tooltip content="This is a tooltip">
@@ -72,7 +72,7 @@ render(<BasicTooltips />)`}
           trigger element.
         </p>
         <CodePlayground
-          code={`function TooltipPositions() {
+          initialCode={`function TooltipPositions() {
   return (
     <div className="space-y-8">
       <div className="flex justify-center gap-2">
@@ -140,7 +140,7 @@ render(<TooltipPositions />)`}
         <h2>With Delay</h2>
         <p>Control when tooltips appear and disappear with custom delays.</p>
         <CodePlayground
-          code={`function TooltipDelays() {
+          initialCode={`function TooltipDelays() {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <Tooltip content="No delay" delay={0}>
@@ -170,7 +170,7 @@ render(<TooltipDelays />)`}
         <h2>Rich Content</h2>
         <p>Tooltips can contain rich HTML content, not just plain text.</p>
         <CodePlayground
-          code={`function RichContentTooltips() {
+          initialCode={`function RichContentTooltips() {
   const userTooltip = (
     <div className="p-2">
       <div className="flex items-center gap-3 mb-2">
@@ -250,7 +250,7 @@ render(<RichContentTooltips />)`}
         <h2>Variants</h2>
         <p>Use different color variants to convey semantic meaning.</p>
         <CodePlayground
-          code={`function TooltipVariants() {
+          initialCode={`function TooltipVariants() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Tooltip content="Default tooltip" variant="default">
@@ -288,7 +288,7 @@ render(<TooltipVariants />)`}
         <h2>Arrow Styles</h2>
         <p>Choose between arrow, no arrow, or custom arrow styles.</p>
         <CodePlayground
-          code={`function ArrowStyles() {
+          initialCode={`function ArrowStyles() {
   return (
     <div className="space-y-4">
       <div>
@@ -338,7 +338,7 @@ render(<ArrowStyles />)`}
         <h2>On Disabled Elements</h2>
         <p>Show tooltips even on disabled elements using a wrapper approach.</p>
         <CodePlayground
-          code={`function DisabledTooltips() {
+          initialCode={`function DisabledTooltips() {
   return (
     <div className="space-y-4">
       <div>
@@ -377,7 +377,7 @@ render(<DisabledTooltips />)`}
           Allow users to interact with tooltip content (e.g., clicking links).
         </p>
         <CodePlayground
-          code={`function InteractiveTooltips() {
+          initialCode={`function InteractiveTooltips() {
   const [copied, setCopied] = React.useState(false)
 
   const interactiveContent = (
@@ -441,7 +441,7 @@ render(<InteractiveTooltips />)`}
         <h2>Click to Toggle</h2>
         <p>Show tooltips on click instead of hover.</p>
         <CodePlayground
-          code={`function ClickTooltips() {
+          initialCode={`function ClickTooltips() {
   return (
     <div className="flex flex-wrap gap-4">
       <Tooltip
@@ -492,7 +492,7 @@ render(<ClickTooltips />)`}
         <h2>Conditional Tooltips</h2>
         <p>Show tooltips only when certain conditions are met.</p>
         <CodePlayground
-          code={`function ConditionalTooltips() {
+          initialCode={`function ConditionalTooltips() {
   const [showTooltip, setShowTooltip] = React.useState(true)
   const [count, setCount] = React.useState(0)
 

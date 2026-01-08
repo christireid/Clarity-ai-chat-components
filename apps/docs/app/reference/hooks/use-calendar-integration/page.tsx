@@ -51,7 +51,7 @@ export default function UseCalendarIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with calendar systems:</p>
         <CodePlayground
-          code={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
 
 function CalendarManager() {
   const {
@@ -88,7 +88,7 @@ function CalendarManager() {
         <h2>Create Events</h2>
         <p>Create calendar events:</p>
         <CodePlayground
-          code={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
 
 function EventCreator() {
   const { createEvent } = useCalendarIntegration()
@@ -117,7 +117,7 @@ function EventCreator() {
         <h2>Check Availability</h2>
         <p>Check availability for scheduling:</p>
         <CodePlayground
-          code={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
 
 function AvailabilityChecker() {
   const { checkAvailability } = useCalendarIntegration()
@@ -143,7 +143,7 @@ function AvailabilityChecker() {
         <h2>Convert Action Items to Events</h2>
         <p>Convert action items from conversations to calendar events:</p>
         <CodePlayground
-          code={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
 
 function ActionItemConverter({ actionItems }: { actionItems: ActionItem[] }) {
   const { convertActionToEvent } = useCalendarIntegration()

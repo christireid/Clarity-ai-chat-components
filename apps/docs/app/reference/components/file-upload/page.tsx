@@ -207,7 +207,7 @@ function UploadDemo() {
             Try customizing the accepted file types and limits.
           </p>
           <CodePlayground
-            code={`function Example() {
+            initialCode={`function Example() {
   const handleUpload = async (files) => {
     logger.debug('Uploading...', files)
     // Simulate 1s upload delay

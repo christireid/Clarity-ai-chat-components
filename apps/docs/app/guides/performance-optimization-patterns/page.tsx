@@ -37,7 +37,7 @@ export default function PerformanceOptimizationPatternsPage() {
         <h2>Memoization</h2>
         <p>Use React.memo and useMemo for optimization:</p>
         <CodePlayground
-          code={`import { memo, useMemo } from 'react'
+          initialCode={`import { memo, useMemo } from 'react'
 import { Message } from '@clarity-chat/react/internal'
 
 // Memoize message component
@@ -68,7 +68,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
         <h2>Virtualization</h2>
         <p>Virtualize long message lists:</p>
         <CodePlayground
-          code={`import { useVirtualizer } from '@tanstack/react-virtual'
+          initialCode={`import { useVirtualizer } from '@tanstack/react-virtual'
 import { MessageList } from '@clarity-chat/react/internal'
 
 function VirtualizedMessageList({ messages }: { messages: Message[] }) {
@@ -113,7 +113,7 @@ function VirtualizedMessageList({ messages }: { messages: Message[] }) {
         <h2>Lazy Loading</h2>
         <p>Lazy load components and features:</p>
         <CodePlayground
-          code={`import { lazy, Suspense } from 'react'
+          initialCode={`import { lazy, Suspense } from 'react'
 import { ChatWindow } from '@clarity-chat/react/internal'
 
 // Lazy load heavy components
@@ -147,7 +147,7 @@ function LazyLoadedChat() {
         <h2>Code Splitting</h2>
         <p>Split code by route or feature:</p>
         <CodePlayground
-          code={`// app/chat/page.tsx
+          initialCode={`// app/chat/page.tsx
 import dynamic from 'next/dynamic'
 
 // Dynamic import with no SSR
@@ -178,7 +178,7 @@ function ChatWithFeatures() {
         <h2>Debouncing and Throttling</h2>
         <p>Optimize frequent updates:</p>
         <CodePlayground
-          code={`import { useDebouncedCallback } from 'use-debounce'
+          initialCode={`import { useDebouncedCallback } from 'use-debounce'
 import { ChatInput } from '@clarity-chat/react/internal'
 
 function OptimizedChatInput() {

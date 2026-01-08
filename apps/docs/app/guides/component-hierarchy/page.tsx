@@ -39,7 +39,7 @@ export default function ComponentHierarchyPage() {
         <h3>Top-Level APIs (Drop-in Ready)</h3>
         <p>Complete, ready-to-use components:</p>
         <CodePlayground
-          code={`// Top-level: Complete solution
+          initialCode={`// Top-level: Complete solution
 import { ClarityChat } from '@clarity-chat/react/internal'
 
 <ClarityChat api="/api/chat" />
@@ -56,7 +56,7 @@ import { ClarityChat } from '@clarity-chat/react/internal'
         <h3>Mid-Level APIs (Composable)</h3>
         <p>Building blocks for custom interfaces:</p>
         <CodePlayground
-          code={`// Mid-level: Composable components
+          initialCode={`// Mid-level: Composable components
 import { ChatWindow, ChatInput, MessageList } from '@clarity-chat/react/internal'
 
 function CustomChat() {
@@ -72,7 +72,7 @@ function CustomChat() {
         <h3>Low-Level Primitives (Utilities)</h3>
         <p>Utilities and internal APIs:</p>
         <CodePlayground
-          code={`// Low-level: Utilities
+          initialCode={`// Low-level: Utilities
 import { 
   normalizeMessages,
   convertCoreMessageToMessage,
@@ -88,7 +88,7 @@ const tokens = estimateTokens(normalized)`}
         <h2>Component Relationships</h2>
         <p>How components relate to each other:</p>
         <CodePlayground
-          code={`// ClarityChat (Top-level)
+          initialCode={`// ClarityChat (Top-level)
 ClarityChat
   ├── ChatWindow (Mid-level)
   │   ├── MessageList (Mid-level)
@@ -116,7 +116,7 @@ function CustomChat() {
         <h2>Composition Patterns</h2>
         <p>Common composition patterns:</p>
         <CodePlayground
-          code={`// Pattern 1: Feature Components
+          initialCode={`// Pattern 1: Feature Components
 function ChatWithFeatures() {
   return (
     <div>
@@ -162,7 +162,7 @@ function ChatWithHooks() {
         <h2>Data Flow</h2>
         <p>Understanding data flow through components:</p>
         <CodePlayground
-          code={`// Data flow example
+          initialCode={`// Data flow example
 User Input
   ↓
 ChatInput (captures input)
@@ -191,7 +191,7 @@ const chat = useClarityChat({ api: '/api/chat' })
         <h2>Custom Chat Interface</h2>
         <p>Build custom chat using mid-level components:</p>
         <CodePlayground
-          code={`import {
+          initialCode={`import {
   ChatWindow,
   ChatInput,
   MessageList,

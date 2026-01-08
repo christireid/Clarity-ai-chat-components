@@ -47,7 +47,7 @@ export default function RealTimeCollaborationRecipePage() {
           First, set up a WebSocket connection for real-time synchronization:
         </p>
         <CodePlayground
-          code={`import { useEffect, useRef } from 'react'
+          initialCode={`import { useEffect, useRef } from 'react'
 import { CollaborativeEditor } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
@@ -114,7 +114,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
         <h2>Message Locking</h2>
         <p>Implement message locking to prevent conflicts:</p>
         <CodePlayground
-          code={`function WithLocking({ messageId }: { messageId: string }) {
+          initialCode={`function WithLocking({ messageId }: { messageId: string }) {
   const [hasLock, setHasLock] = React.useState(false)
 
   const requestLock = async () => {
@@ -153,7 +153,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
         <h2>Conflict Resolution</h2>
         <p>Use operational transform for conflict resolution:</p>
         <CodePlayground
-          code={`function WithConflictResolution() {
+          initialCode={`function WithConflictResolution() {
   const [operations, setOperations] = React.useState([])
 
   const applyOperation = (operation) => {
@@ -189,7 +189,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
         <h2>Complete Example</h2>
         <p>Complete collaborative chat implementation:</p>
         <CodePlayground
-          code={`import { CollaborativeEditor, useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor, useCollaborativeSession } from '@clarity-chat/react/internal'
 import { useEffect, useRef } from 'react'
 
 function CollaborativeChatApp({ messageId }: { messageId: string }) {

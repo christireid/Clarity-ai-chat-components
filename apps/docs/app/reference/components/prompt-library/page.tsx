@@ -21,7 +21,7 @@ export default function PromptLibraryPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   const items = [
     { id: 'summarize', label: 'Summarize Selection' },
     { id: 'rewrite', label: 'Rewrite for Tone' },

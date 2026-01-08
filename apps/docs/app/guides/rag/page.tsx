@@ -892,7 +892,7 @@ function CompleteRAGExample() {
         </section>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'Agent System Guide',
             href: '/guides/agents',
           }}

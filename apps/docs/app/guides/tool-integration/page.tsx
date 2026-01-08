@@ -716,7 +716,7 @@ async function search(args: { query: string; limit?: number }) {
         </section>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'Token Optimization Guide',
             href: '/guides/token-optimization',
           }}

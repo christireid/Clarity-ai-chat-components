@@ -46,7 +46,7 @@ export default function OfflineFirstChatRecipePage() {
         <h2>Basic Setup</h2>
         <p>Set up offline chat with automatic sync:</p>
         <CodePlayground
-          code={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function OfflineChatApp() {
@@ -80,7 +80,7 @@ function OfflineChatApp() {
         <h2>Send Messages Offline</h2>
         <p>Send messages that queue when offline:</p>
         <CodePlayground
-          code={`import { useOfflineChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function OfflineMessageSender() {
   const { isOnline, sync } = useOfflineChat()
@@ -116,7 +116,7 @@ function OfflineMessageSender() {
         <h2>Load Stored Messages</h2>
         <p>Load messages from IndexedDB on app start:</p>
         <CodePlayground
-          code={`import { useOfflineChat } from '@clarity-chat/react/internal'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function LoadStoredMessages() {
   const { storedMessages, loadStoredMessages, isOnline } = useOfflineChat()
@@ -148,7 +148,7 @@ function LoadStoredMessages() {
         <h2>Sync Status Indicator</h2>
         <p>Show sync status to users:</p>
         <CodePlayground
-          code={`function SyncStatus({ syncStatus, pendingCount }: { syncStatus: string, pendingCount: number }) {
+          initialCode={`function SyncStatus({ syncStatus, pendingCount }: { syncStatus: string, pendingCount: number }) {
   return (
     <div className={\`sync-status \${syncStatus}\`}>
       {syncStatus === 'online' && <div>✓ Online</div>}
@@ -167,7 +167,7 @@ function LoadStoredMessages() {
         <h2>Complete Example</h2>
         <p>Complete offline-first chat implementation:</p>
         <CodePlayground
-          code={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import { ChatWindow, ChatInput } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 

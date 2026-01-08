@@ -42,7 +42,7 @@ export default function StreamingWithMemoryCookbook() {
       <section className="docs-section">
         <h2>Complete Example</h2>
         <CodePlayground
-          code={`function StreamingMemoryChat() {
+          initialCode={`function StreamingMemoryChat() {
   const { messages, sendMessage, isStreaming } = useChat({
     endpoint: '/api/chat',
     enableMemory: true,

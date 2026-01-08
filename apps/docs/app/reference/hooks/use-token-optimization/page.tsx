@@ -113,7 +113,7 @@ const { optimizePrompt } = useTokenOptimizationEnhanced({
         </section>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'useTokenTracker',
             href: '/reference/hooks/use-token-tracker',
           }}

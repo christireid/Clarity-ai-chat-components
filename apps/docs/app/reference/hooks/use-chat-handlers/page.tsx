@@ -120,7 +120,7 @@ function Chat() {
           Experiment with the useChatHandlers hook:
         </p>
         <CodePlayground
-          code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Example() {

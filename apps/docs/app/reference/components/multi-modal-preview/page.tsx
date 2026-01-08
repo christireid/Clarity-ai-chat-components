@@ -33,7 +33,7 @@ export default function MultiModalPreviewPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function FilePreviews() {
+          initialCode={`function FilePreviews() {
   const attachments = [
     {
       id: '1',

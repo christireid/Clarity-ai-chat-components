@@ -60,7 +60,7 @@ export default function UseInteractionTrackingPage() {
         <h2>Basic Usage</h2>
         <p>Track user interactions:</p>
         <CodePlayground
-          code={`import { useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { useInteractionTracking } from '@clarity-chat/react/internal'
 
 function TrackedComponent() {
   const { trackEvent, events, sessions, features } = useInteractionTracking({
@@ -90,7 +90,7 @@ function TrackedComponent() {
         <h2>Feature Discovery</h2>
         <p>Track feature discovery:</p>
         <CodePlayground
-          code={`import { useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { useInteractionTracking } from '@clarity-chat/react/internal'
 
 function FeatureTracking() {
   const { trackFeatureDiscovery, features } = useInteractionTracking()
@@ -117,7 +117,7 @@ function FeatureTracking() {
         <h2>User Journey</h2>
         <p>Track user journey through the application:</p>
         <CodePlayground
-          code={`import { useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { useInteractionTracking } from '@clarity-chat/react/internal'
 
 function JourneyTracking() {
   const { trackJourneyStep, sessions } = useInteractionTracking()
@@ -148,7 +148,7 @@ function JourneyTracking() {
         <h2>Engagement Metrics</h2>
         <p>Get engagement metrics:</p>
         <CodePlayground
-          code={`import { useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { useInteractionTracking } from '@clarity-chat/react/internal'
 
 function EngagementMetrics() {
   const { getEngagementMetrics } = useInteractionTracking()
@@ -171,7 +171,7 @@ function EngagementMetrics() {
         <h2>Event Callbacks</h2>
         <p>Handle events with callbacks:</p>
         <CodePlayground
-          code={`import { useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { useInteractionTracking } from '@clarity-chat/react/internal'
 
 function WithCallbacks() {
   const { trackEvent } = useInteractionTracking({

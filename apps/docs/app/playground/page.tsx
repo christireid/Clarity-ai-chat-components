@@ -81,7 +81,7 @@ export default function PlaygroundPage() {
             {/* Main Playground */}
             <div className="col-span-12 lg:col-span-9">
               <DynamicCodePlayground
-                code={code}
+                initialCode={code}
                 dependencies={dependencies}
                 onCodeChange={setCode}
               />

@@ -41,7 +41,7 @@ export default function CustomizationGuidePage() {
         </p>
 
         <CodePlayground
-          initialCode={`// In your global CSS or Tailwind config
+          code={`// In your global CSS or Tailwind config
 :root {
   --clarity-brand-50: #f0f9ff;
   --clarity-brand-500: #0ea5e9;

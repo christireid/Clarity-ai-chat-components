@@ -156,7 +156,7 @@ function Demo() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <CodePlayground
-            code={`function Example() {
+            initialCode={`function Example() {
   const [text, setText] = React.useState('Generating response')
   const [tick, setTick] = React.useState(0)
 

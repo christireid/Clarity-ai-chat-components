@@ -22,7 +22,7 @@ export default function ProjectSidebarPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   return (
     <div className="h-[420px] border rounded overflow-hidden">
       <ProjectSidebar />

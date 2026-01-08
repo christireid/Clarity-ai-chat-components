@@ -45,11 +45,11 @@ function MessageWithActionsDemo() {
 
   const handleCopy = useCallback((content: string) => {
     navigator.clipboard.writeText(content)
-    console.log('Copied:', content)
+    logger.debug('Copied:', content)
   }, [])
 
   const handleFeedback = useCallback((type: 'up' | 'down') => {
-    console.log('Feedback:', type)
+    logger.debug('Feedback:', type)
     setMessage((prev) => ({
       ...prev,
       feedback: { type, timestamp: new Date() },
@@ -62,10 +62,10 @@ function MessageWithActionsDemo() {
         message={message}
         onCopy={handleCopy}
         onFeedback={handleFeedback}
-        onRetry={() => console.log('Retry')}
-        onEdit={() => console.log('Edit')}
-        onRegenerate={() => console.log('Regenerate')}
-        onDelete={() => console.log('Delete')}
+        onRetry={() => logger.debug('Retry')}
+        onEdit={() => logger.debug('Edit')}
+        onRegenerate={() => logger.debug('Regenerate')}
+        onDelete={() => logger.debug('Delete')}
       />
     </div>
   )
@@ -190,7 +190,7 @@ export default function MessagePage() {
             and see how it renders.
           </p>
           <CodePlayground
-            code={`function Example() {
+            initialCode={`function Example() {
   const message = {
     id: '1',
     chatId: 'demo',
@@ -659,7 +659,7 @@ const example = 'code blocks work too!'
         </ul>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'AdvancedChatInput',
             href: '/reference/components/advanced-chat-input',
           }}

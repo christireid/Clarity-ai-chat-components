@@ -41,7 +41,7 @@ export default function MemoryInspectorPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function SimpleMemory() {
+          initialCode={`function SimpleMemory() {
   const memories = [
     {
       id: '1',
@@ -94,7 +94,7 @@ render(<SimpleMemory />)`}
         </ul>
 
         <CodePlayground
-          code={`function MemoryScopes() {
+          initialCode={`function MemoryScopes() {
   const memories = [
     {
       id: '1',
@@ -142,7 +142,7 @@ render(<MemoryScopes />)`}
           remembers.
         </p>
         <CodePlayground
-          code={`import { useState } from 'react'
+          initialCode={`import { useState } from 'react'
 
 function ManageableMemory() {
   const [memories, setMemories] = useState([

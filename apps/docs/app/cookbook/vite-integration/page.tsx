@@ -36,7 +36,7 @@ export default function ViteIntegrationPage() {
         <h2>Basic Setup</h2>
         <p>Set up Clarity Chat in a Vite project:</p>
         <CodePlayground
-          code={`// vite.config.ts
+          initialCode={`// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -76,7 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <h2>Environment Variables</h2>
         <p>Configure environment variables:</p>
         <CodePlayground
-          code={`// .env
+          initialCode={`// .env
 VITE_API_URL=http://localhost:3000/api
 VITE_CHAT_API=/api/chat
 
@@ -108,7 +108,7 @@ function ChatApp() {
         <h2>Build Optimization</h2>
         <p>Optimize build for production:</p>
         <CodePlayground
-          code={`// vite.config.ts
+          initialCode={`// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -136,7 +136,7 @@ export default defineConfig({
         <h2>HMR Configuration</h2>
         <p>Configure Hot Module Replacement:</p>
         <CodePlayground
-          code={`// vite.config.ts
+          initialCode={`// vite.config.ts
 export default defineConfig({
   server: {
     hmr: {
@@ -171,7 +171,7 @@ function ChatComponent() {
         <h2>Proxy Configuration</h2>
         <p>Configure proxy for API requests:</p>
         <CodePlayground
-          code={`// vite.config.ts
+          initialCode={`// vite.config.ts
 export default defineConfig({
   server: {
     proxy: {

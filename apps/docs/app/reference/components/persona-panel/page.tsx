@@ -36,7 +36,7 @@ export default function PersonaPanelPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function BasicPersonas() {
+          initialCode={`function BasicPersonas() {
   const personas = [
     {
       id: '1',
@@ -76,7 +76,7 @@ render(<BasicPersonas />)`}
       <section className="docs-section">
         <h2>All Persona Types</h2>
         <CodePlayground
-          code={`import { useState } from 'react'
+          initialCode={`import { useState } from 'react'
 
 function AllPersonas() {
   const [active, setActive] = useState('1')

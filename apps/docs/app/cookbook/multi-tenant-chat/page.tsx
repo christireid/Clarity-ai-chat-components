@@ -45,7 +45,7 @@ export default function MultiTenantChatRecipePage() {
         <h2>Tenant Context Setup</h2>
         <p>Set up tenant context for isolation:</p>
         <CodePlayground
-          code={`import { createContext, useContext } from 'react'
+          initialCode={`import { createContext, useContext } from 'react'
 
 interface TenantContext {
   tenantId: string
@@ -86,7 +86,7 @@ export function useTenant() {
         <h2>Tenant-Isolated Chat</h2>
         <p>Create tenant-isolated chat instances:</p>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { ClarityChat } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function TenantChat() {
@@ -112,7 +112,7 @@ function TenantChat() {
         <h2>Seat Management</h2>
         <p>Manage seats for each tenant:</p>
         <CodePlayground
-          code={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function SeatManagement() {
@@ -143,7 +143,7 @@ function SeatManagement() {
         <h2>SSO Integration</h2>
         <p>Integrate SSO for tenant authentication:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function SSOIntegration() {
@@ -169,7 +169,7 @@ function SSOIntegration() {
         <h2>API Token Management</h2>
         <p>Manage API tokens per tenant:</p>
         <CodePlayground
-          code={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 import { useTenant } from './tenant-context'
 
 function TokenManagement() {
@@ -196,7 +196,7 @@ function TokenManagement() {
         <h2>Complete Example</h2>
         <p>Complete multi-tenant chat application:</p>
         <CodePlayground
-          code={`import { TenantProvider, useTenant } from './tenant-context'
+          initialCode={`import { TenantProvider, useTenant } from './tenant-context'
 import { ClarityChat, SeatInviteDialog, ApiTokenManager } from '@clarity-chat/react/internal'
 
 function MultiTenantApp({ tenantId }: { tenantId: string }) {

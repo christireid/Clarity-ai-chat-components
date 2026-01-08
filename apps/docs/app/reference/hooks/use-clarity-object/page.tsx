@@ -219,7 +219,7 @@ export default function UseClarityObjectPage() {
             objects with type safety.
           </p>
           <CodePlayground
-            code={`interface Product {
+            initialCode={`interface Product {
   name: string
   price: number
   description: string
@@ -759,7 +759,7 @@ function ValidatedProductGenerator() {
         </ul>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'useClarityChat',
             href: '/reference/hooks/use-clarity-chat',
           }}

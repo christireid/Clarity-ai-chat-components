@@ -21,7 +21,7 @@ export default function TokenOptimizationExample() {
       <section className="docs-section">
         <h2>Live Demo</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   return (
     <div className="grid md:grid-cols-3 gap-4">
       <div className="md:col-span-2 border rounded">

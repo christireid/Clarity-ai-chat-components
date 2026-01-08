@@ -61,7 +61,7 @@ export default function AuthTenantDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display tenant authentication dashboard:</p>
         <CodePlayground
-          code={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function TenantAuth({ tenantId }: { tenantId: string }) {
   return (
@@ -85,7 +85,7 @@ function TenantAuth({ tenantId }: { tenantId: string }) {
         <h2>SSO Configuration</h2>
         <p>Configure SSO for tenant:</p>
         <CodePlayground
-          code={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function WithSSO({ tenantId }: { tenantId: string }) {
   return (
@@ -111,7 +111,7 @@ function WithSSO({ tenantId }: { tenantId: string }) {
         <h2>User Management</h2>
         <p>Manage tenant users:</p>
         <CodePlayground
-          code={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function UserManagement({ tenantId }: { tenantId: string }) {
   return (

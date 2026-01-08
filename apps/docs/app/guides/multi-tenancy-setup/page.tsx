@@ -45,7 +45,7 @@ export default function MultiTenancySetupPage() {
         <h2>Tenant Context Setup</h2>
         <p>Set up tenant context:</p>
         <CodePlayground
-          code={`import { TenantProvider } from '@clarity-chat/react/internal'
+          initialCode={`import { TenantProvider } from '@clarity-chat/react/internal'
 
 function App({ tenantId }: { tenantId: string }) {
   return (
@@ -75,7 +75,7 @@ function ChatApp() {
         <h2>Seat Management</h2>
         <p>Manage seats for tenants:</p>
         <CodePlayground
-          code={`import { SeatInviteDialog, AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog, AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function TenantManagement({ tenantId }: { tenantId: string }) {
   const [seats, setSeats] = useState([])
@@ -109,7 +109,7 @@ function TenantManagement({ tenantId }: { tenantId: string }) {
         <h2>SSO Configuration</h2>
         <p>Configure SSO for tenants:</p>
         <CodePlayground
-          code={`import { SSOConfigWizard, AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard, AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function SSOSetup({ tenantId }: { tenantId: string }) {
   return (
@@ -135,7 +135,7 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
         <h2>API Token Management</h2>
         <p>Manage API tokens per tenant:</p>
         <CodePlayground
-          code={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 
 function TokenManagement({ tenantId }: { tenantId: string }) {
   const [tokens, setTokens] = useState([])
@@ -166,7 +166,7 @@ function TokenManagement({ tenantId }: { tenantId: string }) {
         <h2>Complete Multi-Tenant Setup</h2>
         <p>Complete multi-tenant setup:</p>
         <CodePlayground
-          code={`import {
+          initialCode={`import {
   TenantProvider,
   AuthTenantDashboard,
   SeatInviteDialog,

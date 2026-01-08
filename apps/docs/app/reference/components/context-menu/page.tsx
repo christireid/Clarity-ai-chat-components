@@ -35,7 +35,7 @@ export default function ContextMenuPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function BasicContextMenu() {
+          initialCode={`function BasicContextMenu() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -98,7 +98,7 @@ render(<BasicContextMenu />)`}
       <section className="docs-section">
         <h2>With Icons and Shortcuts</h2>
         <CodePlayground
-          code={`function ContextMenuWithShortcuts() {
+          initialCode={`function ContextMenuWithShortcuts() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -187,7 +187,7 @@ render(<ContextMenuWithShortcuts />)`}
       <section className="docs-section">
         <h2>Nested Submenus</h2>
         <CodePlayground
-          code={`function NestedContextMenu() {
+          initialCode={`function NestedContextMenu() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -312,7 +312,7 @@ render(<NestedContextMenu />)`}
       <section className="docs-section">
         <h2>Disabled and Conditional Items</h2>
         <CodePlayground
-          code={`function ConditionalContextMenu() {
+          initialCode={`function ConditionalContextMenu() {
   const [hasSelection, setHasSelection] = React.useState(false)
   const [clipboardEmpty, setClipboardEmpty] = React.useState(true)
   const [action, setAction] = React.useState('None')
@@ -417,7 +417,7 @@ render(<ConditionalContextMenu />)`}
       <section className="docs-section">
         <h2>Custom Trigger Position</h2>
         <CodePlayground
-          code={`function CustomPositionMenu() {
+          initialCode={`function CustomPositionMenu() {
   const [action, setAction] = React.useState('None')
   const [position, setPosition] = React.useState('auto')
 
@@ -497,7 +497,7 @@ render(<CustomPositionMenu />)`}
       <section className="docs-section">
         <h2>With Checkboxes and Radio</h2>
         <CodePlayground
-          code={`function SelectableContextMenu() {
+          initialCode={`function SelectableContextMenu() {
   const [showImages, setShowImages] = React.useState(true)
   const [showVideos, setShowVideos] = React.useState(false)
   const [showFiles, setShowFiles] = React.useState(true)
@@ -615,7 +615,7 @@ render(<SelectableContextMenu />)`}
           features.
         </p>
         <CodePlayground
-          code={`function ChatMessageContextMenu() {
+          initialCode={`function ChatMessageContextMenu() {
   const [action, setAction] = React.useState('None')
   const [isStarred, setIsStarred] = React.useState(false)
   const [isPinned, setIsPinned] = React.useState(false)

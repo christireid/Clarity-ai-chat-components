@@ -46,7 +46,7 @@ export default function VirtualizedChatExamplePage() {
       <section className="docs-section">
         <h2>Live Demo</h2>
         <CodePlayground
-          code={`import { useMemo, useState } from 'react'
+          initialCode={`import { useMemo, useState } from 'react'
 import {
   MessageList,
   useMessageListScroll,

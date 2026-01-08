@@ -87,7 +87,7 @@ export default function PromptTestHarnessPage() {
         <h2>Basic Usage</h2>
         <p>Set up prompt testing harness:</p>
         <CodePlayground
-          code={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
 
 function PromptTesting() {
   const variants = [
@@ -132,7 +132,7 @@ function PromptTesting() {
         <h2>With Datasets</h2>
         <p>Test across multiple datasets:</p>
         <CodePlayground
-          code={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
 
 function WithDatasets() {
   const datasets = [
@@ -161,7 +161,7 @@ function WithDatasets() {
         <h2>Test Status Tracking</h2>
         <p>Track test execution status:</p>
         <CodePlayground
-          code={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
 
 function StatusTracking() {
   const [tests, setTests] = React.useState(testCases)

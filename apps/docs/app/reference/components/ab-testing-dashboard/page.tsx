@@ -71,7 +71,7 @@ export default function ABTestingDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display A/B testing dashboard:</p>
         <CodePlayground
-          code={`import { ABTestingDashboard, useABTesting } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard, useABTesting } from '@clarity-chat/react/internal'
 
 function ABTestingView() {
   const { experiments, getExperiment } = useABTesting()
@@ -94,7 +94,7 @@ function ABTestingView() {
         <h2>Variant Comparison</h2>
         <p>Compare variant performance:</p>
         <CodePlayground
-          code={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
 
 function VariantComparison({ experiments }: { experiments: ExperimentResult[] }) {
   return (
@@ -114,7 +114,7 @@ function VariantComparison({ experiments }: { experiments: ExperimentResult[] })
         <h2>Statistical Significance</h2>
         <p>Display statistical significance tests:</p>
         <CodePlayground
-          code={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
 
 function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) {
   return (
@@ -138,7 +138,7 @@ function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) 
         <h2>Experiment Recommendations</h2>
         <p>Show experiment recommendations:</p>
         <CodePlayground
-          code={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
 
 function RecommendationsView({ experiments }: { experiments: ExperimentResult[] }) {
   return (

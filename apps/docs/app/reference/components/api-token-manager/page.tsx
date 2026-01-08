@@ -73,7 +73,7 @@ export default function ApiTokenManagerPage() {
         <h2>Basic Usage</h2>
         <p>Manage API tokens:</p>
         <CodePlayground
-          code={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 
 function TokenManagement() {
   const [tokens, setTokens] = React.useState([])
@@ -117,7 +117,7 @@ function TokenManagement() {
         <h2>Token Scopes</h2>
         <p>Manage token scopes:</p>
         <CodePlayground
-          code={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 
 function WithScopes() {
   const tokens = [
@@ -153,7 +153,7 @@ function WithScopes() {
         <h2>Token Status</h2>
         <p>Track token status:</p>
         <CodePlayground
-          code={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
 
 function StatusTracking() {
   const tokens = [

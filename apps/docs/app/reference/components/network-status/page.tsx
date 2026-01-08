@@ -114,7 +114,7 @@ function ChatApp() {
           Experiment with NetworkStatus:
         </p>
         <CodePlayground
-          code={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          initialCode={`import { NetworkStatus } from '@clarity-chat/react/internal'
 
 function Example() {
   return (

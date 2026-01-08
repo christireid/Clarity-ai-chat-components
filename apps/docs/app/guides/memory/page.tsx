@@ -824,7 +824,7 @@ function MemoryStats() {
         </section>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'Streaming Guide',
             href: '/guides/streaming',
           }}

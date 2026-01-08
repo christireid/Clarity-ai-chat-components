@@ -42,7 +42,7 @@ export default function InputPage() {
           placeholders, and states to build the perfect input experience.
         </p>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   return (
     <div className="p-8 max-w-md mx-auto space-y-4">
       <Input placeholder="Type something..." />
@@ -59,7 +59,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`import { Input } from '@clarity/chat-components';
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function BasicInput() {
   return (
@@ -195,7 +195,7 @@ render(<BasicInput />)`}
       <section className="docs-section">
         <h2>Sizes</h2>
         <CodePlayground
-          code={`import { Input } from '@clarity/chat-components';
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputSizes() {
   return (
@@ -214,7 +214,7 @@ render(<InputSizes />)`}
       <section className="docs-section">
         <h2>With Icons</h2>
         <CodePlayground
-          code={`import { Input } from '@clarity/chat-components';
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputWithIcons() {
   return (
@@ -233,7 +233,7 @@ render(<InputWithIcons />)`}
       <section className="docs-section">
         <h2>Validation States</h2>
         <CodePlayground
-          code={`import { Input } from '@clarity/chat-components';
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputValidation() {
   return (
@@ -252,7 +252,7 @@ render(<InputValidation />)`}
       <section className="docs-section">
         <h2>Controlled Input</h2>
         <CodePlayground
-          code={`import { useState } from 'react';
+          initialCode={`import { useState } from 'react';
 import { Input } from '@clarity/chat-components';
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 

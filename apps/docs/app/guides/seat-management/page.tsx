@@ -44,7 +44,7 @@ export default function SeatManagementPage() {
         <h2>Inviting Users</h2>
         <p>Invite users to seats:</p>
         <CodePlayground
-          code={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
 
 function InviteUsers({ tenantId }: { tenantId: string }) {
   return (
@@ -75,7 +75,7 @@ function InviteUsers({ tenantId }: { tenantId: string }) {
         <h2>Seat Usage Tracking</h2>
         <p>Track seat usage:</p>
         <CodePlayground
-          code={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
 
 function SeatTracking({ tenantId }: { tenantId: string }) {
   const [seatUsage, setSeatUsage] = useState({ used: 0, total: 10 })
@@ -114,7 +114,7 @@ async function fetchSeatUsage(tenantId: string) {
         <h2>Role Management</h2>
         <p>Manage user roles:</p>
         <CodePlayground
-          code={`function RoleManagement({ tenantId }: { tenantId: string }) {
+          initialCode={`function RoleManagement({ tenantId }: { tenantId: string }) {
   const [users, setUsers] = useState([])
 
   const updateRole = async (userId: string, newRole: string) => {
@@ -153,7 +153,7 @@ async function fetchSeatUsage(tenantId: string) {
         <h2>Seat Limits</h2>
         <p>Handle seat limits:</p>
         <CodePlayground
-          code={`import { AuthTenantDashboard, SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard, SeatInviteDialog } from '@clarity-chat/react/internal'
 
 function SeatLimits({ tenantId }: { tenantId: string }) {
   const [seatUsage, setSeatUsage] = useState({ used: 8, total: 10 })

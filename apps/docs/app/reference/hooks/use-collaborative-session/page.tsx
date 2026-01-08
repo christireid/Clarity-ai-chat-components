@@ -69,7 +69,7 @@ export default function UseCollaborativeSessionPage() {
         <h2>Basic Usage</h2>
         <p>Manage a collaborative session:</p>
         <CodePlayground
-          code={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
 
 function CollaborativeChat({ sessionId }: { sessionId: string }) {
   const currentUser = {
@@ -121,7 +121,7 @@ function CollaborativeChat({ sessionId }: { sessionId: string }) {
         <h2>User Presence</h2>
         <p>Update and track user presence:</p>
         <CodePlayground
-          code={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
 
 function PresenceTracking() {
   const { updatePresence, activeUsers } = useCollaborativeSession({
@@ -158,7 +158,7 @@ function PresenceTracking() {
         <h2>Message Locking</h2>
         <p>Request and release message locks:</p>
         <CodePlayground
-          code={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
 
 function MessageLocking() {
   const { requestLock, releaseLock, session } = useCollaborativeSession({
@@ -196,7 +196,7 @@ function MessageLocking() {
         <h2>Cursor Tracking</h2>
         <p>Track cursor positions:</p>
         <CodePlayground
-          code={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { useCollaborativeSession } from '@clarity-chat/react/internal'
 
 function CursorTracking() {
   const { updateCursor, session } = useCollaborativeSession({

@@ -328,7 +328,7 @@ export function UseTokenBudgetMonitorContent() {
             approaching limits.
           </p>
           <CodePlayground
-            code={`function Example() {
+            initialCode={`function Example() {
   const [messages, setMessages] = useState([])
 
   const { usage, isWarning, isCritical, updateMessages, trimToCritical } = useTokenBudgetMonitor({
@@ -490,7 +490,7 @@ function BasicMonitor() {
         </ul>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'useTokenOptimizationEnhanced',
             href: '/reference/hooks/use-token-optimization-enhanced',
           }}

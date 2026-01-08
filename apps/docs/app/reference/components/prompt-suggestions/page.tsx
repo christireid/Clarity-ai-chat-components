@@ -21,7 +21,7 @@ export default function PromptSuggestionsPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   const suggestions = ['Summarize that', 'Give me 3 options', 'Explain like I\'m 5']
   return (
     <div className="p-4">

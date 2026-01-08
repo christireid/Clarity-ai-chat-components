@@ -16,7 +16,7 @@ function BasicInputDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
@@ -39,7 +39,7 @@ function CharacterLimitDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
   }, [])
@@ -163,11 +163,11 @@ export default function ChatInputPage() {
             limits, and see the animations in action.
           </p>
           <CodePlayground
-            code={`function Example() {
+            initialCode={`function Example() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = async (text) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     await new Promise(resolve => setTimeout(resolve, 1000))
     setValue('')
   }
@@ -212,7 +212,7 @@ function SimpleChatInput() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     // Send to your API
     await fetch('/api/chat', {
       method: 'POST',
@@ -547,7 +547,7 @@ function ChatWithValidation() {
         </ul>
 
         <Pagination
-          prev={{
+          previous={{
             title: 'ChatWindow',
             href: '/reference/components/chat-window',
           }}

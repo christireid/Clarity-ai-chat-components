@@ -22,7 +22,7 @@ export default function TokenOptimizationPanelPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function Example() {
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <TokenOptimizationPanel />

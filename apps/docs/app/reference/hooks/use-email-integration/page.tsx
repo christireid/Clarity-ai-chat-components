@@ -51,7 +51,7 @@ export default function UseEmailIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with email providers:</p>
         <CodePlayground
-          code={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
 
 function EmailManager() {
   const {
@@ -85,7 +85,7 @@ function EmailManager() {
         <h2>Connect Email Account</h2>
         <p>Connect email accounts:</p>
         <CodePlayground
-          code={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
 
 function AccountConnector() {
   const { connectAccount } = useEmailIntegration()
@@ -109,7 +109,7 @@ function AccountConnector() {
         <h2>Send Email</h2>
         <p>Send emails from chat:</p>
         <CodePlayground
-          code={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
 
 function EmailSender() {
   const { sendEmail } = useEmailIntegration()
@@ -132,7 +132,7 @@ function EmailSender() {
         <h2>Search Emails</h2>
         <p>Search email threads:</p>
         <CodePlayground
-          code={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
 
 function EmailSearch() {
   const { searchThreads } = useEmailIntegration()

@@ -36,7 +36,7 @@ export default function NextJSIntegrationPage() {
         <h2>App Router Setup</h2>
         <p>Set up Clarity Chat in Next.js App Router:</p>
         <CodePlayground
-          code={`// app/chat/page.tsx
+          initialCode={`// app/chat/page.tsx
 import { ClarityChat } from '@clarity-chat/react'
 
 export default function ChatPage() {
@@ -59,7 +59,7 @@ export default function ChatPage() {
         <h2>Server Component Configuration</h2>
         <p>Use Server Components for secure configuration:</p>
         <CodePlayground
-          code={`// app/chat/layout.tsx
+          initialCode={`// app/chat/layout.tsx
 import { ClarityChat } from '@clarity-chat/react'
 
 export default async function ChatLayout({ children }: { children: React.ReactNode }) {
@@ -94,7 +94,7 @@ export default function ChatPage() {
         <h2>API Route with Streaming</h2>
         <p>Create streaming API route:</p>
         <CodePlayground
-          code={`// app/api/chat/route.ts
+          initialCode={`// app/api/chat/route.ts
 import { NextRequest } from 'next/server'
 import { StreamingTextResponse } from 'ai'
 
@@ -159,7 +159,7 @@ async function createChatStream(messages: any[], apiKey: string) {
         <h2>Authentication Middleware</h2>
         <p>Add authentication to chat routes:</p>
         <CodePlayground
-          code={`// middleware.ts
+          initialCode={`// middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -190,7 +190,7 @@ export const config = {
         <h2>Server Actions</h2>
         <p>Use Server Actions for chat operations:</p>
         <CodePlayground
-          code={`// app/actions/chat.ts
+          initialCode={`// app/actions/chat.ts
 'use server'
 
 import { revalidatePath } from 'next/cache'
@@ -219,7 +219,7 @@ export async function deleteConversation(conversationId: string) {
         <h2>Complete Next.js Integration</h2>
         <p>Complete Next.js integration example:</p>
         <CodePlayground
-          code={`// app/chat/page.tsx
+          initialCode={`// app/chat/page.tsx
 import { ClarityChat } from '@clarity-chat/react'
 import { useSession } from 'next-auth/react'
 

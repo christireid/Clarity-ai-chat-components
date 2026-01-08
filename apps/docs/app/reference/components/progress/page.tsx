@@ -44,7 +44,7 @@ export default function ProgressPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function BasicProgress() {
   return (
@@ -135,7 +135,7 @@ render(<BasicProgress />)`}
         <h2>Sizes</h2>
         <p>Choose from 3 sizes to match your UI needs.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressSizes() {
   return (
@@ -164,7 +164,7 @@ render(<ProgressSizes />)`}
         <h2>Colors</h2>
         <p>Use semantic colors to indicate different types of progress.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressColors() {
   return (
@@ -201,7 +201,7 @@ render(<ProgressColors />)`}
         <h2>With Label</h2>
         <p>Display the progress percentage as a label.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressWithLabel() {
   return (
@@ -233,7 +233,7 @@ render(<ProgressWithLabel />)`}
         <h2>Striped Progress</h2>
         <p>Add a striped pattern for more visual interest.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function StripedProgress() {
   return (
@@ -258,7 +258,7 @@ render(<StripedProgress />)`}
         <h2>Indeterminate Progress</h2>
         <p>Use indeterminate progress when the duration is unknown.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function IndeterminateProgress() {
   return (
@@ -283,7 +283,7 @@ render(<IndeterminateProgress />)`}
         <h2>Circular Progress</h2>
         <p>Display progress as a circular indicator.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function CircularProgress() {
   return (
@@ -316,7 +316,7 @@ render(<CircularProgress />)`}
         <h2>Animated Progress</h2>
         <p>Simulate progress animation over time.</p>
         <CodePlayground
-          code={`import { useState, useEffect } from 'react';
+          initialCode={`import { useState, useEffect } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 
 export default function AnimatedProgress() {
@@ -385,7 +385,7 @@ render(<AnimatedProgress />)`}
         <h2>File Upload Progress</h2>
         <p>A practical example of file upload with progress tracking.</p>
         <CodePlayground
-          code={`import { useState } from 'react';
+          initialCode={`import { useState } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 
 export default function FileUploadProgress() {
@@ -427,7 +427,7 @@ render(<FileUploadProgress />)`}
         <h2>Multi-Step Progress</h2>
         <p>Track progress through multi-step processes.</p>
         <CodePlayground
-          code={`import { useState } from 'react';
+          initialCode={`import { useState } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
@@ -507,7 +507,7 @@ render(<MultiStepProgress />)`}
         <h3>Progress with Segments</h3>
         <p>Show progress divided into segments for multi-part tasks.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function SegmentedProgress() {
   const segments = [
@@ -540,7 +540,7 @@ render(<SegmentedProgress />)`}
         <h3>Progress with Custom Label</h3>
         <p>Add custom labels and status information.</p>
         <CodePlayground
-          code={`import { Progress } from '@clarity/chat-components';
+          initialCode={`import { Progress } from '@clarity/chat-components';
 
 export default function CustomLabelProgress() {
   return (

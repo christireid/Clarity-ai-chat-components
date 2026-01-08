@@ -113,7 +113,7 @@ function AnalyticsView({ messages }: { messages: Message[] }) {
           Experiment with ConversationAnalyticsDashboard:
         </p>
         <CodePlayground
-          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function Example() {
   const messages = [

@@ -196,7 +196,7 @@ function Chat() {
           Experiment with useMessageOperations:
         </p>
         <CodePlayground
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          initialCode={`import { useMessageOperations } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

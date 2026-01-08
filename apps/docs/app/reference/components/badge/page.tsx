@@ -37,7 +37,7 @@ export default function BadgePage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          code={`function BasicBadges() {
+          initialCode={`function BasicBadges() {
   return (
     <div className="flex items-center gap-4">
       <Badge>New</Badge>
@@ -63,7 +63,7 @@ render(<BasicBadges />)`}
           Badges come in multiple semantic variants for different use cases.
         </p>
         <CodePlayground
-          code={`function BadgeVariants() {
+          initialCode={`function BadgeVariants() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -97,7 +97,7 @@ render(<BadgeVariants />)`}
         <h2>Sizes</h2>
         <p>Choose from small, medium, or large sizes to fit your design.</p>
         <CodePlayground
-          code={`function BadgeSizes() {
+          initialCode={`function BadgeSizes() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -123,7 +123,7 @@ render(<BadgeSizes />)`}
         <h2>With Icons</h2>
         <p>Add icons to badges for better visual communication.</p>
         <CodePlayground
-          code={`function IconBadges() {
+          initialCode={`function IconBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ render(<IconBadges />)`}
         <h2>Dot Badges</h2>
         <p>Use minimal dot indicators for subtle notifications.</p>
         <CodePlayground
-          code={`function DotBadges() {
+          initialCode={`function DotBadges() {
   return (
     <div className="space-y-6">
       <div>
@@ -227,7 +227,7 @@ render(<DotBadges />)`}
         <h2>Positioned Badges</h2>
         <p>Overlay badges on other elements like avatars, icons, or buttons.</p>
         <CodePlayground
-          code={`function PositionedBadges() {
+          initialCode={`function PositionedBadges() {
   return (
     <div className="flex items-center gap-8">
       <div className="text-center">
@@ -304,7 +304,7 @@ render(<PositionedBadges />)`}
         <h2>Max Count</h2>
         <p>Automatically format large numbers with a maximum display value.</p>
         <CodePlayground
-          code={`function MaxCountBadges() {
+          initialCode={`function MaxCountBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -338,7 +338,7 @@ render(<MaxCountBadges />)`}
         <h2>Outline Style</h2>
         <p>Use outlined badges for a lighter visual weight.</p>
         <CodePlayground
-          code={`function OutlineBadges() {
+          initialCode={`function OutlineBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -372,7 +372,7 @@ render(<OutlineBadges />)`}
           filters.
         </p>
         <CodePlayground
-          code={`function RemovableBadges() {
+          initialCode={`function RemovableBadges() {
   const [tags, setTags] = React.useState([
     { id: '1', label: 'React', variant: 'primary' },
     { id: '2', label: 'TypeScript', variant: 'info' },
@@ -427,7 +427,7 @@ render(<RemovableBadges />)`}
           Add a pulsing animation to draw attention to live or important badges.
         </p>
         <CodePlayground
-          code={`function PulsingBadges() {
+          initialCode={`function PulsingBadges() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -475,7 +475,7 @@ render(<PulsingBadges />)`}
         <h2>Interactive Badges</h2>
         <p>Make badges clickable for filtering, navigation, or actions.</p>
         <CodePlayground
-          code={`function InteractiveBadges() {
+          initialCode={`function InteractiveBadges() {
   const [selected, setSelected] = React.useState('all')
   const [count, setCount] = React.useState(5)
 
@@ -540,7 +540,7 @@ render(<InteractiveBadges />)`}
 
         <h3>Chat Application Badges</h3>
         <CodePlayground
-          code={`function ChatBadges() {
+          initialCode={`function ChatBadges() {
   return (
     <div className="space-y-6 max-w-md">
       <div className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">

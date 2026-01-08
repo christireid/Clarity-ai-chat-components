@@ -89,7 +89,7 @@ export default function SemanticMessageSearchPage() {
         <h2>Basic Usage</h2>
         <p>Search messages semantically with default configuration:</p>
         <CodePlayground
-          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithSemanticSearch({ messages }: { messages: Message[] }) {
@@ -122,7 +122,7 @@ function ChatWithSemanticSearch({ messages }: { messages: Message[] }) {
         <h2>Embedding Providers</h2>
         <p>Configure different embedding providers:</p>
         <CodePlayground
-          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function WithOpenAI({ messages }: { messages: Message[] }) {
@@ -161,7 +161,7 @@ function WithCohere({ messages }: { messages: Message[] }) {
         <h2>Similarity Threshold</h2>
         <p>Configure similarity threshold for results:</p>
         <CodePlayground
-          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 
 function ThresholdSearch() {
   return (
@@ -184,7 +184,7 @@ function ThresholdSearch() {
         <h2>Caching</h2>
         <p>Enable caching for better performance:</p>
         <CodePlayground
-          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function CachedSearch({ messages }: { messages: Message[] }) {
@@ -210,7 +210,7 @@ function CachedSearch({ messages }: { messages: Message[] }) {
         <h2>Custom Embeddings</h2>
         <p>Provide custom embeddings function:</p>
         <CodePlayground
-          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function CustomEmbeddings({ messages }: { messages: Message[] }) {
