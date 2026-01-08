@@ -1,0 +1,11 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+/**
+ * Loading State
+ *
+ * Displayed while the page is loading. Shows skeleton for
+ * the theme studio interface.
+ */
+export default function Loading() {
+    return (_jsxs("div", { className: "flex h-screen", "aria-busy": "true", "aria-label": "Loading theme studio", children: [_jsxs("aside", { className: "w-96 border-r p-6 space-y-6", children: [_jsxs("div", { children: [_jsx("div", { className: "h-8 w-40 bg-muted animate-pulse rounded" }), _jsx("div", { className: "h-4 w-64 bg-muted animate-pulse rounded mt-2" })] }), _jsx("div", { className: "flex gap-2", children: [...Array(3)].map((_, i) => (_jsx("div", { className: "h-8 w-16 bg-muted animate-pulse rounded-lg" }, i))) }), _jsx("div", { className: "space-y-3", children: [...Array(4)].map((_, i) => (_jsxs("div", { className: "p-4 bg-muted animate-pulse rounded-xl space-y-3", children: [_jsx("div", { className: "flex gap-1", children: [...Array(4)].map((_, j) => (_jsx("div", { className: "w-6 h-6 bg-muted-foreground/10 rounded-full" }, j))) }), _jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("div", { children: [_jsx("div", { className: "h-4 w-24 bg-muted-foreground/10 rounded" }), _jsx("div", { className: "h-3 w-32 bg-muted-foreground/10 rounded mt-1" })] }), _jsx("div", { className: "h-5 w-12 bg-muted-foreground/10 rounded-full" })] })] }, i))) }), _jsx("div", { className: "pt-6 border-t", children: _jsx("div", { className: "h-12 w-full bg-muted animate-pulse rounded-xl" }) })] }), _jsx("div", { className: "flex-1 p-6", children: _jsxs("div", { className: "h-full max-w-2xl mx-auto space-y-4", children: [_jsxs("div", { className: "flex items-center justify-between", children: [_jsxs("div", { children: [_jsx("div", { className: "h-6 w-32 bg-muted animate-pulse rounded" }), _jsx("div", { className: "h-4 w-48 bg-muted animate-pulse rounded mt-1" })] }), _jsx("div", { className: "h-6 w-24 bg-muted animate-pulse rounded" })] }), _jsx("div", { className: "h-[calc(100%-4rem)] bg-muted animate-pulse rounded-xl" })] }) }), _jsx("span", { className: "sr-only", children: "Loading theme studio..." })] }));
+}
+//# sourceMappingURL=loading.js.map

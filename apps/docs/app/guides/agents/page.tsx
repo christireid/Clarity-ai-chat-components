@@ -804,7 +804,7 @@ function CompleteAgentExample() {
         </section>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'Tool Integration Guide',
             href: '/guides/tool-integration',
           }}

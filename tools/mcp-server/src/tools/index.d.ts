@@ -1,0 +1,18 @@
+/**
+ * MCP Tools for Clarity Chat
+ *
+ * Tools that AI agents can call to interact with Clarity Chat projects.
+ * Includes component discovery, documentation, code generation, and project management.
+ *
+ * @module tools
+ */
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+/**
+ * Available tools
+ */
+export declare const tools: Tool[];
+/**
+ * Handle tool calls with proper validation and error handling
+ */
+export declare function handleToolCall(name: string, args: Record<string, any>): Promise<any>;
+//# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"secureLogger.d.ts","sourceRoot":"","sources":["secureLogger.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,eAAO,MAAM,YAAY;qBACN,OAAO,EAAE,KAAG,IAAI;oBAMjB,OAAO,EAAE,KAAG,IAAI;oBAIhB,OAAO,EAAE,KAAG,IAAI;qBAIf,OAAO,EAAE,KAAG,IAAI;mBAIlB,OAAO,EAAE,KAAG,IAAI;CAGhC,CAAA"}

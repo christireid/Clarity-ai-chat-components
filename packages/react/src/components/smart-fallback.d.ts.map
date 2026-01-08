@@ -1,0 +1,1 @@
+{"version":3,"file":"smart-fallback.d.ts","sourceRoot":"","sources":["smart-fallback.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,MAAM,WAAW,gBAAgB;IAC/B,MAAM,EAAE,MAAM,CAAA;IACd,KAAK,EAAE,MAAM,CAAA;IACb,MAAM,EAAE,YAAY,GAAG,OAAO,CAAA;CAC/B;AAED;;;GAGG;AACH,wBAAsB,gBAAgB,CACpC,IAAI,EAAE,MAAM,EACZ,MAAM,GAAE,MAAgB,GACvB,OAAO,CAAC,gBAAgB,CAAC,CAS3B"}

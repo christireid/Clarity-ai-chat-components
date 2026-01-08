@@ -1,0 +1,188 @@
+'use client';
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState, useRef, useMemo, useEffect, useId } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
+import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives';
+import { ANIMATION_DURATION, EASING_FRAMER, DURATION_SECONDS as durations, } from '../../animations/constants';
+import { useReducedMotion } from '@clarity-chat/primitives';
+import { useFocusTrap, useFocusRestoration, } from '../../accessibility/focus-management';
+export function CommandPalette({ items, open, onClose, placeholder = 'Type a command...', className, loading = false, 'aria-label': ariaLabel = 'Command palette', ref, }) {
+    const [search, setSearch] = useState('');
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [portalContainer, setPortalContainer] = useState(null);
+    const inputRef = useRef(null);
+    const selectedItemRef = useRef(null);
+    const listboxId = useId();
+    const inputId = useId();
+    const prefersReducedMotion = useReducedMotion();
+    // Use existing focus management utilities
+    const focusTrapRef = useFocusTrap(open);
+    const { saveFocus, restoreFocus } = useFocusRestoration();
+    const { lock } = useBodyScrollLock();
+    // Setup portal container
+    useEffect(() => {
+        setPortalContainer(document.body);
+    }, []);
+    // Body scroll lock when open
+    useEffect(() => {
+        if (open) {
+            const unlock = lock();
+            return unlock;
+        }
+        return undefined;
+    }, [open, lock]);
+    // Save/restore focus on open/close
+    useEffect(() => {
+        if (open) {
+            saveFocus();
+        }
+        else {
+            restoreFocus();
+        }
+    }, [open, saveFocus, restoreFocus]);
+    // Filter items based on search
+    const filteredItems = useMemo(() => {
+        if (!search)
+            return items;
+        const query = search.toLowerCase();
+        return items.filter((item) => item.label.toLowerCase().includes(query) ||
+            item.description?.toLowerCase().includes(query) ||
+            item.category?.toLowerCase().includes(query));
+    }, [items, search]);
+    // Group items by category
+    const groupedItems = useMemo(() => {
+        const groups = {};
+        filteredItems.forEach((item) => {
+            const category = item.category || 'Commands';
+            if (!groups[category]) {
+                groups[category] = [];
+            }
+            groups[category].push(item);
+        });
+        return groups;
+    }, [filteredItems]);
+    // Reset selection when filtered items change
+    useEffect(() => {
+        setSelectedIndex(0);
+    }, [filteredItems]);
+    // Focus input when opened
+    useEffect(() => {
+        if (open) {
+            inputRef.current?.focus();
+            setSearch('');
+            setSelectedIndex(0);
+        }
+    }, [open]);
+    // Handle keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!open)
+                return;
+            switch (e.key) {
+                case 'Escape':
+                    e.preventDefault();
+                    onClose();
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    setSelectedIndex((prev) => filteredItems.length > 0 ? (prev + 1) % filteredItems.length : 0);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    setSelectedIndex((prev) => filteredItems.length > 0
+                        ? (prev - 1 + filteredItems.length) % filteredItems.length
+                        : 0);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    setSelectedIndex(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    setSelectedIndex(Math.max(0, filteredItems.length - 1));
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (filteredItems[selectedIndex]) {
+                        filteredItems[selectedIndex].onSelect();
+                        onClose();
+                    }
+                    break;
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [open, filteredItems, selectedIndex, onClose]);
+    // Scroll selected item into view
+    useEffect(() => {
+        if (selectedItemRef.current) {
+            selectedItemRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'nearest',
+            });
+        }
+    }, [selectedIndex]);
+    // Calculate flat index for keyboard navigation
+    const flatItems = useMemo(() => {
+        return Object.values(groupedItems).flat();
+    }, [groupedItems]);
+    // Get the currently selected item ID for aria-activedescendant
+    const selectedItemId = flatItems[selectedIndex]?.id
+        ? `${listboxId}-option-${flatItems[selectedIndex].id}`
+        : undefined;
+    // Animation config respecting reduced motion preference
+    const motionProps = prefersReducedMotion
+        ? { initial: false, animate: { opacity: 1 } }
+        : {
+            initial: { opacity: 0, scale: 0.95, y: -20 },
+            animate: { opacity: 1, scale: 1, y: 0 },
+            exit: { opacity: 0, scale: 0.95, y: -20 },
+        };
+    // Screen reader live region for announcements
+    const liveRegionContent = useMemo(() => {
+        if (filteredItems.length === 0) {
+            return 'No commands found';
+        }
+        return `${filteredItems.length} ${filteredItems.length === 1 ? 'command' : 'commands'} available`;
+    }, [filteredItems.length]);
+    if (!portalContainer)
+        return null;
+    const content = (_jsx(MotionConfig, { reducedMotion: prefersReducedMotion ? 'always' : 'never', children: _jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx("div", { "aria-live": "polite", "aria-atomic": "true", className: "sr-only", children: liveRegionContent }), _jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: {
+                            duration: prefersReducedMotion
+                                ? 0
+                                : ANIMATION_DURATION.normal / 1000,
+                        }, onClick: onClose, className: "fixed inset-0 bg-black/50 backdrop-blur-sm z-[var(--z-modal-backdrop)]", "aria-hidden": "true" }), _jsxs(motion.div, { ref: focusTrapRef, ...motionProps, transition: {
+                            duration: prefersReducedMotion
+                                ? 0
+                                : ANIMATION_DURATION.normal / 1000,
+                            ease: EASING_FRAMER.out,
+                        }, role: "dialog", "aria-modal": "true", "aria-label": ariaLabel, className: cn('fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4', 'bg-card border shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-modal)]', 'flex flex-col max-h-[60vh] overflow-hidden', className), children: [_jsx("div", { className: "relative p-4 border-b", children: _jsxs("div", { className: "flex items-center gap-3", children: [loading ? (_jsxs("svg", { className: "h-5 w-5 text-muted-foreground shrink-0 animate-spin", fill: "none", viewBox: "0 0 24 24", "aria-hidden": "true", children: [_jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }), _jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })] })) : (_jsx("svg", { className: "h-5 w-5 text-muted-foreground shrink-0", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true", children: _jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" }) })), _jsx("input", { ref: inputRef, id: inputId, type: "text", value: search, onChange: (e) => setSearch(e.target.value), placeholder: placeholder, role: "combobox", "aria-expanded": "true", "aria-controls": listboxId, "aria-activedescendant": selectedItemId, "aria-autocomplete": "list", "aria-busy": loading, className: cn('flex-1 px-0 py-2 text-base bg-transparent', 'border-none outline-none placeholder:text-muted-foreground', 'focus:ring-0') }), search && (_jsx(motion.button, { initial: prefersReducedMotion
+                                                ? false
+                                                : { opacity: 0, scale: 0.8 }, animate: { opacity: 1, scale: 1 }, onClick: () => setSearch(''), className: "flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted transition-colors", "aria-label": "Clear search", type: "button", children: _jsx("svg", { className: "h-4 w-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true", children: _jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M6 18L18 6M6 6l12 12" }) }) }))] }) }), _jsx("div", { id: listboxId, role: "listbox", "aria-label": "Commands", className: "overflow-y-auto flex-1 p-2", children: filteredItems.length === 0 ? (_jsxs(motion.div, { initial: prefersReducedMotion ? false : { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, className: "py-12 text-center", role: "status", "aria-live": "polite", children: [_jsx("svg", { className: "mx-auto h-12 w-12 text-muted-foreground/40 mb-3", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true", children: _jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" }) }), _jsx("p", { className: "text-sm text-muted-foreground", children: "No commands found" }), _jsx("p", { className: "text-xs text-muted-foreground/60 mt-1", children: "Try a different search term" })] })) : (_jsx("div", { className: "space-y-4", children: Object.entries(groupedItems).map(([category, categoryItems], groupIndex) => (_jsxs(motion.div, { role: "group", "aria-labelledby": `${listboxId}-group-${groupIndex}`, initial: prefersReducedMotion ? false : { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: {
+                                            delay: prefersReducedMotion ? 0 : groupIndex * 0.05,
+                                        }, children: [_jsx("div", { id: `${listboxId}-group-${groupIndex}`, className: "px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider", children: category }), _jsx("div", { className: "space-y-1", children: categoryItems.map((item) => {
+                                                    // Calculate global index
+                                                    const globalIndex = flatItems.indexOf(item);
+                                                    const isSelected = globalIndex === selectedIndex;
+                                                    const optionId = `${listboxId}-option-${item.id}`;
+                                                    return (_jsxs(motion.button, { id: optionId, ref: isSelected ? selectedItemRef : null, role: "option", "aria-selected": isSelected, onClick: () => {
+                                                            item.onSelect();
+                                                            onClose();
+                                                        }, onMouseEnter: () => setSelectedIndex(globalIndex), whileHover: prefersReducedMotion ? {} : { x: 4 }, whileTap: prefersReducedMotion ? {} : { scale: 0.98 }, className: cn('w-full flex items-center gap-3 px-3 py-2.5 rounded-lg', 'transition-all duration-150 text-left', isSelected
+                                                            ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
+                                                            : 'hover:bg-accent'), type: "button", children: [item.icon && (_jsx(motion.div, { animate: isSelected && !prefersReducedMotion
+                                                                    ? { scale: [1, 1.2, 1] }
+                                                                    : {}, transition: {
+                                                                    duration: durations.moderate,
+                                                                }, className: "flex-shrink-0", "aria-hidden": "true", children: item.icon })), _jsxs("div", { className: "flex-1 min-w-0", children: [_jsx("div", { className: "font-medium truncate", children: item.label }), item.description && (_jsx("div", { className: cn('text-sm truncate', isSelected
+                                                                            ? 'text-primary-foreground/70'
+                                                                            : 'text-muted-foreground'), children: item.description }))] }), item.shortcut && (_jsx("div", { className: "flex gap-1 flex-shrink-0", "aria-hidden": "true", children: item.shortcut.map((key, i) => (_jsx(Kbd, { shortcut: key, size: "sm", variant: isSelected ? 'ghost' : 'default', className: cn(isSelected &&
+                                                                        'bg-primary-foreground/20 border-primary-foreground/30 text-primary-foreground') }, i))) }))] }, item.id));
+                                                }) })] }, category))) })) }), _jsxs(motion.div, { initial: prefersReducedMotion ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { delay: prefersReducedMotion ? 0 : 0.2 }, className: "px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between bg-muted/50", children: [_jsxs("div", { className: "flex gap-3 sm:gap-4", "aria-hidden": "true", children: [_jsxs("span", { className: "flex items-center gap-1.5", children: [_jsx(Kbd, { shortcut: "up", size: "sm" }), _jsx(Kbd, { shortcut: "down", size: "sm" }), _jsx("span", { className: "hidden sm:inline", children: "Navigate" })] }), _jsxs("span", { className: "flex items-center gap-1.5", children: [_jsx(Kbd, { shortcut: "enter", size: "sm" }), _jsx("span", { className: "hidden sm:inline", children: "Select" })] }), _jsxs("span", { className: "flex items-center gap-1.5", children: [_jsx(Kbd, { shortcut: "escape", size: "sm" }), _jsx("span", { className: "hidden sm:inline", children: "Close" })] })] }), _jsxs("div", { className: "font-medium", children: [filteredItems.length, ' ', filteredItems.length === 1 ? 'command' : 'commands'] })] })] })] })) }) }));
+    // Render through portal to avoid z-index issues
+    return createPortal(content, portalContainer);
+}
+CommandPalette.displayName = 'CommandPalette';
+//# sourceMappingURL=command-palette.js.map
