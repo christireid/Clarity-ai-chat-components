@@ -230,7 +230,11 @@ function cosineSimilarity(a: number[], b: number[]): number {
 
   let dotProduct = 0
   for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i]
+    const aVal = a[i]
+    const bVal = b[i]
+    if (aVal !== undefined && bVal !== undefined) {
+      dotProduct += aVal * bVal
+    }
   }
 
   return dotProduct // Already normalized
@@ -618,12 +622,14 @@ export function getMemoryStats(state: MemoryEngineState): {
       ? entries.reduce((sum, e) => sum + e.importance, 0) / entries.length
       : 0
 
+  const firstEntry = entries[0]
+  const lastEntry = entries[entries.length - 1]
+
   return {
     totalEntries: entries.length,
     totalTokens,
-    oldestTimestamp: entries.length > 0 ? entries[0].timestamp : null,
-    newestTimestamp:
-      entries.length > 0 ? entries[entries.length - 1].timestamp : null,
+    oldestTimestamp: firstEntry?.timestamp ?? null,
+    newestTimestamp: lastEntry?.timestamp ?? null,
     averageImportance: Math.round(averageImportance * 100) / 100,
   }
 }

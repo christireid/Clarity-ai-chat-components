@@ -355,7 +355,7 @@ export function detectCommonMistakes(config: {
 
   // Check RAG configuration
   if (
-    config.features?.rag &&
+    config.features?.['rag'] &&
     (!config.ragSources || config.ragSources.length === 0)
   ) {
     warnings.push({
@@ -368,7 +368,7 @@ export function detectCommonMistakes(config: {
 
   // Check tools configuration
   if (
-    config.features?.tools &&
+    config.features?.['tools'] &&
     (!config.toolsRegistry || config.toolsRegistry.length === 0)
   ) {
     warnings.push({
@@ -380,7 +380,7 @@ export function detectCommonMistakes(config: {
   }
 
   // Check memory with streaming
-  if (config.memoryEnabled && config.features?.streaming === false) {
+  if (config.memoryEnabled && config.features?.['streaming'] === false) {
     warnings.push({
       code: 'MEMORY_NO_STREAMING',
       message: 'Memory works best with streaming enabled',

@@ -395,13 +395,13 @@ export function ClarityChatApp({
       onEvent?.(event)
 
       if (event.type === 'message:sent' && onMessageSent) {
-        onMessageSent(event.data.message as Message)
+        onMessageSent(event.data['message'] as Message)
       }
       if (event.type === 'message:received' && onMessageReceived) {
-        onMessageReceived(event.data.message as Message)
+        onMessageReceived(event.data['message'] as Message)
       }
       if (event.type === 'message:error' && onError) {
-        onError(new Error(event.data.error as string))
+        onError(new Error(event.data['error'] as string))
       }
     },
     [onEvent, onMessageSent, onMessageReceived, onError]
