@@ -34,18 +34,18 @@
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface running in **under 60 seconds**:
+Get a production-ready AI chat interface running in **under 3 minutes**:
 
 ```bash
 npm install @clarity-chat/react
 ```
 
 ```tsx
-import { ClarityChat } from '@clarity-chat/react'
+import { ClarityChatApp } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 export default function App() {
-  return <ClarityChat api="/api/chat" />
+  return <ClarityChatApp api="/api/chat" />
 }
 ```
 
@@ -57,6 +57,24 @@ export default function App() {
 - ✅ WCAG AAA accessibility
 - ✅ Mobile responsive design
 - ✅ Error recovery with retry
+
+### Enable Advanced Features with One Line
+
+```tsx
+// Add memory - conversations persist and context is injected automatically
+<ClarityChatApp api="/api/chat" features={{ memory: true }} />
+
+// Add token optimization - reduce AI costs by 60-90%
+<ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
+
+// Use a preset for common configurations
+<ClarityChatApp api="/api/chat" preset="pro" />
+
+// Enterprise preset - memory, tokens, safety, analytics all enabled
+<ClarityChatApp api="/api/chat" preset="enterprise" />
+```
+
+**Available presets:** `simple` | `pro` | `memory` | `rag` | `tools` | `enterprise`
 
 <br />
 
@@ -162,64 +180,110 @@ export default function App() {
 
 <br />
 
-## 🎯 Key Features
+## 🎯 Choose Your Path
 
-### **💰 Token Optimization Suite** → _Save 60-90% on AI costs_
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🚀 **Quick Start**
+
+_"I just want a chat UI"_
 
 ```tsx
-import { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/react'
+<ClarityChatApp api="/api/chat" />
+```
 
-// Wrap your app with TokenBudgetProvider for automatic optimization
-;<TokenBudgetProvider maxTokens={4000}>
-  <ClarityChat api="/api/chat" />
-</TokenBudgetProvider>
+**You get:** Streaming, animations, accessibility, error recovery
 
-// Or use the hook for custom control
-const { remaining, usage, isNearLimit } = useTokenBudget()
-// Result: $0.05 instead of $0.12 per request
+</td>
+<td width="33%" valign="top">
+
+### 🧠 **With Memory**
+
+_"I need conversation persistence"_
+
+```tsx
+<ClarityChatApp api="/api/chat" features={{ memory: true }} />
+```
+
+**You get:** + Context injection, sliding window, vector search
+
+</td>
+<td width="33%" valign="top">
+
+### 🏢 **Enterprise**
+
+_"I need everything"_
+
+```tsx
+<ClarityChatApp api="/api/chat" preset="enterprise" />
+```
+
+**You get:** + Token optimization, safety, RAG, analytics, tools
+
+</td>
+</tr>
+</table>
+
+<br />
+
+## 🔧 Key Features
+
+### **💰 Token Optimization** → _Save 60-90% on AI costs_
+
+```tsx
+// Enabled with one flag - no setup required
+;<ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
+
+// Access stats in your custom UI
+const chat = useClarityChatApp({ api: '/api/chat', features: { tokenOptimization: true } })
+console.log(chat.meta.token.totalTokens) // Real-time token tracking
+console.log(chat.meta.token.budgetRemaining) // Budget monitoring
 ```
 
 ### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_
 
 ```tsx
-import { ClarityChatPresets } from '@clarity-chat/react'
+// Safety features enabled with enterprise preset
+<ClarityChatApp api="/api/chat" preset="enterprise" />
 
-// Enterprise preset includes security by default
-;<ClarityChatPresets.Enterprise
+// Or enable specific features
+<ClarityChatApp
   api="/api/chat"
-  enableSafety // Prompt injection detection (90%+)
-  enableAnalytics // Full observability
+  features={{ safety: true }}
+  config={{ safety: { piiRedaction: true, promptInjectionDetection: true } }}
 />
-
-// Security features: prompt injection detection, PII masking, jailbreak prevention
 ```
 
 ### **🎨 Beautiful Design System** → _15 themes, 150+ animations_
 
 ```tsx
-import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
+import { ThemeProvider, ClarityChatApp } from '@clarity-chat/react'
 
 <ThemeProvider theme="glassmorphism">  {/* ✨ Modern glass effect */}
 <ThemeProvider theme="ocean">           {/* 🌊 Ocean vibes */}
 <ThemeProvider theme="neon">            {/* 💜 Cyberpunk neon */}
-  <ClarityChat api="/api/chat" />
+  <ClarityChatApp api="/api/chat" />
 </ThemeProvider>
-// Also: default, midnight, sunset, forest, rose, slate, emerald, amber + 2 more!
 ```
 
-### **⚡ Streaming & Real-Time** → _SSE & WebSocket support_
+### **⚡ Headless Mode** → _Full control, zero UI constraints_
 
 ```tsx
-import { ClarityChat, useClarityChat } from '@clarity-chat/react'
+import { useClarityChatApp } from '@clarity-chat/react'
 
-// Streaming is enabled by default - just works!
-;<ClarityChat api="/api/chat" />
+const chat = useClarityChatApp({ api: '/api/chat', preset: 'pro' })
 
-// Or control streaming with the hook
-const { messages, isStreaming, stop } = useClarityChat({
-  api: '/api/chat',
-  // Auto-reconnect and exponential backoff built-in
-})
+// Full control over UI
+<div>{chat.messages.map(m => <MyMessage key={m.id} message={m} />)}</div>
+<input value={chat.input} onChange={chat.handleInputChange} />
+<button onClick={chat.handleSubmit}>Send</button>
+
+// Access metadata from all systems
+chat.meta.token.totalTokens    // Token stats
+chat.meta.memory.totalItems    // Memory stats
+chat.meta.safety.riskLevel     // Safety stats
 ```
 
 <br />
@@ -350,23 +414,31 @@ Battery-aware streaming, performance optimization, analytics
 
 <br />
 
-## 🏆 What Makes Us Different
+## 🏆 How We Compare
 
-```diff
-┌─────────────────────────┬───────────┬──────────┬──────────┬──────────┐
-│ Feature                 │ Clarity   │ ChatGPT  │ Claude   │ Gemini   │
-├─────────────────────────┼───────────┼──────────┼──────────┼──────────┤
-│ Components              │ 200+      │ ❌        │ ❌        │ ❌        │
-│ Custom Hooks            │ 95+       │ ❌        │ ❌        │ ❌        │
-│ Themes                  │ 15        │ 1        │ 1        │ 1        │
-│ Token Optimization      │ ✅ 60-90%  │ ❌        │ ❌        │ ❌        │
-│ Vector Stores           │ 4         │ ❌        │ ❌        │ ❌        │
-│ RAG Pipeline            │ ✅         │ ❌        │ ❌        │ ❌        │
-│ Agent Orchestration     │ ✅         │ ❌        │ ❌        │ ❌        │
-│ Accessibility           │ WCAG AAA  │ WCAG AA  │ WCAG AA  │ WCAG AA  │
-│ Open Source             │ ✅ MIT     │ ❌        │ ❌        │ ❌        │
-└─────────────────────────┴───────────┴──────────┴──────────┴──────────┘
-```
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th><strong>Clarity Chat</strong></th>
+<th>Vercel AI SDK</th>
+<th>Stream Chat</th>
+<th>Sendbird</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Setup Time</td><td><strong>3 minutes</strong></td><td>~15 min</td><td>~30 min</td><td>~10 min</td></tr>
+<tr><td>Components</td><td><strong>200+</strong></td><td>~20</td><td>~50</td><td>~40</td></tr>
+<tr><td>React Hooks</td><td><strong>95+</strong></td><td>~5</td><td>~10</td><td>~8</td></tr>
+<tr><td>Token Optimization</td><td><strong>✅ 60-90% savings</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
+<tr><td>RAG Pipeline</td><td><strong>✅</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Preset System</td><td><strong>6 presets</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Accessibility</td><td><strong>WCAG AAA</strong></td><td>Basic</td><td>WCAG AA</td><td>WCAG AA</td></tr>
+<tr><td>Bundle Size (core)</td><td><strong>~30KB</strong></td><td>~15KB</td><td>~200KB</td><td>~150KB</td></tr>
+<tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>Commercial</td><td>Commercial</td></tr>
+</tbody>
+</table>
 
 <br />
 

@@ -157,12 +157,8 @@ test.describe('DocsAssistant Visual Tests', () => {
   })
 
   test('accessibility audit', async ({ page }) => {
-    // Basic accessibility checks
-    const accessibilityTree = await page.accessibility.snapshot()
-    console.log(
-      'Accessibility tree:',
-      JSON.stringify(accessibilityTree, null, 2)
-    )
+    // Basic accessibility checks using ARIA attributes
+    // Note: For comprehensive accessibility testing, consider using @axe-core/playwright
 
     // Check for main landmark
     const main = page.locator('main')

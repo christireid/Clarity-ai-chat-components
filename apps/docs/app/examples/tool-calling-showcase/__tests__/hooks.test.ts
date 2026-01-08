@@ -242,7 +242,8 @@ describe('useConversationPersistence', () => {
   })
 
   it('should start with empty sessions', async () => {
-    const { useConversationPersistence } = await import('../hooks/useConversationPersistence')
+    const { useConversationPersistence } =
+      await import('../hooks/useConversationPersistence')
     const { result } = renderHook(() => useConversationPersistence())
 
     expect(result.current.sessions).toEqual([])
@@ -250,7 +251,8 @@ describe('useConversationPersistence', () => {
   })
 
   it('should create new sessions', async () => {
-    const { useConversationPersistence } = await import('../hooks/useConversationPersistence')
+    const { useConversationPersistence } =
+      await import('../hooks/useConversationPersistence')
     const { result } = renderHook(() => useConversationPersistence())
 
     act(() => {
@@ -262,11 +264,17 @@ describe('useConversationPersistence', () => {
   })
 
   it('should save and load sessions', async () => {
-    const { useConversationPersistence } = await import('../hooks/useConversationPersistence')
+    const { useConversationPersistence } =
+      await import('../hooks/useConversationPersistence')
     const { result } = renderHook(() => useConversationPersistence())
 
     const messages = [
-      { id: '1', role: 'user' as const, content: 'Hello', timestamp: new Date() },
+      {
+        id: '1',
+        role: 'user' as const,
+        content: 'Hello',
+        timestamp: new Date(),
+      },
     ]
 
     act(() => {
@@ -278,7 +286,8 @@ describe('useConversationPersistence', () => {
   })
 
   it('should delete sessions', async () => {
-    const { useConversationPersistence } = await import('../hooks/useConversationPersistence')
+    const { useConversationPersistence } =
+      await import('../hooks/useConversationPersistence')
     const { result } = renderHook(() => useConversationPersistence())
 
     let sessionId: string
@@ -297,7 +306,8 @@ describe('useConversationPersistence', () => {
   })
 
   it('should export and import sessions', async () => {
-    const { useConversationPersistence } = await import('../hooks/useConversationPersistence')
+    const { useConversationPersistence } =
+      await import('../hooks/useConversationPersistence')
     const { result } = renderHook(() => useConversationPersistence())
 
     act(() => {
@@ -334,7 +344,9 @@ describe('Mock Data', () => {
 
     expect(result.success).toBe(true)
     expect(result.data).toHaveProperty('matches')
-    expect(result.data.matches.length).toBeGreaterThan(0)
+    expect(
+      (result.data as { matches: unknown[] }).matches.length
+    ).toBeGreaterThan(0)
   })
 
   it('should execute get_financials tool', async () => {
@@ -359,7 +371,9 @@ describe('Mock Data', () => {
 
     expect(result.success).toBe(true)
     expect(result.data).toHaveProperty('dataPoints')
-    expect(result.data.dataPoints.length).toBeGreaterThan(0)
+    expect(
+      (result.data as { dataPoints: unknown[] }).dataPoints.length
+    ).toBeGreaterThan(0)
   })
 
   it('should execute execute_trade tool', async () => {

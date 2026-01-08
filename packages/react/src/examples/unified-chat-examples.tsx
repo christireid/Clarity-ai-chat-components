@@ -1,10 +1,10 @@
 /**
  * Unified Chat Hook Examples
- * 
+ *
  * Demonstrates the simplified useChat hook API
  */
 
-import { useChat, ChatWindow } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 /**
@@ -65,7 +65,13 @@ export function MemoryChatExample() {
   return (
     <div style={{ height: '600px' }}>
       {chat.memoryInfo.enabled && (
-        <div style={{ padding: '0.5rem', background: '#f3f4f6', fontSize: '0.875rem' }}>
+        <div
+          style={{
+            padding: '0.5rem',
+            background: '#f3f4f6',
+            fontSize: '0.875rem',
+          }}
+        >
           Memory: {chat.memoryInfo.memoryCount} memories stored
         </div>
       )}
@@ -90,7 +96,9 @@ export function FullControlExample() {
   return (
     <div style={{ height: '600px' }}>
       {error && (
-        <div style={{ padding: '1rem', background: '#fef2f2', color: '#991b1b' }}>
+        <div
+          style={{ padding: '1rem', background: '#fef2f2', color: '#991b1b' }}
+        >
           Error: {error.message}
         </div>
       )}

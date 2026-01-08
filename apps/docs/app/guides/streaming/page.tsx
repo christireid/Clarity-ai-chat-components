@@ -879,7 +879,7 @@ function WebSocketReconnect() {
         </section>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'Memory System Guide',
             href: '/guides/memory',
           }}

@@ -1,0 +1,128 @@
+/**
+ * Configuration types for docs-sync
+ */
+/** Package configuration for docs-sync */
+export interface PackageConfig {
+    /** Package name (e.g., '@clarity-chat/react') */
+    name: string;
+    /** Path to package root (relative to repo root) */
+    path: string;
+    /** Entry points for API extraction */
+    entryPoints: string[];
+    /** Output path for generated docs */
+    docsPath: string;
+    /** Whether to generate component docs */
+    generateComponentDocs: boolean;
+    /** Whether to generate hook docs */
+    generateHookDocs: boolean;
+    /** Whether to generate type docs */
+    generateTypeDocs: boolean;
+    /** Custom patterns to include */
+    includePatterns?: string[];
+    /** Custom patterns to exclude */
+    excludePatterns?: string[];
+}
+/** Main configuration for docs-sync */
+export interface DocsSyncConfig {
+    /** Version of config format */
+    version: number;
+    /** Repository root path */
+    rootDir: string;
+    /** Path to documentation site */
+    docsDir: string;
+    /** Path to generated API data */
+    apiDataDir: string;
+    /** Path to cache directory */
+    cacheDir: string;
+    /** Packages to process */
+    packages: PackageConfig[];
+    /** Patterns for docs-relevant files */
+    docsRelevantPatterns: string[];
+    /** Patterns to exclude from processing */
+    excludePatterns: string[];
+    /** Template directory */
+    templatesDir: string;
+    /** GitHub repository (owner/repo) */
+    repository?: string;
+    /** Base URL for documentation */
+    baseUrl: string;
+    /** Changelog configuration */
+    changelog: {
+        /** Output path for changelog */
+        outputPath: string;
+        /** Types to include in changelog */
+        types: string[];
+        /** Whether to include breaking changes section */
+        includeBreaking: boolean;
+    };
+    /** CI configuration */
+    ci: {
+        /** GitHub Actions bot name */
+        botName: string;
+        /** Bot email */
+        botEmail: string;
+        /** Commit message prefix */
+        commitPrefix: string;
+        /** Whether to create PRs instead of direct commits */
+        createPR: boolean;
+    };
+}
+/** Runtime options for CLI commands */
+export interface CLIOptions {
+    /** Base commit for comparison */
+    base?: string;
+    /** Head commit for comparison */
+    head?: string;
+    /** Specific packages to process (comma-separated string) */
+    packages?: string;
+    /** Force full rebuild */
+    full?: boolean;
+    /** Dry run mode */
+    dryRun?: boolean;
+    /** Output format (json, github, text, changelog) */
+    output?: 'json' | 'github' | 'text' | 'changelog';
+    /** Verbose logging */
+    verbose?: boolean;
+    /** Silent mode (no output) */
+    silent?: boolean;
+    /** Config file path */
+    config?: string;
+    /** Version for changelog */
+    version?: string;
+    /** Since commit/tag for changelog */
+    since?: string;
+    /** Check for broken internal links (verify command) */
+    checkLinks?: boolean;
+    /** Check API documentation coverage (verify command) */
+    checkCoverage?: boolean;
+    /** Run package extraction in parallel */
+    parallel?: boolean;
+    /** Concurrency limit for parallel extraction */
+    concurrency?: string;
+}
+/** Default configuration values */
+export declare const DEFAULT_CONFIG: Partial<DocsSyncConfig>;
+/** Result of sync operation */
+export interface SyncResult {
+    /** Whether sync was successful */
+    success: boolean;
+    /** Changes detected */
+    changesDetected: number;
+    /** Documentation updates made */
+    docsUpdated: number;
+    /** Changelog entries created */
+    changelogEntriesCreated: number;
+    /** Files created */
+    filesCreated: string[];
+    /** Files updated */
+    filesUpdated: string[];
+    /** Files deleted */
+    filesDeleted: string[];
+    /** Errors encountered */
+    errors: string[];
+    /** Duration in milliseconds */
+    duration: number;
+    /** Commit SHA if changes were committed */
+    commitSha?: string;
+}
+//# sourceMappingURL=config.d.ts.map

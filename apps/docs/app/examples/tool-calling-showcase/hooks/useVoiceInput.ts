@@ -9,6 +9,45 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 
+// Web Speech API types (not included in standard TypeScript lib)
+interface SpeechRecognitionEvent extends Event {
+  readonly resultIndex: number
+  readonly results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  readonly error: string
+  readonly message: string
+}
+
+interface SpeechRecognition extends EventTarget {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null
+  onerror:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void)
+    | null
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void)
+    | null
+  start(): void
+  stop(): void
+  abort(): void
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor
+    webkitSpeechRecognition?: SpeechRecognitionConstructor
+  }
+}
+
 interface UseVoiceInputOptions {
   language?: string
   continuous?: boolean
@@ -31,17 +70,15 @@ interface UseVoiceInputReturn {
 }
 
 // Check if Speech Recognition is available
-function getSpeechRecognition(): typeof SpeechRecognition | null {
+function getSpeechRecognition(): SpeechRecognitionConstructor | null {
   if (typeof window === 'undefined') return null
 
-  return (
-    (window as typeof window & { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
-    (window as typeof window & { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition ||
-    null
-  )
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null
 }
 
-export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInputReturn {
+export function useVoiceInput(
+  options: UseVoiceInputOptions = {}
+): UseVoiceInputReturn {
   const {
     language = 'en-US',
     continuous = false,
@@ -57,7 +94,8 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
   const [error, setError] = useState<string | null>(null)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
-  const isSupported = typeof window !== 'undefined' && getSpeechRecognition() !== null
+  const isSupported =
+    typeof window !== 'undefined' && getSpeechRecognition() !== null
 
   // Initialize recognition
   useEffect(() => {
@@ -83,13 +121,15 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       const errorMessages: Record<string, string> = {
         'no-speech': 'No speech detected. Please try again.',
         'audio-capture': 'Microphone not available. Please check permissions.',
-        'not-allowed': 'Microphone access denied. Please allow microphone access.',
+        'not-allowed':
+          'Microphone access denied. Please allow microphone access.',
         network: 'Network error. Please check your connection.',
         aborted: 'Speech recognition was aborted.',
         'language-not-supported': 'Language not supported.',
       }
 
-      const message = errorMessages[event.error] || `Speech recognition error: ${event.error}`
+      const message =
+        errorMessages[event.error] || `Speech recognition error: ${event.error}`
       setError(message)
       setIsListening(false)
       onError?.(message)
@@ -135,7 +175,10 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
       setInterimTranscript('')
       recognitionRef.current.start()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to start speech recognition'
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to start speech recognition'
       setError(message)
       onError?.(message)
     }

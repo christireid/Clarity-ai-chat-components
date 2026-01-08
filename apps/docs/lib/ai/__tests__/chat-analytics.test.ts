@@ -21,6 +21,15 @@ global.fetch = mockFetch
 describe('chat-analytics', () => {
   const originalEnv = process.env
 
+  // Helper to safely set environment variables in tests
+  const setEnv = (key: string, value: string) => {
+    Object.defineProperty(process.env, key, {
+      value,
+      writable: true,
+      configurable: true,
+    })
+  }
+
   beforeEach(() => {
     vi.resetAllMocks()
     // Reset environment
@@ -44,7 +53,7 @@ describe('chat-analytics', () => {
     }
 
     it('logs to console in development mode', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       trackChatInteraction(validMetrics)
 
@@ -62,7 +71,7 @@ describe('chat-analytics', () => {
     })
 
     it('does not log to console in production mode', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'false'
 
       trackChatInteraction(validMetrics)
@@ -71,7 +80,7 @@ describe('chat-analytics', () => {
     })
 
     it('does nothing when analytics is disabled', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'false'
 
       trackChatInteraction(validMetrics)
@@ -81,7 +90,7 @@ describe('chat-analytics', () => {
     })
 
     it('sends to analytics service in production when enabled', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
       process.env.ANALYTICS_API_KEY = 'test-api-key'
@@ -107,7 +116,7 @@ describe('chat-analytics', () => {
     })
 
     it('includes all optional fields when provided', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       const fullMetrics: ChatInteractionMetrics = {
         ...validMetrics,
@@ -131,7 +140,7 @@ describe('chat-analytics', () => {
     })
 
     it('handles fetch errors gracefully without throwing', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -150,7 +159,7 @@ describe('chat-analytics', () => {
     })
 
     it('handles non-ok response from analytics service', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -168,7 +177,7 @@ describe('chat-analytics', () => {
     })
 
     it('does not send to service without endpoint configured', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       delete process.env.ANALYTICS_ENDPOINT
 
@@ -187,7 +196,7 @@ describe('chat-analytics', () => {
     }
 
     it('logs error to console in development', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       trackApiError(errorData)
 
@@ -204,7 +213,7 @@ describe('chat-analytics', () => {
     })
 
     it('includes stack trace when provided', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       trackApiError({
         ...errorData,
@@ -220,7 +229,7 @@ describe('chat-analytics', () => {
     })
 
     it('sends error to analytics service in production', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -237,7 +246,7 @@ describe('chat-analytics', () => {
     })
 
     it('does nothing when disabled', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'false'
 
       trackApiError(errorData)
@@ -254,7 +263,7 @@ describe('chat-analytics', () => {
     }
 
     it('logs search query in development', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       trackSearchQuery(queryData)
 
@@ -269,7 +278,7 @@ describe('chat-analytics', () => {
     })
 
     it('includes topResultScore when provided', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
 
       trackSearchQuery({
         ...queryData,
@@ -285,7 +294,7 @@ describe('chat-analytics', () => {
     })
 
     it('does nothing when disabled', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'false'
 
       trackSearchQuery(queryData)
@@ -335,7 +344,7 @@ describe('chat-analytics', () => {
 
   describe('configuration', () => {
     it('always enables analytics in development', () => {
-      process.env.NODE_ENV = 'development'
+      setEnv('NODE_ENV', 'development')
       process.env.ANALYTICS_ENABLED = 'false' // Explicitly disabled
 
       trackChatInteraction({
@@ -350,7 +359,7 @@ describe('chat-analytics', () => {
     })
 
     it('uses empty string for API key when not set', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
       delete process.env.ANALYTICS_API_KEY
@@ -386,7 +395,7 @@ describe('chat-analytics', () => {
     })
 
     it('queues events for batched sending', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -402,7 +411,7 @@ describe('chat-analytics', () => {
     })
 
     it('flushes queue when batch size is reached', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -428,7 +437,7 @@ describe('chat-analytics', () => {
     })
 
     it('flushAnalytics sends all queued events', async () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -463,7 +472,7 @@ describe('chat-analytics', () => {
     })
 
     it('clearQueue removes all events without sending', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       process.env.ANALYTICS_ENDPOINT = 'https://analytics.example.com/track'
 
@@ -483,7 +492,7 @@ describe('chat-analytics', () => {
     })
 
     it('does not queue events when endpoint is not configured', () => {
-      process.env.NODE_ENV = 'production'
+      setEnv('NODE_ENV', 'production')
       process.env.ANALYTICS_ENABLED = 'true'
       delete process.env.ANALYTICS_ENDPOINT
 

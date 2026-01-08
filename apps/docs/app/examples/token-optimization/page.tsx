@@ -3,7 +3,8 @@ import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Example: Token Optimization',
-  description: 'End-to-end example combining retrieval, compression, and reranking.',
+  description:
+    'End-to-end example combining retrieval, compression, and reranking.',
 }
 
 export default function TokenOptimizationExample() {
@@ -12,7 +13,9 @@ export default function TokenOptimizationExample() {
       <div className="docs-header">
         <span className="docs-badge">Example</span>
         <h1>Token Optimization</h1>
-        <p className="docs-lead">RAG + compression + reranking with live metrics.</p>
+        <p className="docs-lead">
+          RAG + compression + reranking with live metrics.
+        </p>
       </div>
 
       <section className="docs-section">

@@ -41,7 +41,7 @@ export default function CustomizationGuidePage() {
         </p>
 
         <CodePlayground
-          code={`// In your global CSS or Tailwind config
+          initialCode={`// In your global CSS or Tailwind config
 :root {
   --clarity-brand-50: #f0f9ff;
   --clarity-brand-500: #0ea5e9;
@@ -68,7 +68,7 @@ export default function CustomizationGuidePage() {
         </p>
 
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          initialCode={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function MyChat() {
   return (
@@ -96,7 +96,7 @@ function MyChat() {
         </p>
 
         <CodePlayground
-          code={`// tailwind.config.js
+          initialCode={`// tailwind.config.js
 module.exports = {
   theme: {
     extend: {
@@ -124,7 +124,7 @@ module.exports = {
         </p>
 
         <CodePlayground
-          code={`import { useDesignTokens } from '@clarity-chat/react/internal'
+          initialCode={`import { useDesignTokens } from '@clarity-chat/react/internal'
 import styled from 'styled-components'
 
 function CustomMessage({ content }) {

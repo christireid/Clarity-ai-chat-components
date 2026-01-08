@@ -23,6 +23,8 @@ interface CodePlaygroundProps {
   dependencies?: Record<string, string>
   onCodeChange?: (code: string) => void
   className?: string
+  /** Height of the playground */
+  height?: string
 }
 
 export function CodePlayground({

@@ -174,24 +174,26 @@ pnpm add @clarity-chat/react`}
           <ScrollReveal delay={0.55}>
             <TutorialStep
               step={3}
-              title="Fastest Start (Recommended)"
+              title="Fastest Start (NEW - Recommended)"
               nextStepHref="#manual-control"
               nextStepTitle="Manual Control"
             >
               <p className="text-text-secondary mb-4">
-                Use{' '}
+                Use the new unified{' '}
                 <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                  ClarityChat
+                  ClarityChatApp
                 </code>{' '}
-                for the simplest integration - just provide an API endpoint:
+                for the simplest integration with all advanced features
+                built-in:
               </p>
 
               <EnhancedCodeBlock
-                code={`import { ClarityChat } from '@clarity-chat/react'
+                code={`import { ClarityChatApp } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 export default function App() {
-  return <ClarityChat api="/api/chat" />
+  // Basic usage - streaming chat in 3 minutes
+  return <ClarityChatApp api="/api/chat" />
 }`}
                 language="tsx"
                 filename="App.tsx"
@@ -201,10 +203,33 @@ export default function App() {
 
               <Callout type="success" className="mt-6">
                 <p>
-                  <strong>That's it!</strong> ClarityChat handles all state
+                  <strong>That's it!</strong> ClarityChatApp handles all state
                   management, streaming, error handling, and UI internally.
                 </p>
               </Callout>
+
+              <div className="my-6 p-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">
+                  🚀 Enable Advanced Features with One Line
+                </h4>
+                <EnhancedCodeBlock
+                  code={`// Enable memory with one flag
+<ClarityChatApp api="/api/chat" features={{ memory: true }} />
+
+// Use a preset for common configurations
+<ClarityChatApp api="/api/chat" preset="pro" />
+
+// Enterprise preset - all features enabled
+<ClarityChatApp api="/api/chat" preset="enterprise" />`}
+                  language="tsx"
+                  filename="Advanced Examples"
+                  showCopyButton
+                />
+                <p className="text-sm text-blue-700 dark:text-blue-400 mt-3">
+                  <strong>Available presets:</strong> simple, pro, memory, rag,
+                  tools, enterprise
+                </p>
+              </div>
 
               {/* Success Celebration */}
               <SuccessCelebration
@@ -212,10 +237,10 @@ export default function App() {
                 message="You've just created a production-ready AI chat interface. Here's what to explore next:"
                 nextSteps={[
                   {
-                    title: 'Add Streaming',
-                    description: 'See responses in real-time',
-                    href: '/guides/streaming',
-                    icon: <span className="text-lg">⚡</span>,
+                    title: 'Add Memory',
+                    description: 'Enable with one flag',
+                    href: '/guides/memory',
+                    icon: <span className="text-lg">🧠</span>,
                   },
                   {
                     title: 'Customize Theme',
@@ -224,10 +249,10 @@ export default function App() {
                     icon: <span className="text-lg">🎨</span>,
                   },
                   {
-                    title: 'Add Memory',
-                    description: 'Remember context',
-                    href: '/guides/memory',
-                    icon: <span className="text-lg">🧠</span>,
+                    title: 'Token Optimization',
+                    description: 'Reduce AI costs',
+                    href: '/guides/token-optimization',
+                    icon: <span className="text-lg">💰</span>,
                   },
                 ]}
               />
@@ -237,74 +262,88 @@ export default function App() {
           <ScrollReveal delay={0.6}>
             <TutorialStep
               step={4}
-              title="Manual Control (Optional)"
+              title="Manual Control with Hook"
               nextStepHref="#whats-included"
               nextStepTitle="What's Included"
             >
               <p className="text-text-secondary mb-4">
-                For more control over state, use{' '}
+                For headless usage with custom UI, use the{' '}
                 <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                  ChatWindow
-                </code>{' '}
-                with the{' '}
-                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                  useClarityChat
+                  useClarityChatApp
                 </code>{' '}
                 hook:
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+                code={`import { useClarityChatApp } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-export default function App() {
-  const chat = useClarityChat({ api: '/api/chat' })
+export default function CustomChat() {
+  const chat = useClarityChatApp({
+    api: '/api/chat',
+    features: { memory: true },  // Enable features via hook
+  })
 
   return (
-    <ChatWindow
-      messages={chat.messages}
-      isLoading={chat.isLoading}
-      onSendMessage={(content) => chat.append({ role: 'user', content })}
-    />
+    <div>
+      <div className="messages">
+        {chat.messages.map((msg) => (
+          <div key={msg.id}>{msg.content}</div>
+        ))}
+      </div>
+      <input
+        value={chat.input}
+        onChange={chat.handleInputChange}
+        onKeyDown={(e) => e.key === 'Enter' && chat.handleSubmit()}
+      />
+      <button onClick={() => chat.handleSubmit()}>Send</button>
+
+      {/* Access metadata from all systems */}
+      <div>Tokens used: {chat.meta.token.totalTokens}</div>
+      <div>Memory items: {chat.meta.memory.totalItems}</div>
+    </div>
   )
 }`}
                 language="tsx"
-                filename="App.tsx"
+                filename="CustomChat.tsx"
                 showLineNumbers
                 showCopyButton
               />
 
-              <TryItOut title="Try it out">
+              <TryItOut title="Hook Features">
                 <p className="text-text-secondary mb-4">
-                  This pattern gives you full control over the chat while
-                  keeping it simple:
+                  The unified hook provides everything you need:
                 </p>
                 <ul className="space-y-2 text-text-secondary">
                   <li>
                     ✓{' '}
                     <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                      useClarityChat
+                      messages, send, append, stop, retry, clear
                     </code>{' '}
-                    manages all state, streaming, and API calls
+                    - Full message management
                   </li>
                   <li>
                     ✓{' '}
                     <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                      ChatWindow
+                      meta.token, meta.memory, meta.rag, meta.safety
                     </code>{' '}
-                    accepts messages directly - no conversion needed
+                    - Unified metadata from all systems
                   </li>
                   <li>
-                    ✓ Add memory, tools, or custom behavior via hook options
+                    ✓{' '}
+                    <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+                      config
+                    </code>{' '}
+                    - Resolved configuration with all defaults applied
                   </li>
                 </ul>
               </TryItOut>
 
               <Callout type="success" className="mt-6">
                 <p>
-                  <strong>That's it!</strong> You now have a fully functional
-                  chat interface with beautiful UI, animations, and
-                  accessibility built-in.
+                  <strong>Full control, zero boilerplate.</strong> The hook
+                  handles state, streaming, retries, and feature integration
+                  automatically.
                 </p>
               </Callout>
             </TutorialStep>
@@ -474,7 +513,8 @@ export default function App() {
                     Components
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Explore all {LIBRARY_STATS.components} components with interactive examples
+                    Explore all {LIBRARY_STATS.components} components with
+                    interactive examples
                   </p>
                 </a>
 

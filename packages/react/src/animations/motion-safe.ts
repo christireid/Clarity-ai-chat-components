@@ -48,32 +48,73 @@ export function getMotionSafeVariants<T extends Record<string, Variant>>(
 }
 
 /**
+ * Transition duration presets
+ */
+const TRANSITION_DURATIONS = {
+  fast: 0.15,
+  normal: 0.2,
+  slow: 0.3,
+} as const
+
+/**
+ * Transition easing presets
+ */
+const TRANSITION_EASINGS = {
+  in: [0.4, 0, 1, 1],
+  out: [0, 0, 0.2, 1],
+  inOut: [0.4, 0, 0.2, 1],
+} as const
+
+/**
  * Get motion-safe transition settings
  *
+ * Supports both object configuration and preset-based signatures.
+ *
  * @param reducedMotion - Whether reduced motion is preferred
- * @param transition - Transition configuration
+ * @param transition - Transition configuration object, OR duration preset ('fast' | 'normal' | 'slow')
+ * @param easing - Optional easing preset ('in' | 'out' | 'inOut') when using duration preset
+ * @param overrides - Optional additional transition properties
  * @returns Motion-safe transition (instant if reduced motion)
  *
- * @example
+ * @example Object config
  * ```tsx
- * const prefersReducedMotion = useReducedMotion()
- *
  * <motion.div
- *   animate={{ x: 100 }}
  *   transition={getMotionSafeTransition(prefersReducedMotion, {
  *     duration: 0.3,
  *     ease: 'easeOut'
  *   })}
  * />
  * ```
+ *
+ * @example Preset config
+ * ```tsx
+ * <motion.div
+ *   transition={getMotionSafeTransition(prefersReducedMotion, 'normal', 'out')}
+ * />
+ * ```
  */
 export function getMotionSafeTransition(
   reducedMotion: boolean,
-  transition: Record<string, unknown>
+  transition: Record<string, unknown> | keyof typeof TRANSITION_DURATIONS,
+  easing?: keyof typeof TRANSITION_EASINGS,
+  overrides?: Record<string, unknown>
 ): Record<string, unknown> {
   if (reducedMotion) {
     return { duration: 0 }
   }
+
+  // Handle preset-based signature
+  if (typeof transition === 'string') {
+    const duration = TRANSITION_DURATIONS[transition] ?? 0.2
+    const ease = easing ? TRANSITION_EASINGS[easing] : TRANSITION_EASINGS.inOut
+    return {
+      duration,
+      ease,
+      ...overrides,
+    }
+  }
+
+  // Handle object configuration
   return transition
 }
 
@@ -212,6 +253,70 @@ export const MOTION_SAFE_PRESETS = {
       initial: { opacity: 0, y: 10, scale: 0.95 },
       animate: { opacity: 1, y: 0, scale: 1 },
       exit: { opacity: 0, y: 10, scale: 0.95 },
+    },
+    reduced: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+  },
+
+  /**
+   * Slide down - simplified for reduced motion
+   */
+  slideDown: {
+    full: {
+      initial: { opacity: 0, y: -20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: 20 },
+    },
+    reduced: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+  },
+
+  /**
+   * Slide right - simplified for reduced motion
+   */
+  slideRight: {
+    full: {
+      initial: { opacity: 0, x: -20 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: 20 },
+    },
+    reduced: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+  },
+
+  /**
+   * Slide left - simplified for reduced motion
+   */
+  slideLeft: {
+    full: {
+      initial: { opacity: 0, x: 20 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: -20 },
+    },
+    reduced: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+  },
+
+  /**
+   * Fade in (alias for fade) - for compatibility
+   */
+  fadeIn: {
+    full: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
     },
     reduced: {
       initial: { opacity: 0 },

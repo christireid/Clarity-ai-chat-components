@@ -42,9 +42,9 @@ import {
   type PromptSuggestion,
 } from './components/prompt/prompt-suggestions'
 
-// Import hooks
+// Import hooks - use alias to avoid duplicate identifier
 import {
-  useChat,
+  useClarityChat as useSimpleChat,
   type UseChatOptions,
   type UseChatReturn,
 } from './hooks/chat/use-chat-unified'
@@ -77,7 +77,7 @@ import { convertCoreMessagesToMessages } from './utils/message/message-conversio
  */
 export const hooks = {
   /** Simplified chat hook with sensible defaults */
-  useChat,
+  useChat: useSimpleChat,
   /** Full-featured chat hook with all options */
   useClarityChat,
   /** Pre-configured handlers for ChatWindow */

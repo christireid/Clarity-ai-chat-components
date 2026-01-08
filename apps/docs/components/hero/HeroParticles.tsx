@@ -11,10 +11,19 @@ import {
   type ReactNode,
   type ErrorInfo,
 } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { logger } from '@/lib/logger'
 import * as THREE from 'three'
+
+// Extend react-three-fiber with Three.js elements
+extend({
+  Points: THREE.Points,
+  BufferGeometry: THREE.BufferGeometry,
+  BufferAttribute: THREE.BufferAttribute,
+  ShaderMaterial: THREE.ShaderMaterial,
+})
+
 import { createNoise3D, type NoiseFunction3D } from 'simplex-noise'
 import { cn } from '@/lib/utils'
 import {

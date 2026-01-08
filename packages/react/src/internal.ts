@@ -201,6 +201,16 @@ export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
 export { SecurityManager, securityManager, useSecurity } from './utils/security'
 
+// Re-export types from @clarity-chat/types for convenience
+export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
+
+// Re-export input types
+export type { InputSuggestion } from './components/input/advanced-chat-input'
+
+// Re-export additional types for docs pages
+export type { AgentRunStep } from './components/ai/agent-run-feed'
+export type { ModelInfo, ToolCall } from './adapters/types'
+
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
@@ -303,3 +313,38 @@ export * from './agents/tool-ui-registry'
 // ============================================================================
 // Note: Animation exports are already in public-api, additional internal
 // animation utilities can be imported directly from './animations'
+
+// ============================================================================
+// APP API ESCAPE HATCHES (For advanced customization)
+// ============================================================================
+// These utilities allow advanced users to customize the unified ClarityChatApp
+// without using the full component. Use these if you need fine-grained control
+// over configuration resolution or need to build custom integrations.
+export {
+  // Configuration resolution
+  resolveConfig,
+  isFeatureEnabled,
+  describeActiveFeatures,
+  createPresetConfig,
+  mergeConfigs,
+  ConfigValidationError,
+  type ResolveConfigOptions,
+} from './app-api/resolve-config'
+
+// Default configurations (for overriding specific defaults)
+export {
+  DEFAULT_FEATURE_FLAGS,
+  DEFAULT_MEMORY_CONFIG,
+  DEFAULT_TOKEN_OPTIMIZATION_CONFIG,
+  DEFAULT_TOOLS_CONFIG,
+  DEFAULT_RAG_CONFIG,
+  DEFAULT_SAFETY_CONFIG,
+  DEFAULT_OBSERVABILITY_CONFIG,
+  DEFAULT_UI_CONFIG,
+  DEFAULT_ERROR_RECOVERY_CONFIG,
+  DEFAULT_STREAMING_CONFIG,
+  PRESET_DEFINITIONS,
+  DEFAULT_RESOLVED_CONFIG,
+  MODEL_TOKEN_BUDGETS,
+  getModelTokenBudget,
+} from './app-api/defaults'

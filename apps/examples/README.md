@@ -1,6 +1,6 @@
 # Clarity Chat Examples
 
-> **30+ Production-Ready Examples** - Copy, customize, and ship.
+> **40+ Production-Ready Examples** - Copy, customize, and ship.
 
 Every example is a complete, working application you can deploy in minutes.
 
@@ -8,11 +8,39 @@ Every example is a complete, working application you can deploy in minutes.
 
 ---
 
-## Quick Start
+## 3 Minutes to Production
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
+
+**That's it!** Now add features with one line:
+
+```tsx
+// Add memory
+<ClarityChatApp api="/api/chat" features={{ memory: true }} />
+
+// Add token optimization (60-90% cost reduction)
+<ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
+
+// Use a preset
+<ClarityChatApp api="/api/chat" preset="enterprise" />
+```
+
+**Available presets:** `simple` | `pro` | `memory` | `rag` | `tools` | `enterprise`
+
+---
+
+## Run an Example
 
 ```bash
 # Pick an example and run it
-cd apps/examples/basic-chat
+cd apps/examples/minimal-chat
 npm install
 npm run dev
 ```
@@ -21,16 +49,17 @@ npm run dev
 
 ## Find the Right Example
 
-| I want to... | Start with... | Complexity |
-|-------------|---------------|------------|
-| Learn the basics | [basic-chat](./basic-chat) | Beginner |
-| Add streaming | [streaming-chat](./streaming-chat) | Beginner |
-| Build a code assistant | [code-assistant](./code-assistant) | Intermediate |
-| Create an e-commerce bot | [ecommerce-assistant](./ecommerce-assistant) | Intermediate |
-| Build enterprise features | [enterprise-ai-ops](./enterprise-ai-ops) | Advanced |
-| Compare AI models | [model-comparison-demo](./model-comparison-demo) | Intermediate |
-| Customize themes | [theme-builder](./theme-builder) | Beginner |
-| Track token usage | [analytics-console-demo](./analytics-console-demo) | Intermediate |
+| I want to...              | Start with...                                      | Complexity   |
+| ------------------------- | -------------------------------------------------- | ------------ |
+| **Fastest setup**         | [minimal-chat](./minimal-chat)                     | ⭐ Beginner  |
+| Learn the basics          | [basic-chat](./basic-chat)                         | Beginner     |
+| Add streaming             | [streaming-chat](./streaming-chat)                 | Beginner     |
+| Build a code assistant    | [code-assistant](./code-assistant)                 | Intermediate |
+| Create an e-commerce bot  | [ecommerce-assistant](./ecommerce-assistant)       | Intermediate |
+| Build enterprise features | [enterprise-ai-ops](./enterprise-ai-ops)           | Advanced     |
+| Compare AI models         | [model-comparison-demo](./model-comparison-demo)   | Intermediate |
+| Customize themes          | [theme-builder](./theme-builder)                   | Beginner     |
+| Track token usage         | [analytics-console-demo](./analytics-console-demo) | Intermediate |
 
 ---
 
@@ -39,24 +68,33 @@ npm run dev
 Three showcases demonstrating the full power of Clarity Chat:
 
 ### 1. AI Research Platform
+
 Enterprise-grade multi-agent RAG system with knowledge visualization.
+
 ```
 apps/examples/ai-research-platform
 ```
+
 [![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/ai-research-platform)
 
 ### 2. Enterprise AI Ops
+
 Full operations dashboard with safety review, evaluation, and monitoring.
+
 ```
 apps/examples/enterprise-ai-ops
 ```
+
 [![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/enterprise-ai-ops)
 
 ### 3. Comprehensive Chat Demo
+
 All features working together: edit, regenerate, export, search, command palette.
+
 ```
 apps/examples/comprehensive-chat-demo
 ```
+
 [![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/comprehensive-chat-demo)
 
 ---
@@ -65,11 +103,11 @@ apps/examples/comprehensive-chat-demo
 
 ### Beginner Examples
 
-| Example | Description | Complexity |
-|---------|-------------|------------|
-| [minimal-chat](./minimal-chat) | 5 lines of code - simplest possible | ⭐ |
-| [basic-chat](./basic-chat) | Simple chat with message operations | ⭐ |
-| [customized-chat](./customized-chat) | Custom styling and callbacks | ⭐ |
+| Example                              | Description                        | Complexity |
+| ------------------------------------ | ---------------------------------- | ---------- |
+| [minimal-chat](./minimal-chat)       | **ONE LINE of code** - start here! | ⭐ Easiest |
+| [basic-chat](./basic-chat)           | Chat with message operations       | ⭐         |
+| [customized-chat](./customized-chat) | Custom styling and callbacks       | ⭐         |
 
 ### Prerequisites
 
@@ -93,65 +131,65 @@ npm run dev
 
 ## 💬 Core Features
 
-| Example | Features | Status |
-|---------|----------|--------|
-| [streaming-chat](./streaming-chat) | SSE streaming, cancellation, stop generation | ✅ |
-| [advanced-chat-features](./advanced-chat-features) | Edit, regenerate, delete, undo/redo | ✅ |
-| [comprehensive-chat-demo](./comprehensive-chat-demo) | All features + search + command palette | ✅ |
-| [ai-assistant](./ai-assistant) | TanStack Query integration | ✅ |
+| Example                                              | Features                                     | Status |
+| ---------------------------------------------------- | -------------------------------------------- | ------ |
+| [streaming-chat](./streaming-chat)                   | SSE streaming, cancellation, stop generation | ✅     |
+| [advanced-chat-features](./advanced-chat-features)   | Edit, regenerate, delete, undo/redo          | ✅     |
+| [comprehensive-chat-demo](./comprehensive-chat-demo) | All features + search + command palette      | ✅     |
+| [ai-assistant](./ai-assistant)                       | TanStack Query integration                   | ✅     |
 
 ---
 
 ## 📊 Analytics & Optimization
 
-| Example | Features | Status |
-|---------|----------|--------|
-| [analytics-console-demo](./analytics-console-demo) | Token usage dashboard, cost analytics | ✅ |
-| [token-optimization-demo](./token-optimization-demo) | In-chat token tracking | ✅ |
-| [performance-dashboard](./performance-dashboard) | Component benchmarking | ✅ |
-| [conversational-analytics](./conversational-analytics) | Conversation insights | ✅ |
+| Example                                                | Features                              | Status |
+| ------------------------------------------------------ | ------------------------------------- | ------ |
+| [analytics-console-demo](./analytics-console-demo)     | Token usage dashboard, cost analytics | ✅     |
+| [token-optimization-demo](./token-optimization-demo)   | In-chat token tracking                | ✅     |
+| [performance-dashboard](./performance-dashboard)       | Component benchmarking                | ✅     |
+| [conversational-analytics](./conversational-analytics) | Conversation insights                 | ✅     |
 
 ---
 
 ## 🤖 AI/ML Features
 
-| Example | Features | API Keys Required |
-|---------|----------|-------------------|
-| [rag-workbench-demo](./rag-workbench-demo) | RAG, vector search, citations | OpenAI, Anthropic, Google |
-| [model-comparison-demo](./model-comparison-demo) | Compare AI providers | OpenAI, Anthropic, Google |
-| [code-assistant](./code-assistant) | Code generation, debugging | OpenAI |
-| [ai-research-platform](./ai-research-platform) | Multi-agent, knowledge graph | OpenAI, Anthropic, Google |
+| Example                                          | Features                      | API Keys Required         |
+| ------------------------------------------------ | ----------------------------- | ------------------------- |
+| [rag-workbench-demo](./rag-workbench-demo)       | RAG, vector search, citations | OpenAI, Anthropic, Google |
+| [model-comparison-demo](./model-comparison-demo) | Compare AI providers          | OpenAI, Anthropic, Google |
+| [code-assistant](./code-assistant)               | Code generation, debugging    | OpenAI                    |
+| [ai-research-platform](./ai-research-platform)   | Multi-agent, knowledge graph  | OpenAI, Anthropic, Google |
 
 ---
 
 ## 🏢 Enterprise Features
 
-| Example | Features | Status |
-|---------|----------|--------|
-| [enterprise-ai-ops](./enterprise-ai-ops) | Safety review, evaluation, monitoring | ✅ |
-| [complex-chat](./complex-chat) | Enterprise patterns, sidebar | ✅ |
-| [multi-user-chat](./multi-user-chat) | Remix + WebSockets | ✅ |
+| Example                                  | Features                              | Status |
+| ---------------------------------------- | ------------------------------------- | ------ |
+| [enterprise-ai-ops](./enterprise-ai-ops) | Safety review, evaluation, monitoring | ✅     |
+| [complex-chat](./complex-chat)           | Enterprise patterns, sidebar          | ✅     |
+| [multi-user-chat](./multi-user-chat)     | Remix + WebSockets                    | ✅     |
 
 ---
 
 ## 🎨 Design System
 
-| Example | Features | Status |
-|---------|----------|--------|
-| [design-system-showcase](./design-system-showcase) | All components, variants, tokens | ✅ |
-| [theme-builder](./theme-builder) | Interactive theme editor | ✅ |
-| [component-demo](./component-demo) | Component patterns | ✅ |
-| [examples-showcase](./examples-showcase) | Multi-view example browser | ✅ |
+| Example                                            | Features                         | Status |
+| -------------------------------------------------- | -------------------------------- | ------ |
+| [design-system-showcase](./design-system-showcase) | All components, variants, tokens | ✅     |
+| [theme-builder](./theme-builder)                   | Interactive theme editor         | ✅     |
+| [component-demo](./component-demo)                 | Component patterns               | ✅     |
+| [examples-showcase](./examples-showcase)           | Multi-view example browser       | ✅     |
 
 ---
 
 ## 🏪 Industry Solutions
 
-| Example | Industry | Features |
-|---------|----------|----------|
-| [ecommerce-assistant](./ecommerce-assistant) | E-Commerce | Product search, cart, recommendations |
-| [customer-support](./customer-support) | Support | Ticket management, Supabase |
-| [vercel-ai-sdk-compatible](./vercel-ai-sdk-compatible) | Integration | Vercel AI SDK patterns |
+| Example                                                | Industry    | Features                              |
+| ------------------------------------------------------ | ----------- | ------------------------------------- |
+| [ecommerce-assistant](./ecommerce-assistant)           | E-Commerce  | Product search, cart, recommendations |
+| [customer-support](./customer-support)                 | Support     | Ticket management, Supabase           |
+| [vercel-ai-sdk-compatible](./vercel-ai-sdk-compatible) | Integration | Vercel AI SDK patterns                |
 
 ---
 
@@ -233,6 +271,7 @@ These examples serve as both documentation and testing grounds:
 ## 📞 Support
 
 For questions or issues:
+
 1. Check the example's README
 2. Review [EXAMPLES_INDEX.md](./EXAMPLES_INDEX.md)
 3. Open an issue on GitHub

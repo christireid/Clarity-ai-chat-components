@@ -12,6 +12,12 @@ interface PerformanceMetrics {
   timeToInteractive?: number
 }
 
+// Web Vitals LayoutShift interface (not in standard TypeScript DOM types)
+interface LayoutShift extends PerformanceEntry {
+  readonly hadRecentInput: boolean
+  readonly value: number
+}
+
 export function usePerformanceMonitoring() {
   const metricsRef = useRef<PerformanceMetrics>({})
 
@@ -64,8 +70,10 @@ export function usePerformanceMonitoring() {
       try {
         const fidObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
+            // Cast to PerformanceEventTiming for first-input entries
+            const fidEntry = entry as PerformanceEventTiming
             metricsRef.current.firstInputDelay =
-              entry.processingStart - entry.startTime
+              fidEntry.processingStart - fidEntry.startTime
           }
         })
         fidObserver.observe({ entryTypes: ['first-input'] })
@@ -78,8 +86,10 @@ export function usePerformanceMonitoring() {
         let clsValue = 0
         const clsObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value
+            // Cast to LayoutShift for layout-shift entries
+            const lsEntry = entry as LayoutShift
+            if (!lsEntry.hadRecentInput) {
+              clsValue += lsEntry.value
             }
           }
           metricsRef.current.cumulativeLayoutShift = clsValue

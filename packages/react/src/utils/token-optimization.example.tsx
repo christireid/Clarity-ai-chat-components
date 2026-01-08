@@ -11,7 +11,7 @@ import {
   TokenOptimizationPanel,
   TokenOptimizationBadge,
 } from '../hooks/token/use-token-optimization'
-import { useChat } from '../hooks/chat/use-chat-enhanced'
+import { useClarityChat } from '../hooks/chat/use-chat-enhanced'
 
 // ============================================================================
 // Example 1: Basic Usage with Prompt Shortening

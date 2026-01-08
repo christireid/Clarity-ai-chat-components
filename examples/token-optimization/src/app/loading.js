@@ -1,0 +1,5 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export default function Loading() {
+    return (_jsxs("div", { className: "min-h-screen bg-background p-6", "aria-busy": "true", "aria-label": "Loading", children: [_jsxs("div", { className: "max-w-6xl mx-auto", children: [_jsx("div", { className: "h-9 w-80 bg-muted animate-pulse rounded mb-6" }), _jsx("div", { className: "mb-8 flex flex-wrap gap-4", children: [...Array(5)].map((_, i) => (_jsx("div", { className: "h-10 w-32 bg-muted animate-pulse rounded" }, i))) }), _jsx("div", { className: "mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", children: [...Array(4)].map((_, i) => (_jsxs("div", { className: "p-4 bg-card border rounded-lg", children: [_jsx("div", { className: "h-4 w-24 bg-muted animate-pulse rounded mb-2" }), _jsx("div", { className: "h-8 w-16 bg-muted animate-pulse rounded" })] }, i))) }), _jsx("div", { className: "h-6 w-24 bg-muted animate-pulse rounded mb-4" }), _jsx("div", { className: "h-64 bg-muted animate-pulse rounded" })] }), _jsx("span", { className: "sr-only", children: "Loading token optimization demo..." })] }));
+}
+//# sourceMappingURL=loading.js.map

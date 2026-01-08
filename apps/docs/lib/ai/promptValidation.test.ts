@@ -123,30 +123,39 @@ describe('isPromptValid', () => {
 describe('validatePromptDevMode', () => {
   const originalEnv = process.env.NODE_ENV
 
+  // Helper to safely set environment variables in tests
+  const setEnv = (key: string, value: string) => {
+    Object.defineProperty(process.env, key, {
+      value,
+      writable: true,
+      configurable: true,
+    })
+  }
+
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv
+    setEnv('NODE_ENV', originalEnv as string)
     vi.restoreAllMocks()
   })
 
   it('logs errors in development mode', () => {
-    process.env.NODE_ENV = 'development'
+    setEnv('NODE_ENV', 'development')
     validatePromptDevMode('<unclosed>', 'TestPrompt')
     expect(console.error).toHaveBeenCalled()
   })
 
   it('does nothing in production mode', () => {
-    process.env.NODE_ENV = 'production'
+    setEnv('NODE_ENV', 'production')
     validatePromptDevMode('<unclosed>', 'TestPrompt')
     expect(console.error).not.toHaveBeenCalled()
   })
 
   it('logs warnings for best practice issues', () => {
-    process.env.NODE_ENV = 'development'
+    setEnv('NODE_ENV', 'development')
     validatePromptDevMode('Minimal prompt', 'TestPrompt')
     expect(console.warn).toHaveBeenCalled()
   })

@@ -6,6 +6,7 @@
  */
 
 import { Redis } from '@upstash/redis'
+import { logger } from '@/lib/logger'
 
 export interface Feedback {
   id: string
@@ -73,7 +74,9 @@ export class RedisFeedbackStore implements FeedbackStore {
     return `${prefix}:all`
   }
 
-  async saveFeedback(feedback: Omit<Feedback, 'id' | 'timestamp'>): Promise<void> {
+  async saveFeedback(
+    feedback: Omit<Feedback, 'id' | 'timestamp'>
+  ): Promise<void> {
     const id = `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = new Date().toISOString()
 
@@ -91,7 +94,9 @@ export class RedisFeedbackStore implements FeedbackStore {
   }
 
   async getAllFeedback(): Promise<Feedback[]> {
-    const feedbackIds = (await this.redis.smembers(this.getAllFeedbackKey())) as string[]
+    const feedbackIds = (await this.redis.smembers(
+      this.getAllFeedbackKey()
+    )) as string[]
     const feedbacks: Feedback[] = []
 
     for (const id of feedbackIds) {
@@ -101,28 +106,38 @@ export class RedisFeedbackStore implements FeedbackStore {
       }
     }
 
-    return feedbacks.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return feedbacks.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
   }
 
   async getStats(): Promise<FeedbackStats> {
     const allFeedback = await this.getAllFeedback()
     const total = allFeedback.length
-    const positive = allFeedback.filter(f => f.type === 'positive').length
+    const positive = allFeedback.filter((f) => f.type === 'positive').length
     const negative = total - positive
     const positiveRate = total > 0 ? (positive / total) * 100 : 0
 
     // Extract common issues from negative feedback comments
     const comments = allFeedback
-      .filter(f => f.type === 'negative' && f.comment)
-      .map(f => f.comment!.toLowerCase())
+      .filter((f) => f.type === 'negative' && f.comment)
+      .map((f) => f.comment!.toLowerCase())
 
-    const issueKeywords = ['wrong', 'incorrect', 'outdated', 'unclear', 'missing', 'error']
-    const commonIssues = issueKeywords.map(keyword => ({
-      issue: keyword,
-      count: comments.filter(c => c.includes(keyword)).length,
-    })).filter(i => i.count > 0)
+    const issueKeywords = [
+      'wrong',
+      'incorrect',
+      'outdated',
+      'unclear',
+      'missing',
+      'error',
+    ]
+    const commonIssues = issueKeywords
+      .map((keyword) => ({
+        issue: keyword,
+        count: comments.filter((c) => c.includes(keyword)).length,
+      }))
+      .filter((i) => i.count > 0)
       .sort((a, b) => b.count - a.count)
 
     return {
@@ -136,7 +151,7 @@ export class RedisFeedbackStore implements FeedbackStore {
 
   async getFeedbackForMessage(messageId: string): Promise<Feedback | null> {
     const allFeedback = await this.getAllFeedback()
-    return allFeedback.find(f => f.messageId === messageId) || null
+    return allFeedback.find((f) => f.messageId === messageId) || null
   }
 }
 
@@ -146,7 +161,9 @@ export class RedisFeedbackStore implements FeedbackStore {
 export class LocalFeedbackStore implements FeedbackStore {
   private feedbacks: Map<string, Feedback> = new Map()
 
-  async saveFeedback(feedback: Omit<Feedback, 'id' | 'timestamp'>): Promise<void> {
+  async saveFeedback(
+    feedback: Omit<Feedback, 'id' | 'timestamp'>
+  ): Promise<void> {
     const id = `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = new Date().toISOString()
 
@@ -161,27 +178,37 @@ export class LocalFeedbackStore implements FeedbackStore {
   }
 
   async getAllFeedback(): Promise<Feedback[]> {
-    return Array.from(this.feedbacks.values()).sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return Array.from(this.feedbacks.values()).sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
   }
 
   async getStats(): Promise<FeedbackStats> {
     const allFeedback = await this.getAllFeedback()
     const total = allFeedback.length
-    const positive = allFeedback.filter(f => f.type === 'positive').length
+    const positive = allFeedback.filter((f) => f.type === 'positive').length
     const negative = total - positive
     const positiveRate = total > 0 ? (positive / total) * 100 : 0
 
     const comments = allFeedback
-      .filter(f => f.type === 'negative' && f.comment)
-      .map(f => f.comment!.toLowerCase())
+      .filter((f) => f.type === 'negative' && f.comment)
+      .map((f) => f.comment!.toLowerCase())
 
-    const issueKeywords = ['wrong', 'incorrect', 'outdated', 'unclear', 'missing', 'error']
-    const commonIssues = issueKeywords.map(keyword => ({
-      issue: keyword,
-      count: comments.filter(c => c.includes(keyword)).length,
-    })).filter(i => i.count > 0)
+    const issueKeywords = [
+      'wrong',
+      'incorrect',
+      'outdated',
+      'unclear',
+      'missing',
+      'error',
+    ]
+    const commonIssues = issueKeywords
+      .map((keyword) => ({
+        issue: keyword,
+        count: comments.filter((c) => c.includes(keyword)).length,
+      }))
+      .filter((i) => i.count > 0)
       .sort((a, b) => b.count - a.count)
 
     return {
@@ -195,7 +222,7 @@ export class LocalFeedbackStore implements FeedbackStore {
 
   async getFeedbackForMessage(messageId: string): Promise<Feedback | null> {
     const allFeedback = await this.getAllFeedback()
-    return allFeedback.find(f => f.messageId === messageId) || null
+    return allFeedback.find((f) => f.messageId === messageId) || null
   }
 }
 
