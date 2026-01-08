@@ -76,6 +76,85 @@ export type {
   ValidationWarning,
 } from './dx-hints'
 
+// RAG Engine (for advanced usage)
+export {
+  createRAGEngine,
+  initializeRAG,
+  queryRAG,
+  addSources,
+  clearRAG,
+  getRAGStats,
+  chunkText,
+} from './rag-engine'
+
+export type { RAGChunk, RAGQueryResult, RAGEngineState } from './rag-engine'
+
+// Memory Engine (for advanced usage)
+export {
+  createMemoryEngine,
+  initializeMemory,
+  addToMemory,
+  retrieveContext,
+  generateSummary,
+  clearMemory,
+  getMemoryStats,
+} from './memory-engine'
+
+export type {
+  MemoryEntry,
+  MemoryContext,
+  MemoryEngineState,
+} from './memory-engine'
+
+// Tools Engine (for advanced usage)
+export {
+  createToolsEngine,
+  registerTool,
+  unregisterTool,
+  getAvailableTools,
+  createToolCall,
+  approveToolCall,
+  rejectToolCall,
+  executeToolCall,
+  executeTool,
+  getToolStats,
+  clearToolHistory,
+  clearToolCache,
+} from './tools-engine'
+
+export type {
+  ToolCall,
+  ToolExecutionResult,
+  ToolsEngineState,
+} from './tools-engine'
+
+// Token Optimization Engine (for advanced usage)
+export {
+  createTokenEngine,
+  estimateTokens,
+  estimateMessageTokens,
+  estimateConversationTokens,
+  estimateCost,
+  updateUsage,
+  getBudgetStatus,
+  hasBudget,
+  optimizeForBudget,
+  getCachedResponse,
+  cacheResponse,
+  generateCacheKey,
+  getTokenEstimate,
+  resetUsage,
+  clearCache,
+  getTokenStats,
+} from './token-engine'
+
+export type {
+  TokenBudget,
+  TokenOptimizationResult,
+  TokenEngineState,
+  TokenEstimate,
+} from './token-engine'
+
 // Types
 export type {
   // Feature flags and presets
