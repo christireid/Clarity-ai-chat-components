@@ -15,6 +15,16 @@ import type {
   ClarityResolvedConfig,
 } from './types'
 import { resolveConfig } from './resolve-config'
+import {
+  createClarityError,
+  httpStatusToErrorCode,
+  devHint,
+  logInitialization,
+  logPerformanceWarning,
+  detectCommonMistakes,
+  logValidationWarnings,
+  showQuickStartOnError,
+} from './dx-hints'
 
 // =============================================================================
 // Default Metadata
@@ -116,6 +126,41 @@ export function useClarityChatApp(
       options.sources,
     ]
   )
+
+  // Development mode initialization logging
+  const hasLoggedInit = useRef(false)
+  useEffect(() => {
+    if (!hasLoggedInit.current) {
+      hasLoggedInit.current = true
+
+      // Log initialization
+      logInitialization({
+        api,
+        preset: options.preset,
+        features: config.features,
+      })
+
+      // Check for common mistakes
+      const warnings = detectCommonMistakes({
+        api,
+        preset: options.preset,
+        features: config.features,
+        ragSources: config.rag.sources,
+        toolsRegistry: config.tools.registry,
+        memoryEnabled: config.features.memory,
+        tokenBudget: config.tokenOptimization.budget,
+      })
+      logValidationWarnings(warnings)
+
+      // Performance hints
+      if (config.features.memory && config.memory.limit > 50) {
+        logPerformanceWarning(
+          'High memory limit may slow down responses',
+          'Consider reducing memory.limit to 20-30 messages for optimal performance'
+        )
+      }
+    }
+  }, [api, options.preset, config])
 
   // Core chat state
   const [messages, setMessages] = useState<Message[]>(initialMessages)
@@ -316,7 +361,11 @@ export function useClarityChatApp(
         })
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          const errorCode = httpStatusToErrorCode(response.status)
+          throw createClarityError(
+            errorCode,
+            `Status ${response.status} from ${api}`
+          )
         }
 
         // Handle streaming response
@@ -385,7 +434,35 @@ export function useClarityChatApp(
           return
         }
 
-        const error = err instanceof Error ? err : new Error('Unknown error')
+        // Handle different error types with actionable messages
+        let error: Error
+        if (err instanceof Error && 'code' in err) {
+          // Already a ClarityError
+          error = err
+        } else if (
+          err instanceof TypeError &&
+          (err as Error).message.includes('fetch')
+        ) {
+          // Network error
+          error = createClarityError('NETWORK_ERROR', (err as Error).message)
+        } else if (err instanceof Error) {
+          error = err
+        } else {
+          error = createClarityError('API_ERROR_UNKNOWN', String(err))
+        }
+
+        // Show quick start guide on first error in dev
+        showQuickStartOnError()
+
+        // Log helpful hint in development
+        devHint('error', `Request failed: ${error.message}`, {
+          api,
+          retryCount: retryCountRef.current,
+          suggestion:
+            'code' in error
+              ? (error as { suggestion?: string }).suggestion
+              : undefined,
+        })
 
         // Retry logic
         if (
@@ -398,6 +475,10 @@ export function useClarityChatApp(
               Math.pow(2, retryCountRef.current - 1)
             : config.errorRecovery.retryDelayMs
 
+          devHint(
+            'info',
+            `Retrying in ${delay}ms (attempt ${retryCountRef.current}/${config.errorRecovery.maxRetries})`
+          )
           setTimeout(() => send(content), delay)
           return
         }

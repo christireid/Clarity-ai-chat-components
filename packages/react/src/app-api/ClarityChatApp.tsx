@@ -5,6 +5,7 @@ import type { Message } from '@clarity-chat/types'
 import type { ClarityChatAppProps, ClarityEvent } from './types'
 import { useClarityChatApp } from './use-clarity-chat-app'
 import { resolveConfig, isFeatureEnabled } from './resolve-config'
+import { formatErrorForDisplay, type ClarityError } from './dx-hints'
 
 // =============================================================================
 // Internal Components
@@ -203,7 +204,7 @@ function DefaultLoadingIndicator() {
 }
 
 /**
- * Default error display
+ * Default error display with actionable suggestions
  */
 function DefaultErrorDisplay({
   error,
@@ -212,6 +213,8 @@ function DefaultErrorDisplay({
   error: Error
   retry?: () => void
 }) {
+  const formatted = formatErrorForDisplay(error)
+
   return (
     <div
       className="clarity-error"
@@ -219,24 +222,58 @@ function DefaultErrorDisplay({
         padding: '12px 16px',
         margin: '12px',
         borderRadius: '8px',
-        backgroundColor: '#fee',
-        border: '1px solid #fcc',
-        color: '#c00',
+        backgroundColor: '#fef2f2',
+        border: '1px solid #fecaca',
+        color: '#991b1b',
       }}
     >
-      <div style={{ fontWeight: 500, marginBottom: '4px' }}>Error</div>
-      <div style={{ fontSize: '14px' }}>{error.message}</div>
-      {retry && (
+      <div
+        style={{
+          fontWeight: 600,
+          marginBottom: '4px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+      >
+        <span style={{ fontSize: '16px' }}>!</span>
+        {formatted.title}
+      </div>
+      <div
+        style={{
+          fontSize: '14px',
+          marginBottom: formatted.suggestion ? '8px' : '0',
+        }}
+      >
+        {formatted.message}
+      </div>
+      {formatted.suggestion && (
+        <div
+          style={{
+            fontSize: '13px',
+            color: '#7f1d1d',
+            backgroundColor: '#fef2f2',
+            padding: '8px',
+            borderRadius: '4px',
+            border: '1px dashed #fca5a5',
+          }}
+        >
+          <strong>Suggestion:</strong> {formatted.suggestion}
+        </div>
+      )}
+      {formatted.canRetry && retry && (
         <button
           onClick={retry}
           style={{
-            marginTop: '8px',
-            padding: '6px 12px',
-            borderRadius: '4px',
-            border: '1px solid #c00',
-            backgroundColor: 'transparent',
-            color: '#c00',
+            marginTop: '10px',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            border: 'none',
+            backgroundColor: '#991b1b',
+            color: 'white',
             cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 500,
           }}
         >
           Retry

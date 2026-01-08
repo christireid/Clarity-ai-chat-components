@@ -262,94 +262,178 @@ function filterUndefined<T extends object>(obj: T): Partial<T> {
 // =============================================================================
 
 /**
- * Validation errors for invalid configurations
+ * Validation errors for invalid configurations with actionable suggestions
  */
 export class ConfigValidationError extends Error {
   constructor(
     message: string,
     public readonly field: string,
-    public readonly suggestion?: string
+    public readonly suggestion?: string,
+    public readonly docsUrl?: string
   ) {
     super(message)
     this.name = 'ConfigValidationError'
   }
+
+  /**
+   * Format error for developer-friendly display
+   */
+  override toString(): string {
+    let output = `ClarityChat ConfigValidationError: ${this.message}`
+    if (this.field) output += `\n  Field: ${this.field}`
+    if (this.suggestion) output += `\n  Suggestion: ${this.suggestion}`
+    if (this.docsUrl) output += `\n  Docs: ${this.docsUrl}`
+    return output
+  }
+}
+
+interface ValidationIssue {
+  field: string
+  message: string
+  suggestion: string
+  docsUrl?: string
 }
 
 /**
  * Validate resolved configuration
- * Throws ConfigValidationError for invalid combinations
+ * Throws ConfigValidationError for invalid combinations with actionable guidance
  */
 function validateConfig(config: ClarityResolvedConfig): void {
-  const errors: string[] = []
+  const issues: ValidationIssue[] = []
 
   // Validate memory config
   if (config.features.memory) {
     if (config.memory.maxTokens <= 0) {
-      errors.push('memory.maxTokens must be positive')
+      issues.push({
+        field: 'memory.maxTokens',
+        message: 'maxTokens must be a positive number',
+        suggestion:
+          'Set memory.maxTokens to a positive value like 4096. This controls the maximum tokens for memory context.',
+      })
     }
     if (config.memory.limit <= 0) {
-      errors.push('memory.limit must be positive')
+      issues.push({
+        field: 'memory.limit',
+        message: 'limit must be a positive number',
+        suggestion:
+          'Set memory.limit to how many messages to remember (e.g., 20). Higher values use more tokens.',
+      })
     }
   }
 
   // Validate token optimization config
   if (config.features.tokenOptimization) {
     if (config.tokenOptimization.budget <= 0) {
-      errors.push('tokenOptimization.budget must be positive')
+      issues.push({
+        field: 'tokenOptimization.budget',
+        message: 'budget must be a positive number',
+        suggestion:
+          'Set a token budget based on your model: GPT-3.5 (4096), GPT-4 (8192), GPT-4 Turbo (128000).',
+        docsUrl: 'https://clarity-chat.dev/docs/token-optimization',
+      })
     }
     if (
       config.tokenOptimization.qualityThreshold < 0 ||
       config.tokenOptimization.qualityThreshold > 1
     ) {
-      errors.push('tokenOptimization.qualityThreshold must be between 0 and 1')
+      issues.push({
+        field: 'tokenOptimization.qualityThreshold',
+        message: 'qualityThreshold must be between 0 and 1',
+        suggestion:
+          'Use 0.8 for high quality (less aggressive optimization) or 0.5 for more aggressive token saving.',
+      })
     }
   }
 
   // Validate RAG config
   if (config.features.rag) {
     if (config.rag.topK <= 0) {
-      errors.push('rag.topK must be positive')
+      issues.push({
+        field: 'rag.topK',
+        message: 'topK must be a positive number',
+        suggestion:
+          'Set topK to the number of chunks to retrieve (e.g., 3-5). Higher values provide more context but use more tokens.',
+        docsUrl: 'https://clarity-chat.dev/docs/rag',
+      })
     }
     if (
       config.rag.similarityThreshold < 0 ||
       config.rag.similarityThreshold > 1
     ) {
-      errors.push('rag.similarityThreshold must be between 0 and 1')
+      issues.push({
+        field: 'rag.similarityThreshold',
+        message: 'similarityThreshold must be between 0 and 1',
+        suggestion:
+          'Use 0.7-0.8 for strict matching or 0.5-0.6 for broader results. Lower values return more chunks.',
+      })
     }
   }
 
   // Validate tools config
   if (config.features.tools) {
     if (config.tools.timeoutMs <= 0) {
-      errors.push('tools.timeoutMs must be positive')
+      issues.push({
+        field: 'tools.timeoutMs',
+        message: 'timeoutMs must be a positive number',
+        suggestion:
+          'Set a reasonable timeout like 30000 (30 seconds). This prevents tools from hanging indefinitely.',
+      })
     }
     // Validate tool definitions
-    for (const tool of config.tools.registry) {
+    config.tools.registry.forEach((tool, index) => {
       if (!tool.name || typeof tool.name !== 'string') {
-        errors.push('Each tool must have a valid name')
+        issues.push({
+          field: `tools.registry[${index}].name`,
+          message: 'Each tool must have a valid name',
+          suggestion:
+            'Add a unique string name: { name: "my_tool", description: "...", execute: async () => {...} }',
+          docsUrl: 'https://clarity-chat.dev/docs/tools',
+        })
       }
       if (!tool.execute || typeof tool.execute !== 'function') {
-        errors.push(`Tool "${tool.name}" must have an execute function`)
+        issues.push({
+          field: `tools.registry[${index}].execute`,
+          message: `Tool "${tool.name || 'unnamed'}" must have an execute function`,
+          suggestion:
+            'Add an async execute function: { execute: async (params) => { return result; } }',
+          docsUrl: 'https://clarity-chat.dev/docs/tools',
+        })
       }
-    }
+    })
   }
 
   // Validate error recovery config
   if (config.features.errorRecovery) {
     if (config.errorRecovery.maxRetries < 0) {
-      errors.push('errorRecovery.maxRetries cannot be negative')
+      issues.push({
+        field: 'errorRecovery.maxRetries',
+        message: 'maxRetries cannot be negative',
+        suggestion:
+          'Set maxRetries to 0 to disable retries, or 3 for resilient error handling.',
+      })
     }
     if (config.errorRecovery.retryDelayMs < 0) {
-      errors.push('errorRecovery.retryDelayMs cannot be negative')
+      issues.push({
+        field: 'errorRecovery.retryDelayMs',
+        message: 'retryDelayMs cannot be negative',
+        suggestion:
+          'Set retryDelayMs to at least 1000 (1 second) to avoid overwhelming the server.',
+      })
     }
   }
 
-  // Throw if there are errors
-  if (errors.length > 0) {
+  // Throw if there are issues
+  if (issues.length > 0) {
+    const firstIssue = issues[0]
+    const allIssues = issues
+      .map((i) => `  - ${i.field}: ${i.message}`)
+      .join('\n')
+
     throw new ConfigValidationError(
-      `Invalid configuration: ${errors.join('; ')}`,
-      'config',
-      'Check your configuration values against the documented constraints'
+      `Invalid configuration:\n${allIssues}`,
+      firstIssue.field,
+      firstIssue.suggestion,
+      firstIssue.docsUrl
     )
   }
 }

@@ -62,6 +62,20 @@ export {
   getModelTokenBudget,
 } from './defaults'
 
+// DX Hints and Error Handling
+export {
+  createClarityError,
+  formatErrorForDisplay,
+  devHint,
+  detectCommonMistakes,
+} from './dx-hints'
+
+export type {
+  ClarityError,
+  ClarityErrorCode,
+  ValidationWarning,
+} from './dx-hints'
+
 // Types
 export type {
   // Feature flags and presets
