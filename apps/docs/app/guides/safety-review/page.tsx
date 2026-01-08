@@ -45,7 +45,7 @@ export default function SafetyReviewPage() {
         <h2>PII Detection</h2>
         <p>Detect personally identifiable information:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          code={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
 
 function PIIDetection({ content }: { content: string }) {
   const highlights = detectPII(content)
@@ -92,7 +92,7 @@ function detectPII(content: string) {
         <h2>Prompt Injection Prevention</h2>
         <p>Prevent prompt injection attacks:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          code={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
 
 function PromptInjectionDetection({ content }: { content: string }) {
   const highlights = detectPromptInjection(content)
@@ -139,7 +139,7 @@ function detectPromptInjection(content: string) {
         <h2>Jailbreak Detection</h2>
         <p>Detect jailbreak attempts:</p>
         <CodePlayground
-          initialCode={`function JailbreakDetection({ content }: { content: string }) {
+          code={`function JailbreakDetection({ content }: { content: string }) {
   const highlights = detectJailbreak(content)
 
   return (
@@ -183,7 +183,7 @@ function detectJailbreak(content: string) {
         <h2>Content Moderation</h2>
         <p>Moderate content for safety:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          code={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
 
 function ContentModeration({ content }: { content: string }) {
   const highlights = moderateContent(content)
@@ -222,7 +222,7 @@ async function moderateContent(content: string) {
         <h2>Complete Safety Review</h2>
         <p>Complete safety review workflow:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          code={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
 
 function CompleteSafetyReview({ content }: { content: string }) {
   const [highlights, setHighlights] = useState([])

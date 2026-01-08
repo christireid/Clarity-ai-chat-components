@@ -35,7 +35,7 @@ export default function WorkflowSuggestionListPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function SimpleWorkflows() {
+          code={`function SimpleWorkflows() {
   const workflows = [
     {
       id: '1',

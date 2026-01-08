@@ -302,7 +302,7 @@ export default function UseTokenTrackerPage() {
             Track token usage and costs! Add messages and see real-time updates.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const { tokens, estimatedCost, isNearLimit, addMessage } = useTokenTracker({
     modelName: 'gpt-4',
   })
@@ -757,7 +757,7 @@ function CompleteTrackerExample() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'useTokenBudgetMonitor',
             href: '/reference/hooks/use-token-budget-monitor',
           }}

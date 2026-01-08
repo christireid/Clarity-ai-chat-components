@@ -450,7 +450,7 @@ type MemoryScope = 'session' | 'thread' | 'global'`}
       </section>
 
       <Pagination
-        previous={{
+        prev={{
           title: 'Utilities',
           href: '/reference/utilities',
         }}

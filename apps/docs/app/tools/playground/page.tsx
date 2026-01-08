@@ -89,7 +89,7 @@ render(<Example />)\`
 
   return (
     <CodePlayground
-      initialCode={initialCode}
+      code={initialCode}
     />
   )
 }

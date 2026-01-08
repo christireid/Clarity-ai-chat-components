@@ -21,7 +21,7 @@ export default function RetryButtonPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-4">
       <RetryButton onRetry={() => fetch('/api/retry')} />

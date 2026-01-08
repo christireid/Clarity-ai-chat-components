@@ -36,7 +36,7 @@ export default function ServerSideRenderingPage() {
         <h2>Next.js App Router SSR</h2>
         <p>Server-side render chat with initial data:</p>
         <CodePlayground
-          initialCode={`// app/chat/page.tsx (Server Component)
+          code={`// app/chat/page.tsx (Server Component)
 import { ChatClient } from './chat-client'
 
 export default async function ChatPage() {
@@ -69,7 +69,7 @@ export function ChatClient({ initialMessages }: { initialMessages: Message[] }) 
         <h2>Server Actions</h2>
         <p>Use Server Actions for chat operations:</p>
         <CodePlayground
-          initialCode={`// app/actions/chat.ts
+          code={`// app/actions/chat.ts
 'use server'
 
 import { revalidatePath } from 'next/cache'
@@ -108,7 +108,7 @@ export default function ChatPage() {
         <h2>Streaming with SSR</h2>
         <p>Handle streaming in SSR context:</p>
         <CodePlayground
-          initialCode={`// app/api/chat/route.ts
+          code={`// app/api/chat/route.ts
 import { StreamingTextResponse } from 'ai'
 
 export async function POST(req: Request) {
@@ -138,7 +138,7 @@ export function StreamingChat() {
         <h2>Remix SSR</h2>
         <p>Use with Remix loader:</p>
         <CodePlayground
-          initialCode={`// app/routes/chat.tsx
+          code={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
 import { ClarityChat } from '@clarity-chat/react'
 

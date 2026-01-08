@@ -239,7 +239,7 @@ function Chat() {
           Experiment with the useChatEnhanced hook:
         </p>
         <CodePlayground
-          initialCode={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function Example() {

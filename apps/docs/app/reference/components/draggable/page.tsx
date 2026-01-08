@@ -203,7 +203,7 @@ function DragDemo() {
               Experiment with constraints and drag options:
             </p>
             <CodePlayground
-              initialCode={`function Example() {
+              code={`function Example() {
   return (
     <div className="h-64 border rounded-lg bg-background relative overflow-hidden p-8">
       <p className="text-center text-muted-foreground mb-8">
@@ -342,7 +342,7 @@ function KanbanBoard() {
         </ScrollReveal>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'ContextMenu',
             href: '/reference/components/context-menu',
           }}

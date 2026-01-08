@@ -44,7 +44,7 @@ export default function MultiAgentOrchestrationPage() {
         <h2>Agent Creation</h2>
         <p>Create multiple specialized agents:</p>
         <CodePlayground
-          initialCode={`import { createAgent } from '@clarity-chat/react/internal'
+          code={`import { createAgent } from '@clarity-chat/react/internal'
 
 // Research agent
 const researchAgent = createAgent({
@@ -73,7 +73,7 @@ const writingAgent = createAgent({
         <h2>Agent Orchestration</h2>
         <p>Orchestrate agents in a workflow:</p>
         <CodePlayground
-          initialCode={`import { createAgent } from '@clarity-chat/react/internal'
+          code={`import { createAgent } from '@clarity-chat/react/internal'
 
 async function orchestrateAgents(query: string) {
   // Step 1: Research
@@ -102,7 +102,7 @@ async function orchestrateAgents(query: string) {
         <h2>Parallel Agent Execution</h2>
         <p>Execute agents in parallel:</p>
         <CodePlayground
-          initialCode={`async function parallelAgents(query: string) {
+          code={`async function parallelAgents(query: string) {
   // Execute multiple agents in parallel
   const [research, analysis, writing] = await Promise.all([
     researchAgent.execute({ task: \`Research: \${query}\` }),
@@ -122,7 +122,7 @@ async function orchestrateAgents(query: string) {
         <h2>Agent Communication</h2>
         <p>Enable agent-to-agent communication:</p>
         <CodePlayground
-          initialCode={`function AgentChat() {
+          code={`function AgentChat() {
   const [agentMessages, setAgentMessages] = useState([])
 
   const handleAgentMessage = (from: string, to: string, message: string) => {
@@ -151,7 +151,7 @@ async function orchestrateAgents(query: string) {
         <h2>Complete Multi-Agent System</h2>
         <p>Complete multi-agent orchestration:</p>
         <CodePlayground
-          initialCode={`import { createAgent, AgentOrchestrator } from '@clarity-chat/react/internal'
+          code={`import { createAgent, AgentOrchestrator } from '@clarity-chat/react/internal'
 
 function MultiAgentSystem() {
   const agents = [

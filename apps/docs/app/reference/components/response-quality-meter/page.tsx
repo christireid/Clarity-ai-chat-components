@@ -41,7 +41,7 @@ export default function ResponseQualityMeterPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function SimpleQuality() {
+          code={`function SimpleQuality() {
   const metrics = [
     {
       id: '1',
@@ -81,7 +81,7 @@ render(<SimpleQuality />)`}
           Show target thresholds to highlight metrics that need improvement.
         </p>
         <CodePlayground
-          initialCode={`function MetricsWithTargets() {
+          code={`function MetricsWithTargets() {
   const metrics = [
     {
       id: '1',
@@ -130,7 +130,7 @@ render(<MetricsWithTargets />)`}
       <section className="docs-section">
         <h2>Real-World: RAG Quality Dashboard</h2>
         <CodePlayground
-          initialCode={`import { useState, useEffect } from 'react'
+          code={`import { useState, useEffect } from 'react'
 
 function RAGQualityDashboard() {
   const [metrics, setMetrics] = useState([])

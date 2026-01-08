@@ -230,7 +230,7 @@ function VoiceDemo() {
               Try configuring the VoiceInput component:
             </p>
             <CodePlayground
-              initialCode={`import { VoiceInput } from '@clarity-chat/react/internal'
+              code={`import { VoiceInput } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

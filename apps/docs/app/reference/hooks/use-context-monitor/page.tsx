@@ -71,7 +71,7 @@ export default function UseContextMonitorPage() {
         <h2>Basic Usage</h2>
         <p>Monitor context utilization:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ContextMonitor({ messages }: { messages: Message[] }) {
@@ -101,7 +101,7 @@ function ContextMonitor({ messages }: { messages: Message[] }) {
         <h2>Efficiency Metrics</h2>
         <p>Track information density, recency, and relevance:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function EfficiencyMetrics({ messages }: { messages: Message[] }) {
   const { utilization } = useContextMonitor(messages, {
@@ -126,7 +126,7 @@ function EfficiencyMetrics({ messages }: { messages: Message[] }) {
         <h2>Optimization Recommendations</h2>
         <p>Get intelligent recommendations for context optimization:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function WithRecommendations({ messages }: { messages: Message[] }) {
   const { recommendations } = useContextMonitor(messages, {
@@ -158,7 +158,7 @@ function WithRecommendations({ messages }: { messages: Message[] }) {
         <h2>Context Warnings</h2>
         <p>Handle context warnings with callbacks:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function WithWarnings({ messages }: { messages: Message[] }) {
   const { warnings } = useContextMonitor(messages, {
@@ -193,7 +193,7 @@ function WithWarnings({ messages }: { messages: Message[] }) {
         <h2>Context Breakdown</h2>
         <p>Analyze token usage by category:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function Breakdown({ messages }: { messages: Message[] }) {
   const { utilization } = useContextMonitor(messages, {

@@ -48,7 +48,7 @@ export default function ButtonPage() {
           and states.
         </p>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="flex items-center justify-center gap-3 p-8">
       <Button variant="primary">Primary Button</Button>
@@ -65,7 +65,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function BasicButtons() {
+          code={`function BasicButtons() {
   return (
     <div className="flex items-center gap-3">
       <Button>Default Button</Button>
@@ -91,7 +91,7 @@ render(<BasicButtons />)`}
           Choose from multiple semantic variants to convey different actions.
         </p>
         <CodePlayground
-          initialCode={`function ButtonVariants() {
+          code={`function ButtonVariants() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -123,7 +123,7 @@ render(<ButtonVariants />)`}
         <h2>Sizes</h2>
         <p>Buttons come in four sizes to fit different contexts.</p>
         <CodePlayground
-          initialCode={`function ButtonSizes() {
+          code={`function ButtonSizes() {
   return (
     <div className="flex flex-wrap items-end gap-3">
       <Button size="xs" variant="primary">Extra Small</Button>
@@ -142,7 +142,7 @@ render(<ButtonSizes />)`}
         <h2>With Icons</h2>
         <p>Add icons before or after button text, or use icon-only buttons.</p>
         <CodePlayground
-          initialCode={`function IconButtons() {
+          code={`function IconButtons() {
   return (
     <div className="space-y-4">
       <div>
@@ -206,7 +206,7 @@ render(<IconButtons />)`}
         <h2>Loading State</h2>
         <p>Show loading spinner while an action is in progress.</p>
         <CodePlayground
-          initialCode={`function LoadingButtons() {
+          code={`function LoadingButtons() {
   const [isLoading, setIsLoading] = React.useState(false)
 
   const handleClick = () => {
@@ -269,7 +269,7 @@ render(<LoadingButtons />)`}
         <h2>Disabled State</h2>
         <p>Disable buttons to prevent interaction.</p>
         <CodePlayground
-          initialCode={`function DisabledButtons() {
+          code={`function DisabledButtons() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -296,7 +296,7 @@ render(<DisabledButtons />)`}
         <h2>Full Width</h2>
         <p>Make buttons span the full width of their container.</p>
         <CodePlayground
-          initialCode={`function FullWidthButtons() {
+          code={`function FullWidthButtons() {
   return (
     <div className="space-y-3 max-w-md">
       <Button variant="primary" fullWidth>
@@ -320,7 +320,7 @@ render(<FullWidthButtons />)`}
         <h2>Button Groups</h2>
         <p>Group related buttons together for better visual hierarchy.</p>
         <CodePlayground
-          initialCode={`function ButtonGroups() {
+          code={`function ButtonGroups() {
   const [selected, setSelected] = React.useState('day')
   const [alignment, setAlignment] = React.useState('left')
 
@@ -402,7 +402,7 @@ render(<ButtonGroups />)`}
           styling.
         </p>
         <CodePlayground
-          initialCode={`function ButtonLinks() {
+          code={`function ButtonLinks() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -457,7 +457,7 @@ render(<ButtonLinks />)`}
         <h2>With Keyboard Shortcuts</h2>
         <p>Display keyboard shortcuts alongside button labels.</p>
         <CodePlayground
-          initialCode={`function ShortcutButtons() {
+          code={`function ShortcutButtons() {
   return (
     <div className="space-y-3 max-w-md">
       <Button variant="primary" fullWidth>
@@ -492,7 +492,7 @@ render(<ShortcutButtons />)`}
         <h2>Confirmation Buttons</h2>
         <p>Implement confirmation flows with button states.</p>
         <CodePlayground
-          initialCode={`function ConfirmationButtons() {
+          code={`function ConfirmationButtons() {
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [deleted, setDeleted] = React.useState(false)
 

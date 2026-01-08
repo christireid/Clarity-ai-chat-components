@@ -149,7 +149,7 @@ function CachedChat() {
           Experiment with useSmartCache:
         </p>
         <CodePlayground
-          initialCode={`import { useSmartCache } from '@clarity-chat/react/internal'
+          code={`import { useSmartCache } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

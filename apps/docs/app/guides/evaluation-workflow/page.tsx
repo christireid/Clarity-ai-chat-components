@@ -44,7 +44,7 @@ export default function EvaluationWorkflowPage() {
         <h2>Evaluation Dashboard</h2>
         <p>Set up evaluation dashboard:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function EvaluationSetup() {
   const [results, setResults] = useState([])
@@ -71,7 +71,7 @@ function EvaluationSetup() {
         <h2>Quality Metrics</h2>
         <p>Define quality metrics:</p>
         <CodePlayground
-          initialCode={`interface QualityMetrics {
+          code={`interface QualityMetrics {
   accuracy: number
   latency: number
   tokenUsage: number
@@ -102,7 +102,7 @@ function calculateAccuracy(results: TestResult[]): number {
         <h2>Trend Tracking</h2>
         <p>Track trends over time:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function TrendTracking() {
   const [trends, setTrends] = useState([])
@@ -138,7 +138,7 @@ async function fetchEvaluationHistory() {
         <h2>Automated Evaluation</h2>
         <p>Automate evaluation workflows:</p>
         <CodePlayground
-          initialCode={`// Scheduled evaluation
+          code={`// Scheduled evaluation
 import { runEvaluation } from '@clarity-chat/react/evaluation'
 
 async function scheduledEvaluation() {
@@ -168,7 +168,7 @@ setInterval(scheduledEvaluation, 24 * 60 * 60 * 1000)`}
         <h2>Quality Checks</h2>
         <p>Implement quality checks:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function QualityChecks() {
   return (

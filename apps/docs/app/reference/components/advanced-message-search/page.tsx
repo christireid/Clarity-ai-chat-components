@@ -22,7 +22,7 @@ export default function AdvancedMessageSearchPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-4">
       <AdvancedMessageSearch />

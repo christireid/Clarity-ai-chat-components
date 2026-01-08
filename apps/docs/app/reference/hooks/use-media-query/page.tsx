@@ -41,7 +41,7 @@ export default function UseMediaQueryPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveComponent() {
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -117,7 +117,7 @@ render(<ResponsiveComponent />)`}
           Detect common responsive breakpoints for mobile, tablet, and desktop.
         </p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveBreakpoints() {
   const isMobile = useMediaQuery('(max-width: 639px)');
@@ -170,7 +170,7 @@ render(<ResponsiveBreakpoints />)`}
         <h2>Orientation Detection</h2>
         <p>Detect device orientation for tailored layouts.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function OrientationDetection() {
   const isPortrait = useMediaQuery('(orientation: portrait)');
@@ -201,7 +201,7 @@ render(<OrientationDetection />)`}
         <h2>Color Scheme Detection</h2>
         <p>Detect user's color scheme preference (light or dark mode).</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ColorSchemeDetection() {
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
@@ -238,7 +238,7 @@ render(<ColorSchemeDetection />)`}
         <h2>Reduced Motion Detection</h2>
         <p>Respect user's motion preferences for better accessibility.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function MotionDetection() {
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
@@ -282,7 +282,7 @@ export default function MotionDetection() {
         <h2>Multiple Queries</h2>
         <p>Use multiple media queries for complex responsive logic.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function MultipleQueries() {
   const isSmall = useMediaQuery('(max-width: 640px)');
@@ -336,7 +336,7 @@ render(<MultipleQueries />)`}
         <h2>Conditional Rendering</h2>
         <p>Render different components based on media query matches.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 function MobileNav() {
   return (
@@ -382,7 +382,7 @@ render(<MobileNav />)`}
         <h2>Custom Breakpoints</h2>
         <p>Create reusable breakpoint hooks for your design system.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 // Custom hooks for your breakpoints
 function useBreakpoint() {
@@ -451,7 +451,7 @@ render(<useBreakpoint />)`}
         <h3>Responsive Component State</h3>
         <p>Adjust component behavior dynamically based on screen size.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveTable() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -512,7 +512,7 @@ render(<ResponsiveTable />)`}
         <h3>Performance Optimization</h3>
         <p>Conditionally load heavy components only when needed.</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
+          code={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function LazyLoadByBreakpoint() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');

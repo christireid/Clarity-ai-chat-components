@@ -55,7 +55,7 @@ export default function UseAvailabilityCheckPage() {
         <h2>Basic Usage</h2>
         <p>Check availability:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          code={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
 
 function AvailabilityView() {
   const {
@@ -87,7 +87,7 @@ function AvailabilityView() {
         <h2>Find Free Slots</h2>
         <p>Find free time slots for meetings:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          code={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
 
 function FreeSlotFinder() {
   const { findFreeSlots } = useAvailabilityCheck({
@@ -117,7 +117,7 @@ function FreeSlotFinder() {
         <h2>Suggest Meeting Times</h2>
         <p>Suggest optimal meeting times:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          code={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
 
 function MeetingTimeSuggestions() {
   const { suggestMeetingTime } = useAvailabilityCheck()

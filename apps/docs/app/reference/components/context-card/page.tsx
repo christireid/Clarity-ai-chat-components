@@ -42,7 +42,7 @@ export default function ContextCardPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function SimpleContext() {
+          code={`function SimpleContext() {
   const context = {
     id: '1',
     type: 'document',
@@ -72,7 +72,7 @@ render(<SimpleContext />)`}
           the content type.
         </p>
         <CodePlayground
-          initialCode={`function ContextTypes() {
+          code={`function ContextTypes() {
   const contexts = [
     {
       id: '1',
@@ -125,7 +125,7 @@ render(<ContextTypes />)`}
         <h2>With Actions</h2>
         <p>Add management actions like toggle, preview, and remove.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function InteractiveContext() {
   const [contexts, setContexts] = useState([
@@ -187,7 +187,7 @@ render(<InteractiveContext />)`}
         <h2>With Thumbnails</h2>
         <p>Show visual previews for images and videos.</p>
         <CodePlayground
-          initialCode={`function ThumbnailContexts() {
+          code={`function ThumbnailContexts() {
   const contexts = [
     {
       id: '1',
@@ -233,7 +233,7 @@ render(<ThumbnailContexts />)`}
           Build a complete document management interface for RAG applications.
         </p>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function RAGDocumentManager() {
   const [documents, setDocuments] = useState([

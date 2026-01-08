@@ -39,7 +39,7 @@ export default function PerformanceDashboardPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-6">
       <PerformanceDashboard />
@@ -54,7 +54,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Compact Mode</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-6">
       <PerformanceDashboard 
@@ -72,7 +72,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>With Thresholds</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   const thresholds = {
     maxLatencyMs: 2000,
     minTokensPerSecond: 10,

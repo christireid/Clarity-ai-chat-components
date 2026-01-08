@@ -38,7 +38,7 @@ export default function UsageDashboardPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-6">
       <UsageDashboard />
@@ -53,7 +53,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>With Custom Refresh Rate</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   return (
     <div className="p-6">
       <UsageDashboard refreshIntervalMs={5000} />
@@ -68,7 +68,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>With Quota Limits</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          code={`function Example() {
   const quotas = {
     tokensPerDay: 100000,
     requestsPerMinute: 50,

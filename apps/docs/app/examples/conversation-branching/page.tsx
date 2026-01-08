@@ -44,7 +44,7 @@ export default function ConversationBranchingExamplePage() {
       <section className="docs-section">
         <h2>Live Demo</h2>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 import {
   ChatWindow,
   ConversationBranchVisualizer,

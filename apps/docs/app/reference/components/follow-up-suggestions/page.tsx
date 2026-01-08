@@ -40,7 +40,7 @@ export default function FollowUpSuggestionsPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function SimpleSuggestions() {
+          code={`function SimpleSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -80,7 +80,7 @@ render(<SimpleSuggestions />)`}
         <h2>With Icons</h2>
         <p>Add visual icons to make suggestions more scannable.</p>
         <CodePlayground
-          initialCode={`function IconSuggestions() {
+          code={`function IconSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -127,7 +127,7 @@ render(<IconSuggestions />)`}
           suggestions).
         </p>
         <CodePlayground
-          initialCode={`function RankedSuggestions() {
+          code={`function RankedSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -177,7 +177,7 @@ render(<RankedSuggestions />)`}
         <h2>Layout Options</h2>
         <p>Choose between grid (default) or list layout.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function LayoutOptions() {
   const [layout, setLayout] = useState('grid')
@@ -225,7 +225,7 @@ render(<LayoutOptions />)`}
         <h2>Loading State</h2>
         <p>Show skeleton placeholders while AI generates suggestions.</p>
         <CodePlayground
-          initialCode={`import { useState, useEffect } from 'react'
+          code={`import { useState, useEffect } from 'react'
 
 function LoadingSuggestions() {
   const [isLoading, setIsLoading] = useState(true)
@@ -260,7 +260,7 @@ render(<LoadingSuggestions />)`}
       <section className="docs-section">
         <h2>Real-World Example: AI Chat with Smart Suggestions</h2>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function SmartChatSuggestions() {
   const [messages, setMessages] = useState([

@@ -111,7 +111,7 @@ function RAGChat() {
           Experiment with useRAGPipeline:
         </p>
         <CodePlayground
-          initialCode={`import { useRAGPipeline } from '@clarity-chat/react'
+          code={`import { useRAGPipeline } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {

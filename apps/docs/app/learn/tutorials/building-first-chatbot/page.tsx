@@ -104,7 +104,7 @@ export async function POST(req: Request) {
           Update <code>app/page.tsx</code>:
         </p>
         <CodePlayground
-          initialCode={`'use client'
+          code={`'use client'
 import { useState } from 'react'
 import { ChatWindow } from '@clarity-chat/react/internal'
 

@@ -163,7 +163,7 @@ function Autocomplete() {
           Experiment with useCompletion:
         </p>
         <CodePlayground
-          initialCode={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

@@ -61,7 +61,7 @@ export default function EvaluationDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display evaluation dashboard:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function EvaluationView() {
   const metrics = [
@@ -114,7 +114,7 @@ function EvaluationView() {
         <h2>With Quality Meter</h2>
         <p>Include response quality meter:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function WithQualityMeter() {
   return (
@@ -138,7 +138,7 @@ function WithQualityMeter() {
         <h2>Trend Tracking</h2>
         <p>Track trends with sparklines:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          code={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
 
 function TrendTracking() {
   return (

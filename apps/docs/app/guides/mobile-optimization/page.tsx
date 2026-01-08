@@ -39,7 +39,7 @@ export default function MobileOptimizationGuidePage() {
           performance based on battery level:
         </p>
         <CodePlayground
-          initialCode={`import { useBatteryAware } from '@clarity-chat/react/internal'
+          code={`import { useBatteryAware } from '@clarity-chat/react/internal'
 
 function MobileChat() {
   const { recommendations, isBatterySaverActive } = useBatteryAware({
@@ -62,7 +62,7 @@ function MobileChat() {
         <h2>Battery Indicator</h2>
         <p>Display battery status to users:</p>
         <CodePlayground
-          initialCode={`import { BatteryIndicator } from '@clarity-chat/react/internal'
+          code={`import { BatteryIndicator } from '@clarity-chat/react/internal'
 
 function ChatWithBattery() {
   return (
@@ -85,7 +85,7 @@ function ChatWithBattery() {
           interactions:
         </p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          code={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
 
 function MobileInput() {
   const { isKeyboardVisible, keyboardHeight } = useMobileKeyboard()
@@ -103,7 +103,7 @@ function MobileInput() {
         <h2>Responsive Layout</h2>
         <p>Use responsive design patterns for mobile:</p>
         <CodePlayground
-          initialCode={`import { useMediaQuery } from '@clarity-chat/react/internal'
+          code={`import { useMediaQuery } from '@clarity-chat/react/internal'
 
 function ResponsiveChat() {
   const isMobile = useMediaQuery('(max-width: 768px)')

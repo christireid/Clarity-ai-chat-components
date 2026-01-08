@@ -1,14 +1,15 @@
-import React from 'react';
-import { Metadata } from 'next';
-import { CodePlayground } from '@/components/Playground/CodePlayground';
-import { ApiTable } from '@/components/Demo/ApiTable';
-import { Callout } from '@/components/MDX/Callout';
-import { ViewInStorybook } from '@/components/Links/StorybookLink';
+import React from 'react'
+import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Progress Component - Clarity Chat Components',
-  description: 'A visual indicator component that shows the completion progress of a task or operation.',
-};
+  description:
+    'A visual indicator component that shows the completion progress of a task or operation.',
+}
 
 export default function ProgressPage() {
   return (
@@ -17,7 +18,8 @@ export default function ProgressPage() {
         <div>
           <h1>Progress</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A visual indicator component that shows the completion progress of a task or operation.
+            A visual indicator component that shows the completion progress of a
+            task or operation.
           </p>
         </div>
       </header>
@@ -27,21 +29,22 @@ export default function ProgressPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The Progress component displays a horizontal or circular progress bar to indicate the completion
-          status of tasks, file uploads, downloads, or multi-step processes. It provides clear visual
-          feedback about ongoing operations.
+          The Progress component displays a horizontal or circular progress bar
+          to indicate the completion status of tasks, file uploads, downloads,
+          or multi-step processes. It provides clear visual feedback about
+          ongoing operations.
         </p>
 
         <Callout type="info" title="Determinate vs Indeterminate">
-          Use determinate progress (with value) when you know the completion percentage.
-          Use indeterminate progress when the duration is unknown.
+          Use determinate progress (with value) when you know the completion
+          percentage. Use indeterminate progress when the duration is unknown.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function BasicProgress() {
   return (
@@ -66,73 +69,73 @@ render(<BasicProgress />)`}
               name: 'value',
               type: 'number',
               default: '0',
-              description: 'Current progress value (0-100)'
+              description: 'Current progress value (0-100)',
             },
             {
               name: 'max',
               type: 'number',
               default: '100',
-              description: 'Maximum value for progress calculation'
+              description: 'Maximum value for progress calculation',
             },
             {
               name: 'size',
               type: "'sm' | 'md' | 'lg'",
               default: "'md'",
-              description: 'Height of the progress bar (sm=4px, md=8px, lg=12px)'
+              description:
+                'Height of the progress bar (sm=4px, md=8px, lg=12px)',
             },
             {
               name: 'color',
               type: "'primary' | 'secondary' | 'success' | 'warning' | 'error'",
               default: "'primary'",
-              description: 'Progress bar color variant'
+              description: 'Progress bar color variant',
             },
             {
               name: 'variant',
               type: "'linear' | 'circular'",
               default: "'linear'",
-              description: 'Progress bar style'
+              description: 'Progress bar style',
             },
             {
               name: 'showLabel',
               type: 'boolean',
               default: 'false',
-              description: 'Whether to show percentage label'
+              description: 'Whether to show percentage label',
             },
             {
               name: 'isIndeterminate',
               type: 'boolean',
               default: 'false',
-              description: 'Whether progress is indeterminate (animated without value)'
+              description:
+                'Whether progress is indeterminate (animated without value)',
             },
             {
               name: 'striped',
               type: 'boolean',
               default: 'false',
-              description: 'Whether to show striped pattern'
+              description: 'Whether to show striped pattern',
             },
             {
               name: 'animated',
               type: 'boolean',
               default: 'false',
-              description: 'Whether to animate the stripes'
+              description: 'Whether to animate the stripes',
             },
             {
               name: 'className',
               type: 'string',
               default: 'undefined',
-              description: 'Additional CSS classes'
-            }
+              description: 'Additional CSS classes',
+            },
           ]}
         />
       </section>
 
       <section className="docs-section">
         <h2>Sizes</h2>
-        <p>
-          Choose from 3 sizes to match your UI needs.
-        </p>
+        <p>Choose from 3 sizes to match your UI needs.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressSizes() {
   return (
@@ -159,11 +162,9 @@ render(<ProgressSizes />)`}
 
       <section className="docs-section">
         <h2>Colors</h2>
-        <p>
-          Use semantic colors to indicate different types of progress.
-        </p>
+        <p>Use semantic colors to indicate different types of progress.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressColors() {
   return (
@@ -198,11 +199,9 @@ render(<ProgressColors />)`}
 
       <section className="docs-section">
         <h2>With Label</h2>
-        <p>
-          Display the progress percentage as a label.
-        </p>
+        <p>Display the progress percentage as a label.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function ProgressWithLabel() {
   return (
@@ -232,11 +231,9 @@ render(<ProgressWithLabel />)`}
 
       <section className="docs-section">
         <h2>Striped Progress</h2>
-        <p>
-          Add a striped pattern for more visual interest.
-        </p>
+        <p>Add a striped pattern for more visual interest.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function StripedProgress() {
   return (
@@ -259,11 +256,9 @@ render(<StripedProgress />)`}
 
       <section className="docs-section">
         <h2>Indeterminate Progress</h2>
-        <p>
-          Use indeterminate progress when the duration is unknown.
-        </p>
+        <p>Use indeterminate progress when the duration is unknown.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function IndeterminateProgress() {
   return (
@@ -286,11 +281,9 @@ render(<IndeterminateProgress />)`}
 
       <section className="docs-section">
         <h2>Circular Progress</h2>
-        <p>
-          Display progress as a circular indicator.
-        </p>
+        <p>Display progress as a circular indicator.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function CircularProgress() {
   return (
@@ -321,11 +314,9 @@ render(<CircularProgress />)`}
 
       <section className="docs-section">
         <h2>Animated Progress</h2>
-        <p>
-          Simulate progress animation over time.
-        </p>
+        <p>Simulate progress animation over time.</p>
         <CodePlayground
-          initialCode={`import { useState, useEffect } from 'react';
+          code={`import { useState, useEffect } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 
 export default function AnimatedProgress() {
@@ -392,11 +383,9 @@ render(<AnimatedProgress />)`}
 
       <section className="docs-section">
         <h2>File Upload Progress</h2>
-        <p>
-          A practical example of file upload with progress tracking.
-        </p>
+        <p>A practical example of file upload with progress tracking.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 
 export default function FileUploadProgress() {
@@ -436,11 +425,9 @@ render(<FileUploadProgress />)`}
 
       <section className="docs-section">
         <h2>Multi-Step Progress</h2>
-        <p>
-          Track progress through multi-step processes.
-        </p>
+        <p>Track progress through multi-step processes.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
@@ -518,11 +505,9 @@ render(<MultiStepProgress />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Progress with Segments</h3>
-        <p>
-          Show progress divided into segments for multi-part tasks.
-        </p>
+        <p>Show progress divided into segments for multi-part tasks.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function SegmentedProgress() {
   const segments = [
@@ -553,11 +538,9 @@ render(<SegmentedProgress />)`}
         />
 
         <h3>Progress with Custom Label</h3>
-        <p>
-          Add custom labels and status information.
-        </p>
+        <p>Add custom labels and status information.</p>
         <CodePlayground
-          initialCode={`import { Progress } from '@clarity/chat-components';
+          code={`import { Progress } from '@clarity/chat-components';
 
 export default function CustomLabelProgress() {
   return (
@@ -602,11 +585,22 @@ render(<CustomLabelProgress />)`}
 
         <h3>ARIA Attributes</h3>
         <ul>
-          <li><code>role="progressbar"</code> - Identifies the element as a progress bar</li>
-          <li><code>aria-valuenow</code> - Current progress value</li>
-          <li><code>aria-valuemin</code> - Minimum value (0)</li>
-          <li><code>aria-valuemax</code> - Maximum value (100)</li>
-          <li><code>aria-label</code> - Descriptive label for screen readers</li>
+          <li>
+            <code>role="progressbar"</code> - Identifies the element as a
+            progress bar
+          </li>
+          <li>
+            <code>aria-valuenow</code> - Current progress value
+          </li>
+          <li>
+            <code>aria-valuemin</code> - Minimum value (0)
+          </li>
+          <li>
+            <code>aria-valuemax</code> - Maximum value (100)
+          </li>
+          <li>
+            <code>aria-label</code> - Descriptive label for screen readers
+          </li>
         </ul>
 
         <h3>Screen Reader Support</h3>
@@ -644,7 +638,10 @@ render(<CustomLabelProgress />)`}
         <h3>Design Guidelines</h3>
         <ul>
           <li>Always show progress from 0% to 100%, never backwards</li>
-          <li>Update progress frequently enough (every 100-200ms) for smooth animation</li>
+          <li>
+            Update progress frequently enough (every 100-200ms) for smooth
+            animation
+          </li>
           <li>Include descriptive text above or below the progress bar</li>
           <li>Use colors semantically (green for success, red for errors)</li>
           <li>Show estimated time remaining for long operations</li>
@@ -661,17 +658,17 @@ render(<CustomLabelProgress />)`}
         </ul>
 
         <Callout type="info" title="User Experience Tip">
-          Users perceive progress bars that start fast and slow down near completion
-          as faster than linear progress. Consider easing functions for better UX.
+          Users perceive progress bars that start fast and slow down near
+          completion as faster than linear progress. Consider easing functions
+          for better UX.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <p>
-          The Progress component is fully typed with TypeScript:
-        </p>
-        <pre><code>{`type ProgressSize = 'sm' | 'md' | 'lg';
+        <p>The Progress component is fully typed with TypeScript:</p>
+        <pre>
+          <code>{`type ProgressSize = 'sm' | 'md' | 'lg';
 type ProgressColor = 'primary' | 'secondary' | 'success' | 'warning' | 'error';
 type ProgressVariant = 'linear' | 'circular';
 
@@ -695,17 +692,27 @@ interface ProgressProps {
   className?: string;
 }
 
-export default function Progress(props: ProgressProps): JSX.Element;`}</code></pre>
+export default function Progress(props: ProgressProps): JSX.Element;`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/spinner">Spinner</a> - Indeterminate loading indicator</li>
-          <li><a href="/reference/components/skeleton">Skeleton</a> - Placeholder loading screens</li>
-          <li><a href="/reference/components/stepper">Stepper</a> - Multi-step navigation indicator</li>
+          <li>
+            <a href="/reference/components/spinner">Spinner</a> - Indeterminate
+            loading indicator
+          </li>
+          <li>
+            <a href="/reference/components/skeleton">Skeleton</a> - Placeholder
+            loading screens
+          </li>
+          <li>
+            <a href="/reference/components/stepper">Stepper</a> - Multi-step
+            navigation indicator
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

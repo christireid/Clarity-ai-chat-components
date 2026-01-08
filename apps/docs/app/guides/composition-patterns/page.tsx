@@ -36,7 +36,7 @@ export default function CompositionPatternsPage() {
         <h2>Basic Composition</h2>
         <p>Compose basic chat interface:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput, useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow, ChatInput, useClarityChat } from '@clarity-chat/react/internal'
 
 function BasicChat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -55,7 +55,7 @@ function BasicChat() {
         <h2>Feature Composition</h2>
         <p>Add features to chat:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   ChatWindow,
   ChatInput,
   TokenCounter,
@@ -101,7 +101,7 @@ function FeatureRichChat() {
         <h2>Provider Composition</h2>
         <p>Use providers for shared state:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   MemoryProvider,
   ThemeProvider,
   ChatWindow,
@@ -136,7 +136,7 @@ function ChatApp() {
         <h2>Hook Composition</h2>
         <p>Compose multiple hooks:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   useClarityChat,
   useTokenOptimizationEnhanced,
   useBatteryAware,
@@ -174,7 +174,7 @@ function OptimizedChat() {
         <h2>Conditional Composition</h2>
         <p>Conditionally render components:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   ChatWindow,
   MobileChatWindow,
   useMediaQuery,
@@ -196,7 +196,7 @@ function ResponsiveChat() {
         <h2>Advanced Composition</h2>
         <p>Advanced composition with multiple features:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   ChatWindow,
   ChatInput,
   TokenCounter,

@@ -47,7 +47,7 @@ export default function MultiUserChatExamplePage() {
       <section className="docs-section">
         <h2>Complete Implementation</h2>
         <CodePlayground
-          initialCode={`import { useState, useEffect, useRef } from 'react'
+          code={`import { useState, useEffect, useRef } from 'react'
 
 function MultiUserChat() {
   const [messages, setMessages] = useState([])

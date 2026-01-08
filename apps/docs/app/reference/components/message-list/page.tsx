@@ -172,7 +172,7 @@ export default function MessageListPage() {
             configurations and see how messages are displayed.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const messages = [
     {
       id: '1',
@@ -630,7 +630,7 @@ function CompleteMessageList() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'Message',
             href: '/reference/components/message',
           }}

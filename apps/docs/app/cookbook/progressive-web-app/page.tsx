@@ -44,7 +44,7 @@ export default function ProgressiveWebAppRecipePage() {
         <h2>Service Worker Setup</h2>
         <p>Register service worker for offline support:</p>
         <CodePlayground
-          initialCode={`// public/sw.js
+          code={`// public/sw.js
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open('clarity-chat-v1').then((cache) => {
@@ -76,7 +76,7 @@ if ('serviceWorker' in navigator) {
         <h2>Offline Chat with IndexedDB</h2>
         <p>Use OfflineChatSync for offline functionality:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+          code={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function PWAChat({ messages }: { messages: Message[] }) {
@@ -113,7 +113,7 @@ function PWAChat({ messages }: { messages: Message[] }) {
         <h2>App Manifest</h2>
         <p>Create app manifest for PWA:</p>
         <CodePlayground
-          initialCode={`// public/manifest.json
+          code={`// public/manifest.json
 {
   "name": "Clarity Chat",
   "short_name": "Clarity",
@@ -145,7 +145,7 @@ function PWAChat({ messages }: { messages: Message[] }) {
         <h2>Push Notifications</h2>
         <p>Enable push notifications:</p>
         <CodePlayground
-          initialCode={`async function requestNotificationPermission() {
+          code={`async function requestNotificationPermission() {
   if ('Notification' in window) {
     const permission = await Notification.requestPermission()
     if (permission === 'granted') {
@@ -176,7 +176,7 @@ React.useEffect(() => {
         <h2>Install Prompt</h2>
         <p>Handle app installation:</p>
         <CodePlayground
-          initialCode={`function InstallPrompt() {
+          code={`function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = React.useState<any>(null)
   const [showPrompt, setShowPrompt] = React.useState(false)
 
@@ -216,7 +216,7 @@ React.useEffect(() => {
         <h2>Complete PWA Setup</h2>
         <p>Complete PWA implementation:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+          code={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import { useEffect, useState } from 'react'
 
 function PWAApp() {

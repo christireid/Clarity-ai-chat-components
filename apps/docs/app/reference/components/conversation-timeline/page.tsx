@@ -42,7 +42,7 @@ export default function ConversationTimelinePage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function SimpleTimeline() {
+          code={`function SimpleTimeline() {
   const events = [
     {
       id: '1',
@@ -88,7 +88,7 @@ render(<SimpleTimeline />)`}
           timeline.
         </p>
         <CodePlayground
-          initialCode={`function EventTypes() {
+          code={`function EventTypes() {
   const events = [
     {
       id: '1',
@@ -152,7 +152,7 @@ render(<EventTypes />)`}
           Add extra details like tokens used, model name, or any custom data.
         </p>
         <CodePlayground
-          initialCode={`function MetadataTimeline() {
+          code={`function MetadataTimeline() {
   const events = [
     {
       id: '1',
@@ -200,7 +200,7 @@ render(<MetadataTimeline />)`}
           failed steps.
         </p>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function InteractiveTimeline() {
   const [events, setEvents] = useState([
@@ -283,7 +283,7 @@ render(<InteractiveTimeline />)`}
           Build a debugging interface to see exactly what your AI agent did.
         </p>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function AgentDebugDashboard() {
   // Simulate a complex agent workflow

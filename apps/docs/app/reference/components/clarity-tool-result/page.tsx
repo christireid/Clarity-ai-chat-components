@@ -218,7 +218,7 @@ export default function ClarityToolResultPage() {
             while unregistered ones fall back to JSON.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const registry = createToolUIRegistry({
     weather: ({ data }) => (
       <div className="p-4 border rounded-lg">
@@ -802,7 +802,7 @@ function StreamingWithToolResults() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'AgentRunFeed',
             href: '/reference/components/agent-run-feed',
           }}

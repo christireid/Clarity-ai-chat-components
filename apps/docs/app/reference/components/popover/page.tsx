@@ -43,7 +43,7 @@ export default function PopoverPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function BasicPopover() {
@@ -201,7 +201,7 @@ render(<BasicPopover />)`}
           element.
         </p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverPlacement() {
   const placements = [
@@ -241,7 +241,7 @@ render(<PopoverPlacement />)`}
         <h2>Trigger Methods</h2>
         <p>Open popovers on click, hover, or focus events.</p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverTriggers() {
   return (
@@ -294,7 +294,7 @@ render(<PopoverTriggers />)`}
           interactive elements.
         </p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function RichPopover() {
   return (
@@ -350,7 +350,7 @@ render(<RichPopover />)`}
         <h2>Form in Popover</h2>
         <p>Use popovers for inline forms and input collection.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function FormPopover() {
@@ -432,7 +432,7 @@ render(<FormPopover />)`}
           element.
         </p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverWithArrow() {
   return (
@@ -471,7 +471,7 @@ render(<PopoverWithArrow />)`}
           simpler usage.
         </p>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function ControlledPopover() {
@@ -526,7 +526,7 @@ render(<ControlledPopover />)`}
           Open popovers from within other popovers for hierarchical content.
         </p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function NestedPopovers() {
   return (
@@ -566,7 +566,7 @@ render(<NestedPopovers />)`}
         <h3>Info Card Popover</h3>
         <p>Display detailed information cards on hover or click.</p>
         <CodePlayground
-          initialCode={`import { Popover } from '@clarity/chat-components';
+          code={`import { Popover } from '@clarity/chat-components';
 
 export default function InfoCardPopover() {
   return (
@@ -605,7 +605,7 @@ render(<InfoCardPopover />)`}
         <h3>Share Popover</h3>
         <p>Create social sharing popovers with multiple options.</p>
         <CodePlayground
-          initialCode={`import { Popover, Button } from '@clarity/chat-components';
+          code={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function SharePopover() {
   const shareOptions = [
@@ -662,7 +662,7 @@ render(<SharePopover />)`}
         <h3>Color Picker Popover</h3>
         <p>Use popovers for inline selectors and pickers.</p>
         <CodePlayground
-          initialCode={`import { useState } from 'react';
+          code={`import { useState } from 'react';
 import { Popover } from '@clarity/chat-components';
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 

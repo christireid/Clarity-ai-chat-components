@@ -282,7 +282,7 @@ export default function UseStreamingSSEPage() {
             status changes.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const { status, data, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
@@ -829,7 +829,7 @@ export async function POST(req: Request) {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'useClarityObject',
             href: '/reference/hooks/use-clarity-object',
           }}

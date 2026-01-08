@@ -35,7 +35,7 @@ export default function UseKeyboardShortcutsPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function ChatWithShortcuts() {
+          code={`function ChatWithShortcuts() {
   const [messages, setMessages] = React.useState([])
   const [status, setStatus] = React.useState('Ready')
 
@@ -91,7 +91,7 @@ render(<ChatWithShortcuts />)`}
           sequences with the <code>then</code> keyword.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithSequences() {
+          code={`function ChatWithSequences() {
   const [action, setAction] = React.useState('None')
 
   useKeyboardShortcuts({
@@ -139,7 +139,7 @@ render(<ChatWithSequences />)`}
           of your app.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithScopes() {
+          code={`function ChatWithScopes() {
   const [mode, setMode] = React.useState('normal')
   const [status, setStatus] = React.useState('Normal mode')
 
@@ -240,7 +240,7 @@ render(<ChatWithScopes />)`}
           each shortcut.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithPreventDefault() {
+          code={`function ChatWithPreventDefault() {
   const [log, setLog] = React.useState([])
 
   const addLog = (msg) => {
@@ -305,7 +305,7 @@ render(<ChatWithPreventDefault />)`}
           Enable or disable shortcuts dynamically based on application state.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithDynamicShortcuts() {
+          code={`function ChatWithDynamicShortcuts() {
   const [isEditing, setIsEditing] = React.useState(false)
   const [isFocused, setIsFocused] = React.useState(false)
   const [message, setMessage] = React.useState('')
@@ -388,7 +388,7 @@ render(<ChatWithDynamicShortcuts />)`}
           can customize this behavior.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithInputHandling() {
+          code={`function ChatWithInputHandling() {
   const [message, setMessage] = React.useState('')
   const [log, setLog] = React.useState([])
 
@@ -474,7 +474,7 @@ render(<ChatWithInputHandling />)`}
           Build an interactive help panel that displays all available shortcuts.
         </p>
         <CodePlayground
-          initialCode={`function ChatWithHelpPanel() {
+          code={`function ChatWithHelpPanel() {
   const [showHelp, setShowHelp] = React.useState(false)
   const [action, setAction] = React.useState('None')
 

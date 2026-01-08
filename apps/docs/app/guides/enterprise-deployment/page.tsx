@@ -36,7 +36,7 @@ export default function EnterpriseDeploymentPage() {
         <h2>High Availability</h2>
         <p>Deploy with high availability:</p>
         <CodePlayground
-          initialCode={`// docker-compose.yml
+          code={`// docker-compose.yml
 version: '3.8'
 services:
   chat-api:
@@ -66,7 +66,7 @@ services:
         <h2>Scaling</h2>
         <p>Scale horizontally:</p>
         <CodePlayground
-          initialCode={`// Kubernetes deployment
+          code={`// Kubernetes deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -104,7 +104,7 @@ spec:
         <h2>Security Configuration</h2>
         <p>Configure security:</p>
         <CodePlayground
-          initialCode={`// Security headers
+          code={`// Security headers
 const securityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'X-Content-Type-Options': 'nosniff',
@@ -138,7 +138,7 @@ const limiter = rateLimit({
         <h2>Monitoring</h2>
         <p>Set up monitoring:</p>
         <CodePlayground
-          initialCode={`// Monitoring setup
+          code={`// Monitoring setup
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function MonitoringDashboard() {

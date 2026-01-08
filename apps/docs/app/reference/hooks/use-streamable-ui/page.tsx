@@ -225,7 +225,7 @@ export default function UseStreamableUIPage() {
             Try streaming values! See how values accumulate and status changes.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const [source, setSource] = useState(null)
   
   const { values, latest, status, isStreaming } = useStreamableUI(source, {
@@ -763,7 +763,7 @@ function CompleteStreamableUIExample() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'useStreamingWebSocket',
             href: '/reference/hooks/use-streaming-websocket',
           }}

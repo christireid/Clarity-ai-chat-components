@@ -56,7 +56,7 @@ export default function UseMentionsPage() {
         <h2>Basic Usage</h2>
         <p>Extract and track mentions:</p>
         <CodePlayground
-          initialCode={`import { useMentions } from '@clarity-chat/react/internal'
+          code={`import { useMentions } from '@clarity-chat/react/internal'
 
 function ChatWithMentions() {
   const users = [
@@ -99,7 +99,7 @@ function ChatWithMentions() {
         <h2>Get User Mentions</h2>
         <p>Get all mentions for a specific user:</p>
         <CodePlayground
-          initialCode={`import { useMentions } from '@clarity-chat/react/internal'
+          code={`import { useMentions } from '@clarity-chat/react/internal'
 
 function UserMentions({ userId }: { userId: string }) {
   const { getUserMentions, unreadCount } = useMentions({ users })
@@ -129,7 +129,7 @@ function UserMentions({ userId }: { userId: string }) {
         <h2>Mention Notifications</h2>
         <p>Handle mention notifications:</p>
         <CodePlayground
-          initialCode={`import { useMentions } from '@clarity-chat/react/internal'
+          code={`import { useMentions } from '@clarity-chat/react/internal'
 
 function WithNotifications({ currentUserId }: { currentUserId: string }) {
   const { mentions, unreadCount } = useMentions({
@@ -157,7 +157,7 @@ function WithNotifications({ currentUserId }: { currentUserId: string }) {
         <h2>Mark as Read</h2>
         <p>Mark mentions as read:</p>
         <CodePlayground
-          initialCode={`import { useMentions } from '@clarity-chat/react/internal'
+          code={`import { useMentions } from '@clarity-chat/react/internal'
 
 function MentionList({ userId }: { userId: string }) {
   const { getUserMentions, markAsRead, markAllAsRead } = useMentions({ users })

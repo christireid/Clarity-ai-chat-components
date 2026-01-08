@@ -196,7 +196,7 @@ export default function AgentRunFeedPage() {
             through the workflow.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const [steps, setSteps] = React.useState([])
 
   React.useEffect(() => {
@@ -686,7 +686,7 @@ function CompleteAgentFeed() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'ToolInvocationCard',
             href: '/reference/components/tool-invocation-card',
           }}

@@ -36,7 +36,7 @@ export default function HookDependenciesPage() {
         <h2>Hook Composition</h2>
         <p>Compose hooks in the correct order:</p>
         <CodePlayground
-          initialCode={`import {
+          code={`import {
   useClarityChat,
   useTokenOptimizationEnhanced,
   useStreaming,
@@ -75,7 +75,7 @@ function ChatWithHooks() {
         <h2>Dependency Order</h2>
         <p>Order hooks by dependency:</p>
         <CodePlayground
-          initialCode={`// Correct order
+          code={`// Correct order
 function CorrectHookOrder() {
   // Independent hooks first
   const battery = useBatteryAware()
@@ -113,7 +113,7 @@ function IncorrectHookOrder() {
         <h2>Avoiding Dependency Cycles</h2>
         <p>Avoid circular dependencies:</p>
         <CodePlayground
-          initialCode={`// ❌ Circular dependency
+          code={`// ❌ Circular dependency
 function CircularDependency() {
   const chat = useClarityChat({
     onMessage: (msg) => {
@@ -148,7 +148,7 @@ function NoCircularDependency() {
         <h2>Conditional Hooks</h2>
         <p>Handle conditional hook usage:</p>
         <CodePlayground
-          initialCode={`// ✅ Conditional hooks (same order)
+          code={`// ✅ Conditional hooks (same order)
 function ConditionalHooks({ enableOptimization }: { enableOptimization: boolean }) {
   const chat = useClarityChat({ api: '/api/chat' })
 

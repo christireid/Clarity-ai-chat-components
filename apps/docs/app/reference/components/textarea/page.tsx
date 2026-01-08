@@ -23,7 +23,7 @@ export default function TextareaPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`import { Textarea } from '@clarity/chat-components';
+          code={`import { Textarea } from '@clarity/chat-components';
 
 export default function BasicTextarea() {
   return (

@@ -252,7 +252,7 @@ function PromptBuilder() {
             Experiment with different field types and priorities.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const [values, setValues] = React.useState({})
 
   const fields = [

@@ -34,7 +34,7 @@ export default function UseModelRouterPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Chat() {
+          code={`function Chat() {
   const { route, currentModel } = useModelRouter({
     models: [
       { name: 'gpt-4', cost: 0.03, maxTokens: 8192, quality: 'high' },
@@ -60,7 +60,7 @@ render(<Chat />)`}
       <section className="docs-section">
         <h2>Complexity-Based Routing</h2>
         <CodePlayground
-          initialCode={`function SmartChat() {
+          code={`function SmartChat() {
   const { route } = useModelRouter({
     models: [
       { name: 'gpt-4', quality: 'high', cost: 0.03 },

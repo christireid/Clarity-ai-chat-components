@@ -201,6 +201,16 @@ export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
 export { SecurityManager, securityManager, useSecurity } from './utils/security'
 
+// Re-export types from @clarity-chat/types for convenience
+export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
+
+// Re-export input types
+export type { InputSuggestion } from './components/input/advanced-chat-input'
+
+// Re-export additional types for docs pages
+export type { AgentRunStep } from './components/ai/agent-run-feed'
+export type { ModelInfo, ToolCall } from './adapters/types'
+
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================

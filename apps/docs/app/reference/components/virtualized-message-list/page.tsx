@@ -160,7 +160,7 @@ export default function VirtualizedMessageListPage() {
               performs thanks to virtualization.
             </p>
             <CodePlayground
-              initialCode={`function Example() {
+              code={`function Example() {
   // Generate 100 messages
   const messages = React.useMemo(() => 
     Array.from({ length: 100 }, (_, i) => ({
@@ -372,7 +372,7 @@ function SimpleVirtualizedList() {
         </ScrollReveal>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'MessageList',
             href: '/reference/components/message-list',
           }}

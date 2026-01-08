@@ -62,7 +62,7 @@ function ToolCardWithApprovalDemo() {
   }, [])
 
   const handleReject = useCallback(() => {
-    logger.debug('Tool rejected')
+    console.log('Tool rejected')
   }, [])
 
   return (
@@ -187,7 +187,7 @@ export default function ToolInvocationCardPage() {
             changes through the workflow.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const toolCall = {
     id: 'call-1',
     type: 'function',
@@ -650,7 +650,7 @@ function StreamingWithTools() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'StreamingMessage',
             href: '/reference/components/streaming-message',
           }}

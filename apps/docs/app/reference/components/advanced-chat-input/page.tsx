@@ -23,8 +23,8 @@ function BasicAdvancedInputDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      logger.debug('Message:', text)
-      logger.debug('Attachments:', attachments)
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
       setValue('')
     },
     []
@@ -65,8 +65,8 @@ function FileUploadDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      logger.debug('Message:', text)
-      logger.debug('Attachments:', attachments)
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
       setValue('')
     },
     []
@@ -217,7 +217,7 @@ export default function AdvancedChatInputPage() {
               features!
             </p>
             <CodePlayground
-              initialCode={`function Example() {
+              code={`function Example() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = (text, attachments) => {
@@ -831,7 +831,7 @@ function CompleteAdvancedChat() {
         </ScrollReveal>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'ChatInput',
             href: '/reference/components/chat-input',
           }}

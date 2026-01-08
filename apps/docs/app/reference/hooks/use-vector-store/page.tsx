@@ -153,7 +153,7 @@ function VectorSearch() {
           Experiment with useVectorStore:
         </p>
         <CodePlayground
-          initialCode={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Example() {

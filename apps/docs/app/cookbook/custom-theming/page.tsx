@@ -247,7 +247,7 @@ module.exports = {
       <section className="docs-section">
         <h2>Dynamic Theme Switching</h2>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 const themes = {
   ocean: {

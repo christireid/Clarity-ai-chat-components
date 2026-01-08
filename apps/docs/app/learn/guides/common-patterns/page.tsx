@@ -721,7 +721,7 @@ describe('ChatInterface', () => {
       </section>
 
       <Pagination
-        previous={{
+        prev={{
           title: 'Testing',
           href: '/learn/guides/testing',
         }}

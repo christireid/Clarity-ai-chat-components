@@ -7,12 +7,163 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  SecurityManager,
-  ConsoleAlertHandler,
-  type SecurityResult,
-  type SecurityMetrics,
-} from '@clarity-chat/react/internal'
+
+// Local type definitions for security playground demo
+interface SecurityResult {
+  allowed: boolean
+  reason?: string
+  action?: 'allow' | 'warn' | 'block'
+  sanitizedInput?: string
+  details?: Record<string, unknown>
+  checks?: Array<{
+    name: string
+    passed: boolean
+    message?: string
+    confidence: number
+    threats?: string[]
+  }>
+  threats?: Array<{ type: string; severity: string; message: string }>
+}
+
+interface SecurityMetrics {
+  totalRequests: number
+  blockedRequests: number
+  warnings: number
+  rateLimitHits: number
+  piiDetections: number
+  injectionAttempts: number
+  totalEvents: number
+  eventsByType: Record<string, number>
+}
+
+// Mock ConsoleAlertHandler for demo
+class ConsoleAlertHandler {
+  handle(event: unknown) {
+    console.log('[Security Alert]', event)
+  }
+}
+
+// Attack patterns for demo detection
+const ATTACK_PATTERNS = [
+  /ignore.*previous.*instruction/i,
+  /reveal.*system.*prompt/i,
+  /you are now/i,
+  /pretend.*you.*are/i,
+  /do anything now/i,
+  /without.*restrictions/i,
+  /jailbreak/i,
+  /repeat.*word.*for.*word/i,
+]
+
+const PII_PATTERNS = {
+  email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
+  phone: /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/,
+  ssn: /\b\d{3}-\d{2}-\d{4}\b/,
+}
+
+// Demo SecurityManager that simulates security validation
+class SecurityManager {
+  private metrics: SecurityMetrics = {
+    totalRequests: 0,
+    blockedRequests: 0,
+    warnings: 0,
+    rateLimitHits: 0,
+    piiDetections: 0,
+    injectionAttempts: 0,
+    totalEvents: 0,
+    eventsByType: {},
+  }
+  private events: unknown[] = []
+
+  constructor(_config?: unknown) {
+    // Config is accepted but behavior is simulated
+  }
+
+  async validateInput(
+    text: string,
+    _context?: unknown
+  ): Promise<SecurityResult> {
+    this.metrics.totalRequests++
+    this.metrics.totalEvents++
+
+    const checks: SecurityResult['checks'] = []
+    const threats: SecurityResult['threats'] = []
+
+    // Check for attack patterns
+    const hasAttackPattern = ATTACK_PATTERNS.some((pattern) =>
+      pattern.test(text)
+    )
+    if (hasAttackPattern) {
+      this.metrics.injectionAttempts++
+      this.metrics.eventsByType['prompt_injection_detected'] =
+        (this.metrics.eventsByType['prompt_injection_detected'] || 0) + 1
+      checks.push({
+        name: 'Prompt Injection',
+        passed: false,
+        message: 'Potential prompt injection detected',
+        confidence: 0.95,
+        threats: ['Jailbreak attempt'],
+      })
+      threats.push({
+        type: 'prompt_injection',
+        severity: 'high',
+        message: 'Input contains potential jailbreak or injection attempt',
+      })
+    } else {
+      checks.push({ name: 'Prompt Injection', passed: true, confidence: 0.98 })
+    }
+
+    // Check for PII
+    const hasPII = Object.entries(PII_PATTERNS).some(([type, pattern]) => {
+      if (pattern.test(text)) {
+        this.metrics.piiDetections++
+        this.metrics.eventsByType['pii_detected'] =
+          (this.metrics.eventsByType['pii_detected'] || 0) + 1
+        checks.push({
+          name: `PII (${type})`,
+          passed: false,
+          message: `${type} pattern detected`,
+          confidence: 0.9,
+          threats: [`${type} data exposure`],
+        })
+        threats.push({
+          type: 'pii',
+          severity: 'medium',
+          message: `Potential ${type} detected in input`,
+        })
+        return true
+      }
+      return false
+    })
+
+    if (!hasPII) {
+      checks.push({ name: 'PII Detection', passed: true, confidence: 0.95 })
+    }
+
+    // Determine result
+    const shouldBlock = hasAttackPattern
+    if (shouldBlock) {
+      this.metrics.blockedRequests++
+    }
+
+    return {
+      allowed: !shouldBlock,
+      action: shouldBlock ? 'block' : 'allow',
+      reason: shouldBlock ? 'Security validation failed' : undefined,
+      sanitizedInput: text,
+      checks,
+      threats: threats.length > 0 ? threats : undefined,
+    }
+  }
+
+  getMetrics(): SecurityMetrics {
+    return { ...this.metrics }
+  }
+
+  clearEvents(): void {
+    this.events = []
+  }
+}
 
 // Pre-loaded attack examples
 const ATTACK_EXAMPLES = [
@@ -93,40 +244,7 @@ export default function SecurityPlayground() {
   const [security] = useState(() => {
     // Only initialize on client side
     if (typeof window === 'undefined') return null
-    return new SecurityManager({
-      promptInjection: {
-        enabled: true,
-        config: {
-          enableHeuristics: true,
-          enableSemanticAnalysis: true,
-          useAttackPatternDB: true,
-          enableMultiTurnDetection: true,
-          confidenceThreshold: 0.7,
-        },
-      },
-      pii: {
-        enabled: true,
-        patterns: ['EMAIL', 'PHONE', 'SSN', 'CREDIT_CARD', 'IP_ADDRESS'],
-        redactionStrategy: 'synthetic',
-      },
-      jailbreakPrevention: {
-        enabled: true,
-        config: {
-          protectSystemMessage: true,
-          bracketUserInput: true,
-          validateOutput: true,
-          monitorConversation: true,
-        },
-      },
-      contentModeration: {
-        enabled: true,
-      },
-      monitoring: {
-        enabled: true,
-        logEvents: true,
-        alertHandlers: [new ConsoleAlertHandler()],
-      },
-    })
+    return new SecurityManager()
   })
 
   const [customInput, setCustomInput] = useState('')

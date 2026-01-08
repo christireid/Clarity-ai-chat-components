@@ -37,7 +37,7 @@ export default function ComponentOptimizationPage() {
         <h2>Rendering Optimization</h2>
         <p>Optimize component rendering:</p>
         <CodePlayground
-          initialCode={`import { memo, useMemo } from 'react'
+          code={`import { memo, useMemo } from 'react'
 import { Message } from '@clarity-chat/react/internal'
 
 // Memoize expensive components
@@ -68,7 +68,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
         <h2>Reducing Re-renders</h2>
         <p>Reduce unnecessary re-renders:</p>
         <CodePlayground
-          initialCode={`import { useCallback, useMemo } from 'react'
+          code={`import { useCallback, useMemo } from 'react'
 import { ChatInput } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
@@ -107,7 +107,7 @@ const MessageList = memo(({ messages }: { messages: Message[] }) => {
         <h2>Code Splitting</h2>
         <p>Split component code:</p>
         <CodePlayground
-          initialCode={`import { lazy, Suspense } from 'react'
+          code={`import { lazy, Suspense } from 'react'
 
 // Lazy load heavy components
 const PerformanceAnalytics = lazy(() => 
@@ -146,7 +146,7 @@ const SettingsPage = lazy(() => import('./SettingsPage'))`}
         <h2>Bundle Size Optimization</h2>
         <p>Optimize bundle size:</p>
         <CodePlayground
-          initialCode={`// Import only what you need
+          code={`// Import only what you need
 import { ChatWindow } from '@clarity-chat/react/internal'
 // Instead of: import * from '@clarity-chat/react/internal'
 
@@ -189,7 +189,7 @@ export default {
         <h2>Performance Measurement</h2>
         <p>Measure component performance:</p>
         <CodePlayground
-          initialCode={`import { Profiler } from 'react'
+          code={`import { Profiler } from 'react'
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function MeasuredChat() {

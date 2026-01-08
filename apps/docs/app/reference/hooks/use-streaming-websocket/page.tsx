@@ -354,7 +354,7 @@ export default function UseStreamingWebSocketPage() {
             back.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org',
     onMessage: (msg) => {
@@ -927,7 +927,7 @@ function CompleteWebSocketExample() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'useStreamingSSE',
             href: '/reference/hooks/use-streaming-sse',
           }}

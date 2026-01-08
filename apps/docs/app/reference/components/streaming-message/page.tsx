@@ -58,8 +58,8 @@ function StreamingWithToolsDemo() {
     },
   ])
 
-  const handleToolApprove = useCallback((tool: ToolCall) => {
-    logger.debug('Tool approved:', tool)
+  const handleToolApprove = useCallback((tool: unknown) => {
+    console.log('Tool approved:', tool)
   }, [])
 
   return (
@@ -189,7 +189,7 @@ export default function StreamingMessagePage() {
             by token.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const [content, setContent] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(true)
 
@@ -648,7 +648,7 @@ function StreamingWithHook() {
         </ul>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'VirtualizedMessageList',
             href: '/reference/components/virtualized-message-list',
           }}

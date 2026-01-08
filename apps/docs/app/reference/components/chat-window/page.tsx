@@ -218,7 +218,7 @@ export default function ChatWindowPage() {
             see how they enhance the chat experience.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
+            code={`function Example() {
   const [messages, setMessages] = React.useState([
     {
       id: '1',

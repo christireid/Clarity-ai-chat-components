@@ -45,7 +45,7 @@ export default function AdvancedRAGPatternsRecipePage() {
         <h2>Document Integration for RAG</h2>
         <p>Extract and chunk documents for RAG:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
+          code={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function RAGDocumentSetup() {
   const { extractContent, fetchDocument } = useDocumentIntegration()
@@ -90,7 +90,7 @@ function RAGDocumentSetup() {
         <h2>Semantic Search</h2>
         <p>Use semantic search to find relevant context:</p>
         <CodePlayground
-          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
+          code={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 
 function RAGSearch() {
   const [query, setQuery] = React.useState('')
@@ -136,7 +136,7 @@ function RAGSearch() {
         <h2>RAG Context in Chat</h2>
         <p>Use retrieved context in chat:</p>
         <CodePlayground
-          initialCode={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function RAGChat() {
   const [context, setContext] = React.useState<string[]>([])
@@ -178,7 +178,7 @@ function RAGChat() {
         <h2>Hybrid Search</h2>
         <p>Combine semantic and keyword search:</p>
         <CodePlayground
-          initialCode={`async function hybridSearch(query: string) {
+          code={`async function hybridSearch(query: string) {
   // Semantic search
   const semanticResults = await semanticSearch(query)
   
@@ -198,7 +198,7 @@ function RAGChat() {
         <h2>Context Management</h2>
         <p>Manage RAG context efficiently:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          code={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function RAGContextManager({ messages }: { messages: Message[] }) {
   const { utilization, recommendations } = useContextMonitor(messages, {
@@ -230,7 +230,7 @@ function RAGContextManager({ messages }: { messages: Message[] }) {
         <h2>Complete RAG Implementation</h2>
         <p>Complete RAG implementation:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration, SemanticMessageSearch, ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { DocumentIntegration, SemanticMessageSearch, ClarityChat } from '@clarity-chat/react/internal'
 import { useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function CompleteRAG() {

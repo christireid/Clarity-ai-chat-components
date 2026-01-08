@@ -565,10 +565,10 @@ function CostTrackingExample() {
 
   return (
     <div>
-      <p>Total Cost: ${stats.costs.totalCost.toFixed(4)}</p>
-      <p>Input Cost: ${stats.costs.inputCost.toFixed(4)}</p>
-      <p>Output Cost: ${stats.costs.outputCost.toFixed(4)}</p>
-      <p>Savings: ${stats.costs.savingsFromOptimization.toFixed(4)}</p>
+      <p>Total Cost: \${stats.costs.totalCost.toFixed(4)}</p>
+      <p>Input Cost: \${stats.costs.inputCost.toFixed(4)}</p>
+      <p>Output Cost: \${stats.costs.outputCost.toFixed(4)}</p>
+      <p>Savings: \${stats.costs.savingsFromOptimization.toFixed(4)}</p>
       <p>Total Tokens Saved: {stats.overall.totalTokensSaved}</p>
       <p>Average Savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
     </div>
@@ -720,7 +720,7 @@ function CompleteOptimizationExample() {
       <button onClick={handleOptimize}>Optimize</button>
       <div>
         <p>Tokens saved: {stats.overall.totalTokensSaved}</p>
-        <p>Cost saved: ${stats.overall.totalCostSaved.toFixed(4)}</p>
+        <p>Cost saved: \${stats.overall.totalCostSaved.toFixed(4)}</p>
         <p>Savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
       </div>
     </div>
@@ -771,7 +771,7 @@ function CompleteOptimizationExample() {
         </section>
 
         <Pagination
-          previous={{
+          prev={{
             title: 'Streaming Guide',
             href: '/guides/streaming',
           }}

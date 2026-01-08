@@ -25,7 +25,7 @@ export default function InteractiveGuidePage() {
           <h2>Basic Chat Window</h2>
           <p>A minimal chat window with message sending capability:</p>
           <CodePlayground
-            initialCode={`function BasicChat() {
+            code={`function BasicChat() {
   const [messages, setMessages] = React.useState([
     { role: 'assistant', content: 'Hello! How can I help you today?' }
   ])
@@ -67,7 +67,7 @@ render(<BasicChat />)`}
           <h2>Streaming Messages</h2>
           <p>Simulate streaming responses with typing animation:</p>
           <CodePlayground
-            initialCode={`function StreamingDemo() {
+            code={`function StreamingDemo() {
   const [message, setMessage] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(false)
   const fullMessage = 'This is a simulated streaming response that appears letter by letter...'

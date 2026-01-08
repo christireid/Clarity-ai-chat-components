@@ -37,7 +37,7 @@ export default function AvatarPage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function BasicAvatar() {
+          code={`function BasicAvatar() {
   return (
     <div className="flex items-center gap-4">
       <Avatar
@@ -79,7 +79,7 @@ render(<BasicAvatar />)`}
           large.
         </p>
         <CodePlayground
-          initialCode={`function AvatarSizes() {
+          code={`function AvatarSizes() {
   return (
     <div className="flex items-end gap-4">
       <div className="text-center">
@@ -150,7 +150,7 @@ render(<AvatarSizes />)`}
           the user's name with a generated background color.
         </p>
         <CodePlayground
-          initialCode={`function FallbackAvatars() {
+          code={`function FallbackAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -232,7 +232,7 @@ render(<FallbackAvatars />)`}
         <h2>With Status Indicator</h2>
         <p>Show user presence status with a colored indicator.</p>
         <CodePlayground
-          initialCode={`function StatusAvatars() {
+          code={`function StatusAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -322,7 +322,7 @@ render(<StatusAvatars />)`}
         <h2>Shapes</h2>
         <p>Avatars can be circular (default), rounded square, or square.</p>
         <CodePlayground
-          initialCode={`function AvatarShapes() {
+          code={`function AvatarShapes() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -397,7 +397,7 @@ render(<AvatarShapes />)`}
         <h2>Avatar Group</h2>
         <p>Display multiple avatars in a compact, overlapping group.</p>
         <CodePlayground
-          initialCode={`function AvatarGroups() {
+          code={`function AvatarGroups() {
   const users = [
     { id: '1', name: 'Alice', src: 'https://i.pravatar.cc/150?img=1' },
     { id: '2', name: 'Bob', src: 'https://i.pravatar.cc/150?img=2' },
@@ -485,7 +485,7 @@ render(<AvatarGroups />)`}
         <h2>With Badge</h2>
         <p>Add notification badges or counts to avatars.</p>
         <CodePlayground
-          initialCode={`function AvatarWithBadge() {
+          code={`function AvatarWithBadge() {
   return (
     <div className="flex items-center gap-8">
       <div className="text-center">
@@ -542,7 +542,7 @@ render(<AvatarWithBadge />)`}
         <h2>Interactive Avatars</h2>
         <p>Make avatars clickable for profile views or actions.</p>
         <CodePlayground
-          initialCode={`function InteractiveAvatars() {
+          code={`function InteractiveAvatars() {
   const [clicked, setClicked] = React.useState(null)
 
   const users = [
@@ -594,7 +594,7 @@ render(<InteractiveAvatars />)`}
         <h2>Custom Colors</h2>
         <p>Override the default color scheme for fallback avatars.</p>
         <CodePlayground
-          initialCode={`function CustomColorAvatars() {
+          code={`function CustomColorAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -668,7 +668,7 @@ render(<CustomColorAvatars />)`}
         <h2>Loading State</h2>
         <p>Show a skeleton loader while the avatar image is loading.</p>
         <CodePlayground
-          initialCode={`function LoadingAvatars() {
+          code={`function LoadingAvatars() {
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {

@@ -238,7 +238,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <section className="docs-section">
         <h2>Complete Working Example</h2>
         <CodePlayground
-          initialCode={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 
 function StreamingChatDemo() {
   const [messages, setMessages] = useState<Message[]>([

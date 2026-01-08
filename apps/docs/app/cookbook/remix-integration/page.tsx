@@ -36,7 +36,7 @@ export default function RemixIntegrationPage() {
         <h2>Basic Setup</h2>
         <p>Set up Clarity Chat in a Remix route:</p>
         <CodePlayground
-          initialCode={`// app/routes/chat.tsx
+          code={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
 import { ClarityChat } from '@clarity-chat/react'
 import type { LoaderFunctionArgs } from '@remix-run/node'
@@ -67,7 +67,7 @@ export default function ChatRoute() {
         <h2>Form Actions</h2>
         <p>Handle chat messages with Remix actions:</p>
         <CodePlayground
-          initialCode={`// app/routes/chat.tsx
+          code={`// app/routes/chat.tsx
 import { useActionData, useNavigation } from '@remix-run/react'
 import { action } from './chat.server'
 import { ChatInput } from '@clarity-chat/react'
@@ -110,7 +110,7 @@ export default function ChatRoute() {
         <h2>Streaming with Resource Routes</h2>
         <p>Implement streaming with Remix resource routes:</p>
         <CodePlayground
-          initialCode={`// app/routes/api.chat.stream.tsx
+          code={`// app/routes/api.chat.stream.tsx
 import type { LoaderFunctionArgs } from '@remix-run/node'
 import { eventStream } from '@remix-run/node'
 
@@ -157,7 +157,7 @@ export function StreamingChat() {
         <h2>Authentication</h2>
         <p>Handle authentication in Remix:</p>
         <CodePlayground
-          initialCode={`// app/routes/chat.tsx
+          code={`// app/routes/chat.tsx
 import { requireUserId } from '~/session.server'
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -190,7 +190,7 @@ export default function ChatRoute() {
         <h2>Error Handling</h2>
         <p>Handle errors in Remix:</p>
         <CodePlayground
-          initialCode={`// app/routes/chat.tsx
+          code={`// app/routes/chat.tsx
 import { useRouteError } from '@remix-run/react'
 
 export function ErrorBoundary() {
