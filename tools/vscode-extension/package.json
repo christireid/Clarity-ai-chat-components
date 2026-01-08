@@ -424,7 +424,7 @@
     "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
     "glob": "^10.5.0",
-    "mocha": "^10.2.0",
+    "mocha": "^11.7.5",
     "sharp": "^0.34.5",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2"
