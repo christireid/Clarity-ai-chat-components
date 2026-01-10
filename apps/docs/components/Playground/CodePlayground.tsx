@@ -285,9 +285,9 @@ export function CodePlayground({
           <div
             className={`${
               layout === 'horizontal'
-                ? 'w-1 cursor-col-resize'
-                : 'h-1 cursor-row-resize'
-            } bg-gray-200 dark:bg-gray-700 hover:bg-blue-500 transition-colors`}
+                ? 'w-2 cursor-col-resize'
+                : 'h-2 cursor-row-resize'
+            } bg-gray-200 dark:bg-gray-700 hover:bg-brand-500 active:bg-brand-600 transition-colors flex-shrink-0`}
             onMouseDown={(e) => {
               e.preventDefault()
               const startPos = layout === 'horizontal' ? e.clientX : e.clientY

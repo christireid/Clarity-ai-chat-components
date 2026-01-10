@@ -508,9 +508,7 @@ export default function ToolCallingDemo() {
                       <User className="w-5 h-5" />
                     )}
                   </div>
-                  <div
-                    className={`max-w-[80%] ${message.sender === 'user' ? '' : ''}`}
-                  >
+                  <div className="max-w-[80%]">
                     <div
                       className={`rounded-2xl px-4 py-3 ${
                         message.sender === 'bot'
@@ -556,7 +554,7 @@ export default function ToolCallingDemo() {
             {/* Tool Registry Info */}
             <div className="border-t border-border p-4 bg-bg-secondary">
               <div className="text-sm text-text-secondary text-center">
-                💡 Each tool has a custom{' '}
+                <span className="font-medium text-text-primary">Tip:</span> Each tool has a custom{' '}
                 <code className="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
                   ToolUIRegistry
                 </code>{' '}

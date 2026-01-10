@@ -447,7 +447,9 @@ function Scene({
 }: SceneProps) {
   return (
     <>
+      {/* Key forces remount when count changes to avoid Three.js buffer resize errors */}
       <ParticleField
+        key={count}
         count={count}
         primaryColor={primaryColor}
         secondaryColor={secondaryColor}

@@ -1,8 +1,17 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, useSyncExternalStore } from 'react'
 import { Highlight, themes } from 'prism-react-renderer'
 import { useTheme } from 'next-themes'
+
+// Hook to safely check if mounted (avoids hydration mismatch)
+function useIsMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+}
 import {
   Check,
   Copy,
@@ -35,7 +44,8 @@ export function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+  const isMounted = useIsMounted()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const toast = useToast()
   const codeBlockRef = useRef<HTMLDivElement>(null)
@@ -117,10 +127,12 @@ export function CodeBlock({
   }, [])
 
   // Memoize theme selection to prevent recalculation
+  // Always use dark theme on server to avoid hydration mismatch
   const highlightTheme = useMemo(() => {
-    const isDark = theme === 'dark'
+    if (!isMounted) return themes.nightOwl // Default to dark on server
+    const isDark = resolvedTheme === 'dark'
     return isDark ? themes.nightOwl : themes.nightOwlLight
-  }, [theme])
+  }, [resolvedTheme, isMounted])
 
   // Memoize highlight lines set for O(1) lookups
   const highlightLinesSet = useMemo(
@@ -140,14 +152,17 @@ export function CodeBlock({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className={clsx(
-        'group relative not-prose my-6 shadow-sm hover:shadow-md transition-shadow duration-200',
+        'group relative not-prose my-6 rounded-xl overflow-hidden',
+        'shadow-lg shadow-slate-900/5 dark:shadow-slate-900/20',
+        'hover:shadow-xl hover:shadow-slate-900/10 dark:hover:shadow-slate-900/30',
+        'transition-shadow duration-300',
         className
       )}
       tabIndex={0}
     >
-      {/* Header */}
+      {/* Header - Glassmorphism styling */}
       {(title || language) && (
-        <div className="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b-2 border-border rounded-t-xl">
+        <div className="flex items-center justify-between px-4 py-3 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 rounded-t-xl">
           <div className="flex items-center gap-2 text-sm">
             {title ? (
               <>
@@ -160,14 +175,14 @@ export function CodeBlock({
                     stiffness: 200,
                     damping: 15,
                   }}
-                  className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"
+                  className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center"
                 >
-                  <Terminal className="w-4 h-4 text-primary" />
+                  <Terminal className="w-4 h-4 text-blue-500" />
                 </motion.div>
-                <span className="font-semibold text-text-primary">{title}</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">{title}</span>
               </>
             ) : (
-              <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">
+              <span className="font-mono text-xs font-medium text-slate-600 dark:text-slate-400 px-2.5 py-1 bg-slate-200/50 dark:bg-slate-700/50 rounded-md">
                 {language}
               </span>
             )}
@@ -179,7 +194,7 @@ export function CodeBlock({
               onClick={copyToClipboard}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
+              className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
               aria-label="Copy code (⌘⇧C)"
             >
               <AnimatePresence mode="wait">
@@ -216,10 +231,10 @@ export function CodeBlock({
               onClick={downloadCode}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="p-2 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-text-secondary hover:text-text-primary"
+              className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-all duration-200 text-text-secondary hover:text-text-primary"
               aria-label="Download code (⌘⇧D)"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-5 h-5" />
             </motion.button>
 
             {/* Expand/Collapse button (only for tall code blocks) */}
@@ -228,7 +243,7 @@ export function CodeBlock({
                 onClick={toggleExpanded}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-text-secondary hover:text-text-primary"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-all duration-200 text-text-secondary hover:text-text-primary"
                 aria-label={
                   isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'
                 }
@@ -241,7 +256,7 @@ export function CodeBlock({
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 90 }}
                     >
-                      <Minimize2 className="w-4 h-4" />
+                      <Minimize2 className="w-5 h-5" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -250,7 +265,7 @@ export function CodeBlock({
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: -90 }}
                     >
-                      <Maximize2 className="w-4 h-4" />
+                      <Maximize2 className="w-5 h-5" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -283,25 +298,26 @@ export function CodeBlock({
             }}
             className={clsx(
               highlightClassName,
-              'overflow-x-auto p-8 text-sm leading-loose border-2 border-border relative',
+              'overflow-x-auto p-6 text-sm leading-relaxed relative',
+              'border border-slate-200/50 dark:border-slate-700/50',
               !title && !language && 'rounded-xl',
               (title || language) && 'rounded-b-xl border-t-0',
               isTallCodeBlock && !isExpanded && 'overflow-y-hidden'
             )}
             style={{
               ...style,
-              backgroundColor: theme === 'dark' ? '#1a202c' : '#f7fafc',
+              backgroundColor: 'var(--color-code-bg)',
             }}
           >
             {/* Floating action buttons (no header) */}
             {!title && !language && (
-              <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 {/* Copy button */}
                 <motion.button
                   onClick={copyToClipboard}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
+                  className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
                   aria-label="Copy code (⌘⇧C)"
                 >
                   <AnimatePresence mode="wait">
@@ -312,7 +328,7 @@ export function CodeBlock({
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: 180 }}
                       >
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-5 h-5 text-green-500" />
                       </motion.div>
                     ) : (
                       <motion.div
@@ -321,7 +337,7 @@ export function CodeBlock({
                         animate={{ scale: 1, rotate: 0 }}
                         exit={{ scale: 0, rotate: -180 }}
                       >
-                        <Copy className="w-4 h-4 text-text-tertiary" />
+                        <Copy className="w-5 h-5 text-text-tertiary" />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -332,10 +348,10 @@ export function CodeBlock({
                   onClick={downloadCode}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
+                  className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
                   aria-label="Download code (⌘⇧D)"
                 >
-                  <Download className="w-4 h-4 text-text-tertiary" />
+                  <Download className="w-5 h-5 text-text-tertiary" />
                 </motion.button>
 
                 {/* Expand/Collapse button (only for tall code blocks) */}
@@ -344,7 +360,7 @@ export function CodeBlock({
                     onClick={toggleExpanded}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
+                    className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 hover:shadow-sm"
                     aria-label={
                       isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'
                     }
@@ -357,7 +373,7 @@ export function CodeBlock({
                           animate={{ scale: 1, rotate: 0 }}
                           exit={{ scale: 0, rotate: 90 }}
                         >
-                          <Minimize2 className="w-4 h-4 text-text-tertiary" />
+                          <Minimize2 className="w-5 h-5 text-text-tertiary" />
                         </motion.div>
                       ) : (
                         <motion.div
@@ -366,7 +382,7 @@ export function CodeBlock({
                           animate={{ scale: 1, rotate: 0 }}
                           exit={{ scale: 0, rotate: -90 }}
                         >
-                          <Maximize2 className="w-4 h-4 text-text-tertiary" />
+                          <Maximize2 className="w-5 h-5 text-text-tertiary" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -416,7 +432,10 @@ export function CodeBlock({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-bg-primary dark:from-[#1a202c] to-transparent pointer-events-none"
+                className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to top, var(--color-code-bg), transparent)',
+                }}
               />
             )}
           </motion.pre>

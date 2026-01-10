@@ -21,6 +21,7 @@ import {
   createSSEStream,
   getStreamingFunction,
   getStreamingFunctionWithRouting,
+  getProviderStatus,
   streamFromClaudeWithTools,
   checkRateLimit,
   validateRequest,
@@ -866,7 +867,7 @@ Current page: ${currentPath || 'unknown'}`
 /**
  * GET /api/docs-assistant
  *
- * Health check endpoint
+ * Health check endpoint with provider status
  */
 export async function GET() {
   const cache = getResponseCache()
@@ -878,10 +879,23 @@ export async function GET() {
     console.error('Failed to get cache stats:', error)
   }
 
+  // Get provider status for debugging and health checks
+  const providerStatus = getProviderStatus()
+
   return NextResponse.json({
     status: 'ok',
     service: 'Clarity Chat Documentation Assistant',
-    version: '1.2.0',
+    version: '1.3.0',
+    // Provider status - useful for debugging and UI display
+    provider: {
+      active: providerStatus.activeProvider.name,
+      model: providerStatus.activeProvider.model,
+      isDemoMode: providerStatus.isDemoMode,
+      summary: providerStatus.summary,
+      available: providerStatus.providers
+        .filter(p => p.available && p.name !== 'demo')
+        .map(p => ({ name: p.name, model: p.model })),
+    },
     features: {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
       enhancedRAG: USE_ENHANCED_RAG,
@@ -926,6 +940,21 @@ export async function GET() {
         : 'disabled',
     },
     cache: cacheStats,
+    // Setup instructions if in demo mode
+    ...(providerStatus.isDemoMode && {
+      setup: {
+        message: 'Running in demo mode. To enable full AI functionality, configure an API key.',
+        instructions: [
+          '1. Copy .env.example to .env.local',
+          '2. Add at least one API key:',
+          '   - ANTHROPIC_API_KEY (recommended)',
+          '   - OPENAI_API_KEY',
+          '   - GEMINI_API_KEY',
+          '3. Restart the development server',
+        ],
+        docs: '/guides/configuration',
+      },
+    }),
   })
 }
 

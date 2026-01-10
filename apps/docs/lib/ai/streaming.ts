@@ -736,7 +736,91 @@ export interface ModelRoutingConfig {
 }
 
 /**
+ * Provider status information for health checks and debugging
+ */
+export interface ProviderStatus {
+  name: 'anthropic' | 'openai' | 'gemini' | 'demo'
+  available: boolean
+  configured: boolean
+  envVar: string
+  model?: string
+}
+
+/**
+ * Get the status of all configured AI providers
+ * Useful for health checks, debugging, and UI display
+ */
+export function getProviderStatus(): {
+  providers: ProviderStatus[]
+  activeProvider: ProviderStatus
+  isDemoMode: boolean
+  summary: string
+} {
+  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
+  const hasOpenAI = !!process.env.OPENAI_API_KEY
+  const hasGemini = !!process.env.GEMINI_API_KEY
+
+  const providers: ProviderStatus[] = [
+    {
+      name: 'anthropic',
+      available: hasAnthropic,
+      configured: !!process.env.ANTHROPIC_API_KEY,
+      envVar: 'ANTHROPIC_API_KEY',
+      model: hasAnthropic ? 'claude-3-5-sonnet-20241022' : undefined,
+    },
+    {
+      name: 'openai',
+      available: hasOpenAI,
+      configured: !!process.env.OPENAI_API_KEY,
+      envVar: 'OPENAI_API_KEY',
+      model: hasOpenAI ? (process.env.AI_MODEL || 'gpt-4-turbo-preview') : undefined,
+    },
+    {
+      name: 'gemini',
+      available: hasGemini,
+      configured: !!process.env.GEMINI_API_KEY,
+      envVar: 'GEMINI_API_KEY',
+      model: hasGemini ? 'gemini-1.5-flash' : undefined,
+    },
+    {
+      name: 'demo',
+      available: true, // Always available as fallback
+      configured: true,
+      envVar: 'N/A',
+      model: 'demo-mode',
+    },
+  ]
+
+  const isDemoMode = !hasAnthropic && !hasOpenAI && !hasGemini
+
+  // Determine active provider with priority: Anthropic > OpenAI > Gemini > Demo
+  let activeProvider: ProviderStatus
+  if (hasAnthropic) {
+    activeProvider = providers[0]
+  } else if (hasOpenAI) {
+    activeProvider = providers[1]
+  } else if (hasGemini) {
+    activeProvider = providers[2]
+  } else {
+    activeProvider = providers[3]
+  }
+
+  const configuredCount = providers.filter(p => p.available && p.name !== 'demo').length
+  const summary = isDemoMode
+    ? 'No API keys configured - running in demo mode. Add ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to .env.local for full functionality.'
+    : `${configuredCount} provider(s) configured. Active: ${activeProvider.name} (${activeProvider.model})`
+
+  return {
+    providers,
+    activeProvider,
+    isDemoMode,
+    summary,
+  }
+}
+
+/**
  * Get the appropriate streaming function based on configured model
+ * Priority order: Anthropic (preferred) > OpenAI > Gemini > Demo mode
  */
 export function getStreamingFunction():
   | typeof streamFromOpenAI
@@ -750,26 +834,41 @@ export function getStreamingFunction():
 
   // If no API keys, use demo mode
   if (!hasOpenAI && !hasAnthropic && !hasGemini) {
-    logger.warn('⚠️  No API keys configured - using demo mode')
+    logger.warn('No API keys configured - using demo mode. Add ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to .env.local')
     return streamFromDemo
   }
 
   const model = process.env.AI_MODEL || 'gpt-4-turbo-preview'
 
+  // Priority: Check configured model first, then fall back in order
   if (model.startsWith('claude') && hasAnthropic) {
+    logger.info(`Using Anthropic Claude: ${model}`)
     return streamFromClaude
   }
 
   if (model.startsWith('gemini') && hasGemini) {
+    logger.info(`Using Google Gemini: ${model}`)
     return streamFromGemini
   }
 
   if (hasOpenAI) {
+    logger.info(`Using OpenAI: ${model}`)
     return streamFromOpenAI
   }
 
+  // If we have keys but configured model doesn't match, try fallback order
+  if (hasAnthropic) {
+    logger.warn(`Configured model "${model}" not available, falling back to Anthropic Claude`)
+    return streamFromClaude
+  }
+
+  if (hasGemini) {
+    logger.warn(`Configured model "${model}" not available, falling back to Google Gemini`)
+    return streamFromGemini
+  }
+
   // Fallback to demo if configured model doesn't have a key
-  logger.warn('⚠️  Configured model has no API key - using demo mode')
+  logger.warn('Configured model has no API key - using demo mode')
   return streamFromDemo
 }
 

@@ -200,10 +200,46 @@ export class AdvancedRateLimiter {
   private requests: Map<string, number[]> = new Map()
   private readonly windowMs: number
   private readonly maxRequests: number
+  private readonly maxEntries: number = 10000 // Prevent unbounded memory growth
 
   constructor(windowMs: number = 60000, maxRequests: number = 100) {
     this.windowMs = windowMs
     this.maxRequests = maxRequests
+    // Cleanup stale entries periodically
+    setInterval(() => this.cleanup(), 5 * 60 * 1000)
+  }
+
+  /**
+   * Cleanup stale entries and enforce size limit
+   */
+  private cleanup() {
+    const now = Date.now()
+    for (const [key, timestamps] of this.requests.entries()) {
+      const valid = timestamps.filter(t => now - t < this.windowMs)
+      if (valid.length === 0) {
+        this.requests.delete(key)
+      } else {
+        this.requests.set(key, valid)
+      }
+    }
+  }
+
+  /**
+   * Evict oldest entry to prevent unbounded growth
+   */
+  private evictOldest() {
+    let oldestKey: string | null = null
+    let oldestTime = Infinity
+    for (const [key, timestamps] of this.requests.entries()) {
+      const oldest = Math.min(...timestamps)
+      if (oldest < oldestTime) {
+        oldestTime = oldest
+        oldestKey = key
+      }
+    }
+    if (oldestKey) {
+      this.requests.delete(oldestKey)
+    }
   }
 
   /**
@@ -211,19 +247,25 @@ export class AdvancedRateLimiter {
    */
   isAllowed(identifier: string): boolean {
     const now = Date.now()
+    const existing = this.requests.has(identifier)
     const userRequests = this.requests.get(identifier) || []
-    
+
     // Remove old requests outside the window
     const validRequests = userRequests.filter(timestamp => now - timestamp < this.windowMs)
-    
+
     if (validRequests.length >= this.maxRequests) {
       return false
     }
-    
+
+    // Evict oldest if adding new identifier would exceed limit
+    if (!existing && this.requests.size >= this.maxEntries) {
+      this.evictOldest()
+    }
+
     // Add current request
     validRequests.push(now)
     this.requests.set(identifier, validRequests)
-    
+
     return true
   }
 

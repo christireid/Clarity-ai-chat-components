@@ -14,6 +14,7 @@ import {
   User,
   ArrowRight,
   RefreshCw,
+  Check,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { durations } from '@/lib/animations'
@@ -498,21 +499,21 @@ export default function TokenVisualizerDemo() {
 
               <div className="p-6 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 border border-indigo-200 dark:border-indigo-800">
                 <h3 className="font-bold mb-3">Why This Matters</h3>
-                <ul className="space-y-2 text-sm">
+                <ul className="space-y-2 text-sm" aria-label="Benefits of token optimization">
                   <li className="flex items-start gap-2">
-                    <span className="text-green-500">✓</span>
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                     <span>Predictable API costs</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-500">✓</span>
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                     <span>Automatic context optimization</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-500">✓</span>
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                     <span>KV-cache maximization</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-500">✓</span>
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                     <span>Real-time budget alerts</span>
                   </li>
                 </ul>

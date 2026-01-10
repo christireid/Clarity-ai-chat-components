@@ -80,7 +80,7 @@ export function HeroChatMessage({
               className={`px-4 py-3 rounded-2xl ${
                 isUser
                   ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-tr-sm'
-                  : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-tl-sm shadow-sm'
+                  : 'bg-bg-primary dark:bg-slate-800 text-text-primary border border-border dark:border-slate-700 rounded-tl-sm shadow-sm'
               }`}
               whileHover={{ scale: 1.01 }}
             >
@@ -157,7 +157,7 @@ function ThinkingIndicator() {
       <motion.div
         className="flex gap-1"
         animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: durations.slower, repeat: Infinity }}
+        transition={{ duration: durations.slower, repeat: Infinity, type: 'tween' }}
       >
         {[0, 1, 2].map((i) => (
           <motion.div
@@ -168,6 +168,7 @@ function ThinkingIndicator() {
               duration: durations.slower,
               repeat: Infinity,
               delay: i * 0.15,
+              type: 'tween',
             }}
           />
         ))}

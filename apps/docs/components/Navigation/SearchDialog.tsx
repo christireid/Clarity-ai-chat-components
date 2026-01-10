@@ -47,18 +47,49 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const previousActiveElement = useRef<HTMLElement | null>(null)
 
   // Debounce search query for performance
   const deferredQuery = useDeferredValue(query)
   const isSearching = query !== deferredQuery
 
-  // Focus input when opened
+  // Focus input when opened and restore focus on close
   useEffect(() => {
     if (open) {
+      previousActiveElement.current = document.activeElement as HTMLElement
       setTimeout(() => inputRef.current?.focus(), 100)
       setQuery('')
       setSelectedIndex(0)
+    } else if (previousActiveElement.current) {
+      previousActiveElement.current.focus()
     }
+  }, [open])
+
+  // Focus trap within dialog
+  useEffect(() => {
+    if (!open) return
+
+    const handleFocusTrap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !dialogRef.current) return
+
+      const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault()
+        lastElement?.focus()
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault()
+        firstElement?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleFocusTrap)
+    return () => document.removeEventListener('keydown', handleFocusTrap)
   }, [open])
 
   // Fuzzy search with scoring (uses deferred query for debouncing)
@@ -213,6 +244,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
 
           {/* Search Dialog */}
           <motion.div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Search documentation"

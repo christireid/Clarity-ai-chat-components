@@ -50,7 +50,7 @@ const securityConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://api.openai.com https://www.google-analytics.com",
+              "connect-src 'self' https://api.openai.com https://api.github.com https://www.google-analytics.com",
               "media-src 'self'",
               "object-src 'none'",
               "child-src 'none'",

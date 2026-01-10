@@ -75,16 +75,20 @@ export function EnhancedCodeBlock({
   return (
     <div
       className={clsx(
-        'group relative not-prose my-6 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl overflow-hidden border border-border',
+        'group relative not-prose my-6 rounded-xl overflow-hidden',
+        'shadow-lg shadow-slate-900/5 dark:shadow-slate-900/20',
+        'hover:shadow-xl hover:shadow-slate-900/10 dark:hover:shadow-slate-900/30',
+        'transition-shadow duration-300',
+        'border border-slate-200/50 dark:border-slate-700/50',
         className
       )}
     >
-      {/* Enhanced Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-bg-tertiary to-bg-secondary border-b border-border">
+      {/* Enhanced Header - Glassmorphism styling */}
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50">
         <div className="flex items-center gap-3">
           {filename && (
             <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-brand-500" />
+              <Terminal className="w-4 h-4 text-blue-500" />
               <span className="font-mono text-sm font-medium text-text-primary">
                 {filename}
               </span>
@@ -154,12 +158,11 @@ export function EnhancedCodeBlock({
           <pre
             className={clsx(
               highlightClassName,
-              'overflow-x-auto p-4 text-sm leading-relaxed',
-              'bg-gradient-to-br from-bg-primary to-bg-secondary'
+              'overflow-x-auto p-6 text-sm leading-relaxed'
             )}
             style={{
               ...style,
-              backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+              backgroundColor: 'var(--color-code-bg)',
             }}
           >
             {!title && !filename && showCopyButton && (

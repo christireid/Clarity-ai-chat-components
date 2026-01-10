@@ -10,17 +10,22 @@ import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 
 // Color palette from design system
+// These colors are used for SVG diagrams which don't support CSS variables well
+// For Tailwind classes, use the semantic color classes instead
 const colors = {
-  brand: '#3b82f6',
-  brandLight: '#60a5fa',
-  brandDark: '#2563eb',
-  success: '#10b981',
-  warning: '#f59e0b',
-  error: '#ef4444',
-  neutral: '#6b7280',
-  neutralLight: '#d1d5db',
-  background: '#f9fafb',
-  backgroundDark: '#1f2937',
+  // Brand colors - matches Tailwind's blue palette
+  brand: '#3b82f6', // blue-500
+  brandLight: '#60a5fa', // blue-400
+  brandDark: '#2563eb', // blue-600
+  // Semantic colors
+  success: '#22c55e', // green-500
+  warning: '#f59e0b', // amber-500
+  error: '#ef4444', // red-500
+  // Neutrals - using slate for better dark mode
+  neutral: '#64748b', // slate-500
+  neutralLight: '#cbd5e1', // slate-300
+  background: '#f8fafc', // slate-50
+  backgroundDark: '#1e293b', // slate-800
 }
 
 interface BoxNodeProps {

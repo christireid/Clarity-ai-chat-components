@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu, X, PanelLeftClose, PanelLeft, GripVertical } from 'lucide-react'
 import { Sidebar, type NavItem } from '@/components/Navigation/Sidebar'
 import { TableOfContents } from '@/components/Enhanced/TableOfContents'
@@ -8,6 +9,9 @@ import { AutoPagination } from '@/components/Navigation/AutoPagination'
 import { useSidebarState } from '@/components/Layout/hooks/useSidebarState'
 import { useReducedMotion } from '@/components/Layout/hooks/useReducedMotion'
 import clsx from 'clsx'
+
+// Animation constants for consistency (300ms)
+const ANIMATION_DURATION_MS = 300
 
 interface DocsLayoutProps {
   children: React.ReactNode
@@ -56,6 +60,8 @@ export function DocsLayout({
   children,
   navigation,
 }: DocsLayoutProps) {
+  const pathname = usePathname()
+
   // Mobile sidebar state (separate from desktop)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -68,6 +74,40 @@ export function DocsLayout({
 
   // Respect reduced motion preferences
   const prefersReducedMotion = useReducedMotion()
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  // Handle mobile sidebar close (for navigation callback)
+  const handleMobileClose = useCallback(() => {
+    setMobileOpen(false)
+  }, [])
+
+  // Handle escape key to close mobile sidebar
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileOpen) {
+        setMobileOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [mobileOpen])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
 
   // Show skeleton during SSR hydration to prevent flash
   if (!sidebar.isMounted) {
@@ -86,13 +126,16 @@ export function DocsLayout({
   return (
     <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex py-8 relative">
-        {/* Mobile Sidebar Toggle */}
+        {/* Mobile Sidebar Toggle - Floating action button with glassmorphism */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className={clsx(
-            'lg:hidden fixed bottom-4 right-4 z-50 p-4',
-            'bg-brand-500 text-white rounded-full shadow-lg',
-            'hover:bg-brand-600 active:scale-95',
+            'lg:hidden fixed bottom-6 right-6 z-50 p-4',
+            // Glassmorphism styling with brand accent
+            'bg-blue-500/90 backdrop-blur-md text-white rounded-2xl',
+            'shadow-lg shadow-blue-500/25',
+            'hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/30',
+            'active:scale-95',
             prefersReducedMotion ? '' : 'transition-all duration-200'
           )}
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -102,24 +145,29 @@ export function DocsLayout({
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Desktop Sidebar Toggle */}
+        {/* Desktop Sidebar Toggle - Positioned at left edge when collapsed, near sidebar when visible */}
         <button
           onClick={sidebar.toggleVisibility}
           className={clsx(
             'hidden lg:flex items-center justify-center',
-            'fixed top-20 z-50 p-2 rounded-lg',
-            'bg-bg-secondary hover:bg-bg-tertiary border border-border',
-            'text-text-secondary hover:text-text-primary',
-            'shadow-sm hover:shadow-md',
+            'fixed top-20 z-40 p-2.5 rounded-xl',
+            // Glassmorphism styling
+            'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md',
+            'border border-slate-200/50 dark:border-slate-700/50',
+            'text-slate-600 dark:text-slate-400',
+            'hover:text-slate-900 dark:hover:text-slate-100',
+            'hover:bg-white dark:hover:bg-slate-800',
+            'shadow-lg shadow-slate-900/5 dark:shadow-slate-900/20',
+            'hover:shadow-xl hover:shadow-slate-900/10 dark:hover:shadow-slate-900/30',
             transitionClasses
           )}
           style={{
-            left: sidebar.visible ? `${sidebar.width + 8}px` : '16px',
+            left: sidebar.visible ? `${Math.min(sidebar.width + 24, 320)}px` : '24px',
           }}
           aria-label={sidebar.visible ? 'Hide sidebar' : 'Show sidebar'}
           aria-expanded={sidebar.visible}
           aria-controls="docs-sidebar"
-          title={`${sidebar.visible ? 'Hide' : 'Show'} sidebar (⌘B)`}
+          title={`${sidebar.visible ? 'Hide' : 'Show'} sidebar (Cmd+B)`}
         >
           {sidebar.visible ? (
             <PanelLeftClose className="w-5 h-5" />
@@ -205,36 +253,59 @@ export function DocsLayout({
           </div>
         )}
 
-        {/* Mobile Sidebar (Overlay) */}
+        {/* Mobile Sidebar (Overlay) - Glassmorphism styling with swipe support */}
         <aside
           id="docs-sidebar-mobile"
           className={clsx(
             'lg:hidden fixed top-16 left-0 z-40',
-            'h-[calc(100vh-4rem)] w-72 overflow-y-auto',
-            'bg-bg-primary border-r border-border',
+            'h-[calc(100vh-4rem)] w-80 max-w-[85vw] overflow-y-auto overflow-x-hidden',
+            'bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl',
+            'border-r border-slate-200/50 dark:border-slate-700/50',
+            'shadow-2xl shadow-slate-900/10 dark:shadow-slate-900/30',
+            // Smooth 300ms slide transition
             transformTransitionClasses,
             mobileOpen ? 'translate-x-0' : '-translate-x-full'
           )}
           aria-hidden={!mobileOpen}
           inert={!mobileOpen ? true : undefined}
+          // Touch swipe handling via CSS touch-action
+          style={{ touchAction: 'pan-y' }}
         >
-          <div className="p-6">
-            <Sidebar navigation={navigation} />
+          {/* Close button inside mobile sidebar for easy access */}
+          <div className="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-slate-700/50">
+            <span className="font-semibold text-text-primary">Navigation</span>
+            <button
+              onClick={handleMobileClose}
+              className={clsx(
+                'p-2 rounded-lg',
+                'text-text-secondary hover:text-text-primary',
+                'hover:bg-bg-secondary dark:hover:bg-slate-800',
+                'transition-colors duration-200',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
+              )}
+              aria-label="Close navigation menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="p-4">
+            <Sidebar navigation={navigation} onNavigate={handleMobileClose} />
           </div>
         </aside>
 
-        {/* Mobile Backdrop */}
-        {mobileOpen && (
-          <div
-            className={clsx(
-              'lg:hidden fixed inset-0 z-30 bg-black/50',
-              prefersReducedMotion ? '' : 'animate-fade-in'
-            )}
-            onClick={() => setMobileOpen(false)}
-            onKeyDown={(e) => e.key === 'Escape' && setMobileOpen(false)}
-            aria-hidden="true"
-          />
-        )}
+        {/* Mobile Backdrop - Blur effect with smooth transition */}
+        <div
+          className={clsx(
+            'lg:hidden fixed inset-0 z-30',
+            'bg-slate-900/30 dark:bg-slate-950/50 backdrop-blur-sm',
+            // Smooth 300ms fade transition
+            'transition-opacity duration-300 ease-in-out',
+            mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          )}
+          onClick={handleMobileClose}
+          aria-hidden="true"
+          role="presentation"
+        />
 
         {/* Main Content */}
         <main

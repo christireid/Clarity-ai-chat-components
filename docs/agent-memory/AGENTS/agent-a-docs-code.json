@@ -1,0 +1,29 @@
+{
+  "agent_id": "A",
+  "scope": [
+    "Inventory all public APIs, components, hooks, providers",
+    "Inventory all docs pages",
+    "Identify false claims and missing docs",
+    "Populate DOCS_CODE_COVERAGE_MAP.md",
+    "Flag required doc rewrites or deletions"
+  ],
+  "non_scope": [
+    "Do NOT modify UI or demos",
+    "Do NOT fix bugs directly",
+    "Do NOT change code, only audit"
+  ],
+  "current_focus": "Initial recon - scanning packages and docs structure",
+  "completed": [],
+  "todo_next": [
+    {"id": "A-001", "desc": "Scan packages/react for exported APIs", "why": "Core package", "dependencies": [], "risk": "low"},
+    {"id": "A-002", "desc": "Scan apps/docs/content for all doc pages", "why": "Map documentation", "dependencies": [], "risk": "low"},
+    {"id": "A-003", "desc": "Cross-reference APIs with docs", "why": "Find gaps", "dependencies": ["A-001", "A-002"], "risk": "medium"}
+  ],
+  "blocked": [],
+  "key_decisions": [],
+  "initial_recon": {
+    "top_5_risks": [],
+    "top_5_quick_wins": [],
+    "unknowns": []
+  }
+}

@@ -3,12 +3,19 @@
 /**
  * Simple skeleton components for docs site
  * These are local implementations used for the skeleton reference page
+ *
+ * Features:
+ * - GPU-accelerated animations using transform/opacity
+ * - Respects prefers-reduced-motion
+ * - Two variants: pulse (subtle) and shimmer (premium)
+ * - Smooth 1.5s animation cycle for natural feel
  */
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Animation variant: pulse (subtle opacity), shimmer (gradient sweep), or none */
   variant?: 'pulse' | 'shimmer' | 'none'
   width?: string | number
   height?: string | number
@@ -32,13 +39,17 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     full: 'rounded-full',
   }
 
+  // Base classes for GPU-accelerated rendering
+  const baseClasses = 'will-change-[opacity,transform] motion-reduce:animate-none'
+
   return (
     <div
       className={cn(
-        'bg-muted/60',
+        'bg-muted/60 relative overflow-hidden',
         roundedClasses[rounded],
-        variant === 'pulse' && 'animate-pulse',
-        variant === 'shimmer' && 'animate-pulse',
+        baseClasses,
+        variant === 'pulse' && 'animate-skeleton-pulse',
+        variant === 'shimmer' && 'animate-skeleton-shimmer',
         className
       )}
       style={{

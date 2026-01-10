@@ -120,7 +120,7 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased overflow-x-hidden">
         <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">

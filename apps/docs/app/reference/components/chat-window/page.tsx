@@ -5,7 +5,6 @@ import { ToastProvider, ChatWindow } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
@@ -844,12 +843,6 @@ function ChatWithAttachments() {
           <code>sessionTitle</code> to display properly.
         </p>
 
-        <Pagination
-          next={{
-            title: 'Message',
-            href: '/reference/components/message',
-          }}
-        />
       </>
     </ToastProvider>
   )

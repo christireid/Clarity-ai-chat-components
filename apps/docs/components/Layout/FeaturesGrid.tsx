@@ -33,7 +33,7 @@ export function FeaturesGrid({ features }: FeaturesGridProps) {
           key={index}
           variants={staggerItem}
           {...cardAnimation}
-          className="group relative p-6 rounded-xl border border-border bg-bg-primary hover:border-brand-500/50 transition-all hover:shadow-xl overflow-hidden cursor-pointer"
+          className="group relative p-6 rounded-xl border border-border bg-bg-primary hover:border-brand-400/60 transition-all hover:shadow-[0_20px_40px_-12px_rgba(59,130,246,0.15),0_8px_16px_-8px_rgba(59,130,246,0.1)] dark:hover:shadow-[0_20px_40px_-12px_rgba(96,165,250,0.2),0_8px_16px_-8px_rgba(96,165,250,0.15)] overflow-hidden cursor-pointer"
         >
           {/* Icon */}
           <motion.div

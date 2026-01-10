@@ -144,44 +144,53 @@ function InstallCommand({ command }: { command: string }) {
       <div className="relative group">
         <motion.div
           animate={copied ? { scale: [1, 1.02, 1] } : {}}
-          transition={{ duration: durations.normal }}
-          className="flex items-center gap-3 px-5 py-3 rounded-xl bg-bg-tertiary/80 backdrop-blur-sm border border-border hover:border-brand-300 transition-all shadow-lg"
+          transition={{ duration: durations.normal, type: 'tween' }}
+          className="rounded-xl bg-bg-tertiary/90 dark:bg-slate-800/90 backdrop-blur-sm border border-border hover:border-brand-300 transition-all shadow-lg overflow-hidden"
         >
-          <Terminal className="w-4 h-4 text-brand-500" />
-          <code className="font-mono text-sm text-text-primary">{command}</code>
-          <div className="relative">
-            <motion.button
-              onClick={copyToClipboard}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-1.5 rounded-md hover:bg-bg-secondary transition-colors"
-              aria-label="Copy to clipboard"
-            >
-              <AnimatePresence mode="wait">
-                {copied ? (
-                  <motion.div
-                    key="check"
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    exit={{ scale: 0, rotate: 180 }}
-                    transition={{ duration: durations.normal }}
-                  >
-                    <Check className="w-4 h-4 text-green-500" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="copy"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    transition={{ duration: durations.normal }}
-                  >
-                    <Copy className="w-4 h-4 text-text-secondary" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
-            <CopyConfetti show={showConfetti} />
+          {/* Terminal window chrome */}
+          <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border/50 bg-bg-secondary/50 dark:bg-slate-900/50">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+            <span className="ml-2 text-xs text-text-tertiary font-medium">Terminal</span>
+          </div>
+          <div className="flex items-center gap-3 px-5 py-3">
+            <Terminal className="w-4 h-4 text-brand-500" />
+            <code className="font-mono text-sm text-text-primary">{command}</code>
+            <div className="relative">
+              <motion.button
+                onClick={copyToClipboard}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-bg-secondary transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                aria-label="Copy to clipboard"
+              >
+                <AnimatePresence mode="wait">
+                  {copied ? (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{ duration: durations.normal }}
+                    >
+                      <Check className="w-4 h-4 text-green-500" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="copy"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      transition={{ duration: durations.normal }}
+                    >
+                      <Copy className="w-4 h-4 text-text-secondary" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+              <CopyConfetti show={showConfetti} />
+            </div>
           </div>
         </motion.div>
         <motion.div
@@ -319,11 +328,12 @@ function GitHubStarsBadge() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: durations.moderate }}
       whileHover={{ scale: 1.05 }}
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-secondary/80 border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:border-brand-300 transition-all"
+      className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full bg-bg-secondary/80 border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:border-brand-300 transition-all focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+      aria-label={`Star us on GitHub - ${stars?.toLocaleString() ?? 'loading'} stars`}
     >
-      <Github className="w-4 h-4" />
-      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-      <span>{stars?.toLocaleString() ?? '—'}</span>
+      <Github className="w-4 h-4" aria-hidden="true" />
+      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+      <span aria-hidden="true">{stars?.toLocaleString() ?? '—'}</span>
     </motion.a>
   )
 }
@@ -337,7 +347,7 @@ export function HeroSection({
   showGitHubStars = true,
 }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden min-h-[90vh] flex flex-col justify-center">
       {/* 3D Particle Animation Background */}
       <HeroParticlesLazy
         interactionMode="hybrid"
@@ -345,28 +355,38 @@ export function HeroSection({
         bloomIntensity={1.8}
       />
 
-      {/* Animated Background Gradient (subtle overlay) */}
+      {/* Animated Background Gradient (subtle overlay) - consistent brand colors */}
       <motion.div
         animate={{
           background: [
-            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
-            'radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)',
-            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
+            'radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
+            'radial-gradient(ellipse 80% 50% at 80% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 60%)',
+            'radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
           ],
         }}
         transition={{
-          duration: durations.slower,
+          duration: 8,
           repeat: Infinity,
           ease: 'linear',
         }}
-        className="absolute inset-0 opacity-50"
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
       />
 
-      {/* Animated Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] opacity-50" />
+      {/* Secondary gradient layer for depth */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-bg-primary/30 to-bg-primary pointer-events-none"
+        aria-hidden="true"
+      />
+
+      {/* Animated Grid - subtle pattern */}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 dark:opacity-20"
+        aria-hidden="true"
+      />
 
       {/* Content */}
-      <div className="container-docs relative py-20 md:py-28">
+      <div className="container-docs relative z-10 py-16 sm:py-20 md:py-28">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge + GitHub Stars */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
@@ -399,7 +419,7 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold mb-6 text-balance"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-balance leading-tight"
           >
             {title}
           </motion.h1>
@@ -409,7 +429,7 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.3 }}
-            className="text-xl md:text-2xl text-text-secondary mb-8 text-balance max-w-3xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 text-balance max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
           >
             {description}
           </motion.p>
@@ -427,7 +447,7 @@ export function HeroSection({
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href={primaryCta.href}
-                className="group relative inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl overflow-hidden"
+                className="group relative inline-flex items-center gap-2 px-8 py-4 min-h-[48px] bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl overflow-hidden focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary focus-visible:outline-none"
               >
                 <motion.div
                   className="absolute inset-0 bg-white/20"
@@ -447,7 +467,7 @@ export function HeroSection({
               >
                 <Link
                   href={secondaryCta.href}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-bg-secondary hover:bg-bg-tertiary text-text-primary rounded-lg font-semibold transition-all border border-border hover:border-brand-300 hover:shadow-md"
+                  className="inline-flex items-center gap-2 px-8 py-4 min-h-[48px] bg-bg-secondary hover:bg-bg-tertiary text-text-primary rounded-lg font-semibold transition-all border border-border hover:border-brand-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   {secondaryCta.text}
                 </Link>
@@ -460,7 +480,7 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.5 }}
-            className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto"
+            className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 max-w-3xl mx-auto px-2 sm:px-0"
           >
             {[
               { value: 70, label: 'Components', suffix: '+' },
@@ -477,7 +497,7 @@ export function HeroSection({
                   delay: 0.6 + index * 0.1,
                 }}
                 whileHover={{ scale: 1.05, y: -3 }}
-                className="group relative p-4 sm:p-5 rounded-xl bg-gradient-to-br from-bg-secondary to-bg-tertiary border border-border hover:border-brand-300 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-4 sm:p-5 rounded-xl bg-gradient-to-br from-bg-secondary to-bg-tertiary border border-border hover:border-brand-400/70 transition-all duration-300 hover:shadow-[0_8px_24px_-4px_rgba(59,130,246,0.12),0_0_0_1px_rgba(59,130,246,0.1)] dark:hover:shadow-[0_8px_24px_-4px_rgba(96,165,250,0.15),0_0_0_1px_rgba(96,165,250,0.15)]"
               >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
@@ -485,7 +505,7 @@ export function HeroSection({
                 />
                 <div className="relative z-10">
                   <motion.div
-                    className="text-2xl sm:text-3xl font-bold text-brand-500 mb-1"
+                    className="text-2xl sm:text-3xl font-extrabold text-brand-500 mb-1 tracking-tight"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
                   >
@@ -494,7 +514,7 @@ export function HeroSection({
                       <span className="text-lg">{stat.suffix}</span>
                     )}
                   </motion.div>
-                  <div className="text-xs sm:text-sm text-text-secondary font-medium">
+                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
                     {stat.label}
                   </div>
                 </div>

@@ -25,6 +25,8 @@
     "test:coverage": "NODE_OPTIONS='--max-old-space-size=4096' turbo run test -- --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:smoke": "pnpm --filter @clarity-chat/docs test:smoke",
+    "test:smoke:ui": "pnpm --filter @clarity-chat/docs test:smoke:ui",
     "// === CODE QUALITY ===": "",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",

@@ -74,17 +74,21 @@ export function ComponentPreview({
           viewport={{ once: true }}
           transition={{ duration: 0.3, delay: 0.25 }}
           className="flex border-t border-border relative"
+          role="tablist"
+          aria-label="Preview and code tabs"
         >
           <motion.button
             onClick={() => setActiveTab('preview')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className={clsx(
-              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative',
+              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
               activeTab === 'preview'
                 ? 'border-brand-500 text-brand-600 dark:text-brand-400'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             )}
+            aria-selected={activeTab === 'preview'}
+            role="tab"
           >
             <motion.div
               animate={activeTab === 'preview' ? { scale: [1, 1.2, 1] } : {}}
@@ -99,11 +103,13 @@ export function ComponentPreview({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className={clsx(
-              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative',
+              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
               activeTab === 'code'
                 ? 'border-brand-500 text-brand-600 dark:text-brand-400'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             )}
+            aria-selected={activeTab === 'code'}
+            role="tab"
           >
             <motion.div
               animate={activeTab === 'code' ? { scale: [1, 1.2, 1] } : {}}

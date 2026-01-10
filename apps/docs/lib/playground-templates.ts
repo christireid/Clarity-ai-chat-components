@@ -20,27 +20,25 @@ export default function App() {
   const [messages, setMessages] = useState([
     { id: '1', role: 'assistant', content: 'Hello! How can I help you today?' }
   ])
-  const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSend = async (content: string) => {
-    const userMessage = { 
-      id: Date.now().toString(), 
-      role: 'user' as const, 
-      content 
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user' as const,
+      content
     }
-    
+
     setMessages(prev => [...prev, userMessage])
-    setInput('')
     setIsLoading(true)
 
     // Simulate streaming response
-    const assistantMessage = { 
-      id: (Date.now() + 1).toString(), 
-      role: 'assistant' as const, 
-      content: '' 
+    const assistantMessage = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant' as const,
+      content: ''
     }
-    
+
     setMessages(prev => [...prev, assistantMessage])
 
     const response = \`This is a simulated response to: "\${content}"\`
@@ -60,12 +58,7 @@ export default function App() {
     <div className="h-[600px] border rounded-lg">
       <ChatWindow
         messages={messages}
-        input={input}
-        onInputChange={(e) => setInput(e.target.value)}
-        onSubmit={(e) => {
-          e.preventDefault()
-          if (input.trim()) handleSend(input)
-        }}
+        onSendMessage={handleSend}
         isLoading={isLoading}
         placeholder="Type a message..."
       />
@@ -378,15 +371,10 @@ export default function App() {
       return \`Found results for: \${query}\`
     },
     calculate: (expression: string) => {
-      try {
-        // Safe math evaluation - only allows numbers and basic operators
-        const sanitized = expression.replace(/[^0-9+\\-*/().\\s]/g, '')
-        if (sanitized !== expression) return 'Invalid expression'
-        const result = new Function(\`"use strict"; return (\${sanitized})\`)()
-        return typeof result === 'number' && isFinite(result) ? \`Result: \${result}\` : 'Invalid result'
-      } catch {
-        return 'Invalid expression'
-      }
+      // Safe math evaluation using recursive descent parser (CSP-compliant)
+      // Does NOT use eval() or new Function() - no arbitrary code execution
+      const result = safeMathEval(expression)
+      return result !== null ? \`Result: \${result}\` : 'Invalid expression'
     }
   }
 

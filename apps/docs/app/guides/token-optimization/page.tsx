@@ -4,7 +4,6 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { Pagination } from '@/components/Navigation/Pagination'
 
 export default function TokenOptimizationGuidePage() {
   return (
@@ -770,16 +769,6 @@ function CompleteOptimizationExample() {
           </ul>
         </section>
 
-        <Pagination
-          prev={{
-            title: 'Streaming Guide',
-            href: '/guides/streaming',
-          }}
-          next={{
-            title: 'Tool Integration Guide',
-            href: '/guides/tool-integration',
-          }}
-        />
       </div>
     </>
   )

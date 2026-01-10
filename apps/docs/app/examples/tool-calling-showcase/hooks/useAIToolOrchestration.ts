@@ -143,7 +143,8 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
     })
 
     setConvertedMessages(converted)
-  }, [aiMessages, debugEvents])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- debugEvents.addEvent is stable, including debugEvents causes infinite loop
+  }, [aiMessages])
 
   // Send message
   const sendMessage = useCallback(

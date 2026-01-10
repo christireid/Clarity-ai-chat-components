@@ -1,0 +1,29 @@
+{
+  "agent_id": "B",
+  "scope": [
+    "Analyze docs site structure",
+    "Remove duplication across sections",
+    "Design minimal, intuitive IA",
+    "Define sidebar structure and routes",
+    "Define redirect/migration plan"
+  ],
+  "non_scope": [
+    "Do NOT implement code fixes",
+    "Do NOT modify component styling",
+    "Do NOT change demos"
+  ],
+  "current_focus": "Initial recon - analyzing current site structure",
+  "completed": [],
+  "todo_next": [
+    {"id": "B-001", "desc": "Map current route structure", "why": "Understand baseline", "dependencies": [], "risk": "low"},
+    {"id": "B-002", "desc": "Identify duplicate content", "why": "Reduce confusion", "dependencies": ["B-001"], "risk": "medium"},
+    {"id": "B-003", "desc": "Design new IA hierarchy", "why": "Core deliverable", "dependencies": ["B-002"], "risk": "medium"}
+  ],
+  "blocked": [],
+  "key_decisions": [],
+  "initial_recon": {
+    "top_5_risks": [],
+    "top_5_quick_wins": [],
+    "unknowns": []
+  }
+}

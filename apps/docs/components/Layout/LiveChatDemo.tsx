@@ -300,7 +300,7 @@ export function LiveChatDemo() {
               onClick={handleReset}
               whileHover={{ rotate: 180, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none"
+              className="p-2.5 min-w-[44px] min-h-[44px] rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none flex items-center justify-center"
               title="Reset Demo"
               aria-label="Reset chat demo"
             >
@@ -502,13 +502,10 @@ export function LiveChatDemo() {
                   {SUGGESTIONS.map((suggestion, idx) => (
                     <motion.button
                       key={idx}
-                      whileHover={{
-                        scale: 1.05,
-                        backgroundColor: 'var(--brand-50)',
-                      }}
+                      whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleSend(suggestion.text)}
-                      className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary border border-border rounded-full text-xs font-medium text-text-secondary hover:text-brand-600 hover:border-brand-200 transition-colors whitespace-nowrap shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+                      className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] bg-bg-secondary hover:bg-brand-50 dark:hover:bg-brand-900/30 border border-border rounded-full text-sm font-medium text-text-secondary hover:text-brand-600 dark:hover:text-brand-400 hover:border-brand-200 dark:hover:border-brand-700 transition-colors whitespace-nowrap shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
                     >
                       <suggestion.icon className="w-3 h-3" />
                       {suggestion.text}
@@ -528,8 +525,14 @@ export function LiveChatDemo() {
               handleSend()
             }}
             className="flex gap-2 relative group/input"
+            role="search"
+            aria-label="Chat with Clarity assistant"
           >
+            <label htmlFor="chat-demo-input" className="sr-only">
+              Type your message to the Clarity Chat Assistant
+            </label>
             <input
+              id="chat-demo-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -539,10 +542,11 @@ export function LiveChatDemo() {
                   : 'Ask about components, hooks, theming...'
               }
               disabled={isTyping || isStreaming}
-              className={`flex-1 px-4 py-3 pl-4 pr-12 rounded-xl border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 transition-all shadow-sm disabled:opacity-50 ${
+              aria-describedby="chat-demo-status"
+              className={`flex-1 px-4 py-3.5 min-h-[48px] pl-4 pr-12 rounded-xl border bg-bg-secondary text-text-primary placeholder:text-text-tertiary focus:outline-none focus-visible:ring-2 transition-all shadow-sm disabled:opacity-50 ${
                 isError
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-border focus:border-brand-500 focus:ring-brand-500/50'
+                  ? 'border-red-300 focus:border-red-500 focus-visible:ring-red-200'
+                  : 'border-border focus:border-brand-500 focus-visible:ring-brand-500/50'
               }`}
             />
             <AnimatePresence mode="wait">
@@ -556,7 +560,7 @@ export function LiveChatDemo() {
                   disabled={isTyping || isStreaming}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="absolute right-2 top-1.5 bottom-1.5 aspect-square bg-brand-500 hover:bg-brand-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  className="absolute right-1 top-1 bottom-1 w-[46px] bg-brand-500 hover:bg-brand-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
                   aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
@@ -574,13 +578,14 @@ export function LiveChatDemo() {
               )}
             </AnimatePresence>
           </form>
-          <div className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5">
+          <div id="chat-demo-status" className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5" role="status" aria-live="polite">
             <span
               className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`}
+              aria-hidden="true"
             />
             {isError
               ? 'Connection interrupted'
-              : 'Powered by Gemini • Reads entire documentation in real-time'}
+              : 'Powered by Gemini - Reads entire documentation in real-time'}
           </div>
         </div>
       </motion.div>

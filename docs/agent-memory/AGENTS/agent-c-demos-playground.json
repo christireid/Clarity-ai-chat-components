@@ -1,0 +1,29 @@
+{
+  "agent_id": "C",
+  "scope": [
+    "Fix or replace broken playground",
+    "Ensure all demos render and accept input",
+    "Implement fallback live-render system if needed",
+    "Ensure multi-provider support",
+    "Implement Setup Required UI for missing keys"
+  ],
+  "non_scope": [
+    "Do NOT change docs content",
+    "Do NOT modify sidebar/navigation",
+    "Do NOT audit code coverage"
+  ],
+  "current_focus": "Initial recon - diagnosing playground failure",
+  "completed": [],
+  "todo_next": [
+    {"id": "C-001", "desc": "Identify playground component location", "why": "Find root cause", "dependencies": [], "risk": "low"},
+    {"id": "C-002", "desc": "Diagnose playground failure mode", "why": "Decide fix vs replace", "dependencies": ["C-001"], "risk": "high"},
+    {"id": "C-003", "desc": "Implement fix or fallback", "why": "Core deliverable", "dependencies": ["C-002"], "risk": "high"}
+  ],
+  "blocked": [],
+  "key_decisions": [],
+  "initial_recon": {
+    "top_5_risks": [],
+    "top_5_quick_wins": [],
+    "unknowns": []
+  }
+}

@@ -14,6 +14,17 @@ import type {
   ToolUseProgress,
   ToolResult,
 } from '../types'
+
+/**
+ * Provider status returned from health check endpoint
+ */
+interface ProviderInfo {
+  active: string
+  model: string
+  isDemoMode: boolean
+  summary: string
+  available: Array<{ name: string; model: string }>
+}
 import {
   SESSION_ID_KEY,
   MESSAGES_KEY,
@@ -52,6 +63,9 @@ export function useDocsChat() {
   const [toolResults, setToolResults] = useState<Map<string, ToolResult>>(
     new Map()
   )
+  // Provider status - tracks which AI provider is active
+  const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -132,6 +146,46 @@ export function useDocsChat() {
       abortControllerRef.current?.abort()
     }
   }, [])
+
+  // Fetch provider status on mount with AbortController for cleanup
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function fetchProviderStatus() {
+      try {
+        const response = await fetch('/api/docs-assistant', {
+          signal: controller.signal,
+        })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.provider) {
+            setProviderInfo(data.provider)
+            setApiError(null)
+            // Show demo mode notification on first load
+            if (data.provider.isDemoMode) {
+              toast.info(
+                'Running in demo mode. Configure an API key for full AI functionality.',
+                'Demo Mode',
+                8000
+              )
+            }
+          }
+        }
+      } catch (error) {
+        // Ignore abort errors - component unmounted
+        if (error instanceof Error && error.name === 'AbortError') {
+          return
+        }
+        console.error('Failed to fetch provider status:', error)
+        setApiError('Unable to connect to AI service')
+      }
+    }
+    fetchProviderStatus()
+
+    return () => {
+      controller.abort()
+    }
+  }, [toast])
 
   // Throttled message update for streaming
   const updateStreamingMessage = useThrottledCallback(
@@ -705,6 +759,10 @@ export function useDocsChat() {
     suggestedFollowUps,
     currentToolUse,
     toolResults,
+    // Provider info for UI display
+    providerInfo,
+    apiError,
+    isDemoMode: providerInfo?.isDemoMode ?? false,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,

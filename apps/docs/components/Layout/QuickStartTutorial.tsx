@@ -84,17 +84,17 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   }, [code])
 
   return (
-    <div className="relative group rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-700">
+    <div className="relative group rounded-lg overflow-hidden border border-slate-700 dark:border-slate-600">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-900 border-b border-slate-700 dark:border-slate-600">
         <div className="flex items-center gap-2">
-          <Terminal className="w-3.5 h-3.5 text-gray-400" />
-          <span className="text-xs text-gray-400 font-mono">{language}</span>
+          <Terminal className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-xs text-slate-400 font-mono">{language}</span>
         </div>
         <motion.button
           onClick={copyToClipboard}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="p-1.5 rounded hover:bg-gray-700 transition-colors"
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-slate-700 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none"
           aria-label="Copy code"
         >
           <AnimatePresence mode="wait">
@@ -114,14 +114,17 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
               >
-                <Copy className="w-4 h-4 text-gray-400" />
+                <Copy className="w-4 h-4 text-slate-400" />
               </motion.div>
             )}
           </AnimatePresence>
         </motion.button>
       </div>
-      <pre className="p-4 bg-gray-950 overflow-x-auto">
-        <code className="text-sm font-mono text-gray-100 whitespace-pre">
+      <pre
+        className="p-4 overflow-x-auto rounded-b-lg"
+        style={{ backgroundColor: 'var(--color-code-bg)', margin: 0, border: 'none' }}
+      >
+        <code className="text-sm font-mono text-slate-100 whitespace-pre">
           {code}
         </code>
       </pre>
@@ -177,11 +180,12 @@ export function QuickStartTutorial() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  'w-full flex items-start gap-4 p-4 rounded-xl text-left transition-all duration-300',
+                  'w-full flex items-start gap-4 p-4 min-h-[72px] rounded-xl text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
                   activeStep === step.id
                     ? 'bg-bg-primary border-2 border-brand-500 shadow-lg shadow-brand-500/10'
                     : 'bg-bg-primary/50 border-2 border-transparent hover:border-border hover:bg-bg-primary'
                 )}
+                aria-pressed={activeStep === step.id}
               >
                 <div
                   className={cn(
@@ -281,19 +285,30 @@ export function QuickStartTutorial() {
             </AnimatePresence>
 
             {/* Progress indicator */}
-            <div className="flex items-center justify-center gap-2 mt-4">
+            <div className="flex items-center justify-center gap-3 mt-4" role="tablist" aria-label="Tutorial steps">
               {steps.map((step) => (
                 <button
                   key={step.id}
                   onClick={() => setActiveStep(step.id)}
                   className={cn(
-                    'w-2 h-2 rounded-full transition-all',
+                    'min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
                     activeStep === step.id
-                      ? 'w-6 bg-brand-500'
-                      : 'bg-border hover:bg-text-tertiary'
+                      ? 'bg-brand-500'
+                      : 'bg-transparent hover:bg-bg-tertiary'
                   )}
-                  aria-label={`Go to step ${step.id}`}
-                />
+                  aria-label={`Go to step ${step.id}: ${step.title}`}
+                  aria-selected={activeStep === step.id}
+                  role="tab"
+                >
+                  <span
+                    className={cn(
+                      'block rounded-full transition-all',
+                      activeStep === step.id
+                        ? 'w-6 h-2 bg-white'
+                        : 'w-2 h-2 bg-border'
+                    )}
+                  />
+                </button>
               ))}
             </div>
           </motion.div>

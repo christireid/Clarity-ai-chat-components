@@ -4,7 +4,6 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { Pagination } from '@/components/Navigation/Pagination'
 
 export default function MemoryGuidePage() {
   return (
@@ -823,16 +822,6 @@ function MemoryStats() {
           </ul>
         </section>
 
-        <Pagination
-          prev={{
-            title: 'Streaming Guide',
-            href: '/guides/streaming',
-          }}
-          next={{
-            title: 'Token Optimization Guide',
-            href: '/guides/token-optimization',
-          }}
-        />
       </div>
     </>
   )

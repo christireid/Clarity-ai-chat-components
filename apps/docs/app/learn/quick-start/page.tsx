@@ -2,7 +2,6 @@
 
 import { ToastProvider } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
@@ -613,12 +612,6 @@ export default function CustomChat() {
           ]}
         />
 
-        <Pagination
-          next={{
-            title: 'Installation',
-            href: '/learn/installation',
-          }}
-        />
       </>
     </ToastProvider>
   )

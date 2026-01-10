@@ -28,45 +28,45 @@ interface CalloutProps {
 const calloutConfig = {
   info: {
     icon: Info,
-    bgColor: 'bg-blue-50 dark:bg-blue-950/30',
-    borderColor: 'border-blue-200 dark:border-blue-800',
+    bgColor: 'bg-blue-50/80 dark:bg-blue-950/40 backdrop-blur-sm',
+    borderColor: 'border-blue-200/60 dark:border-blue-800/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
     titleColor: 'text-blue-900 dark:text-blue-100',
   },
   warning: {
     icon: AlertTriangle,
-    bgColor: 'bg-yellow-50 dark:bg-yellow-950/30',
-    borderColor: 'border-yellow-200 dark:border-yellow-800',
-    iconColor: 'text-yellow-600 dark:text-yellow-400',
-    titleColor: 'text-yellow-900 dark:text-yellow-100',
+    bgColor: 'bg-amber-50/80 dark:bg-amber-950/40 backdrop-blur-sm',
+    borderColor: 'border-amber-200/60 dark:border-amber-800/60',
+    iconColor: 'text-amber-600 dark:text-amber-400',
+    titleColor: 'text-amber-900 dark:text-amber-100',
   },
   error: {
     icon: AlertCircle,
-    bgColor: 'bg-red-50 dark:bg-red-950/30',
-    borderColor: 'border-red-200 dark:border-red-800',
+    bgColor: 'bg-red-50/80 dark:bg-red-950/40 backdrop-blur-sm',
+    borderColor: 'border-red-200/60 dark:border-red-800/60',
     iconColor: 'text-red-600 dark:text-red-400',
     titleColor: 'text-red-900 dark:text-red-100',
   },
   success: {
     icon: CheckCircle,
-    bgColor: 'bg-green-50 dark:bg-green-950/30',
-    borderColor: 'border-green-200 dark:border-green-800',
-    iconColor: 'text-green-600 dark:text-green-400',
-    titleColor: 'text-green-900 dark:text-green-100',
+    bgColor: 'bg-emerald-50/80 dark:bg-emerald-950/40 backdrop-blur-sm',
+    borderColor: 'border-emerald-200/60 dark:border-emerald-800/60',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
+    titleColor: 'text-emerald-900 dark:text-emerald-100',
   },
   tip: {
     icon: Lightbulb,
-    bgColor: 'bg-purple-50 dark:bg-purple-950/30',
-    borderColor: 'border-purple-200 dark:border-purple-800',
-    iconColor: 'text-purple-600 dark:text-purple-400',
-    titleColor: 'text-purple-900 dark:text-purple-100',
+    bgColor: 'bg-violet-50/80 dark:bg-violet-950/40 backdrop-blur-sm',
+    borderColor: 'border-violet-200/60 dark:border-violet-800/60',
+    iconColor: 'text-violet-600 dark:text-violet-400',
+    titleColor: 'text-violet-900 dark:text-violet-100',
   },
   quote: {
     icon: MessageSquare,
-    bgColor: 'bg-gray-50 dark:bg-gray-950/30',
-    borderColor: 'border-gray-200 dark:border-gray-800',
-    iconColor: 'text-gray-600 dark:text-gray-400',
-    titleColor: 'text-gray-900 dark:text-gray-100',
+    bgColor: 'bg-slate-50/80 dark:bg-slate-900/40 backdrop-blur-sm',
+    borderColor: 'border-slate-200/60 dark:border-slate-700/60',
+    iconColor: 'text-slate-600 dark:text-slate-400',
+    titleColor: 'text-slate-900 dark:text-slate-100',
   },
 }
 
@@ -100,8 +100,8 @@ export function Callout({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'not-prose my-6 p-5 rounded-xl border-2 shadow-sm transition-all duration-200',
-        'hover:shadow-md hover:scale-[1.01]',
+        'not-prose my-6 p-5 rounded-xl border transition-all duration-300',
+        'shadow-sm hover:shadow-md',
         config.bgColor,
         config.borderColor,
         className

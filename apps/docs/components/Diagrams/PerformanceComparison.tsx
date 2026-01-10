@@ -102,15 +102,15 @@ export function PerformanceComparison() {
 
                 {/* Arrow */}
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 h-0.5 bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="flex-1 h-0.5 bg-slate-200 dark:bg-slate-600"></div>
                   <motion.div
                     animate={{ y: [0, 3, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
+                    transition={{ duration: 1, repeat: Infinity, type: 'tween' }}
                     className={colorMap[metric.color as keyof typeof colorMap].text}
                   >
                     ↓
                   </motion.div>
-                  <div className="flex-1 h-0.5 bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="flex-1 h-0.5 bg-slate-200 dark:bg-slate-600"></div>
                 </div>
 
                 {/* After */}

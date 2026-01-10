@@ -1,8 +1,8 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
-import { fadeIn, slideUp, springs, durations } from '@/lib/animations'
+import { durations } from '@/lib/animations'
 import { ReactNode } from 'react'
 
 interface PageTransitionProps {
@@ -25,6 +25,9 @@ interface PageTransitionProps {
  *
  * Uses the animation library for consistent transitions across the site.
  * Leverages Next.js usePathname to detect route changes.
+ * Respects prefers-reduced-motion for accessibility.
+ *
+ * Performance: Uses GPU-accelerated properties (transform, opacity)
  *
  * @example
  * ```tsx
@@ -40,7 +43,9 @@ export function PageTransition({
   duration = durations.normal,
 }: PageTransitionProps) {
   const pathname = usePathname()
+  const shouldReduceMotion = useReducedMotion()
 
+  // Full animation variants
   const variants = {
     fade: {
       initial: { opacity: 0 },
@@ -59,6 +64,19 @@ export function PageTransition({
     },
   }
 
+  // Reduced motion variants - opacity only
+  const reducedVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  }
+
+  // Use reduced variants when user prefers reduced motion
+  const activeVariants = shouldReduceMotion ? reducedVariants : variants[mode]
+
+  // Faster duration for reduced motion
+  const activeDuration = shouldReduceMotion ? 0.1 : duration
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -66,10 +84,10 @@ export function PageTransition({
         initial="initial"
         animate="animate"
         exit="exit"
-        variants={variants[mode]}
+        variants={activeVariants}
         transition={{
-          duration,
-          ease: springs.smooth.ease,
+          duration: activeDuration,
+          ease: [0.4, 0, 0.2, 1], // Standard easing curve
         }}
       >
         {children}
@@ -82,6 +100,7 @@ export function PageTransition({
  * PageSection - Animated section for within-page content
  *
  * Creates staggered animations for page sections using the animation library.
+ * Respects prefers-reduced-motion for accessibility.
  *
  * @example
  * ```tsx
@@ -97,22 +116,28 @@ interface PageSectionProps {
   className?: string
 }
 
+const fadeInVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+}
+
 export function PageSection({
   children,
   delay = 0,
   className,
 }: PageSectionProps) {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <motion.div
       className={className}
-      variants={fadeIn}
+      variants={fadeInVariants}
       initial="initial"
       animate="animate"
-      custom={delay}
       transition={{
-        delay,
-        duration: durations.normal,
-        ease: springs.smooth.ease,
+        delay: shouldReduceMotion ? 0 : delay,
+        duration: shouldReduceMotion ? 0.1 : durations.normal,
+        ease: [0.4, 0, 0.2, 1],
       }}
     >
       {children}

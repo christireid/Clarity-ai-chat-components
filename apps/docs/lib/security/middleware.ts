@@ -19,6 +19,7 @@ export class RateLimiter {
   private readonly windowMs = 60 * 1000 // 1 minute
   private readonly maxRequests = 100
   private readonly cleanupInterval = 5 * 60 * 1000 // 5 minutes
+  private readonly maxEntries = 10000 // Prevent unbounded memory growth
 
   private constructor() {
     // Cleanup old entries periodically
@@ -44,6 +45,10 @@ export class RateLimiter {
     const entry = this.requests.get(identifier)
 
     if (!entry) {
+      // Evict oldest entry if at capacity to prevent memory leak
+      if (this.requests.size >= this.maxEntries) {
+        this.evictOldest()
+      }
       // First request
       this.requests.set(identifier, {
         count: 1,
@@ -92,6 +97,25 @@ export class RateLimiter {
       if (now > entry.resetTime + this.windowMs) {
         this.requests.delete(identifier)
       }
+    }
+  }
+
+  /**
+   * Evict oldest entry to make room for new one (LRU-style)
+   */
+  private evictOldest() {
+    let oldestKey: string | null = null
+    let oldestTime = Infinity
+
+    for (const [key, entry] of this.requests.entries()) {
+      if (entry.resetTime < oldestTime) {
+        oldestTime = entry.resetTime
+        oldestKey = key
+      }
+    }
+
+    if (oldestKey) {
+      this.requests.delete(oldestKey)
     }
   }
 }

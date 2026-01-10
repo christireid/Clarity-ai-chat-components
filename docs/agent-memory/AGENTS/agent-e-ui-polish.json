@@ -1,0 +1,30 @@
+{
+  "agent_id": "E",
+  "scope": [
+    "Fix layout issues (duplicated Next/Previous)",
+    "Fix sidebar toggle position",
+    "Standardize code rendering and syntax highlighting",
+    "Enforce scroll/overflow rules",
+    "Apply glassmorphism + shadcn/ui influence",
+    "Ensure responsive behavior"
+  ],
+  "non_scope": [
+    "Do NOT change content or docs text",
+    "Do NOT modify API functionality",
+    "Do NOT change route structure"
+  ],
+  "current_focus": "Initial recon - cataloging layout and code rendering issues",
+  "completed": [],
+  "todo_next": [
+    {"id": "E-001", "desc": "Find all layout/nav components", "why": "Identify duplicates", "dependencies": [], "risk": "low"},
+    {"id": "E-002", "desc": "Identify code block components", "why": "Standardize rendering", "dependencies": [], "risk": "low"},
+    {"id": "E-003", "desc": "Fix highest-impact UI issues", "why": "Immediate improvement", "dependencies": ["E-001", "E-002"], "risk": "medium"}
+  ],
+  "blocked": [],
+  "key_decisions": [],
+  "initial_recon": {
+    "top_5_risks": [],
+    "top_5_quick_wins": [],
+    "unknowns": []
+  }
+}

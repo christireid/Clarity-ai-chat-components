@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, ReactNode } from 'react'
+import { useState, ReactNode, useId } from 'react'
 
 interface CollapsibleSectionProps {
   title: string
@@ -18,16 +18,20 @@ export function CollapsibleSection({
   badge,
 }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
+  const contentId = useId()
+  const headingId = useId()
 
   return (
     <div className={`border rounded-lg overflow-hidden ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-muted transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
         aria-expanded={isOpen}
+        aria-controls={contentId}
+        id={headingId}
       >
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold">{title}</h3>
+          <span className="font-semibold">{title}</span>
           {badge && (
             <span className="px-2 py-0.5 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded text-xs font-medium">
               {badge}
@@ -49,6 +53,10 @@ export function CollapsibleSection({
 
       {/* CSS Grid animation technique for smooth height transition */}
       <div
+        id={contentId}
+        role="region"
+        aria-labelledby={headingId}
+        hidden={!isOpen}
         className="grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none"
         style={{
           gridTemplateRows: isOpen ? '1fr' : '0fr',

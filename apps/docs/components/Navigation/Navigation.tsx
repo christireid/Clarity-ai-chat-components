@@ -28,9 +28,13 @@ import {
   AccessibilityMenu,
 } from '../Layout/AccessibilityMenu'
 import clsx from 'clsx'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { toast } from '@/lib/toast'
 import { durations } from '@/lib/animations'
+
+// Animation constants for consistency (300ms)
+const ANIMATION_DURATION = 0.3
+const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
 const navigation = [
   { name: 'Demos', href: '/demos', icon: Play },
@@ -50,10 +54,16 @@ export function Navigation() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   // Handle keyboard shortcut for search (Cmd+K or Ctrl+K)
   useEffect(() => {
@@ -105,7 +115,7 @@ export function Navigation() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-bg-primary/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b bg-[var(--glass-medium-bg)] backdrop-blur-[var(--glass-medium-blur)] backdrop-saturate-150 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.2)] border-[var(--glass-border-subtle)] transition-all duration-300">
         <nav className="container-docs" aria-label="Main navigation">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -141,8 +151,9 @@ export function Navigation() {
                   >
                     <Link
                       href={item.href}
+                      aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
                       className={clsx(
-                        'relative px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        'relative px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
                         pathname?.startsWith(item.href)
                           ? 'bg-bg-tertiary text-brand-500'
                           : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
@@ -155,6 +166,7 @@ export function Navigation() {
                           initial={{ scaleX: 0 }}
                           whileHover={{ scaleX: 1 }}
                           transition={{ duration: durations.normal }}
+                          aria-hidden="true"
                         />
                       )}
                     </Link>
@@ -168,44 +180,63 @@ export function Navigation() {
               {/* Search */}
               <motion.button
                 onClick={() => setSearchOpen(true)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-bg-secondary hover:bg-bg-tertiary transition-colors text-sm text-text-secondary hover:shadow-sm"
-                aria-label="Search documentation"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                className={clsx(
+                  'hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg',
+                  'border border-border/50 dark:border-slate-700/50',
+                  'bg-bg-secondary/80 dark:bg-slate-800/50',
+                  'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
+                  'text-sm text-text-secondary hover:text-text-primary',
+                  'transition-all duration-300 ease-in-out',
+                  'hover:shadow-sm hover:border-brand-500/30',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2'
+                )}
+                aria-label="Search documentation (Press Cmd+K)"
               >
-                <Search className="w-4 h-4" />
-                <span>Search</span>
-                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-bg-primary px-1.5 font-mono text-xs">
-                  <span className="text-xs">⌘</span>K
+                <Search className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden md:inline">Search docs...</span>
+                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border/50 dark:border-slate-600 bg-bg-primary dark:bg-slate-800 px-1.5 font-mono text-xs text-text-tertiary">
+                  <span className="text-xs">Cmd</span>K
                 </kbd>
               </motion.button>
 
               {/* Mobile Search */}
               <motion.button
                 onClick={() => setSearchOpen(true)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="sm:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label="Search"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                className={clsx(
+                  'sm:hidden p-2 rounded-lg',
+                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
+                  'transition-colors duration-300',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
+                )}
+                aria-label="Search documentation"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5" aria-hidden="true" />
               </motion.button>
 
               {/* Theme Toggle */}
               <motion.button
                 onClick={cycleTheme}
-                whileHover={{ scale: 1.1, rotate: 15 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label="Cycle through themes: light, dark, and system"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 15 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                className={clsx(
+                  'p-2 rounded-lg',
+                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
+                  'transition-colors duration-300',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
+                )}
+                aria-label={`Current theme: ${mounted ? theme : 'system'}. Click to cycle through themes: light, dark, and system`}
               >
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={theme}
-                    initial={{ rotate: -90, opacity: 0 }}
+                    key={mounted ? theme : 'loading'}
+                    initial={prefersReducedMotion ? {} : { rotate: -90, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: durations.normal }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
+                    transition={{ duration: ANIMATION_DURATION }}
                   >
                     {getThemeIcon()}
                   </motion.div>
@@ -220,12 +251,17 @@ export function Navigation() {
                 href="https://github.com/christireid/Clarity-ai-chat-components"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label="View on GitHub"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                className={clsx(
+                  'hidden sm:flex p-2 rounded-lg',
+                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
+                  'transition-colors duration-300',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
+                )}
+                aria-label="View project on GitHub (opens in new tab)"
               >
-                <ExternalLink className="w-5 h-5" />
+                <ExternalLink className="w-5 h-5" aria-hidden="true" />
               </motion.a>
 
               {/* Mobile Menu Toggle */}
@@ -233,8 +269,10 @@ export function Navigation() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="md:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label="Toggle mobile menu"
+                className="md:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
               >
                 <AnimatePresence mode="wait">
                   {mobileMenuOpen ? (
@@ -267,6 +305,7 @@ export function Navigation() {
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
+                id="mobile-menu"
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -275,6 +314,8 @@ export function Navigation() {
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
                 className="md:hidden overflow-hidden border-t border-border"
+                role="navigation"
+                aria-label="Mobile navigation"
               >
                 <motion.div
                   initial="hidden"
@@ -294,6 +335,7 @@ export function Navigation() {
                 >
                   {navigation.map((item) => {
                     const Icon = item.icon
+                    const isActive = pathname?.startsWith(item.href)
                     return (
                       <motion.div
                         key={item.name}
@@ -306,14 +348,15 @@ export function Navigation() {
                         <Link
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
+                          aria-current={isActive ? 'page' : undefined}
                           className={clsx(
-                            'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-                            pathname?.startsWith(item.href)
+                            'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            isActive
                               ? 'bg-bg-tertiary text-brand-500'
                               : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
                           )}
                         >
-                          <Icon className="w-4 h-4" />
+                          <Icon className="w-4 h-4" aria-hidden="true" />
                           {item.name}
                         </Link>
                       </motion.div>

@@ -480,9 +480,9 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
       role="application"
       aria-label="Clarity Chat Demo"
     >
-      {/* Animated gradient background */}
+      {/* Subtle gradient background - consistent with brand colors */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30 pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-white to-purple-50/40 dark:from-slate-900 dark:via-slate-900/95 dark:to-indigo-950/20 pointer-events-none transition-colors duration-300"
         aria-hidden="true"
       />
 

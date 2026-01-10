@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -54,25 +54,38 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
   const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
   const [showQuickActions, setShowQuickActions] = useState(false)
+
+  // Use refs to avoid re-creating scroll handler on every scroll
+  const lastScrollYRef = useRef(0)
+  const ticking = useRef(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      // Hide when scrolling down, show when scrolling up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false)
-        setShowQuickActions(false)
-      } else {
-        setIsVisible(true)
-      }
-      setLastScrollY(currentScrollY)
+      // Skip if we're already processing a scroll event
+      if (ticking.current) return
+
+      ticking.current = true
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY
+        const lastScrollY = lastScrollYRef.current
+
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setIsVisible(false)
+          setShowQuickActions(false)
+        } else {
+          setIsVisible(true)
+        }
+
+        lastScrollYRef.current = currentScrollY
+        ticking.current = false
+      })
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  }, []) // Empty deps - stable handler
 
   const quickActions = [
     {

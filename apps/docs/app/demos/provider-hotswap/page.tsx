@@ -473,21 +473,23 @@ export default function ProviderHotswapDemo() {
                       API Route (Server)
                     </span>
                   </div>
-                  <button
-                    onClick={() => copyCode(apiRouteCode, 'api')}
-                    className="p-2 hover:bg-gray-700 rounded transition-colors"
-                    title="Copy snippet"
-                  >
-                    {isCopied('api') ? (
-                      <Check className="w-4 h-4 text-green-400" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-gray-400" />
-                    )}
-                  </button>
-                  <CopyFullExampleButton
-                    demoId="provider-hotswap"
-                    variant="compact"
-                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => copyCode(apiRouteCode, 'api')}
+                      className="p-2 hover:bg-gray-700 rounded transition-colors"
+                      title="Copy snippet"
+                    >
+                      {isCopied('api') ? (
+                        <Check className="w-4 h-4 text-green-400" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+                    <CopyFullExampleButton
+                      demoId="provider-hotswap"
+                      variant="compact"
+                    />
+                  </div>
                 </div>
                 <pre className="p-4 text-sm font-mono text-gray-300 overflow-x-auto">
                   <code>{apiRouteCode}</code>

@@ -10,8 +10,18 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Message } from '@clarity-chat/types'
+import { z } from 'zod'
 
 const MESSAGE_QUEUE_KEY = 'clarity-docs-assistant-queue'
+
+// Zod schema for runtime validation of localStorage data
+const QueuedMessageSchema = z.object({
+  id: z.string(),
+  content: z.string(),
+  timestamp: z.number(),
+})
+
+const QueuedMessageArraySchema = z.array(QueuedMessageSchema)
 
 export interface QueuedMessage {
   id: string
@@ -53,16 +63,22 @@ function getInitialOnlineStatus(): boolean {
 
 /**
  * Safely load queue from localStorage (SSR-safe)
+ * Uses Zod schema validation to ensure data integrity
  */
 function loadQueueFromStorage(): QueuedMessage[] {
   if (!isBrowser) return []
   try {
     const savedQueue = localStorage.getItem(MESSAGE_QUEUE_KEY)
     if (savedQueue) {
-      const parsed = JSON.parse(savedQueue) as QueuedMessage[]
-      if (Array.isArray(parsed)) {
-        return parsed
+      const parsed = JSON.parse(savedQueue)
+      // Validate with Zod schema before using
+      const result = QueuedMessageArraySchema.safeParse(parsed)
+      if (result.success) {
+        return result.data
       }
+      // Invalid data - log warning and return empty (data may be corrupted)
+      console.warn('Invalid queue data in localStorage, clearing:', result.error.message)
+      localStorage.removeItem(MESSAGE_QUEUE_KEY)
     }
   } catch (e) {
     console.error('Failed to load message queue:', e)

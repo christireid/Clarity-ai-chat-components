@@ -96,6 +96,18 @@ export {
 
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
 
+// Chain of Thought - AI reasoning visualization
+export {
+  ChainOfThought,
+  useChainOfThought,
+  type ChainOfThoughtProps,
+  type ChainOfThoughtStep,
+  type ChainOfThoughtStepStatus,
+  type ChainOfThoughtVariant,
+  type UseChainOfThoughtOptions,
+  type UseChainOfThoughtReturn,
+} from './components/ai/chain-of-thought'
+
 // Code blocks
 export { CodeBlock, type CodeBlockProps } from './components/code/CodeBlock'
 

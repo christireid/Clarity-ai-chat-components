@@ -152,10 +152,9 @@ function Example() {
           required: ['expression'],
         },
         execute: async (args) => {
-          // Safe math evaluation - sanitize input
-          const expr = String(args.expression).replace(/[^0-9+\\-*/().\\s]/g, '')
-          const result = new Function(\`"use strict"; return (\${expr})\`)()
-          return { result: typeof result === 'number' ? result : 'Invalid' }
+          // Safe math evaluation using recursive descent parser (CSP-compliant)
+          const result = safeMathEval(String(args.expression))
+          return { result: result !== null ? result : 'Invalid expression' }
         },
       },
     ],

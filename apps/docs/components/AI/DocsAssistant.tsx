@@ -121,6 +121,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     suggestedFollowUps,
     currentToolUse,
     toolResults,
+    providerInfo,
+    apiError,
+    isDemoMode,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,
@@ -533,7 +536,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 onMessageFeedback={handleFeedback}
                 showHeader
                 sessionTitle="Documentation Assistant"
-                sessionSubtitle="Powered by Clarity Chat"
+                sessionSubtitle={
+                  isDemoMode
+                    ? 'Demo Mode - Configure API key for full functionality'
+                    : providerInfo?.model
+                      ? `Powered by ${providerInfo.model}`
+                      : 'Powered by Clarity Chat'
+                }
+                error={apiError}
+                onDismissError={() => {/* apiError will be cleared on successful fetch */}}
                 showMessageCount
                 onExport={
                   messages.length > 0 ? handleOpenExportDialog : undefined
@@ -706,6 +717,64 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 }
 
 // ============================================================================
+// Error Message Helper
+// ============================================================================
+
+/**
+ * Get a user-friendly error message based on the error type
+ */
+function getUserFriendlyErrorMessage(error: Error): {
+  title: string
+  message: string
+  suggestion: string
+} {
+  const errorMsg = error.message.toLowerCase()
+
+  // Network/connectivity errors
+  if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('failed to fetch')) {
+    return {
+      title: 'Connection Error',
+      message: 'Unable to connect to the AI service.',
+      suggestion: 'Please check your internet connection and try again.',
+    }
+  }
+
+  // API key errors
+  if (errorMsg.includes('api key') || errorMsg.includes('unauthorized') || errorMsg.includes('401')) {
+    return {
+      title: 'Configuration Error',
+      message: 'The AI service is not properly configured.',
+      suggestion: 'Add a valid API key to .env.local (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY).',
+    }
+  }
+
+  // Rate limiting
+  if (errorMsg.includes('rate limit') || errorMsg.includes('429')) {
+    return {
+      title: 'Rate Limit Exceeded',
+      message: 'Too many requests. Please wait a moment.',
+      suggestion: 'Wait a few seconds before trying again.',
+    }
+  }
+
+  // Server errors
+  if (errorMsg.includes('500') || errorMsg.includes('502') || errorMsg.includes('503')) {
+    return {
+      title: 'Service Unavailable',
+      message: 'The AI service is temporarily unavailable.',
+      suggestion: 'Please try again in a few moments.',
+    }
+  }
+
+  // Default error
+  return {
+    title: 'Documentation Assistant Error',
+    message: error.message || 'An unexpected error occurred.',
+    suggestion: 'Try refreshing the page or contact support if the issue persists.',
+  }
+}
+
+// ============================================================================
 // Exported Component with Error Boundary
 // ============================================================================
 
@@ -714,27 +783,42 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
   return (
     <ErrorBoundary
-      fallback={(error, resetError) => (
-        <div className="fixed bottom-4 right-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg shadow-lg max-w-sm">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">
-                Documentation Assistant Error
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {error.message || 'An unexpected error occurred.'}
-              </p>
-              <button
-                onClick={resetError}
-                className="text-sm text-primary hover:underline"
-              >
-                Try Again
-              </button>
+      fallback={(error, resetError) => {
+        const { title, message, suggestion } = getUserFriendlyErrorMessage(error)
+
+        return (
+          <div className="fixed bottom-4 right-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg shadow-lg max-w-sm z-[100]">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="space-y-2">
+                <h3 className="font-semibold text-foreground">
+                  {title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {message}
+                </p>
+                <p className="text-xs text-muted-foreground/80">
+                  {suggestion}
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={resetError}
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    Try Again
+                  </button>
+                  <a
+                    href="/guides/configuration"
+                    className="text-sm text-muted-foreground hover:underline"
+                  >
+                    Configuration Guide
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }}
       onError={(error, errorInfo) => {
         console.error('[DocsAssistant] Error:', error, errorInfo)
       }}

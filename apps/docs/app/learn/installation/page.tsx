@@ -3,7 +3,6 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { InstallationFlow } from '@/components/Diagrams/InstallationFlow'
@@ -361,16 +360,6 @@ export default App`}
         </Callout>
       </ScrollReveal>
 
-      <Pagination
-        prev={{
-          title: 'Quick Start',
-          href: '/learn/quick-start',
-        }}
-        next={{
-          title: 'Tutorial',
-          href: '/learn/tutorial',
-        }}
-      />
     </>
   )
 }

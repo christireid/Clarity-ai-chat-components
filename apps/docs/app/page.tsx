@@ -9,7 +9,6 @@ import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
 import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
-import { SocialProof } from '@/components/Layout/SocialProof'
 import { Testimonials } from '@/components/Layout/Testimonials'
 // AnimatedBackground is a 'use client' component with built-in lazy loading
 import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
@@ -49,9 +48,6 @@ export default function HomePage() {
         }}
       />
 
-      {/* Social Proof - Early trust signals */}
-      <SocialProof />
-
       {/* Quick Start Tutorial */}
       <QuickStartTutorial />
 
@@ -59,7 +55,7 @@ export default function HomePage() {
       <section id="demo" className="container-docs py-24 scroll-mt-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">See What You're Getting</h2>
-          <p className="text-xl text-text-secondary">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             No signup. No surprises. Just a chat UI that works.
           </p>
         </div>
@@ -74,7 +70,7 @@ export default function HomePage() {
             <h2 className="text-4xl font-bold mb-4">
               Start Building in Seconds
             </h2>
-            <p className="text-xl text-text-secondary">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Copy, paste, and customize. It's that simple.
             </p>
           </div>
@@ -115,7 +111,7 @@ function CustomChat() {
           <h2 className="text-4xl font-bold mb-4">
             Built for Developers Who Ship
           </h2>
-          <p className="text-xl text-text-secondary">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Everything you need. Nothing you don't.
           </p>
         </div>
@@ -166,7 +162,7 @@ function CustomChat() {
             <h2 className="text-4xl font-bold mb-4">
               Performance You Don't Have to Think About
             </h2>
-            <p className="text-xl text-text-secondary">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Virtual scrolling. React.memo. Tree-shaking. Already done.
             </p>
           </div>
@@ -179,7 +175,7 @@ function CustomChat() {
             <h2 className="text-4xl font-bold mb-4">
               More Features, Less Work
             </h2>
-            <p className="text-xl text-text-secondary">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               See how Clarity stacks up against the alternatives.
             </p>
           </div>

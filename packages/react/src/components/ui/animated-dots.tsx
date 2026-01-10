@@ -89,8 +89,8 @@ const ANIMATION_CONFIG: Record<
   bounce: {
     animate: { y: [-2, -6, -2], opacity: [0.6, 1, 0.6] },
     initial: { y: -2, opacity: 0.6 },
-    transition: { type: 'spring', damping: 10, stiffness: 400 },
-    defaultDuration: undefined, // Uses spring physics
+    transition: { ease: 'easeInOut' },
+    defaultDuration: 0.6,
   },
   pulse: {
     animate: { scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] },
@@ -231,7 +231,7 @@ export function AnimatedDots({
           animate={animate}
           transition={getTransition(i)}
           className={cn(
-            'rounded-full bg-current',
+            'rounded-full bg-current will-change-transform',
             sizeConfig.dot,
             dotClassName
           )}

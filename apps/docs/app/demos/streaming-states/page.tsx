@@ -250,7 +250,7 @@ export default function StreamingStatesDemo() {
                   <button
                     onClick={runDemo}
                     disabled={isAutoPlaying}
-                    className="w-full py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     {isAutoPlaying ? (
                       <>
@@ -358,6 +358,7 @@ export default function StreamingStatesDemo() {
                                         duration: durations.slower,
                                         repeat: Infinity,
                                         delay: i * 0.1,
+                                        type: 'tween',
                                       }}
                                     />
                                   ))}

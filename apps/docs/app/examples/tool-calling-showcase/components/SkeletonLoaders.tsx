@@ -5,30 +5,46 @@
  *
  * Beautiful animated loading states that replace tool components
  * while data is being fetched.
+ *
+ * Features:
+ * - GPU-accelerated opacity animations
+ * - Smooth 1.5s pulse cycle (not jarring)
+ * - Respects prefers-reduced-motion
+ * - Matches actual tool component layouts
  */
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
-// Base shimmer animation
-const shimmer = {
-  hidden: { opacity: 0.3 },
-  visible: {
-    opacity: 1,
-    transition: {
-      repeat: Infinity,
-      repeatType: 'reverse' as const,
-      duration: 1,
-    },
-  },
-}
+/**
+ * Skeleton pulse animation duration - 1.5s for smooth effect
+ */
+const SKELETON_DURATION = 1.5
 
+/**
+ * Base Skeleton component with smooth pulse animation
+ * Uses will-change for GPU acceleration
+ */
 function Skeleton({ className }: { className?: string }) {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
     <motion.div
-      variants={shimmer}
-      initial="hidden"
-      animate="visible"
-      className={`bg-gray-200 dark:bg-gray-700 rounded ${className || ''}`}
+      initial={{ opacity: 0.4 }}
+      animate={
+        shouldReduceMotion
+          ? { opacity: 0.5 }
+          : { opacity: [0.4, 0.7, 0.4] }
+      }
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : {
+              duration: SKELETON_DURATION,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }
+      }
+      className={`bg-gray-200 dark:bg-gray-700 rounded will-change-[opacity] ${className || ''}`}
     />
   )
 }

@@ -6,8 +6,8 @@
 
 'use client'
 
-import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion'
-import { useEffect, useRef } from 'react'
+import { motion, useInView, animate } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 interface Stat {
   value: number
@@ -26,24 +26,25 @@ interface StatisticsShowcaseProps {
 
 function AnimatedNumber({ value, suffix = '', prefix = '' }: { value: number; suffix?: string; prefix?: string }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const motionValue = useMotionValue(0)
-  const rounded = useTransform(motionValue, (latest) => Math.round(latest))
+  const [displayValue, setDisplayValue] = useState(0)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   useEffect(() => {
-    if (isInView) {
-      const controls = animate(motionValue, value, {
-        duration: 2,
-        ease: 'easeOut',
-      })
-      return controls.stop
-    }
-  }, [isInView, motionValue, value])
+    if (!isInView) return
+
+    const controls = animate(0, value, {
+      duration: 2,
+      ease: 'easeOut',
+      onUpdate: (latest) => setDisplayValue(Math.round(latest)),
+    })
+
+    return () => controls.stop()
+  }, [isInView, value])
 
   return (
     <motion.span ref={ref} className="tabular-nums">
       {prefix}
-      <motion.span>{rounded}</motion.span>
+      <span>{displayValue}</span>
       {suffix}
     </motion.span>
   )

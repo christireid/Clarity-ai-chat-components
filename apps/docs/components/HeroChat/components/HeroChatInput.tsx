@@ -48,7 +48,7 @@ export function HeroChatInput({
         {onAttachment && (
           <motion.button
             onClick={onAttachment}
-            className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2.5 min-w-[44px] min-h-[44px] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             title="Attach file"
@@ -72,8 +72,8 @@ export function HeroChatInput({
             placeholder={placeholder}
             rows={1}
             maxLength={maxLength}
-            className="w-full px-4 py-3 pr-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none text-slate-900 dark:text-white placeholder-slate-400 transition-all"
-            style={{ minHeight: '48px', maxHeight: '120px' }}
+            className="w-full px-4 py-3.5 pr-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 transition-all"
+            style={{ minHeight: '52px', maxHeight: '120px' }}
             aria-describedby="char-count"
             disabled={isStreaming}
             data-chat-input
@@ -90,7 +90,7 @@ export function HeroChatInput({
         {/* Voice input */}
         <motion.button
           onClick={onToggleVoice}
-          className={`p-2.5 rounded-xl transition-colors ${
+          className={`p-2.5 min-w-[44px] min-h-[44px] rounded-xl transition-colors flex items-center justify-center focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none ${
             isRecording
               ? 'bg-red-500 text-white'
               : 'hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -115,7 +115,7 @@ export function HeroChatInput({
         <motion.button
           onClick={onSubmit}
           disabled={!value.trim() || isStreaming}
-          className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2.5 min-w-[44px] min-h-[44px] rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           aria-label={isStreaming ? 'Sending message...' : 'Send message'}

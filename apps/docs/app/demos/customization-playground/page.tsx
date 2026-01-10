@@ -119,7 +119,7 @@ const previewMessages: PreviewMessage[] = [
 
 export default function CustomizationPlaygroundDemo() {
   const [config, setConfig] = useState<ConfigOption[]>(defaultConfig)
-  const [copied, setCopied] = useState(false)
+  const { copy, copied } = useCopyToClipboard()
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light')
 
   // Track demo view
@@ -165,18 +165,10 @@ export default function Chat() {
 
   const copyCode = async () => {
     const code = generateCode()
-    try {
-      await navigator.clipboard.writeText(code)
-    } catch {
-      const textarea = document.createElement('textarea')
-      textarea.value = code
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
+    const success = await copy(code)
+    if (success) {
+      trackCodeCopied('customization-playground', 'generated-code')
     }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   const resetConfig = () => {

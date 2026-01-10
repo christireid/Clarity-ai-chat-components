@@ -55,8 +55,8 @@ export function CopyButton({
     [text, onCopy]
   )
 
-  const sizeClasses = size === 'sm' ? 'p-1' : 'p-1.5'
-  const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
+  const sizeClasses = size === 'sm' ? 'p-2' : 'p-2.5'
+  const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'
 
   return (
     <button
@@ -64,6 +64,7 @@ export function CopyButton({
       className={cn(
         'rounded hover:bg-muted-foreground/10 transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-brand-500',
+        'min-w-[44px] min-h-[44px] flex items-center justify-center', // WCAG touch target
         sizeClasses,
         className
       )}
