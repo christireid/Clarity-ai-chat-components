@@ -63,20 +63,50 @@ function countSpecialTokenAdjustment(text) {
 export class TokenCounter {
     static DEFAULT_CHARS_PER_TOKEN = 4;
     static currentModel = 'generic';
+
     /**
-     * Set the model family for more accurate counting
+     * Instance model for instance methods
+     */
+    instanceModel = 'generic';
+
+    /**
+     * Constructor for instance usage
+     */
+    constructor(model) {
+        if (model) {
+            this.instanceModel = model;
+        }
+    }
+
+    /**
+     * Set the model family for more accurate counting (static)
      */
     static setModel(model) {
         this.currentModel = model;
     }
     /**
-     * Get current model family
+     * Get current model family (static)
      */
     static getModel() {
         return this.currentModel;
     }
+
     /**
-     * Count tokens in text with confidence level
+     * Set instance model
+     */
+    setModel(model) {
+        this.instanceModel = model;
+    }
+
+    /**
+     * Get instance model
+     */
+    getModel() {
+        return this.instanceModel;
+    }
+
+    /**
+     * Count tokens in text with confidence level (static)
      * Returns detailed result including confidence
      */
     static countWithConfidence(text, model) {
@@ -111,20 +141,44 @@ export class TokenCounter {
         return { count, confidence, contentType };
     }
     /**
-     * Count tokens in text (approximate)
+     * Count tokens in text (approximate) - static method
      * Backward compatible - returns just the count
      */
     static count(text) {
         return this.countWithConfidence(text).count;
     }
+
     /**
-     * Count tokens in multiple texts
+     * Count tokens in text - instance method
+     * Delegates to static method
+     */
+    countTokens(text) {
+        return TokenCounter.countWithConfidence(text, this.instanceModel).count;
+    }
+
+    /**
+     * Count tokens with confidence - instance method
+     */
+    countTokensWithConfidence(text) {
+        return TokenCounter.countWithConfidence(text, this.instanceModel);
+    }
+
+    /**
+     * Count tokens in multiple texts (static)
      */
     static countBatch(texts) {
         return texts.reduce((sum, text) => sum + this.count(text), 0);
     }
+
     /**
-     * Count tokens in multiple texts with confidence
+     * Count tokens in multiple texts - instance method
+     */
+    countBatch(texts) {
+        return texts.reduce((sum, text) => sum + this.countTokens(text), 0);
+    }
+
+    /**
+     * Count tokens in multiple texts with confidence (static)
      */
     static countBatchWithConfidence(texts) {
         if (texts.length === 0) {
@@ -156,7 +210,7 @@ export class TokenCounter {
         };
     }
     /**
-     * Truncate text to fit token budget
+     * Truncate text to fit token budget (static)
      * Tries to break at sentence boundaries when possible
      */
     static truncate(text, maxTokens) {
@@ -177,20 +231,44 @@ export class TokenCounter {
         }
         return truncated + '...';
     }
+
     /**
-     * Estimate tokens remaining in a budget
+     * Truncate text - instance method
+     */
+    truncate(text, maxTokens) {
+        return TokenCounter.truncate(text, maxTokens);
+    }
+
+    /**
+     * Estimate tokens remaining in a budget (static)
      */
     static remaining(text, budget) {
         return Math.max(0, budget - this.count(text));
     }
+
     /**
-     * Check if text fits within token budget
+     * Estimate tokens remaining - instance method
+     */
+    remaining(text, budget) {
+        return Math.max(0, budget - this.countTokens(text));
+    }
+
+    /**
+     * Check if text fits within token budget (static)
      */
     static fitsInBudget(text, budget) {
         return this.count(text) <= budget;
     }
+
     /**
-     * Split text into sentences
+     * Check if text fits - instance method
+     */
+    fitsInBudget(text, budget) {
+        return this.countTokens(text) <= budget;
+    }
+
+    /**
+     * Split text into sentences (static)
      */
     static splitSentences(text) {
         return text
@@ -198,11 +276,34 @@ export class TokenCounter {
             .map((s) => s.trim())
             .filter((s) => s.length > 0);
     }
+
     /**
-     * Get token-to-character ratio for current model
+     * Split text into sentences - instance method
+     */
+    splitSentences(text) {
+        return TokenCounter.splitSentences(text);
+    }
+
+    /**
+     * Get token-to-character ratio for current model (static)
      */
     static getTokenRatio(contentType = 'prose') {
         const ratios = MODEL_RATIOS[this.currentModel];
+        switch (contentType) {
+            case 'code':
+                return ratios.code;
+            case 'prose':
+                return ratios.prose;
+            default:
+                return (ratios.code + ratios.prose) / 2;
+        }
+    }
+
+    /**
+     * Get token-to-character ratio - instance method
+     */
+    getTokenRatio(contentType = 'prose') {
+        const ratios = MODEL_RATIOS[this.instanceModel];
         switch (contentType) {
             case 'code':
                 return ratios.code;
@@ -226,4 +327,3 @@ export function countTokens(text) {
 export function countTokensWithConfidence(text, model) {
     return TokenCounter.countWithConfidence(text, model);
 }
-//# sourceMappingURL=token-counter.js.map

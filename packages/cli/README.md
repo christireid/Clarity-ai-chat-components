@@ -24,7 +24,8 @@ clarity-chat init
 | Command | Description |
 |---------|-------------|
 | `clarity-chat init` | Create a new project with interactive setup |
-| `clarity-chat add <component>` | Add components to your project |
+| `clarity-chat add [component]` | Add components to your project (lists all if no arg) |
+| `clarity-chat components` | List all available components and templates |
 | `clarity-chat keys` | Manage API keys (OpenAI, Anthropic, etc.) |
 | `clarity-chat dev` | Start development server |
 | `clarity-chat generate` | Generate components, hooks, or tests |
@@ -88,16 +89,43 @@ clarity-chat add chat-interface --batch "model-selector,token-counter"
 ```
 
 **Available Components:**
-- `chat-interface` - Full-featured chat UI
-- `model-selector` - AI model dropdown
-- `token-counter` - Token usage display
-- `cost-estimator` - API cost calculator
-- `streaming-handler` - SSE streaming utilities
+- `chat-interface` - Full-featured chat UI with message list and input
+- `chat-input` - Rich text input with keyboard shortcuts
+- `message-list` - Virtualized message list with auto-scroll
+- `model-selector` - AI model dropdown with provider grouping
+- `token-counter` - Real-time token usage display
+- `cost-estimator` - API cost calculator with real-time updates
+- `streaming-handler` - SSE streaming utilities with reconnection
+- `typing-indicator` - Animated typing indicator for AI responses
+- `code-block` - Syntax-highlighted code with copy button
+- `markdown-renderer` - Render markdown with code highlighting
+- `error-boundary` - Graceful error handling component
+
+Run `npx @clarity-chat/cli add` to see all available components.
 
 **Options:**
 - `-p, --path <path>` - Installation path (default: `./src/components`)
 - `--no-deps` - Skip dependency installation
 - `--batch <components>` - Add multiple components (comma-separated)
+- `--all` - Add all available components
+- `--dry-run` - Preview what would be added without making changes
+- `--force` - Overwrite existing files
+
+### `clarity-chat components`
+
+List all available components and templates:
+
+```bash
+clarity-chat components              # List all components by category
+clarity-chat components --templates  # List project templates
+clarity-chat components --category chat  # Filter by category
+clarity-chat components --json       # Output as JSON for tooling
+```
+
+**Options:**
+- `-c, --category <category>` - Filter by category (chat, ui, analytics, core)
+- `-t, --templates` - List available project templates
+- `--json` - Output as JSON
 
 ### `clarity-chat keys`
 

@@ -46,6 +46,42 @@ export interface ContextProfile {
   estimatedTokenDensity: number // Estimated tokens per character
 }
 
+// Internal strategy configuration
+interface AdaptiveStrategyConfig {
+  name: string
+  compressionRatio: number
+  qualityThreshold: number
+  compressionStrategy: string
+  confidence: number
+}
+
+// Optimization metrics result
+interface OptimizationMetrics {
+  estimatedCost: number
+  estimatedLatency: number
+  costSavings: number
+  performanceScore: number
+  compressionEfficiency?: number
+}
+
+// Compression result from applyAdaptiveOptimization
+interface AdaptiveCompressionResult {
+  compressedText: string
+  compressedTokens: number
+  compressionRatio: number
+  estimatedQuality: number
+}
+
+// Performance history entry for learning
+interface PerformanceHistoryEntry {
+  timestamp: number
+  contextProfile: ContextProfile
+  modelProfile: ModelEfficiencyProfile
+  metrics: OptimizationMetrics
+  strategy: AdaptiveStrategyConfig
+  success: boolean
+}
+
 // Conversation state for adaptive optimization
 export interface ConversationState {
   turnCount: number
@@ -171,7 +207,7 @@ const MODEL_EFFICIENCY_PROFILES: Record<string, ModelEfficiencyProfile> = {
 export class AdaptiveTokenOptimizer {
   private tokenCounter: TokenCounter
   private compressionOrchestrator: AdvancedCompressionOrchestrator
-  private performanceHistory: Map<string, any[]>
+  private performanceHistory: Map<string, PerformanceHistoryEntry[]>
   private contextProfiles: Map<string, ContextProfile>
   private conversationStates: Map<string, ConversationState>
   private learningRate: number
@@ -399,10 +435,10 @@ export class AdaptiveTokenOptimizer {
    */
   private async applyAdaptiveOptimization(
     text: string,
-    strategy: any,
+    strategy: AdaptiveStrategyConfig,
     modelProfile: ModelEfficiencyProfile,
     config: AdaptiveOptimizationConfig
-  ): Promise<any> {
+  ): Promise<AdaptiveCompressionResult> {
     const compressionConfig = {
       strategy: strategy.compressionStrategy,
       compressionRatio: strategy.compressionRatio,
@@ -411,15 +447,19 @@ export class AdaptiveTokenOptimizer {
       adaptive: true,
     }
 
-    return await compressWithAdvanced(
+    const compressedText = await compressWithAdvanced(
       text,
-      strategy.compressionStrategy,
+      strategy.compressionStrategy as 'llmlingua' | 'selective_context' | 'semantic_pruning' | 'structural' | 'adaptive' | undefined,
       compressionConfig.compressionRatio,
       compressionConfig.qualityThreshold
-    ).then((compressedText) => ({
+    )
+
+    return {
       compressedText,
       compressedTokens: 0, // Will be calculated later
-    }))
+      compressionRatio: strategy.compressionRatio,
+      estimatedQuality: strategy.qualityThreshold,
+    }
   }
 
   /**
@@ -467,8 +507,8 @@ export class AdaptiveTokenOptimizer {
   private updateLearning(
     contextProfile: ContextProfile,
     modelProfile: ModelEfficiencyProfile,
-    metrics: any,
-    strategy: any
+    metrics: OptimizationMetrics,
+    strategy: AdaptiveStrategyConfig
   ): void {
     const learningKey = `${contextProfile.domain}-${modelProfile.family}`
     const history = this.performanceHistory.get(learningKey) || []
@@ -503,8 +543,8 @@ export class AdaptiveTokenOptimizer {
   private async generateRecommendations(
     contextProfile: ContextProfile,
     modelProfile: ModelEfficiencyProfile,
-    metrics: any,
-    strategy: any
+    metrics: OptimizationMetrics,
+    strategy: AdaptiveStrategyConfig
   ): Promise<string[]> {
     const recommendations: string[] = []
 
@@ -690,7 +730,13 @@ export class AdaptiveTokenOptimizer {
     this.conversationStates.set(conversationId, updatedState)
   }
 
-  getPerformanceAnalytics(model?: string, domain?: string): any {
+  getPerformanceAnalytics(model?: string, domain?: string): {
+    totalOptimizations: number
+    averageReduction: number
+    averageQuality: number
+    learningRate: number
+    recentPerformance?: PerformanceHistoryEntry[]
+  } {
     const key = model || domain || 'global'
     const history = this.performanceHistory.get(key)
 
@@ -706,7 +752,7 @@ export class AdaptiveTokenOptimizer {
     const totalOptimizations = history.length
     const averageReduction =
       history.reduce(
-        (sum, h) => sum + (1 - h.metrics.compressionEfficiency),
+        (sum, h) => sum + (1 - (h.metrics.compressionEfficiency ?? 0)),
         0
       ) / totalOptimizations
 
@@ -759,6 +805,12 @@ export function updateConversationState(
   adaptiveOptimizer.updateConversationState(conversationId, update)
 }
 
-export function getAdaptiveAnalytics(model?: string, domain?: string): any {
+export function getAdaptiveAnalytics(model?: string, domain?: string): {
+  totalOptimizations: number
+  averageReduction: number
+  averageQuality: number
+  learningRate: number
+  recentPerformance?: PerformanceHistoryEntry[]
+} {
   return adaptiveOptimizer.getPerformanceAnalytics(model, domain)
 }

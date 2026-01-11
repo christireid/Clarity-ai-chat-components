@@ -141,7 +141,7 @@ export function Callout({
                 <motion.button
                   onClick={() => setIsCollapsed(!isCollapsed)}
                   className={cn(
-                    'p-1 rounded-lg transition-colors',
+                    'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-colors',
                     'hover:bg-black/5 dark:hover:bg-white/5',
                     'focus:outline-none focus:ring-2 focus:ring-offset-2',
                     config.iconColor

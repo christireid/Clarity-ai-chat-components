@@ -2,6 +2,13 @@
  * Performance utilities for chat hooks
  */
 
+// Extend Window interface for performance logging flag
+declare global {
+  interface Window {
+    __PERF_LOGGING__?: boolean
+  }
+}
+
 /**
  * Throttle function calls - ensures function is called at most once per wait period
  * 
@@ -15,7 +22,7 @@
  * window.addEventListener('scroll', throttledScroll)
  * ```
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -59,7 +66,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * input.addEventListener('input', (e) => debouncedSearch(e.target.value))
  * ```
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) & { cancel: () => void } {
@@ -148,7 +155,7 @@ export function measurePerformance<T>(
   const end = performance.now()
   const duration = end - start
   
-  if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+  if (typeof window !== 'undefined' && window.__PERF_LOGGING__) {
     console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
   }
   
@@ -179,7 +186,7 @@ export async function measurePerformanceAsync<T>(
     const end = performance.now()
     const duration = end - start
     
-    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+    if (typeof window !== 'undefined' && window.__PERF_LOGGING__) {
       console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
     }
     
@@ -188,7 +195,7 @@ export async function measurePerformanceAsync<T>(
     const end = performance.now()
     const duration = end - start
     
-    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+    if (typeof window !== 'undefined' && window.__PERF_LOGGING__) {
       console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
     }
     
@@ -223,7 +230,7 @@ export async function measureWithResult<T>(
     const result = await fn()
     const duration = performance.now() - start
     
-    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+    if (typeof window !== 'undefined' && window.__PERF_LOGGING__) {
       console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
     }
     
@@ -231,7 +238,7 @@ export async function measureWithResult<T>(
   } catch (error) {
     const duration = performance.now() - start
     
-    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+    if (typeof window !== 'undefined' && window.__PERF_LOGGING__) {
       console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
     }
     

@@ -1129,7 +1129,7 @@ And that's just the **direct development cost**.
 - Perfect for: Startups, small teams
 
 ### Enterprise - Starting at $2,499/year
-- 70+ components (all features)
+- 155+ components (all features)
 - Unlimited AI providers
 - Vector databases & RAG
 - White-label support

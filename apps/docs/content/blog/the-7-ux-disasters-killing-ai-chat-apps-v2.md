@@ -944,8 +944,8 @@ But honestly? The real savings is in time-to-market. Ship 6 weeks earlier. Get f
 - ThemeSwitcher (theme selection)
 - ...and 60 more
 
-### 30+ Hooks
-- `useChat` - Complete chat management
+### 70+ Hooks
+- `useClarityChat` - Complete chat management
 - `useStreamingSSE` - Server-sent events
 - `useStreamingWebSocket` - WebSocket support
 - `useErrorRecovery` - Automatic retry
@@ -955,7 +955,7 @@ But honestly? The real savings is in time-to-market. Ship 6 weeks earlier. Get f
 - `useVoiceInput` - Speech recognition
 - `useOptimisticMessage` - Optimistic UI
 - `useUndo` - Undo/redo operations
-- ...and 20 more
+- ...and 60 more
 
 ### 8 AI Providers Supported
 - OpenAI (GPT-3.5, GPT-4, GPT-4 Turbo)
@@ -1021,7 +1021,7 @@ But honestly? The real savings is in time-to-market. Ship 6 weeks earlier. Get f
 - **Perfect for:** Startups, small teams
 
 ### Enterprise - Starting at $2,499/year
-- 70+ components (everything)
+- 155+ components (everything)
 - Unlimited AI providers
 - Vector databases & RAG
 - White-label support

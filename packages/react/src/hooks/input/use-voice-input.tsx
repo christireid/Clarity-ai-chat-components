@@ -2,6 +2,61 @@
 
 import * as React from 'react'
 
+// Web Speech API type declarations
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number
+  results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean
+  length: number
+  item(index: number): SpeechRecognitionAlternative
+  [index: number]: SpeechRecognitionAlternative
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+  message?: string
+}
+
+interface SpeechRecognitionInstance extends EventTarget {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  maxAlternatives: number
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onspeechstart: (() => void) | null
+  onspeechend: (() => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  start(): void
+  stop(): void
+}
+
+interface SpeechRecognitionConstructor {
+  new(): SpeechRecognitionInstance
+}
+
+// Extend Window for browser speech recognition APIs
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor
+    webkitSpeechRecognition?: SpeechRecognitionConstructor
+  }
+}
+
 /**
  * Voice recognition state
  */
@@ -49,12 +104,12 @@ export interface UseVoiceInputOptions {
 /**
  * Get browser speech recognition API
  */
-function getSpeechRecognition(): any | null {
+function getSpeechRecognition(): SpeechRecognitionConstructor | null {
   if (typeof window === 'undefined') return null
-  
+
   return (
-    (window as any).SpeechRecognition ||
-    (window as any).webkitSpeechRecognition ||
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
     null
   )
 }
@@ -175,7 +230,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     }
   })
 
-  const recognitionRef = React.useRef<any>(null)
+  const recognitionRef = React.useRef<SpeechRecognitionInstance | null>(null)
   const autoStopTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   /**
@@ -192,7 +247,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     recognition.maxAlternatives = maxAlternatives
 
     // Handle results
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interimTranscript = ''
       let finalTranscript = ''
 
@@ -249,7 +304,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     }
 
     // Handle errors
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       let errorMessage = 'Speech recognition error'
       
       switch (event.error) {

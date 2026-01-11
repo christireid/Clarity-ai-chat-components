@@ -80,13 +80,15 @@ export interface UseChatReturn {
 /**
  * @deprecated Use `useClarityChat` directly instead. This wrapper will be removed in v2.0.
  */
+// Track if we've already warned to avoid spamming console
+let hasWarnedUseChatUnified = false
+
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
-  // Deprecation warning
-  if (process.env['NODE_ENV'] === 'development') {
+  // Deprecation warning - only warn once
+  if (process.env.NODE_ENV === 'development' && !hasWarnedUseChatUnified) {
+    hasWarnedUseChatUnified = true
     console.warn(
-      '[Clarity Chat] useChat is deprecated. Use useClarityChat directly for better ' +
-        'TypeScript support and direct access to all features. ' +
-        'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
+      '[Clarity] useChatUnified is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'
     )
   }
 

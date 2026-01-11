@@ -11,6 +11,11 @@
 
 import { estimateTokens } from '../tokenization/estimator'
 
+/** JSON-like value type for TOON encoding */
+type JsonValue = string | number | boolean | null | undefined | JsonObject | JsonArray
+type JsonObject = { [key: string]: JsonValue }
+type JsonArray = JsonValue[]
+
 export interface ToonOptions {
   /** Indent size for nested objects (default: 2) */
   indent?: number
@@ -39,7 +44,7 @@ export interface ToonOptions {
  * // Bob, 25, SF
  * ```
  */
-export function jsonToToon(data: any, options: ToonOptions = {}): string {
+export function jsonToToon(data: JsonValue, options: ToonOptions = {}): string {
   const {
     indent = 2,
     compact = false,
@@ -54,7 +59,7 @@ export function jsonToToon(data: any, options: ToonOptions = {}): string {
  * Encode a value to TOON format
  */
 function encodeValue(
-  value: any,
+  value: JsonValue,
   depth: number,
   indent: number,
   compact: boolean,
@@ -106,7 +111,7 @@ function encodeString(str: string, quoteStrings: boolean): string {
  * Encode array to TOON format
  */
 function encodeArray(
-  arr: any[],
+  arr: JsonArray,
   depth: number,
   indent: number,
   compact: boolean,
@@ -138,7 +143,7 @@ function encodeArray(
  * Encode array of uniform objects as table (CSV-style)
  */
 function encodeUniformObjectArray(
-  arr: any[],
+  arr: JsonObject[],
   depth: number,
   indent: number,
   compact: boolean,
@@ -176,7 +181,7 @@ function encodeUniformObjectArray(
 /**
  * Encode array of primitives
  */
-function encodePrimitiveArray(arr: any[], quoteStrings: boolean): string {
+function encodePrimitiveArray(arr: JsonArray, quoteStrings: boolean): string {
   const values = arr.map(item => encodeValue(item, 0, 0, true, true, quoteStrings))
   return `[${values.join(', ')}]`
 }
@@ -185,7 +190,7 @@ function encodePrimitiveArray(arr: any[], quoteStrings: boolean): string {
  * Encode object to TOON format (YAML-style)
  */
 function encodeObject(
-  obj: any,
+  obj: JsonObject,
   depth: number,
   indent: number,
   compact: boolean,
@@ -217,28 +222,35 @@ function encodeObject(
 }
 
 /**
+ * Type guard to check if value is a JsonObject
+ */
+function isJsonObject(value: JsonValue): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
  * Check if array contains uniform objects
  */
-function isUniformObjectArray(arr: any[]): boolean {
+function isUniformObjectArray(arr: JsonArray): arr is JsonObject[] {
   if (arr.length === 0) return false
-  if (!arr.every(item => typeof item === 'object' && !Array.isArray(item) && item !== null)) {
+  if (!arr.every(item => isJsonObject(item))) {
     return false
   }
 
   // Check if all objects have similar keys (at least 50% overlap)
   const allKeys = new Set<string>()
-  arr.forEach(obj => {
+  ;(arr as JsonObject[]).forEach(obj => {
     Object.keys(obj).forEach(key => allKeys.add(key))
   })
 
-  const avgKeyCount = arr.reduce((sum, obj) => sum + Object.keys(obj).length, 0) / arr.length
+  const avgKeyCount = (arr as JsonObject[]).reduce((sum, obj) => sum + Object.keys(obj).length, 0) / arr.length
   return avgKeyCount / allKeys.size >= 0.5
 }
 
 /**
  * Get uniform keys from array of objects
  */
-function getUniformKeys(arr: any[]): string[] {
+function getUniformKeys(arr: JsonObject[]): string[] {
   const keySet = new Set<string>()
   arr.forEach(obj => {
     Object.keys(obj).forEach(key => keySet.add(key))
@@ -249,7 +261,7 @@ function getUniformKeys(arr: any[]): string[] {
 /**
  * Check if value is primitive
  */
-function isPrimitive(value: any): boolean {
+function isPrimitive(value: JsonValue): value is string | number | boolean | null | undefined {
   return (
     value === null ||
     value === undefined ||
@@ -262,7 +274,7 @@ function isPrimitive(value: any): boolean {
 /**
  * Estimate token savings from using TOON vs JSON
  */
-export function estimateToonSavings(data: any): {
+export function estimateToonSavings(data: JsonValue): {
   jsonTokens: number
   toonTokens: number
   savings: number
@@ -288,7 +300,7 @@ export function estimateToonSavings(data: any): {
 /**
  * Check if data is suitable for TOON format
  */
-export function isSuitableForToon(data: any): boolean {
+export function isSuitableForToon(data: JsonValue): boolean {
   // TOON works best for:
   // 1. Arrays of uniform objects
   // 2. Simple nested objects
@@ -297,7 +309,7 @@ export function isSuitableForToon(data: any): boolean {
     return true
   }
 
-  if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+  if (isJsonObject(data)) {
     // Check if object values are mostly primitives or uniform arrays
     const values = Object.values(data)
     const simpleValues = values.filter(v =>

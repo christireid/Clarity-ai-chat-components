@@ -1,25 +1,67 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { Highlight, themes } from 'prism-react-renderer'
-import { useTheme } from 'next-themes'
-import { Check, Copy, Terminal, ExternalLink } from 'lucide-react'
-import clsx from 'clsx'
-import { useToast } from '@clarity-chat/react/internal'
+/**
+ * EnhancedCodeBlock - Docs App Wrapper
+ *
+ * This is a thin wrapper around the unified CodeBlock from @clarity-chat/react.
+ * It provides enhanced features like sandbox URLs while using the unified component.
+ *
+ * Features inherited from unified component:
+ * - Shiki syntax highlighting (VS Code engine)
+ * - 15+ popular themes
+ * - Line numbers and highlighting
+ * - Diff visualization
+ * - Copy and download buttons
+ * - Expand/collapse for long blocks
+ * - Keyboard shortcuts
+ * - WCAG 2.1 AA accessible
+ */
 
-interface EnhancedCodeBlockProps {
+import { CodeBlock as UnifiedCodeBlock } from '@clarity-chat/react'
+import { ExternalLink } from 'lucide-react'
+
+/**
+ * Props for the enhanced CodeBlock wrapper
+ */
+export interface EnhancedCodeBlockProps {
+  /** The code content to display */
   code: string
+  /** Programming language for syntax highlighting */
   language: string
+  /** Title to display in header */
   title?: string
+  /** Show line numbers */
   showLineNumbers?: boolean
+  /** Lines to highlight (array of line numbers) */
   highlightLines?: number[]
+  /** Additional CSS class */
   className?: string
+  /** Filename to display (alternative to title) */
   filename?: string
+  /** URL to open code in sandbox (CodeSandbox, StackBlitz, etc.) */
   sandboxUrl?: string
+  /** Enable code editing (placeholder for future feature) */
   editable?: boolean
+  /** Show copy button */
   showCopyButton?: boolean
 }
 
+/**
+ * EnhancedCodeBlock component for documentation pages
+ *
+ * Extends the unified CodeBlock with additional features like sandbox links.
+ *
+ * @example
+ * ```tsx
+ * <EnhancedCodeBlock
+ *   code="const x = 1;"
+ *   language="typescript"
+ *   filename="example.ts"
+ *   sandboxUrl="https://codesandbox.io/..."
+ *   showLineNumbers
+ * />
+ * ```
+ */
 export function EnhancedCodeBlock({
   code,
   language,
@@ -32,186 +74,45 @@ export function EnhancedCodeBlock({
   editable = false,
   showCopyButton = true,
 }: EnhancedCodeBlockProps) {
-  const [copied, setCopied] = useState(false)
-  const { theme } = useTheme()
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const { success, error: showError } = useToast()
+  // Convert array-based highlightLines to string format
+  const highlightLinesString = highlightLines.length > 0
+    ? highlightLines.join(',')
+    : undefined
 
-  const copyToClipboard = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      success('Code copied to clipboard')
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-
-      timeoutRef.current = setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy:', error)
-      showError('Failed to copy code')
-    }
-  }, [code, success, showError])
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
-  const highlightTheme = useMemo(() => {
-    const isDark = theme === 'dark'
-    return isDark ? themes.nightOwl : themes.nightOwlLight
-  }, [theme])
-
-  const highlightLinesSet = useMemo(
-    () => new Set(highlightLines),
-    [highlightLines]
-  )
+  // Use filename as title if provided
+  const displayTitle = filename || title
 
   return (
-    <div
-      className={clsx(
-        'group relative not-prose my-6 rounded-xl overflow-hidden',
-        'shadow-lg shadow-slate-900/5 dark:shadow-slate-900/20',
-        'hover:shadow-xl hover:shadow-slate-900/10 dark:hover:shadow-slate-900/30',
-        'transition-shadow duration-300',
-        'border border-slate-200/50 dark:border-slate-700/50',
-        className
-      )}
-    >
-      {/* Enhanced Header - Glassmorphism styling */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50">
-        <div className="flex items-center gap-3">
-          {filename && (
-            <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-blue-500" />
-              <span className="font-mono text-sm font-medium text-text-primary">
-                {filename}
-              </span>
-            </div>
-          )}
-          {title && !filename && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center">
-                <Terminal className="w-4 h-4 text-brand-500" />
-              </div>
-              <span className="font-semibold text-text-primary">{title}</span>
-            </div>
-          )}
-          {!title && !filename && (
-            <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">
-              {language}
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {sandboxUrl && (
-            <a
-              href={sandboxUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary"
-              aria-label="Open in CodeSandbox"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Open</span>
-            </a>
-          )}
-          {showCopyButton && (
-            <button
-              onClick={copyToClipboard}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
-              aria-label="Copy code"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-green-500" />
-                  <span className="text-green-600 dark:text-green-400 font-semibold">
-                    Copied!
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Code */}
-      <Highlight theme={highlightTheme} code={code.trim()} language={language}>
-        {({
-          className: highlightClassName,
-          style,
-          tokens,
-          getLineProps,
-          getTokenProps,
-        }) => (
-          <pre
-            className={clsx(
-              highlightClassName,
-              'overflow-x-auto p-6 text-sm leading-relaxed'
-            )}
-            style={{
-              ...style,
-              backgroundColor: 'var(--color-code-bg)',
-            }}
+    <div className="relative group">
+      {/* Sandbox link (if provided) */}
+      {sandboxUrl && (
+        <div className="absolute top-2 right-2 z-10">
+          <a
+            href={sandboxUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/80 backdrop-blur-sm hover:bg-muted transition-all duration-200 text-xs font-medium text-muted-foreground hover:text-foreground"
+            aria-label="Open in CodeSandbox"
           >
-            {!title && !filename && showCopyButton && (
-              <button
-                onClick={copyToClipboard}
-                className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:shadow-sm z-10"
-                aria-label="Copy code"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Copy className="w-4 h-4 text-text-tertiary" />
-                )}
-              </button>
-            )}
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Open</span>
+          </a>
+        </div>
+      )}
 
-            <code className="font-mono">
-              {tokens.map((line, lineIndex) => {
-                const lineNumber = lineIndex + 1
-                const isHighlighted = highlightLinesSet.has(lineNumber)
-                const lineProps = getLineProps({ line })
-
-                return (
-                  <div
-                    key={lineIndex}
-                    {...lineProps}
-                    className={clsx(
-                      lineProps.className,
-                      isHighlighted &&
-                        'bg-brand-500/10 border-l-4 border-brand-500 -ml-4 pl-3',
-                      'px-1 rounded-sm',
-                      'hover:bg-bg-tertiary/50 transition-colors'
-                    )}
-                  >
-                    {showLineNumbers && (
-                      <span className="inline-block w-10 text-right mr-4 text-text-tertiary select-none font-mono text-xs">
-                        {lineNumber}
-                      </span>
-                    )}
-                    {line.map((token, tokenIndex) => (
-                      <span key={tokenIndex} {...getTokenProps({ token })} />
-                    ))}
-                  </div>
-                )
-              })}
-            </code>
-          </pre>
-        )}
-      </Highlight>
+      <UnifiedCodeBlock
+        language={language}
+        title={displayTitle}
+        showLineNumbers={showLineNumbers}
+        highlightLines={highlightLinesString}
+        showCopyButton={showCopyButton}
+        showDownloadButton
+        enableKeyboardShortcuts
+        filename={filename}
+        className={className}
+      >
+        {code}
+      </UnifiedCodeBlock>
     </div>
   )
 }

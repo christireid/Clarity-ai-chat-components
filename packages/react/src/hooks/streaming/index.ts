@@ -17,3 +17,17 @@ export {
   type UseSmoothedTextOptions,
   type UseSmoothedTextReturn,
 } from './use-smoothed-text'
+
+// Stream status tracking (inspired by Tambo's useTamboStreamStatus pattern)
+export {
+  useStreamStatus,
+  useSimpleStreamStatus,
+  type UseStreamStatusOptions,
+  type UseStreamStatusReturn,
+  type StreamStatusReturn,
+  type StreamingState,
+  type FieldStreamStatus,
+  type FieldStatus,
+  type TokenStats,
+  type TimeStats,
+} from './use-stream-status'

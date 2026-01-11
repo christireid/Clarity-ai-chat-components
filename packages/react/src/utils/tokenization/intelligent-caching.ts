@@ -28,9 +28,9 @@ export interface CacheConfig {
   enableAnalytics?: boolean
 }
 
-export interface CacheEntry {
+export interface CacheEntry<T = unknown> {
   key: string
-  value: any
+  value: T
   tokens: number
   hits: number
   lastAccessed: number
@@ -64,8 +64,8 @@ export interface SemanticCacheConfig {
 /**
  * Advanced semantic cache with intelligent matching
  */
-export class IntelligentSemanticCache {
-  private cache: Map<string, CacheEntry>
+export class IntelligentSemanticCache<T = unknown> {
+  private cache: Map<string, CacheEntry<T>>
   private semanticIndex: Map<string, Set<string>>
   private contextIndex: Map<string, Set<string>>
   private accessPatterns: Map<string, number>
@@ -90,7 +90,7 @@ export class IntelligentSemanticCache {
   /**
    * Get cached result with intelligent matching
    */
-  async get(key: string, context?: string): Promise<any> {
+  async get(key: string, context?: string): Promise<T | null> {
     const startTime = performance.now()
 
     // Try exact match first
@@ -124,9 +124,9 @@ export class IntelligentSemanticCache {
    */
   async set(
     key: string,
-    value: any,
+    value: T & { tokens?: number },
     context?: string,
-    metadata?: any
+    _metadata?: unknown
   ): Promise<void> {
     const tokens =
       value.tokens || (await TokenCounter.count(JSON.stringify(value)))
@@ -136,7 +136,7 @@ export class IntelligentSemanticCache {
       this.evictEntry()
     }
 
-    const entry: CacheEntry = {
+    const entry: CacheEntry<T> = {
       key,
       value,
       tokens,
@@ -166,11 +166,11 @@ export class IntelligentSemanticCache {
   /**
    * Find semantic match using similarity algorithms
    */
-  private async findSemanticMatch(key: string): Promise<CacheEntry | null> {
+  private async findSemanticMatch(key: string): Promise<CacheEntry<T> | null> {
     const keyHash = this.generateSemanticHash(key)
     const candidates = this.semanticIndex.get(keyHash) || new Set()
 
-    let bestMatch: CacheEntry | null = null
+    let bestMatch: CacheEntry<T> | null = null
     let bestScore = this.config.semanticThreshold || 0.8
 
     for (const candidateKey of candidates) {
@@ -193,11 +193,11 @@ export class IntelligentSemanticCache {
   private async findContextualMatch(
     key: string,
     context: string
-  ): Promise<CacheEntry | null> {
+  ): Promise<CacheEntry<T> | null> {
     const contextHash = this.generateContextHash(context)
     const candidates = this.contextIndex.get(contextHash) || new Set()
 
-    let bestMatch: CacheEntry | null = null
+    let bestMatch: CacheEntry<T> | null = null
     let bestScore = 0.6
 
     for (const candidateKey of candidates) {
@@ -227,7 +227,7 @@ export class IntelligentSemanticCache {
     key: string,
     level: CacheLevel,
     context?: string
-  ): Promise<any> {
+  ): Promise<T | null> {
     // Route to appropriate cache level
     switch (level) {
       case 'memory':
@@ -300,7 +300,7 @@ export class IntelligentSemanticCache {
    * Smart eviction with multiple strategies
    */
   private evictEntry(): void {
-    let entryToEvict: CacheEntry | null = null
+    let entryToEvict: CacheEntry<T> | null = null
     let evictionKey: string | null = null
 
     switch (this.config.evictionPolicy) {
@@ -415,9 +415,9 @@ export class IntelligentSemanticCache {
    * Find LRU entry
    */
   private findLRUEntry():
-    | { entry: CacheEntry; key: string }
+    | { entry: CacheEntry<T>; key: string }
     | { entry: null; key: null } {
-    let oldestEntry: CacheEntry | null = null
+    let oldestEntry: CacheEntry<T> | null = null
     let oldestKey: string | null = null
     let oldestTime = Date.now()
 
@@ -438,9 +438,9 @@ export class IntelligentSemanticCache {
    * Find LFU entry
    */
   private findLFUEntry():
-    | { entry: CacheEntry; key: string }
+    | { entry: CacheEntry<T>; key: string }
     | { entry: null; key: null } {
-    let leastUsedEntry: CacheEntry | null = null
+    let leastUsedEntry: CacheEntry<T> | null = null
     let leastUsedKey: string | null = null
     let minHits = Infinity
 
@@ -461,7 +461,7 @@ export class IntelligentSemanticCache {
    * Find TTL expired entry
    */
   private findTTLEntry():
-    | { entry: CacheEntry; key: string }
+    | { entry: CacheEntry<T>; key: string }
     | { entry: null; key: null } {
     const now = Date.now()
 
@@ -478,9 +478,9 @@ export class IntelligentSemanticCache {
    * Find adaptive entry based on multiple factors
    */
   private findAdaptiveEntry():
-    | { entry: CacheEntry; key: string }
+    | { entry: CacheEntry<T>; key: string }
     | { entry: null; key: null } {
-    let bestEntry: CacheEntry | null = null
+    let bestEntry: CacheEntry<T> | null = null
     let bestKey: string | null = null
     let bestScore = -1
 
@@ -501,7 +501,7 @@ export class IntelligentSemanticCache {
   /**
    * Calculate adaptive score for entry prioritization
    */
-  private calculateAdaptiveScore(entry: CacheEntry): number {
+  private calculateAdaptiveScore(entry: CacheEntry<T>): number {
     const now = Date.now()
     const ageScore = (now - entry.lastAccessed) / 3600000 // Hours since access
     const frequencyScore = entry.hits / 10 // Normalize hits
@@ -516,14 +516,14 @@ export class IntelligentSemanticCache {
    */
   private async getFromSessionStorage(
     key: string,
-    context?: string
-  ): Promise<any> {
+    _context?: string
+  ): Promise<T | null> {
     if (typeof sessionStorage === 'undefined') return null
 
     try {
       const cached = sessionStorage.getItem(`semantic_${key}`)
       if (cached) {
-        const entry = JSON.parse(cached)
+        const entry = JSON.parse(cached) as { created: number; ttl: number; value: T }
         if (Date.now() - entry.created < entry.ttl) {
           return entry.value
         }
@@ -538,9 +538,9 @@ export class IntelligentSemanticCache {
    * Persistent storage integration
    */
   private async getFromPersistentStorage(
-    key: string,
-    context?: string
-  ): Promise<any> {
+    _key: string,
+    _context?: string
+  ): Promise<T | null> {
     // Implementation would use IndexedDB or similar
     return null
   }
@@ -549,9 +549,9 @@ export class IntelligentSemanticCache {
    * Distributed cache integration
    */
   private async getFromDistributedCache(
-    key: string,
-    context?: string
-  ): Promise<any> {
+    _key: string,
+    _context?: string
+  ): Promise<T | null> {
     // Implementation would use Redis or similar
     return null
   }
@@ -674,7 +674,7 @@ export class IntelligentSemanticCache {
   /**
    * Update entry access
    */
-  private updateEntryAccess(entry: CacheEntry, key: string): void {
+  private updateEntryAccess(entry: CacheEntry<T>, key: string): void {
     entry.hits++
     entry.lastAccessed = Date.now()
     entry.accessPattern.push(key)
@@ -719,7 +719,7 @@ export class IntelligentSemanticCache {
   /**
    * Estimate entry size
    */
-  private estimateEntrySize(entry: CacheEntry): number {
+  private estimateEntrySize(entry: CacheEntry<T>): number {
     return JSON.stringify(entry).length
   }
 
@@ -790,11 +790,19 @@ export class IntelligentSemanticCache {
   }
 }
 
+/** Analytics result type */
+interface CacheAnalyticsResult {
+  stats: CacheStats
+  patterns: Map<string, number>
+  recommendations: string[]
+  optimizationOpportunities: string[]
+}
+
 /**
  * Multi-level cache manager
  */
-export class MultiLevelCacheManager {
-  private caches: Map<CacheLevel, IntelligentSemanticCache>
+export class MultiLevelCacheManager<T = unknown> {
+  private caches: Map<CacheLevel, IntelligentSemanticCache<T>>
   private config: Map<CacheLevel, CacheConfig>
 
   constructor() {
@@ -806,14 +814,14 @@ export class MultiLevelCacheManager {
    * Add cache level
    */
   addCacheLevel(level: CacheLevel, config: CacheConfig): void {
-    this.caches.set(level, new IntelligentSemanticCache(config))
+    this.caches.set(level, new IntelligentSemanticCache<T>(config))
     this.config.set(level, config)
   }
 
   /**
    * Multi-level get with intelligent routing
    */
-  async getMultiLevel(key: string, context?: string): Promise<any> {
+  async getMultiLevel(key: string, context?: string): Promise<T | null> {
     // Try each cache level in order
     const levels: CacheLevel[] = [
       'memory',
@@ -840,11 +848,11 @@ export class MultiLevelCacheManager {
    */
   async setMultiLevel(
     key: string,
-    value: any,
+    value: T & { tokens?: number },
     context?: string
   ): Promise<void> {
     // Set in all enabled cache levels
-    for (const [level, cache] of this.caches.entries()) {
+    for (const [, cache] of this.caches.entries()) {
       await cache.set(key, value, context)
     }
   }
@@ -852,8 +860,8 @@ export class MultiLevelCacheManager {
   /**
    * Get comprehensive analytics
    */
-  getAnalytics(): Map<CacheLevel, any> {
-    const analytics = new Map<CacheLevel, any>()
+  getAnalytics(): Map<CacheLevel, CacheAnalyticsResult> {
+    const analytics = new Map<CacheLevel, CacheAnalyticsResult>()
 
     for (const [level, cache] of this.caches.entries()) {
       analytics.set(level, cache.getAnalytics())
@@ -868,21 +876,37 @@ export class MultiLevelCacheManager {
   optimizeAll(): void {
     for (const cache of this.caches.values()) {
       // Implement optimization logic
-      const analytics = cache.getAnalytics()
+      const _analytics = cache.getAnalytics()
       // Use analytics to optimize cache configuration
     }
   }
+}
+
+/** Token count cache value */
+interface TokenCacheValue {
+  count: number
+  text: string
+  model?: string
+  tokens?: number
+}
+
+/** Compression cache value */
+interface CompressionCacheValue {
+  compressedText: string
+  originalText: string
+  strategy: string
+  tokens?: number
 }
 
 /**
  * Token-specific cache with intelligent features
  */
 export class IntelligentTokenCache {
-  private cache: IntelligentSemanticCache
+  private cache: IntelligentSemanticCache<TokenCacheValue | CompressionCacheValue>
   private compressionCache: Map<string, string>
 
   constructor(config: CacheConfig) {
-    this.cache = new IntelligentSemanticCache(config)
+    this.cache = new IntelligentSemanticCache<TokenCacheValue | CompressionCacheValue>(config)
     this.compressionCache = new Map()
   }
 
@@ -893,13 +917,13 @@ export class IntelligentTokenCache {
     const cacheKey = `tokens_${text.slice(0, 50)}_${model || 'default'}`
 
     const cached = await this.cache.get(cacheKey)
-    if (cached) {
+    if (cached && 'count' in cached) {
       return cached.count
     }
 
     // Calculate and cache
     const count = await TokenCounter.count(text)
-    await this.cache.set(cacheKey, { count, text, model })
+    await this.cache.set(cacheKey, { count, text, model, tokens: count })
 
     return count
   }
@@ -911,7 +935,7 @@ export class IntelligentTokenCache {
     const cacheKey = `compressed_${strategy}_${text.slice(0, 50)}`
 
     const cached = await this.cache.get(cacheKey)
-    if (cached) {
+    if (cached && 'compressedText' in cached) {
       return cached.compressedText
     }
 
@@ -927,10 +951,12 @@ export class IntelligentTokenCache {
     strategy: string
   ): Promise<void> {
     const cacheKey = `compressed_${strategy}_${text.slice(0, 50)}`
+    const tokens = await TokenCounter.count(compressedText)
     await this.cache.set(cacheKey, {
       compressedText,
       originalText: text,
       strategy,
+      tokens,
     })
   }
 
@@ -984,7 +1010,11 @@ export async function setCachedCompression(
   return tokenCache.setCompressedText(text, compressedText, strategy)
 }
 
-export function getCacheAnalytics(): any {
+export function getCacheAnalytics(): {
+  semantic: CacheAnalyticsResult
+  token: CacheStats
+  multiLevel: Map<CacheLevel, CacheAnalyticsResult>
+} {
   return {
     semantic: semanticCache.getAnalytics(),
     token: tokenCache.getStats(),

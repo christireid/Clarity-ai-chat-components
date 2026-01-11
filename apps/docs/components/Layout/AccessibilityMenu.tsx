@@ -140,7 +140,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-20 right-4 z-50 w-80 bg-bg-primary border border-border rounded-xl shadow-xl p-6"
+            className="fixed top-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-primary border border-border rounded-xl shadow-xl p-6"
           >
             <div className="flex items-center justify-between mb-4">
               <h2 id="accessibility-menu-title" className="text-lg font-semibold">
@@ -149,7 +149,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
               <button
                 ref={closeButtonRef}
                 onClick={onClose}
-                className="p-2 rounded-md hover:bg-bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
                 aria-label="Close accessibility menu"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
@@ -169,13 +169,13 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                 onClick={() =>
                   toggleFeature('highContrast', highContrast, setHighContrast)
                 }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
+                className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
                   highContrast ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
                     highContrast ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -198,13 +198,13 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                     setReducedMotion
                   )
                 }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
+                className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
                   reducedMotion ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
                     reducedMotion ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -223,13 +223,13 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                 onClick={() =>
                   toggleFeature('largerText', largerText, setLargerText)
                 }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
+                className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
                   largerText ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
                     largerText ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -252,13 +252,13 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                     setScreenReaderMode
                   )
                 }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
+                className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
                   screenReaderMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
                     screenReaderMode ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -283,7 +283,7 @@ export function AccessibilityButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="p-2 rounded-md hover:bg-bg-secondary transition-colors"
+      className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       aria-label="Open accessibility menu"
       title="Accessibility options"
     >

@@ -31,7 +31,7 @@ export { ModelSelector } from './components/ai/model-selector'
 export { ContextCard } from './components/context/context-card'
 export { ContextManager } from './components/context/context-manager'
 export { ProjectSidebar } from './components/context/project-sidebar'
-export { PromptLibrary } from './components/prompt/prompt-library'
+// PromptLibrary - not yet implemented
 export { SettingsPanel } from './components/context/settings-panel'
 export { UsageDashboard } from './components/dashboards/usage-dashboard'
 export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
@@ -180,14 +180,7 @@ export type {
   PromptSuggestion,
   PromptSuggestionType,
 } from './components/prompt/prompt-suggestions'
-export {
-  PromptSuggestionsEnhanced,
-  usePromptSuggestionsEnhanced,
-} from './components/prompt/prompt-suggestions-enhanced'
-export type {
-  SuggestionRankingConfig,
-  SuggestionInteraction,
-} from './components/prompt/prompt-suggestions-enhanced'
+// PromptSuggestionsEnhanced - not yet implemented
 
 // Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
 export * from './accessibility/focus-management'

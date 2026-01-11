@@ -146,6 +146,51 @@ export const navigationConfig: NavigationSection[] = [
     ],
   },
   {
+    title: 'AI Components',
+    items: [
+      {
+        title: 'ChainOfThought',
+        href: '/reference/components/chain-of-thought',
+        description: 'Step-by-step reasoning visualization with collapsible sections',
+      },
+      {
+        title: 'ThinkingBar',
+        href: '/reference/components/thinking-bar',
+        description: 'Processing status indicator with progress tracking',
+      },
+      {
+        title: 'ToolExecutionCard',
+        href: '/reference/components/tool-execution-card',
+        description: 'Display tool/function call execution status',
+      },
+      {
+        title: 'StreamingProgress',
+        href: '/reference/components/streaming-progress',
+        description: 'Real-time streaming progress with token tracking',
+      },
+      {
+        title: 'TextShimmer',
+        href: '/reference/components/text-shimmer',
+        description: 'Animated text loading placeholder',
+      },
+      {
+        title: 'SourceCitation',
+        href: '/reference/components/source-citation',
+        description: 'Display AI response sources with favicons and confidence scores',
+      },
+      {
+        title: 'PromptContainer',
+        href: '/reference/components/prompt-container',
+        description: 'Comprehensive prompt input wrapper with suggestions and attachments',
+      },
+      {
+        title: 'SuggestionCards',
+        href: '/reference/components/suggestion-cards',
+        description: 'Interactive suggestion grid with filtering and search',
+      },
+    ],
+  },
+  {
     title: 'UI Components',
     items: [
       {

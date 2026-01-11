@@ -269,6 +269,6 @@ Give them that—and spend your engineering cycles on what makes your product sp
 
 ---
 
-_Clarity Chat is the library we wish existed when we started building AI products. 70+ components,
-35+ hooks, 11 themes—so you can focus on what makes your product unique.
+_Clarity Chat is the library we wish existed when we started building AI products. 155+ components,
+70+ hooks, 15 themes—so you can focus on what makes your product unique.
 [See what's included →](/docs/components)_

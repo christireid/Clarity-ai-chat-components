@@ -52,10 +52,13 @@ export interface TruncationResult {
   keyPhrases: string[]
   estimatedQuality: number
   metadata?: {
-    sentenceCount: number
-    paragraphCount: number
-    readingTime: number
-    complexity: number
+    sentenceCount?: number
+    paragraphCount?: number
+    readingTime?: number
+    complexity?: number
+    turnCount?: number
+    speakerCount?: number
+    speakers?: string[]
   }
 }
 
@@ -66,6 +69,40 @@ export interface SummarizationConfig {
   preserveQuotes?: boolean
   preserveNumbers?: boolean
   preserveEntities?: boolean
+}
+
+/** Hierarchical structure for document analysis */
+interface HierarchicalSection {
+  text: string
+  level: number
+}
+
+interface HierarchicalStructure {
+  sections: HierarchicalSection[]
+}
+
+/** Content analysis result */
+interface ContentAnalysis {
+  tokens: number
+  sentences: number
+  words: number
+  complexity: number
+  density: number
+}
+
+/** Metadata for truncated text */
+interface TruncationMetadata {
+  sentenceCount: number
+  paragraphCount: number
+  readingTime: number
+  complexity: number
+}
+
+/** Metadata for truncated conversation */
+interface ConversationMetadata {
+  turnCount: number
+  speakerCount: number
+  speakers: string[]
 }
 
 // Smart truncation engine
@@ -569,8 +606,8 @@ export class SmartTruncator {
 
   private identifyHierarchicalStructure(
     text: string,
-    contentType?: ContentType
-  ): any {
+    _contentType?: ContentType
+  ): HierarchicalStructure {
     // Simplified hierarchical structure identification
     const sections = this.splitIntoSections(text)
     return {
@@ -590,12 +627,12 @@ export class SmartTruncator {
   }
 
   private async truncateByHierarchy(
-    structure: any,
+    structure: HierarchicalStructure,
     config: TruncationConfig
-  ): Promise<any> {
+  ): Promise<HierarchicalStructure> {
     // Preserve higher-level sections first
     const sortedSections = structure.sections.sort(
-      (a: any, b: any) => a.level - b.level
+      (a: HierarchicalSection, b: HierarchicalSection) => a.level - b.level
     )
 
     return {
@@ -603,13 +640,13 @@ export class SmartTruncator {
     }
   }
 
-  private reconstructHierarchicalText(truncatedStructure: any): string {
+  private reconstructHierarchicalText(truncatedStructure: HierarchicalStructure): string {
     return truncatedStructure.sections
-      .map((section: any) => section.text)
+      .map((section: HierarchicalSection) => section.text)
       .join('\n\n')
   }
 
-  private async analyzeContent(text: string): Promise<any> {
+  private async analyzeContent(text: string): Promise<ContentAnalysis> {
     const tokens = await TokenCounter.count(text)
     const sentences = this.splitIntoSentences(text).length
     const words = text.split(/\s+/).length
@@ -624,7 +661,7 @@ export class SmartTruncator {
   }
 
   private selectOptimalStrategy(
-    analysis: any,
+    analysis: ContentAnalysis,
     config: TruncationConfig
   ): TruncationStrategy {
     if (analysis.sentences < 5) return 'semantic'
@@ -795,7 +832,7 @@ export class SmartTruncator {
     return Math.max(qualityThreshold, baseQuality)
   }
 
-  private generateMetadata(text: string): any {
+  private generateMetadata(text: string): TruncationMetadata {
     const sentences = this.splitIntoSentences(text).length
     const paragraphs = text.split(/\n\n+/).length
     const words = text.split(/\s+/).length
@@ -810,7 +847,7 @@ export class SmartTruncator {
     }
   }
 
-  private generateConversationMetadata(text: string): any {
+  private generateConversationMetadata(text: string): ConversationMetadata {
     const turns = this.parseConversationTurns(text)
     const speakers = new Set(turns.map((turn) => turn.speaker))
 

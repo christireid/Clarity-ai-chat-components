@@ -83,7 +83,11 @@ export {
   extractLanguageFromClassName,
   countLines,
   truncateCode,
+  parseCodeBlocks,
+  hasCodeBlocks,
+  extractCodeBlocks,
   COMMON_LANGUAGES,
   LANGUAGE_DISPLAY_NAMES,
   type CommonLanguage,
+  type ParsedCodeBlock,
 } from './utils'

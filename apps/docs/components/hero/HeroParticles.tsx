@@ -11,19 +11,10 @@ import {
   type ReactNode,
   type ErrorInfo,
 } from 'react'
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { logger } from '@/lib/logger'
 import * as THREE from 'three'
-
-// Extend react-three-fiber with Three.js elements
-extend({
-  Points: THREE.Points,
-  BufferGeometry: THREE.BufferGeometry,
-  BufferAttribute: THREE.BufferAttribute,
-  ShaderMaterial: THREE.ShaderMaterial,
-})
-
 import { createNoise3D, type NoiseFunction3D } from 'simplex-noise'
 import { cn } from '@/lib/utils'
 import {
@@ -375,27 +366,19 @@ function ParticleField({
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
         <bufferAttribute
           attach="attributes-aColor"
-          count={count}
-          array={colors}
-          itemSize={3}
+          args={[colors, 3]}
         />
         <bufferAttribute
           attach="attributes-aSize"
-          count={count}
-          array={sizes}
-          itemSize={1}
+          args={[sizes, 1]}
         />
         <bufferAttribute
           attach="attributes-aPhase"
-          count={count}
-          array={phases}
-          itemSize={1}
+          args={[phases, 1]}
         />
       </bufferGeometry>
       <shaderMaterial
@@ -447,9 +430,12 @@ function Scene({
 }: SceneProps) {
   return (
     <>
-      {/* Key forces remount when count changes to avoid Three.js buffer resize errors */}
+      {/* Debug: simple visible mesh to test Canvas rendering */}
+      <mesh position={[0, 0, -5]}>
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshBasicMaterial color="red" />
+      </mesh>
       <ParticleField
-        key={count}
         count={count}
         primaryColor={primaryColor}
         secondaryColor={secondaryColor}
@@ -460,7 +446,8 @@ function Scene({
         isVisible={isVisible}
         qualityLevel={qualityLevel}
       />
-      {enableBloom && (
+      {/* Temporarily disable bloom for debugging */}
+      {false && enableBloom && (
         <EffectComposer>
           <Bloom
             intensity={bloomIntensity}
@@ -731,6 +718,7 @@ export function HeroParticles({
       >
         <Suspense fallback={<LoadingPlaceholder />}>
           <Canvas
+            key={`canvas-${adjustedCount}`}
             camera={{
               fov: CAMERA.fov,
               near: CAMERA.near,

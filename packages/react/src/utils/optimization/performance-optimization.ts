@@ -58,7 +58,7 @@ export interface DebounceConfig {
 /**
  * Create a debounced function
  */
-export function createDebouncedFunction<T extends (...args: any[]) => any>(
+export function createDebouncedFunction<T extends (...args: unknown[]) => unknown>(
   fn: T,
   config: DebounceConfig
 ): (...args: Parameters<T>) => void {
@@ -104,7 +104,7 @@ export interface ThrottleConfig {
 /**
  * Create a throttled function
  */
-export function createThrottledFunction<T extends (...args: any[]) => any>(
+export function createThrottledFunction<T extends (...args: unknown[]) => unknown>(
   fn: T,
   config: ThrottleConfig
 ): (...args: Parameters<T>) => void {
@@ -135,8 +135,8 @@ export function createThrottledFunction<T extends (...args: any[]) => any>(
 /**
  * Memory management utilities
  */
-export class MemoryManager {
-  private cache: Map<string, any> = new Map()
+export class MemoryManager<T = unknown> {
+  private cache: Map<string, T> = new Map()
   private maxSize: number
   private accessOrder: string[] = []
 
@@ -147,7 +147,7 @@ export class MemoryManager {
   /**
    * Get item from cache
    */
-  get(key: string): any | undefined {
+  get(key: string): T | undefined {
     if (this.cache.has(key)) {
       // Move to end (most recently used)
       this.accessOrder = this.accessOrder.filter((k) => k !== key)
@@ -160,7 +160,7 @@ export class MemoryManager {
   /**
    * Set item in cache
    */
-  set(key: string, value: any): void {
+  set(key: string, value: T): void {
     if (this.cache.has(key)) {
       this.cache.set(key, value)
       // Move to end
@@ -195,24 +195,30 @@ export class MemoryManager {
   }
 }
 
+/** Message type for diff calculation */
+interface DiffMessage {
+  id: string
+  [key: string]: unknown
+}
+
 /**
  * Message diff utility for efficient re-rendering
  */
 export function calculateMessageDiff(
-  oldMessages: Array<{ id: string; [key: string]: any }>,
-  newMessages: Array<{ id: string; [key: string]: any }>
+  oldMessages: DiffMessage[],
+  newMessages: DiffMessage[]
 ): {
-  added: Array<{ id: string; [key: string]: any }>
-  removed: Array<{ id: string; [key: string]: any }>
-  updated: Array<{ id: string; old: any; new: any }>
+  added: DiffMessage[]
+  removed: DiffMessage[]
+  updated: Array<{ id: string; old: DiffMessage; new: DiffMessage }>
   unchanged: string[]
 } {
   const oldMap = new Map(oldMessages.map((msg) => [msg.id, msg]))
   const newMap = new Map(newMessages.map((msg) => [msg.id, msg]))
 
-  const added: Array<{ id: string; [key: string]: any }> = []
-  const removed: Array<{ id: string; [key: string]: any }> = []
-  const updated: Array<{ id: string; old: any; new: any }> = []
+  const added: DiffMessage[] = []
+  const removed: DiffMessage[] = []
+  const updated: Array<{ id: string; old: DiffMessage; new: DiffMessage }> = []
   const unchanged: string[] = []
 
   // Find added and updated

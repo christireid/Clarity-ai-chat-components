@@ -18,6 +18,7 @@ import { upgradeCommand } from './commands/upgrade.js'
 import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
+import { listCommand } from './commands/list.js'
 import { migrateThemeCommand } from './commands/migrate-theme.js'
 import { validateThemeCommand } from './commands/validate-theme.js'
 import { themeCommand } from './commands/theme.js'
@@ -99,14 +100,15 @@ program
   .action(initCommand)
 
 program
-  .command('add <component>')
-  .description('➕ Add a component to your project')
+  .command('add [component]')
+  .description('➕ Add a component to your project (run without args to list all)')
   .option('-p, --path <path>', 'Installation path', './src/components')
   .option('--no-deps', 'Skip dependency installation')
   .option('--batch <components>', 'Add multiple components (comma-separated)')
   .option('--dry-run', 'Show what would be added without making changes')
   .option('-y, --yes', 'Skip confirmation prompts')
   .option('--force', 'Overwrite existing files')
+  .option('-a, --all', 'Add all available components')
   .action(addCommand)
 
 program
@@ -225,6 +227,15 @@ program
   .command('browse')
   .description('🎨 Browse available components interactively')
   .action(browseCommand)
+
+program
+  .command('components')
+  .alias('ls')
+  .description('📋 List available components and templates')
+  .option('-c, --category <category>', 'Filter by category (chat, ui, analytics, core)')
+  .option('-t, --templates', 'List available project templates')
+  .option('--json', 'Output as JSON')
+  .action(listCommand)
 
 program
   .command('search <query>')

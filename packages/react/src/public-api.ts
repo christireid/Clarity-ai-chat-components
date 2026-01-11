@@ -89,6 +89,19 @@ export {
   type CitationSource,
 } from './components/ai/citation'
 
+// SourceCitation - Rich source citation display with multiple variants
+export {
+  SourceCitation,
+  useSourceCitation,
+  type SourceCitationProps,
+  type SourceCitationVariant,
+  type SourceCitationSize,
+  type SourceCitationSource,
+  type Source,
+  type UseSourceCitationOptions,
+  type UseSourceCitationReturn,
+} from './components/ai/source-citation'
+
 export {
   MarkdownRendererEnhanced,
   type MarkdownRendererProps,
@@ -108,11 +121,96 @@ export {
   type UseChainOfThoughtReturn,
 } from './components/ai/chain-of-thought'
 
+// ThinkingBar - AI processing status indicator
+export {
+  ThinkingBar,
+  useThinkingBar,
+  type ThinkingBarProps,
+  type ThinkingBarStatus,
+  type ThinkingBarVariant,
+  type UseThinkingBarOptions,
+  type UseThinkingBarReturn,
+} from './components/ai/thinking-bar'
+
+// StreamStatusProgress - Comprehensive streaming progress visualization
+// Note: Different from ui/progress.tsx's simple StreamingProgress (animated dots)
+export {
+  StreamStatusProgress,
+  StreamStatusProgressWithFields,
+  type StreamStatusProgressProps,
+  type StreamStatusProgressWithFieldsProps,
+  type StreamStatusProgressVariant,
+  type StreamStatusProgressSize,
+  type StreamStatusProgressColor,
+  type StreamStatusTokens,
+} from './components/ai/streaming-progress'
+
+// TextShimmer - Animated text placeholder loading indicator
+export {
+  TextShimmer,
+  ParagraphShimmer,
+  HeadingShimmer,
+  CodeShimmer,
+  InlineShimmer,
+  TextShimmerGroup,
+  useTextShimmer,
+  type TextShimmerProps,
+  type TextShimmerVariant,
+  type TextShimmerSpeed,
+  type TextShimmerSize,
+  type TextShimmerGroupProps,
+  type UseTextShimmerOptions,
+  type UseTextShimmerReturn,
+} from './components/ai/text-shimmer'
+
+// ToolExecutionCard - Tool call execution status display
+export {
+  ToolExecutionCard,
+  useToolExecution,
+  type ToolExecutionCardProps,
+  type ToolExecution,
+  type ToolExecutionStatus,
+  type UseToolExecutionOptions,
+  type UseToolExecutionReturn,
+} from './components/ai/tool-execution-card'
+
 // Code blocks
-export { CodeBlock, type CodeBlockProps } from './components/code/CodeBlock'
+export {
+  CodeBlock,
+  type CodeBlockProps,
+  type CodeFontFamily,
+} from './components/code/CodeBlock'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+
+// Code block utilities
+export {
+  parseCodeBlocks,
+  hasCodeBlocks,
+  extractCodeBlocks,
+  parseLineRanges,
+  escapeHtml,
+  normalizeLanguage,
+  detectLanguage,
+  getLanguageDisplayName,
+  extractLanguageFromClassName,
+  countLines,
+  truncateCode,
+  COMMON_LANGUAGES,
+  LANGUAGE_DISPLAY_NAMES,
+  type ParsedCodeBlock,
+  type CommonLanguage,
+} from './components/code/utils'
+
+// Code themes
+export {
+  CODE_THEMES,
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  type CodeThemeName,
+  type CodeThemeDefinition,
+} from './components/code/themes'
 
 // ============================================================================
 // COMPOSABLE UI COMPONENTS (For custom layouts)
@@ -290,6 +388,27 @@ export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt/prompt-suggestions'
 export type { PromptSuggestion } from './components/prompt/prompt-suggestions'
 
+// Prompt Container and Suggestion Cards
+export {
+  PromptContainer,
+  useFileAttachments,
+} from './components/prompt/prompt-container'
+export type {
+  PromptContainerProps,
+  SuggestionCategory,
+  FileAttachment,
+} from './components/prompt/prompt-container'
+
+export {
+  SuggestionCards,
+  useSuggestionCards,
+} from './components/prompt/suggestion-cards'
+export type {
+  SuggestionCardsProps,
+  SuggestionCard,
+  CategoryFilter,
+} from './components/prompt/suggestion-cards'
+
 // Message Components
 export { CitationCard } from './components/message/citation-card'
 
@@ -357,6 +476,20 @@ export {
   type UseSmoothedTextOptions,
   type UseSmoothedTextReturn,
 } from './hooks/streaming/use-smoothed-text'
+
+// Stream Status Tracking (inspired by Tambo's useTamboStreamStatus pattern)
+export {
+  useStreamStatus,
+  useSimpleStreamStatus,
+  type UseStreamStatusOptions,
+  type UseStreamStatusReturn,
+  type StreamStatusReturn,
+  type StreamingState,
+  type FieldStreamStatus,
+  type FieldStatus,
+  type TokenStats as StreamTokenStats,
+  type TimeStats as StreamTimeStats,
+} from './hooks/streaming/use-stream-status'
 
 // Accessibility
 export { useReducedMotion } from './animations'

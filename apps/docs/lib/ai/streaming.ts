@@ -9,7 +9,6 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
-import type { ToolName } from './tools'
 
 export interface StreamChunk {
   type:
@@ -205,7 +204,7 @@ export async function* streamFromClaudeWithTools(
     model = 'claude-3-5-sonnet-20241022',
     temperature = 0.7,
     maxTokens = 4000,
-    tools: providedTools = [],
+    tools = [],
   } = options
 
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -231,7 +230,7 @@ export async function* streamFromClaudeWithTools(
       max_tokens: maxTokens,
       temperature,
       system: systemMessage,
-      tools: providedTools.length > 0 ? providedTools : undefined,
+      tools: tools.length > 0 ? tools : undefined,
       messages: conversationMessages.map((m) => ({
         role: m.role === 'user' ? 'user' : 'assistant',
         content: m.content,
@@ -275,8 +274,8 @@ export async function* streamFromClaudeWithTools(
           // Execute the tool
           try {
             const toolResult = await executeToolCall(
-              block.name as ToolName,
-              block.input as Parameters<typeof executeToolCall>[1]
+              block.name as toolsModule.ToolName,
+              block.input as Record<string, unknown>
             )
 
             // Emit tool result for UI to render
@@ -322,8 +321,8 @@ export async function* streamFromClaudeWithTools(
         if (block.type === 'tool_use') {
           try {
             const result = await executeToolCall(
-              block.name as ToolName,
-              block.input as Parameters<typeof executeToolCall>[1]
+              block.name as toolsModule.ToolName,
+              block.input as Record<string, unknown>
             )
             toolResults.push({
               type: 'tool_result',
@@ -367,7 +366,7 @@ export async function* streamFromClaudeWithTools(
         max_tokens: maxTokens,
         temperature,
         system: systemMessage,
-        tools: providedTools.length > 0 ? providedTools : undefined,
+        tools: tools.length > 0 ? tools : undefined,
         messages: continuationMessages,
       })
 
@@ -469,14 +468,14 @@ export async function* streamFromDemo(
 
     // Components
     components:
-      'Clarity Chat provides **190+ pre-built components**:\n\n**Core Components:**\n- `<ClarityChat />` - Drop-in complete chat UI\n- `<ChatWindow />` - Main chat interface\n- `<ChatInput />` - Message input with auto-resize\n- `<MessageList />` - Virtualized message container\n- `<Message />` - Individual message display\n\n**Advanced Components:**\n- `<VoiceInput />` - Speech-to-text\n- `<FileUpload />` - Drag & drop file attachments\n- `<CommandPalette />` - Cmd+K interface\n- `<TokenCounter />` - Real-time token tracking\n- `<PromptSuggestions />` - AI-generated follow-ups\n\n📖 **Learn more**: [Component Reference](/reference/components)',
+      'Clarity Chat provides **70+ pre-built components**:\n\n**Core Components:**\n- `<ClarityChat />` - Drop-in complete chat UI\n- `<ChatWindow />` - Main chat interface\n- `<ChatInput />` - Message input with auto-resize\n- `<MessageList />` - Virtualized message container\n- `<Message />` - Individual message display\n\n**Advanced Components:**\n- `<VoiceInput />` - Speech-to-text\n- `<FileUpload />` - Drag & drop file attachments\n- `<CommandPalette />` - Cmd+K interface\n- `<TokenCounter />` - Real-time token tracking\n- `<PromptSuggestions />` - AI-generated follow-ups\n\n📖 **Learn more**: [Component Reference](/reference/components)',
 
     // Hooks
-    hook: 'Clarity Chat includes **95+ custom hooks**:\n\n**Core Hooks:**\n```tsx\nimport {\n  useClarityChat,    // Main chat hook\n  useStreamingSSE,   // SSE streaming\n  useTokenTracker,   // Token counting\n  useMessageOps,     // Edit/delete/regenerate\n} from "@clarity-chat/react"\n```\n\n**Utility Hooks:**\n- `useAutoScroll()` - Smart scrolling\n- `useClipboard()` - Copy-paste support\n- `useLocalStorage()` - Persistence\n- `useReducedMotion()` - Accessibility\n\n📖 **Learn more**: [Hooks Reference](/reference/hooks)',
+    hook: 'Clarity Chat includes **35+ custom hooks**:\n\n**Core Hooks:**\n```tsx\nimport {\n  useClarityChat,    // Main chat hook\n  useStreamingSSE,   // SSE streaming\n  useTokenTracker,   // Token counting\n  useMessageOps,     // Edit/delete/regenerate\n} from "@clarity-chat/react"\n```\n\n**Utility Hooks:**\n- `useAutoScroll()` - Smart scrolling\n- `useClipboard()` - Copy-paste support\n- `useLocalStorage()` - Persistence\n- `useReducedMotion()` - Accessibility\n\n📖 **Learn more**: [Hooks Reference](/reference/hooks)',
 
     // Theming
     theme:
-      'Customize Clarity Chat with **15 built-in themes** or create your own:\n\n```tsx\nimport { ClarityChat, themes } from "@clarity-chat/react"\n\n// Use a preset theme\n<ClarityChat theme={themes.dark} />\n\n// Or customize with CSS variables\n<ClarityChat\n  style={{\n    "--cc-primary": "#6366f1",\n    "--cc-bg": "#0f172a",\n  }}\n/>\n```\n\n**Available themes:** light, dark, system, ocean, forest, sunset, midnight, lavender, slate, rose, emerald\n\n📖 **Learn more**: [Theming Guide](/guides/theming)',
+      'Customize Clarity Chat with **11 built-in themes** or create your own:\n\n```tsx\nimport { ClarityChat, themes } from "@clarity-chat/react"\n\n// Use a preset theme\n<ClarityChat theme={themes.dark} />\n\n// Or customize with CSS variables\n<ClarityChat\n  style={{\n    "--cc-primary": "#6366f1",\n    "--cc-bg": "#0f172a",\n  }}\n/>\n```\n\n**Available themes:** light, dark, system, ocean, forest, sunset, midnight, lavender, slate, rose, emerald\n\n📖 **Learn more**: [Theming Guide](/guides/theming)',
 
     // Memory
     memory:
@@ -518,8 +517,8 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
 **📚 Documentation Topics:**
 - Installation & getting started
 - Streaming messages (SSE/WebSocket)
-- Available components (200+)
-- Hooks reference (95+)
+- Available components (70+)
+- Hooks reference (35+)
 - Theming & customization
 - Memory & conversation history
 - Token optimization
@@ -736,91 +735,7 @@ export interface ModelRoutingConfig {
 }
 
 /**
- * Provider status information for health checks and debugging
- */
-export interface ProviderStatus {
-  name: 'anthropic' | 'openai' | 'gemini' | 'demo'
-  available: boolean
-  configured: boolean
-  envVar: string
-  model?: string
-}
-
-/**
- * Get the status of all configured AI providers
- * Useful for health checks, debugging, and UI display
- */
-export function getProviderStatus(): {
-  providers: ProviderStatus[]
-  activeProvider: ProviderStatus
-  isDemoMode: boolean
-  summary: string
-} {
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
-  const hasOpenAI = !!process.env.OPENAI_API_KEY
-  const hasGemini = !!process.env.GEMINI_API_KEY
-
-  const providers: ProviderStatus[] = [
-    {
-      name: 'anthropic',
-      available: hasAnthropic,
-      configured: !!process.env.ANTHROPIC_API_KEY,
-      envVar: 'ANTHROPIC_API_KEY',
-      model: hasAnthropic ? 'claude-3-5-sonnet-20241022' : undefined,
-    },
-    {
-      name: 'openai',
-      available: hasOpenAI,
-      configured: !!process.env.OPENAI_API_KEY,
-      envVar: 'OPENAI_API_KEY',
-      model: hasOpenAI ? (process.env.AI_MODEL || 'gpt-4-turbo-preview') : undefined,
-    },
-    {
-      name: 'gemini',
-      available: hasGemini,
-      configured: !!process.env.GEMINI_API_KEY,
-      envVar: 'GEMINI_API_KEY',
-      model: hasGemini ? 'gemini-1.5-flash' : undefined,
-    },
-    {
-      name: 'demo',
-      available: true, // Always available as fallback
-      configured: true,
-      envVar: 'N/A',
-      model: 'demo-mode',
-    },
-  ]
-
-  const isDemoMode = !hasAnthropic && !hasOpenAI && !hasGemini
-
-  // Determine active provider with priority: Anthropic > OpenAI > Gemini > Demo
-  let activeProvider: ProviderStatus
-  if (hasAnthropic) {
-    activeProvider = providers[0]
-  } else if (hasOpenAI) {
-    activeProvider = providers[1]
-  } else if (hasGemini) {
-    activeProvider = providers[2]
-  } else {
-    activeProvider = providers[3]
-  }
-
-  const configuredCount = providers.filter(p => p.available && p.name !== 'demo').length
-  const summary = isDemoMode
-    ? 'No API keys configured - running in demo mode. Add ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to .env.local for full functionality.'
-    : `${configuredCount} provider(s) configured. Active: ${activeProvider.name} (${activeProvider.model})`
-
-  return {
-    providers,
-    activeProvider,
-    isDemoMode,
-    summary,
-  }
-}
-
-/**
  * Get the appropriate streaming function based on configured model
- * Priority order: Anthropic (preferred) > OpenAI > Gemini > Demo mode
  */
 export function getStreamingFunction():
   | typeof streamFromOpenAI
@@ -834,41 +749,26 @@ export function getStreamingFunction():
 
   // If no API keys, use demo mode
   if (!hasOpenAI && !hasAnthropic && !hasGemini) {
-    logger.warn('No API keys configured - using demo mode. Add ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY to .env.local')
+    logger.warn('⚠️  No API keys configured - using demo mode')
     return streamFromDemo
   }
 
   const model = process.env.AI_MODEL || 'gpt-4-turbo-preview'
 
-  // Priority: Check configured model first, then fall back in order
   if (model.startsWith('claude') && hasAnthropic) {
-    logger.info(`Using Anthropic Claude: ${model}`)
     return streamFromClaude
   }
 
   if (model.startsWith('gemini') && hasGemini) {
-    logger.info(`Using Google Gemini: ${model}`)
     return streamFromGemini
   }
 
   if (hasOpenAI) {
-    logger.info(`Using OpenAI: ${model}`)
     return streamFromOpenAI
   }
 
-  // If we have keys but configured model doesn't match, try fallback order
-  if (hasAnthropic) {
-    logger.warn(`Configured model "${model}" not available, falling back to Anthropic Claude`)
-    return streamFromClaude
-  }
-
-  if (hasGemini) {
-    logger.warn(`Configured model "${model}" not available, falling back to Google Gemini`)
-    return streamFromGemini
-  }
-
   // Fallback to demo if configured model doesn't have a key
-  logger.warn('Configured model has no API key - using demo mode')
+  logger.warn('⚠️  Configured model has no API key - using demo mode')
   return streamFromDemo
 }
 
@@ -1014,6 +914,49 @@ export function getStreamingFunctionWithRouting(
     model: selectedModel,
     classification,
   }
+}
+
+/**
+ * Provider status for API health checks
+ */
+export interface ProviderStatus {
+  provider: 'openai' | 'anthropic' | 'google' | 'demo'
+  available: boolean
+  latency?: number
+  error?: string
+}
+
+export async function getProviderStatus(): Promise<ProviderStatus[]> {
+  const statuses: ProviderStatus[] = []
+
+  // Check OpenAI
+  const openaiKey = process.env.OPENAI_API_KEY
+  statuses.push({
+    provider: 'openai',
+    available: !!openaiKey && openaiKey.length > 10,
+  })
+
+  // Check Anthropic
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  statuses.push({
+    provider: 'anthropic',
+    available: !!anthropicKey && anthropicKey.length > 10,
+  })
+
+  // Check Google
+  const googleKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY
+  statuses.push({
+    provider: 'google',
+    available: !!googleKey && googleKey.length > 10,
+  })
+
+  // Demo is always available
+  statuses.push({
+    provider: 'demo',
+    available: true,
+  })
+
+  return statuses
 }
 
 /**

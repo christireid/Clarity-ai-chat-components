@@ -7,6 +7,71 @@
 
 import type { ErrorProvider, ErrorReport } from './types'
 
+// ============================================================================
+// Error Tracking Provider Interfaces
+// ============================================================================
+
+/** Sentry SDK mock interface */
+interface SentryLike {
+  init: (config: {
+    dsn: string
+    environment?: string
+    release?: string
+    tracesSampleRate?: number
+  }) => void
+  captureException: (
+    error: Error,
+    context?: {
+      level?: string
+      tags?: Record<string, string>
+      contexts?: Record<string, Record<string, unknown>>
+      user?: { id?: string; email?: string }
+      extra?: Record<string, unknown>
+    }
+  ) => void
+  setUser: (user: { id?: string; email?: string } | null) => void
+  setContext: (name: string, context: Record<string, unknown>) => void
+  addBreadcrumb: (breadcrumb: {
+    message?: string
+    data?: Record<string, unknown>
+    timestamp?: number
+  }) => void
+}
+
+/** Rollbar SDK mock interface */
+interface RollbarLike {
+  error: (error: Error | string, custom?: Record<string, unknown>) => void
+  warning: (message: string, custom?: Record<string, unknown>) => void
+  info: (message: string, custom?: Record<string, unknown>) => void
+  critical: (error: Error | string, custom?: Record<string, unknown>) => void
+  configure: (config: {
+    accessToken?: string
+    environment?: string
+    codeVersion?: string
+    payload?: { person?: { id: string; email?: string } }
+  }) => void
+  [key: string]: ((arg: Error | string, custom?: Record<string, unknown>) => void) | unknown
+}
+
+/** Bugsnag SDK mock interface */
+interface BugsnagEventLike {
+  severity: string
+  setUser: (id: string, email?: string, name?: string) => void
+  addMetadata: (section: string, data: Record<string, unknown>) => void
+}
+
+interface BugsnagLike {
+  start: (config: {
+    apiKey: string
+    releaseStage?: string
+    appVersion?: string
+  }) => void
+  notify: (error: Error, onError?: (event: BugsnagEventLike) => void) => void
+  setUser: (id: string, email?: string, name?: string) => void
+  addMetadata: (section: string, data: Record<string, unknown>) => void
+  leaveBreadcrumb: (message: string, metadata?: Record<string, unknown>) => void
+}
+
 function isDev(): boolean {
   return (
     typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
@@ -60,7 +125,7 @@ interface SentryConfig {
  * ```
  */
 export function createSentryProvider(config: SentryConfig): ErrorProvider {
-  let Sentry: any = null
+  let Sentry: SentryLike | null = null
 
   return {
     name: 'sentry',
@@ -73,17 +138,17 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
       // Mock Sentry object
       Sentry = {
         init: () => {},
-        captureException: (error: Error, context?: any) => {
+        captureException: (error: Error, context?: Record<string, unknown>) => {
           if (config.debug)
             safeDevLog('[Sentry] Captured exception', { error, context })
         },
-        setUser: (user: any) => {
+        setUser: () => {
           if (config.debug) safeDevLog('[Sentry] Set user')
         },
-        setContext: (name: string, context: any) => {
+        setContext: (name: string) => {
           if (config.debug) safeDevLog('[Sentry] Set context', name)
         },
-        addBreadcrumb: (breadcrumb: any) => {
+        addBreadcrumb: () => {
           if (config.debug) safeDevLog('[Sentry] Added breadcrumb')
         },
       }
@@ -105,8 +170,8 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
         level: report.severity,
         tags: report.tags,
         contexts: {
-          custom: report.context,
-          environment: report.environment,
+          custom: report.context ?? {},
+          environment: report.environment ?? {},
         },
         user: report.userId
           ? {
@@ -125,18 +190,18 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
     setUser: (
       userId: string,
       email?: string,
-      userData?: Record<string, any>
+      userData?: Record<string, unknown>
     ) => {
       if (!Sentry) return
       Sentry.setUser({ id: userId, email, ...userData })
     },
 
-    setContext: (context: Record<string, any>) => {
+    setContext: (context: Record<string, unknown>) => {
       if (!Sentry) return
       Sentry.setContext('custom', context)
     },
 
-    addBreadcrumb: (message: string, data?: Record<string, any>) => {
+    addBreadcrumb: (message: string, data?: Record<string, unknown>) => {
       if (!Sentry) return
       Sentry.addBreadcrumb({
         message,
@@ -162,7 +227,7 @@ interface RollbarConfig {
  * Create a Rollbar error tracking provider
  */
 export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
-  let Rollbar: any = null
+  let Rollbar: RollbarLike | null = null
 
   return {
     name: 'rollbar',
@@ -172,17 +237,20 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
 
       // Mock Rollbar object
       Rollbar = {
-        error: (error: Error | string, custom?: any) => {
+        error: (error: Error | string, custom?: Record<string, unknown>) => {
           if (config.debug) safeDevLog('[Rollbar] Error', { error, custom })
         },
-        warning: (message: string, custom?: any) => {
+        warning: (message: string, custom?: Record<string, unknown>) => {
           if (config.debug) safeDevLog('[Rollbar] Warning', { message, custom })
         },
-        info: (message: string, custom?: any) => {
+        info: (message: string, custom?: Record<string, unknown>) => {
           if (config.debug) safeDevLog('[Rollbar] Info', { message, custom })
         },
-        configure: (config: any) => {
-          if (config.debug) safeDevLog('[Rollbar] Configured')
+        critical: (error: Error | string, custom?: Record<string, unknown>) => {
+          if (config.debug) safeDevLog('[Rollbar] Critical', { error, custom })
+        },
+        configure: (rollbarConfig: Record<string, unknown>) => {
+          if (config.debug) safeDevLog('[Rollbar] Configured', rollbarConfig)
         },
       }
 
@@ -213,18 +281,21 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
       }
 
       const level = report.severity === 'fatal' ? 'critical' : report.severity
+      const logMethod = Rollbar[level]
 
-      if (report.originalError) {
-        Rollbar[level](report.originalError, payload)
-      } else {
-        Rollbar[level](report.message, payload)
+      if (typeof logMethod === 'function') {
+        if (report.originalError) {
+          logMethod(report.originalError, payload)
+        } else {
+          logMethod(report.message, payload)
+        }
       }
     },
 
     setUser: (
       userId: string,
       email?: string,
-      userData?: Record<string, any>
+      userData?: Record<string, unknown>
     ) => {
       if (!Rollbar) return
       Rollbar.configure({
@@ -251,7 +322,7 @@ interface BugsnagConfig {
  * Create a Bugsnag error tracking provider
  */
 export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
-  let Bugsnag: any = null
+  let Bugsnag: BugsnagLike | null = null
 
   return {
     name: 'bugsnag',
@@ -262,17 +333,25 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
       // Mock Bugsnag object
       Bugsnag = {
         start: () => {},
-        notify: (error: Error, onError?: any) => {
+        notify: (error: Error, onError?: (event: BugsnagEventLike) => void) => {
           if (config.debug) safeDevLog('[Bugsnag] Notified')
-          if (onError) onError()
+          if (onError) {
+            // Create a mock event for the callback
+            const mockEvent: BugsnagEventLike = {
+              severity: 'error',
+              setUser: () => {},
+              addMetadata: () => {},
+            }
+            onError(mockEvent)
+          }
         },
-        setUser: (id: string, email?: string, name?: string) => {
-          if (config.debug) safeDevLog('[Bugsnag] Set user')
+        setUser: (id: string, email?: string) => {
+          if (config.debug) safeDevLog('[Bugsnag] Set user', { id, email })
         },
-        addMetadata: (section: string, data: any) => {
+        addMetadata: (section: string) => {
           if (config.debug) safeDevLog('[Bugsnag] Added metadata', section)
         },
-        leaveBreadcrumb: (message: string, metadata?: any) => {
+        leaveBreadcrumb: () => {
           if (config.debug) safeDevLog('[Bugsnag] Left breadcrumb')
         },
       }
@@ -289,7 +368,7 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
 
       const error = report.originalError || new Error(report.message)
 
-      Bugsnag.notify(error, (event: any) => {
+      Bugsnag.notify(error, (event: BugsnagEventLike) => {
         event.severity = report.severity === 'fatal' ? 'error' : report.severity
 
         if (report.userId) {
@@ -313,16 +392,17 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
     setUser: (
       userId: string,
       email?: string,
-      userData?: Record<string, any>
+      userData?: Record<string, unknown>
     ) => {
       if (!Bugsnag) return
-      Bugsnag.setUser(userId, email, userData?.['name'])
+      const name = userData?.['name']
+      Bugsnag.setUser(userId, email, typeof name === 'string' ? name : undefined)
       if (userData) {
         Bugsnag.addMetadata('user', userData)
       }
     },
 
-    addBreadcrumb: (message: string, data?: Record<string, any>) => {
+    addBreadcrumb: (message: string, data?: Record<string, unknown>) => {
       if (!Bugsnag) return
       Bugsnag.leaveBreadcrumb(message, data)
     },
@@ -447,7 +527,7 @@ export function createConsoleErrorProvider(): ErrorProvider {
     setUser: (
       userId: string,
       email?: string,
-      userData?: Record<string, any>
+      userData?: Record<string, unknown>
     ) => {
       console.debug('[Error Reporter] Set user:', {
         userId,
@@ -456,11 +536,11 @@ export function createConsoleErrorProvider(): ErrorProvider {
       })
     },
 
-    setContext: (context: Record<string, any>) => {
+    setContext: (context: Record<string, unknown>) => {
       console.debug('[Error Reporter] Set context:', context)
     },
 
-    addBreadcrumb: (message: string, data?: Record<string, any>) => {
+    addBreadcrumb: (message: string, data?: Record<string, unknown>) => {
       console.debug('[Error Reporter] Breadcrumb:', message, data)
     },
   }

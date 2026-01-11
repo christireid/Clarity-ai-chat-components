@@ -104,7 +104,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
             <button
               onClick={() => handleFeedback('helpful')}
               disabled={isSubmitting}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+              className={`flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                 feedback === 'helpful'
                   ? 'bg-green-100 dark:bg-green-900 border-green-300 dark:border-green-700'
                   : 'hover:bg-muted'
@@ -120,7 +120,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
             <button
               onClick={() => handleFeedback('not-helpful')}
               disabled={isSubmitting}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+              className={`flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                 feedback === 'not-helpful'
                   ? 'bg-red-100 dark:bg-red-900 border-red-300 dark:border-red-700'
                   : 'hover:bg-muted'
@@ -156,7 +156,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
               type="submit"
               disabled={isSubmitting}
               aria-busy={isSubmitting}
-              className={`px-4 py-2 bg-brand-500 text-white rounded-lg text-sm hover:bg-brand-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
+              className={`px-4 py-2 min-h-[44px] bg-brand-500 text-white rounded-lg text-sm hover:bg-brand-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
                 isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -170,7 +170,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
                 setError(null)
               }}
               disabled={isSubmitting}
-              className="px-4 py-2 border rounded-lg text-sm hover:bg-muted transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="px-4 py-2 min-h-[44px] border rounded-lg text-sm hover:bg-muted transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               Cancel
             </button>

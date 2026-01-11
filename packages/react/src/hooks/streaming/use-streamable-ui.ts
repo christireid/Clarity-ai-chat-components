@@ -46,21 +46,21 @@ export interface UseStreamableUIState<T> {
   reset: () => void
 }
 
-const identityTransform: TransformFn<any> = (value) => value as any
+const identityTransform = <T,>(value: unknown): T => value as T
 
 const isAsyncIterable = <T>(value: unknown): value is AsyncIterable<T> =>
-  Boolean(value) && typeof (value as any)[Symbol.asyncIterator] === 'function'
+  Boolean(value) && typeof (value as Record<symbol, unknown>)[Symbol.asyncIterator] === 'function'
 
 const isPromiseLike = <T>(value: unknown): value is PromiseLike<T> =>
-  Boolean(value) && typeof (value as any).then === 'function'
+  Boolean(value) && typeof (value as Record<string, unknown>).then === 'function'
 
-const isReadableStream = (value: unknown): value is ReadableStream<any> =>
+const isReadableStream = (value: unknown): value is ReadableStream<unknown> =>
   Boolean(value) &&
-  typeof (value as ReadableStream<any>).getReader === 'function'
+  typeof (value as ReadableStream<unknown>).getReader === 'function'
 
-const toAsyncIterableFromReadable = (
-  stream: ReadableStream<any>
-): AsyncIterable<any> => ({
+const toAsyncIterableFromReadable = <T>(
+  stream: ReadableStream<T>
+): AsyncIterable<T> => ({
   [Symbol.asyncIterator]() {
     const reader = stream.getReader()
     return {
@@ -216,7 +216,7 @@ export function useStreamableUI<T>(
     }
 
     const normalizedSource = isReadableStream(source)
-      ? toAsyncIterableFromReadable(source)
+      ? toAsyncIterableFromReadable(source as ReadableStream<T | Uint8Array | string>)
       : source
 
     if (isAsyncIterable<T>(normalizedSource)) {

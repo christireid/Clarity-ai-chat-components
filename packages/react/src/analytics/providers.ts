@@ -6,6 +6,70 @@
 
 import type { AnalyticsProvider, AnalyticsEvent } from './types'
 
+// ============================================================================
+// Global Type Declarations for Third-Party Analytics Libraries
+// ============================================================================
+
+/** Google Analytics gtag function signature */
+type GtagCommand = 'config' | 'event' | 'js' | 'set'
+type GtagFunction = (
+  command: GtagCommand | Date,
+  targetOrEventName?: string,
+  params?: Record<string, unknown>
+) => void
+
+/** Mixpanel API interface */
+interface MixpanelInstance {
+  init: (token: string) => void
+  track: (event: string, properties?: Record<string, unknown>) => void
+  identify: (id: string) => void
+  people: {
+    set: (properties: Record<string, unknown>) => void
+  }
+  reset: () => void
+}
+
+/** PostHog API interface */
+interface PostHogInstance {
+  init: (
+    apiKey: string,
+    options?: { api_host?: string; loaded?: (posthog: PostHogInstance) => void }
+  ) => void
+  capture: (event: string, properties?: Record<string, unknown>) => void
+  identify: (id: string, properties?: Record<string, unknown>) => void
+  reset: () => void
+  debug: (enabled: boolean) => void
+}
+
+/** Amplitude API interface */
+interface AmplitudeIdentify {
+  set: (key: string, value: unknown) => void
+}
+
+interface AmplitudeInstance {
+  init: (apiKey: string) => void
+  logEvent: (event: string, properties?: Record<string, unknown>) => void
+  setUserId: (userId: string | null) => void
+  identify: (identify: AmplitudeIdentify) => void
+  regenerateDeviceId: () => void
+}
+
+interface AmplitudeSDK {
+  getInstance: () => AmplitudeInstance
+  Identify: new () => AmplitudeIdentify
+}
+
+/** Window interface extensions for analytics libraries */
+declare global {
+  interface Window {
+    gtag?: GtagFunction
+    dataLayer?: unknown[]
+    mixpanel?: MixpanelInstance
+    posthog?: PostHogInstance
+    amplitude?: AmplitudeSDK
+  }
+}
+
 /**
  * Console Logger Provider (for debugging)
  */
@@ -45,38 +109,39 @@ export function createGoogleAnalyticsProvider(
       if (typeof window === 'undefined') return
 
       // Check if already loaded
-      if ((window as any).gtag) return
+      if (window.gtag) return
 
       const script = document.createElement('script')
       script.async = true
       script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
       document.head.appendChild(script)
-      ;(window as any).dataLayer = (window as any).dataLayer || []
-      function gtag(...args: any[]) {
-        ;(window as any).dataLayer.push(args)
-      }
-      ;(window as any).gtag = gtag
 
-      gtag('js', new Date())
+      window.dataLayer = window.dataLayer || []
+      const gtag: GtagFunction = (command, targetOrEventName, params) => {
+        window.dataLayer?.push([command, targetOrEventName, params])
+      }
+      window.gtag = gtag
+
+      gtag('js' as GtagCommand, new Date().toISOString())
       gtag('config', measurementId)
     },
     track: (event) => {
-      if (typeof window === 'undefined' || !(window as any).gtag) return
-      ;(window as any).gtag('event', event.name, {
+      if (typeof window === 'undefined' || !window.gtag) return
+      window.gtag('event', event.name, {
         ...event.properties,
         user_id: event.userId,
       })
     },
     identify: (user) => {
-      if (typeof window === 'undefined' || !(window as any).gtag) return
-      ;(window as any).gtag('config', measurementId, {
+      if (typeof window === 'undefined' || !window.gtag) return
+      window.gtag('config', measurementId, {
         user_id: user.id,
         user_properties: user.properties,
       })
     },
     page: (pageView) => {
-      if (typeof window === 'undefined' || !(window as any).gtag) return
-      ;(window as any).gtag('config', measurementId, {
+      if (typeof window === 'undefined' || !window.gtag) return
+      window.gtag('config', measurementId, {
         page_path: pageView.path,
         page_title: pageView.title,
       })
@@ -97,7 +162,7 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
     name: 'mixpanel',
     init: async () => {
       if (typeof window === 'undefined') return
-      if ((window as any).mixpanel) return
+      if (window.mixpanel) return
 
       // Load Mixpanel library
       const script = document.createElement('script')
@@ -109,22 +174,28 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
         script.onerror = reject
         document.head.appendChild(script)
       })
-      ;(window as any).mixpanel.init(token)
+
+      // Re-check after script load since window.mixpanel is now available
+      // Type assertion needed because TypeScript narrowed to never after early return above
+      const mixpanel = window.mixpanel as MixpanelInstance | undefined
+      if (mixpanel) {
+        mixpanel.init(token)
+      }
     },
     track: (event) => {
-      if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      ;(window as any).mixpanel.track(event.name, event.properties)
+      if (typeof window === 'undefined' || !window.mixpanel) return
+      window.mixpanel.track(event.name, event.properties)
     },
     identify: (user) => {
-      if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      ;(window as any).mixpanel.identify(user.id)
+      if (typeof window === 'undefined' || !window.mixpanel) return
+      window.mixpanel.identify(user.id)
       if (user.properties) {
-        ;(window as any).mixpanel.people.set(user.properties)
+        window.mixpanel.people.set(user.properties)
       }
     },
     page: (pageView) => {
-      if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      ;(window as any).mixpanel.track('Page View', {
+      if (typeof window === 'undefined' || !window.mixpanel) return
+      window.mixpanel.track('Page View', {
         path: pageView.path,
         title: pageView.title,
         referrer: pageView.referrer,
@@ -132,8 +203,8 @@ export function createMixpanelProvider(token: string): AnalyticsProvider {
       })
     },
     reset: () => {
-      if (typeof window === 'undefined' || !(window as any).mixpanel) return
-      ;(window as any).mixpanel.reset()
+      if (typeof window === 'undefined' || !window.mixpanel) return
+      window.mixpanel.reset()
     },
   }
 }
@@ -156,7 +227,7 @@ export function createPostHogProvider(
     name: 'posthog',
     init: async () => {
       if (typeof window === 'undefined') return
-      if ((window as any).posthog) return
+      if (window.posthog) return
 
       // Load PostHog library
       const script = document.createElement('script')
@@ -168,24 +239,30 @@ export function createPostHogProvider(
         script.onerror = reject
         document.head.appendChild(script)
       })
-      ;(window as any).posthog.init(apiKey, {
-        api_host: options?.api_host || 'https://app.posthog.com',
-        loaded: (posthog: any) => {
-          posthog.debug(false)
-        },
-      })
+
+      // Re-check after script load since window.posthog is now available
+      // Type assertion needed because TypeScript narrowed to never after early return above
+      const posthog = window.posthog as PostHogInstance | undefined
+      if (posthog) {
+        posthog.init(apiKey, {
+          api_host: options?.api_host || 'https://app.posthog.com',
+          loaded: (ph: PostHogInstance) => {
+            ph.debug(false)
+          },
+        })
+      }
     },
     track: (event) => {
-      if (typeof window === 'undefined' || !(window as any).posthog) return
-      ;(window as any).posthog.capture(event.name, event.properties)
+      if (typeof window === 'undefined' || !window.posthog) return
+      window.posthog.capture(event.name, event.properties)
     },
     identify: (user) => {
-      if (typeof window === 'undefined' || !(window as any).posthog) return
-      ;(window as any).posthog.identify(user.id, user.properties)
+      if (typeof window === 'undefined' || !window.posthog) return
+      window.posthog.identify(user.id, user.properties)
     },
     page: (pageView) => {
-      if (typeof window === 'undefined' || !(window as any).posthog) return
-      ;(window as any).posthog.capture('$pageview', {
+      if (typeof window === 'undefined' || !window.posthog) return
+      window.posthog.capture('$pageview', {
         $current_url: window.location.href,
         path: pageView.path,
         title: pageView.title,
@@ -193,8 +270,8 @@ export function createPostHogProvider(
       })
     },
     reset: () => {
-      if (typeof window === 'undefined' || !(window as any).posthog) return
-      ;(window as any).posthog.reset()
+      if (typeof window === 'undefined' || !window.posthog) return
+      window.posthog.reset()
     },
   }
 }
@@ -212,7 +289,7 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
     name: 'amplitude',
     init: async () => {
       if (typeof window === 'undefined') return
-      if ((window as any).amplitude) return
+      if (window.amplitude) return
 
       // Load Amplitude library
       const script = document.createElement('script')
@@ -224,28 +301,32 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
         script.onerror = reject
         document.head.appendChild(script)
       })
-      ;(window as any).amplitude.getInstance().init(apiKey)
+
+      // Re-check after script load since window.amplitude is now available
+      // Type assertion needed because TypeScript narrowed to never after early return above
+      const amplitude = window.amplitude as AmplitudeSDK | undefined
+      if (amplitude) {
+        amplitude.getInstance().init(apiKey)
+      }
     },
     track: (event) => {
-      if (typeof window === 'undefined' || !(window as any).amplitude) return
-      ;(window as any).amplitude
-        .getInstance()
-        .logEvent(event.name, event.properties)
+      if (typeof window === 'undefined' || !window.amplitude) return
+      window.amplitude.getInstance().logEvent(event.name, event.properties)
     },
     identify: (user) => {
-      if (typeof window === 'undefined' || !(window as any).amplitude) return
-      ;(window as any).amplitude.getInstance().setUserId(user.id)
+      if (typeof window === 'undefined' || !window.amplitude) return
+      window.amplitude.getInstance().setUserId(user.id)
       if (user.properties) {
-        const identify = new (window as any).amplitude.Identify()
+        const identify = new window.amplitude.Identify()
         Object.entries(user.properties).forEach(([key, value]) => {
           identify.set(key, value)
         })
-        ;(window as any).amplitude.getInstance().identify(identify)
+        window.amplitude.getInstance().identify(identify)
       }
     },
     page: (pageView) => {
-      if (typeof window === 'undefined' || !(window as any).amplitude) return
-      ;(window as any).amplitude.getInstance().logEvent('Page View', {
+      if (typeof window === 'undefined' || !window.amplitude) return
+      window.amplitude.getInstance().logEvent('Page View', {
         path: pageView.path,
         title: pageView.title,
         referrer: pageView.referrer,
@@ -253,9 +334,9 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
       })
     },
     reset: () => {
-      if (typeof window === 'undefined' || !(window as any).amplitude) return
-      ;(window as any).amplitude.getInstance().setUserId(null)
-      ;(window as any).amplitude.getInstance().regenerateDeviceId()
+      if (typeof window === 'undefined' || !window.amplitude) return
+      window.amplitude.getInstance().setUserId(null)
+      window.amplitude.getInstance().regenerateDeviceId()
     },
   }
 }
@@ -276,7 +357,7 @@ export function createAmplitudeProvider(apiKey: string): AnalyticsProvider {
 export function createCustomApiProvider(config: {
   endpoint: string
   headers?: Record<string, string>
-  transformEvent?: (event: AnalyticsEvent) => any
+  transformEvent?: (event: AnalyticsEvent) => unknown
 }): AnalyticsProvider {
   return {
     name: 'custom-api',

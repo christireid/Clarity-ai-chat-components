@@ -29,7 +29,7 @@ export interface ToonDecodeOptions {
  * // ]
  * ```
  */
-export function toonToJson(toon: string, options: ToonDecodeOptions = {}): any {
+export function toonToJson(toon: string, options: ToonDecodeOptions = {}): unknown {
   const { strict = false } = options
 
   try {
@@ -91,7 +91,7 @@ function isObjectFormat(lines: string[]): boolean {
 /**
  * Parse table format (CSV-style)
  */
-function parseTable(lines: string[], options: ToonDecodeOptions): any[] {
+function parseTable(lines: string[], options: ToonDecodeOptions): Record<string, unknown>[] {
   const [headerLine, ...dataLines] = lines
   if (!headerLine) return []
 
@@ -101,7 +101,7 @@ function parseTable(lines: string[], options: ToonDecodeOptions): any[] {
   // Parse data rows
   return dataLines.map(line => {
     const values = parseCsvLine(line)
-    const obj: any = {}
+    const obj: Record<string, unknown> = {}
 
     headers.forEach((header, index) => {
       const value = values[index]
@@ -115,8 +115,8 @@ function parseTable(lines: string[], options: ToonDecodeOptions): any[] {
 /**
  * Parse list format
  */
-function parseList(lines: string[], options: ToonDecodeOptions): any[] {
-  const items: any[] = []
+function parseList(lines: string[], options: ToonDecodeOptions): unknown[] {
+  const items: unknown[] = []
   let currentItem = ''
 
   for (const line of lines) {
@@ -145,8 +145,8 @@ function parseList(lines: string[], options: ToonDecodeOptions): any[] {
 /**
  * Parse object format (YAML-style)
  */
-function parseObject(lines: string[], options: ToonDecodeOptions): any {
-  const obj: any = {}
+function parseObject(lines: string[], options: ToonDecodeOptions): Record<string, unknown> {
+  const obj: Record<string, unknown> = {}
   let currentKey: string | null = null
   let currentValue = ''
   let indent = 0
@@ -225,7 +225,7 @@ function parseCsvLine(line: string): string[] {
 /**
  * Parse single value
  */
-function parseValue(value: string, options: ToonDecodeOptions): any {
+function parseValue(value: string, options: ToonDecodeOptions): unknown {
   const trimmed = value.trim()
 
   // Null

@@ -7,7 +7,7 @@
 <h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>
 
 <p><strong>The most complete, production-ready AI chat component library for React.</strong><br/>
-249K+ lines of code. 200+ components. 95+ hooks. Trusted by developers worldwide.</p>
+249K+ lines of code. 155+ components. 70+ hooks. Trusted by developers worldwide.</p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -133,7 +133,7 @@ export default function App() {
 
 #### 🎨 **Components**
 
-- **200+** React components
+- **155+** React components
 - **15** theme presets
 - **150+** animations
 - Virtual scrolling
@@ -144,7 +144,7 @@ export default function App() {
 
 #### ⚙️ **Hooks & Logic**
 
-- **95+** custom hooks
+- **70+** custom hooks
 - Streaming (SSE/WebSocket)
 - Token optimization
 - Error recovery
@@ -428,8 +428,8 @@ Battery-aware streaming, performance optimization, analytics
 </thead>
 <tbody>
 <tr><td>Setup Time</td><td><strong>3 minutes</strong></td><td>~15 min</td><td>~30 min</td><td>~10 min</td></tr>
-<tr><td>Components</td><td><strong>200+</strong></td><td>~20</td><td>~50</td><td>~40</td></tr>
-<tr><td>React Hooks</td><td><strong>95+</strong></td><td>~5</td><td>~10</td><td>~8</td></tr>
+<tr><td>Components</td><td><strong>155+</strong></td><td>~20</td><td>~50</td><td>~40</td></tr>
+<tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~10</td><td>~8</td></tr>
 <tr><td>Token Optimization</td><td><strong>✅ 60-90% savings</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
 <tr><td>RAG Pipeline</td><td><strong>✅</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>

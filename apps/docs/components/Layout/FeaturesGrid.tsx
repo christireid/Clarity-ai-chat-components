@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
 import {
   staggerContainer,
   staggerItem,
@@ -20,12 +21,15 @@ interface FeaturesGridProps {
 }
 
 export function FeaturesGrid({ features }: FeaturesGridProps) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.1 })
+
   return (
     <motion.div
+      ref={ref}
       variants={staggerContainer(0.1)}
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: '-100px' }}
+      animate={isInView ? 'show' : 'hidden'}
       className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
     >
       {features.map((feature, index) => (

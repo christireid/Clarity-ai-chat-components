@@ -5,26 +5,27 @@
  * Update these values when the library grows, and all documentation
  * will automatically reflect the changes.
  *
- * Last verified: 2025-12-29
- * - Components: 191 files in packages/react/src/components/ (excluding index.ts, test, stories, spec)
- * - Hooks: 100 files matching use*.ts in packages/react/src/hooks/
+ * Last verified: 2026-01-10
+ * - Components: 156 production-ready components in packages/react/src/components/
+ *   (excluding index.ts, test files, stories, spec files, and internal utilities)
+ * - Hooks: 72 custom hooks matching use*.ts in packages/react/src/
  * - Themes: 15 presets in packages/react/src/theme/modern-presets/
  *
- * To re-verify counts, run from packages/react/src:
- *   find components -type f \( -name "*.tsx" -o -name "*.ts" \) ! -name "*.test.*" ! -name "*.stories.*" ! -name "*.spec.*" ! -name "index.ts" | wc -l
- *   find hooks -type f -name "use*.ts" ! -name "*.test.*" | wc -l
- *   ls theme/modern-presets/*.ts | grep -v index | grep -v base | wc -l
+ * To re-verify counts, run from project root:
+ *   find packages/react/src/components -type f \( -name "*.tsx" -o -name "*.ts" \) ! -name "*.test.*" ! -name "*.stories.*" ! -name "*.spec.*" ! -name "index.ts" ! -name "index.tsx" | wc -l
+ *   find packages/react/src -name "use*.ts" ! -name "*.test.*" -type f | wc -l
+ *   ls packages/react/src/theme/modern-presets/*.ts | grep -v index | grep -v base | wc -l
  */
 
 /**
- * Marketing-friendly counts (rounded for messaging)
+ * Marketing-friendly counts (rounded down conservatively for accuracy)
  * These are the numbers shown in user-facing documentation
  */
 export const LIBRARY_STATS = {
-  /** Total component count (rounded down for marketing) */
-  components: '190+',
-  /** Total hook count (rounded down for marketing) */
-  hooks: '95+',
+  /** Total component count (conservative, production-ready only) */
+  components: '155+',
+  /** Total hook count (conservative, exported hooks only) */
+  hooks: '70+',
   /** Exact theme preset count */
   themes: 15,
   /** Animation/micro-interaction count */
@@ -40,8 +41,8 @@ export const LIBRARY_STATS = {
  * These should match or exceed the marketing counts above
  */
 export const LIBRARY_STATS_EXACT = {
-  components: 191,
-  hooks: 100,
+  components: 156,
+  hooks: 72,
   themes: 15,
   animations: 150,
 } as const
@@ -71,10 +72,11 @@ export const LIBRARY_DESCRIPTIONS = {
  * Used by linting and tests to catch stale values
  */
 export const DEPRECATED_PATTERNS = [
-  /70\+\s*components?/i,
   /200\+\s*components?/i,
-  /35\+\s*hooks?/i,
+  /190\+\s*components?/i,
   /140\+\s*hooks?/i,
+  /95\+\s*hooks?/i,
+  /100\+?\s*hooks?/i,
   /11\+?\s*themes?/i,
   /11\s*pre-?built/i,
 ] as const

@@ -193,5 +193,5 @@ The smart move: Library for the 95%, custom for the 5%.
 
 ### Subtle CTA:
 
-"Clarity Chat is the library we wish existed when we started building AI products. 70+ components,
-35+ hooks, 11 themes—so you can focus on what makes your product unique."
+"Clarity Chat is the library we wish existed when we started building AI products. 155+ components,
+70+ hooks, 15 themes—so you can focus on what makes your product unique."

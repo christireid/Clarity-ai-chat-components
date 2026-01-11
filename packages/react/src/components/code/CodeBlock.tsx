@@ -11,13 +11,14 @@ import {
   normalizeLanguage,
   detectLanguage,
   countLines,
+  getLanguageDisplayName,
 } from './utils'
 import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
-import { ChevronDownIcon, ChevronUpIcon } from '../ui/icons'
+import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
 
 /**
  * Font family options
@@ -68,6 +69,14 @@ export interface CodeBlockProps {
   onCopy?: () => void
   /** Auto-detect language if not provided */
   autoDetectLanguage?: boolean
+  /** Show download button */
+  showDownloadButton?: boolean
+  /** Callback when code is downloaded */
+  onDownload?: () => void
+  /** Enable keyboard shortcuts (Cmd+Shift+C to copy, Cmd+Shift+D to download) */
+  enableKeyboardShortcuts?: boolean
+  /** Filename for download (defaults to code.{language}) */
+  filename?: string
 }
 
 /**
@@ -130,12 +139,17 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
   className,
   onCopy,
   autoDetectLanguage = true,
+  showDownloadButton = false,
+  onDownload,
+  enableKeyboardShortcuts = false,
+  filename,
 }) {
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [highlightedHtml, setHighlightedHtml] = React.useState<string>('')
   const [isLoading, setIsLoading] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
   const codeRef = React.useRef<HTMLDivElement>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   // Normalize code content
   const code = React.useMemo(() => children.trim(), [children])
@@ -168,6 +182,63 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
 
   // Get Shiki theme
   const shikiTheme = React.useMemo(() => getShikiTheme(theme), [theme])
+
+  // Download code as file
+  const handleDownload = React.useCallback(() => {
+    try {
+      const blob = new Blob([code], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename || `code.${language === 'text' ? 'txt' : language}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      onDownload?.()
+    } catch (err) {
+      logger.error('Failed to download code:', err)
+    }
+  }, [code, filename, language, onDownload])
+
+  // Copy to clipboard (for keyboard shortcut)
+  const handleCopy = React.useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      onCopy?.()
+    } catch (err) {
+      logger.error('Failed to copy code:', err)
+    }
+  }, [code, onCopy])
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    if (!enableKeyboardShortcuts) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if focused within this code block
+      if (!containerRef.current?.contains(document.activeElement)) return
+
+      // Cmd/Ctrl+Shift+C to copy
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') {
+        e.preventDefault()
+        handleCopy()
+      }
+      // Cmd/Ctrl+Shift+D to download
+      else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'd') {
+        e.preventDefault()
+        handleDownload()
+      }
+      // Cmd/Ctrl+Shift+E to toggle expand
+      else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'e') {
+        e.preventDefault()
+        setIsExpanded((prev) => !prev)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [enableKeyboardShortcuts, handleCopy, handleDownload])
 
   // Highlight code with Shiki
   React.useEffect(() => {
@@ -256,6 +327,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         'code-block group relative rounded-lg border overflow-hidden',
         'border-border bg-card',
@@ -264,6 +336,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
       )}
       data-theme={theme}
       data-language={language}
+      tabIndex={enableKeyboardShortcuts ? 0 : undefined}
     >
       {/* Header */}
       <CodeBlockHeader
@@ -271,17 +344,39 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
         language={language}
         showLanguageBadge={showLanguageBadge}
       >
-        {showCopyButton && (
-          <CodeBlockCopyButton
-            content={code}
-            onCopy={onCopy}
-            className={cn(
-              'opacity-0 group-hover:opacity-100',
-              'focus-visible:opacity-100',
-              'transition-opacity duration-200'
-            )}
-          />
-        )}
+        <div className="flex items-center gap-1">
+          {showDownloadButton && (
+            <button
+              type="button"
+              onClick={handleDownload}
+              className={cn(
+                'p-2 rounded-md',
+                'hover:bg-muted/80',
+                'text-muted-foreground hover:text-foreground',
+                'opacity-0 group-hover:opacity-100',
+                'focus-visible:opacity-100',
+                'transition-all duration-200',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              )}
+              aria-label={`Download code${enableKeyboardShortcuts ? ' (Cmd+Shift+D)' : ''}`}
+              title={`Download${enableKeyboardShortcuts ? ' (Cmd+Shift+D)' : ''}`}
+            >
+              <DownloadIcon className="h-4 w-4" size={16} />
+            </button>
+          )}
+          {showCopyButton && (
+            <CodeBlockCopyButton
+              content={code}
+              onCopy={onCopy}
+              className={cn(
+                'opacity-0 group-hover:opacity-100',
+                'focus-visible:opacity-100',
+                'transition-opacity duration-200'
+              )}
+              aria-label={enableKeyboardShortcuts ? 'Copy code (Cmd+Shift+C)' : undefined}
+            />
+          )}
+        </div>
       </CodeBlockHeader>
 
       {/* Code Content */}

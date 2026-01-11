@@ -81,12 +81,15 @@ export interface UseChatReturn {
 /**
  * @deprecated Use `useClarityChat` instead. This will be removed in v3.0.
  */
+// Track if we've already warned to avoid spamming console
+let hasWarnedUseChat = false
+
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
-  // Log deprecation warning in development
-  if (process.env['NODE_ENV'] === 'development') {
+  // Log deprecation warning once in development
+  if (process.env.NODE_ENV === 'development' && !hasWarnedUseChat) {
+    hasWarnedUseChat = true
     console.warn(
-      '[useChat] This hook is deprecated. Please migrate to `useClarityChat` from @clarity-chat/react. ' +
-        'See migration guide: https://github.com/clarity-chat/clarity-chat/blob/main/MIGRATION_GUIDE.md'
+      '[Clarity] useChat is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'
     )
   }
 

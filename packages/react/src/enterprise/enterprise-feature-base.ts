@@ -112,14 +112,22 @@ export interface EnhancedBaseEnterpriseConfig {
 }
 
 /**
+ * Metric entry for tracking
+ */
+interface MetricEntry {
+  timestamp: Date
+  [key: string]: unknown
+}
+
+/**
  * Enterprise processing result
  */
-export interface EnterpriseProcessingResult<TData = any> {
+export interface EnterpriseProcessingResult<TData = unknown> {
   success: boolean
   data: TData
   warnings: string[]
   errors: string[]
-  metrics: Record<string, any>
+  metrics: Record<string, unknown>
   timestamp: Date
   duration: number
 }
@@ -137,7 +145,7 @@ export abstract class EnhancedEnterpriseFeature<
 {
   protected config: TConfig
   protected logger: Logger
-  protected metrics: Map<string, any[]> = new Map()
+  protected metrics: Map<string, MetricEntry[]> = new Map()
   protected maxMetricsHistory = 100
   protected startTime: Date | null = null
 
@@ -294,7 +302,7 @@ export abstract class EnhancedEnterpriseFeature<
       this.logger.info('Processing started')
     })
 
-    this.on('processing-complete', (result: EnterpriseProcessingResult) => {
+    this.on('processing-complete', (result: EnterpriseProcessingResult<unknown>) => {
       const duration = this.startTime
         ? Date.now() - this.startTime.getTime()
         : 0
@@ -309,11 +317,11 @@ export abstract class EnhancedEnterpriseFeature<
 
     // Debug logging
     if (this.config.logLevel === 'debug') {
-      this.on('metrics-updated', (metrics: any) => {
+      this.on('metrics-updated', (metrics: { metricName: string; metricData: unknown }) => {
         this.logger.debug('Metrics updated', metrics)
       })
 
-      this.on('config-updated', (data: { oldConfig: any; newConfig: any }) => {
+      this.on('config-updated', (data: { oldConfig: TConfig; newConfig: TConfig }) => {
         this.logger.debug('Configuration updated', data)
       })
     }
@@ -462,7 +470,7 @@ export abstract class EnhancedEnterpriseFeature<
   /**
    * Update metrics with validation and cleanup
    */
-  protected updateMetrics(metricName: string, metricData: any): void {
+  protected updateMetrics(metricName: string, metricData: Record<string, unknown>): void {
     try {
       if (!this.metrics.has(metricName)) {
         this.metrics.set(metricName, [])
@@ -492,13 +500,13 @@ export abstract class EnhancedEnterpriseFeature<
   /**
    * Get metrics for a specific metric name
    */
-  getMetrics(metricName?: string): any[] {
+  getMetrics(metricName?: string): MetricEntry[] {
     if (metricName) {
       return [...(this.metrics.get(metricName) || [])]
     }
 
     // Return all metrics flattened
-    const allMetrics: any[] = []
+    const allMetrics: MetricEntry[] = []
     for (const [name, history] of this.metrics.entries()) {
       allMetrics.push(...history.map((m) => ({ ...m, metricName: name })))
     }

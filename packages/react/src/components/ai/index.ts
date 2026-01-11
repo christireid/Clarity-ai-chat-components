@@ -23,3 +23,38 @@ export { SafetyStatusCard } from './safety-status-card'
 export { SessionSummaryCard } from './session-summary-card'
 export { WorkflowSuggestionList } from './workflow-suggestion-list'
 export { Citation, type CitationProps, type CitationSource } from './citation'
+
+// ThinkingBar - AI processing status indicator
+export {
+  ThinkingBar,
+  useThinkingBar,
+  type ThinkingBarProps,
+  type ThinkingBarStatus,
+  type ThinkingBarVariant,
+  type UseThinkingBarOptions,
+  type UseThinkingBarReturn,
+} from './thinking-bar'
+
+// ToolExecutionCard - Tool call execution status display
+export {
+  ToolExecutionCard,
+  useToolExecution,
+  type ToolExecutionCardProps,
+  type ToolExecution,
+  type ToolExecutionStatus,
+  type UseToolExecutionOptions,
+  type UseToolExecutionReturn,
+} from './tool-execution-card'
+
+// StreamStatusProgress - Comprehensive streaming progress visualization
+// Note: Different from ui/progress.tsx's simple StreamingProgress (animated dots)
+export {
+  StreamStatusProgress,
+  StreamStatusProgressWithFields,
+  type StreamStatusProgressProps,
+  type StreamStatusProgressWithFieldsProps,
+  type StreamStatusProgressVariant,
+  type StreamStatusProgressSize,
+  type StreamStatusProgressColor,
+  type StreamStatusTokens,
+} from './streaming-progress'

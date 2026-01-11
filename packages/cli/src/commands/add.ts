@@ -30,6 +30,7 @@ interface AddOptions {
   dryRun?: boolean
   yes?: boolean
   force?: boolean
+  all?: boolean
 }
 
 async function detectPackageManager(cwd: string): Promise<string> {
@@ -39,38 +40,91 @@ async function detectPackageManager(cwd: string): Promise<string> {
   return 'npm'
 }
 
-export async function addCommand(component: string, options: AddOptions) {
+/**
+ * Display the list of available components in a beautiful table
+ */
+function displayComponentList() {
+  const columns: TableColumn[] = [
+    { header: 'Component', width: 25, color: pc.yellow },
+    { header: 'Category', width: 12 },
+    { header: 'Description', width: 40 },
+  ]
+
+  const componentData = Object.values(COMPONENT_REGISTRY).map((comp) => [
+    `${comp.icon} ${comp.slug}`,
+    comp.category,
+    comp.description,
+  ])
+
+  console.log()
+  console.log(sectionHeader('📦 Available Components'))
+  console.log(table(componentData, columns))
+  console.log()
+  console.log(pc.bold('Usage:'))
+  console.log(pc.cyan('  npx @clarity-chat/cli add <component>') + '  Add a single component')
+  console.log(pc.cyan('  npx @clarity-chat/cli add --all') + '        Add all components')
+  console.log(pc.cyan('  npx @clarity-chat/cli add --batch chat-input,token-counter'))
+  console.log()
+  console.log(pc.bold('Examples:'))
+  console.log(pc.gray('  npx @clarity-chat/cli add chat-interface'))
+  console.log(pc.gray('  npx @clarity-chat/cli add model-selector --path ./src/ui'))
+  console.log(pc.gray('  npx @clarity-chat/cli add token-counter --dry-run'))
+  console.log()
+}
+
+export async function addCommand(component: string | undefined, options: AddOptions) {
   console.log()
   console.log(sectionHeader('➕ Add Component'))
   console.log()
+
+  // Handle batch mode
+  if (options.batch) {
+    const components = options.batch.split(',').map(c => c.trim())
+    console.log(pc.cyan(`Adding ${components.length} components: ${components.join(', ')}`))
+    console.log()
+
+    for (const comp of components) {
+      await addSingleComponent(comp, options)
+    }
+    return
+  }
+
+  // Handle --all flag
+  if (options.all) {
+    const allSlugs = Object.keys(COMPONENT_REGISTRY)
+    console.log(pc.cyan(`Adding all ${allSlugs.length} components...`))
+    console.log()
+
+    for (const slug of allSlugs) {
+      await addSingleComponent(slug, options)
+    }
+    return
+  }
+
+  // If no component specified, list all available components
+  if (!component) {
+    displayComponentList()
+    return
+  }
 
   // Use centralized registry to get component config
   const componentConfig = getComponent(component)
 
   if (!componentConfig) {
-    console.error(`Component "${component}" not found`)
-
-    // Display available components in a beautiful table using registry
-    const columns: TableColumn[] = [
-      { header: 'Component', width: 25, color: pc.yellow },
-      { header: 'Category', width: 12 },
-      { header: 'Description', width: 40 },
-    ]
-
-    const componentData = Object.values(COMPONENT_REGISTRY).map((comp) => [
-      `${comp.icon} ${comp.slug}`,
-      comp.category,
-      comp.description,
-    ])
-
-    console.log()
-    console.log(sectionHeader('📦 Available Components'))
-    console.log(table(componentData, columns))
-    console.log()
-    console.log(pc.gray('Use: clarity-chat add <component>'))
-    console.log()
-
+    console.error(pc.red(`Component "${component}" not found`))
+    displayComponentList()
     process.exit(1)
+  }
+
+  await addSingleComponent(component, options)
+}
+
+async function addSingleComponent(component: string, options: AddOptions) {
+  const componentConfig = getComponent(component)
+
+  if (!componentConfig) {
+    console.error(pc.red(`Component "${component}" not found, skipping...`))
+    return
   }
 
   // Resolve dependencies (includes transitive registry dependencies)

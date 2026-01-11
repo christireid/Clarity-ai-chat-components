@@ -88,15 +88,17 @@ export interface UseChatSimpleReturn {
  * // ChatWindow accepts messages directly, no conversion needed
  * ```
  */
+// Track if we've already warned to avoid spamming console
+let hasWarnedUseChatSimple = false
+
 export function useChatSimple(
   options: UseChatSimpleOptions
 ): UseChatSimpleReturn {
-  // Deprecation warning
-  if (process.env['NODE_ENV'] === 'development') {
+  // Deprecation warning - only warn once
+  if (process.env.NODE_ENV === 'development' && !hasWarnedUseChatSimple) {
+    hasWarnedUseChatSimple = true
     console.warn(
-      '[Clarity Chat] useChatSimple is deprecated. Use useClarityChat instead. ' +
-        'ChatWindow now accepts CoreMessage[] directly. ' +
-        'See: https://clarity-chat.dev/docs/migration/deprecated-hooks'
+      '[Clarity] useChatSimple is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'
     )
   }
   const {

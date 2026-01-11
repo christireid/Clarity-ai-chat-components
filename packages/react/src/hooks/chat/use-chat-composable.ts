@@ -65,16 +65,19 @@ export interface ChatFeatures {
 /**
  * @deprecated Use `useClarityChat` instead. This hook will be removed in v2.0.
  */
+// Track if we've already warned to avoid spamming console
+let hasWarnedUseChatComposable = false
+
 export function useChatComposable(
   options: UseChatOptions & {
     features?: ChatFeatures
   }
 ): UseChatReturn {
-  // Deprecation warning
-  if (process.env['NODE_ENV'] === 'development') {
+  // Deprecation warning - only warn once
+  if (process.env.NODE_ENV === 'development' && !hasWarnedUseChatComposable) {
+    hasWarnedUseChatComposable = true
     console.warn(
-      '[Clarity Chat] useChatComposable is deprecated. Use useClarityChat with its built-in ' +
-        'memory and transport options instead. See: https://clarity-chat.dev/docs/hooks/use-clarity-chat'
+      '[Clarity] useChatComposable is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'
     )
   }
 

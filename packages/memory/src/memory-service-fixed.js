@@ -41,7 +41,7 @@ export class MemoryServiceFixed {
             return;
         try {
             // Initialize vector store if configured
-            if (this.config.persistence.useVectorStore && this.vectorStore) {
+            if (this.config.persistence?.useVectorStore && this.vectorStore) {
                 await this.vectorStore.initialize();
             }
             // Initialize decay manager if configured
@@ -124,7 +124,7 @@ export class MemoryServiceFixed {
             // Store in buffer by scope
             this.buffer[scope].set(id, memory);
             // Store in vector store if configured
-            if (this.config.persistence.useVectorStore && this.vectorStore && embedding) {
+            if (this.config.persistence?.useVectorStore && this.vectorStore && embedding) {
                 await this.vectorStore.upsert([{
                         id,
                         values: embedding,
@@ -176,7 +176,7 @@ export class MemoryServiceFixed {
                 return memory;
             }
             // Check vector store if configured
-            if (this.config.persistence.useVectorStore && this.vectorStore) {
+            if (this.config.persistence?.useVectorStore && this.vectorStore) {
                 const results = await this.vectorStore.query({
                     id,
                     includeMetadata: true

@@ -7,51 +7,54 @@
 
 import * as React from 'react'
 import {
-  useChat,
-  useCompletion,
-  useAssistant,
   useClarityChat,
   ChatWindow,
   MemoryProvider,
   ThemeProvider,
-  themes,
-  convertCoreMessagesToMessages,
 } from '@clarity-chat/react'
 import AdvancedExamples from './AdvancedExample'
 
+// Helper to convert messages to display format
+function convertToDisplayMessage(msg: { id?: string; role: string; content: unknown }) {
+  return {
+    id: msg.id || String(Date.now()),
+    chatId: 'default',
+    role: msg.role === 'user' ? 'user' as const : msg.role === 'assistant' ? 'assistant' as const : 'system' as const,
+    content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+    status: 'sent' as const,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+}
+
 function ChatExample() {
-  const { messages, append, isLoading, handleSubmit, input, setInput, error } =
-    useChat({
-      api: '/api/chat',
-      initialMessages: [],
-      onFinish: (message) => {
-        console.log('Message finished:', message)
-      },
-      onError: (error) => {
-        console.error('Chat error:', error)
-      },
-    })
+  const {
+    messages,
+    append,
+    isLoading,
+    error,
+  } = useClarityChat({
+    api: '/api/chat',
+    transport: 'sse',
+  })
+
+  const [input, setInput] = React.useState('')
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (input.trim()) {
+      append({
+        role: 'user',
+        content: input.trim(),
+      })
+      setInput('')
+    }
+  }
 
   return (
     <div className="flex flex-col h-screen">
       <ChatWindow
-        messages={messages.map((msg) => ({
-          id: msg.id || '',
-          chatId: 'default',
-          role:
-            msg.role === 'user'
-              ? 'user'
-              : msg.role === 'assistant'
-                ? 'assistant'
-                : 'system',
-          content:
-            typeof msg.content === 'string'
-              ? msg.content
-              : JSON.stringify(msg.content),
-          status: isLoading && msg.role === 'assistant' ? 'streaming' : 'sent',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }))}
+        messages={messages.map(convertToDisplayMessage)}
         isLoading={isLoading}
         onSendMessage={(content) => {
           append({
@@ -88,19 +91,33 @@ function ChatExample() {
 }
 
 function CompletionExample() {
-  const { completion, complete, isLoading, stop } = useCompletion({
-    api: '/api/completion',
-    onFinish: (prompt, completion) => {
-      console.log('Completion finished:', { prompt, completion })
-    },
-  })
-
+  const [completion, setCompletion] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
   const [prompt, setPrompt] = React.useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (prompt.trim()) {
-      complete(prompt)
+    if (!prompt.trim()) return
+
+    setIsLoading(true)
+    setCompletion('')
+
+    try {
+      const response = await fetch('/api/completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      })
+
+      if (!response.ok) throw new Error('Failed to fetch completion')
+
+      const data = await response.json()
+      setCompletion(data.completion || 'No completion received')
+    } catch (err) {
+      console.error('Completion error:', err)
+      setCompletion('Error fetching completion')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -123,43 +140,41 @@ function CompletionExample() {
           >
             Complete
           </button>
-          {isLoading && (
-            <button
-              type="button"
-              onClick={stop}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg"
-            >
-              Stop
-            </button>
-          )}
         </div>
       </form>
       <div className="p-4 bg-gray-50 rounded-lg min-h-[200px]">
-        {completion || 'Completion will appear here...'}
+        {isLoading ? 'Loading...' : completion || 'Completion will appear here...'}
       </div>
     </div>
   )
 }
 
 function AssistantExample() {
-  const {
-    status,
-    messages,
-    submitMessage,
-    input,
-    setInput,
-    isLoading,
-    toolInvocations,
-  } = useAssistant({
-    api: '/api/assistant',
-    assistantId: 'example-assistant',
-    onToolCall: (toolCall) => {
-      console.log('Tool called:', toolCall)
-    },
-    onFinish: (message) => {
-      console.log('Assistant finished:', message)
-    },
-  })
+  const [messages, setMessages] = React.useState<Array<{ id: string; role: string; content: string }>>([])
+  const [input, setInput] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [status, setStatus] = React.useState<'idle' | 'in_progress'>('idle')
+
+  const submitMessage = async (content: string) => {
+    const userMessage = { id: Date.now().toString(), role: 'user', content }
+    setMessages((prev) => [...prev, userMessage])
+    setIsLoading(true)
+    setStatus('in_progress')
+
+    try {
+      // Simulate assistant response
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const assistantMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `You asked: "${content}". This is a demo assistant response.`,
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } finally {
+      setIsLoading(false)
+      setStatus('idle')
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -177,9 +192,7 @@ function AssistantExample() {
           className={`px-3 py-1 rounded-full text-sm ${
             status === 'idle'
               ? 'bg-green-100 text-green-800'
-              : status === 'in_progress'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-yellow-100 text-yellow-800'
+              : 'bg-blue-100 text-blue-800'
           }`}
         >
           {status}
@@ -195,25 +208,10 @@ function AssistantExample() {
             }`}
           >
             <div className="text-sm font-semibold mb-1">{msg.role}</div>
-            <div>
-              {typeof msg.content === 'string'
-                ? msg.content
-                : JSON.stringify(msg.content)}
-            </div>
+            <div>{msg.content}</div>
           </div>
         ))}
       </div>
-
-      {toolInvocations.length > 0 && (
-        <div className="mb-4 p-4 bg-yellow-50 rounded-lg">
-          <h3 className="font-semibold mb-2">Tool Invocations:</h3>
-          {toolInvocations.map((invocation, idx) => (
-            <div key={idx} className="text-sm">
-              <strong>{invocation.toolName}</strong>: {invocation.state}
-            </div>
-          ))}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
@@ -239,7 +237,7 @@ import PerformanceExample from './PerformanceExample'
 
 function ClarityChatExample() {
   const {
-    messages: coreMessages,
+    messages,
     append,
     isLoading,
     error,
@@ -255,11 +253,6 @@ function ClarityChatExample() {
     transport: 'sse',
   })
 
-  const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
-
   return (
     <div className="flex flex-col h-screen">
       <div className="p-4 bg-blue-50 border-b">
@@ -272,14 +265,14 @@ function ClarityChatExample() {
         </p>
         {memoryEnabled && (
           <div className="text-xs text-green-700">
-            ✓ Memory Enabled{' '}
+            Memory Enabled{' '}
             {contextSummary &&
               `- Context: ${contextSummary.substring(0, 50)}...`}
           </div>
         )}
       </div>
       <ChatWindow
-        messages={messages}
+        messages={messages.map(convertToDisplayMessage)}
         isLoading={isLoading}
         onSendMessage={(content) => {
           append({
@@ -307,14 +300,14 @@ export default function App() {
 
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ThemeProvider theme={themes.ocean}>
+      <ThemeProvider>
         <div className="min-h-screen bg-gray-50">
           <div className="bg-white border-b shadow-sm">
             <div className="max-w-7xl mx-auto px-4 py-4">
               <h1 className="text-3xl font-bold mb-4">
                 Vercel AI SDK Compatible Examples
               </h1>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => setActiveTab('chat')}
                   className={`px-4 py-2 rounded-lg ${
@@ -323,7 +316,7 @@ export default function App() {
                       : 'bg-gray-200'
                   }`}
                 >
-                  useChat
+                  Chat
                 </button>
                 <button
                   onClick={() => setActiveTab('completion')}
@@ -333,7 +326,7 @@ export default function App() {
                       : 'bg-gray-200'
                   }`}
                 >
-                  useCompletion
+                  Completion
                 </button>
                 <button
                   onClick={() => setActiveTab('assistant')}
@@ -343,7 +336,7 @@ export default function App() {
                       : 'bg-gray-200'
                   }`}
                 >
-                  useAssistant
+                  Assistant
                 </button>
                 <button
                   onClick={() => setActiveTab('clarity')}
@@ -353,7 +346,7 @@ export default function App() {
                       : 'bg-gray-200'
                   }`}
                 >
-                  useClarityChat ⭐
+                  useClarityChat
                 </button>
                 <button
                   onClick={() => setActiveTab('advanced')}

@@ -216,6 +216,37 @@ export const referenceNavigation: NavItem[] = [
     ],
   },
   {
+    title: 'AI Components',
+    items: [
+      {
+        title: 'ChainOfThought',
+        href: '/reference/components/chain-of-thought',
+      },
+      { title: 'ThinkingBar', href: '/reference/components/thinking-bar' },
+      {
+        title: 'ToolExecutionCard',
+        href: '/reference/components/tool-execution-card',
+      },
+      {
+        title: 'StreamingProgress',
+        href: '/reference/components/streaming-progress',
+      },
+      { title: 'TextShimmer', href: '/reference/components/text-shimmer' },
+      {
+        title: 'SourceCitation',
+        href: '/reference/components/source-citation',
+      },
+      {
+        title: 'PromptContainer',
+        href: '/reference/components/prompt-container',
+      },
+      {
+        title: 'SuggestionCards',
+        href: '/reference/components/suggestion-cards',
+      },
+    ],
+  },
+  {
     title: 'UI Elements',
     items: [
       { title: 'Avatar', href: '/reference/components/avatar' },

@@ -24,9 +24,20 @@ import {
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
 import ReactMarkdown from 'react-markdown'
-import type { Components } from 'react-markdown'
+import type { Components, ExtraProps } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
+
+// Type for markdown component props that have children
+interface MarkdownElementProps extends React.HTMLAttributes<HTMLElement>, ExtraProps {
+  children?: React.ReactNode
+}
+
+// Type for code block component props
+interface CodeBlockProps extends React.HTMLAttributes<HTMLElement>, ExtraProps {
+  children?: React.ReactNode
+  inline?: boolean
+}
 
 export interface MessageOptimizedProps {
   message: MessageType
@@ -45,8 +56,8 @@ export interface MessageOptimizedProps {
  * Memoized markdown components to avoid recreation
  */
 const markdownComponents: Components = {
-  code(props: any) {
-    const { node, inline, className, children, ...rest } = props
+  code(props: CodeBlockProps) {
+    const { node: _node, inline, className, children, ...rest } = props
     return inline ? (
       <code className="bg-muted px-1 py-0.5 rounded text-sm" {...rest}>
         {children}
@@ -64,8 +75,8 @@ const markdownComponents: Components = {
     )
   },
   // Table styling
-  table(props: any) {
-    const { children, ...rest } = props
+  table(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <div className="overflow-x-auto my-4 w-full">
         <table
@@ -77,24 +88,24 @@ const markdownComponents: Components = {
       </div>
     )
   },
-  thead(props: any) {
-    const { children, ...rest } = props
+  thead(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <thead className="bg-muted" {...rest}>
         {children}
       </thead>
     )
   },
-  tbody(props: any) {
-    const { children, ...rest } = props
+  tbody(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <tbody className="bg-background divide-y divide-border" {...rest}>
         {children}
       </tbody>
     )
   },
-  th(props: any) {
-    const { children, ...rest } = props
+  th(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <th
         className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
@@ -104,16 +115,16 @@ const markdownComponents: Components = {
       </th>
     )
   },
-  td(props: any) {
-    const { children, ...rest } = props
+  td(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <td className="px-6 py-4 text-sm border border-border" {...rest}>
         {children}
       </td>
     )
   },
-  tr(props: any) {
-    const { children, ...rest } = props
+  tr(props: MarkdownElementProps) {
+    const { node: _node, children, ...rest } = props
     return (
       <tr className="hover:bg-muted/50 transition-colors" {...rest}>
         {children}
@@ -154,7 +165,8 @@ function MessageOptimizedInner({
       <>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight as any]}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          rehypePlugins={[rehypeHighlight as unknown as (typeof remarkGfm)]}
           components={markdownComponents}
         >
           {message.content}

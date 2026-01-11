@@ -1,33 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ThemeProvider,
-  themes,
-  EvaluationDashboard,
-  SafetyReviewConsole,
-  PromptTestHarness,
-  TokenOptimizationDashboard,
-  PerformanceDashboard,
-  useTokenOptimization,
-  SafetyStatusCard,
-  ResponseQualityMeter,
-} from '@clarity-chat/react'
+import { ThemeProvider } from '@clarity-chat/react'
 import { OpsHeader } from '@/components/OpsHeader'
 import { MetricsOverview } from '@/components/MetricsOverview'
 import { RealTimeMonitor } from '@/components/RealTimeMonitor'
 import { AlertPanel } from '@/components/AlertPanel'
-import { Shield, TrendingUp, Activity, Zap, AlertTriangle } from 'lucide-react'
+import { Shield, TrendingUp, Activity, Zap } from 'lucide-react'
 
 export default function EnterpriseAIOps() {
   const [activeTab, setActiveTab] = useState<
     'overview' | 'safety' | 'evaluation' | 'testing' | 'tokens' | 'performance'
   >('overview')
-
-  const { metrics } = useTokenOptimization({
-    enabled: true,
-    trackMetrics: true,
-  })
 
   const mockMetrics = {
     totalRequests: 125430,
@@ -53,7 +37,7 @@ export default function EnterpriseAIOps() {
   ]
 
   return (
-    <ThemeProvider theme={themes.corporate}>
+    <ThemeProvider>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <OpsHeader />
 
@@ -67,7 +51,7 @@ export default function EnterpriseAIOps() {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id as typeof activeTab)}
                     className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === tab.id
                         ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -102,129 +86,80 @@ export default function EnterpriseAIOps() {
 
           {activeTab === 'safety' && (
             <div className="space-y-6">
-              <SafetyReviewConsole
-                violations={[
-                  {
-                    id: '1',
-                    timestamp: new Date(),
-                    severity: 'high',
-                    type: 'pii_detection',
-                    message: 'Potential PII detected in user input',
-                    details: { detected: ['email', 'phone'] },
-                  },
-                  {
-                    id: '2',
-                    timestamp: new Date(Date.now() - 3600000),
-                    severity: 'medium',
-                    type: 'content_filter',
-                    message: 'Content flagged for review',
-                    details: { category: 'violence' },
-                  },
-                ]}
-                onReview={(id) => console.log('Review', id)}
-              />
-              <SafetyStatusCard
-                status={{
-                  piiDetection: { enabled: true, violations: 1 },
-                  contentFiltering: { enabled: true, violations: 2 },
-                  promptInjection: { enabled: true, violations: 0 },
-                }}
-              />
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4">Safety Review Console</h2>
+                <p className="text-gray-500">
+                  Enterprise safety monitoring components coming soon.
+                  This demo showcases the AI Ops dashboard layout.
+                </p>
+              </div>
             </div>
           )}
 
           {activeTab === 'evaluation' && (
-            <EvaluationDashboard
-              evaluations={[
-                {
-                  id: '1',
-                  name: 'Response Quality',
-                  score: 92.3,
-                  metrics: {
-                    accuracy: 94,
-                    relevance: 91,
-                    coherence: 92,
-                    helpfulness: 93,
-                  },
-                  timestamp: new Date(),
-                },
-                {
-                  id: '2',
-                  name: 'Safety Compliance',
-                  score: 98.5,
-                  metrics: {
-                    pii_detection: 100,
-                    content_filter: 97,
-                    prompt_injection: 98,
-                  },
-                  timestamp: new Date(),
-                },
-              ]}
-              onSelectEvaluation={(id) => console.log('Select', id)}
-            />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Evaluation Dashboard</h2>
+              <p className="text-gray-500">
+                Enterprise evaluation components coming soon.
+                This demo showcases the AI Ops dashboard layout.
+              </p>
+            </div>
           )}
 
           {activeTab === 'testing' && (
-            <PromptTestHarness
-              testCases={[
-                {
-                  id: '1',
-                  name: 'Customer Support Prompt',
-                  prompt: 'Help customer with billing question',
-                  expectedBehavior: 'Professional, helpful, accurate',
-                  status: 'passed',
-                },
-                {
-                  id: '2',
-                  name: 'PII Detection Test',
-                  prompt: 'User email: john@example.com',
-                  expectedBehavior: 'Should detect and redact PII',
-                  status: 'failed',
-                },
-              ]}
-              onRunTest={(id) => console.log('Run test', id)}
-            />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Prompt Test Harness</h2>
+              <p className="text-gray-500">
+                Enterprise testing components coming soon.
+                This demo showcases the AI Ops dashboard layout.
+              </p>
+            </div>
           )}
 
           {activeTab === 'tokens' && (
             <div className="space-y-6">
-              <TokenOptimizationDashboard
-                metrics={
-                  metrics || {
-                    totalTokens: 12500000,
-                    tokensSaved: 3750000,
-                    costSaved: 1125.5,
-                    savingsPercent: 30,
-                    breakdown: {
-                      promptCompression: { tokens: 1500000, percent: 12 },
-                      caching: { hits: 1200, savings: 1500000 },
-                      modelRouting: { savings: 500000, percent: 40 },
-                      responseLimiting: { tokens: 250000, percent: 8 },
-                    },
-                  }
-                }
-                showBreakdown={true}
-              />
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-xl font-semibold mb-4">Token Optimization Dashboard</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-sm text-gray-500">Total Tokens Used</p>
+                    <p className="text-2xl font-bold">{(mockMetrics.tokensUsed / 1000000).toFixed(1)}M</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-sm text-gray-500">Tokens Saved</p>
+                    <p className="text-2xl font-bold text-green-600">{(mockMetrics.tokensSaved / 1000000).toFixed(1)}M</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-sm text-gray-500">Cost Saved</p>
+                    <p className="text-2xl font-bold text-green-600">${mockMetrics.costSaved.toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {activeTab === 'performance' && (
-            <PerformanceDashboard
-              metrics={{
-                avgLatency: 245,
-                p95Latency: 580,
-                p99Latency: 1200,
-                throughput: 1250,
-                errorRate: 1.5,
-                successRate: 98.5,
-              }}
-              timeSeriesData={[
-                { time: '00:00', latency: 200, throughput: 1100 },
-                { time: '01:00', latency: 245, throughput: 1250 },
-                { time: '02:00', latency: 180, throughput: 980 },
-                { time: '03:00', latency: 280, throughput: 1350 },
-              ]}
-            />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Performance Dashboard</h2>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-500">Avg Latency</p>
+                  <p className="text-2xl font-bold">{mockMetrics.avgLatency}ms</p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-500">P95 Latency</p>
+                  <p className="text-2xl font-bold">{mockMetrics.p95Latency}ms</p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-500">Error Rate</p>
+                  <p className="text-2xl font-bold text-red-500">{mockMetrics.errorRate}%</p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-500">Success Rate</p>
+                  <p className="text-2xl font-bold text-green-600">{mockMetrics.successRate}%</p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

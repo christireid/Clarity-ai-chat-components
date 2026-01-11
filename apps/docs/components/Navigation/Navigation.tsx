@@ -122,7 +122,7 @@ export function Navigation() {
             <div className="flex items-center gap-8">
               <Link
                 href="/"
-                className="group flex items-center gap-2 font-bold text-xl"
+                className="group flex items-center gap-2 font-bold text-xl min-h-[44px]"
               >
                 <motion.div
                   whileHover={{ rotate: 15, scale: 1.1 }}
@@ -153,7 +153,7 @@ export function Navigation() {
                       href={item.href}
                       aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
                       className={clsx(
-                        'relative px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
+                        'relative px-4 py-2 min-h-[44px] flex items-center rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
                         pathname?.startsWith(item.href)
                           ? 'bg-bg-tertiary text-brand-500'
                           : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
@@ -183,7 +183,7 @@ export function Navigation() {
                 whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 className={clsx(
-                  'hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg',
+                  'hidden sm:flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-lg',
                   'border border-border/50 dark:border-slate-700/50',
                   'bg-bg-secondary/80 dark:bg-slate-800/50',
                   'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
@@ -207,7 +207,7 @@ export function Navigation() {
                 whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
                 className={clsx(
-                  'sm:hidden p-2 rounded-lg',
+                  'sm:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg',
                   'hover:bg-bg-secondary dark:hover:bg-slate-800',
                   'transition-colors duration-300',
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
@@ -223,7 +223,7 @@ export function Navigation() {
                 whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 15 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
                 className={clsx(
-                  'p-2 rounded-lg',
+                  'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg',
                   'hover:bg-bg-secondary dark:hover:bg-slate-800',
                   'transition-colors duration-300',
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
@@ -254,7 +254,7 @@ export function Navigation() {
                 whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
                 className={clsx(
-                  'hidden sm:flex p-2 rounded-lg',
+                  'hidden sm:flex p-2.5 min-w-[44px] min-h-[44px] items-center justify-center rounded-lg',
                   'hover:bg-bg-secondary dark:hover:bg-slate-800',
                   'transition-colors duration-300',
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
@@ -269,7 +269,7 @@ export function Navigation() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="md:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu"
@@ -350,7 +350,7 @@ export function Navigation() {
                           onClick={() => setMobileMenuOpen(false)}
                           aria-current={isActive ? 'page' : undefined}
                           className={clsx(
-                            'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            'flex items-center gap-3 px-4 py-3 min-h-[48px] rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
                             isActive
                               ? 'bg-bg-tertiary text-brand-500'
                               : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'

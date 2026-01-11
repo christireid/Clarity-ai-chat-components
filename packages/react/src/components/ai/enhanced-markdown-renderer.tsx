@@ -5,8 +5,42 @@ import ReactMarkdown from 'react-markdown'
 // rehypeHighlight is now loaded async (react-markdown v10 feature)
 import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
-type PluggableList = any[] // Simplified type for rehype/remark plugins
+/** Mermaid theme types */
+type MermaidTheme = 'default' | 'dark' | 'neutral' | 'forest' | 'base' | 'null'
+
+/** React-markdown component props */
+interface MarkdownCodeProps extends Omit<ComponentPropsWithoutRef<'code'>, 'ref'> {
+  node?: unknown
+  inline?: boolean
+  className?: string
+  children?: ReactNode
+}
+
+interface MarkdownParagraphProps extends Omit<ComponentPropsWithoutRef<'p'>, 'ref'> {
+  children?: ReactNode
+}
+
+interface MarkdownTableProps extends Omit<ComponentPropsWithoutRef<'table'>, 'ref'> {
+  children?: ReactNode
+}
+
+interface MarkdownElementProps extends Omit<ComponentPropsWithoutRef<'div'>, 'ref'> {
+  children?: ReactNode
+}
+
+interface MarkdownCellProps extends Omit<ComponentPropsWithoutRef<'th'>, 'ref'> {
+  children?: ReactNode
+}
+
+interface MarkdownTdProps extends Omit<ComponentPropsWithoutRef<'td'>, 'ref'> {
+  children?: ReactNode
+}
+
+interface MarkdownTrProps extends Omit<ComponentPropsWithoutRef<'tr'>, 'ref'> {
+  children?: ReactNode
+}
 
 /**
  * Configuration for enhanced markdown rendering
@@ -75,10 +109,12 @@ export const EnhancedMarkdownRenderer = React.memo(
       if (enableMermaid && !mermaidInitialized.current && typeof window !== 'undefined') {
         // Dynamically import mermaid only if needed
         // mermaid is an optional peer dependency
-        import('mermaid').then((mermaid: any) => {
-          mermaid.default.initialize({
+        import('mermaid').then((mermaidModule) => {
+          const mermaid = mermaidModule.default
+          const theme: MermaidTheme = codeTheme === 'dark' ? 'dark' : 'default'
+          mermaid.initialize({
             startOnLoad: false,
-            theme: codeTheme === 'dark' ? 'dark' : 'default',
+            theme,
             securityLevel: 'loose',
             // Mermaid v11: Suppress error rendering to avoid inserting 'Syntax error' message to DOM
             // This allows us to handle errors gracefully in our UI
@@ -88,11 +124,11 @@ export const EnhancedMarkdownRenderer = React.memo(
 
           // Render any existing mermaid diagrams
           if (containerRef.current) {
-            mermaid.default.run({
+            mermaid.run({
               nodes: containerRef.current.querySelectorAll('.language-mermaid'),
             })
           }
-        }).catch((err) => {
+        }).catch((err: unknown) => {
           console.warn('Failed to load Mermaid:', err)
         })
       }
@@ -103,11 +139,12 @@ export const EnhancedMarkdownRenderer = React.memo(
     React.useEffect(() => {
       if (enableMermaid && mermaidInitialized.current && containerRef.current) {
         // mermaid is an optional peer dependency
-        import('mermaid').then((mermaid: any) => {
+        import('mermaid').then((mermaidModule) => {
+          const mermaid = mermaidModule.default
           const mermaidElements = containerRef.current?.querySelectorAll('.language-mermaid')
           if (mermaidElements && mermaidElements.length > 0) {
             try {
-              mermaid.default.run({
+              mermaid.run({
                 nodes: Array.from(mermaidElements) as HTMLElement[],
               })
             } catch (error) {
@@ -124,7 +161,9 @@ export const EnhancedMarkdownRenderer = React.memo(
 
     // Build rehype plugins list
     // react-markdown v10 supports async plugins - use async loading for heavy plugins
-    const rehypePlugins: PluggableList = []
+    // Using any[] here since react-markdown's Pluggable type is complex and supports various formats
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rehypePlugins: any[] = []
     
     if (enableSyntaxHighlight) {
       // Async plugin loading for rehypeHighlight (heavy dependency)
@@ -140,7 +179,7 @@ export const EnhancedMarkdownRenderer = React.memo(
       rehypePlugins.push([
         // We'll use a custom plugin for KaTeX
         () => {
-          return (tree: any) => {
+          return (tree: unknown) => {
             // Transform math nodes for KaTeX rendering
             // This is a placeholder - actual implementation would use
             // rehype-katex or similar
@@ -168,7 +207,7 @@ export const EnhancedMarkdownRenderer = React.memo(
           rehypePlugins={rehypePlugins}
           components={{
             // Custom code block rendering for Mermaid
-            code({ node: _node, inline: _inline, className, children, ...props }: any) {
+            code({ node: _node, inline: _inline, className, children, ...props }: MarkdownCodeProps) {
               const match = /language-(\w+)/.exec(className || '')
               const language = match ? match[1] : ''
               const codeString = String(children).replace(/\n$/, '')
@@ -190,34 +229,34 @@ export const EnhancedMarkdownRenderer = React.memo(
               )
             },
             // Custom math rendering for KaTeX
-            p({ children, ...props }: any) {
+            p({ children, ...props }: MarkdownParagraphProps) {
               // Check if paragraph contains math delimiters
-              const content = React.Children.toArray(children).join('')
-              if (enableKaTeX && (content.includes('$$') || content.includes('\\('))) {
+              const contentStr = React.Children.toArray(children).join('')
+              if (enableKaTeX && (contentStr.includes('$$') || contentStr.includes('\\('))) {
                 // Would render with KaTeX here
                 // For now, return standard paragraph
               }
               return <p {...props}>{children}</p>
             },
             // Table styling
-            table: ({ children, ...props }: any) => (
+            table: ({ children, ...props }: MarkdownTableProps) => (
               <div className="overflow-x-auto my-4 w-full">
                 <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
                   {children}
                 </table>
               </div>
             ),
-            thead: ({ children, ...props }: any) => (
+            thead: ({ children, ...props }: MarkdownElementProps) => (
               <thead className="bg-muted" {...props}>
                 {children}
               </thead>
             ),
-            tbody: ({ children, ...props }: any) => (
+            tbody: ({ children, ...props }: MarkdownElementProps) => (
               <tbody className="bg-background divide-y divide-border" {...props}>
                 {children}
               </tbody>
             ),
-            th: ({ children, ...props }: any) => (
+            th: ({ children, ...props }: MarkdownCellProps) => (
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
                 {...props}
@@ -225,12 +264,12 @@ export const EnhancedMarkdownRenderer = React.memo(
                 {children}
               </th>
             ),
-            td: ({ children, ...props }: any) => (
+            td: ({ children, ...props }: MarkdownTdProps) => (
               <td className="px-6 py-4 text-sm border border-border" {...props}>
                 {children}
               </td>
             ),
-            tr: ({ children, ...props }: any) => (
+            tr: ({ children, ...props }: MarkdownTrProps) => (
               <tr className="hover:bg-muted/50 transition-colors" {...props}>
                 {children}
               </tr>

@@ -105,3 +105,12 @@ export {
   type ComponentErrorCode,
   type ComponentErrorOptions,
 } from './component-errors'
+
+// Internal hooks (not for public use)
+export {
+  useChat as useChatEnhanced,
+  type CoreMessage,
+  type CoreMessageContent,
+  type UseChatOptions as UseChatEnhancedOptions,
+  type UseChatReturn as UseChatEnhancedReturn,
+} from './hooks'

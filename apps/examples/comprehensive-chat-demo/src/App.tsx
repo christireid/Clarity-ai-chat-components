@@ -1,67 +1,60 @@
 /**
  * Comprehensive Chat Demo
  *
- * Demonstrates all modern AI chat features working together:
- * - Message operations (edit, regenerate, delete)
- * - Undo/Redo
+ * Demonstrates modern AI chat features working together:
+ * - Message display and sending
  * - Export functionality
- * - Conversation branching
- * - Advanced search
- * - Command palette
+ * - Search
  * - Citation display
- * - Conversation list
  * - Token tracking
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import {
   ChatWindow,
-  useMessageOperations,
   useTokenTracker,
   useAutoScroll,
-  AdvancedMessageSearch,
-  CommandPalette,
   CitationCard,
-  ConversationList,
   TokenCounter,
   ExportDialog,
   ErrorBoundary,
-  useCommandPaletteCommands,
+  MessageSearch,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 
-// Local Citation type since it's not exported from @clarity-chat/types
+// Local Citation type that matches CitationCard props
 interface Citation {
   id: string
   url: string
   title: string
   chunkText: string
+  source: string
   metadata?: Record<string, unknown>
   confidence?: number
 }
-import type { Conversation, Folder } from '@clarity-chat/react'
+
+// Local type definitions for demo (not exported from library)
+interface Conversation {
+  id: string
+  title: string
+  preview: string
+  timestamp: number
+  messageCount: number
+  isPinned?: boolean
+  folderId?: string
+}
+
+// Local message type for internal tracking
+interface LocalMessage {
+  id: string
+  chatId: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+}
 
 function ComprehensiveChatApp() {
-  // Folder management
-  const [folders, setFolders] = useState<Folder[]>([
-    {
-      id: 'folder-1',
-      name: 'Work',
-      createdAt: Date.now() - 172800000,
-      conversationCount: 0,
-    },
-    {
-      id: 'folder-2',
-      name: 'Personal',
-      createdAt: Date.now() - 86400000,
-      conversationCount: 0,
-    },
-  ])
-  const [activeFolderId, setActiveFolderId] = useState<
-    string | null | undefined
-  >(undefined)
-
   // Conversation management
   const [conversations, setConversations] = useState<Conversation[]>([
     {
@@ -71,7 +64,6 @@ function ComprehensiveChatApp() {
       timestamp: Date.now() - 86400000,
       messageCount: 2,
       isPinned: true,
-      folderId: 'folder-1',
     },
     {
       id: '2',
@@ -79,56 +71,52 @@ function ComprehensiveChatApp() {
       preview: 'What is React?',
       timestamp: Date.now() - 3600000,
       messageCount: 4,
-      folderId: 'folder-2',
     },
   ])
   const [activeConversationId, setActiveConversationId] = useState('1')
-  const [showCommandPalette, setShowCommandPalette] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Message operations
-  const {
-    messages: operationMessages,
-    addMessage,
-    editMessage,
-    regenerateMessage,
-    deleteMessage,
-    branchConversation,
-    switchToBranch,
-    getBranches,
-    currentBranchId,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  } = useMessageOperations({
-    initialMessages: [
-      {
-        id: '1',
-        chatId: activeConversationId,
-        role: 'assistant',
-        content:
-          "Hello! I'm your comprehensive AI assistant. Try:\n- Editing messages\n- Using Ctrl+K for commands\n- Searching messages\n- Exporting conversations",
-        timestamp: Date.now() - 5000,
-      },
-    ],
-    onEdit: (messageId, newContent) => {
-      console.log('Message edited:', messageId, newContent)
+  // Local message state management
+  const [localMessages, setLocalMessages] = useState<LocalMessage[]>([
+    {
+      id: '1',
+      chatId: '1',
+      role: 'assistant',
+      content:
+        "Hello! I'm your comprehensive AI assistant. Try:\n- Sending messages\n- Using Ctrl+K for commands\n- Searching messages\n- Exporting conversations",
+      timestamp: Date.now() - 5000,
     },
-    onRegenerate: (messageId) => {
-      console.log('Regenerating:', messageId)
+  ])
+
+  // Add message function
+  const addMessage = useCallback(
+    (msg: Omit<LocalMessage, 'id' | 'timestamp'>) => {
+      const newMsg: LocalMessage = {
+        ...msg,
+        id: Date.now().toString(),
+        timestamp: Date.now(),
+      }
+      setLocalMessages((prev) => [...prev, newMsg])
     },
-    onDelete: (messageId) => {
-      console.log('Message deleted:', messageId)
-    },
-    onBranch: (branchId, parentMessageId) => {
-      console.log('Branched from:', parentMessageId, 'to:', branchId)
-    },
-  })
+    []
+  )
+
+  // Delete message function
+  const deleteMessage = useCallback((messageId: string) => {
+    setLocalMessages((prev) => prev.filter((m) => m.id !== messageId))
+  }, [])
+
+  // Edit message function
+  const editMessage = useCallback((messageId: string, newContent: string) => {
+    setLocalMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, content: newContent } : m))
+    )
+  }, [])
 
   // Convert to Message format
-  const messages: Message[] = operationMessages.map((msg) => ({
+  const messages: Message[] = localMessages.map((msg) => ({
     id: msg.id,
     chatId: activeConversationId,
     role: msg.role,
@@ -139,7 +127,7 @@ function ComprehensiveChatApp() {
   }))
 
   // Token tracking
-  const { totalTokens, addInputTokens, addOutputTokens, estimatedCost, reset } =
+  const { tokens, estimatedCost, addMessage: addTrackedMessage, clear: clearTokens } =
     useTokenTracker({
       modelName: 'gpt-4-turbo',
     })
@@ -151,41 +139,24 @@ function ComprehensiveChatApp() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null
-  )
-  const branches = getBranches()
-
-  // Get selected message details
-  const selectedMessage = selectedMessageId
-    ? messages.find((m) => m.id === selectedMessageId)
-    : null
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Command palette (Ctrl+K or Cmd+K)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      // Export (Ctrl+E)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault()
-        setShowCommandPalette(true)
+        setShowExport(true)
       }
-      // Undo (Ctrl+Z)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      // Toggle sidebar (Ctrl+B)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
         e.preventDefault()
-        if (canUndo) undo()
-      }
-      // Redo (Ctrl+Y or Ctrl+Shift+Z)
-      if (
-        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
-        ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey)
-      ) {
-        e.preventDefault()
-        if (canRedo) redo()
+        setShowSidebar((prev) => !prev)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [canUndo, canRedo, undo, redo])
+  }, [])
 
   // Handle edit
   const handleEdit = useCallback(
@@ -198,7 +169,6 @@ function ComprehensiveChatApp() {
       if (newContent !== message.content) {
         editMessage(messageId, newContent)
       }
-      setSelectedMessageId(null)
     },
     [messages, editMessage]
   )
@@ -226,14 +196,15 @@ function ComprehensiveChatApp() {
             content: responseContent,
           })
 
-          const tokens = Math.ceil(responseContent.length / 4)
-          addOutputTokens(tokens)
+          // Track output tokens
+          const tokenEstimate = Math.ceil(responseContent.length / 4)
+          addTrackedMessage({ role: 'assistant', content: responseContent, tokens: tokenEstimate })
         }
       } finally {
         setIsLoading(false)
       }
     },
-    [messages, deleteMessage, addMessage, activeConversationId, addOutputTokens]
+    [messages, deleteMessage, addMessage, activeConversationId, addTrackedMessage]
   )
 
   // Handle delete
@@ -241,108 +212,10 @@ function ComprehensiveChatApp() {
     (messageId: string) => {
       if (confirm('Delete this message?')) {
         deleteMessage(messageId)
-        if (selectedMessageId === messageId) {
-          setSelectedMessageId(null)
-        }
       }
     },
-    [deleteMessage, selectedMessageId]
+    [deleteMessage]
   )
-
-  // Generate message operation commands (after handlers are defined)
-  const messageOperationCommands = useCommandPaletteCommands({
-    selectedMessageId,
-    isUserMessage: selectedMessage?.role === 'user',
-    isAssistantMessage: selectedMessage?.role === 'assistant',
-    onEdit: handleEdit,
-    onRegenerate: handleRegenerate,
-    onDelete: handleDelete,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  })
-
-  // Command palette commands (must be after messageOperationCommands)
-  const commands = [
-    {
-      id: 'new-chat',
-      label: 'New Chat',
-      description: 'Start a new conversation',
-      shortcut: ['Ctrl', 'N'],
-      category: 'Conversation',
-      onSelect: () => {
-        const newId = Date.now().toString()
-        setConversations((prev) => [
-          {
-            id: newId,
-            title: 'New Chat',
-            preview: '',
-            timestamp: Date.now(),
-            messageCount: 0,
-          },
-          ...prev,
-        ])
-        setActiveConversationId(newId)
-        setShowCommandPalette(false)
-      },
-    },
-    {
-      id: 'export',
-      label: 'Export Conversation',
-      description: 'Export current conversation',
-      shortcut: ['Ctrl', 'E'],
-      category: 'Conversation',
-      onSelect: () => {
-        setShowExport(true)
-        setShowCommandPalette(false)
-      },
-    },
-    {
-      id: 'search',
-      label: 'Search Messages',
-      description: 'Search through messages',
-      shortcut: ['Ctrl', 'K'],
-      category: 'Navigation',
-      onSelect: () => {
-        setShowCommandPalette(false)
-      },
-    },
-    {
-      id: 'undo',
-      label: 'Undo',
-      description: 'Undo last operation',
-      shortcut: ['Ctrl', 'Z'],
-      category: 'Edit',
-      onSelect: () => {
-        undo()
-        setShowCommandPalette(false)
-      },
-    },
-    {
-      id: 'redo',
-      label: 'Redo',
-      description: 'Redo last undone operation',
-      shortcut: ['Ctrl', 'Y'],
-      category: 'Edit',
-      onSelect: () => {
-        redo()
-        setShowCommandPalette(false)
-      },
-    },
-    {
-      id: 'toggle-sidebar',
-      label: 'Toggle Sidebar',
-      description: 'Show/hide conversation list',
-      shortcut: ['Ctrl', 'B'],
-      category: 'View',
-      onSelect: () => {
-        setShowSidebar((prev) => !prev)
-        setShowCommandPalette(false)
-      },
-    },
-    ...messageOperationCommands,
-  ]
 
   // Handle send
   const handleSend = useCallback(
@@ -353,8 +226,9 @@ function ComprehensiveChatApp() {
         content,
       })
 
-      const userTokens = Math.ceil(content.length / 4)
-      addInputTokens(userTokens)
+      // Track input tokens
+      const userTokenEstimate = Math.ceil(content.length / 4)
+      addTrackedMessage({ role: 'user', content, tokens: userTokenEstimate })
 
       // Update conversation preview
       setConversations((prev) =>
@@ -381,18 +255,19 @@ function ComprehensiveChatApp() {
           content: responseContent,
         })
 
-        const aiTokens = Math.ceil(responseContent.length / 4)
-        addOutputTokens(aiTokens)
+        // Track output tokens
+        const aiTokenEstimate = Math.ceil(responseContent.length / 4)
+        addTrackedMessage({ role: 'assistant', content: responseContent, tokens: aiTokenEstimate })
       } finally {
         setIsLoading(false)
       }
     },
-    [addMessage, activeConversationId, addInputTokens, addOutputTokens]
+    [addMessage, activeConversationId, addTrackedMessage]
   )
 
   // Handle export
   const handleExport = useCallback(
-    async (options: any) => {
+    async (options: { format?: string }) => {
       const format = options.format || 'markdown'
       let content = ''
 
@@ -426,6 +301,13 @@ function ComprehensiveChatApp() {
     [messages]
   )
 
+  // Filter messages by search
+  const displayMessages = searchQuery
+    ? messages.filter((m) =>
+        m.content.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : messages
+
   // Sample citations (for demo)
   const sampleCitations: Citation[] = [
     {
@@ -434,7 +316,8 @@ function ComprehensiveChatApp() {
       title: 'Documentation Example',
       chunkText:
         'This is a sample citation from a document. It provides context for the AI response.',
-      metadata: { source: 'docs', page: 1 },
+      source: 'docs',
+      metadata: { page: 1 },
       confidence: 0.95,
     },
   ]
@@ -462,63 +345,38 @@ function ComprehensiveChatApp() {
               Conversations
             </h2>
           </div>
-          <ConversationList
-            conversations={conversations}
-            folders={folders}
-            activeId={activeConversationId}
-            activeFolderId={activeFolderId}
-            onSelect={setActiveConversationId}
-            onFolderSelect={setActiveFolderId}
-            onDelete={(id) => {
-              setConversations((prev) => prev.filter((c) => c.id !== id))
-              if (id === activeConversationId && conversations.length > 1) {
-                setActiveConversationId(
-                  conversations.find((c) => c.id !== id)?.id ||
-                    conversations[0].id
-                )
-              }
-            }}
-            onDeleteFolder={(folderId) => {
-              setFolders((prev) => prev.filter((f) => f.id !== folderId))
-              setConversations((prev) =>
-                prev.map((c) =>
-                  c.folderId === folderId ? { ...c, folderId: undefined } : c
-                )
-              )
-              if (activeFolderId === folderId) {
-                setActiveFolderId(undefined)
-              }
-            }}
-            onMoveToFolder={(conversationId, folderId) => {
-              setConversations((prev) =>
-                prev.map((c) =>
-                  c.id === conversationId
-                    ? { ...c, folderId: folderId || undefined }
-                    : c
-                )
-              )
-            }}
-            onCreateFolder={(name) => {
-              const newFolder: Folder = {
-                id: `folder-${Date.now()}`,
-                name,
-                createdAt: Date.now(),
-                conversationCount: 0,
-              }
-              setFolders((prev) => [...prev, newFolder])
-            }}
-            onTogglePin={(id) => {
-              setConversations((prev) =>
-                prev.map((c) =>
-                  c.id === id ? { ...c, isPinned: !c.isPinned } : c
-                )
-              )
-            }}
-            showSearch
-            showFilters
-            showSort
-            showFolders
-          />
+          <div style={{ flex: 1, overflow: 'auto', padding: '0.5rem' }}>
+            {conversations.map((conv) => (
+              <div
+                key={conv.id}
+                onClick={() => setActiveConversationId(conv.id)}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer',
+                  background:
+                    conv.id === activeConversationId ? '#f3f4f6' : 'transparent',
+                  marginBottom: '0.25rem',
+                }}
+              >
+                <div style={{ fontWeight: 500 }}>
+                  {conv.isPinned && '📌 '}
+                  {conv.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {conv.preview}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -559,62 +417,6 @@ function ComprehensiveChatApp() {
               flexWrap: 'wrap',
             }}
           >
-            {/* Branch selector */}
-            {branches.size > 1 && (
-              <select
-                value={currentBranchId}
-                onChange={(e) => switchToBranch(e.target.value)}
-                style={{
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                {Array.from(branches.keys()).map((branchId: string) => (
-                  <option key={branchId} value={branchId}>
-                    Branch {branchId.slice(0, 8)}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {/* Undo/Redo */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button
-                onClick={undo}
-                disabled={!canUndo}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: canUndo ? '#f3f4f6' : '#e5e7eb',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  cursor: canUndo ? 'pointer' : 'not-allowed',
-                  fontSize: '0.875rem',
-                  opacity: canUndo ? 1 : 0.5,
-                }}
-                title="Undo (Ctrl+Z)"
-              >
-                ↶ Undo
-              </button>
-              <button
-                onClick={redo}
-                disabled={!canRedo}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: canRedo ? '#f3f4f6' : '#e5e7eb',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  cursor: canRedo ? 'pointer' : 'not-allowed',
-                  fontSize: '0.875rem',
-                  opacity: canRedo ? 1 : 0.5,
-                }}
-                title="Redo (Ctrl+Y)"
-              >
-                ↷ Redo
-              </button>
-            </div>
-
             {/* Export */}
             <button
               onClick={() => setShowExport(true)}
@@ -629,11 +431,11 @@ function ComprehensiveChatApp() {
                 fontWeight: 500,
               }}
             >
-              📥 Export
+              Export
             </button>
 
             {/* Token counter */}
-            <TokenCounter tokens={totalTokens} cost={estimatedCost} />
+            <TokenCounter />
 
             {/* Sidebar toggle */}
             <button
@@ -654,18 +456,25 @@ function ComprehensiveChatApp() {
 
         {/* Search */}
         <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-          <AdvancedMessageSearch
-            messages={messages}
-            onResultsChange={setFilteredMessages}
-            enableAdvancedFilters
+          <input
+            type="text"
             placeholder="Search messages..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.5rem 1rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+            }}
           />
         </div>
 
         {/* Chat window */}
-        <div ref={scrollRef as any} style={{ flex: 1, overflow: 'auto' }}>
+        <div ref={scrollRef as React.RefObject<HTMLDivElement>} style={{ flex: 1, overflow: 'auto' }}>
           <ChatWindow
-            messages={filteredMessages.length > 0 ? filteredMessages : messages}
+            messages={displayMessages}
             isLoading={isLoading}
             onSendMessage={handleSend}
             onEditMessage={handleEdit}
@@ -706,13 +515,6 @@ function ComprehensiveChatApp() {
             )}
         </div>
       </div>
-
-      {/* Command Palette */}
-      <CommandPalette
-        items={commands}
-        open={showCommandPalette}
-        onClose={() => setShowCommandPalette(false)}
-      />
 
       {/* Export Dialog */}
       {showExport && (

@@ -4,11 +4,11 @@
   "description": "Beautiful CLI for Clarity Chat - Developer productivity toolkit",
   "type": "module",
   "bin": {
-    "clarity-chat": "./dist/index.js"
+    "clarity-chat": "./dist/index.js",
+    "@clarity-chat/cli": "./dist/index.js"
   },
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -72,7 +72,8 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "registry.json"
   ],
   "sideEffects": false,
   "engines": {

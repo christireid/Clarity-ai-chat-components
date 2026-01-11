@@ -162,7 +162,7 @@
 
 **Script:**
 
-> "We've built 70+ components covering everything from basic chat to enterprise SSO. [Pick 2-3
+> "We've built 155+ components covering everything from basic chat to enterprise SSO. [Pick 2-3
 > relevant to prospect]."
 
 ---
@@ -456,7 +456,7 @@
 **Unique Advantages:**
 
 1. ✅ **Only WCAG AAA certified** chat library
-2. ✅ **70+ components** (most comprehensive)
+2. ✅ **155+ components** (most comprehensive)
 3. ✅ **Enterprise features** (SSO, RBAC, white-label)
 4. ✅ **97% cost savings** vs. custom build
 5. ✅ **10-50x faster** time to market

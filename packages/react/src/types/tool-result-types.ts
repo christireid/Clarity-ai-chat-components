@@ -54,7 +54,7 @@ export interface CalculatorToolResult {
  */
 export interface DatabaseQueryToolResult {
   query: string
-  rows: Record<string, any>[]
+  rows: Record<string, unknown>[]
   rowCount: number
   columns?: string[]
   executionTime?: number
@@ -153,30 +153,36 @@ export interface GenericToolResult {
  * Type guard to check if result matches a specific tool result type
  */
 export function isWeatherToolResult(result: unknown): result is WeatherToolResult {
+  if (typeof result !== 'object' || result === null) {
+    return false
+  }
+  const obj = result as Record<string, unknown>
   return (
-    typeof result === 'object' &&
-    result !== null &&
-    typeof (result as any).location === 'string' &&
-    typeof (result as any).temperature === 'number' &&
-    typeof (result as any).condition === 'string'
+    typeof obj.location === 'string' &&
+    typeof obj.temperature === 'number' &&
+    typeof obj.condition === 'string'
   )
 }
 
 export function isSearchToolResult(result: unknown): result is SearchToolResult {
+  if (typeof result !== 'object' || result === null) {
+    return false
+  }
+  const obj = result as Record<string, unknown>
   return (
-    typeof result === 'object' &&
-    result !== null &&
-    typeof (result as any).query === 'string' &&
-    Array.isArray((result as any).results)
+    typeof obj.query === 'string' &&
+    Array.isArray(obj.results)
   )
 }
 
 export function isCalculatorToolResult(result: unknown): result is CalculatorToolResult {
+  if (typeof result !== 'object' || result === null) {
+    return false
+  }
+  const obj = result as Record<string, unknown>
   return (
-    typeof result === 'object' &&
-    result !== null &&
-    typeof (result as any).expression === 'string' &&
-    typeof (result as any).result === 'number'
+    typeof obj.expression === 'string' &&
+    typeof obj.result === 'number'
   )
 }
 

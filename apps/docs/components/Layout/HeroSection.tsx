@@ -409,7 +409,7 @@ export function HeroSection({
               >
                 <Sparkles className="w-4 h-4" />
               </motion.div>
-              <span>190+ Components · 95+ Hooks · 15 Themes</span>
+              <span>155+ Components · 70+ Hooks · 15 Themes</span>
             </motion.div>
             {showGitHubStars && <GitHubStarsBadge />}
           </div>
@@ -483,9 +483,9 @@ export function HeroSection({
             className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 max-w-3xl mx-auto px-2 sm:px-0"
           >
             {[
-              { value: 70, label: 'Components', suffix: '+' },
-              { value: 35, label: 'Hooks', suffix: '+' },
-              { value: 11, label: 'Themes', suffix: '' },
+              { value: 155, label: 'Components', suffix: '+' },
+              { value: 70, label: 'Hooks', suffix: '+' },
+              { value: 15, label: 'Themes', suffix: '' },
               { value: 99, label: 'Lighthouse', suffix: '' },
             ].map((stat, index) => (
               <motion.div

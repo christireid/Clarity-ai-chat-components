@@ -64,7 +64,7 @@ import {
  * @param deps - Dependencies array for React's dependency checking
  * @returns Memoized callback with stable reference
  */
-export function useMemoizedCallback<T extends (...args: any[]) => any>(
+export function useMemoizedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   deps: DependencyList
 ): T {
@@ -78,7 +78,7 @@ export function useMemoizedCallback<T extends (...args: any[]) => any>(
 
   // Create memoized version that maintains referential equality
   if (!memoizedCallback.current) {
-    memoizedCallback.current = function (this: any, ...args: any[]) {
+    memoizedCallback.current = function (this: unknown, ...args: unknown[]) {
       return callbackRef.current.apply(this, args);
     } as T;
   }
@@ -573,13 +573,13 @@ export function useContextSelector<T, R>(
  * @param contexts - Array of context tuples [Context, selector]
  * @returns Array of selected values
  */
-export function useMultipleContexts<T extends readonly [React.Context<any>, (value: any) => any][]>(
+export function useMultipleContexts<T extends readonly [React.Context<unknown>, (value: unknown) => unknown][]>(
   contexts: T
-): { [K in keyof T]: T[K] extends [React.Context<any>, (value: any) => infer R] ? R : never } {
+): { [K in keyof T]: T[K] extends [React.Context<unknown>, (value: unknown) => infer R] ? R : never } {
   return contexts.map(([context, selector]) => {
     const contextValue = useContext(context);
     return selector(contextValue);
-  }) as any;
+  }) as { [K in keyof T]: T[K] extends [React.Context<unknown>, (value: unknown) => infer R] ? R : never };
 }
 
 // ============================================================================
@@ -589,30 +589,34 @@ export function useMultipleContexts<T extends readonly [React.Context<any>, (val
 /**
  * Deep equality comparison for objects and arrays
  */
-function deepEqual(a: any, b: any): boolean {
+function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   if (a == null || b == null) return false;
   if (typeof a !== typeof b) return false;
-  
-  if (typeof a === 'object') {
-    if (Array.isArray(a) !== Array.isArray(b)) return false;
-    
-    if (Array.isArray(a)) {
+
+  if (typeof a === 'object' && typeof b === 'object') {
+    const aIsArray = Array.isArray(a);
+    const bIsArray = Array.isArray(b);
+    if (aIsArray !== bIsArray) return false;
+
+    if (aIsArray && bIsArray) {
       if (a.length !== b.length) return false;
       return a.every((item, index) => deepEqual(item, b[index]));
     }
-    
-    const keysA = Object.keys(a);
-    const keysB = Object.keys(b);
-    
+
+    const aObj = a as Record<string, unknown>;
+    const bObj = b as Record<string, unknown>;
+    const keysA = Object.keys(aObj);
+    const keysB = Object.keys(bObj);
+
     if (keysA.length !== keysB.length) return false;
-    
+
     return keysA.every(key => {
       if (!keysB.includes(key)) return false;
-      return deepEqual(a[key], b[key]);
+      return deepEqual(aObj[key], bObj[key]);
     });
   }
-  
+
   return false;
 }
 

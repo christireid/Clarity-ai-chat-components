@@ -522,22 +522,22 @@ export function limitHistory(
 // 3. Basic Response Caching
 // ============================================================================
 
-interface CacheEntry {
+interface CacheEntry<T = unknown> {
   key: string
-  value: any
+  value: T
   timestamp: number
   ttl: number
 }
 
-class MemoryCache {
-  private cache = new Map<string, CacheEntry>()
+class MemoryCache<T = unknown> {
+  private cache = new Map<string, CacheEntry<T>>()
   private maxSize: number
 
   constructor(maxSize: number = 100) {
     this.maxSize = maxSize
   }
 
-  get(key: string): any | null {
+  get(key: string): T | null {
     const entry = this.cache.get(key)
     if (!entry) return null
 
@@ -550,7 +550,7 @@ class MemoryCache {
     return entry.value
   }
 
-  set(key: string, value: any, ttl: number = 3600000): void {
+  set(key: string, value: T, ttl: number = 3600000): void {
     // Evict oldest if at capacity
     if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
       const firstKey = this.cache.keys().next().value
@@ -579,21 +579,21 @@ class MemoryCache {
 /**
  * Create a cache instance
  */
-export function createCache(options: CacheOptions = {}): {
-  get: (key: string) => any | null
-  set: (key: string, value: any, ttl?: number) => void
+export function createCache<T = unknown>(options: CacheOptions = {}): {
+  get: (key: string) => T | null
+  set: (key: string, value: T, ttl?: number) => void
   clear: () => void
   size: () => number
 } {
   const { storage = 'memory', maxSize = 100 } = options
 
   if (storage === 'memory') {
-    return new MemoryCache(maxSize)
+    return new MemoryCache<T>(maxSize)
   }
 
   // For localStorage and indexedDB, return simplified memory cache for now
   // Full implementation would use async storage
-  return new MemoryCache(maxSize)
+  return new MemoryCache<T>(maxSize)
 }
 
 /**
@@ -603,9 +603,9 @@ export function generateCacheKey(message: string | CoreMessage): string {
   const text =
     typeof message === 'string'
       ? message
-      : typeof (message as any).content === 'string'
-        ? (message as any).content
-        : JSON.stringify((message as any).content)
+      : typeof message.content === 'string'
+        ? message.content
+        : JSON.stringify(message.content)
 
   // Simple hash function
   let hash = 0
@@ -853,20 +853,20 @@ export function enforceOutputLimit(
 // 8. Request Batching
 // ============================================================================
 
-interface BatchedRequest {
+interface BatchedRequest<T = unknown> {
   id: string
-  request: () => Promise<any>
-  resolve: (value: any) => void
-  reject: (error: any) => void
+  request: () => Promise<T>
+  resolve: (value: T) => void
+  reject: (error: unknown) => void
   timestamp: number
 }
 
 class RequestBatcher {
-  private queue: BatchedRequest[] = []
+  private queue: BatchedRequest<unknown>[] = []
   private batchSize: number
   private maxWaitTime: number
   private timeWindow: number
-  private timer: NodeJS.Timeout | null = null
+  private timer: ReturnType<typeof setTimeout> | null = null
 
   constructor(options: BatchingOptions = {}) {
     this.batchSize = options.batchSize ?? 5
@@ -876,7 +876,7 @@ class RequestBatcher {
 
   async add<T>(request: () => Promise<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-      const batchedRequest: BatchedRequest = {
+      const batchedRequest: BatchedRequest<T> = {
         id: Math.random().toString(36).substr(2, 9),
         request,
         resolve,
@@ -884,7 +884,7 @@ class RequestBatcher {
         timestamp: Date.now(),
       }
 
-      this.queue.push(batchedRequest)
+      this.queue.push(batchedRequest as BatchedRequest<unknown>)
 
       // If batch is full, process immediately
       if (this.queue.length >= this.batchSize) {
@@ -1011,12 +1011,12 @@ export function calculateSimilarity(str1: string, str2: string): number {
 /**
  * Find similar cached response
  */
-export function findSimilarCached(
+export function findSimilarCached<T = unknown>(
   query: string,
-  cache: Map<string, { query: string; response: any; timestamp: number }>,
+  cache: Map<string, { query: string; response: T; timestamp: number }>,
   threshold: number = 0.7
-): any | null {
-  for (const [key, entry] of cache.entries()) {
+): T | null {
+  for (const [, entry] of cache.entries()) {
     const similarity = calculateSimilarity(query, entry.query)
     if (similarity >= threshold) {
       return entry.response

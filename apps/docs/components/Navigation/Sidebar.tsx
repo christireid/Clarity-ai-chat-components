@@ -77,7 +77,7 @@ function NavGroup({
           href={item.href}
           onClick={handleLinkClick}
           className={clsx(
-            'block px-3 py-2 rounded-lg text-sm',
+            'block px-3 py-2 min-h-[44px] flex items-center rounded-lg text-sm',
             // Smooth 300ms transitions for all properties
             'transition-all duration-300 ease-in-out',
             // Subtle scale effect
@@ -108,7 +108,7 @@ function NavGroup({
           href={item.href}
           onClick={handleLinkClick}
           className={clsx(
-            'flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm',
+            'flex items-center justify-between w-full px-3 py-2 min-h-[44px] rounded-lg text-sm',
             // Smooth 300ms transitions
             'transition-all duration-300 ease-in-out',
             'hover:scale-[1.01] active:scale-[0.99]',
@@ -133,7 +133,7 @@ function NavGroup({
                 setIsOpen(!isOpen)
               }}
               className={clsx(
-                'p-1.5 rounded-md shrink-0',
+                'p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-md shrink-0',
                 'transition-colors duration-300 ease-in-out',
                 'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
@@ -156,7 +156,7 @@ function NavGroup({
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           className={clsx(
-            'flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm text-left',
+            'flex items-center justify-between w-full px-3 py-2 min-h-[44px] rounded-lg text-sm text-left',
             // Smooth 300ms transitions
             'transition-all duration-300 ease-in-out',
             'hover:scale-[1.01] active:scale-[0.99]',

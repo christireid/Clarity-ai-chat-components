@@ -147,7 +147,7 @@ export class TypedMemoryService {
     async storeMemory(memory) {
         this.cache.set(memory.id, memory);
         this.buffer[memory.scope].set(memory.id, memory);
-        if (this.config.persistence.useVectorStore && this.vectorStore && memory.embedding) {
+        if (this.config.persistence?.useVectorStore && this.vectorStore && memory.embedding) {
             await this.vectorStore.upsert([{
                     id: memory.id,
                     values: memory.embedding,
@@ -213,7 +213,7 @@ export class TypedMemoryService {
             return memory;
         }
         // Check vector store if configured
-        if (this.config.persistence.useVectorStore && this.vectorStore) {
+        if (this.config.persistence?.useVectorStore && this.vectorStore) {
             const results = await this.vectorStore.query({ id, includeMetadata: true });
             if (results.length > 0) {
                 return this.reconstructMemoryFromVector(results[0]);

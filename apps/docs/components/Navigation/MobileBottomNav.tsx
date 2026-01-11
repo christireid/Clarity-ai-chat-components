@@ -129,7 +129,7 @@ export function MobileBottomNav() {
                       key={i}
                       href={action.href}
                       onClick={() => setShowQuickActions(false)}
-                      className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-bg-secondary transition-colors flex-1"
+                      className="flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg hover:bg-bg-secondary transition-colors flex-1 justify-center"
                     >
                       <span className="text-brand-500">{action.icon}</span>
                       <span className="text-xs text-text-secondary">
@@ -143,7 +143,7 @@ export function MobileBottomNav() {
                         action.action?.()
                         setShowQuickActions(false)
                       }}
-                      className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-bg-secondary transition-colors flex-1"
+                      className="flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg hover:bg-bg-secondary transition-colors flex-1 justify-center"
                     >
                       <span className="text-brand-500">{action.icon}</span>
                       <span className="text-xs text-text-secondary">
@@ -166,7 +166,7 @@ export function MobileBottomNav() {
         className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       >
         <div className="bg-bg-primary/95 backdrop-blur-lg border-t border-border shadow-lg safe-area-bottom">
-          <div className="flex items-center justify-around px-2 py-2">
+          <div className="flex items-center justify-around px-2 py-1">
             {navItems.map((item) => {
               const active = item.isActive?.(pathname) ?? pathname === item.href
               return (
@@ -174,7 +174,7 @@ export function MobileBottomNav() {
                   key={item.href}
                   href={item.href}
                   className={clsx(
-                    'flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg transition-all min-w-[60px]',
+                    'flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg transition-all justify-center',
                     active
                       ? 'text-brand-500 bg-brand-500/10'
                       : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
@@ -201,7 +201,7 @@ export function MobileBottomNav() {
             <button
               onClick={() => setShowQuickActions(!showQuickActions)}
               className={clsx(
-                'flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg transition-all min-w-[60px]',
+                'flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg transition-all justify-center',
                 showQuickActions
                   ? 'text-brand-500 bg-brand-500/10'
                   : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'

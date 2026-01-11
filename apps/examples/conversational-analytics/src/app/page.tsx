@@ -6,12 +6,6 @@ import { useState, useCallback, useMemo } from 'react'
 import {
   ChatWindow,
   ThemeProvider,
-  themes,
-  useMessageOperations,
-  AdvancedChatInput,
-  CommandPalette,
-  useStreamingSSE,
-  InteractiveCard,
   FollowUpSuggestions,
 } from '@clarity-chat/react'
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard'
@@ -20,39 +14,46 @@ import { InsightCards } from '@/components/InsightCards'
 import { ChartGallery } from '@/components/ChartGallery'
 import { DataExplorer } from '@/components/DataExplorer'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BarChart, Search } from 'lucide-react'
+import { BarChart } from 'lucide-react'
+import type { Message } from '@clarity-chat/types'
 
 export default function ConversationalAnalytics() {
   const [activeView, setActiveView] = useState<
     'chat' | 'dashboard' | 'explorer'
   >('chat')
   const [currentQuery, setCurrentQuery] = useState('')
-  const [generatedCharts, setGeneratedCharts] = useState<any[]>([])
-  const [insights, setInsights] = useState<any[]>([])
+  const [generatedCharts, setGeneratedCharts] = useState<unknown[]>([])
+  const [insights, setInsights] = useState<Array<{ id: string; text: string; timestamp: Date }>>([])
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isStreaming, setIsStreaming] = useState(false)
 
-  const messageOps = useMessageOperations() || {}
-  const messages = messageOps.messages ?? []
-  const addMessage = messageOps.addMessage ?? (() => {})
-
-  const { streamMessage, isStreaming } = useStreamingSSE({
-    url: '/api/analytics',
-    onMessage: (content) => {
-      // Handle streaming responses
-    },
-  })
+  const addMessage = useCallback((msg: Partial<Message>) => {
+    const newMsg: Message = {
+      id: msg.id || `msg-${Date.now()}`,
+      chatId: 'analytics',
+      role: (msg.role as 'user' | 'assistant' | 'system') || 'user',
+      content: (msg.content as string) || '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    setMessages((prev) => [...prev, newMsg])
+  }, [])
 
   const handleQuery = useCallback(
     async (query: string) => {
       setCurrentQuery(query)
+      setIsStreaming(true)
 
       addMessage({
         id: `user-${Date.now()}`,
         role: 'user',
         content: query,
-        timestamp: new Date(),
       })
 
       // Simulate analytics query processing
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
       const mockResponse = {
         type: 'chart',
         data: {
@@ -86,13 +87,10 @@ export default function ConversationalAnalytics() {
       addMessage({
         id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: `I've analyzed your data and created a chart showing ${mockResponse.data.title}. Here are the key insights:\n\n${mockResponse.insights.map((i) => `• ${i}`).join('\n')}`,
-        timestamp: new Date(),
-        metadata: {
-          chartType: mockResponse.data.chartType,
-          insights: mockResponse.insights,
-        },
+        content: `I've analyzed your data and created a chart showing ${mockResponse.data.title}. Here are the key insights:\n\n${mockResponse.insights.map((i) => `- ${i}`).join('\n')}`,
       })
+
+      setIsStreaming(false)
     },
     [addMessage]
   )
@@ -109,7 +107,7 @@ export default function ConversationalAnalytics() {
   )
 
   return (
-    <ThemeProvider theme={themes.minimal}>
+    <ThemeProvider>
       <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         {/* Header */}
         <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
@@ -138,7 +136,6 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <span className="mr-2">⚡</span>
                   Chat
                 </button>
                 <button
@@ -149,7 +146,6 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <span className="mr-2">📊</span>
                   Dashboard
                 </button>
                 <button
@@ -160,7 +156,6 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <span className="mr-2">🗄️</span>
                   Explorer
                 </button>
               </div>
@@ -190,8 +185,7 @@ export default function ConversationalAnalytics() {
                     {insights.length > 0 && (
                       <div className="mt-6">
                         <h3 className="font-semibold mb-3 flex items-center">
-                          <span className="mr-2">💡</span>
-                          Key Insights
+                          <span className="mr-2">Key Insights</span>
                         </h3>
                         <InsightCards insights={insights.slice(-5)} />
                       </div>
@@ -205,60 +199,16 @@ export default function ConversationalAnalytics() {
                     <ChatWindow
                       messages={messages}
                       onSendMessage={handleQuery}
-                      renderMessage={(message) => {
-                        if (
-                          message.role === 'assistant' &&
-                          message.metadata?.chartType
-                        ) {
-                          return (
-                            <div className="space-y-4">
-                              <div className="prose dark:prose-invert max-w-none">
-                                {message.content}
-                              </div>
-                              {Array.isArray(message.metadata?.insights) && (
-                                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                                  <h4 className="font-semibold mb-2 flex items-center">
-                                    <span className="mr-2">✨</span>
-                                    AI Insights
-                                  </h4>
-                                  <ul className="space-y-1">
-                                    {message.metadata?.insights?.map(
-                                      (insight: string, idx: number) => (
-                                        <li key={idx} className="text-sm">
-                                          {insight}
-                                        </li>
-                                      )
-                                    )}
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
-                          )
-                        }
-                        return (
-                          <div className="prose dark:prose-invert max-w-none">
-                            {message.content}
-                          </div>
-                        )
-                      }}
-                      showTypingIndicator={isStreaming}
+                      isLoading={isStreaming}
                     />
                   </div>
 
-                  {/* Advanced Input with Suggestions */}
+                  {/* Input with Suggestions */}
                   <div className="border-t border-gray-200 dark:border-gray-800 p-4 bg-white dark:bg-gray-900">
                     <FollowUpSuggestions
                       suggestions={suggestedQueries.slice(0, 3)}
                       onSelect={(suggestion) => handleQuery(suggestion)}
                     />
-                    <div className="mt-3">
-                      <AdvancedChatInput
-                        onSend={handleQuery}
-                        placeholder="Ask a question about your data... (e.g., 'Show sales by region')"
-                        enableVoice={true}
-                        suggestions={suggestedQueries}
-                      />
-                    </div>
                   </div>
                 </main>
 
@@ -266,8 +216,7 @@ export default function ConversationalAnalytics() {
                 <aside className="w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
                   <div className="p-4">
                     <h3 className="font-semibold mb-4 flex items-center">
-                      <span className="mr-2">📈</span>
-                      Generated Charts
+                      <span className="mr-2">Generated Charts</span>
                     </h3>
                     <ChartGallery charts={generatedCharts} />
                   </div>
@@ -304,15 +253,6 @@ export default function ConversationalAnalytics() {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Command Palette */}
-        <CommandPalette
-          commands={[
-            { id: 'new-query', label: 'New Query', action: () => {} },
-            { id: 'export-data', label: 'Export Data', action: () => {} },
-            { id: 'save-dashboard', label: 'Save Dashboard', action: () => {} },
-          ]}
-        />
       </div>
     </ThemeProvider>
   )

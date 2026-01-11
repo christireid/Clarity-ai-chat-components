@@ -165,7 +165,7 @@ compliance requirements
 - Opportunity cost visible
 
 **The new equation:** | Factor | Build | Buy | |--------|-------|-----| | Initial time | 6-10 weeks
-| 1 week | | Features | What you build | 70+ components | | Maintenance | Forever | Included | |
+| 1 week | | Features | What you build | 155+ components | | Maintenance | Forever | Included | |
 Updates | Your team | Vendor | | Opportunity cost | High | Low |
 
 **Lesson:** Don't rebuild solved problems. Build your differentiator.

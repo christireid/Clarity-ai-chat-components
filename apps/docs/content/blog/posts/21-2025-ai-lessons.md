@@ -187,7 +187,7 @@ The new math:
 | Factor                   | Build                        | Buy              |
 | ------------------------ | ---------------------------- | ---------------- |
 | Initial time             | 6-10 weeks                   | 1 week           |
-| Features at launch       | What you build               | 70+ components   |
+| Features at launch       | What you build               | 155+ components   |
 | Maintenance              | Forever, your team           | Included         |
 | Updates when APIs change | Your problem                 | Vendor's problem |
 | Opportunity cost         | High (core features delayed) | Low              |

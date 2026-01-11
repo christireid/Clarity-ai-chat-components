@@ -95,21 +95,49 @@ export class TokenCounter {
   private static currentModel: ModelFamily = 'generic'
 
   /**
-   * Set the model family for more accurate counting
+   * Instance model for instance methods
+   */
+  private instanceModel: ModelFamily = 'generic'
+
+  /**
+   * Constructor for instance usage
+   */
+  constructor(model?: ModelFamily) {
+    if (model) {
+      this.instanceModel = model
+    }
+  }
+
+  /**
+   * Set the model family for more accurate counting (static)
    */
   static setModel(model: ModelFamily): void {
     this.currentModel = model
   }
 
   /**
-   * Get current model family
+   * Get current model family (static)
    */
   static getModel(): ModelFamily {
     return this.currentModel
   }
 
   /**
-   * Count tokens in text with confidence level
+   * Set instance model
+   */
+  setModel(model: ModelFamily): void {
+    this.instanceModel = model
+  }
+
+  /**
+   * Get instance model
+   */
+  getModel(): ModelFamily {
+    return this.instanceModel
+  }
+
+  /**
+   * Count tokens in text with confidence level (static)
    * Returns detailed result including confidence
    */
   static countWithConfidence(
@@ -153,7 +181,7 @@ export class TokenCounter {
   }
 
   /**
-   * Count tokens in text (approximate)
+   * Count tokens in text (approximate) - static method
    * Backward compatible - returns just the count
    */
   static count(text: string): number {
@@ -161,14 +189,36 @@ export class TokenCounter {
   }
 
   /**
-   * Count tokens in multiple texts
+   * Count tokens in text - instance method
+   * Delegates to static method
+   */
+  countTokens(text: string): number {
+    return TokenCounter.countWithConfidence(text, this.instanceModel).count
+  }
+
+  /**
+   * Count tokens with confidence - instance method
+   */
+  countTokensWithConfidence(text: string): TokenCountResult {
+    return TokenCounter.countWithConfidence(text, this.instanceModel)
+  }
+
+  /**
+   * Count tokens in multiple texts (static)
    */
   static countBatch(texts: string[]): number {
     return texts.reduce((sum, text) => sum + this.count(text), 0)
   }
 
   /**
-   * Count tokens in multiple texts with confidence
+   * Count tokens in multiple texts - instance method
+   */
+  countBatch(texts: string[]): number {
+    return texts.reduce((sum, text) => sum + this.countTokens(text), 0)
+  }
+
+  /**
+   * Count tokens in multiple texts with confidence (static)
    */
   static countBatchWithConfidence(texts: string[]): TokenCountResult {
     if (texts.length === 0) {
@@ -203,7 +253,7 @@ export class TokenCounter {
   }
 
   /**
-   * Truncate text to fit token budget
+   * Truncate text to fit token budget (static)
    * Tries to break at sentence boundaries when possible
    */
   static truncate(text: string, maxTokens: number): string {
@@ -234,21 +284,42 @@ export class TokenCounter {
   }
 
   /**
-   * Estimate tokens remaining in a budget
+   * Truncate text - instance method
+   */
+  truncate(text: string, maxTokens: number): string {
+    return TokenCounter.truncate(text, maxTokens)
+  }
+
+  /**
+   * Estimate tokens remaining in a budget (static)
    */
   static remaining(text: string, budget: number): number {
     return Math.max(0, budget - this.count(text))
   }
 
   /**
-   * Check if text fits within token budget
+   * Estimate tokens remaining - instance method
+   */
+  remaining(text: string, budget: number): number {
+    return Math.max(0, budget - this.countTokens(text))
+  }
+
+  /**
+   * Check if text fits within token budget (static)
    */
   static fitsInBudget(text: string, budget: number): boolean {
     return this.count(text) <= budget
   }
 
   /**
-   * Split text into sentences
+   * Check if text fits - instance method
+   */
+  fitsInBudget(text: string, budget: number): boolean {
+    return this.countTokens(text) <= budget
+  }
+
+  /**
+   * Split text into sentences (static)
    */
   static splitSentences(text: string): string[] {
     return text
@@ -258,10 +329,32 @@ export class TokenCounter {
   }
 
   /**
-   * Get token-to-character ratio for current model
+   * Split text into sentences - instance method
+   */
+  splitSentences(text: string): string[] {
+    return TokenCounter.splitSentences(text)
+  }
+
+  /**
+   * Get token-to-character ratio for current model (static)
    */
   static getTokenRatio(contentType: ContentType = 'prose'): number {
     const ratios = MODEL_RATIOS[this.currentModel]
+    switch (contentType) {
+      case 'code':
+        return ratios.code
+      case 'prose':
+        return ratios.prose
+      default:
+        return (ratios.code + ratios.prose) / 2
+    }
+  }
+
+  /**
+   * Get token-to-character ratio - instance method
+   */
+  getTokenRatio(contentType: ContentType = 'prose'): number {
+    const ratios = MODEL_RATIOS[this.instanceModel]
     switch (contentType) {
       case 'code':
         return ratios.code

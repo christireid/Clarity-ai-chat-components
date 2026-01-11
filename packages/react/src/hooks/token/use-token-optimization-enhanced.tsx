@@ -420,7 +420,7 @@ export function useTokenOptimizationEnhanced(
   options: EnhancedTokenOptimizationOptions = {}
 ): {
   /** Optimize structured data (auto TOON/JSON) */
-  optimizeData: (data: any) => Promise<EnhancedOptimizationResult>
+  optimizeData: (data: unknown) => Promise<EnhancedOptimizationResult>
 
   /** Optimize text prompt */
   optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>
@@ -429,14 +429,14 @@ export function useTokenOptimizationEnhanced(
   optimizeHistory: (messages: CoreMessage[]) => Promise<CoreMessage[]>
 
   /** Prepare messages with caching */
-  prepareMessages: (messages: CoreMessage[]) => Array<{
+  prepareMessages: (messages: CoreMessage[]) => CoreMessage[] | Array<{
     role: string
     content: string
     cache_control?: { type: 'ephemeral' }
   }>
 
   /** Parse response (handles TOON/JSON) */
-  parseResponse: (response: string) => any
+  parseResponse: (response: string) => unknown
 
   /** Count tokens accurately */
   countTokens: (text: string) => Promise<TokenCount>
@@ -703,7 +703,7 @@ export function useTokenOptimizationEnhanced(
    * Optimize structured data
    */
   const optimizeData = React.useCallback(
-    async (data: any): Promise<EnhancedOptimizationResult> => {
+    async (data: unknown): Promise<EnhancedOptimizationResult> => {
       // PII Redaction first
       let processedData = data
       if (enablePIIRedaction) {
@@ -948,7 +948,7 @@ export function useTokenOptimizationEnhanced(
   const prepareMessages = React.useCallback(
     (messages: CoreMessage[]) => {
       if (!enablePromptCaching) {
-        return messages as any
+        return messages
       }
 
       // Extract system prompt
@@ -975,7 +975,7 @@ export function useTokenOptimizationEnhanced(
         )
       }
 
-      return messages as any
+      return messages
     },
     [enablePromptCaching, cachingProvider]
   )
@@ -983,7 +983,7 @@ export function useTokenOptimizationEnhanced(
   /**
    * Parse response
    */
-  const parseResponse = React.useCallback((response: string): any => {
+  const parseResponse = React.useCallback((response: string): unknown => {
     return parseFlexible(response)
   }, [])
 
@@ -1217,17 +1217,29 @@ export function useTokenOptimizationEnhanced(
             if (msg.role === 'user') {
               if (currentTurn.user) {
                 // Previous turn incomplete or just user, push it
-                turns.push(currentTurn as any)
+                turns.push({
+                  user: currentTurn.user,
+                  assistant: currentTurn.assistant,
+                  timestamp: currentTurn.timestamp ?? 0,
+                })
               }
               currentTurn = { user: msg, timestamp: i }
             } else if (msg.role === 'assistant' && currentTurn.user) {
               currentTurn.assistant = msg
-              turns.push(currentTurn as any)
+              turns.push({
+                user: currentTurn.user,
+                assistant: currentTurn.assistant,
+                timestamp: currentTurn.timestamp ?? 0,
+              })
               currentTurn = {}
             }
           }
           if (currentTurn.user) {
-            turns.push(currentTurn as any)
+            turns.push({
+              user: currentTurn.user,
+              assistant: currentTurn.assistant,
+              timestamp: currentTurn.timestamp ?? 0,
+            })
           }
 
           // Score turns based on user message similarity

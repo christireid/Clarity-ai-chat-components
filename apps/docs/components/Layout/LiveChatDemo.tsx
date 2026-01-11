@@ -39,7 +39,7 @@ const generateId = () => crypto.randomUUID()
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 190+ components and 95+ hooks!",
+    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 155+ components and 70+ hooks!",
     sender: 'bot',
     timestamp: new Date(Date.now() - 60000),
   },
@@ -361,7 +361,7 @@ export function LiveChatDemo() {
                     message.sender === 'bot'
                       ? message.isError
                         ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
-                        : 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
+                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-tl-sm border border-gray-200 dark:border-gray-700'
                       : 'bg-brand-500 text-white rounded-tr-sm'
                   }`}
                 >

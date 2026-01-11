@@ -1,6 +1,6 @@
 /**
  * Advanced Example: Multi-modal chat with tool calling
- * 
+ *
  * Demonstrates advanced features:
  * - Multi-modal content (text + images)
  * - Tool calling
@@ -9,32 +9,26 @@
  */
 
 import * as React from 'react'
-import { useChat, useAssistant } from '@clarity-chat/react'
-import {
-  messageToText,
-  extractToolCalls,
-  truncateMessagesToTokenLimit,
-  createUserMessage,
-  createAssistantMessage,
-} from '@clarity-chat/react'
-import type { CoreMessage } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
+
+// Helper to extract text from message content
+function messageToText(msg: { content: unknown }): string {
+  if (typeof msg.content === 'string') {
+    return msg.content
+  }
+  if (Array.isArray(msg.content)) {
+    return msg.content
+      .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
+      .map((part) => part.text)
+      .join('\n')
+  }
+  return JSON.stringify(msg.content)
+}
 
 function MultiModalChatExample() {
-  const { messages, append, isLoading, setMessages } = useChat({
+  const { messages, append, isLoading, setMessages } = useClarityChat({
     api: '/api/chat',
-    transform: (messages) => {
-      // Limit to last 10 messages or 4000 tokens
-      return truncateMessagesToTokenLimit(messages, 4000).slice(-10)
-    },
-    onFinish: (message) => {
-      console.log('Message finished:', message)
-      
-      // Check for tool calls
-      const toolCalls = extractToolCalls(message)
-      if (toolCalls.length > 0) {
-        console.log('Tool calls detected:', toolCalls)
-      }
-    },
+    transport: 'sse',
   })
 
   const handleImageUpload = (file: File) => {
@@ -44,16 +38,7 @@ function MultiModalChatExample() {
       if (imageData) {
         append({
           role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'What do you see in this image?',
-            },
-            {
-              type: 'image',
-              image: imageData as ArrayBuffer,
-            },
-          ],
+          content: `[Image uploaded: ${file.name}] What do you see in this image?`,
         })
       }
     }
@@ -63,7 +48,7 @@ function MultiModalChatExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Multi-Modal Chat</h2>
-      
+
       <div className="mb-4">
         <input
           type="file"
@@ -88,9 +73,6 @@ function MultiModalChatExample() {
           >
             <div className="text-sm font-semibold mb-1">{msg.role}</div>
             <div>{messageToText(msg)}</div>
-            {Array.isArray(msg.content) && msg.content.some((p) => p.type === 'image') && (
-              <div className="mt-2 text-sm text-gray-600">[Image attached]</div>
-            )}
           </div>
         ))}
       </div>
@@ -101,27 +83,49 @@ function MultiModalChatExample() {
 }
 
 function ToolCallingExample() {
-  const {
-    status,
-    messages,
-    submitMessage,
-    input,
-    setInput,
-    isLoading,
-    toolInvocations,
-  } = useAssistant({
-    api: '/api/assistant',
-    assistantId: 'tool-assistant',
-    onToolCall: (toolCall) => {
-      console.log('Tool called:', toolCall)
-      
-      // Simulate tool execution
-      if (toolCall.toolName === 'get_weather') {
-        // In real app, this would call an actual API
-        console.log('Getting weather for:', toolCall.args)
+  const [messages, setMessages] = React.useState<
+    Array<{ id: string; role: string; content: string }>
+  >([])
+  const [input, setInput] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [status, setStatus] = React.useState<'idle' | 'in_progress'>('idle')
+  const [toolInvocations, setToolInvocations] = React.useState<
+    Array<{ toolName: string; state: string; args?: unknown }>
+  >([])
+
+  const submitMessage = async (content: string) => {
+    const userMessage = { id: Date.now().toString(), role: 'user', content }
+    setMessages((prev) => [...prev, userMessage])
+    setIsLoading(true)
+    setStatus('in_progress')
+    setToolInvocations([])
+
+    try {
+      // Simulate tool detection
+      if (content.toLowerCase().includes('weather')) {
+        setToolInvocations([
+          { toolName: 'get_weather', state: 'executing', args: { location: 'San Francisco' } },
+        ])
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        setToolInvocations([
+          { toolName: 'get_weather', state: 'completed', args: { location: 'San Francisco' } },
+        ])
       }
-    },
-  })
+
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      const assistantMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: content.toLowerCase().includes('weather')
+          ? 'The weather in San Francisco is 72F and sunny.'
+          : `You asked: "${content}". This is a demo response.`,
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } finally {
+      setIsLoading(false)
+      setStatus('idle')
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -134,13 +138,15 @@ function ToolCallingExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Tool Calling Assistant</h2>
-      
+
       <div className="mb-4 flex items-center gap-4">
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          status === 'idle' ? 'bg-green-100 text-green-800' :
-          status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-          'bg-yellow-100 text-yellow-800'
-        }`}>
+        <span
+          className={`px-3 py-1 rounded-full text-sm ${
+            status === 'idle'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-blue-100 text-blue-800'
+          }`}
+        >
           {status}
         </span>
         {toolInvocations.length > 0 && (
@@ -151,30 +157,17 @@ function ToolCallingExample() {
       </div>
 
       <div className="space-y-2 mb-4 max-h-96 overflow-y-auto">
-        {messages.map((msg) => {
-          const toolCalls = extractToolCalls(msg)
-          return (
-            <div
-              key={msg.id}
-              className={`p-3 rounded-lg ${
-                msg.role === 'user' ? 'bg-blue-50 ml-12' : 'bg-gray-50 mr-12'
-              }`}
-            >
-              <div className="text-sm font-semibold mb-1">{msg.role}</div>
-              <div>{messageToText(msg)}</div>
-              {toolCalls.length > 0 && (
-                <div className="mt-2 pt-2 border-t">
-                  <div className="text-xs font-semibold text-gray-600 mb-1">Tool Calls:</div>
-                  {toolCalls.map((tc, idx) => (
-                    <div key={idx} className="text-xs text-gray-500">
-                      • {tc.toolName}({JSON.stringify(tc.args)})
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`p-3 rounded-lg ${
+              msg.role === 'user' ? 'bg-blue-50 ml-12' : 'bg-gray-50 mr-12'
+            }`}
+          >
+            <div className="text-sm font-semibold mb-1">{msg.role}</div>
+            <div>{msg.content}</div>
+          </div>
+        ))}
       </div>
 
       {toolInvocations.length > 0 && (
@@ -214,8 +207,9 @@ function ToolCallingExample() {
 }
 
 function MessageManagementExample() {
-  const { messages, append, setMessages, reload } = useChat({
+  const { messages, append, setMessages } = useClarityChat({
     api: '/api/chat',
+    transport: 'sse',
   })
 
   const handleClear = () => {
@@ -231,7 +225,7 @@ function MessageManagementExample() {
       })),
       exportedAt: new Date().toISOString(),
     }
-    
+
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json',
     })
@@ -246,7 +240,7 @@ function MessageManagementExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Message Management</h2>
-      
+
       <div className="mb-4 flex gap-2">
         <button
           onClick={handleClear}
@@ -260,13 +254,6 @@ function MessageManagementExample() {
           disabled={messages.length === 0}
         >
           Export Chat
-        </button>
-        <button
-          onClick={() => reload()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-          disabled={messages.length === 0}
-        >
-          Reload Last Response
         </button>
       </div>
 

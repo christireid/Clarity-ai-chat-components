@@ -319,3 +319,97 @@ export function truncateCode(code: string, maxLines: number): string {
   if (lines.length <= maxLines) return code
   return lines.slice(0, maxLines).join('\n')
 }
+
+/**
+ * Parsed code block from markdown text
+ */
+export interface ParsedCodeBlock {
+  type: 'code' | 'text'
+  content: string
+  language?: string
+}
+
+/**
+ * Parse markdown code blocks from text
+ *
+ * Extracts fenced code blocks (```language ... ```) from markdown text
+ * and returns an array of blocks, preserving text content between them.
+ *
+ * @param text - Markdown text containing code blocks
+ * @returns Array of parsed blocks (code and text)
+ *
+ * @example
+ * ```ts
+ * const blocks = parseCodeBlocks(`
+ * Here is some code:
+ * \`\`\`typescript
+ * const x = 1;
+ * \`\`\`
+ * And more text.
+ * `);
+ * // Returns:
+ * // [
+ * //   { type: 'text', content: 'Here is some code:' },
+ * //   { type: 'code', content: 'const x = 1;', language: 'typescript' },
+ * //   { type: 'text', content: 'And more text.' }
+ * // ]
+ * ```
+ */
+export function parseCodeBlocks(text: string): ParsedCodeBlock[] {
+  const blocks: ParsedCodeBlock[] = []
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
+
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    // Add text before code block
+    if (match.index > lastIndex) {
+      const textContent = text.slice(lastIndex, match.index)
+      if (textContent.trim()) {
+        blocks.push({ type: 'text', content: textContent })
+      }
+    }
+
+    // Add code block
+    blocks.push({
+      type: 'code',
+      content: match[2].trim(),
+      language: match[1] || 'text',
+    })
+
+    lastIndex = match.index + match[0].length
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    const textContent = text.slice(lastIndex)
+    if (textContent.trim()) {
+      blocks.push({ type: 'text', content: textContent })
+    }
+  }
+
+  return blocks
+}
+
+/**
+ * Check if text contains any code blocks
+ */
+export function hasCodeBlocks(text: string): boolean {
+  return /```[\s\S]*?```/.test(text)
+}
+
+/**
+ * Extract all code blocks from text (ignoring text content)
+ */
+export function extractCodeBlocks(
+  text: string
+): Array<{ code: string; language: string }> {
+  const blocks = parseCodeBlocks(text)
+  return blocks
+    .filter((block): block is ParsedCodeBlock & { type: 'code' } => block.type === 'code')
+    .map((block) => ({
+      code: block.content,
+      language: block.language || 'text',
+    }))
+}

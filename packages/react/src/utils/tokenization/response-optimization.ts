@@ -48,12 +48,27 @@ export interface ResponseMetrics {
   relevanceScore?: number
 }
 
+/** User preferences for conversation context */
+interface UserPreferences {
+  preferredResponseLength?: 'short' | 'medium' | 'long'
+  verbosity?: number
+  [key: string]: unknown
+}
+
+/** Historical response record */
+interface HistoricalResponse {
+  tokens?: number
+  content?: string
+  timestamp?: number
+  [key: string]: unknown
+}
+
 export interface ConversationContext {
   conversationId: string
   turnCount: number
   averageResponseLength: number
-  userPreferences: any
-  historicalResponses: any[]
+  userPreferences: UserPreferences
+  historicalResponses: HistoricalResponse[]
   contextWindowUsage: number
   topics: string[]
 }
@@ -67,12 +82,39 @@ export interface ResponsePrediction {
   strategy: string
 }
 
+/** Historical data record for prediction */
+interface HistoricalDataRecord {
+  timestamp: number
+  prompt: string
+  actualTokens: number
+  predictedTokens: number
+  accuracy: number
+  context?: ConversationContext
+}
+
+/** Historical pattern for prediction */
+interface HistoricalPattern {
+  averageTokens: number
+  trend: number
+  consistency: number
+}
+
+/** Prompt analysis result */
+interface PromptAnalysis {
+  complexity: number
+  questionType: string
+  domain: string
+  length: number
+  hasExamples: boolean
+  hasConstraints: boolean
+}
+
 /**
  * Advanced response length predictor using ML techniques
  */
 export class ResponseLengthPredictor {
-  private historicalData: Map<string, any[]>
-  private predictionModels: Map<string, any>
+  private historicalData: Map<string, HistoricalDataRecord[]>
+  private predictionModels: Map<string, unknown>
 
   constructor() {
     this.historicalData = new Map()
@@ -135,14 +177,7 @@ export class ResponseLengthPredictor {
   /**
    * Analyze prompt characteristics
    */
-  private analyzePrompt(prompt: string): {
-    complexity: number
-    questionType: string
-    domain: string
-    length: number
-    hasExamples: boolean
-    hasConstraints: boolean
-  } {
+  private analyzePrompt(prompt: string): PromptAnalysis {
     const words = prompt.split(/\s+/).length
     const sentences = prompt.split(/[.!?]+/).length
     const complexity = this.calculateComplexity(prompt)
@@ -166,7 +201,7 @@ export class ResponseLengthPredictor {
    */
   private basePrediction(
     promptTokens: number,
-    analysis: any,
+    analysis: PromptAnalysis,
     model: string
   ): number {
     let baseTokens = promptTokens * 0.7 // Default ratio
@@ -225,7 +260,7 @@ export class ResponseLengthPredictor {
   private getHistoricalPattern(
     model: string,
     context?: ConversationContext
-  ): any {
+  ): HistoricalPattern | null {
     const key = `${model}_${context?.conversationId || 'global'}`
     const history = this.historicalData.get(key) || []
 
@@ -248,7 +283,7 @@ export class ResponseLengthPredictor {
    */
   private adjustPrediction(
     predictedTokens: number,
-    historicalPattern: any
+    historicalPattern: HistoricalPattern | null
   ): number {
     if (!historicalPattern) return predictedTokens
 
@@ -296,8 +331,8 @@ export class ResponseLengthPredictor {
    * Calculate confidence in prediction
    */
   private calculateConfidence(
-    promptAnalysis: any,
-    historicalPattern?: any
+    promptAnalysis: PromptAnalysis,
+    historicalPattern?: HistoricalPattern | null
   ): number {
     let confidence = 0.5 // Base confidence
 
@@ -306,8 +341,9 @@ export class ResponseLengthPredictor {
     if (promptAnalysis.hasExamples) confidence += 0.1
 
     // Increase confidence with historical data
-    if (historicalPattern?.consistency > 0.8) confidence += 0.2
-    if (historicalPattern?.trend !== 0) confidence += 0.1
+    const consistency = historicalPattern?.consistency
+    if (consistency !== undefined && consistency > 0.8) confidence += 0.2
+    if (historicalPattern?.trend !== 0 && historicalPattern?.trend !== undefined) confidence += 0.1
 
     return Math.min(0.95, confidence)
   }
@@ -815,18 +851,20 @@ export class ResponseOptimizer {
     prompt: string,
     response: string,
     model: string,
-    metadata?: any
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     const cacheKey = this.generateCacheKey(prompt, model)
     const responseTokens = await TokenCounter.count(response)
 
+    // Type assertion needed as semanticCache uses generic unknown type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await semanticCache.set(cacheKey, {
       response,
       tokens: responseTokens,
       model,
       timestamp: Date.now(),
       metadata,
-    })
+    } as any)
   }
 
   /**
@@ -838,7 +876,8 @@ export class ResponseOptimizer {
     similarityThreshold = 0.8
   ): Promise<string | null> {
     const cacheKey = this.generateCacheKey(prompt, model)
-    const cached = await semanticCache.get(cacheKey)
+    // Type assertion needed as semanticCache uses generic unknown type
+    const cached = await semanticCache.get(cacheKey) as { response?: string } | null
 
     if (cached && cached.response) {
       return cached.response

@@ -15,7 +15,7 @@ directly impacts adoption, revenue, and customer trust.
 
 The documentation site has been remediated and is ready for commercial launch:
 
-- Comprehensive component and hook coverage (200+ components, 140+ hooks)
+- Comprehensive component and hook coverage (155+ components, 70+ hooks)
 - Well-structured information architecture with clear learning paths
 - MCP server for AI assistant integration
 - AI-optimized API endpoints (28 components, 23+ hooks including enterprise)
@@ -33,7 +33,7 @@ The documentation site has been remediated and is ready for commercial launch:
 
 | Package                          | Version | Status    | Public Exports               |
 | -------------------------------- | ------- | --------- | ---------------------------- |
-| @clarity-chat/react              | 1.0.0   | ✅ Public | ~200+ components, 140+ hooks |
+| @clarity-chat/react              | 1.0.0   | ✅ Public | ~155+ components, 70+ hooks |
 | @clarity-chat/primitives         | 1.0.0   | ✅ Public | UI primitives                |
 | @clarity-chat/types              | 1.0.0   | ✅ Public | TypeScript definitions       |
 | @clarity-chat/utils              | 1.0.0   | ✅ Public | Utility functions            |
@@ -515,7 +515,7 @@ apps/docs/
 export { ClarityChat } from './components/chat/clarity-chat'
 export { useClarityChat } from './hooks/chat/use-clarity-chat'
 export { MemoryProvider } from './memory/memory-provider'
-// ... 200+ more components, 140+ hooks
+// ... 155+ more components, 70+ hooks
 
 // @clarity-chat/react/core - Core bundle
 export { ClarityChat, ChatWindow, ChatInput, MessageList }
