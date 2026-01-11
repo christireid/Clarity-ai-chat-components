@@ -16,7 +16,7 @@ import createMDX from '@next/mdx'
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
   img-src 'self' data: https: blob:;
   font-src 'self' https://fonts.gstatic.com;
   connect-src 'self' https://api.openai.com https://api.anthropic.com https://api.github.com https://www.google-analytics.com wss:;
