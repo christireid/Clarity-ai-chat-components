@@ -89,6 +89,11 @@ export type { OpenAIAdapterConfig, AnthropicAdapterConfig } from './adapters'
 // =============================================================================
 
 export { useTokenCounter } from './use-token-counter'
+export {
+  useLazyTokenCounter,
+  preloadTokenizer,
+  isTokenizerLoaded,
+} from './use-lazy-token-counter'
 export { useCostEstimator } from './use-cost-estimator'
 export { useContextWindow } from './use-context-window'
 export { useResponseCache } from './use-response-cache'
@@ -256,3 +261,10 @@ export type {
   CostEntry,
   CostTotals,
 } from './use-cost-tracker'
+
+// useLazyTokenCounter types
+export type {
+  UseLazyTokenCounterConfig,
+  UseLazyTokenCounterReturn,
+  LazyTokenCounterState,
+} from './use-lazy-token-counter'

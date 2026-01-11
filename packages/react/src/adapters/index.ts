@@ -15,6 +15,26 @@ export type {
   TokenUsage,
   ModelAdapter,
   ModelInfo,
+  // Formalized adapter types (assistant-ui pattern)
+  AdapterCapabilities,
+  FinishReason,
+  TypedStreamChunk,
+  StreamingCallbacks,
+  AdapterResponse,
+  ValidationResult,
+  FormalizedModelAdapter,
+  AdapterRegistry,
+} from './types'
+
+// Runtime functions and type guards
+export {
+  createAdapterRegistry,
+  collectStreamText,
+  isTextDelta,
+  isToolCallDelta,
+  isToolCallComplete,
+  isFinishChunk,
+  isErrorChunk,
 } from './types'
 
 // OpenAI adapter
