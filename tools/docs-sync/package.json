@@ -31,7 +31,7 @@
     "api-extraction"
   ],
   "author": "Clarity Chat",
-  "license": "MIT",
+  "license": "Commercial",
   "dependencies": {
     "commander": "^12.1.0",
     "glob": "^11.0.0",

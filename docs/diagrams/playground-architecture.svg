@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#f8fafc" rx="12"/>
+  <text x="400" y="200" font-family="system-ui" font-size="24" text-anchor="middle" fill="#64748b">
+    Playground Architecture Diagram
+  </text>
+  <rect x="50" y="50" width="200" height="300" fill="#e2e8f0" rx="8"/>
+  <text x="150" y="200" font-family="system-ui" font-size="16" text-anchor="middle" fill="#475569">Template Selector</text>
+  <rect x="300" y="50" width="450" height="300" fill="#fff" stroke="#cbd5e1" rx="8"/>
+  <text x="525" y="200" font-family="system-ui" font-size="16" text-anchor="middle" fill="#475569">Sandpack Editor & Preview</text>
+</svg>

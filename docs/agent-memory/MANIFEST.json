@@ -1,52 +1,5 @@
 {
-  "project": "Clarity AI Chat Components Docs Release",
-  "repo": "https://github.com/christireid/Clarity-ai-chat-components",
-  "current_version": "v1.1.0-20260108-1945",
-  "current_branch": "main",
-  "status": "integration_complete",
-  "last_checkpoint": {
-    "id": "v1.1.0-20260108-1945",
-    "timestamp": "2026-01-08T19:45:00Z",
-    "summary": "All 6 agents completed - integration and verification phase complete",
-    "blocking_issues": [],
-    "known_issues": [
-      "Component count claims need correction (~156 vs 200+ claimed)",
-      "React Three Fiber warnings on 3D pages",
-      "Hydration warnings in dev mode"
-    ],
-    "next_actions": [
-      "Fix inflated component count claims in docs",
-      "Address React hydration warnings",
-      "Configure API endpoints for full E2E testing",
-      "Production build verification",
-      "Final QA sign-off"
-    ]
-  },
-  "acceptance_criteria": {
-    "no_broken_routes": "PASS",
-    "no_duplicated_navigation": "PASS",
-    "stable_sidebar": "PASS",
-    "syntax_highlighting": "PASS",
-    "working_playground": "PASS",
-    "ai_assistant_visible": "PASS",
-    "provider_demos_work": "PASS",
-    "no_console_errors": "WARN",
-    "correct_messaging": "PASS",
-    "zero_false_claims": "WARN"
-  },
-  "agents": {
-    "A": {"file": "AGENTS/agent-a-docs-code.json", "owner": "Docs<->Code Auditor", "state": "completed"},
-    "B": {"file": "AGENTS/agent-b-ia-ux.json", "owner": "IA & UX Architect", "state": "completed"},
-    "C": {"file": "AGENTS/agent-c-demos-playground.json", "owner": "Demos & Playground Engineer", "state": "completed"},
-    "D": {"file": "AGENTS/agent-d-assistant.json", "owner": "AI Assistant Engineer", "state": "completed"},
-    "E": {"file": "AGENTS/agent-e-ui-polish.json", "owner": "UI Polish & Design System", "state": "completed"},
-    "F": {"file": "AGENTS/agent-f-qa-release.json", "owner": "QA & Release Hardening", "state": "completed"}
-  },
-  "verification_results": {
-    "docs_build": "PASS",
-    "critical_routes_verified": 11,
-    "smoke_tests_passed": 12,
-    "smoke_tests_failed": 24,
-    "smoke_tests_total": 36
-  }
+  "version": "1.0.0",
+  "active_agents": ["A", "B", "C", "D", "E", "F"],
+  "last_checkpoint": null
 }

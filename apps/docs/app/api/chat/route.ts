@@ -1,40 +1,60 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import {
+  createSSEStream,
+  getStreamingFunctionWithRouting,
+  validateRequest,
+  handleStreamError,
+} from '@/lib/ai/streaming'
 
-export async function POST(req: Request) {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+export const runtime = 'edge'
 
+export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
+
+    // Validate request
+    const validation = validateRequest(messages)
+    if (!validation.valid) {
+      return NextResponse.json(
+        { error: validation.error },
+        { status: 400 }
+      )
+    }
+
+    // Get the last user message for complexity analysis
     const lastMessage = messages[messages.length - 1]
-    const userText = lastMessage?.content || ''
+    const conversationLength = messages.length
 
-    // Check if client requested streaming (this is a mock, so we assume yes for demo)
-    // In a real app, we'd check headers or body props.
+    // Get appropriate streaming function based on routing config
+    const { streamFn, model, classification } = getStreamingFunctionWithRouting(
+      lastMessage.content,
+      conversationLength
+    )
 
-    const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        const responseText = `This is a simulated streaming response to: "${userText}".\n\nIn a real application, this would connect to an LLM like OpenAI or Anthropic. The text appears token by token to improve perceived latency.`
+    // Log the decision (in a real app you'd use a proper logger)
+    console.log(`[Chat API] Routing query to ${model} (${classification.complexity})`)
 
-        const tokens = responseText.split(/(?=\s)/) // Split by words/spaces roughly
-
-        for (const token of tokens) {
-          // Simulate token generation delay
-          await new Promise((resolve) => setTimeout(resolve, 30))
-          controller.enqueue(encoder.encode(token))
-        }
-
-        controller.close()
-      },
+    // Create the stream generator
+    const generator = streamFn(messages, {
+      model,
+      // Pass other config if needed
     })
+
+    // Create the SSE stream
+    const stream = createSSEStream(generator)
 
     return new Response(stream, {
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    console.error('Chat API Error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

@@ -12,7 +12,7 @@
     "accessibility"
   ],
   "author": "Clarity Chat",
-  "license": "MIT",
+  "license": "Commercial",
   "peerDependencies": {
     "eslint": ">=8.0.0"
   }

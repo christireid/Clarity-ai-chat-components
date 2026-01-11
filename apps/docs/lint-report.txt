@@ -1,0 +1,156 @@
+
+> clarity-chat@0.1.0 lint
+> turbo run lint
+
+turbo 2.6.3
+
+• Packages in scope: @clarity-chat/ai-research-platform, @clarity-chat/cli, @clarity-chat/codemods, @clarity-chat/conversational-analytics, @clarity-chat/dev-tools, @clarity-chat/docs, @clarity-chat/docs-sync, @clarity-chat/enterprise-ai-ops, @clarity-chat/error-handling, @clarity-chat/examples-complex-chat, @clarity-chat/license, @clarity-chat/marketing-site, @clarity-chat/mcp-server, @clarity-chat/memory, @clarity-chat/playground, @clarity-chat/primitives, @clarity-chat/react, @clarity-chat/storybook, @clarity-chat/testing-utils, @clarity-chat/token-optimization, @clarity-chat/token-optimization-demo, @clarity-chat/types, @clarity-chat/typescript-config, @clarity-chat/utils, advanced-chat-features, ai-assistant-demo, analytics-console-demo, basic-chat-demo, clarity-chat, clarity-chat-showcase, code-assistant-demo, component-demo, comprehensive-chat-demo, customer-support-demo, customized-chat-example, design-system-showcase, ecommerce-assistant-demo, enhanced-ui-ux-showcase, enterprise-rag-template, examples-gallery, minimal-chat-example, model-comparison-demo, multi-user-chat-demo, performance-dashboard, rag-workbench-demo, streaming-chat-demo, theme-builder, use-clarity-chat-showcase, vercel-ai-sdk-compatible-demo
+• Running lint in 49 packages
+• Remote caching disabled
+@clarity-chat/testing-utils:lint: cache miss, executing 85497949c9302812
+model-comparison-demo:lint: cache miss, executing 37613a214f600ac6
+rag-workbench-demo:lint: cache miss, executing 06f76ba5cf56b1a6
+@clarity-chat/ai-research-platform:lint: cache miss, executing e7dea3dd4f9f15f4
+@clarity-chat/error-handling:lint: cache miss, executing dd1d0090252ce082
+@clarity-chat/token-optimization:lint: cache miss, executing 08c1e302787152f3
+@clarity-chat/marketing-site:lint: cache miss, executing ecedcee09c20e9a2
+enterprise-rag-template:lint: cache miss, executing f0fcf47e2a6fc971
+@clarity-chat/primitives:lint: cache miss, executing bfeca81a75eff4fd
+@clarity-chat/types:lint: cache miss, executing 6bd30b56f531ae08
+model-comparison-demo:lint: 
+model-comparison-demo:lint: > model-comparison-demo@1.0.0 lint /workspace/apps/examples/model-comparison-demo
+model-comparison-demo:lint: > eslint .
+model-comparison-demo:lint: 
+@clarity-chat/token-optimization:lint: 
+@clarity-chat/token-optimization:lint: > @clarity-chat/token-optimization@1.0.0 lint /workspace/packages/token-optimization
+@clarity-chat/token-optimization:lint: > eslint src
+@clarity-chat/token-optimization:lint: 
+@clarity-chat/testing-utils:lint: 
+@clarity-chat/testing-utils:lint: > @clarity-chat/testing-utils@2.0.0 lint /workspace/packages/testing-utils
+@clarity-chat/testing-utils:lint: > eslint "src/**/*.ts" "src/**/*.tsx"
+@clarity-chat/testing-utils:lint: 
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: > @clarity-chat/marketing-site@0.1.0 lint /workspace/apps/marketing-site
+@clarity-chat/marketing-site:lint: > eslint . --ext ts,tsx --max-warnings 15
+@clarity-chat/marketing-site:lint: 
+rag-workbench-demo:lint: 
+rag-workbench-demo:lint: > rag-workbench-demo@0.1.0 lint /workspace/apps/examples/rag-workbench-demo
+rag-workbench-demo:lint: > eslint .
+rag-workbench-demo:lint: 
+enterprise-rag-template:lint: 
+enterprise-rag-template:lint: > enterprise-rag-template@0.1.0 lint /workspace/apps/examples/enterprise-rag
+enterprise-rag-template:lint: > eslint .
+enterprise-rag-template:lint: 
+@clarity-chat/ai-research-platform:lint: 
+@clarity-chat/ai-research-platform:lint: > @clarity-chat/ai-research-platform@1.0.0 lint /workspace/apps/examples/ai-research-platform
+@clarity-chat/ai-research-platform:lint: > eslint .
+@clarity-chat/ai-research-platform:lint: 
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: > @clarity-chat/primitives@1.0.0 lint /workspace/packages/primitives
+@clarity-chat/primitives:lint: > eslint src --ext ts,tsx
+@clarity-chat/primitives:lint: 
+@clarity-chat/error-handling:lint: 
+@clarity-chat/error-handling:lint: > @clarity-chat/error-handling@2.0.0 lint /workspace/packages/error-handling
+@clarity-chat/error-handling:lint: > eslint src --ext .ts,.tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'
+@clarity-chat/error-handling:lint: 
+@clarity-chat/types:lint: 
+@clarity-chat/types:lint: > @clarity-chat/types@1.0.0 lint /workspace/packages/types
+@clarity-chat/types:lint: > eslint src --ext ts --report-unused-disable-directives --max-warnings 0
+@clarity-chat/types:lint: 
+@clarity-chat/marketing-site:lint: (node:6678) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+@clarity-chat/marketing-site:lint: (Use `node --trace-warnings ...` to show where the warning was created)
+@clarity-chat/error-handling:lint: (node:6767) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+@clarity-chat/error-handling:lint: (Use `node --trace-warnings ...` to show where the warning was created)
+@clarity-chat/playground:lint: cache miss, executing 67b53309ca399a5e
+@clarity-chat/ai-research-platform:lint: 
+@clarity-chat/ai-research-platform:lint: /workspace/apps/examples/ai-research-platform/src/components/KnowledgeGraph.tsx
+@clarity-chat/ai-research-platform:lint:   72:41  warning  Use duration tokens (durations.fast/normal/slow/moderate) instead of hardcoded 0.5. Import from @/lib/animations  clarity-animations/no-hardcoded-duration
+@clarity-chat/ai-research-platform:lint: 
+@clarity-chat/ai-research-platform:lint: /workspace/apps/examples/ai-research-platform/src/components/ResearchAgent.tsx
+@clarity-chat/ai-research-platform:lint:   54:35  warning  Use duration tokens (durations.fast/normal/slow/moderate) instead of hardcoded 0.5. Import from @/lib/animations  clarity-animations/no-hardcoded-duration
+@clarity-chat/ai-research-platform:lint: 
+@clarity-chat/ai-research-platform:lint: ✖ 2 problems (0 errors, 2 warnings)
+@clarity-chat/ai-research-platform:lint:   0 errors and 2 warnings potentially fixable with the `--fix` option.
+@clarity-chat/ai-research-platform:lint: 
+ai-assistant-demo:lint: cache miss, executing 23ac0f346343227f
+@clarity-chat/react:lint: cache miss, executing e42e6a6bc6ff043f
+@clarity-chat/memory:lint: cache miss, executing 968e1ea01ad0ad55
+clarity-chat:lint: cache miss, executing 506ad96b94b601f9
+code-assistant-demo:lint: cache miss, executing c1829247de374710
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: > @clarity-chat/react@1.0.0 lint /workspace/packages/react
+@clarity-chat/react:lint: > eslint src --ext ts,tsx --fix
+@clarity-chat/react:lint: 
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/components/layout/Header.js
+@clarity-chat/marketing-site:lint:   28:17  error  Definition for rule 'clarity-animations/require-reduced-motion' was not found  clarity-animations/require-reduced-motion
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/components/marketing-assistant/ChatWidget.tsx
+@clarity-chat/marketing-site:lint:   113:5  warning  Calling useChat() is deprecated. Migrate to useClarityChat(). See: https://clarity-chat.dev/docs/migration/deprecated-hooks  clarity-deprecations/no-deprecated-hook-calls
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/components/ui/SplitScreenDemo.tsx
+@clarity-chat/marketing-site:lint:   150:13  warning  Consider using animation library variants (fadeInUp, slideUp, etc.) instead of inline animations. Import from @/lib/animations  clarity-animations/prefer-animation-library
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/scripts/index-docs.cjs
+@clarity-chat/marketing-site:lint:   1:1  warning  Unused eslint-disable directive (no problems were reported)
+@clarity-chat/marketing-site:lint:   3:1  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/scripts/test-retrieval.js
+@clarity-chat/marketing-site:lint:   3:1  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: /workspace/apps/marketing-site/scripts/test-retrieval.ts
+@clarity-chat/marketing-site:lint:   4:1  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/marketing-site:lint: ✖ 7 problems (1 error, 6 warnings)
+@clarity-chat/marketing-site:lint:   0 errors and 4 warnings potentially fixable with the `--fix` option.
+@clarity-chat/marketing-site:lint: 
+@clarity-chat/playground:lint: 
+@clarity-chat/playground:lint: > @clarity-chat/playground@0.1.0 lint /workspace/packages/playground
+@clarity-chat/playground:lint: > eslint src --ext .ts,.tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'
+@clarity-chat/playground:lint: 
+@clarity-chat/error-handling:lint: 
+@clarity-chat/error-handling:lint: /workspace/packages/error-handling/src/components/ChatErrorBoundary.tsx
+@clarity-chat/error-handling:lint:   276:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+@clarity-chat/error-handling:lint: 
+@clarity-chat/error-handling:lint: ✖ 1 problem (0 errors, 1 warning)
+@clarity-chat/error-handling:lint:   0 errors and 1 warning potentially fixable with the `--fix` option.
+@clarity-chat/error-handling:lint: 
+ai-assistant-demo:lint: 
+ai-assistant-demo:lint: > ai-assistant-demo@1.0.0 lint /workspace/apps/examples/ai-assistant
+ai-assistant-demo:lint: > eslint .
+ai-assistant-demo:lint: 
+@clarity-chat/marketing-site:lint:  ELIFECYCLE  Command failed with exit code 1.
+code-assistant-demo:lint: 
+code-assistant-demo:lint: > code-assistant-demo@1.0.0 lint /workspace/apps/examples/code-assistant
+code-assistant-demo:lint: > eslint .
+code-assistant-demo:lint: 
+@clarity-chat/memory:lint: 
+@clarity-chat/memory:lint: > @clarity-chat/memory@0.1.0 lint /workspace/packages/memory
+@clarity-chat/memory:lint: > eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+@clarity-chat/memory:lint: 
+@clarity-chat/marketing-site:lint: ERROR: command finished with error: command (/workspace/apps/marketing-site) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/pnpm run lint exited (1)
+@clarity-chat/conversational-analytics:lint: cache miss, executing 4c827ba177c3732b
+@clarity-chat/enterprise-ai-ops:lint: cache miss, executing 001a0549c4d18970
+@clarity-chat/docs:lint: cache miss, executing 41ca4ec45b7feba1
+@clarity-chat/utils:lint: cache miss, executing 86d5ccf227a92381
+ai-assistant-demo:lint:  ELIFECYCLE  Command failed.
+analytics-console-demo:lint: cache miss, executing 0e407c024eaa8dd9
+@clarity-chat/playground:lint:  ELIFECYCLE  Command failed.
+streaming-chat-demo:lint: cache miss, executing f7157665270785be
+customer-support-demo:lint: cache miss, executing fa693afe0ff8ce90
+@clarity-chat/react:lint:  ELIFECYCLE  Command failed.
+code-assistant-demo:lint:  ELIFECYCLE  Command failed.
+@clarity-chat/mcp-server:lint: cache miss, executing b3ff08a2124d7d45
+ecommerce-assistant-demo:lint: cache miss, executing 42b9c51d50ac3c07
+@clarity-chat/license:lint: cache miss, executing 9bf3fc8375e24202
+@clarity-chat/error-handling:lint:  ELIFECYCLE  Command failed.
+@clarity-chat/token-optimization:lint:  ELIFECYCLE  Command failed.
+@clarity-chat/primitives:lint:  ELIFECYCLE  Command failed.
+@clarity-chat/marketing-site#lint: command (/workspace/apps/marketing-site) /home/ubuntu/.nvm/versions/node/v22.21.1/bin/pnpm run lint exited (1)
+
+ Tasks:    6 successful, 26 total
+Cached:    0 cached, 26 total
+  Time:    9.035s 
+Failed:    @clarity-chat/marketing-site#lint
+
+ ERROR  run failed: command  exited (1)

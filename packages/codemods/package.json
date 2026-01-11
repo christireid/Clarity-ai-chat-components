@@ -31,7 +31,7 @@
     "jscodeshift"
   ],
   "author": "Clarity Chat",
-  "license": "MIT",
+  "license": "Commercial",
   "dependencies": {
     "@clarity-chat/utils": "workspace:*",
     "jscodeshift": "^0.15.0",
