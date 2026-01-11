@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
-import { useReducedMotion } from '@/lib/animations'
 
 interface CodeExample {
   title: string
@@ -152,6 +151,7 @@ export default function CodePreview() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [copied, setCopied] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   const nextExample = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % codeExamples.length)
@@ -163,13 +163,13 @@ export default function CodePreview() {
     )
   }, [])
 
-  // Auto-cycle through examples
+  // Auto-cycle through examples (disabled when reduced motion is preferred)
   useEffect(() => {
-    if (isPaused) return
+    if (isPaused || shouldReduceMotion) return
 
     const interval = setInterval(nextExample, 6000)
     return () => clearInterval(interval)
-  }, [isPaused, nextExample])
+  }, [isPaused, nextExample, shouldReduceMotion])
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(codeExamples[activeIndex].code)
@@ -178,6 +178,15 @@ export default function CodePreview() {
   }
 
   const activeExample = codeExamples[activeIndex]
+
+  const motionProps = shouldReduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
+        transition: { duration: durations.moderate },
+      }
 
   return (
     <div
@@ -221,16 +230,11 @@ export default function CodePreview() {
         {/* Code content */}
         <div className="relative">
           <AnimatePresence mode="wait">
-            {/* eslint-disable clarity-animations/prefer-animation-library -- Tab transition animation */}
             <motion.div
               key={activeIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: durations.moderate }}
+              {...motionProps}
               className="p-4 font-mono text-sm overflow-x-auto"
             >
-              {/* eslint-enable clarity-animations/prefer-animation-library */}
               <pre className="text-gray-200">
                 {highlightCode(activeExample.code)}
               </pre>

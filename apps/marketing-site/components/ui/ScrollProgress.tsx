@@ -1,14 +1,20 @@
 'use client';
 
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, useReducedMotion } from 'framer-motion';
 
 export default function ScrollProgress() {
   const { scrollYProgress } = useScroll();
+  const shouldReduceMotion = useReducedMotion();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
+
+  // Don't render the animated progress bar if user prefers reduced motion
+  if (shouldReduceMotion) {
+    return null;
+  }
 
   return (
     <motion.div

@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Check, ArrowRight, Sparkles, Globe, Code } from 'lucide-react'
 import { durations } from '@/lib/constants'
-import { useReducedMotion } from '@/lib/animations'
 import TiltCard from '../ui/TiltCard'
 
 const tiers = [
@@ -76,6 +75,18 @@ export default function PricingSection() {
   )
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const getAnimateProps = (delay = 0) => {
+    if (shouldReduceMotion) {
+      return { style: { opacity: 1, y: 0 } }
+    }
+    return {
+      initial: { opacity: 0, y: 20 },
+      animate: isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
+      transition: { duration: durations.slow, delay },
+    }
+  }
 
   return (
     <section id="pricing" className="relative py-24 sm:py-32 bg-surface-900">
@@ -87,11 +98,7 @@ export default function PricingSection() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={
-            isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          transition={{ duration: durations.slow }}
+          {...getAnimateProps()}
           className="text-center mb-12"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-cosmic-500/10 border border-cosmic-500/20 text-cosmic-400 text-sm font-medium mb-4">
@@ -130,7 +137,7 @@ export default function PricingSection() {
               animate={{
                 left: billingPeriod === 'annual' ? '2rem' : '0.25rem',
               }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 30 }}
             />
           </button>
           <span
@@ -158,13 +165,7 @@ export default function PricingSection() {
             return (
               <TiltCard key={tier.name} className={`h-full`}>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={
-                    isHeaderInView
-                      ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: 20 }
-                  }
-                  transition={{ duration: durations.slow, delay: i * 0.1 }}
+                  {...getAnimateProps(i * 0.1)}
                   className={`relative rounded-2xl ${
                     tier.highlighted
                       ? 'border-2 border-clarity-500/50 scale-105 z-10'
@@ -266,9 +267,7 @@ export default function PricingSection() {
 
         {/* Trust indicators */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={isHeaderInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.5, duration: durations.slow }}
+          {...getAnimateProps(0.5)}
           className="mt-12 flex flex-wrap justify-center gap-8 text-sm text-gray-500"
         >
           <div className="flex items-center gap-2">

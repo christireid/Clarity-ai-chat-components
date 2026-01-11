@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, FormEvent } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, Variants } from 'framer-motion'
 import { useChat } from 'ai/react'
 import { Sparkles, Shield, X, ArrowRight, ChevronRight } from 'lucide-react'
 
@@ -56,16 +56,55 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const chatWindowVariants: Variants = {
+  initial: { opacity: 0, scale: 0.9, y: 20 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.9, y: 20 },
+}
+
+const reducedChatWindowVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+}
+
+/* eslint-disable clarity-animations/no-layout-animation -- height animation required for collapsible content */
+const collapsibleVariants: Variants = {
+  initial: { height: 0, opacity: 0 },
+  animate: { height: 'auto', opacity: 1 },
+  exit: { height: 0, opacity: 0 },
+}
+/* eslint-enable clarity-animations/no-layout-animation */
+
+const reducedCollapsibleVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+}
+
+const tooltipVariants: Variants = {
+  initial: { opacity: 0, x: -10 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -10 },
+}
+
+const reducedTooltipVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+}
+
 export default function MarketingAssistant({
   apiEndpoint = '/api/chat',
-  initialMessage = "Hi! 👋 I'm Aura, your Clarity Chat specialist. Ask me about features, pricing, or how to get started!",
+  initialMessage = "Hi! I'm Aura, your Clarity Chat specialist. Ask me about features, pricing, or how to get started!",
   title = 'Aura',
-  subtitle = 'AI Specialist • Online',
+  subtitle = 'AI Specialist - Online',
 }: MarketingAssistantProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [userApiKey, setUserApiKey] = useState('')
   const [showKeyInput, setShowKeyInput] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -88,15 +127,9 @@ export default function MarketingAssistant({
   // Auto-scroll
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      messagesEndRef.current?.scrollIntoView({ behavior: shouldReduceMotion ? 'auto' : 'smooth' })
     }
-  }, [messages, isOpen, isLoading, error])
-
-  const customChatVariants = {
-    initial: { opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' },
-    animate: { opacity: 1, scale: 1, y: 0 },
-    exit: { opacity: 0, scale: 0.9, y: 20 },
-  }
+  }, [messages, isOpen, isLoading, error, shouldReduceMotion])
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -111,11 +144,12 @@ export default function MarketingAssistant({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            variants={customChatVariants}
+            variants={shouldReduceMotion ? reducedChatWindowVariants : chatWindowVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={shouldReduceMotion ? undefined : { type: 'spring', damping: 25, stiffness: 300 }}
+            style={{ transformOrigin: 'bottom right' }}
             className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-surface-900/95 backdrop-blur-xl border border-surface-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
             {/* Header */}
@@ -155,9 +189,10 @@ export default function MarketingAssistant({
             <AnimatePresence>
               {showKeyInput && (
                 <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
+                  variants={shouldReduceMotion ? reducedCollapsibleVariants : collapsibleVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                   className="bg-surface-800/50 border-b border-surface-700 overflow-hidden"
                 >
                   <div className="p-3">
@@ -185,9 +220,9 @@ export default function MarketingAssistant({
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
               {messages.map((msg) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
                   key={msg.id}
+                  initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10 }}
+                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
@@ -215,8 +250,8 @@ export default function MarketingAssistant({
               {/* Error Message */}
               {error && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+                  animate={shouldReduceMotion ? undefined : { opacity: 1 }}
                   className="flex justify-center my-2"
                 >
                   <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-3 py-2 rounded-lg max-w-[90%] text-center">
@@ -234,15 +269,15 @@ export default function MarketingAssistant({
                   </div>
                   <div className="bg-surface-800 border border-surface-700 rounded-2xl rounded-bl-none p-3 flex gap-1 items-center">
                     <div
-                      className="w-1.5 h-1.5 bg-surface-500 rounded-full animate-bounce"
+                      className={`w-1.5 h-1.5 bg-surface-500 rounded-full ${shouldReduceMotion ? '' : 'animate-bounce'}`}
                       style={{ animationDelay: '0ms' }}
                     />
                     <div
-                      className="w-1.5 h-1.5 bg-surface-500 rounded-full animate-bounce"
+                      className={`w-1.5 h-1.5 bg-surface-500 rounded-full ${shouldReduceMotion ? '' : 'animate-bounce'}`}
                       style={{ animationDelay: '150ms' }}
                     />
                     <div
-                      className="w-1.5 h-1.5 bg-surface-500 rounded-full animate-bounce"
+                      className={`w-1.5 h-1.5 bg-surface-500 rounded-full ${shouldReduceMotion ? '' : 'animate-bounce'}`}
                       style={{ animationDelay: '300ms' }}
                     />
                   </div>
@@ -269,7 +304,7 @@ export default function MarketingAssistant({
                   aria-label="Send message"
                 >
                   {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className={`w-4 h-4 border-2 border-white/30 border-t-white rounded-full ${shouldReduceMotion ? '' : 'animate-spin'}`} />
                   ) : (
                     <ArrowRight className="w-4 h-4" />
                   )}
@@ -282,8 +317,8 @@ export default function MarketingAssistant({
 
       {/* Floating Toggle Button */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -291,7 +326,7 @@ export default function MarketingAssistant({
         aria-label={isOpen ? 'Close Chat' : 'Open Chat'}
       >
         {/* Pulse effect */}
-        {!isOpen && (
+        {!isOpen && !shouldReduceMotion && (
           <span className="absolute inset-0 rounded-full bg-brand-500 opacity-20 animate-ping" />
         )}
 
@@ -305,9 +340,10 @@ export default function MarketingAssistant({
         <AnimatePresence>
           {isHovered && !isOpen && (
             <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              variants={shouldReduceMotion ? reducedTooltipVariants : tooltipVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="absolute right-16 top-1/2 -translate-y-1/2 bg-surface-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-surface-700 whitespace-nowrap shadow-xl"
             >
               Chat with {title}

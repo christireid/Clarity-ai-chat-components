@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'framer-motion'
 
 interface TiltCardProps {
   children: React.ReactNode
@@ -11,7 +11,8 @@ interface TiltCardProps {
 
 export default function TiltCard({ children, className = '', gradient }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null)
-  
+  const shouldReduceMotion = useReducedMotion()
+
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
@@ -19,10 +20,11 @@ export default function TiltCard({ children, className = '', gradient }: TiltCar
   const mouseY = useSpring(y, { stiffness: 500, damping: 100 })
 
   function onMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    if (shouldReduceMotion) return
     const { left, top, width, height } = currentTarget.getBoundingClientRect()
     const xPct = (clientX - left) / width - 0.5
     const yPct = (clientY - top) / height - 0.5
-    
+
     x.set(xPct)
     y.set(yPct)
   }
@@ -32,9 +34,9 @@ export default function TiltCard({ children, className = '', gradient }: TiltCar
     y.set(0)
   }
 
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [7, -7])
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-7, 7])
-  
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], shouldReduceMotion ? [0, 0] : [7, -7])
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], shouldReduceMotion ? [0, 0] : [-7, 7])
+
   const brightness = useTransform(mouseY, [-0.5, 0.5], [1.1, 0.9])
 
   return (
@@ -58,9 +60,9 @@ export default function TiltCard({ children, className = '', gradient }: TiltCar
       >
         {children}
       </motion.div>
-      
+
       {/* Glossy overlay */}
-      <motion.div 
+      <motion.div
         style={{
             opacity: useTransform(mouseY, [-0.5, 0.5], [0, 0.1]),
             background: `linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%)`

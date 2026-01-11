@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { durations } from '@/lib/constants'
-import { useReducedMotion } from '@/lib/animations'
 import {
   Check,
   Copy,
@@ -33,42 +32,53 @@ const ChatMessage = ({
   role,
   content,
   isStreaming = false,
+  shouldReduceMotion = false,
 }: {
   role: 'user' | 'assistant'
   content: string
   isStreaming?: boolean
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    className={`flex gap-3 ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
-  >
-    {role === 'assistant' && (
-      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-clarity-500 to-cosmic-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-clarity-500/20">
-        <Brain className="w-4 h-4 text-white" />
-      </div>
-    )}
-    <div
-      className={`max-w-[85%] rounded-2xl p-3.5 text-sm leading-relaxed shadow-sm ${
-        role === 'user'
-          ? 'bg-surface-800 text-white rounded-br-none border border-surface-700'
-          : 'bg-surface-700 text-gray-100 rounded-bl-none border border-surface-600'
-      }`}
-    >
-      {content}
-      {isStreaming && (
-        <span className="inline-block w-1.5 h-4 ml-1 align-middle bg-clarity-400 animate-pulse" />
-      )}
-    </div>
-    {role === 'user' && (
-      <div className="w-8 h-8 rounded-full bg-surface-700 flex items-center justify-center flex-shrink-0 border border-surface-600">
-        <Users className="w-4 h-4 text-gray-400" />
-      </div>
-    )}
-  </motion.div>
-)
+  shouldReduceMotion?: boolean
+}) => {
+  const motionProps = shouldReduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+      }
 
-const DemoSteps = [
+  return (
+    <motion.div
+      {...motionProps}
+      className={`flex gap-3 ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+    >
+      {role === 'assistant' && (
+        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-clarity-500 to-cosmic-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-clarity-500/20">
+          <Brain className="w-4 h-4 text-white" />
+        </div>
+      )}
+      <div
+        className={`max-w-[85%] rounded-2xl p-3.5 text-sm leading-relaxed shadow-sm ${
+          role === 'user'
+            ? 'bg-surface-800 text-white rounded-br-none border border-surface-700'
+            : 'bg-surface-700 text-gray-100 rounded-bl-none border border-surface-600'
+        }`}
+      >
+        {content}
+        {isStreaming && (
+          <span className="inline-block w-1.5 h-4 ml-1 align-middle bg-clarity-400 animate-pulse" />
+        )}
+      </div>
+      {role === 'user' && (
+        <div className="w-8 h-8 rounded-full bg-surface-700 flex items-center justify-center flex-shrink-0 border border-surface-600">
+          <Users className="w-4 h-4 text-gray-400" />
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
+// Factory function to create demo steps with reduced motion support
+const createDemoSteps = (shouldReduceMotion: boolean) => [
   {
     id: 'basic',
     label: 'Basic Chat',
@@ -90,10 +100,11 @@ const DemoSteps = [
     ],
     chatState: (
       <>
-        <ChatMessage role="user" content="Hello, how does this work?" />
+        <ChatMessage role="user" content="Hello, how does this work?" shouldReduceMotion={shouldReduceMotion} />
         <ChatMessage
           role="assistant"
           content="I am a basic instance of Clarity Chat. I process text input using the standard provider configuration."
+          shouldReduceMotion={shouldReduceMotion}
         />
       </>
     ),
@@ -121,22 +132,30 @@ const DemoSteps = [
     ],
     chatState: (
       <>
-        <ChatMessage role="user" content="My name is Sarah." />
+        <ChatMessage role="user" content="My name is Sarah." shouldReduceMotion={shouldReduceMotion} />
         <ChatMessage
           role="assistant"
           content="Nice to meet you, Sarah! I've saved that to my memory."
+          shouldReduceMotion={shouldReduceMotion}
         />
-        {}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="my-4 mx-auto max-w-xs bg-surface-900 rounded-lg border border-surface-700 p-2 text-xs font-mono text-gray-400 flex items-center gap-2"
-        >
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Memory Updated: {`{ "name": "Sarah" }`}</span>
-        </motion.div>
-        <ChatMessage role="user" content="What's my name?" />
-        <ChatMessage role="assistant" content="Your name is Sarah." />
+        {/* Memory update indicator */}
+        {shouldReduceMotion ? (
+          <div className="my-4 mx-auto max-w-xs bg-surface-900 rounded-lg border border-surface-700 p-2 text-xs font-mono text-gray-400 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>Memory Updated: {`{ "name": "Sarah" }`}</span>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="my-4 mx-auto max-w-xs bg-surface-900 rounded-lg border border-surface-700 p-2 text-xs font-mono text-gray-400 flex items-center gap-2"
+          >
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Memory Updated: {`{ "name": "Sarah" }`}</span>
+          </motion.div>
+        )}
+        <ChatMessage role="user" content="What's my name?" shouldReduceMotion={shouldReduceMotion} />
+        <ChatMessage role="assistant" content="Your name is Sarah." shouldReduceMotion={shouldReduceMotion} />
       </>
     ),
   },
@@ -163,11 +182,12 @@ const DemoSteps = [
     ],
     chatState: (
       <>
-        <ChatMessage role="user" content="Write a haiku about code." />
+        <ChatMessage role="user" content="Write a haiku about code." shouldReduceMotion={shouldReduceMotion} />
         <ChatMessage
           role="assistant"
           content="Logic flows like water,\n bugs hide in the deep dark depths,\n coffee fuels the mind."
           isStreaming={true}
+          shouldReduceMotion={shouldReduceMotion}
         />
       </>
     ),
@@ -178,15 +198,18 @@ export default function SplitScreenDemo() {
   const [activeStep, setActiveStep] = useState(0)
   const [copied, setCopied] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
+
+  const DemoSteps = createDemoSteps(shouldReduceMotion ?? false)
 
   // Auto-advance
   useEffect(() => {
-    if (isPaused) return
+    if (isPaused || shouldReduceMotion) return
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % DemoSteps.length)
     }, 6000)
     return () => clearInterval(timer)
-  }, [isPaused])
+  }, [isPaused, shouldReduceMotion, DemoSteps.length])
 
   const handleCopy = () => {
     // Construct raw code string from lines
@@ -195,6 +218,24 @@ export default function SplitScreenDemo() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  const codeMotionProps = shouldReduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 5 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -5 },
+        transition: { duration: durations.normal },
+      }
+
+  const chatMotionProps = shouldReduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, scale: 0.98 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.98 },
+        transition: { duration: durations.moderate },
+      }
 
   return (
     <div
@@ -218,7 +259,7 @@ export default function SplitScreenDemo() {
           </div>
           <div className="flex items-center gap-2">
             <div className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider mr-2">
-              {isPaused ? 'Paused' : 'Auto-Play'}
+              {isPaused ? 'Paused' : shouldReduceMotion ? 'Manual' : 'Auto-Play'}
             </div>
             <button
               onClick={handleCopy}
@@ -242,13 +283,9 @@ export default function SplitScreenDemo() {
           </div>
           <div className="pl-10">
             <AnimatePresence mode="wait">
-              {}
               <motion.div
                 key={activeStep}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: durations.normal }}
+                {...codeMotionProps}
               >
                 {DemoSteps[activeStep].lines.map((line, idx) => (
                   <div key={idx} className="whitespace-pre">
@@ -298,7 +335,9 @@ export default function SplitScreenDemo() {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-              <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+              {!shouldReduceMotion && (
+                <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+              )}
             </div>
             <div>
               <div className="text-sm font-semibold text-white">
@@ -330,13 +369,9 @@ export default function SplitScreenDemo() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:linear-gradient(to_bottom,transparent,black_10%)]" />
 
           <AnimatePresence mode="wait">
-            {}
             <motion.div
               key={activeStep}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: durations.moderate }}
+              {...chatMotionProps}
               className="relative z-10 flex flex-col justify-end min-h-full pb-2"
             >
               {DemoSteps[activeStep].chatState}
@@ -347,8 +382,8 @@ export default function SplitScreenDemo() {
         {/* Input Area (Fake) */}
         <div className="p-4 border-t border-surface-800 bg-surface-900/50 backdrop-blur-sm">
           <div className="h-11 rounded-xl bg-surface-800/50 border border-surface-700 flex items-center px-4 text-sm text-gray-500 shadow-inner">
-            <span className="animate-pulse">|</span>
-            <span className="ml-1">Type a message...</span>
+            {!shouldReduceMotion && <span className="animate-pulse">|</span>}
+            <span className={shouldReduceMotion ? '' : 'ml-1'}>Type a message...</span>
           </div>
         </div>
       </div>

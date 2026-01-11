@@ -1,0 +1,7 @@
+# Compiled output
+*.js
+*.d.ts
+*.js.map
+*.d.ts.map
+dist/
+node_modules/

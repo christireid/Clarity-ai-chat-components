@@ -139,7 +139,8 @@ export default function ResearchPlatform() {
                   {/* Research Agents Status */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: 0.2 }}
                     className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-4"
                   >
@@ -163,7 +164,8 @@ export default function ResearchPlatform() {
                   {/* Context Visualizer */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: 0.3 }}
                   >
                     <ContextVisualizer
@@ -179,7 +181,8 @@ export default function ResearchPlatform() {
                   {/* Conversation Timeline */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: 0.4 }}
                   >
                     <ConversationTimeline

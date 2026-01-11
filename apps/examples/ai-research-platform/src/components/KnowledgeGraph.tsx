@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Network } from 'lucide-react'
 
 interface Node {
@@ -22,6 +22,8 @@ interface KnowledgeGraphProps {
 }
 
 export function KnowledgeGraph({ nodes, edges }: KnowledgeGraphProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   // Simple force-directed layout simulation
   const positions = useMemo(() => {
     const pos: Record<string, { x: number; y: number }> = {}
@@ -65,7 +67,7 @@ export function KnowledgeGraph({ nodes, edges }: KnowledgeGraphProps) {
                 stroke="#6366f1"
                 strokeWidth={edge.strength * 3}
                 opacity={0.3}
-                initial={{ pathLength: 0 }}
+                initial={prefersReducedMotion ? false : { pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
               />
@@ -90,7 +92,7 @@ export function KnowledgeGraph({ nodes, edges }: KnowledgeGraphProps) {
                       ? '#8b5cf6'
                       : '#ec4899'
                   }
-                  initial={{ scale: 0 }}
+                  initial={prefersReducedMotion ? false : { scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: idx * 0.1, type: 'spring' }}
                 />
@@ -99,7 +101,7 @@ export function KnowledgeGraph({ nodes, edges }: KnowledgeGraphProps) {
                   y={pos.y + 50}
                   textAnchor="middle"
                   className="text-sm font-medium fill-gray-700 dark:fill-gray-300"
-                  initial={{ opacity: 0 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: idx * 0.1 + 0.3 }}
                 >

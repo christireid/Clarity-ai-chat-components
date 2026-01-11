@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Github, Shield, Sparkles, Zap } from 'lucide-react'
 import SplitScreenDemo from '../ui/SplitScreenDemo'
 import { durations } from '@/lib/constants'
@@ -12,7 +12,6 @@ import {
   scaleUp,
   fadeInRight,
   reducedMotionConfig,
-  useReducedMotion,
 } from '@/lib/animations'
 
 // Dynamically import Hero3D to avoid SSR issues with Three.js
@@ -39,6 +38,21 @@ import MagneticButton from '../ui/MagneticButton'
  * Respects reduced-motion preferences via animation library.
  */
 export default function HeroSection() {
+  const shouldReduceMotion = useReducedMotion()
+
+  // Create motion props that respect reduced motion preference
+  const getMotionProps = (variant: typeof fadeInUp, delay = 0) => {
+    if (shouldReduceMotion) {
+      return {}
+    }
+    return {
+      variants: variant,
+      initial: 'hidden',
+      animate: 'visible',
+      transition: { delay },
+    }
+  }
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-surface-950">
       {/* Background elements */}
@@ -60,17 +74,12 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-8rem)]">
           {/* Left column - Text content */}
           <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
+            {...getMotionProps(fadeInUp)}
             className="text-center lg:text-left"
           >
             {/* Badge */}
             <motion.div
-              variants={scaleUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.1 }}
+              {...getMotionProps(scaleUp, 0.1)}
               className="mb-6"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium">
@@ -84,10 +93,7 @@ export default function HeroSection() {
 
             {/* Headline - Benefit-driven */}
             <motion.h1
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.2 }}
+              {...getMotionProps(fadeInUp, 0.2)}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6"
             >
               Stop Building Chat UI.{' '}
@@ -96,10 +102,7 @@ export default function HeroSection() {
 
             {/* Subheadline */}
             <motion.p
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.3 }}
+              {...getMotionProps(fadeInUp, 0.3)}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
               170+ production-ready React components for AI chat. OpenAI,
@@ -109,10 +112,7 @@ export default function HeroSection() {
 
             {/* CTAs */}
             <motion.div
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.4 }}
+              {...getMotionProps(fadeInUp, 0.4)}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10 items-center lg:items-center"
             >
               <MagneticButton
@@ -133,10 +133,7 @@ export default function HeroSection() {
 
             {/* Trust badges */}
             <motion.div
-              variants={fadeIn}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.5 }}
+              {...getMotionProps(fadeIn, 0.5)}
               className="flex flex-wrap gap-6 justify-center lg:justify-start"
             >
               {trustBadges.map((badge) => {
@@ -156,10 +153,7 @@ export default function HeroSection() {
 
           {/* Right column - Code preview */}
           <motion.div
-            variants={fadeInRight}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.3 }}
+            {...getMotionProps(fadeInRight, 0.3)}
             className="relative w-full lg:w-[120%]"
           >
             <SplitScreenDemo />
@@ -168,10 +162,7 @@ export default function HeroSection() {
 
         {/* Stats bar - Verifiable metrics only */}
         <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: 0.6 }}
+          {...getMotionProps(fadeInUp, 0.6)}
           className="mt-16 lg:mt-0 grid grid-cols-2 sm:grid-cols-4 gap-8 p-8 rounded-2xl glass-card"
         >
           <div className="text-center">
@@ -203,21 +194,24 @@ export default function HeroSection() {
 
       {/* Scroll indicator */}
       <motion.div
-        variants={fadeIn}
-        initial="hidden"
-        animate="visible"
-        transition={{ delay: 1 }}
+        {...getMotionProps(fadeIn, 1)}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-2 text-gray-500">
           <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: durations.slower, repeat: Infinity }}
-            className="w-6 h-10 rounded-full border-2 border-gray-600 flex items-start justify-center p-1"
-          >
-            <div className="w-1.5 h-3 rounded-full bg-gray-500" />
-          </motion.div>
+          {shouldReduceMotion ? (
+            <div className="w-6 h-10 rounded-full border-2 border-gray-600 flex items-start justify-center p-1">
+              <div className="w-1.5 h-3 rounded-full bg-gray-500" />
+            </div>
+          ) : (
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: durations.slower, repeat: Infinity }}
+              className="w-6 h-10 rounded-full border-2 border-gray-600 flex items-start justify-center p-1"
+            >
+              <div className="w-1.5 h-3 rounded-full bg-gray-500" />
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </section>

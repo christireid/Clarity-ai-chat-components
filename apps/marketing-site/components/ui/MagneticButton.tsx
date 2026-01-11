@@ -1,10 +1,9 @@
 'use client'
 
 import React, { useRef, useState, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { useReducedMotion } from '@/lib/animations'
 
 interface ButtonProps {
   children: React.ReactNode
@@ -54,6 +53,7 @@ export default function MagneticButton({
   const { ref, position, handleMouseMove, handleMouseLeave } = useMagnetic({
     strength: 0.15,
   })
+  const shouldReduceMotion = useReducedMotion()
 
   const variants = {
     primary:
@@ -81,12 +81,15 @@ export default function MagneticButton({
     </>
   )
 
+  // Disable magnetic effect when reduced motion is preferred
+  const animatePosition = shouldReduceMotion ? { x: 0, y: 0 } : { x: position.x, y: position.y }
+
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
+      onMouseMove={shouldReduceMotion ? undefined : handleMouseMove}
+      onMouseLeave={shouldReduceMotion ? undefined : handleMouseLeave}
+      animate={animatePosition}
       transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
       className="inline-block"
     >

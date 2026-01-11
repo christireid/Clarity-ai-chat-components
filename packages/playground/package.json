@@ -52,7 +52,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",

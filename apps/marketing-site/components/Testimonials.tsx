@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import {
   Github,
@@ -14,7 +14,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { durations } from '@/lib/constants'
-import { fadeInUp, useReducedMotion } from '@/lib/animations'
+import { fadeInUp } from '@/lib/animations'
 import Link from 'next/link'
 
 // Verifiable metrics - these can be confirmed by visiting the repo/npm
@@ -92,15 +92,22 @@ function MetricCard({
 }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
   const Icon = metric.icon
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isInView ? 'visible' : 'hidden',
+        transition: { delay: index * 0.1 },
+      }
 
   return (
     <motion.div
       ref={ref}
-      variants={fadeInUp}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.1 }}
+      {...motionProps}
       className="relative group"
     >
       <div
@@ -136,14 +143,21 @@ function FeatureCard({
 }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isInView ? 'visible' : 'hidden',
+        transition: { delay: index * 0.15 },
+      }
 
   return (
     <motion.div
       ref={ref}
-      variants={fadeInUp}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.15 }}
+      {...motionProps}
       className="glass-card p-6 border border-white/10 rounded-xl"
     >
       <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
@@ -164,6 +178,27 @@ function FeatureCard({
 export default function Testimonials() {
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const headerMotionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isHeaderInView ? 'visible' : 'hidden',
+      }
+
+  const getScrollMotionProps = () => {
+    if (shouldReduceMotion) {
+      return { style: { opacity: 1, y: 0 } }
+    }
+    return {
+      initial: { opacity: 0, y: 20 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, margin: '-100px' },
+      transition: { duration: durations.slow },
+    }
+  }
 
   return (
     <section
@@ -182,9 +217,7 @@ export default function Testimonials() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          variants={fadeInUp}
-          initial="hidden"
-          animate={isHeaderInView ? 'visible' : 'hidden'}
+          {...headerMotionProps}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
@@ -209,10 +242,7 @@ export default function Testimonials() {
 
         {/* GitHub CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: durations.slow }}
+          {...getScrollMotionProps()}
           className="text-center mb-20"
         >
           <Link
@@ -234,10 +264,7 @@ export default function Testimonials() {
 
         {/* Code examples */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: durations.slow }}
+          {...getScrollMotionProps()}
           className="mb-12"
         >
           <h3 className="text-2xl font-bold text-white text-center mb-8">
@@ -253,10 +280,7 @@ export default function Testimonials() {
 
         {/* Early Adopter Program */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: durations.slow }}
+          {...getScrollMotionProps()}
           className="mt-20 text-center"
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-clarity-500/10 to-cosmic-500/10 border border-white/10">

@@ -13,7 +13,7 @@ import { QueryBuilder } from '@/components/QueryBuilder'
 import { InsightCards } from '@/components/InsightCards'
 import { ChartGallery } from '@/components/ChartGallery'
 import { DataExplorer } from '@/components/DataExplorer'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { BarChart } from 'lucide-react'
 import type { Message } from '@clarity-chat/types'
 
@@ -26,6 +26,7 @@ export default function ConversationalAnalytics() {
   const [insights, setInsights] = useState<Array<{ id: string; text: string; timestamp: Date }>>([])
   const [messages, setMessages] = useState<Message[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   const addMessage = useCallback((msg: Partial<Message>) => {
     const newMsg: Message = {
@@ -169,9 +170,9 @@ export default function ConversationalAnalytics() {
             {activeView === 'chat' && (
               <motion.div
                 key="chat"
-                initial={{ opacity: 0, x: -20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: 20 }}
                 className="h-full flex"
               >
                 {/* Left Sidebar - Query Builder */}
@@ -227,9 +228,9 @@ export default function ConversationalAnalytics() {
             {activeView === 'dashboard' && (
               <motion.div
                 key="dashboard"
-                initial={{ opacity: 0, y: 20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
                 className="h-full overflow-y-auto"
               >
                 <AnalyticsDashboard
@@ -243,9 +244,9 @@ export default function ConversationalAnalytics() {
             {activeView === 'explorer' && (
               <motion.div
                 key="explorer"
-                initial={{ opacity: 0, y: 20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
                 className="h-full overflow-y-auto"
               >
                 <DataExplorer />

@@ -1,10 +1,9 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { Check, X, ArrowRight, ChevronRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
-import { useReducedMotion } from '@/lib/animations'
 
 const comparisonData = [
   {
@@ -48,6 +47,15 @@ const comparisonData = [
 export default function ComparisonSection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        initial: { opacity: 0, y: 30 },
+        animate: isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
+        transition: { duration: durations.slow },
+      }
 
   return (
     <section className="relative py-24 bg-surface-950 overflow-hidden">
@@ -68,9 +76,7 @@ export default function ComparisonSection() {
 
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: durations.slow }}
+          {...motionProps}
           className="rounded-2xl border border-white/10 bg-surface-900/50 backdrop-blur-sm overflow-hidden"
         >
           <div className="grid grid-cols-3 border-b border-white/10 bg-surface-900/80">

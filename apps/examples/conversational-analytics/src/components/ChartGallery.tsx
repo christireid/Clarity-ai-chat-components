@@ -15,7 +15,7 @@ import {
   Cell,
 } from 'recharts'
 import { Trash } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface Chart {
   chartType: string
@@ -28,6 +28,8 @@ interface ChartGalleryProps {
 }
 
 export function ChartGallery({ charts }: ChartGalleryProps) {
+  const shouldReduceMotion = useReducedMotion()
+
   if (charts.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500 dark:text-gray-400">
@@ -45,9 +47,9 @@ export function ChartGallery({ charts }: ChartGalleryProps) {
       {charts.map((chart, idx) => (
         <motion.div
           key={idx}
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: idx * 0.1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { delay: idx * 0.1 }}
           className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm"
         >
           <div className="flex items-center justify-between mb-3">

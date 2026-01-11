@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import {
@@ -21,7 +21,6 @@ import {
   fadeInUp,
   scaleUp,
   reducedMotionConfig,
-  useReducedMotion,
 } from '@/lib/animations'
 import TokenSavingsCalculator from '../ui/TokenSavingsCalculator'
 import SpotlightCard from '../ui/SpotlightCard'
@@ -134,15 +133,22 @@ function FeatureCard({
 }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
   const Icon = feature.icon
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isInView ? 'visible' : 'hidden',
+        transition: { delay: index * 0.1 },
+      }
 
   return (
     <motion.div
       ref={ref}
-      variants={fadeInUp}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.1 }}
+      {...motionProps}
     >
       <SpotlightCard
         className={`h-full p-6 border ${feature.borderColor} transition-all duration-300`}
@@ -170,15 +176,22 @@ function HighlightCard({
 }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
   const Icon = highlight.icon
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, scale: 1 } }
+    : {
+        variants: scaleUp,
+        initial: 'hidden',
+        animate: isInView ? 'visible' : 'hidden',
+        transition: { delay: index * 0.15 },
+      }
 
   return (
     <motion.div
       ref={ref}
-      variants={scaleUp}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.15 }}
+      {...motionProps}
       className="relative group"
     >
       <div
@@ -207,6 +220,22 @@ function HighlightCard({
 export default function FeaturesSection() {
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const headerMotionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isHeaderInView ? 'visible' : 'hidden',
+      }
+
+  const calculatorMotionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        ...reducedMotionConfig,
+      }
 
   return (
     <section id="features" className="relative py-24 sm:py-32 bg-surface-950">
@@ -218,9 +247,7 @@ export default function FeaturesSection() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          variants={fadeInUp}
-          initial="hidden"
-          animate={isHeaderInView ? 'visible' : 'hidden'}
+          {...headerMotionProps}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
@@ -255,13 +282,12 @@ export default function FeaturesSection() {
         </div>
         {/* Calculator */}
         <motion.div
-          variants={fadeInUp}
-          {...reducedMotionConfig}
+          {...calculatorMotionProps}
           className="mt-32 max-w-4xl mx-auto"
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Stop Burning Tokens 🔥
+              Stop Burning Tokens
             </h2>
             <p className="text-gray-400">
               See how much Clarity Cache could save you.

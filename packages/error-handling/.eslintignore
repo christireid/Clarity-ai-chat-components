@@ -1,0 +1,5 @@
+# Compiled output
+*.js
+*.d.ts
+dist/
+node_modules/

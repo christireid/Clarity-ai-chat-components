@@ -1,14 +1,13 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { Sparkles, Code, Zap, ArrowRight } from 'lucide-react'
 import { durations } from '@/lib/constants'
 import {
   fadeInUp,
   reducedMotionConfig,
-  useReducedMotion,
 } from '@/lib/animations'
 
 const steps = [
@@ -59,15 +58,22 @@ export default function Chat() {
 function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
   const Icon = step.icon
+
+  const motionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isInView ? 'visible' : 'hidden',
+        transition: { delay: index * 0.15 },
+      }
 
   return (
     <motion.div
       ref={ref}
-      variants={fadeInUp}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.15 }}
+      {...motionProps}
       className="relative"
     >
       {/* Connector line */}
@@ -108,6 +114,23 @@ function StepCard({ step, index }: { step: (typeof steps)[0]; index: number }) {
 export default function HowItWorksSection() {
   const headerRef = useRef(null)
   const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
+  const shouldReduceMotion = useReducedMotion()
+
+  const headerMotionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        initial: 'hidden',
+        animate: isHeaderInView ? 'visible' : 'hidden',
+      }
+
+  const ctaMotionProps = shouldReduceMotion
+    ? { style: { opacity: 1, y: 0 } }
+    : {
+        variants: fadeInUp,
+        ...reducedMotionConfig,
+        transition: { delay: 0.3 },
+      }
 
   return (
     <section className="relative py-24 sm:py-32 bg-surface-900">
@@ -119,9 +142,7 @@ export default function HowItWorksSection() {
         {/* Section header */}
         <motion.div
           ref={headerRef}
-          variants={fadeInUp}
-          initial="hidden"
-          animate={isHeaderInView ? 'visible' : 'hidden'}
+          {...headerMotionProps}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
@@ -145,9 +166,7 @@ export default function HowItWorksSection() {
 
         {/* Bottom CTA */}
         <motion.div
-          variants={fadeInUp}
-          {...reducedMotionConfig}
-          transition={{ delay: 0.3 }}
+          {...ctaMotionProps}
           className="mt-16 text-center"
         >
           <a

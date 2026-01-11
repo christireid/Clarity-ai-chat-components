@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Search } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface QueryBuilderProps {
   onQuery: (query: string) => void
@@ -11,6 +11,7 @@ interface QueryBuilderProps {
 
 export function QueryBuilder({ onQuery, suggestedQueries }: QueryBuilderProps) {
   const [query, setQuery] = useState('')
+  const shouldReduceMotion = useReducedMotion()
 
   return (
     <div className="space-y-4">
@@ -55,9 +56,9 @@ export function QueryBuilder({ onQuery, suggestedQueries }: QueryBuilderProps) {
           {suggestedQueries.map((suggestion, idx) => (
             <motion.button
               key={idx}
-              initial={{ opacity: 0, x: -10 }}
+              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.05 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { delay: idx * 0.05 }}
               onClick={() => onQuery(suggestion)}
               className="w-full text-left px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >

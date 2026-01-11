@@ -1,18 +1,18 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Copy, Check, ArrowRight, Zap } from 'lucide-react'
 import { durations } from '@/lib/constants'
-import { useReducedMotion } from '@/lib/animations'
 import NewsletterSignup from '../ui/NewsletterSignup'
 
 export default function CTASection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [copied, setCopied] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   const installCommand = 'npx create-clarity-chat@latest'
 
@@ -22,6 +22,28 @@ export default function CTASection() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const getMotionProps = (delay = 0) => {
+    if (shouldReduceMotion) {
+      return { style: { opacity: 1, y: 0, scale: 1 } }
+    }
+    return {
+      initial: { opacity: 0, y: 20 },
+      animate: isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
+      transition: { duration: durations.slow, delay },
+    }
+  }
+
+  const getScaleMotionProps = () => {
+    if (shouldReduceMotion) {
+      return { style: { opacity: 1, scale: 1 } }
+    }
+    return {
+      initial: { opacity: 0, scale: 0.5 },
+      animate: isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 },
+      transition: { duration: durations.slow },
+    }
+  }
+
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background gradient */}
@@ -29,8 +51,8 @@ export default function CTASection() {
       <div className="absolute inset-0 bg-surface-950/80" />
 
       {/* Animated gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-clarity-500/30 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cosmic-500/30 rounded-full blur-3xl animate-pulse animation-delay-1000" />
+      <div className={`absolute top-1/4 left-1/4 w-96 h-96 bg-clarity-500/30 rounded-full blur-3xl ${shouldReduceMotion ? '' : 'animate-pulse'}`} />
+      <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 bg-cosmic-500/30 rounded-full blur-3xl ${shouldReduceMotion ? '' : 'animate-pulse animation-delay-1000'}`} />
 
       {/* Grid pattern */}
       <div className="absolute inset-0 bg-grid-pattern opacity-20" />
@@ -44,11 +66,7 @@ export default function CTASection() {
       >
         {/* Icon */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={
-            isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }
-          }
-          transition={{ duration: durations.slow }}
+          {...getScaleMotionProps()}
           className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-clarity-500/20 to-cosmic-500/20 border border-white/10 mb-8"
         >
           <Zap className="w-8 h-8 text-clarity-400" />
@@ -56,9 +74,7 @@ export default function CTASection() {
 
         {/* Heading - Bold, action-oriented */}
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: durations.slow, delay: 0.1 }}
+          {...getMotionProps(0.1)}
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6"
         >
           Your AI Chat Ships
@@ -67,9 +83,7 @@ export default function CTASection() {
 
         {/* Description */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: durations.slow, delay: 0.2 }}
+          {...getMotionProps(0.2)}
           className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto"
         >
           One command. 170+ components. MIT licensed. Start building your AI
@@ -78,9 +92,7 @@ export default function CTASection() {
 
         {/* Install command */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: durations.slow, delay: 0.3 }}
+          {...getMotionProps(0.3)}
           className="mb-10"
         >
           <div className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-surface-800 border border-white/10">
@@ -108,9 +120,7 @@ export default function CTASection() {
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: durations.slow, delay: 0.4 }}
+          {...getMotionProps(0.4)}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <Link
@@ -130,9 +140,13 @@ export default function CTASection() {
 
         {/* Trust indicators */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: durations.slow, delay: 0.5 }}
+          {...(shouldReduceMotion
+            ? { style: { opacity: 1 } }
+            : {
+                initial: { opacity: 0 },
+                animate: isInView ? { opacity: 1 } : { opacity: 0 },
+                transition: { duration: durations.slow, delay: 0.5 },
+              })}
           className="mt-12 flex flex-wrap justify-center gap-8 text-sm text-gray-500"
         >
           <div className="flex items-center gap-2">
@@ -150,9 +164,7 @@ export default function CTASection() {
         </motion.div>
         {/* Newsletter Signup */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: durations.slow, delay: 0.6 }}
+          {...getMotionProps(0.6)}
           className="mt-20 max-w-3xl mx-auto text-left"
         >
           <NewsletterSignup />

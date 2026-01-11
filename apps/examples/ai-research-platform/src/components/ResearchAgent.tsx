@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { CheckCircle2, Loader2, Circle } from 'lucide-react'
 
 interface ResearchAgentProps {
@@ -10,6 +10,8 @@ interface ResearchAgentProps {
 }
 
 export function ResearchAgent({ name, status, progress }: ResearchAgentProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   const getStatusIcon = () => {
     switch (status) {
       case 'completed':
@@ -47,7 +49,7 @@ export function ResearchAgent({ name, status, progress }: ResearchAgentProps) {
       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <motion.div
           className={`h-full ${getStatusColor()}`}
-          initial={{ width: 0 }}
+          initial={prefersReducedMotion ? false : { width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         />
