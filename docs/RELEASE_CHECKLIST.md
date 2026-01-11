@@ -15,3 +15,4 @@
 - [x] Vercel Configuration Ready
 - [x] Environment Variables Documented
 - [x] License Terms Updated to Commercial
+- [x] Visual Regression Tests Configured

@@ -10,3 +10,4 @@
 - Will install `ripgrep` or specific linters if needed (currently using `grep` via tool).
 
 ## Running Log
+- Configured visual regression testing infrastructure with Playwright.
