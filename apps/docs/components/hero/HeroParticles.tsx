@@ -364,22 +364,10 @@ function ParticleField({
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-aColor"
-          args={[colors, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-aSize"
-          args={[sizes, 1]}
-        />
-        <bufferAttribute
-          attach="attributes-aPhase"
-          args={[phases, 1]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-aColor" args={[colors, 3]} />
+        <bufferAttribute attach="attributes-aSize" args={[sizes, 1]} />
+        <bufferAttribute attach="attributes-aPhase" args={[phases, 1]} />
       </bufferGeometry>
       <shaderMaterial
         ref={materialRef}
@@ -446,8 +434,8 @@ function Scene({
         isVisible={isVisible}
         qualityLevel={qualityLevel}
       />
-      {/* Temporarily disable bloom for debugging */}
-      {false && enableBloom && (
+      {/* Temporarily disabled bloom for debugging
+      {enableBloom && (
         <EffectComposer>
           <Bloom
             intensity={bloomIntensity}
@@ -457,6 +445,7 @@ function Scene({
           />
         </EffectComposer>
       )}
+      */}
     </>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useReducedMotion } from '@/components/Layout/hooks'
 import {
   Palette,
   ChevronLeft,
@@ -96,24 +97,27 @@ interface PreviewMessage {
   timestamp: Date
 }
 
+// Use fixed timestamps to avoid hydration mismatch between server and client
+const FIXED_BASE_TIME = new Date('2025-01-11T10:30:00').getTime()
+
 const previewMessages: PreviewMessage[] = [
   {
     id: '1',
     text: 'Hello! How can I help you today?',
     sender: 'bot',
-    timestamp: new Date(Date.now() - 60000),
+    timestamp: new Date(FIXED_BASE_TIME - 60000),
   },
   {
     id: '2',
     text: 'I need help with my React project.',
     sender: 'user',
-    timestamp: new Date(Date.now() - 30000),
+    timestamp: new Date(FIXED_BASE_TIME - 30000),
   },
   {
     id: '3',
     text: "Of course! I'd be happy to help with your React project. What specifically would you like assistance with?",
     sender: 'bot',
-    timestamp: new Date(),
+    timestamp: new Date(FIXED_BASE_TIME),
   },
 ]
 
@@ -121,6 +125,7 @@ export default function CustomizationPlaygroundDemo() {
   const [config, setConfig] = useState<ConfigOption[]>(defaultConfig)
   const { copy, copied } = useCopyToClipboard()
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light')
+  const prefersReducedMotion = useReducedMotion()
 
   // Track demo view
   useEffect(() => {
@@ -252,10 +257,15 @@ export default function Chat() {
                     .map((option) => (
                       <label
                         key={option.id}
+                        htmlFor={`toggle-${option.id}`}
                         className="flex items-center justify-between cursor-pointer"
                       >
                         <span className="text-sm">{option.label}</span>
                         <button
+                          id={`toggle-${option.id}`}
+                          name={option.id}
+                          role="switch"
+                          aria-checked={option.value}
                           onClick={() => updateConfig(option.id, !option.value)}
                           className={`relative w-11 h-6 rounded-full transition-colors ${
                             option.value
@@ -265,8 +275,13 @@ export default function Chat() {
                         >
                           <motion.div
                             className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+                            initial={prefersReducedMotion ? false : undefined}
                             animate={{ left: option.value ? '24px' : '4px' }}
-                            transition={{ duration: durations.normal }}
+                            transition={
+                              prefersReducedMotion
+                                ? { duration: 0 }
+                                : { duration: durations.normal }
+                            }
                           />
                         </button>
                       </label>
@@ -278,10 +293,15 @@ export default function Chat() {
                       .filter((c) => c.type === 'select')
                       .map((option) => (
                         <div key={option.id} className="mb-4">
-                          <label className="block text-sm mb-2">
+                          <label
+                            htmlFor={`select-${option.id}`}
+                            className="block text-sm mb-2"
+                          >
                             {option.label}
                           </label>
                           <select
+                            id={`select-${option.id}`}
+                            name={option.id}
                             value={option.value}
                             onChange={(e) =>
                               updateConfig(option.id, e.target.value)
@@ -397,9 +417,16 @@ export default function Chat() {
                       <AnimatePresence>
                         {showAvatars && (
                           <motion.div
-                            initial={{ scale: 0 }}
+                            initial={
+                              prefersReducedMotion ? false : { scale: 0 }
+                            }
                             animate={{ scale: 1 }}
-                            exit={{ scale: 0 }}
+                            exit={
+                              prefersReducedMotion ? undefined : { scale: 0 }
+                            }
+                            transition={
+                              prefersReducedMotion ? { duration: 0 } : undefined
+                            }
                             className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                               message.sender === 'bot'
                                 ? previewTheme === 'dark'
@@ -450,9 +477,22 @@ export default function Chat() {
                         <AnimatePresence>
                           {showTimestamps && (
                             <motion.div
-                              initial={{ opacity: 0, height: 0 }}
+                              initial={
+                                prefersReducedMotion
+                                  ? false
+                                  : { opacity: 0, height: 0 }
+                              }
                               animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
+                              exit={
+                                prefersReducedMotion
+                                  ? undefined
+                                  : { opacity: 0, height: 0 }
+                              }
+                              transition={
+                                prefersReducedMotion
+                                  ? { duration: 0 }
+                                  : undefined
+                              }
                               className={`text-xs mt-1 ${
                                 previewTheme === 'dark'
                                   ? 'text-gray-500'
