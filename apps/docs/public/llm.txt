@@ -15,6 +15,15 @@
 - **Theming**: 11 built-in themes + custom theme builder
 - **Accessibility**: WCAG 2.1 AAA compliant
 - **Token Optimization**: Smart token budgeting and cost tracking
+- **Cognitive Core**: Advanced AI capabilities including RAG and MCP support
+
+## Cognitive Core Capabilities
+
+The library now includes advanced AI orchestration features:
+
+- **Client-Side RAG**: `packages/rag` provides vector search directly in the browser using Voy (WASM).
+- **Model Context Protocol (MCP)**: `packages/mcp` enables connection to external tools and data sources via standard protocols.
+- **Agent Orchestration**: `useAgent` hook supports branching conversations and optimistic tool execution.
 
 ## Commercial License
 
