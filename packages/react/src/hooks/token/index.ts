@@ -33,3 +33,12 @@ export {
   type BudgetMessage,
   type BudgetMonitorModel,
 } from './use-token-budget-monitor'
+
+export {
+  useTokenCounter,
+  getEncodingForModel,
+  preloadEncoding,
+  type TokenEncoding,
+  type UseTokenCounterOptions,
+  type UseTokenCounterReturn,
+} from './useTokenCounter'

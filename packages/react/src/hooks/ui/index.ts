@@ -35,3 +35,4 @@ export {
   type FlashingValueProps,
 } from './use-animated-value'
 export * from './use-safe-timeout'
+export * from './useThemeColor'

@@ -26,6 +26,9 @@ export { cn } from './cn'
 export * from './mobile'
 export * from './export-utils'
 
+// Color Utilities
+export * from './color'
+
 // Streaming Utilities
 export * from './streaming'
 

@@ -23,9 +23,16 @@ const commonConfig = {
     'dompurify',
   ],
   sourcemap: false,
-  minify: false, // Set to boolean false instead of string
-  splitting: false,
-  treeshake: false,
+  minify: true,
+  splitting: true,
+  treeshake: {
+    preset: 'recommended',
+    moduleSideEffects: false,
+  },
+  esbuildOptions(options) {
+    options.drop = ['console', 'debugger']
+    options.legalComments = 'none'
+  },
   outExtension({ format }: { format: string }) {
     return {
       js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
