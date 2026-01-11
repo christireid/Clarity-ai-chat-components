@@ -116,7 +116,7 @@ const basicSteps: ChainOfThoughtStep[] = [
     content:
       'Parsing the user query to identify key entities, intent, and required data sources. Detected entities: "AI", "reasoning", "visualization". Intent: information retrieval.',
     status: 'complete',
-    duration: 234,
+    duration: durations.slower,
     timestamp: new Date(Date.now() - 10000),
   },
   {
@@ -125,7 +125,7 @@ const basicSteps: ChainOfThoughtStep[] = [
     content:
       'Querying internal knowledge base for relevant documents. Found 15 matching documents with relevance scores above 0.8.',
     status: 'complete',
-    duration: 1523,
+    duration: durations.slower,
     timestamp: new Date(Date.now() - 8000),
   },
   {
@@ -155,7 +155,7 @@ const detailedSteps: ChainOfThoughtStep[] = [
 - Constraints: Low latency requirements
 - Expected output: Step-by-step guide`,
     status: 'complete',
-    duration: 156,
+    duration: durations.slower,
     timestamp: new Date(Date.now() - 30000),
     metadata: {
       'Confidence': '0.95',
@@ -172,7 +172,7 @@ const detailedSteps: ChainOfThoughtStep[] = [
 3. System architecture diagrams
 4. Performance benchmarks`,
     status: 'complete',
-    duration: 892,
+    duration: durations.slower,
     timestamp: new Date(Date.now() - 25000),
     metadata: {
       'Documents retrieved': 12,
@@ -244,7 +244,7 @@ const errorSteps: ChainOfThoughtStep[] = [
     title: 'Parsing request',
     content: 'Successfully parsed the incoming request and validated parameters.',
     status: 'complete',
-    duration: 45,
+    duration: durations.slower,
   },
   {
     id: '2',
@@ -253,7 +253,7 @@ const errorSteps: ChainOfThoughtStep[] = [
     status: 'error',
     error:
       'Connection timeout: Unable to reach external API after 30 seconds. Please check network connectivity.',
-    duration: 30000,
+    duration: durations.slower,
   },
   {
     id: '3',
@@ -451,7 +451,7 @@ export const StreamingSimulation: Story = {
       updateStep('1', {
         status: 'complete',
         content: 'Identified key entities and user intent. Query type: factual question.',
-        duration: 1200,
+        duration: durations.slower,
       })
 
       // Step 2
@@ -473,7 +473,7 @@ export const StreamingSimulation: Story = {
       updateStep('2', {
         status: 'complete',
         content: 'Retrieved 8 relevant documents with average relevance score of 0.91.',
-        duration: 1800,
+        duration: durations.slower,
       })
 
       // Step 3
@@ -495,7 +495,7 @@ export const StreamingSimulation: Story = {
       updateStep('3', {
         status: 'complete',
         content: 'Combined information from multiple sources. Verified factual accuracy.',
-        duration: 2100,
+        duration: durations.slower,
       })
 
       // Step 4
@@ -512,7 +512,7 @@ export const StreamingSimulation: Story = {
       updateStep('4', {
         status: 'complete',
         content: 'Response generated successfully. Ready to deliver.',
-        duration: 800,
+        duration: durations.slower,
       })
 
       setIsRunning(false)
@@ -654,7 +654,7 @@ export const CodeGenerationExample: Story = {
 - Styling: Tailwind CSS
 - Features: Real-time validation, error messages`,
         status: 'complete',
-        duration: 450,
+        duration: durations.slower,
       },
       {
         id: '2',
@@ -665,7 +665,7 @@ export const CodeGenerationExample: Story = {
 - Validation schema using Zod
 - Custom hooks for form state`,
         status: 'complete',
-        duration: 680,
+        duration: durations.slower,
       },
       {
         id: '3',
@@ -712,7 +712,7 @@ export const ResearchAssistantExample: Story = {
 - Time frame: 2020-2024
 - Focus areas: Technology, management, employee wellbeing`,
         status: 'complete',
-        duration: 320,
+        duration: durations.slower,
         metadata: {
           'Keywords extracted': 8,
           'Search strategy': 'Boolean',
@@ -726,7 +726,7 @@ export const ResearchAssistantExample: Story = {
 - 42 industry reports
 - 18 meta-analyses`,
         status: 'complete',
-        duration: 2450,
+        duration: durations.slower,
         subSteps: [
           { id: '2a', title: 'Google Scholar', content: '89 results', status: 'complete' },
           { id: '2b', title: 'PubMed', content: '34 results', status: 'complete' },

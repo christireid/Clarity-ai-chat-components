@@ -162,7 +162,7 @@ export const EnhancedMarkdownRenderer = React.memo(
     // Build rehype plugins list
     // react-markdown v10 supports async plugins - use async loading for heavy plugins
     // Using any[] here since react-markdown's Pluggable type is complex and supports various formats
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const rehypePlugins: any[] = []
     
     if (enableSyntaxHighlight) {

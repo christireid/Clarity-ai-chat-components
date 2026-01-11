@@ -857,7 +857,7 @@ export class ResponseOptimizer {
     const responseTokens = await TokenCounter.count(response)
 
     // Type assertion needed as semanticCache uses generic unknown type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     await semanticCache.set(cacheKey, {
       response,
       tokens: responseTokens,

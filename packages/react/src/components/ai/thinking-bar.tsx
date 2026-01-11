@@ -314,9 +314,9 @@ const IndeterminateProgress: React.FC<IndeterminateProgressProps> = ({
     }
     transition={
       prefersReducedMotion
-        ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+        ? { duration: durations.slower, repeat: Infinity, ease: 'easeInOut' }
         : {
-            duration: 1.5,
+            duration: durations.slower,
             repeat: Infinity,
             ease: 'easeInOut',
           }

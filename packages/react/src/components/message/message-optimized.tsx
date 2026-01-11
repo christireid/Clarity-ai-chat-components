@@ -165,7 +165,7 @@ function MessageOptimizedInner({
       <>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           rehypePlugins={[rehypeHighlight as unknown as (typeof remarkGfm)]}
           components={markdownComponents}
         >

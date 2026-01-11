@@ -258,7 +258,7 @@ const ShimmerLine: React.FC<ShimmerLineProps> = ({
       <motion.div
         animate={{ opacity: [0.5, 0.8, 0.5] }}
         transition={{
-          duration: 2,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeInOut',
           delay: staggerDelay,

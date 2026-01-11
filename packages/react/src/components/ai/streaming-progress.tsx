@@ -306,7 +306,7 @@ const BarProgress: React.FC<BarProgressProps> = ({
           initial={{ x: '-100%' }}
           animate={{ x: '200%' }}
           transition={{
-            duration: 1.5,
+            duration: durations.slower,
             repeat: Infinity,
             ease: 'linear',
           }}
@@ -403,7 +403,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
         <motion.div
           animate={{ rotate: 360 }}
           transition={{
-            duration: 2,
+            duration: durations.slower,
             repeat: Infinity,
             ease: 'linear',
           }}

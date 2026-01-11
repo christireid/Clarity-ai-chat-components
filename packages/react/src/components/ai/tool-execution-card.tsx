@@ -740,7 +740,7 @@ export function ToolExecutionCard({
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{
-              duration: 2,
+              duration: durations.slower,
               repeat: Infinity,
               ease: 'linear',
             }}

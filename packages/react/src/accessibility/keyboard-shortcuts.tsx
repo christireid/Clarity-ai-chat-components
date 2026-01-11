@@ -5,12 +5,17 @@
  */
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../animations/constants'
+import {
+  getMotionSafeValue,
+  getMotionSafeDuration,
+  getMotionSafeScale,
+} from '../animations/motion-safe'
 
 // SSR-safe platform detection
 function detectIsMac(): boolean {
@@ -232,6 +237,7 @@ function KeyboardShortcutsHelp({
   shortcuts,
   onClose,
 }: KeyboardShortcutsHelpProps) {
+  const prefersReducedMotion = useReducedMotion() ?? false
   const [searchQuery, setSearchQuery] = React.useState('')
   const [isMac, setIsMac] = React.useState(false)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
@@ -299,7 +305,9 @@ function KeyboardShortcutsHelp({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: durations.normal }}
+        transition={{
+          duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+        }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
         onClick={onClose}
         aria-hidden="true"
@@ -307,10 +315,21 @@ function KeyboardShortcutsHelp({
 
       {/* Modal */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{
+          opacity: 0,
+          scale: getMotionSafeScale(prefersReducedMotion, 0.95),
+          y: getMotionSafeValue(prefersReducedMotion, 20, 0),
+        }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ duration: durations.normal, ease: EASING_FRAMER.sharp }}
+        exit={{
+          opacity: 0,
+          scale: getMotionSafeScale(prefersReducedMotion, 0.95),
+          y: getMotionSafeValue(prefersReducedMotion, 20, 0),
+        }}
+        transition={{
+          duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+          ease: EASING_FRAMER.sharp,
+        }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
         role="dialog"
         aria-modal="true"
@@ -321,9 +340,15 @@ function KeyboardShortcutsHelp({
           <div className="flex flex-col gap-3 p-5 border-b border-border bg-muted/30">
             <div className="flex items-center justify-between">
               <motion.div
-                initial={{ opacity: 0, x: -10 }}
+                initial={{
+                  opacity: 0,
+                  x: getMotionSafeValue(prefersReducedMotion, -10, 0),
+                }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={{
+                  delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
+                  duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+                }}
               >
                 <h2
                   id="shortcuts-title"
@@ -351,8 +376,14 @@ function KeyboardShortcutsHelp({
               </motion.div>
               <motion.button
                 onClick={onClose}
-                whileHover={{ scale: 1.05, rotate: 90 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={
+                  prefersReducedMotion
+                    ? undefined
+                    : { scale: 1.05, rotate: 90 }
+                }
+                whileTap={
+                  prefersReducedMotion ? undefined : { scale: 0.95 }
+                }
                 className="p-2 hover:bg-accent rounded-lg transition-colors"
                 aria-label="Close"
               >
@@ -374,9 +405,15 @@ function KeyboardShortcutsHelp({
 
             {/* Search Bar */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{
+                opacity: 0,
+                y: getMotionSafeValue(prefersReducedMotion, -10, 0),
+              }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
+              transition={{
+                delay: getMotionSafeDuration(prefersReducedMotion, 0.15),
+                duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+              }}
               className="relative"
             >
               <svg
@@ -409,9 +446,18 @@ function KeyboardShortcutsHelp({
               />
               {searchQuery && (
                 <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{
+                    opacity: 0,
+                    scale: getMotionSafeScale(prefersReducedMotion, 0.8),
+                  }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  exit={{
+                    opacity: 0,
+                    scale: getMotionSafeScale(prefersReducedMotion, 0.8),
+                  }}
+                  transition={{
+                    duration: getMotionSafeDuration(prefersReducedMotion, durations.fast),
+                  }}
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-accent rounded transition-colors"
                   aria-label="Clear search"
@@ -438,8 +484,14 @@ function KeyboardShortcutsHelp({
           <div className="p-5 overflow-y-auto max-h-[calc(85vh-200px)]">
             {Object.keys(groupedShortcuts).length === 0 ? (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{
+                  opacity: 0,
+                  y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+                }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+                }}
                 className="text-center py-12"
               >
                 <svg
@@ -465,9 +517,21 @@ function KeyboardShortcutsHelp({
                   ([category, categoryShortcuts], categoryIndex) => (
                     <motion.div
                       key={category}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{
+                        opacity: 0,
+                        y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+                      }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: categoryIndex * 0.05 }}
+                      transition={{
+                        delay: getMotionSafeDuration(
+                          prefersReducedMotion,
+                          categoryIndex * 0.05
+                        ),
+                        duration: getMotionSafeDuration(
+                          prefersReducedMotion,
+                          durations.normal
+                        ),
+                      }}
                     >
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
                         {category}
@@ -476,15 +540,29 @@ function KeyboardShortcutsHelp({
                         {categoryShortcuts.map((shortcut, index) => (
                           <motion.div
                             key={shortcut.id}
-                            initial={{ opacity: 0, x: -10 }}
+                            initial={{
+                              opacity: 0,
+                              x: getMotionSafeValue(prefersReducedMotion, -10, 0),
+                            }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{
-                              delay: categoryIndex * 0.05 + index * 0.02,
+                              delay: getMotionSafeDuration(
+                                prefersReducedMotion,
+                                categoryIndex * 0.05 + index * 0.02
+                              ),
+                              duration: getMotionSafeDuration(
+                                prefersReducedMotion,
+                                durations.normal
+                              ),
                             }}
-                            whileHover={{
-                              x: 2,
-                              backgroundColor: 'var(--accent)',
-                            }}
+                            whileHover={
+                              prefersReducedMotion
+                                ? undefined
+                                : {
+                                    x: 2,
+                                    backgroundColor: 'var(--accent)',
+                                  }
+                            }
                             className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
                           >
                             <span className="text-sm group-hover:text-foreground transition-colors">
@@ -499,7 +577,11 @@ function KeyboardShortcutsHelp({
                                     </span>
                                   )}
                                   <motion.kbd
-                                    whileHover={{ scale: 1.05 }}
+                                    whileHover={
+                                      prefersReducedMotion
+                                        ? undefined
+                                        : { scale: 1.05 }
+                                    }
                                     className={cn(
                                       'px-2.5 py-1.5 text-xs font-semibold',
                                       'bg-muted/80 border border-border/60 rounded-md shadow-sm',
@@ -527,7 +609,10 @@ function KeyboardShortcutsHelp({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{
+              delay: getMotionSafeDuration(prefersReducedMotion, 0.2),
+              duration: getMotionSafeDuration(prefersReducedMotion, durations.normal),
+            }}
             className="px-5 py-3.5 border-t border-border bg-muted/30 text-xs text-muted-foreground flex items-center justify-between"
           >
             <span>
