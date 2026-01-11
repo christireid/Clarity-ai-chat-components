@@ -84,7 +84,18 @@ function cosineSimilarity(a: number[], b: number[]): number {
 function hashQuery(query: string): string {
   // Normalize and create hash
   const normalized = query.toLowerCase().trim().replace(/\s+/g, ' ')
-  return btoa(normalized).substring(0, 32)
+  try {
+    return btoa(unescape(encodeURIComponent(normalized))).substring(0, 32)
+  } catch {
+    // Fallback simple hash for environments where btoa fails on unicode
+    let hash = 0
+    for (let i = 0; i < normalized.length; i++) {
+      const char = normalized.charCodeAt(i)
+      hash = (hash << 5) - hash + char
+      hash |= 0
+    }
+    return Math.abs(hash).toString(36)
+  }
 }
 
 /**

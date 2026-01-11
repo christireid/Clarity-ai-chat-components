@@ -652,7 +652,11 @@ class AccessPatternAnalyzer {
 class CompressionEngine {
   async compress(content: string): Promise<string> {
     // Simplified compression - in production, use proper compression
-    return btoa(content) // Base64 encoding as simple compression
+    try {
+      return btoa(unescape(encodeURIComponent(content)))
+    } catch {
+      return content
+    }
   }
 
   async decompress(compressed: string): Promise<string> {

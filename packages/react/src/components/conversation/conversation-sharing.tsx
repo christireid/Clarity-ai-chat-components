@@ -137,7 +137,12 @@ function generateQRCode(text: string): string {
       </text>
     </svg>
   `
-  return `data:image/svg+xml;base64,${btoa(svg)}`
+  try {
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
+  } catch {
+    // Fallback for environment where btoa might fail or svg has weird chars
+    return ''
+  }
 }
 
 /**

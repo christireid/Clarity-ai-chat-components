@@ -151,7 +151,16 @@ root.render(<App />);
     const chunk = bytes.subarray(i, i + chunkSize)
     binary += String.fromCharCode(...chunk)
   }
-  const encoded = btoa(binary)
+  
+  let encoded = ''
+  try {
+    // Safe base64 encoding for unicode
+    encoded = btoa(binary)
+  } catch (e) {
+    console.error('Failed to encode for CodeSandbox:', e)
+    // Fallback or empty
+    return '#'
+  }
 
   return `https://codesandbox.io/api/v1/sandboxes/define?parameters=${encoded}`
 }

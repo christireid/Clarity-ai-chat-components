@@ -146,7 +146,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
   const shareUrl =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/playground?code=${encodeURIComponent(btoa(code))}`
+      ? `${window.location.origin}/playground?code=${encodeURIComponent(
+          typeof btoa === 'function' ? btoa(unescape(encodeURIComponent(code))) : code
+        )}`
       : ''
 
   return (
