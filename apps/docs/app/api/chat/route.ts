@@ -15,10 +15,7 @@ export async function POST(req: NextRequest) {
     // Validate request
     const validation = validateRequest(messages)
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
     // Get the last user message for complexity analysis
@@ -31,8 +28,12 @@ export async function POST(req: NextRequest) {
       conversationLength
     )
 
-    // Log the decision (in a real app you'd use a proper logger)
-    console.log(`[Chat API] Routing query to ${model} (${classification.complexity})`)
+    // Log the decision (debug only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `[Chat API] Routing query to ${model} (${classification.complexity})`
+      )
+    }
 
     // Create the stream generator
     const generator = streamFn(messages, {
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     })
   } catch (error) {
