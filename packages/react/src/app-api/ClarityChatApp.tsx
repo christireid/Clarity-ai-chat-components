@@ -6,6 +6,7 @@ import type { ClarityChatAppProps, ClarityEvent } from './types'
 import { useClarityChatApp } from './use-clarity-chat-app'
 import { resolveConfig, isFeatureEnabled } from './resolve-config'
 import { formatErrorForDisplay, type ClarityError } from './dx-hints'
+import { checkLicense } from '../utils/license'
 
 // =============================================================================
 // Internal Components
@@ -388,6 +389,16 @@ export function ClarityChatApp({
     () => resolveConfig({ preset, features, config, model, sources }),
     [preset, features, config, model, sources]
   )
+
+  // License check
+  React.useEffect(() => {
+    if (
+      typeof process !== 'undefined' &&
+      process.env.NODE_ENV !== 'development'
+    ) {
+      checkLicense(process.env.CLARITY_LICENSE_KEY)
+    }
+  }, [])
 
   // Event handler that combines all callbacks
   const handleEvent = useCallback(
