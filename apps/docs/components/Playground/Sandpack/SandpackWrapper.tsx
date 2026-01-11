@@ -22,7 +22,9 @@ interface SandpackWrapperProps {
 const CustomSandpackPreview = () => {
   const { sandpack } = useSandpack()
   // Add any custom preview logic here if needed
-  return <SandpackPreview style={{ height: '100%' }} showOpenInCodeSandbox={false} />
+  return (
+    <SandpackPreview style={{ height: '100%' }} showOpenInCodeSandbox={false} />
+  )
 }
 
 export function SandpackWrapper({
@@ -40,11 +42,11 @@ export function SandpackWrapper({
   }
 
   const customDependencies = {
-    '@clarity-chat/react': 'latest',
-    'lucide-react': 'latest',
-    'framer-motion': 'latest',
-    'clsx': 'latest',
-    'tailwind-merge': 'latest',
+    '@clarity-chat/react': '1.0.0', // Pinned
+    'lucide-react': '0.292.0', // Pinned
+    'framer-motion': '10.16.4', // Pinned to stable version for playground
+    clsx: '2.0.0',
+    'tailwind-merge': '2.0.0',
     ...dependencies,
   }
 
@@ -60,7 +62,9 @@ export function SandpackWrapper({
         externalResources: ['https://cdn.tailwindcss.com'],
       }}
     >
-      <SandpackLayout style={{ height: '100%', border: 'none', borderRadius: 0 }}>
+      <SandpackLayout
+        style={{ height: '100%', border: 'none', borderRadius: 0 }}
+      >
         <SandpackCodeEditor
           showLineNumbers
           showInlineErrors

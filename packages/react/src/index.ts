@@ -35,6 +35,12 @@
  * @packageDocumentation
  */
 
+// Initialize license check in production
+import { checkLicense } from './utils/license'
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'development') {
+  checkLicense(process.env.CLARITY_LICENSE_KEY)
+}
+
 // Export the new unified App API (recommended)
 export * from './app-api'
 

@@ -18,6 +18,9 @@
  * - toon/           Token-Oriented Object Notation
  */
 
+// License Utility
+export { validateLicense, checkLicense, type LicenseStatus } from './license'
+
 // Core Utilities (remain at root)
 export { cn } from './cn'
 export * from './mobile'
