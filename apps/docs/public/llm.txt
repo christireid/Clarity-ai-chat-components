@@ -1,0 +1,23 @@
+# Clarity Chat Documentation
+
+> Premium AI Chat Component Library for React.
+
+## Core Documentation
+
+- [Getting Started](https://clarity-chat.dev/learn/quick-start)
+- [Components](https://clarity-chat.dev/reference/components)
+- [Hooks](https://clarity-chat.dev/reference/hooks)
+- [Guides](https://clarity-chat.dev/guides)
+
+## Key Features
+
+- **Streaming**: Built-in support for streaming responses (SSE/WebSocket)
+- **Theming**: 11 built-in themes + custom theme builder
+- **Accessibility**: WCAG 2.1 AAA compliant
+- **Token Optimization**: Smart token budgeting and cost tracking
+
+## Commercial License
+
+Clarity Chat is a paid product.
+- [Pricing](https://clarity-chat.dev/commercial/pricing)
+- [License Terms](https://clarity-chat.dev/commercial/terms)

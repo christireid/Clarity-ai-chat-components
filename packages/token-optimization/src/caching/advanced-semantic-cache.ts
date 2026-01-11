@@ -1,6 +1,6 @@
 /**
  * Advanced Semantic Caching System
- * 
+ *
  * Implements intelligent caching with semantic similarity matching
  * Provides 90%+ cost reduction for cached content with high accuracy
  */
@@ -115,7 +115,7 @@ export class AdvancedSemanticCache {
 
   constructor(private config: SemanticCacheConfig) {
     this.cache = new LRUCache({
-      max: this.config.maxSize
+      max: this.config.maxSize,
     })
 
     this.embeddingCache = new Map()
@@ -134,13 +134,13 @@ export class AdvancedSemanticCache {
    */
   async get(key: string, context?: CacheContext): Promise<SemanticCacheResult> {
     const startTime = Date.now()
-    
+
     try {
       // Try exact match first
       const exactEntry = this.cache.get(key)
       if (exactEntry) {
         this.updateAccessMetrics(exactEntry)
-        
+
         return {
           found: true,
           entry: exactEntry,
@@ -148,7 +148,7 @@ export class AdvancedSemanticCache {
           cacheHit: true,
           cacheType: 'exact',
           processingTime: Date.now() - startTime,
-          savings: this.calculateSavings(exactEntry)
+          savings: this.calculateSavings(exactEntry),
         }
       }
 
@@ -157,11 +157,11 @@ export class AdvancedSemanticCache {
         const semanticResult = await this.semanticLookup(key, context)
         if (semanticResult.found) {
           this.updateAccessMetrics(semanticResult.entry!)
-          
+
           return {
             ...semanticResult,
             processingTime: Date.now() - startTime,
-            savings: this.calculateSavings(semanticResult.entry!)
+            savings: this.calculateSavings(semanticResult.entry!),
           }
         }
       }
@@ -173,7 +173,7 @@ export class AdvancedSemanticCache {
           return {
             ...contextResult,
             processingTime: Date.now() - startTime,
-            savings: this.calculateSavings(contextResult.entry!)
+            savings: this.calculateSavings(contextResult.entry!),
           }
         }
       }
@@ -183,18 +183,17 @@ export class AdvancedSemanticCache {
         cacheHit: false,
         cacheType: 'none',
         processingTime: Date.now() - startTime,
-        savings: { tokens: 0, cost: 0, percentage: 0 }
+        savings: { tokens: 0, cost: 0, percentage: 0 },
       }
-
     } catch (error) {
       this.monitoring.recordError('cache_lookup', error as Error)
-      
+
       return {
         found: false,
         cacheHit: false,
         cacheType: 'none',
         processingTime: Date.now() - startTime,
-        savings: { tokens: 0, cost: 0, percentage: 0 }
+        savings: { tokens: 0, cost: 0, percentage: 0 },
       }
     }
   }
@@ -203,23 +202,26 @@ export class AdvancedSemanticCache {
    * Intelligent cache storage with optimization
    */
   async set(
-    key: string, 
-    content: string, 
+    key: string,
+    content: string,
     metadata: Partial<CacheMetadata>,
     context?: CacheContext
   ): Promise<void> {
     try {
       // Generate content embedding for semantic matching
       const embedding = await this.generateEmbedding(content)
-      
+
       // Create semantic fingerprint
-      const semanticFingerprint = this.generateSemanticFingerprint(content, embedding)
-      
+      const semanticFingerprint = this.generateSemanticFingerprint(
+        content,
+        embedding
+      )
+
       // Compress content if above threshold
       let finalContent = content
       let compressedContent: string | undefined
       let compressionRatio: number | undefined
-      
+
       if (content.length > this.config.compressionThreshold) {
         compressedContent = await this.compressionEngine.compress(content)
         finalContent = compressedContent
@@ -240,17 +242,17 @@ export class AdvancedSemanticCache {
           sessionContext: context?.sessionContext,
           semanticFingerprint,
           compressionRatio,
-          qualityScore: metadata.qualityScore || 0.95
+          qualityScore: metadata.qualityScore || 0.95,
         },
         timestamp: new Date(),
         accessCount: 0,
         lastAccessed: new Date(),
-        hitRate: 0
+        hitRate: 0,
       }
 
       // Store in cache
       this.cache.set(key, entry)
-      
+
       // Store in semantic index if semantic caching enabled
       if (this.config.enableEmbeddingCache) {
         this.updateSemanticIndex(key, semanticFingerprint)
@@ -266,9 +268,8 @@ export class AdvancedSemanticCache {
         key,
         size: content.length,
         compressedSize: compressedContent?.length,
-        semanticMatch: false
+        semanticMatch: false,
       })
-
     } catch (error: unknown) {
       this.monitoring.recordError('cache_set', error as Error)
       throw new Error(`Failed to cache content: ${(error as Error).message}`)
@@ -279,7 +280,7 @@ export class AdvancedSemanticCache {
    * Semantic lookup with similarity matching
    */
   private async semanticLookup(
-    key: string, 
+    key: string,
     _context?: CacheContext
   ): Promise<SemanticLookupResult> {
     const queryEmbedding = await this.generateEmbedding(key)
@@ -289,9 +290,15 @@ export class AdvancedSemanticCache {
     // Search through cached entries - use a method to get entries
     const entries = this.getAllEntries()
     for (const entry of entries) {
-      const similarity = this.calculateCosineSimilarity(queryEmbedding, entry.embedding)
-      
-      if (similarity > this.config.similarityThreshold && similarity > bestScore) {
+      const similarity = this.calculateCosineSimilarity(
+        queryEmbedding,
+        entry.embedding
+      )
+
+      if (
+        similarity > this.config.similarityThreshold &&
+        similarity > bestScore
+      ) {
         bestScore = similarity
         bestMatch = entry
       }
@@ -303,14 +310,14 @@ export class AdvancedSemanticCache {
         entry: bestMatch,
         similarityScore: bestScore,
         cacheHit: true,
-        cacheType: 'semantic'
+        cacheType: 'semantic',
       }
     }
 
     return {
       found: false,
       cacheHit: false,
-      cacheType: 'none'
+      cacheType: 'none',
     }
   }
 
@@ -318,11 +325,11 @@ export class AdvancedSemanticCache {
    * Context-aware lookup considering user and session context
    */
   private async contextAwareLookup(
-    key: string, 
+    key: string,
     context: CacheContext
   ): Promise<SemanticLookupResult> {
     // Find entries with similar context
-    const contextMatches: Array<{entry: CachedEntry; score: number}> = []
+    const contextMatches: Array<{ entry: CachedEntry; score: number }> = []
 
     for (const entry of this.cache['cache'].values()) {
       let contextScore = 0
@@ -333,18 +340,27 @@ export class AdvancedSemanticCache {
       }
 
       // User context matching
-      if (context.userContext && entry.metadata.userContext === context.userContext) {
+      if (
+        context.userContext &&
+        entry.metadata.userContext === context.userContext
+      ) {
         contextScore += 0.3
       }
 
       // Session context matching
-      if (context.sessionContext && entry.metadata.sessionContext === context.sessionContext) {
+      if (
+        context.sessionContext &&
+        entry.metadata.sessionContext === context.sessionContext
+      ) {
         contextScore += 0.2
       }
 
       // Semantic similarity
       const queryEmbedding = await this.generateEmbedding(key)
-      const semanticSimilarity = this.calculateCosineSimilarity(queryEmbedding, entry.embedding)
+      const semanticSimilarity = this.calculateCosineSimilarity(
+        queryEmbedding,
+        entry.embedding
+      )
       contextScore += semanticSimilarity * 0.2
 
       if (contextScore > 0.5) {
@@ -361,14 +377,14 @@ export class AdvancedSemanticCache {
         entry: contextMatches[0].entry,
         similarityScore: contextMatches[0].score,
         cacheHit: true,
-        cacheType: 'semantic'
+        cacheType: 'semantic',
       }
     }
 
     return {
       found: false,
       cacheHit: false,
-      cacheType: 'none'
+      cacheType: 'none',
     }
   }
 
@@ -385,17 +401,20 @@ export class AdvancedSemanticCache {
     // Generate embedding (simplified implementation)
     // In production, this would use a proper embedding model
     const embedding = this.createSimpleEmbedding(content)
-    
+
     // Cache the embedding
     this.embeddingCache.set(contentHash, embedding)
-    
+
     return embedding
   }
 
   /**
    * Calculate cosine similarity between embeddings
    */
-  private calculateCosineSimilarity(embedding1: number[], embedding2: number[]): number {
+  private calculateCosineSimilarity(
+    embedding1: number[],
+    embedding2: number[]
+  ): number {
     if (embedding1.length !== embedding2.length) {
       return 0
     }
@@ -417,16 +436,19 @@ export class AdvancedSemanticCache {
   /**
    * Generate semantic fingerprint for content
    */
-  private generateSemanticFingerprint(content: string, embedding: number[]): string {
+  private generateSemanticFingerprint(
+    content: string,
+    embedding: number[]
+  ): string {
     // Create a fingerprint based on content characteristics
     const characteristics = [
       content.length,
       content.split(' ').length,
       content.split('\n').length,
-      embedding.slice(0, 5).reduce((sum, val) => sum + val, 0)
+      embedding.slice(0, 5).reduce((sum, val) => sum + val, 0),
     ]
 
-    return characteristics.map(c => Math.round(c / 100)).join('-')
+    return characteristics.map((c) => Math.round(c / 100)).join('-')
   }
 
   /**
@@ -435,17 +457,22 @@ export class AdvancedSemanticCache {
   private updateAccessMetrics(entry: CachedEntry): void {
     entry.accessCount++
     entry.lastAccessed = new Date()
-    entry.hitRate = entry.accessCount / (Date.now() - entry.timestamp.getTime()) * 3600000 // hits per hour
+    entry.hitRate =
+      (entry.accessCount / (Date.now() - entry.timestamp.getTime())) * 3600000 // hits per hour
   }
 
   /**
    * Calculate savings from cache hit
    */
-  private calculateSavings(entry: CachedEntry): {tokens: number; cost: number; percentage: number} {
+  private calculateSavings(entry: CachedEntry): {
+    tokens: number
+    cost: number
+    percentage: number
+  } {
     const tokens = entry.tokenCount
     const cost = tokens * 0.000001 // Assume $0.001 per 1K tokens
     const percentage = 90 // Assume 90% cost reduction for cached content
-    
+
     return { tokens, cost, percentage }
   }
 
@@ -463,12 +490,16 @@ export class AdvancedSemanticCache {
    */
   private async predictAndCache(): Promise<void> {
     const predictions = this.accessPatternAnalyzer.generatePredictions()
-    
+
     for (const prediction of predictions) {
       if (prediction.confidence > 0.7) {
         // Pre-cache predicted content
         // This would typically fetch content from external sources
-        console.log(`Predictive caching: Preparing content for ${prediction.key}`)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `Predictive caching: Preparing content for ${prediction.key}`
+          )
+        }
       }
     }
   }
@@ -480,7 +511,7 @@ export class AdvancedSemanticCache {
     if (!this.semanticIndex.has(fingerprint)) {
       this.semanticIndex.set(fingerprint, [])
     }
-    
+
     const entries = this.semanticIndex.get(fingerprint)!
     if (!entries.includes(key)) {
       entries.push(key)
@@ -495,17 +526,17 @@ export class AdvancedSemanticCache {
     // In production, use a proper embedding model like BERT or Sentence Transformers
     const words = content.toLowerCase().split(/\s+/)
     const embedding = new Array(128).fill(0)
-    
+
     // Simple hash-based embedding
     words.forEach((word, index) => {
       const hash = this.simpleHash(word)
       const position = hash % 128
       embedding[position] += 1 / (index + 1)
     })
-    
+
     // Normalize
     const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0))
-    return embedding.map(val => val / (norm || 1))
+    return embedding.map((val) => val / (norm || 1))
   }
 
   /**
@@ -515,7 +546,7 @@ export class AdvancedSemanticCache {
     let hash = 0
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return Math.abs(hash)
@@ -552,12 +583,14 @@ export class AdvancedSemanticCache {
       /class\s+\w+/,
       /def\s+\w+\s*\(/,
       /\{.*\}/,
-      /\[.*\]/
+      /\[.*\]/,
     ]
-    
-    const codeMatches = codePatterns.filter(pattern => pattern.test(content)).length
+
+    const codeMatches = codePatterns.filter((pattern) =>
+      pattern.test(content)
+    ).length
     const totalLines = content.split('\n').length
-    
+
     if (codeMatches > totalLines * 0.3) return 'code'
     if (codeMatches > 0) return 'mixed'
     return 'text'
@@ -568,15 +601,38 @@ export class AdvancedSemanticCache {
    */
   getStats(): CacheStats {
     const entries = this.cache.values()
-    
+
     return {
       totalEntries: this.cache.size,
-      totalSize: entries.reduce((sum, entry) => sum + (entry?.content?.length || 0), 0),
-      averageHitRate: entries.reduce((sum, entry) => sum + (entry?.hitRate || 0), 0) / (entries.length || 1),
-      averageAccessCount: entries.reduce((sum, entry) => sum + (entry?.accessCount || 0), 0) / (entries.length || 1),
-      oldestEntry: entries.length > 0 ? Math.min(...entries.map(e => (e as CachedEntry)?.timestamp?.getTime() || 0)) : null,
-      newestEntry: entries.length > 0 ? Math.max(...entries.map(e => (e as CachedEntry)?.timestamp?.getTime() || 0)) : null,
-      compressionRatio: entries.filter(e => (e as CachedEntry)?.compressedContent).length / (entries.length || 1) || 0
+      totalSize: entries.reduce(
+        (sum, entry) => sum + (entry?.content?.length || 0),
+        0
+      ),
+      averageHitRate:
+        entries.reduce((sum, entry) => sum + (entry?.hitRate || 0), 0) /
+        (entries.length || 1),
+      averageAccessCount:
+        entries.reduce((sum, entry) => sum + (entry?.accessCount || 0), 0) /
+        (entries.length || 1),
+      oldestEntry:
+        entries.length > 0
+          ? Math.min(
+              ...entries.map(
+                (e) => (e as CachedEntry)?.timestamp?.getTime() || 0
+              )
+            )
+          : null,
+      newestEntry:
+        entries.length > 0
+          ? Math.max(
+              ...entries.map(
+                (e) => (e as CachedEntry)?.timestamp?.getTime() || 0
+              )
+            )
+          : null,
+      compressionRatio:
+        entries.filter((e) => (e as CachedEntry)?.compressedContent).length /
+          (entries.length || 1) || 0,
     }
   }
 
@@ -612,7 +668,7 @@ class AccessPatternAnalyzer {
     history.push({
       timestamp: new Date(),
       context,
-      accessTime: Date.now()
+      accessTime: Date.now(),
     })
 
     // Keep only recent history (last 100 accesses)
@@ -629,7 +685,7 @@ class AccessPatternAnalyzer {
       if (history.length < 5) continue // Need sufficient history
 
       const recentAccesses = history.filter(
-        record => now.getTime() - record.timestamp.getTime() < 3600000 // Last hour
+        (record) => now.getTime() - record.timestamp.getTime() < 3600000 // Last hour
       )
 
       if (recentAccesses.length > 3) {
@@ -637,7 +693,7 @@ class AccessPatternAnalyzer {
         predictions.push({
           key,
           confidence: Math.min(recentAccesses.length / 10, 0.9),
-          predictedTime: new Date(now.getTime() + 300000) // Predict next 5 minutes
+          predictedTime: new Date(now.getTime() + 300000), // Predict next 5 minutes
         })
       }
     }
@@ -652,7 +708,11 @@ class AccessPatternAnalyzer {
 class CompressionEngine {
   async compress(content: string): Promise<string> {
     // Simplified compression - in production, use proper compression
-    return btoa(content) // Base64 encoding as simple compression
+    try {
+      return btoa(unescape(encodeURIComponent(content)))
+    } catch {
+      return content
+    }
   }
 
   async decompress(compressed: string): Promise<string> {
@@ -673,7 +733,7 @@ class CacheMonitoring {
     this.metrics.push({
       operation,
       timestamp: new Date(),
-      ...data
+      ...data,
     })
 
     // Keep only recent metrics

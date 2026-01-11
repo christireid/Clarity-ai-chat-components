@@ -141,7 +141,11 @@ export class AdvancedContextCache {
 
   private async compress(content: string): Promise<string> {
     // Simple compression - in production, use proper compression
-    return btoa(content)
+    try {
+      return btoa(unescape(encodeURIComponent(content)))
+    } catch {
+      return content
+    }
   }
 
   getStats(): CacheStats {

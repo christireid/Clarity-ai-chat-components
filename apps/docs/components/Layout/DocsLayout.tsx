@@ -150,7 +150,7 @@ export function DocsLayout({
           onClick={sidebar.toggleVisibility}
           className={clsx(
             'hidden lg:flex items-center justify-center',
-            'fixed top-20 z-40 p-2.5 rounded-xl',
+            'sticky top-20 z-40 p-2.5 rounded-xl h-fit ml-2',
             // Glassmorphism styling
             'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md',
             'border border-slate-200/50 dark:border-slate-700/50',
@@ -161,9 +161,6 @@ export function DocsLayout({
             'hover:shadow-xl hover:shadow-slate-900/10 dark:hover:shadow-slate-900/30',
             transitionClasses
           )}
-          style={{
-            left: sidebar.visible ? `${Math.min(sidebar.width + 24, 320)}px` : '24px',
-          }}
           aria-label={sidebar.visible ? 'Hide sidebar' : 'Show sidebar'}
           aria-expanded={sidebar.visible}
           aria-controls="docs-sidebar"

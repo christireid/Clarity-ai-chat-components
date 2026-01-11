@@ -260,7 +260,11 @@ export class SecurityManager {
 
     // In a real implementation, use proper encryption like AES-256-GCM
     // This is a placeholder that base64 encodes the data
-    return btoa(data)
+    try {
+      return btoa(unescape(encodeURIComponent(data)))
+    } catch {
+      return data
+    }
   }
 
   /**
