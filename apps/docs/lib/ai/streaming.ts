@@ -9,6 +9,7 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
+import type { ToolName, ToolInputs } from './tools'
 
 export interface StreamChunk {
   type:
@@ -274,8 +275,8 @@ export async function* streamFromClaudeWithTools(
           // Execute the tool
           try {
             const toolResult = await executeToolCall(
-              block.name as toolsModule.ToolName,
-              block.input as Record<string, unknown>
+              block.name as ToolName,
+              block.input as ToolInputs[ToolName]
             )
 
             // Emit tool result for UI to render
@@ -321,8 +322,8 @@ export async function* streamFromClaudeWithTools(
         if (block.type === 'tool_use') {
           try {
             const result = await executeToolCall(
-              block.name as toolsModule.ToolName,
-              block.input as Record<string, unknown>
+              block.name as ToolName,
+              block.input as ToolInputs[ToolName]
             )
             toolResults.push({
               type: 'tool_result',
@@ -920,43 +921,80 @@ export function getStreamingFunctionWithRouting(
  * Provider status for API health checks
  */
 export interface ProviderStatus {
-  provider: 'openai' | 'anthropic' | 'google' | 'demo'
+  name: 'openai' | 'anthropic' | 'google' | 'demo'
   available: boolean
+  model: string
   latency?: number
   error?: string
 }
 
-export async function getProviderStatus(): Promise<ProviderStatus[]> {
-  const statuses: ProviderStatus[] = []
+export interface ProviderStatusResult {
+  providers: ProviderStatus[]
+  activeProvider: { name: string; model: string }
+  isDemoMode: boolean
+  summary: string
+}
+
+const PROVIDER_MODELS = {
+  openai: 'gpt-4-turbo-preview',
+  anthropic: 'claude-3-5-sonnet-20241022',
+  google: 'gemini-1.5-pro',
+  demo: 'demo-mode',
+} as const
+
+export function getProviderStatus(): ProviderStatusResult {
+  const providers: ProviderStatus[] = []
 
   // Check OpenAI
   const openaiKey = process.env.OPENAI_API_KEY
-  statuses.push({
-    provider: 'openai',
+  providers.push({
+    name: 'openai',
     available: !!openaiKey && openaiKey.length > 10,
+    model: PROVIDER_MODELS.openai,
   })
 
   // Check Anthropic
   const anthropicKey = process.env.ANTHROPIC_API_KEY
-  statuses.push({
-    provider: 'anthropic',
+  providers.push({
+    name: 'anthropic',
     available: !!anthropicKey && anthropicKey.length > 10,
+    model: PROVIDER_MODELS.anthropic,
   })
 
   // Check Google
   const googleKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY
-  statuses.push({
-    provider: 'google',
+  providers.push({
+    name: 'google',
     available: !!googleKey && googleKey.length > 10,
+    model: PROVIDER_MODELS.google,
   })
 
   // Demo is always available
-  statuses.push({
-    provider: 'demo',
+  providers.push({
+    name: 'demo',
     available: true,
+    model: PROVIDER_MODELS.demo,
   })
 
-  return statuses
+  // Determine active provider (first available non-demo, or demo)
+  const availableProviders = providers.filter(
+    (p) => p.available && p.name !== 'demo'
+  )
+  const activeProvider =
+    availableProviders[0] || providers.find((p) => p.name === 'demo')!
+  const isDemoMode = activeProvider.name === 'demo'
+
+  const availableCount = availableProviders.length
+  const summary = isDemoMode
+    ? 'Running in demo mode - no API keys configured'
+    : `${availableCount} provider${availableCount === 1 ? '' : 's'} available: ${availableProviders.map((p) => p.name).join(', ')}`
+
+  return {
+    providers,
+    activeProvider: { name: activeProvider.name, model: activeProvider.model },
+    isDemoMode,
+    summary,
+  }
 }
 
 /**
