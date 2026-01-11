@@ -58,7 +58,8 @@ for (let i = 0; i < entries.length; i++) {
     const outDirFlag = outDir ? `--out-dir ${outDir}` : ''
     const externalFlag = externals.map(e => `--external ${e}`).join(' ')
 
-    const cmd = `npx tsup ${entry} --config false --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap --no-minify --no-splitting --no-treeshake`
+    // Use config file for treeshake/minify/splitting settings, override only entry-specific options
+    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap`
 
     execSync(cmd, {
       cwd: resolve(__dirname, '..'),
