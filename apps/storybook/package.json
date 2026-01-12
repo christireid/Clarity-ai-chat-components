@@ -11,9 +11,9 @@
     "@clarity-chat/react": "workspace:*",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
-    "lucide-react": "^0.556.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.1.10",
@@ -22,8 +22,8 @@
     "@storybook/react": "^10.1.10",
     "@storybook/react-vite": "^10.1.10",
     "@tailwindcss/postcss": "^4.1.17",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.22",
     "eslint-plugin-storybook": "^10.1.10",
     "postcss": "^8.5.6",
