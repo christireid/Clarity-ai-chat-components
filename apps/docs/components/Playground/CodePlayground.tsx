@@ -18,7 +18,10 @@ import { openInCodeSandbox } from '@/lib/sandbox-export'
 const CodeEditor = dynamic(() => import('./CodeEditor'), { ssr: false })
 
 interface CodePlaygroundProps {
-  initialCode: string
+  /** Initial code to display (alias: code) */
+  initialCode?: string
+  /** Initial code to display (alias for initialCode) */
+  code?: string
   title?: string
   dependencies?: Record<string, string>
   onCodeChange?: (code: string) => void
@@ -29,20 +32,23 @@ interface CodePlaygroundProps {
 
 export function CodePlayground({
   initialCode,
+  code: codeProp,
   title = 'Clarity Chat Example',
   dependencies = {},
   onCodeChange,
   className,
 }: CodePlaygroundProps) {
-  const [code, setCode] = useState(initialCode)
+  // Support both 'code' and 'initialCode' props
+  const startingCode = initialCode ?? codeProp ?? ''
+  const [code, setCode] = useState(startingCode)
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
   const [editorSize, setEditorSize] = useState(50)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const { copy, copied } = useClipboard({ timeout: 2000 })
 
   useEffect(() => {
-    setCode(initialCode)
-  }, [initialCode])
+    setCode(startingCode)
+  }, [startingCode])
 
   // Handle fullscreen toggle with escape key
   useEffect(() => {
@@ -76,9 +82,9 @@ export function CodePlayground({
   }, [copy, code])
 
   const handleResetCode = useCallback(() => {
-    setCode(initialCode)
-    onCodeChange?.(initialCode)
-  }, [initialCode, onCodeChange])
+    setCode(startingCode)
+    onCodeChange?.(startingCode)
+  }, [startingCode, onCodeChange])
 
   const handleOpenInSandbox = () => {
     openInCodeSandbox({
@@ -219,7 +225,7 @@ export function CodePlayground({
             onClick={handleResetCode}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             aria-label="Reset code"
-            disabled={code === initialCode}
+            disabled={code === startingCode}
           >
             <RotateCcw className="w-4 h-4" />
             <span className="hidden sm:inline">Reset</span>

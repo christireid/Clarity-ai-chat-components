@@ -71,7 +71,7 @@ export function AnalyticsProvider({
       if (!enabled) return
 
       if (debug) {
-        logger.debug('[Analytics] Page view:', path)
+        console.log('[Analytics] Page view:', path)
       }
 
       // Google Analytics
@@ -90,7 +90,7 @@ export function AnalyticsProvider({
       if (!enabled) return
 
       if (debug) {
-        logger.debug('[Analytics] Event:', name, properties)
+        console.log('[Analytics] Event:', name, properties)
       }
 
       // Google Analytics

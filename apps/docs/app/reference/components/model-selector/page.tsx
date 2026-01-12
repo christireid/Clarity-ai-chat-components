@@ -19,7 +19,6 @@ const models: ModelInfo[] = [
     provider: 'openai',
     description: 'Most capable model for complex tasks',
     contextWindow: 128000,
-    maxTokens: 4096,
     vision: true,
     toolCalling: true,
     speed: 'medium',
@@ -32,7 +31,6 @@ const models: ModelInfo[] = [
     provider: 'openai',
     description: 'Fast and cost-effective for simple tasks',
     contextWindow: 16000,
-    maxTokens: 4096,
     vision: false,
     toolCalling: true,
     speed: 'fast',
@@ -45,7 +43,6 @@ const models: ModelInfo[] = [
     provider: 'anthropic',
     description: 'Highest performance for reasoning and coding',
     contextWindow: 200000,
-    maxTokens: 4096,
     vision: true,
     toolCalling: true,
     speed: 'slow',
@@ -62,7 +59,7 @@ function BasicModelSelectorDemo() {
       <ModelSelector
         models={models}
         value={value}
-        onChange={(id) => setValue(id)}
+        onChange={(id: string) => setValue(id)}
       />
     </div>
   )

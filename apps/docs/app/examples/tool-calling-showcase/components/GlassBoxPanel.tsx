@@ -26,6 +26,7 @@ import {
   Play,
   Pause,
   Eye,
+  type LucideIcon,
 } from 'lucide-react'
 import type { DebugEvent, DebugEventType } from '../lib/types'
 
@@ -40,7 +41,7 @@ interface GlassBoxPanelProps {
 
 const eventConfig: Record<
   DebugEventType,
-  { icon: React.ElementType; color: string; label: string; bgColor: string }
+  { icon: LucideIcon; color: string; label: string; bgColor: string }
 > = {
   USER_MESSAGE: {
     icon: User,

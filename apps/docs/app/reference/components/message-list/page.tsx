@@ -309,17 +309,17 @@ function MessageListWithOperations() {
 
   const handleFeedback = useCallback((messageId: string, type: 'up' | 'down') => {
     // Send feedback to analytics
-    logger.debug('Feedback:', messageId, type)
+    console.log('Feedback:', messageId, type)
   }, [])
 
   const handleRetry = useCallback((messageId: string) => {
     // Retry failed message
-    logger.debug('Retry:', messageId)
+    console.log('Retry:', messageId)
   }, [])
 
   const handleEdit = useCallback((messageId: string) => {
     // Open edit dialog
-    logger.debug('Edit:', messageId)
+    console.log('Edit:', messageId)
   }, [])
 
   const handleDelete = useCallback((messageId: string) => {

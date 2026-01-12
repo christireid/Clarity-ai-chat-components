@@ -33,10 +33,10 @@ function BasicBudgetMonitorDemo() {
     warningThreshold: 0.8,
     criticalThreshold: 0.95,
     reservedForOutput: 100,
-    onWarning: (usage) => {
+    onWarning: (usage: { utilizationPercent: number }) => {
       console.debug('Warning:', usage.utilizationPercent)
     },
-    onCritical: (usage) => {
+    onCritical: (usage: { utilizationPercent: number }) => {
       console.debug('Critical:', usage.utilizationPercent)
     },
   })
@@ -61,7 +61,7 @@ function BasicBudgetMonitorDemo() {
     if (result) {
       setMessages((prev) =>
         prev.filter(
-          (_, i) => !result.removedItems.some((item) => item.index === i)
+          (_: unknown, i: number) => !result.removedItems.some((item: { index: number }) => item.index === i)
         )
       )
     }
@@ -386,10 +386,10 @@ function BasicMonitor() {
     warningThreshold: 0.8, // 80%
     criticalThreshold: 0.95, // 95%
     reservedForOutput: 4096,
-    onWarning: (usage) => {
+    onWarning: (usage: { utilizationPercent: number }) => {
       console.debug('Warning:', usage.utilizationPercent)
     },
-    onCritical: (usage) => {
+    onCritical: (usage: { utilizationPercent: number }) => {
       console.debug('Critical:', usage.utilizationPercent)
     },
   })

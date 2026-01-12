@@ -30,10 +30,10 @@ function BasicWebSocketDemo() {
     sendJson,
   } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org', // Public echo server for demo
-    onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+    onMessage: (msg: { data: unknown; timestamp: number }) => {
+      console.log('Received:', msg.data)
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       console.error('WebSocket Error:', err)
     },
   })
@@ -110,7 +110,7 @@ function BasicWebSocketDemo() {
 
         {messages.length > 0 && (
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {messages.map((msg, i) => (
+            {messages.map((msg: { data: unknown; timestamp: number }, i: number) => (
               <div key={i} className="p-2 bg-muted rounded text-sm">
                 <p className="text-xs text-muted-foreground mb-1">
                   {new Date(msg.timestamp).toLocaleTimeString()}

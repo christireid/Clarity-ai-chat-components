@@ -23,8 +23,8 @@ function BasicAdvancedInputDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      logger.debug('Message:', text)
-      logger.debug('Attachments:', attachments)
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
       setValue('')
     },
     []
@@ -65,8 +65,8 @@ function FileUploadDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      logger.debug('Message:', text)
-      logger.debug('Attachments:', attachments)
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
       setValue('')
     },
     []
@@ -221,8 +221,8 @@ export default function AdvancedChatInputPage() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = (text, attachments) => {
-    logger.debug('Message:', text)
-    logger.debug('Attachments:', attachments)
+    console.log('Message:', text)
+    console.log('Attachments:', attachments)
     setValue('')
   }
 
@@ -274,8 +274,8 @@ function SimpleAdvancedInput() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback((text: string, attachments?: MessageAttachment[]) => {
-    logger.debug('Message:', text)
-    logger.debug('Attachments:', attachments)
+    console.log('Message:', text)
+    console.log('Attachments:', attachments)
     setValue('')
   }, [])
 

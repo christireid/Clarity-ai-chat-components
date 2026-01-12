@@ -18,7 +18,7 @@ import { toast } from '@/lib/toast'
 import { Send, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
-  DURATION_SECONDS as durations,
+  durations,
   fadeIn,
   fadeInScale,
   fadeInDown,

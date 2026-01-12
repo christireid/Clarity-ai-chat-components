@@ -19,10 +19,10 @@ function BasicSSEDemo() {
     url: '/api/stream',
     method: 'POST',
     body: { message: 'Hello' },
-    onMessage: (event) => {
-      logger.debug('Received event:', event)
+    onMessage: (event: MessageEvent) => {
+      console.log('Received event:', event)
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       console.error('SSE Error:', err)
     },
   })

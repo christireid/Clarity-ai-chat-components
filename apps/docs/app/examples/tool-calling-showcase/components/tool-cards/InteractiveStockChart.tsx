@@ -19,6 +19,7 @@ import {
   LineChart,
   BarChart3,
   Minus,
+  type LucideIcon,
 } from 'lucide-react'
 import type { ChartData, ChartDataPoint } from '../../lib/types'
 
@@ -33,7 +34,7 @@ type ChartType = 'line' | 'candlestick' | 'area'
 const TIMEFRAMES = ['1D', '1W', '1M', '3M', '1Y', '5Y']
 const CHART_TYPES: {
   type: ChartType
-  icon: React.ElementType
+  icon: LucideIcon
   label: string
 }[] = [
   { type: 'line', icon: LineChart, label: 'Line' },

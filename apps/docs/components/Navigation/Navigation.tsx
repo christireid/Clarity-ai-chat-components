@@ -20,7 +20,6 @@ import {
   ChefHat,
   Code2,
   GitCompare,
-  Newspaper,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import {
@@ -44,7 +43,6 @@ const navigation = [
   { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
   { name: 'Examples', href: '/examples', icon: Code2 },
   { name: 'Compare', href: '/compare', icon: GitCompare },
-  { name: 'Blog', href: '/blog', icon: Newspaper },
 ]
 
 export function Navigation() {

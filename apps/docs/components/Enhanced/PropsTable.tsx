@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Check, Copy, ChevronDown, ExternalLink } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import clsx from 'clsx'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import { useClipboard } from '@clarity-chat/react/internal'
 import { durations } from '@/lib/animations'
 import { getTypeLink, getTypeDefinition } from '@/lib/type-registry'
@@ -32,7 +32,7 @@ interface PropsTableProps {
   className?: string
 }
 
-const tableVariants = {
+const tableVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
@@ -45,7 +45,7 @@ const tableVariants = {
   },
 }
 
-const rowVariants = {
+const rowVariants: Variants = {
   hidden: { opacity: 0, x: -10 },
   show: {
     opacity: 1,

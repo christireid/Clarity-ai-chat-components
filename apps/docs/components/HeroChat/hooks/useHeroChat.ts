@@ -192,7 +192,7 @@ export function useHeroChat(): UseHeroChatReturn {
   // -------------------------------------------------------------------------
   const currentConversation = useMemo(() => {
     if (!currentConversationId) return null
-    return conversations.find((c) => c.id === currentConversationId) || null
+    return conversations.find((c: Conversation) => c.id === currentConversationId) || null
   }, [conversations, currentConversationId])
 
   const messages = currentConversation?.messages || []
@@ -216,7 +216,7 @@ export function useHeroChat(): UseHeroChatReturn {
       updatedAt: Date.now(),
     }
 
-    setConversations((prev) => [newConversation, ...prev])
+    setConversations((prev: Conversation[]) => [newConversation, ...prev])
     setCurrentConversationId(newConversation.id)
   }, [setConversations, setCurrentConversationId])
 
@@ -229,9 +229,9 @@ export function useHeroChat(): UseHeroChatReturn {
 
   const deleteConversation = useCallback(
     (id: string) => {
-      setConversations((prev) => prev.filter((c) => c.id !== id))
+      setConversations((prev: Conversation[]) => prev.filter((c: Conversation) => c.id !== id))
       if (currentConversationId === id) {
-        const remaining = conversations.filter((c) => c.id !== id)
+        const remaining = conversations.filter((c: Conversation) => c.id !== id)
         setCurrentConversationId(remaining[0]?.id || null)
       }
     },
@@ -245,8 +245,8 @@ export function useHeroChat(): UseHeroChatReturn {
 
   const renameConversation = useCallback(
     (id: string, title: string) => {
-      setConversations((prev) =>
-        prev.map((c) =>
+      setConversations((prev: Conversation[]) =>
+        prev.map((c: Conversation) =>
           c.id === id ? { ...c, title, updatedAt: Date.now() } : c
         )
       )
@@ -259,8 +259,8 @@ export function useHeroChat(): UseHeroChatReturn {
   // -------------------------------------------------------------------------
   const updateConversationMessages = useCallback(
     (conversationId: string, updater: (messages: Message[]) => Message[]) => {
-      setConversations((prev) =>
-        prev.map((c) =>
+      setConversations((prev: Conversation[]) =>
+        prev.map((c: Conversation) =>
           c.id === conversationId
             ? { ...c, messages: updater(c.messages), updatedAt: Date.now() }
             : c
@@ -288,7 +288,7 @@ export function useHeroChat(): UseHeroChatReturn {
           createdAt: Date.now(),
           updatedAt: Date.now(),
         }
-        setConversations((prev) => [newConv, ...prev])
+        setConversations((prev: Conversation[]) => [newConv, ...prev])
         setCurrentConversationId(newConv.id)
         convId = newConv.id
       }
@@ -320,7 +320,7 @@ export function useHeroChat(): UseHeroChatReturn {
       ])
 
       // Update title if first message
-      const conv = conversations.find((c) => c.id === convId)
+      const conv = conversations.find((c: Conversation) => c.id === convId)
       if (conv && conv.messages.length === 0) {
         renameConversation(
           convId,
@@ -336,7 +336,7 @@ export function useHeroChat(): UseHeroChatReturn {
 
         // Build messages for API
         const currentMessages =
-          conversations.find((c) => c.id === convId)?.messages || []
+          conversations.find((c: Conversation) => c.id === convId)?.messages || []
         const apiMessages = [...currentMessages, userMessage].map((m) => ({
           role: m.role,
           content: m.content,
@@ -466,7 +466,7 @@ export function useHeroChat(): UseHeroChatReturn {
     async (messageId: string) => {
       if (!currentConversationId) return
 
-      const msgIndex = messages.findIndex((m) => m.id === messageId)
+      const msgIndex = messages.findIndex((m: Message) => m.id === messageId)
       if (msgIndex < 1) return
 
       const previousUserMsg = messages[msgIndex - 1]
@@ -487,7 +487,7 @@ export function useHeroChat(): UseHeroChatReturn {
     async (messageId: string, content: string) => {
       if (!currentConversationId) return
 
-      const msgIndex = messages.findIndex((m) => m.id === messageId)
+      const msgIndex = messages.findIndex((m: Message) => m.id === messageId)
       if (msgIndex < 0) return
 
       const message = messages[msgIndex]

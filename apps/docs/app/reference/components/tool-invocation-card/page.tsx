@@ -62,7 +62,7 @@ function ToolCardWithApprovalDemo() {
   }, [])
 
   const handleReject = useCallback(() => {
-    logger.debug('Tool rejected')
+    console.log('Tool rejected')
   }, [])
 
   return (
@@ -202,8 +202,8 @@ export default function ToolInvocationCardPage() {
       toolCall={toolCall}
       status="pending"
       requiresApproval
-      onApprove={() => logger.debug('Approved')}
-      onReject={() => logger.debug('Rejected')}
+      onApprove={() => console.log('Approved')}
+      onReject={() => console.log('Rejected')}
     />
   )
 }
@@ -301,7 +301,7 @@ function ToolWithApproval() {
       result={result}
       requiresApproval
       onApprove={handleApprove}
-      onReject={() => logger.debug('Rejected')}
+      onReject={() => console.log('Rejected')}
     />
   )
 }`}
@@ -350,7 +350,7 @@ function ToolWithApproval() {
   toolCall={toolCall}
   status="error"
   error="Failed to connect to API"
-  onRetry={() => logger.debug('Retry')}
+  onRetry={() => console.log('Retry')}
 />`}
           language="tsx"
           showLineNumbers
@@ -432,7 +432,7 @@ function ToolWithError() {
 
   const handleRetry = useCallback(() => {
     // Retry the tool call
-    logger.debug('Retrying tool call...')
+    console.log('Retrying tool call...')
   }, [])
 
   return (

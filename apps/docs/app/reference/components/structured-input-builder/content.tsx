@@ -51,7 +51,7 @@ function BasicBuilderDemo() {
         fields={fields}
         values={values}
         onChange={setValues}
-        onSubmit={(result) => alert(JSON.stringify(result, null, 2))}
+        onSubmit={(result: Record<string, string>) => alert(JSON.stringify(result, null, 2))}
       />
     </div>
   )

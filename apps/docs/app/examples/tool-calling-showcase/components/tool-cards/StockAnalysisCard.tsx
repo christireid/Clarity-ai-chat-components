@@ -18,6 +18,7 @@ import {
   Activity,
   Target,
   ChevronRight,
+  type LucideIcon,
 } from 'lucide-react'
 import type { FinancialData } from '../../lib/types'
 
@@ -119,7 +120,7 @@ function MetricItem({
 }: {
   label: string
   value: string | number
-  icon: React.ElementType
+  icon: LucideIcon
   delay: number
 }) {
   return (

@@ -73,6 +73,7 @@ export { ConversationBranchVisualizer } from './components/conversation/conversa
 export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
 export { VirtualizedMessageList } from './components/chat/virtualized-message-list'
+export { MessageList } from './components/message/message-list'
 export { VoiceInput } from './components/input/voice-input'
 export * from './components/ui/link-preview'
 

@@ -34,11 +34,11 @@ function BasicStreamableUIDemo() {
     source,
     {
       mode: 'append',
-      onUpdate: (value) => {
-        logger.debug('Updated:', value)
+      onUpdate: (value: string) => {
+        console.log('Updated:', value)
       },
-      onComplete: (finalValue) => {
-        logger.debug('Complete:', finalValue)
+      onComplete: (finalValue: string) => {
+        console.log('Complete:', finalValue)
       },
     }
   )
@@ -97,7 +97,7 @@ function BasicStreamableUIDemo() {
               All Values ({values.length}):
             </p>
             <div className="p-2 bg-muted rounded max-h-32 overflow-y-auto">
-              {values.map((val, i) => (
+              {values.map((val: string, i: number) => (
                 <span key={i} className="text-sm">
                   {val}
                 </span>

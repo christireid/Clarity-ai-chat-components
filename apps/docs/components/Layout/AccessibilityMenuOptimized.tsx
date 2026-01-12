@@ -74,7 +74,7 @@ export function AccessibilityMenuOptimized() {
   // Optimized CSS class management with reduced re-renders
   useEffect(() => {
     const root = document.documentElement
-    const classes = []
+    const classes: string[] = []
 
     if (settings.highContrast) classes.push('high-contrast')
     if (settings.reducedMotion) classes.push('reduced-motion')

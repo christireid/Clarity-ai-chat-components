@@ -505,14 +505,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             </AnimatePresence>
 
             {/* Token Counter */}
-            {tokenTracker.tokens > 0 && (
+            {tokenTracker.tokenCount > 0 && (
               <div className="absolute top-2 left-4 z-10 max-w-[200px] mt-8 lg:mt-0 lg:left-32">
                 <TokenCounter
-                  currentTokens={tokenTracker.tokens}
+                  currentTokens={tokenTracker.tokenCount}
                   maxTokens={MODEL_MAX_TOKENS}
                   costPerToken={TOKEN_COST_PER_TOKEN}
                   showWarning={
-                    tokenTracker.isNearLimit || tokenTracker.isCritical
+                    tokenTracker.isWarning || tokenTracker.isCritical
                   }
                   warningThreshold={TOKEN_WARNING_THRESHOLD}
                   criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
@@ -663,7 +663,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                           citation={citation}
                           previewLength={80}
                           showConfidence
-                          onSourceClick={(url) =>
+                          onSourceClick={(url: string) =>
                             window.open(url, '_blank', 'noopener,noreferrer')
                           }
                           className="text-sm"
@@ -783,7 +783,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
   return (
     <ErrorBoundary
-      fallback={(error, resetError) => {
+      fallback={(error: Error, resetError: () => void) => {
         const { title, message, suggestion } = getUserFriendlyErrorMessage(error)
 
         return (
@@ -819,7 +819,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
           </div>
         )
       }}
-      onError={(error, errorInfo) => {
+      onError={(error: Error, errorInfo: { componentStack: string }) => {
         console.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {

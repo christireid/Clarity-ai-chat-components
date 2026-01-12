@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 
 export interface PropDefinition {
   name: string
@@ -17,7 +17,7 @@ interface ApiTableProps {
   className?: string
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
@@ -30,7 +30,7 @@ const containerVariants = {
   },
 }
 
-const rowVariants = {
+const rowVariants: Variants = {
   hidden: { opacity: 0, x: -10 },
   show: {
     opacity: 1,

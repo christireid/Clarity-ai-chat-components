@@ -1,6 +1,7 @@
 'use client'
 
-import { ChatLayout, ChatWindow, Message } from '@clarity-chat/react/internal'
+import { ChatLayout, ChatWindow } from '@clarity-chat/react/internal'
+import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -13,9 +14,12 @@ function BasicLayoutDemo() {
   const messages: Message[] = [
     {
       id: '1',
+      chatId: 'demo-chat',
       role: 'assistant',
       content: 'Hello! I am running inside a ChatLayout.',
+      status: 'sent',
       createdAt: new Date(),
+      updatedAt: new Date(),
     },
   ]
 

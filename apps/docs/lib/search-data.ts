@@ -26,13 +26,6 @@ export interface SearchItem {
 
 export const searchData: SearchItem[] = [
   {
-    title: '{post.title}',
-    type: 'guide',
-    href: '//blog/[slug]',
-    description: '',
-    category: 'blog',
-  },
-  {
     title: '@clarity-chat/codemods',
     type: 'guide',
     href: '//tools/codemods',
@@ -136,13 +129,6 @@ export const searchData: SearchItem[] = [
     href: '//guides/best-practices',
     description: '',
     category: 'guides',
-  },
-  {
-    title: 'Blog',
-    type: 'guide',
-    href: '//blog',
-    description: '',
-    category: 'blog',
   },
   {
     title: 'Building Your First Chatbot',

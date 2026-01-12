@@ -252,7 +252,6 @@ export async function searchTickerReal(query: string, limit = 5): Promise<Ticker
     return {
       query,
       matches,
-      timestamp: new Date().toISOString(),
     }
   } catch (error) {
     console.error('Finnhub search error:', error)
@@ -273,19 +272,20 @@ export async function getFinancialsReal(symbol: string): Promise<FinancialData> 
 
     const metric = metrics.metric
 
-    // Generate price history from recent data
+    // Generate price history from recent data with proper PriceHistoryPoint shape
     const priceHistory = [
-      { timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.98 },
-      { timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.99 },
-      { timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc },
-      { timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), price: quote.o },
-      { timestamp: new Date().toISOString(), price: quote.c },
+      { date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.98, volume: 0 },
+      { date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc * 0.99, volume: 0 },
+      { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), price: quote.pc, volume: 0 },
+      { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), price: quote.o, volume: 0 },
+      { date: new Date().toISOString(), price: quote.c, volume: 0 },
     ]
 
     return {
       symbol: symbol.toUpperCase(),
       name: profile.name || symbol,
       currentPrice: quote.c,
+      previousClose: quote.pc,
       change: quote.d,
       changePercent: quote.dp,
       metrics: {
@@ -293,6 +293,7 @@ export async function getFinancialsReal(symbol: string): Promise<FinancialData> 
         marketCap: formatMarketCap(profile.marketCapitalization),
         volume: formatVolume(metric['10DayAverageTradingVolume'] || 0),
         eps: metric['epsBasicExclExtraItemsTTM'] || 0,
+        dividendYield: (metric['dividendYieldIndicatedAnnual'] as number) || 0,
         high52Week: metric['52WeekHigh'] || quote.h,
         low52Week: metric['52WeekLow'] || quote.l,
       },
@@ -337,6 +338,7 @@ export async function getChartReal(
       symbol: symbol.toUpperCase(),
       name: (profile as FinnhubCompanyProfile).name || symbol,
       timeframe,
+      chartType: 'candlestick',
       currentPrice: quote.c,
       change: quote.d,
       changePercent: quote.dp,

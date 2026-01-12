@@ -5,6 +5,9 @@
  * Supports markdown and JSON export with proper formatting.
  */
 
+// Re-export copyToClipboard from canonical source
+export { copyToClipboard } from '@clarity-chat/utils'
+
 export interface ExportMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -255,33 +258,7 @@ export function downloadConversation(
   URL.revokeObjectURL(url)
 }
 
-/**
- * Copy conversation to clipboard
- */
-export async function copyToClipboard(content: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(content)
-    return true
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
-
-    // Fallback method
-    try {
-      const textarea = document.createElement('textarea')
-      textarea.value = content
-      textarea.style.position = 'fixed'
-      textarea.style.opacity = '0'
-      document.body.appendChild(textarea)
-      textarea.select()
-      const success = document.execCommand('copy')
-      document.body.removeChild(textarea)
-      return success
-    } catch (fallbackError) {
-      console.error('Fallback copy failed:', fallbackError)
-      return false
-    }
-  }
-}
+// copyToClipboard is now imported from @clarity-chat/utils
 
 /**
  * Get export statistics

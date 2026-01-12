@@ -462,7 +462,10 @@
         "border",
         "support"
       ],
-      "headings": ["Why Clarity Chat?", "Ready to try it?"]
+      "headings": [
+        "Why Clarity Chat?",
+        "Ready to try it?"
+      ]
     }
   },
   {
@@ -1605,7 +1608,11 @@
         "const",
         "researchdocs"
       ],
-      "headings": ["Research", "{doc.title}", "Contributing Research"]
+      "headings": [
+        "Research",
+        "{doc.title}",
+        "Contributing Research"
+      ]
     }
   },
   {
@@ -2132,7 +2139,11 @@
         "description",
         "typing"
       ],
-      "headings": ["API Reference", "{section.title}", "Interactive Examples"]
+      "headings": [
+        "API Reference",
+        "{section.title}",
+        "Interactive Examples"
+      ]
     }
   },
   {
@@ -3502,7 +3513,10 @@
         "clarity",
         "grade"
       ],
-      "headings": ["Overview", "Resources"]
+      "headings": [
+        "Overview",
+        "Resources"
+      ]
     }
   },
   {
@@ -4413,7 +4427,10 @@
         "scrollreveal",
         "recipe"
       ],
-      "headings": ["Cookbook", "Available Recipes"]
+      "headings": [
+        "Cookbook",
+        "Available Recipes"
+      ]
     }
   },
   {
@@ -5175,7 +5192,11 @@
         "clarity",
         "terms"
       ],
-      "headings": ["Commercial Documentation", "{section.title}", "Need Help?"]
+      "headings": [
+        "Commercial Documentation",
+        "{section.title}",
+        "Need Help?"
+      ]
     }
   },
   {
@@ -5313,7 +5334,10 @@
         "motion",
         "title"
       ],
-      "headings": ["{entry.title}", "Ready to Get Started?"]
+      "headings": [
+        "{entry.title}",
+        "Ready to Get Started?"
+      ]
     }
   },
   {
@@ -5501,143 +5525,6 @@
         "title"
       ],
       "section": "Part 5",
-      "headings": []
-    }
-  },
-  {
-    "id": "guide-page-0",
-    "title": "Blog",
-    "content": ",\n  description:\n    \n,\n}\n\nconst blogPosts = [\n  {\n    title: \n,\n    href: \n,\n    description:\n      \n,\n    date: \n,\n    category: \n,\n  },\n  {\n    title: \n,\n    href: \n,\n    description:\n      \n,\n    date: \n,\n    category: \n,\n  },\n  {\n    title: \n,\n    href: \n,\n    description:\n      \n,\n    date: \n,\n    category: \n,\n  },\n]\n\nexport default function BlogPage() {\n  return (\n    <div className=\n>\n      <div className=\n>\n        <div className=\n>\n          <h1 className=\n>Blog</h1>\n          <p className=\n>\n            Insights, tutorials, and updates about building AI chat interfaces\n            with Clarity Chat.",
-    "url": "//blog",
-    "category": "guide",
-    "keywords": [
-      "blog",
-      "classname",
-      "description",
-      "title",
-      "category",
-      "insights",
-      "tutorials",
-      "updates",
-      "blogposts",
-      "building",
-      "interfaces",
-      "clarity",
-      "scrollreveal",
-      "scrollrevealitem",
-      "updated",
-      "latest",
-      "delivered",
-      "inbox",
-      "target",
-      "discussion"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.699Z",
-      "tags": [
-        "blog",
-        "classname",
-        "description",
-        "title",
-        "category",
-        "insights",
-        "tutorials",
-        "updates",
-        "blogposts",
-        "building"
-      ],
-      "headings": ["Blog", "{post.title}", "Stay Updated"]
-    }
-  },
-  {
-    "id": "guide-page-1",
-    "title": "Blog (2)",
-    "content": "> <h1 className= >Blog</h1> <p className= > Insights, tutorials, and updates about building AI chat interfaces with Clarity Chat.  </p>\n        </div>\n\n        <ScrollReveal stagger staggerDelay={0.1} className=\n>\n          {blogPosts.map((post) => (\n            <ScrollRevealItem key={post.href}>\n              <Link\n                href={post.href}\n                className=\n\n              >\n                <div className=\n>\n                  <div className=\n>\n                    <div className=\n>\n                      <span className=\n>\n                        {post.category}\n                      </span>\n                      <span className=\n>\n                        <Calendar className=\n />\n                        {post.date}\n                      </span>\n                    </div>\n                    <h2 className=\n>\n                      {post.title}\n                    </h2>\n                    <p className=\n>{post.description}</p>\n                  </div>\n                  <ArrowRight className=\n />\n                </div>\n              </Link>\n            </ScrollRevealItem>\n          ))}\n        </ScrollReveal>\n\n        <div className=\n>\n          <h2 className=\n>Stay Updated</h2>\n          <p className=\n>\n            Get the latest updates, tutorials, and insights delivered to your\n            inbox.",
-    "url": "//blog",
-    "category": "guide",
-    "keywords": [
-      "blog",
-      "classname",
-      "description",
-      "title",
-      "category",
-      "insights",
-      "tutorials",
-      "updates",
-      "blogposts",
-      "building",
-      "interfaces",
-      "clarity",
-      "scrollreveal",
-      "scrollrevealitem",
-      "updated",
-      "latest",
-      "delivered",
-      "inbox",
-      "target",
-      "discussion"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.699Z",
-      "tags": [
-        "blog",
-        "classname",
-        "description",
-        "title",
-        "category",
-        "insights",
-        "tutorials",
-        "updates",
-        "blogposts",
-        "building"
-      ],
-      "section": "Part 2",
-      "headings": []
-    }
-  },
-  {
-    "id": "guide-page-2",
-    "title": "Blog (3)",
-    "content": "> <h2 className= >Stay Updated</h2> <p className= > Get the latest updates, tutorials, and insights delivered to your inbox.  </p>\n          <div className=\n>\n            <a\n              href=\n\n              target=\n\n              rel=\n\n              className=\n\n            >\n              Join Discussion\n            </a>\n            <a\n              href=\n\n              target=\n\n              rel=\n\n              className=\nInsights, tutorials, and updates about building AI chat interfaces\n            with Clarity Chat. ))}\nStay Updated\nGet the latest updates, tutorials, and insights delivered to your\n            inbox. Join Discussion\nJoin Discord.",
-    "url": "//blog",
-    "category": "guide",
-    "keywords": [
-      "blog",
-      "classname",
-      "description",
-      "title",
-      "category",
-      "insights",
-      "tutorials",
-      "updates",
-      "blogposts",
-      "building",
-      "interfaces",
-      "clarity",
-      "scrollreveal",
-      "scrollrevealitem",
-      "updated",
-      "latest",
-      "delivered",
-      "inbox",
-      "target",
-      "discussion"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.699Z",
-      "tags": [
-        "blog",
-        "classname",
-        "description",
-        "title",
-        "category",
-        "insights",
-        "tutorials",
-        "updates",
-        "blogposts",
-        "building"
-      ],
-      "section": "Part 3",
       "headings": []
     }
   },
@@ -8071,7 +7958,10 @@
         "commands",
         "section"
       ],
-      "headings": ["🎯 Commands", "{cmd.emoji} {cmd.name}"]
+      "headings": [
+        "🎯 Commands",
+        "{cmd.emoji} {cmd.name}"
+      ]
     }
   },
   {
@@ -8839,7 +8729,11 @@
         "ready",
         "common"
       ],
-      "headings": ["Templates", "Available Templates", "{template.name}"]
+      "headings": [
+        "Templates",
+        "Available Templates",
+        "{template.name}"
+      ]
     }
   },
   {
@@ -9022,7 +8916,11 @@
         "preferences",
         "backend"
       ],
-      "headings": ["Services", "Available Services", "{service.name}"]
+      "headings": [
+        "Services",
+        "Available Services",
+        "{service.name}"
+      ]
     }
   },
   {
@@ -10495,7 +10393,11 @@
         "input",
         "display"
       ],
-      "headings": ["Component Library", "{category.title}", "{component.name}"]
+      "headings": [
+        "Component Library",
+        "{category.title}",
+        "{component.name}"
+      ]
     }
   },
   {
@@ -12330,7 +12232,11 @@
         "clarity",
         "explore"
       ],
-      "headings": ["API Reference", "API Categories", "{category.name}"]
+      "headings": [
+        "API Reference",
+        "API Categories",
+        "{category.name}"
+      ]
     }
   },
   {
@@ -15941,7 +15847,11 @@
         "performance",
         "section"
       ],
-      "headings": ["Guides", "{guide.title}", "Looking for Recipes?"]
+      "headings": [
+        "Guides",
+        "{guide.title}",
+        "Looking for Recipes?"
+      ]
     }
   },
   {
@@ -16127,7 +16037,10 @@
         "language",
         "components"
       ],
-      "headings": ["Frequently Asked Questions", "Still Need Help?"]
+      "headings": [
+        "Frequently Asked Questions",
+        "Still Need Help?"
+      ]
     }
   },
   {
@@ -17398,7 +17311,9 @@
         "group",
         "white"
       ],
-      "headings": ["Related Resources"]
+      "headings": [
+        "Related Resources"
+      ]
     }
   },
   {
@@ -17584,7 +17499,11 @@
         "reference",
         "understand"
       ],
-      "headings": ["Core Concepts", "{concept.title}", "Where to Go Next"]
+      "headings": [
+        "Core Concepts",
+        "{concept.title}",
+        "Where to Go Next"
+      ]
     }
   },
   {
@@ -18226,7 +18145,11 @@
         "create",
         "setisloading"
       ],
-      "headings": ["Quick Start", "Using Vite Proxy", "Building for Production"]
+      "headings": [
+        "Quick Start",
+        "Using Vite Proxy",
+        "Building for Production"
+      ]
     }
   },
   {
@@ -18506,7 +18429,10 @@
         "response",
         "await"
       ],
-      "headings": ["Quick Start", "Example"]
+      "headings": [
+        "Quick Start",
+        "Example"
+      ]
     }
   },
   {
@@ -22794,7 +22720,9 @@
         "function",
         "conversationid"
       ],
-      "headings": ["Message State Management"]
+      "headings": [
+        "Message State Management"
+      ]
     }
   },
   {
@@ -23592,7 +23520,10 @@
         "enterprise",
         "async"
       ],
-      "headings": ["Overview", "SAML Configuration"]
+      "headings": [
+        "Overview",
+        "SAML Configuration"
+      ]
     }
   },
   {
@@ -24300,7 +24231,10 @@
         "const",
         "limits"
       ],
-      "headings": ["Overview", "Inviting Users"]
+      "headings": [
+        "Overview",
+        "Inviting Users"
+      ]
     }
   },
   {
@@ -24533,7 +24467,10 @@
         "match",
         "prompt"
       ],
-      "headings": ["Overview", "PII Detection"]
+      "headings": [
+        "Overview",
+        "PII Detection"
+      ]
     }
   },
   {
@@ -26061,7 +25998,10 @@
         "memoryprovider",
         "chatconfigprovider"
       ],
-      "headings": ["MemoryProvider", "ThemeProvider"]
+      "headings": [
+        "MemoryProvider",
+        "ThemeProvider"
+      ]
     }
   },
   {
@@ -26241,7 +26181,10 @@
         "return",
         "tests"
       ],
-      "headings": ["Overview", "Test Dataset Creation"]
+      "headings": [
+        "Overview",
+        "Test Dataset Creation"
+      ]
     }
   },
   {
@@ -27879,7 +27822,10 @@
         "section",
         "function"
       ],
-      "headings": ["Memoization", "Virtualization"]
+      "headings": [
+        "Memoization",
+        "Virtualization"
+      ]
     }
   },
   {
@@ -28720,7 +28666,11 @@
         "context",
         "tokens"
       ],
-      "headings": ["Overview", "Tenant Context Setup", "Seat Management"]
+      "headings": [
+        "Overview",
+        "Tenant Context Setup",
+        "Seat Management"
+      ]
     }
   },
   {
@@ -28989,7 +28939,10 @@
         "responsive",
         "aware"
       ],
-      "headings": ["Battery-Aware Optimizations", "Battery Indicator"]
+      "headings": [
+        "Battery-Aware Optimizations",
+        "Battery Indicator"
+      ]
     }
   },
   {
@@ -30884,7 +30837,10 @@
         "message",
         "return"
       ],
-      "headings": ["Basic Chat Window", "More Examples"]
+      "headings": [
+        "Basic Chat Window",
+        "More Examples"
+      ]
     }
   },
   {
@@ -31299,7 +31255,10 @@
         "enableoptimization",
         "section"
       ],
-      "headings": ["Dependency Optimization", "Memoizing Hook Results"]
+      "headings": [
+        "Dependency Optimization",
+        "Memoizing Hook Results"
+      ]
     }
   },
   {
@@ -31992,7 +31951,11 @@
         "clarity",
         "scaling"
       ],
-      "headings": ["High Availability", "Scaling", "Monitoring"]
+      "headings": [
+        "High Availability",
+        "Scaling",
+        "Monitoring"
+      ]
     }
   },
   {
@@ -32615,7 +32578,10 @@
         "section",
         "function"
       ],
-      "headings": ["Basic Composition", "Chat"]
+      "headings": [
+        "Basic Composition",
+        "Chat"
+      ]
     }
   },
   {
@@ -34567,7 +34533,9 @@
         "chatwindow",
         "input"
       ],
-      "headings": ["ARIA Patterns"]
+      "headings": [
+        "ARIA Patterns"
+      ]
     }
   },
   {
@@ -34707,7 +34675,10 @@
         "action",
         "button"
       ],
-      "headings": ["WCAG 2.1 AAA in Practice", "Screen Reader Announcements"]
+      "headings": [
+        "WCAG 2.1 AAA in Practice",
+        "Screen Reader Announcements"
+      ]
     }
   },
   {
@@ -35271,7 +35242,11 @@
         "content",
         "virtualization"
       ],
-      "headings": ["Overview", "Live Demo", "Virtualized Conversation"]
+      "headings": [
+        "Overview",
+        "Live Demo",
+        "Virtualized Conversation"
+      ]
     }
   },
   {
@@ -35903,7 +35878,9 @@
         "combining",
         "retrieval"
       ],
-      "headings": ["Live Demo"]
+      "headings": [
+        "Live Demo"
+      ]
     }
   },
   {
@@ -38571,7 +38548,10 @@
         "between",
         "providers"
       ],
-      "headings": ["Features", "Running Locally"]
+      "headings": [
+        "Features",
+        "Running Locally"
+      ]
     }
   },
   {
@@ -38712,7 +38692,10 @@
         "clarity",
         "white"
       ],
-      "headings": ["Try These Prompts", "Keyboard Shortcuts"]
+      "headings": [
+        "Try These Prompts",
+        "Keyboard Shortcuts"
+      ]
     }
   },
   {
@@ -40912,7 +40895,11 @@
         "emails",
         "follow"
       ],
-      "headings": ["Email Assistant", "✨ Features", "💬 Example Workflow"]
+      "headings": [
+        "Email Assistant",
+        "✨ Features",
+        "💬 Example Workflow"
+      ]
     }
   },
   {
@@ -41154,7 +41141,10 @@
         "branch",
         "conversationbranchvisualizer"
       ],
-      "headings": ["Overview", "Live Demo"]
+      "headings": [
+        "Overview",
+        "Live Demo"
+      ]
     }
   },
   {
@@ -42040,7 +42030,9 @@
         "streaming",
         "default"
       ],
-      "headings": ["Ready to build your own?"]
+      "headings": [
+        "Ready to build your own?"
+      ]
     }
   },
   {
@@ -43094,7 +43086,9 @@
         "kvcachehits",
         "savedtokens"
       ],
-      "headings": ["Token Breakdown"]
+      "headings": [
+        "Token Breakdown"
+      ]
     }
   },
   {
@@ -44034,7 +44028,9 @@
         "message",
         "invocation"
       ],
-      "headings": ["Select a Tool to Demo"]
+      "headings": [
+        "Select a Tool to Demo"
+      ]
     }
   },
   {
@@ -44704,7 +44700,10 @@
         "cancelref",
         "await"
       ],
-      "headings": ["Streaming Phases", "{feature.title}"]
+      "headings": [
+        "Streaming Phases",
+        "{feature.title}"
+      ]
     }
   },
   {
@@ -45266,7 +45265,9 @@
         "return",
         "input"
       ],
-      "headings": ["Memory Types"]
+      "headings": [
+        "Memory Types"
+      ]
     }
   },
   {
@@ -47782,7 +47783,10 @@
         "element",
         "usestate"
       ],
-      "headings": ["Accessibility Features", "ARIA Attributes Used"]
+      "headings": [
+        "Accessibility Features",
+        "ARIA Attributes Used"
+      ]
     }
   },
   {
@@ -48534,7 +48538,10 @@
         "messagestyle",
         "sender"
       ],
-      "headings": ["Configuration", "Export Your Configuration"]
+      "headings": [
+        "Configuration",
+        "Export Your Configuration"
+      ]
     }
   },
   {
@@ -50214,7 +50221,10 @@
         "components",
         "setup"
       ],
-      "headings": ["Basic Setup", "Chat App"]
+      "headings": [
+        "Basic Setup",
+        "Chat App"
+      ]
     }
   },
   {
@@ -50358,7 +50368,11 @@
         "userid",
         "typingusers"
       ],
-      "headings": ["What You’ll Build", "1. WebSocket Server", "Team Workspace"]
+      "headings": [
+        "What You’ll Build",
+        "1. WebSocket Server",
+        "Team Workspace"
+      ]
     }
   },
   {
@@ -51295,7 +51309,9 @@
         "function",
         "formdata"
       ],
-      "headings": ["Next.js App Router SSR"]
+      "headings": [
+        "Next.js App Router SSR"
+      ]
     }
   },
   {
@@ -51437,7 +51453,10 @@
         "function",
         "error"
       ],
-      "headings": ["Basic Setup", "Error"]
+      "headings": [
+        "Basic Setup",
+        "Error"
+      ]
     }
   },
   {
@@ -51579,7 +51598,10 @@
         "message",
         "cursor"
       ],
-      "headings": ["Overview", "Setup WebSocket Connection"]
+      "headings": [
+        "Overview",
+        "Setup WebSocket Connection"
+      ]
     }
   },
   {
@@ -53783,7 +53805,11 @@
         "const",
         "section"
       ],
-      "headings": ["Overview", "Basic Setup", "Send Messages Offline"]
+      "headings": [
+        "Overview",
+        "Basic Setup",
+        "Send Messages Offline"
+      ]
     }
   },
   {
@@ -55060,7 +55086,10 @@
         "multiple",
         "string"
       ],
-      "headings": ["Overview", "Agent Creation"]
+      "headings": [
+        "Overview",
+        "Agent Creation"
+      ]
     }
   },
   {
@@ -57562,7 +57591,10 @@
         "event",
         "length"
       ],
-      "headings": ["Performance Monitoring", "Rate Limiting"]
+      "headings": [
+        "Performance Monitoring",
+        "Rate Limiting"
+      ]
     }
   },
   {
@@ -58032,7 +58064,10 @@
         "results",
         "return"
       ],
-      "headings": ["Overview", "Document Integration for RAG"]
+      "headings": [
+        "Overview",
+        "Document Integration for RAG"
+      ]
     }
   },
   {
@@ -58358,7 +58393,11 @@
         "agents",
         "messages"
       ],
-      "headings": ["Overview", "Complete Example", "Simple Agent with Tools"]
+      "headings": [
+        "Overview",
+        "Complete Example",
+        "Simple Agent with Tools"
+      ]
     }
   },
   {
@@ -58499,7 +58538,9 @@
         "return",
         "keyboard"
       ],
-      "headings": ["ARIA Attributes"]
+      "headings": [
+        "ARIA Attributes"
+      ]
     }
   },
   {
@@ -58821,146 +58862,6 @@
         "description",
         "using",
         "privacy"
-      ],
-      "section": "Part 3",
-      "headings": []
-    }
-  },
-  {
-    "id": "guide-page-0",
-    "title": "{post.title}",
-    "content": "ai-chat-ux-pain-points-and-solutions\nI Built 20 AI Chat Interfaces. Here Are The 7 Mistakes That Cost Me $200K\n2024-01-15\n12 min read\nSpoiler: You\nthe-7-ux-disasters-killing-ai-chat-apps-v2\nThe 7 UX Disasters Killing AI Chat Apps (V2)\n2024-02-01\n10 min read\nUpdated analysis of the most common UX mistakes. the-7-ux-disasters-killing-ai-chat-apps\nThe 7 UX Disasters Killing AI Chat Apps\n2023-12-10\n8 min read\nThe fundamental UX mistakes that kill AI chat apps. viral-strategies-research\nViral Strategies Research\n2024-01-20\n15 min read\nResearch and insights on creating viral AI chat experiences.",
-    "url": "//blog/[slug]",
-    "category": "guide",
-    "keywords": [
-      "post",
-      "title",
-      "classname",
-      "disasters",
-      "killing",
-      "mistakes",
-      "viral",
-      "research",
-      "readtime",
-      "strategies",
-      "excerpt",
-      "error",
-      "points",
-      "solutions",
-      "built",
-      "interfaces",
-      "spoiler",
-      "updated",
-      "analysis",
-      "common",
-      "fundamental"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.741Z",
-      "tags": [
-        "post",
-        "title",
-        "classname",
-        "disasters",
-        "killing",
-        "mistakes",
-        "viral",
-        "research",
-        "readtime",
-        "strategies"
-      ],
-      "headings": ["{post.title}"]
-    }
-  },
-  {
-    "id": "guide-page-1",
-    "title": "{post.title} (2)",
-    "content": "chat apps. viral-strategies-research Viral Strategies Research 2024-01-20 15 min read Research and insights on creating viral AI chat experiences.  Post Not Found\n${slug}.md\n)\n  } catch (error) {\n    console.error(\n, error)\n    notFound()\n  }\n\n  // Parse frontmatter if present\n  const { content: mdxContent } = matter(content)\n\n  return (\n    <>\n      <Breadcrumbs />\n\n      <div className=\n>\n        <Link\n          href=\n\n          className=\n\n        >\n          <ArrowLeft className=\n />\n          Back to Blog\n        </Link>\n\n        <article>\n          <header className=\n>\n            <span className=\n>Blog Post</span>\n            <h1 className=\n>{post.title}</h1>\n\n            <div className=\n>\n              <div className=\n>\n                <Calendar className=\n />\n                <time dateTime={post.date}>\n                  {new Date(post.date).toLocaleDateString(\n, {\n                    year: \n,\n                    month: \n,\n                    day: \n,\n                  })}\n                </time>\n              </div>\n              <div className=\n>\n                <Clock className=\n />\n                {post.readTime}\n              </div>\n            </div>\n          </header>\n\n          <div className=\n}\n\n// Blog post metadata\nconst blogPosts: Record\n= {\n  'ai-chat-ux-pain-points-and-solutions': {\n    title:\n      'I Built 20 AI Chat Interfaces.",
-    "url": "//blog/[slug]",
-    "category": "guide",
-    "keywords": [
-      "post",
-      "title",
-      "classname",
-      "disasters",
-      "killing",
-      "mistakes",
-      "viral",
-      "research",
-      "readtime",
-      "strategies",
-      "excerpt",
-      "error",
-      "points",
-      "solutions",
-      "built",
-      "interfaces",
-      "spoiler",
-      "updated",
-      "analysis",
-      "common",
-      "fundamental"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.741Z",
-      "tags": [
-        "post",
-        "title",
-        "classname",
-        "disasters",
-        "killing",
-        "mistakes",
-        "viral",
-        "research",
-        "readtime",
-        "strategies"
-      ],
-      "section": "Part 2",
-      "headings": []
-    }
-  },
-  {
-    "id": "guide-page-2",
-    "title": "{post.title} (3)",
-    "content": "} // Blog post metadata const blogPosts: Record = { 'ai-chat-ux-pain-points-and-solutions': { title: 'I Built 20 AI Chat Interfaces.  Here Are The 7 Mistakes That Cost Me $200K',\n    date: '2024-01-15',\n    readTime: '12 min read',\n    excerpt: \"Spoiler: You're probably making all of them right now.\",\n  },\n  'the-7-ux-disasters-killing-ai-chat-apps-v2': {\n    title: 'The 7 UX Disasters Killing AI Chat Apps (V2)',\n    date: '2024-02-01',\n    readTime: '10 min read',\n    excerpt: 'Updated analysis of the most common UX mistakes.',\n  },\n  'the-7-ux-disasters-killing-ai-chat-apps': {\n    title: 'The 7 UX Disasters Killing AI Chat Apps',\n    date: '2023-12-10',\n    readTime: '8 min read',\n    excerpt: 'The fundamental UX mistakes that kill AI chat apps.',\n  },\n  'viral-strategies-research': {\n    title: 'Viral Strategies Research',\n    date: '2024-01-20',\n    readTime: '15 min read',\n    excerpt: 'Research and insights on creating viral AI chat experiences.',\n  },\n}\n\n// Use existing MDX components from the docs-site\n\nexport async function generateStaticParams() {\n  return Object.keys(blogPosts).map((slug) => ({ slug }))\n}\n\nexport async function generateMetadata({\n  params,\n}: BlogPostPageProps): Promise\nBack to Blog.",
-    "url": "//blog/[slug]",
-    "category": "guide",
-    "keywords": [
-      "post",
-      "title",
-      "classname",
-      "disasters",
-      "killing",
-      "mistakes",
-      "viral",
-      "research",
-      "readtime",
-      "strategies",
-      "excerpt",
-      "error",
-      "points",
-      "solutions",
-      "built",
-      "interfaces",
-      "spoiler",
-      "updated",
-      "analysis",
-      "common",
-      "fundamental"
-    ],
-    "metadata": {
-      "lastUpdated": "2026-01-11T05:24:51.741Z",
-      "tags": [
-        "post",
-        "title",
-        "classname",
-        "disasters",
-        "killing",
-        "mistakes",
-        "viral",
-        "research",
-        "readtime",
-        "strategies"
       ],
       "section": "Part 3",
       "headings": []
@@ -59755,7 +59656,10 @@
         "models",
         "specific"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -59846,7 +59750,10 @@
         "import",
         "colors"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -59983,7 +59890,10 @@
         "context",
         "tracking"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -60924,7 +60834,10 @@
         "automated",
         "handling"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -61011,7 +60924,9 @@
         "foreground",
         "features"
       ],
-      "headings": ["Features"]
+      "headings": [
+        "Features"
+      ]
     }
   },
   {
@@ -61052,7 +60967,9 @@
         "foreground",
         "features"
       ],
-      "headings": ["Features"]
+      "headings": [
+        "Features"
+      ]
     }
   },
   {
@@ -61097,7 +61014,10 @@
         "example",
         "generation"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -61184,7 +61104,9 @@
         "foreground",
         "features"
       ],
-      "headings": ["Features"]
+      "headings": [
+        "Features"
+      ]
     }
   },
   {
@@ -61229,7 +61151,10 @@
         "agent",
         "handoff"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -61362,7 +61287,9 @@
         "foreground",
         "features"
       ],
-      "headings": ["Features"]
+      "headings": [
+        "Features"
+      ]
     }
   },
   {
@@ -61403,7 +61330,9 @@
         "foreground",
         "features"
       ],
-      "headings": ["Features"]
+      "headings": [
+        "Features"
+      ]
     }
   },
   {
@@ -61449,7 +61378,10 @@
         "multi",
         "language"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -61588,7 +61520,10 @@
         "response",
         "support"
       ],
-      "headings": ["Features", "Usage"]
+      "headings": [
+        "Features",
+        "Usage"
+      ]
     }
   },
   {
@@ -61958,7 +61893,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -62004,7 +61941,10 @@
         "support",
         "transcription"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -62136,7 +62076,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -64202,7 +64144,11 @@
         "token",
         "migrate"
       ],
-      "headings": ["Migration Guide", "What It Does", "Related Hooks"]
+      "headings": [
+        "Migration Guide",
+        "What It Does",
+        "Related Hooks"
+      ]
     }
   },
   {
@@ -64377,7 +64323,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -64414,7 +64362,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -66367,7 +66317,10 @@
         "handling",
         "responses"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -67559,7 +67512,10 @@
         "return",
         "values"
       ],
-      "headings": ["useStructuredInput", "Basic Usage"]
+      "headings": [
+        "useStructuredInput",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -67689,7 +67645,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -67734,7 +67692,11 @@
         "failed",
         "retry"
       ],
-      "headings": ["useRetryWithBackoff", "Import", "Usage"]
+      "headings": [
+        "useRetryWithBackoff",
+        "Import",
+        "Usage"
+      ]
     }
   },
   {
@@ -67917,7 +67879,11 @@
         "execute",
         "string"
       ],
-      "headings": ["useRequestDeduplication", "Import", "Usage"]
+      "headings": [
+        "useRequestDeduplication",
+        "Import",
+        "Usage"
+      ]
     }
   },
   {
@@ -68046,7 +68012,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -68225,7 +68193,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -68262,7 +68232,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -68488,7 +68460,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -68976,7 +68950,10 @@
         "optimizations",
         "viewport"
       ],
-      "headings": ["Basic Usage", "Haptic Feedback"]
+      "headings": [
+        "Basic Usage",
+        "Haptic Feedback"
+      ]
     }
   },
   {
@@ -69349,7 +69326,10 @@
         "section",
         "markasread"
       ],
-      "headings": ["useMentions", "Basic Usage"]
+      "headings": [
+        "useMentions",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -71134,7 +71114,9 @@
         "foreground",
         "classname"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -71564,7 +71546,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -72834,7 +72818,9 @@
         "nconst",
         "result"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -72872,7 +72858,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -72917,7 +72905,11 @@
         "journey",
         "discovery"
       ],
-      "headings": ["useInteractionTracking", "Basic Usage", "User Journey"]
+      "headings": [
+        "useInteractionTracking",
+        "Basic Usage",
+        "User Journey"
+      ]
     }
   },
   {
@@ -73679,7 +73671,10 @@
         "exponential",
         "backoff"
       ],
-      "headings": ["Usage", "Error Types"]
+      "headings": [
+        "Usage",
+        "Error Types"
+      ]
     }
   },
   {
@@ -74284,7 +74279,9 @@
         "usage",
         "nconst"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -74329,7 +74326,9 @@
         "muted",
         "foreground"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -74901,7 +74900,10 @@
         "recommendations",
         "section"
       ],
-      "headings": ["useContextMonitor", "Basic Usage"]
+      "headings": [
+        "useContextMonitor",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -75038,7 +75040,10 @@
         "visibility",
         "expiration"
       ],
-      "headings": ["useConversationSharing", "Basic Usage"]
+      "headings": [
+        "useConversationSharing",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -75558,7 +75563,10 @@
         "section",
         "locks"
       ],
-      "headings": ["useCollaborativeSession", "Basic Usage"]
+      "headings": [
+        "useCollaborativeSession",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -75788,7 +75796,10 @@
         "handling",
         "paste"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -78216,7 +78227,11 @@
         "breaker",
         "default"
       ],
-      "headings": ["useCircuitBreaker", "Import", "Usage"]
+      "headings": [
+        "useCircuitBreaker",
+        "Import",
+        "Usage"
+      ]
     }
   },
   {
@@ -78918,7 +78933,11 @@
         "debouncedinput",
         "other"
       ],
-      "headings": ["When to Use", "Usage", "Return Values"]
+      "headings": [
+        "When to Use",
+        "Usage",
+        "Return Values"
+      ]
     }
   },
   {
@@ -80143,7 +80162,11 @@
         "section",
         "const"
       ],
-      "headings": ["useCalendarIntegration", "Basic Usage", "Create Events"]
+      "headings": [
+        "useCalendarIntegration",
+        "Basic Usage",
+        "Create Events"
+      ]
     }
   },
   {
@@ -80326,7 +80349,11 @@
         "optimization",
         "charging"
       ],
-      "headings": ["useBatteryAware", "Basic Usage", "Related"]
+      "headings": [
+        "useBatteryAware",
+        "Basic Usage",
+        "Related"
+      ]
     }
   },
   {
@@ -80841,7 +80868,10 @@
         "useclaritychat",
         "level"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -80980,7 +81010,11 @@
         "enable",
         "disable"
       ],
-      "headings": ["Usage", "Parameters", "Returns"]
+      "headings": [
+        "Usage",
+        "Parameters",
+        "Returns"
+      ]
     }
   },
   {
@@ -82796,7 +82830,10 @@
         "button",
         "length"
       ],
-      "headings": ["Select Hooks to Compare", "Compare Hooks"]
+      "headings": [
+        "Select Hooks to Compare",
+        "Compare Hooks"
+      ]
     }
   },
   {
@@ -83452,7 +83489,10 @@
         "winner",
         "statistical"
       ],
-      "headings": ["useABTesting", "Basic Usage"]
+      "headings": [
+        "useABTesting",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -85293,7 +85333,12 @@
         "componentpreview",
         "rounded"
       ],
-      "headings": ["TypingIndicator", "Import", "Usage", "Variants"]
+      "headings": [
+        "TypingIndicator",
+        "Import",
+        "Usage",
+        "Variants"
+      ]
     }
   },
   {
@@ -86620,7 +86665,9 @@
         "reranking",
         "memory"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -86665,7 +86712,9 @@
         "context",
         "section"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -89128,7 +89177,9 @@
         "longer",
         "entry"
       ],
-      "headings": ["Related Components"]
+      "headings": [
+        "Related Components"
+      ]
     }
   },
   {
@@ -90219,7 +90270,9 @@
         "usage",
         "clarity"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -90264,7 +90317,9 @@
         "basic",
         "usage"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -90309,7 +90364,10 @@
         "classname",
         "oauth"
       ],
-      "headings": ["SSOConfigWizard", "Basic Usage"]
+      "headings": [
+        "SSOConfigWizard",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -91684,7 +91742,11 @@
         "description",
         "highlights"
       ],
-      "headings": ["Overview", "Conversation Timeline", "Export Dialog"]
+      "headings": [
+        "Overview",
+        "Conversation Timeline",
+        "Export Dialog"
+      ]
     }
   },
   {
@@ -91874,7 +91936,10 @@
         "check",
         "results"
       ],
-      "headings": ["Overview", "Response Quality Meter"]
+      "headings": [
+        "Overview",
+        "Response Quality Meter"
+      ]
     }
   },
   {
@@ -92388,7 +92453,10 @@
         "return",
         "classname"
       ],
-      "headings": ["SeatInviteDialog", "Basic Usage"]
+      "headings": [
+        "SeatInviteDialog",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -92572,7 +92640,11 @@
         "target",
         "section"
       ],
-      "headings": ["Related", "Usage Dashboard", "Performance Dashboard"]
+      "headings": [
+        "Related",
+        "Usage Dashboard",
+        "Performance Dashboard"
+      ]
     }
   },
   {
@@ -92832,7 +92904,9 @@
         "usage",
         "fetch"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -92877,7 +92951,11 @@
         "tests",
         "testing"
       ],
-      "headings": ["PromptTestHarness", "Basic Usage", "Test Status Tracking"]
+      "headings": [
+        "PromptTestHarness",
+        "Basic Usage",
+        "Test Status Tracking"
+      ]
     }
   },
   {
@@ -93014,7 +93092,10 @@
         "personalization",
         "return"
       ],
-      "headings": ["PromptSuggestionsEnhanced", "Basic Usage"]
+      "headings": [
+        "PromptSuggestionsEnhanced",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -93289,7 +93370,9 @@
         "usage",
         "render"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -93522,7 +93605,9 @@
         "items",
         "logger"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -93810,7 +93895,9 @@
         "actions",
         "basic"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -94843,7 +94930,11 @@
         "classname",
         "request"
       ],
-      "headings": ["Overview", "UsageDashboard", "Performance Guide"]
+      "headings": [
+        "Overview",
+        "UsageDashboard",
+        "Performance Guide"
+      ]
     }
   },
   {
@@ -95072,7 +95163,10 @@
         "return",
         "classname"
       ],
-      "headings": ["OutputPreferenceSelector", "Basic Usage"]
+      "headings": [
+        "OutputPreferenceSelector",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -95628,7 +95722,10 @@
         "component",
         "vitals"
       ],
-      "headings": ["PerformanceAnalyticsDashboard", "Basic Usage"]
+      "headings": [
+        "PerformanceAnalyticsDashboard",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -96416,7 +96513,13 @@
         "delay",
         "turbo"
       ],
-      "headings": ["ModelSelector", "Import", "Usage", "Types", "ModelInfo"]
+      "headings": [
+        "ModelSelector",
+        "Import",
+        "Usage",
+        "Types",
+        "ModelInfo"
+      ]
     }
   },
   {
@@ -96601,7 +96704,12 @@
         "title",
         "required"
       ],
-      "headings": ["Overview", "Basic Usage", "File Upload", "Context Card"]
+      "headings": [
+        "Overview",
+        "Basic Usage",
+        "File Upload",
+        "Context Card"
+      ]
     }
   },
   {
@@ -97124,7 +97232,10 @@
         "refresh",
         "messages"
       ],
-      "headings": ["MobileOptimizedMessage & MobileChatWindow", "Basic Usage"]
+      "headings": [
+        "MobileOptimizedMessage & MobileChatWindow",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -97399,7 +97510,10 @@
         "section",
         "filtering"
       ],
-      "headings": ["Usage", "Features"]
+      "headings": [
+        "Usage",
+        "Features"
+      ]
     }
   },
   {
@@ -98227,7 +98341,10 @@
         "required",
         "return"
       ],
-      "headings": ["MentionInput & MentionList", "Basic Usage"]
+      "headings": [
+        "MentionInput & MentionList",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -98976,7 +99093,10 @@
         "reporting",
         "content"
       ],
-      "headings": ["MessageActionsSecure", "Basic Usage"]
+      "headings": [
+        "MessageActionsSecure",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -100106,7 +100226,9 @@
         "classname",
         "https"
       ],
-      "headings": ["Usage"]
+      "headings": [
+        "Usage"
+      ]
     }
   },
   {
@@ -100746,7 +100868,11 @@
         "classname",
         "pruning"
       ],
-      "headings": ["HistoryManager", "Basic Usage", "Related"]
+      "headings": [
+        "HistoryManager",
+        "Basic Usage",
+        "Related"
+      ]
     }
   },
   {
@@ -102082,7 +102208,10 @@
         "prompt",
         "classname"
       ],
-      "headings": ["EvaluationDashboard", "Basic Usage"]
+      "headings": [
+        "EvaluationDashboard",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -102219,7 +102348,12 @@
         "markdown",
         "customizable"
       ],
-      "headings": ["Features", "Usage", "Export Formats", "Export Options"]
+      "headings": [
+        "Features",
+        "Usage",
+        "Export Formats",
+        "Export Options"
+      ]
     }
   },
   {
@@ -102356,7 +102490,10 @@
         "warning",
         "duration"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -102535,7 +102672,10 @@
         "providers",
         "const"
       ],
-      "headings": ["EmailIntegration", "Basic Usage"]
+      "headings": [
+        "EmailIntegration",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -102672,7 +102812,11 @@
         "filters",
         "errorstate"
       ],
-      "headings": ["Available Components", "Usage", "Custom Empty State"]
+      "headings": [
+        "Available Components",
+        "Usage",
+        "Custom Empty State"
+      ]
     }
   },
   {
@@ -102809,7 +102953,10 @@
         "customizable",
         "fallback"
       ],
-      "headings": ["Key Features", "Basic Usage"]
+      "headings": [
+        "Key Features",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -103466,7 +103613,12 @@
         "labels",
         "click"
       ],
-      "headings": ["Features", "Usage", "Props", "Related"]
+      "headings": [
+        "Features",
+        "Usage",
+        "Props",
+        "Related"
+      ]
     }
   },
   {
@@ -105814,7 +105966,11 @@
         "window",
         "tracking"
       ],
-      "headings": ["Usage", "Features", "Exclusion Reasons"]
+      "headings": [
+        "Usage",
+        "Features",
+        "Exclusion Reasons"
+      ]
     }
   },
   {
@@ -107236,7 +107392,10 @@
         "return",
         "position"
       ],
-      "headings": ["CollaborativeEditor", "Basic Usage"]
+      "headings": [
+        "CollaborativeEditor",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -107984,7 +108143,11 @@
         "return",
         "github"
       ],
-      "headings": ["CodeBlock", "Import", "Usage"]
+      "headings": [
+        "CodeBlock",
+        "Import",
+        "Usage"
+      ]
     }
   },
   {
@@ -110605,7 +110768,11 @@
         "return",
         "messages"
       ],
-      "headings": ["ChatLayout", "Import", "Usage"]
+      "headings": [
+        "ChatLayout",
+        "Import",
+        "Usage"
+      ]
     }
   },
   {
@@ -112309,7 +112476,9 @@
         "action",
         "start"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -113300,7 +113469,10 @@
         "label",
         "access"
       ],
-      "headings": ["ApiTokenManager", "Basic Usage"]
+      "headings": [
+        "ApiTokenManager",
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -113483,7 +113655,11 @@
         "tenantid",
         "enterprise"
       ],
-      "headings": ["AuthTenantDashboard", "Basic Usage", "SSO Configuration"]
+      "headings": [
+        "AuthTenantDashboard",
+        "Basic Usage",
+        "SSO Configuration"
+      ]
     }
   },
   {
@@ -115259,7 +115435,9 @@
         "results",
         "basic"
       ],
-      "headings": ["Basic Usage"]
+      "headings": [
+        "Basic Usage"
+      ]
     }
   },
   {
@@ -115684,7 +115862,10 @@
         "safer",
         "integrations"
       ],
-      "headings": ["Core Types", "Next Steps"]
+      "headings": [
+        "Core Types",
+        "Next Steps"
+      ]
     }
   },
   {
@@ -116905,7 +117086,13 @@
         "reference",
         "clarity"
       ],
-      "headings": ["Button", "Import", "Props", "Examples", "Next Steps"]
+      "headings": [
+        "Button",
+        "Import",
+        "Props",
+        "Examples",
+        "Next Steps"
+      ]
     }
   },
   {
@@ -117369,7 +117556,13 @@
         "codeblock",
         "language"
       ],
-      "headings": ["useChat", "Signature", "Options", "Return Value", "Usage"]
+      "headings": [
+        "useChat",
+        "Signature",
+        "Options",
+        "Return Value",
+        "Usage"
+      ]
     }
   },
   {
@@ -117552,7 +117745,12 @@
         "classname",
         "boolean"
       ],
-      "headings": ["StreamingMessage", "Props", "Example", "ToolInvocationCard"]
+      "headings": [
+        "StreamingMessage",
+        "Props",
+        "Example",
+        "ToolInvocationCard"
+      ]
     }
   },
   {
@@ -117689,7 +117887,12 @@
         "interface",
         "messages"
       ],
-      "headings": ["Overview", "Core Interfaces", "ModelAdapter", "ModelConfig"]
+      "headings": [
+        "Overview",
+        "Core Interfaces",
+        "ModelAdapter",
+        "ModelConfig"
+      ]
     }
   },
   {
@@ -117826,7 +118029,11 @@
         "clarity",
         "complete"
       ],
-      "headings": ["ChatWindow", "Props", "Usage"]
+      "headings": [
+        "ChatWindow",
+        "Props",
+        "Usage"
+      ]
     }
   },
   {
@@ -118967,7 +119174,10 @@
         "testing",
         "guide"
       ],
-      "headings": ["Install Types", "Typed Messages"]
+      "headings": [
+        "Install Types",
+        "Typed Messages"
+      ]
     }
   },
   {
@@ -120016,7 +120226,11 @@
         "guide",
         "clarity"
       ],
-      "headings": ["Checklist", "Key APIs", "Run the Tooling"]
+      "headings": [
+        "Checklist",
+        "Key APIs",
+        "Run the Tooling"
+      ]
     }
   },
   {

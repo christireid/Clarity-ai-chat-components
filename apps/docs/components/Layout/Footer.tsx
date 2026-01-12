@@ -24,7 +24,6 @@ const footerNavigation = {
       href: 'https://github.com/christireid/Clarity-ai-chat-components',
     },
     { name: 'Examples', href: '/examples-catalog' },
-    { name: 'Blog', href: '/blog' },
     { name: 'Changelog', href: '/changelog' },
   ],
   about: [
