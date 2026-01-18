@@ -1,8 +1,13 @@
 /**
- * Tailwind CSS class name utility
- *
- * Re-exported from @clarity-chat/primitives (canonical source)
- * Uses clsx for conditional classes and tailwind-merge for conflict resolution
+ * Local utility function to merge Tailwind CSS classes
+ * Uses clsx for conditional classes and tailwind-merge to handle conflicts
+ * This is a local version to avoid circular dependencies
  */
-
-export { cn } from '@clarity-chat/primitives'
+export function cn(...inputs: Array<string | number | boolean | undefined | null>) {
+  return inputs
+    .filter(Boolean)
+    .map(String)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}

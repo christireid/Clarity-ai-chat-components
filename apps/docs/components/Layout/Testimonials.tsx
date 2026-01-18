@@ -75,7 +75,7 @@ const item = {
     y: 0,
     scale: 1,
     transition: {
-      type: 'spring' as const,
+      type: 'spring',
       stiffness: 200,
       damping: 20,
     },

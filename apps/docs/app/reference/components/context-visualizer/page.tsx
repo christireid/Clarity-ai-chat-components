@@ -18,7 +18,7 @@ export default function ContextVisualizerPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { ContextVisualizer } from '@clarity-chat/react'
+          <code>{`import { ContextVisualizer } from '@clarity-chat/react/internal'
 
 <ContextVisualizer
   messages={messages}

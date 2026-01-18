@@ -1,12 +1,7 @@
-// TODO: useStreamableUI is planned but not yet implemented in @clarity-chat/react.
-// This page documents the intended API and features.
-
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider } from '@clarity-chat/react'
-// TODO: Uncomment when implemented:
-// import { useStreamableUI } from '@clarity-chat/react'
+import { ToastProvider, useStreamableUI } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -16,36 +11,112 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// Placeholder demo component - shows Coming Soon notice
+// Helper to create a simple async iterable for demo
+function createAsyncIterable<T>(
+  items: T[],
+  delay: number = 100
+): AsyncIterable<T> {
+  return {
+    async *[Symbol.asyncIterator]() {
+      for (const item of items) {
+        await new Promise((resolve) => setTimeout(resolve, delay))
+        yield item
+      }
+    },
+  }
+}
+
+// Basic demo component
 function BasicStreamableUIDemo() {
+  const [source, setSource] = useState<AsyncIterable<string> | null>(null)
+
+  const { values, latest, status, isStreaming, error, reset } = useStreamableUI(
+    source,
+    {
+      mode: 'append',
+      onUpdate: (value: string) => {
+        console.log('Updated:', value)
+      },
+      onComplete: (finalValue: string) => {
+        console.log('Complete:', finalValue)
+      },
+    }
+  )
+
+  const handleStart = useCallback(() => {
+    const stream = createAsyncIterable(
+      ['Hello', ' ', 'World', '!', ' This', ' is', ' streaming', '.'],
+      200
+    )
+    setSource(stream)
+  }, [])
+
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <button
-            disabled
+            onClick={handleStart}
+            disabled={status === 'streaming'}
             className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
             aria-label="Start streaming"
           >
-            Start Stream (Coming Soon)
+            Start Stream
           </button>
           <button
-            disabled
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+            onClick={() => {
+              reset()
+              setSource(null)
+            }}
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
             aria-label="Reset stream"
           >
             Reset
           </button>
           <span className="text-sm text-muted-foreground">
-            Status: idle
+            Status: {status}
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-          <p className="text-amber-700 dark:text-amber-400 text-sm">
-            useStreamableUI is planned but not yet implemented.
-          </p>
-        </div>
+        {isStreaming && (
+          <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+            <p className="text-sm">Streaming...</p>
+          </div>
+        )}
+
+        {latest && (
+          <div className="p-3 bg-muted rounded">
+            <p className="text-sm font-semibold mb-1">Latest Value:</p>
+            <p>{latest}</p>
+          </div>
+        )}
+
+        {values.length > 0 && (
+          <div className="space-y-1">
+            <p className="text-sm font-semibold">
+              All Values ({values.length}):
+            </p>
+            <div className="p-2 bg-muted rounded max-h-32 overflow-y-auto">
+              {values.map((val: string, i: number) => (
+                <span key={i} className="text-sm">
+                  {val}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 bg-destructive/10 text-destructive rounded">
+            <p className="text-sm">Error: {error.message}</p>
+          </div>
+        )}
+
+        {status === 'complete' && (
+          <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
+            <p className="text-sm">Stream completed!</p>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -137,13 +208,6 @@ export default function UseStreamableUIPage() {
           Perfect for handling incremental updates from AI responses.
         </p>
 
-        <Callout type="warning" className="mb-6">
-          <p>
-            <strong>Coming Soon:</strong> useStreamableUI is planned but not yet implemented
-            in @clarity-chat/react. This page documents the intended API and features.
-          </p>
-        </Callout>
-
         <Callout type="info">
           <p>
             This hook is designed to work with Vercel AI SDK's{' '}
@@ -161,25 +225,37 @@ export default function UseStreamableUIPage() {
             Try streaming values! See how values accumulate and status changes.
           </p>
           <CodePlayground
-            initialCode={`// useStreamableUI is coming soon!
-// This playground will be functional once the hook is implemented.
-
-function Example() {
+            initialCode={`function Example() {
   const [source, setSource] = useState(null)
+  
+  const { values, latest, status, isStreaming } = useStreamableUI(source, {
+    mode: 'append',
+    onComplete: (final) => {
+      logger.debug('Complete:', final)
+    },
+  })
 
-  // Once implemented:
-  // const { values, latest, status, isStreaming } = useStreamableUI(source, {
-  //   mode: 'append',
-  //   onComplete: (final) => {
-  //     console.log('Complete:', final)
-  //   },
-  // })
+  const startStream = () => {
+    // Create async iterable
+    const stream = {
+      async *[Symbol.asyncIterator]() {
+        for (const word of ['Hello', ' ', 'World', '!']) {
+          await new Promise(r => setTimeout(r, 200))
+          yield word
+        }
+      },
+    }
+    setSource(stream)
+  }
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-900 rounded-lg border">
-      <p className="text-center text-muted-foreground py-8">
-        useStreamableUI coming soon...
-      </p>
+    <div>
+      <button onClick={startStream} disabled={isStreaming}>
+        Start Stream
+      </button>
+      <p>Status: {status}</p>
+      <p>Latest: {latest}</p>
+      <p>Values: {values.join('')}</p>
     </div>
   )
 }
@@ -191,8 +267,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`// Coming soon:
-import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -204,7 +279,7 @@ import type { UseStreamableUIOptions, UseStreamableUIState } from '@clarity-chat
         <ComponentPreview
           title="Simple Streaming"
           description="Basic streaming from AsyncIterable"
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function SimpleStreaming() {
   const stream = {
@@ -242,7 +317,7 @@ function SimpleStreaming() {
         <p>Use with Vercel AI SDK's StreamableValue:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 import { createStreamableValue } from 'ai/rsc'
 
 function StreamableValueExample() {
@@ -269,12 +344,96 @@ function StreamableValueExample() {
           showLineNumbers
         />
 
+        <h2 id="with-promise">With Promise</h2>
+
+        <p>Handle a Promise that resolves to a value:</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+import { useState } from 'react'
+
+function PromiseExample() {
+  const [promise, setPromise] = useState<Promise<string> | null>(null)
+
+  const {
+    latest,
+    status,
+    error,
+  } = useStreamableUI(promise, {
+    mode: 'replace',
+  })
+
+  const fetchData = () => {
+    const p = fetch('/api/data')
+      .then(res => res.json())
+      .then(data => data.message)
+    setPromise(p)
+  }
+
+  return (
+    <div>
+      <button onClick={fetchData}>Fetch</button>
+      {status === 'streaming' && <p>Loading...</p>}
+      {status === 'complete' && <p>{latest}</p>}
+      {error && <p>Error: {error.message}</p>}
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="with-readable-stream">With ReadableStream</h2>
+
+        <p>Stream from a ReadableStream (e.g., from fetch):</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+import { useState } from 'react'
+
+function ReadableStreamExample() {
+  const [stream, setStream] = useState<ReadableStream<Uint8Array> | null>(null)
+
+  const {
+    values,
+    latest,
+    status,
+  } = useStreamableUI(stream, {
+    mode: 'append',
+    transform: (chunk) => {
+      // Decode Uint8Array to string
+      if (chunk instanceof Uint8Array) {
+        return new TextDecoder().decode(chunk)
+      }
+      return chunk
+    },
+  })
+
+  const startStream = async () => {
+    const response = await fetch('/api/stream')
+    if (response.body) {
+      setStream(response.body)
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={startStream}>Start Stream</button>
+      <p>Status: {status}</p>
+      <p>{values.join('')}</p>
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
         <h2 id="append-vs-replace">Append vs Replace Mode</h2>
 
         <p>Control how values are accumulated:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamableUI } from '@clarity-chat/react'
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
 
 function AppendMode() {
   const stream = createAsyncIterable(['a', 'b', 'c'])
@@ -296,6 +455,81 @@ function ReplaceMode() {
   })
 
   return <p>{values.join(', ')}</p> // "c"
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="transformation">Transformation</h2>
+
+        <p>Transform incoming values (e.g., decode binary, parse JSON):</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+
+function TransformExample() {
+  const stream = createAsyncIterable([
+    '{"name":"Alice"}',
+    '{"name":"Bob"}',
+    '{"name":"Charlie"}',
+  ])
+
+  const {
+    values,
+    latest,
+  } = useStreamableUI(stream, {
+    mode: 'append',
+    transform: (value) => {
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return null // Skip invalid JSON
+        }
+      }
+      return value
+    },
+  })
+
+  return (
+    <div>
+      {values.map((person, i) => (
+        <p key={i}>{person.name}</p>
+      ))}
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="completion-detection">Completion Detection</h2>
+
+        <p>Detect when streaming is complete:</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamableUI } from '@clarity-chat/react/internal'
+
+function CompletionExample() {
+  const stream = createAsyncIterable(['Hello', ' ', 'World', null])
+
+  const {
+    values,
+    status,
+  } = useStreamableUI(stream, {
+    mode: 'append',
+    completeWhen: (value) => value === null, // Complete when null is received
+    onComplete: (finalValue) => {
+      logger.debug('Stream complete!', finalValue)
+    },
+  })
+
+  return (
+    <div>
+      <p>Status: {status}</p>
+      <p>{values.join('')}</p>
+    </div>
+  )
 }`}
           language="tsx"
           showLineNumbers
@@ -343,6 +577,109 @@ function ReplaceMode() {
   onDone?: (listener: () => void) => void | (() => void)
   /** Hint that streaming completed */
   done?: boolean
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="complete-example">Complete Example</h2>
+
+        <EnhancedCodeBlock
+          code={`import { useState, useCallback } from 'react'
+import { useStreamableUI } from '@clarity-chat/react/internal'
+
+function CompleteStreamableUIExample() {
+  const [source, setSource] = useState<AsyncIterable<string> | null>(null)
+
+  const {
+    values,
+    latest,
+    status,
+    isStreaming,
+    error,
+    reset,
+  } = useStreamableUI(source, {
+    mode: 'append',
+    transform: (value) => {
+      // Transform or validate values
+      if (typeof value === 'string') {
+        return value.trim()
+      }
+      return null // Skip non-string values
+    },
+    completeWhen: (value) => {
+      // Complete when we receive a special marker
+      return value === '[DONE]'
+    },
+    onUpdate: (value) => {
+      logger.debug('New value:', value)
+    },
+    onComplete: (finalValue) => {
+      logger.debug('Stream complete! Final:', finalValue)
+    },
+    onError: (err) => {
+      console.error('Stream error:', err)
+    },
+  })
+
+  const startStream = useCallback(() => {
+    const stream = {
+      async *[Symbol.asyncIterator]() {
+        const words = ['Hello', ' ', 'World', '!', ' ', '[DONE]']
+        for (const word of words) {
+          await new Promise(resolve => setTimeout(resolve, 200))
+          yield word
+        }
+      },
+    }
+    setSource(stream)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    reset()
+    setSource(null)
+  }, [reset])
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={startStream}
+          disabled={isStreaming}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Start Stream
+        </button>
+        <button
+          onClick={handleReset}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div>
+        <p>Status: {status}</p>
+        {isStreaming && <p className="text-blue-600">Streaming...</p>}
+        {status === 'complete' && <p className="text-green-600">Complete!</p>}
+        {error && <p className="text-red-600">Error: {error.message}</p>}
+      </div>
+
+      {latest && (
+        <div className="p-3 bg-muted rounded">
+          <p className="font-semibold mb-1">Latest:</p>
+          <p>{latest}</p>
+        </div>
+      )}
+
+      {values.length > 0 && (
+        <div className="p-3 bg-muted rounded">
+          <p className="font-semibold mb-1">All Values ({values.length}):</p>
+          <p>{values.join('')}</p>
+        </div>
+      )}
+    </div>
+  )
 }`}
           language="tsx"
           showLineNumbers

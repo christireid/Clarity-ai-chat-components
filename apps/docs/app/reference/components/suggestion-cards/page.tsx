@@ -83,8 +83,8 @@ export default function SuggestionCardsPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { SuggestionCards, useSuggestionCards } from '@clarity-chat/react'
-import type { SuggestionCard, CategoryFilter } from '@clarity-chat/react'
+        code={`import { SuggestionCards, useSuggestionCards } from '@clarity-chat/react/internal'
+import type { SuggestionCard, CategoryFilter } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -92,7 +92,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { SuggestionCards } from '@clarity-chat/react'
+        code={`import { SuggestionCards } from '@clarity-chat/react/internal'
 
 function Example() {
   const cards = [
@@ -153,7 +153,7 @@ function Example() {
       <h2 id="with-hook">With useSuggestionCards Hook</h2>
 
       <EnhancedCodeBlock
-        code={`import { SuggestionCards, useSuggestionCards } from '@clarity-chat/react'
+        code={`import { SuggestionCards, useSuggestionCards } from '@clarity-chat/react/internal'
 
 function Example() {
   const {

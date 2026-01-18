@@ -16,7 +16,6 @@ import type {
   PromptRenderResult,
 } from '../types'
 import { PromptTemplateEngine } from '../template'
-import { estimateTokens } from '@clarity-chat/utils'
 
 /**
  * Model pricing information
@@ -146,7 +145,14 @@ const MAX_TEMPLATE_LENGTH = 100_000
 /** Maximum variable value length */
 const MAX_VARIABLE_VALUE_LENGTH = 50_000
 
-// estimateTokens is now imported from @clarity-chat/utils
+/**
+ * Estimate token count (simple approximation)
+ * Real implementation should use tiktoken or similar
+ */
+function estimateTokens(text: string): number {
+  // Rough estimate: ~4 characters per token for English text
+  return Math.ceil(text.length / 4)
+}
 
 /**
  * Validate and truncate string if necessary

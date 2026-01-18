@@ -99,14 +99,14 @@
 .code-block pre.shiki {
   margin: 0;
   padding: 0;
-  /* Let Shiki's inline styles handle background color - don't override */
+  background: transparent !important;
   overflow: visible;
 }
 
 .code-block pre.shiki code {
   display: block;
   width: 100%;
-  /* Let Shiki's inline styles handle syntax highlighting colors */
+  background: transparent;
 }
 
 /* ============================================================================

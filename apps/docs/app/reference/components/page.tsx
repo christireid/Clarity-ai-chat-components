@@ -108,7 +108,7 @@ export default function ComponentsPage() {
   )
 
   return (
-    <div className="container-docs py-16 md:py-24">
+    <div className="container-docs py-12">
       <div className="max-w-6xl">
         <div className="mb-12">
           <span className="docs-badge mb-4">Components</span>
@@ -151,7 +151,7 @@ export default function ComponentsPage() {
                     <h3 className="text-lg font-semibold mb-2 text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
                       {component.name}
                     </h3>
-                    <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
+                    <p className="text-sm text-text-secondary leading-relaxed">
                       {component.description}
                     </p>
                   </Link>

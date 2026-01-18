@@ -9,9 +9,9 @@ import {
   ExternalLink,
   Copy,
   Check,
-  RefreshCw,
+  RotateCcw,
 } from 'lucide-react'
-import { useClipboard } from '@clarity-chat/react'
+import { useClipboard } from '@clarity-chat/react/internal'
 import { openInCodeSandbox } from '@/lib/sandbox-export'
 
 // Dynamic import for code editor to avoid SSR issues
@@ -30,78 +30,6 @@ interface CodePlaygroundProps {
   height?: string
 }
 
-const nightOwlTheme = {
-  plain: {
-    color: '#d6deeb',
-    backgroundColor: '#011627',
-  },
-  styles: [
-    {
-      types: ['changed'],
-      style: { color: 'rgb(162, 191, 252)', fontStyle: 'italic' as const },
-    },
-    {
-      types: ['deleted'],
-      style: {
-        color: 'rgba(239, 108, 108, 0.56)',
-        fontStyle: 'italic' as const,
-      },
-    },
-    {
-      types: ['inserted', 'attr-name'],
-      style: { color: 'rgb(173, 219, 103)', fontStyle: 'italic' as const },
-    },
-    {
-      types: ['comment'],
-      style: { color: 'rgb(99, 119, 119)', fontStyle: 'italic' as const },
-    },
-    {
-      types: ['string', 'url'],
-      style: { color: 'rgb(173, 219, 103)' },
-    },
-    {
-      types: ['variable'],
-      style: { color: 'rgb(214, 222, 235)' },
-    },
-    {
-      types: ['number'],
-      style: { color: 'rgb(247, 140, 108)' },
-    },
-    {
-      types: ['builtin', 'char', 'constant', 'function'],
-      style: { color: 'rgb(130, 170, 255)' },
-    },
-    {
-      types: ['punctuation'],
-      style: { color: 'rgb(199, 146, 234)' },
-    },
-    {
-      types: ['selector', 'doctype'],
-      style: { color: 'rgb(199, 146, 234)', fontStyle: 'italic' as const },
-    },
-    {
-      types: ['class-name'],
-      style: { color: 'rgb(255, 203, 139)' },
-    },
-    {
-      types: ['tag', 'operator', 'keyword'],
-      style: { color: 'rgb(127, 219, 202)' },
-    },
-    {
-      types: ['boolean'],
-      style: { color: 'rgb(255, 88, 116)' },
-    },
-    {
-      types: ['property'],
-      style: { color: 'rgb(128, 203, 196)' },
-    },
-    {
-      types: ['namespace'],
-      style: { color: 'rgb(178, 204, 214)' },
-    },
-  ],
-}
-
 export function CodePlayground({
   initialCode,
   code: codeProp,
@@ -116,22 +44,7 @@ export function CodePlayground({
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
   const [editorSize, setEditorSize] = useState(50)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const { copy, copied } = useClipboard({ timeout: 2000 })
-
-  // Auto-detect mobile viewport and switch to vertical layout
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
-      if (mobile && layout === 'horizontal') {
-        setLayout('vertical')
-      }
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [layout])
 
   useEffect(() => {
     setCode(startingCode)
@@ -189,10 +102,9 @@ export function CodePlayground({
 
   useEffect(() => {
     let mounted = true
-    // Load all components from the main export
     import('@clarity-chat/react').then((mod) => {
       if (mounted) {
-        setClarityComponents({ ...mod })
+        setClarityComponents(mod)
       }
     })
     return () => {
@@ -228,51 +140,21 @@ export function CodePlayground({
     // Remove 'use client' directive
     transformed = transformed.replace(/'use client'\s*;?\n?/g, '')
 
-    // Track the component name for rendering
-    let componentName: string | null = null
-
-    // Handle: export default function ComponentName(
-    const exportDefaultFuncMatch = transformed.match(
-      /export\s+default\s+function\s+(\w+)\s*\(/
+    // Replace export default function with just function and render it
+    transformed = transformed.replace(
+      /export\s+default\s+function\s+(\w+)\s*\(/g,
+      'function $1('
     )
-    if (exportDefaultFuncMatch) {
-      componentName = exportDefaultFuncMatch[1]
-      transformed = transformed.replace(
-        /export\s+default\s+function\s+(\w+)\s*\(/g,
-        'function $1('
-      )
-    }
 
-    // Handle: export default ComponentName (at end of file)
-    const exportDefaultRefMatch = transformed.match(
-      /export\s+default\s+(\w+)\s*;?\s*$/m
-    )
-    if (exportDefaultRefMatch && !componentName) {
-      componentName = exportDefaultRefMatch[1]
-      transformed = transformed.replace(/export\s+default\s+\w+\s*;?\s*$/m, '')
-    }
-
-    // Handle: const ComponentName = () => { ... } (arrow functions)
-    if (!componentName) {
-      const arrowFuncMatch = transformed.match(
-        /(?:const|let|var)\s+(\w+)\s*=\s*\([^)]*\)\s*=>/
-      )
-      if (arrowFuncMatch) {
-        componentName = arrowFuncMatch[1]
-      }
-    }
-
-    // Handle: function ComponentName( (regular function declarations)
-    if (!componentName) {
-      const funcDeclMatch = transformed.match(/function\s+(\w+)\s*\(/)
-      if (funcDeclMatch) {
-        componentName = funcDeclMatch[1]
-      }
-    }
-
-    // Add render call if we found a component
-    if (componentName && !transformed.includes('render(')) {
-      transformed += `\n\nrender(<${componentName} />)`
+    // If there's a function definition, add a render call at the end
+    if (
+      transformed.includes('function App(') ||
+      transformed.includes('function Home(')
+    ) {
+      const functionName = transformed.includes('function App(')
+        ? 'App'
+        : 'Home'
+      transformed += `\n\nrender(<${functionName} />)`
     }
 
     return transformed.trim()
@@ -289,32 +171,25 @@ export function CodePlayground({
   return (
     <div className={containerClass}>
       {/* Toolbar */}
-      <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex flex-wrap items-center justify-between gap-2 bg-gray-50 dark:bg-gray-900">
+      <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Layout:
           </span>
           <button
             onClick={() => setLayout('horizontal')}
-            disabled={isMobile}
-            className={`px-3 py-2.5 min-h-[44px] text-sm rounded transition-colors ${
+            className={`px-3 py-1 text-sm rounded transition-colors ${
               layout === 'horizontal'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            } ${isMobile ? 'opacity-50 cursor-not-allowed' : ''}`}
+            }`}
             aria-label="Side by side layout"
-            title={
-              isMobile
-                ? 'Side by side not available on mobile'
-                : 'Side by side layout'
-            }
           >
-            <span className="hidden sm:inline">Side by Side</span>
-            <span className="sm:hidden">Split</span>
+            Side by Side
           </button>
           <button
             onClick={() => setLayout('vertical')}
-            className={`px-3 py-2.5 min-h-[44px] text-sm rounded transition-colors ${
+            className={`px-3 py-1 text-sm rounded transition-colors ${
               layout === 'vertical'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -329,7 +204,7 @@ export function CodePlayground({
           {/* Copy Button */}
           <button
             onClick={handleCopyCode}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] min-w-[44px] text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             aria-label="Copy code"
           >
             {copied ? (
@@ -348,18 +223,18 @@ export function CodePlayground({
           {/* Reset Button */}
           <button
             onClick={handleResetCode}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] min-w-[44px] text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             aria-label="Reset code"
             disabled={code === startingCode}
           >
-            <RefreshCw className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4" />
             <span className="hidden sm:inline">Reset</span>
           </button>
 
           {/* Open in CodeSandbox */}
           <button
             onClick={handleOpenInSandbox}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] min-w-[44px] text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
             aria-label="Open in CodeSandbox"
           >
             <ExternalLink className="w-4 h-4" />
@@ -371,7 +246,7 @@ export function CodePlayground({
           {/* Fullscreen Button */}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] min-w-[44px] text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? (
@@ -389,97 +264,95 @@ export function CodePlayground({
         </div>
       </div>
 
-      {/* Editor and Preview - Only render LiveProvider when components are loaded */}
-      <div
-        className={`flex ${layout === 'horizontal' ? 'flex-row' : 'flex-col'}`}
-        style={heightStyle}
-      >
-        {/* Code Editor */}
+      {/* Editor and Preview */}
+      <LiveProvider code={transformCode(code)} scope={scope} noInline={true}>
         <div
-          className="border-r border-gray-200 dark:border-gray-700"
-          style={{
-            width: layout === 'horizontal' ? `${editorSize}%` : '100%',
-            height: layout === 'vertical' ? `${editorSize}%` : '100%',
-          }}
+          className={`flex ${
+            layout === 'horizontal' ? 'flex-row' : 'flex-col'
+          }`}
+          style={heightStyle}
         >
-          <CodeEditor
-            value={code}
-            onChange={handleCodeChange}
-            language="typescript"
+          {/* Code Editor */}
+          <div
+            className="border-r border-gray-200 dark:border-gray-700"
+            style={{
+              width: layout === 'horizontal' ? `${editorSize}%` : '100%',
+              height: layout === 'vertical' ? `${editorSize}%` : '100%',
+            }}
+          >
+            <CodeEditor
+              value={code}
+              onChange={handleCodeChange}
+              language="typescript"
+            />
+          </div>
+
+          {/* Resize Handle */}
+          <div
+            className={`${
+              layout === 'horizontal'
+                ? 'w-2 cursor-col-resize'
+                : 'h-2 cursor-row-resize'
+            } bg-gray-200 dark:bg-gray-700 hover:bg-brand-500 active:bg-brand-600 transition-colors flex-shrink-0`}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              const startPos = layout === 'horizontal' ? e.clientX : e.clientY
+              const startSize = editorSize
+
+              const handleMouseMove = (e: MouseEvent) => {
+                const container = e.currentTarget as HTMLElement
+                const rect = container.getBoundingClientRect()
+                const total = layout === 'horizontal' ? rect.width : rect.height
+                const current = layout === 'horizontal' ? e.clientX : e.clientY
+                const delta = current - startPos
+                const deltaPercent = (delta / total) * 100
+                const newSize = Math.min(
+                  Math.max(startSize + deltaPercent, 20),
+                  80
+                )
+                setEditorSize(newSize)
+              }
+
+              const handleMouseUp = () => {
+                document.removeEventListener('mousemove', handleMouseMove)
+                document.removeEventListener('mouseup', handleMouseUp)
+              }
+
+              document.addEventListener('mousemove', handleMouseMove)
+              document.addEventListener('mouseup', handleMouseUp)
+            }}
           />
-        </div>
 
-        {/* Resize Handle */}
-        <div
-          className={`${
-            layout === 'horizontal'
-              ? 'w-2 cursor-col-resize'
-              : 'h-2 cursor-row-resize'
-          } bg-gray-200 dark:bg-gray-700 hover:bg-brand-500 active:bg-brand-600 transition-colors flex-shrink-0`}
-          onMouseDown={(e) => {
-            e.preventDefault()
-            const startPos = layout === 'horizontal' ? e.clientX : e.clientY
-            const startSize = editorSize
-
-            const handleMouseMove = (e: MouseEvent) => {
-              const container = e.currentTarget as HTMLElement
-              const rect = container.getBoundingClientRect()
-              const total = layout === 'horizontal' ? rect.width : rect.height
-              const current = layout === 'horizontal' ? e.clientX : e.clientY
-              const delta = current - startPos
-              const deltaPercent = (delta / total) * 100
-              const newSize = Math.min(
-                Math.max(startSize + deltaPercent, 20),
-                80
-              )
-              setEditorSize(newSize)
-            }
-
-            const handleMouseUp = () => {
-              document.removeEventListener('mousemove', handleMouseMove)
-              document.removeEventListener('mouseup', handleMouseUp)
-            }
-
-            document.addEventListener('mousemove', handleMouseMove)
-            document.addEventListener('mouseup', handleMouseUp)
-          }}
-        />
-
-        {/* Preview */}
-        <div
-          className="overflow-auto bg-white dark:bg-gray-900"
-          style={{
-            width: layout === 'horizontal' ? `${100 - editorSize}%` : '100%',
-            height: layout === 'vertical' ? `${100 - editorSize}%` : '100%',
-          }}
-        >
-          <div className="p-6 h-full">
-            <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Preview
-              </h3>
-            </div>
-
-            {clarityComponents ? (
-              <LiveProvider
-                code={transformCode(code)}
-                scope={scope}
-                noInline={true}
-                theme={nightOwlTheme}
-              >
-                <LiveError className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4 text-red-800 dark:text-red-200 text-sm font-mono whitespace-pre-wrap" />
-                <div className="playground-preview h-full">
-                  <LivePreview />
-                </div>
-              </LiveProvider>
-            ) : (
-              <div className="flex items-center justify-center h-32 text-gray-500">
-                Loading components...
+          {/* Preview */}
+          <div
+            className="overflow-auto bg-white dark:bg-gray-900"
+            style={{
+              width: layout === 'horizontal' ? `${100 - editorSize}%` : '100%',
+              height: layout === 'vertical' ? `${100 - editorSize}%` : '100%',
+            }}
+          >
+            <div className="p-6 h-full">
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Preview
+                </h3>
               </div>
-            )}
+
+              <LiveError className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4 text-red-800 dark:text-red-200 text-sm font-mono whitespace-pre-wrap" />
+
+              <div className="playground-preview h-full">
+                {clarityComponents ? (
+                  <LivePreview />
+                ) : (
+                  <div className="flex items-center justify-center h-32 text-gray-500">
+                    Loading components...
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </LiveProvider>
 
       {/* Status Bar */}
       <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-900 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">

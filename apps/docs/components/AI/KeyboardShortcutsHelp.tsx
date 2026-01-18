@@ -60,9 +60,8 @@ export function KeyboardShortcutsHelp({
 }: KeyboardShortcutsHelpProps) {
   const [isMac, setIsMac] = useState(false)
 
-  // Detect Mac using userAgent (navigator.platform is deprecated)
   useEffect(() => {
-    setIsMac(/mac/i.test(navigator.userAgent))
+    setIsMac(navigator.platform.toLowerCase().includes('mac'))
   }, [])
 
   useEffect(() => {

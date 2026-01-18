@@ -31,7 +31,7 @@ export default function CitationCardPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { CitationCard } from '@clarity-chat/react'
+          <code>{`import { CitationCard } from '@clarity-chat/react/internal'
 
 const citation = {
   id: '1',

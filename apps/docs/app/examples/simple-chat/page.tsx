@@ -14,47 +14,51 @@ const simpleChatCode = `function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      chatId: 'demo',
-      role: 'assistant',
-      content: 'Hello! Welcome to Clarity Chat UI 👋',
-      status: 'sent',
-      createdAt: new Date(Date.now() - 60000),
-      updatedAt: new Date(Date.now() - 60000),
+      text: 'Hello! Welcome to Clarity Chat UI 👋',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 60000),
+      avatar: {
+        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+        alt: 'Bot',
+      },
     },
     {
       id: '2',
-      chatId: 'demo',
-      role: 'assistant',
-      content: 'This is a simple chat interface built with Clarity Chat UI.',
-      status: 'sent',
-      createdAt: new Date(Date.now() - 30000),
-      updatedAt: new Date(Date.now() - 30000),
+      text: 'This is a simple chat interface built with Clarity Chat UI.',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 30000),
+      avatar: {
+        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+        alt: 'Bot',
+      },
     },
   ])
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = (text: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
-      chatId: 'demo',
-      role: 'user',
-      content,
-      status: 'sent',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      text,
+      sender: 'user',
+      timestamp: new Date(),
+      avatar: {
+        src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
+        alt: 'You',
+      },
     }
-
+    
     setMessages([...messages, newMessage])
 
     // Simulate bot response
     setTimeout(() => {
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        chatId: 'demo',
-        role: 'assistant',
-        content: \`You said: "\${content}". Thanks for trying out Clarity Chat! 🎉\`,
-        status: 'sent',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        text: \`You said: "\${text}". Thanks for trying out Clarity Chat! 🎉\`,
+        sender: 'bot',
+        timestamp: new Date(),
+        avatar: {
+          src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+          alt: 'Bot',
+        },
       }
       setMessages((prev) => [...prev, botMessage])
     }, 1000)
@@ -65,6 +69,9 @@ const simpleChatCode = `function App() {
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
+        placeholder="Type your message..."
+        showTimestamps
+        showAvatars
       />
     </div>
   )
@@ -113,12 +120,9 @@ export default function SimpleChatExample() {
         code={`const [messages, setMessages] = useState<Message[]>([
   {
     id: '1',
-    chatId: 'demo',
-    role: 'assistant',
-    content: 'Hello! Welcome to Clarity Chat UI 👋',
-    status: 'sent',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    text: 'Hello! Welcome to Clarity Chat UI 👋',
+    sender: 'bot',
+    timestamp: new Date(),
   },
 ])`}
         language="tsx"
@@ -133,17 +137,14 @@ export default function SimpleChatExample() {
       </p>
 
       <CodeBlock
-        code={`const handleSendMessage = (content: string) => {
+        code={`const handleSendMessage = (text: string) => {
   const newMessage: Message = {
     id: Date.now().toString(),
-    chatId: 'demo',
-    role: 'user',
-    content,
-    status: 'sent',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    text,
+    sender: 'user',
+    timestamp: new Date(),
   }
-
+  
   setMessages([...messages, newMessage])
 }`}
         language="tsx"
@@ -158,12 +159,9 @@ export default function SimpleChatExample() {
         code={`setTimeout(() => {
   const botMessage: Message = {
     id: (Date.now() + 1).toString(),
-    chatId: 'demo',
-    role: 'assistant',
-    content: \`You said: "\${content}"\`,
-    status: 'sent',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    text: \`You said: "\${text}"\`,
+    sender: 'bot',
+    timestamp: new Date(),
   }
   setMessages((prev) => [...prev, botMessage])
 }, 1000)`}
@@ -218,46 +216,36 @@ export default function SimpleChatExample() {
 
       <h2 id="customization">Customization Ideas</h2>
 
-      <h3>Add a Header</h3>
+      <h3>Change Avatar Style</h3>
 
-      <p>Display a session header with title and actions:</p>
+      <p>Use different avatar services or your own images:</p>
+
+      <CodeBlock
+        code={`avatar: {
+  src: 'https://ui-avatars.com/api/?name=John+Doe',
+  alt: 'John Doe',
+}`}
+        language="tsx"
+      />
+
+      <h3>Add Timestamps</h3>
 
       <CodeBlock
         code={`<ChatWindow
   messages={messages}
   onSendMessage={handleSendMessage}
-  showHeader
-  sessionTitle="Support Chat"
-  sessionSubtitle="We're here to help"
+  showTimestamps
 />`}
         language="tsx"
       />
 
-      <h3>Starter Prompts</h3>
-
-      <p>Help users get started with suggested prompts:</p>
+      <h3>Custom Placeholder</h3>
 
       <CodeBlock
         code={`<ChatWindow
   messages={messages}
   onSendMessage={handleSendMessage}
-  starterPrompts={[
-    { id: '1', text: 'What can you help me with?', type: 'starter', icon: '💬' },
-    { id: '2', text: 'Tell me about your features', type: 'starter', icon: '✨' },
-  ]}
-/>`}
-        language="tsx"
-      />
-
-      <h3>Loading State</h3>
-
-      <p>Show loading state while waiting for responses:</p>
-
-      <CodeBlock
-        code={`<ChatWindow
-  messages={messages}
-  onSendMessage={handleSendMessage}
-  isLoading={isWaitingForResponse}
+  placeholder="Ask me anything..."
 />`}
         language="tsx"
       />

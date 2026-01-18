@@ -394,9 +394,9 @@ export function Message({
       }}
       tabIndex={0}
       className={cn(
-        'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
+        'group flex gap-3.5 rounded-2xl transition-all duration-200 ease-out',
         // Reduced padding for grouped messages
-        isGrouped && !isGroupStart && !isGroupEnd ? 'px-3 py-1.5' : 'p-3',
+        isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
         isUser && 'flex-row-reverse',
         isHovered && 'bg-muted/30 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]',
         className
@@ -417,19 +417,18 @@ export function Message({
           <Avatar
             alt={isUser ? 'User' : 'AI Assistant'}
             fallback={isUser ? 'U' : 'AI'}
-            size="sm"
             className="flex-shrink-0"
           />
         </motion.div>
       ) : showAvatar && isGrouped ? (
         // Spacer to maintain alignment in grouped messages
-        <div className="w-8 flex-shrink-0" aria-hidden="true" />
+        <div className="w-10 flex-shrink-0" aria-hidden="true" />
       ) : null}
 
       {/* Message Content */}
       <div
         className={cn(
-          'flex-1 space-y-2',
+          'flex-1 space-y-2.5',
           isUser && 'flex flex-col items-end'
         )}
       >
@@ -437,21 +436,21 @@ export function Message({
         {isGroupStart && (
           <div
             className={cn(
-              'flex items-center mb-1',
+              'flex items-center',
               isUser ? 'gap-2 flex-row-reverse' : 'gap-2'
             )}
           >
-            <span className="font-semibold text-xs text-foreground whitespace-nowrap">
+            <span className="font-semibold text-sm whitespace-nowrap">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {showTimestamp && (
               <>
-                <span className="text-muted-foreground/40">·</span>
+                <span className="text-muted-foreground/50">·</span>
                 <motion.span
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0.6 }}
+                  animate={{ opacity: isHovered ? 1 : 0.7 }}
                   transition={{ duration: duration('normal') }}
-                  className="text-xs text-muted-foreground whitespace-nowrap"
+                  className="text-xs text-muted-foreground/90 whitespace-nowrap"
                 >
                   {formatRelativeTime(message.createdAt)}
                 </motion.span>
@@ -474,33 +473,16 @@ export function Message({
           className={cn(
             // Base streaming stability classes for assistant messages
             !isUser && 'clarity-streaming-container',
-            !isUser && [
-              'prose prose-sm dark:prose-invert max-w-none',
-              'leading-relaxed',
-              // Subtle background for better visual distinction
-              'px-3 py-2.5 rounded-lg',
-              'bg-muted/30 dark:bg-muted/20',
-              'border border-border/30',
-              // Ensure text is visible
-              'text-foreground',
-              'prose-headings:text-foreground',
-              'prose-p:text-foreground',
-              'prose-strong:text-foreground',
-              'prose-code:text-foreground',
-              // Prevent text overflow
-              'break-words overflow-wrap-anywhere',
-            ],
+            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
             isUser &&
               !isEditing && [
-                'px-3 py-2.5 rounded-xl inline-block max-w-full',
+                'px-4 py-3 rounded-2xl inline-block',
                 'bg-gradient-to-br from-primary via-primary to-primary/90',
                 'text-primary-foreground',
                 'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
                 'ring-1 ring-primary/20',
-                // Prevent text overflow
-                'break-words overflow-wrap-anywhere',
               ]
           )}
         >
@@ -518,32 +500,17 @@ export function Message({
               </p>
             )
           ) : (
-            <div className={cn(
-              isStreaming && 'clarity-streaming-text',
-              'min-h-[1rem]',
-              'text-foreground'
-            )}>
-              {/* Show content if it exists, or show placeholder during streaming */}
-              {message.content && message.content.trim() ? (
-                <ReactMarkdown
-                  remarkPlugins={remarkPlugins}
-                  rehypePlugins={rehypePlugins}
-                  components={markdownComponents}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              ) : isStreaming ? (
-                // During streaming, show a subtle placeholder instead of "No content"
-                <p className="text-muted-foreground/50 italic m-0 text-sm">
-                  Generating response...
-                </p>
-              ) : (
-                // Only show "No content" for completed messages without content
-                <p className="text-muted-foreground italic m-0">No content</p>
-              )}
+            <div className={cn(isStreaming && 'clarity-streaming-text')}>
+              <ReactMarkdown
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
+                components={markdownComponents}
+              >
+                {message.content}
+              </ReactMarkdown>
               {/* Cursor inside the streaming wrapper for proper inline positioning */}
               {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
-              {isStreaming && message.content && message.content.trim() && (
+              {isStreaming && (
                 <span aria-hidden="true" className="clarity-streaming-cursor" />
               )}
             </div>

@@ -11,9 +11,7 @@
   border-radius: 0.25rem;
   background-color: hsl(var(--muted));
   color: hsl(var(--foreground));
-  font-family:
-    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-    monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   font-size: 0.875em;
   border: 1px solid hsl(var(--border));
 }
@@ -27,29 +25,23 @@ pre[class*='language-'] {
 }
 
 code[class*='language-'] {
-  font-family:
-    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-    monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   font-size: 0.875rem;
   line-height: 1.75;
   color: hsl(var(--foreground));
 }
 
-/* Syntax tokens - Night Owl (Force Dark) */
+/* Syntax tokens - Light mode */
 code[class*='language-'] .token.comment,
 code[class*='language-'] .token.prolog,
 code[class*='language-'] .token.doctype,
 code[class*='language-'] .token.cdata {
-  color: #637777;
+  color: #6a737d;
   font-style: italic;
 }
 
 code[class*='language-'] .token.punctuation {
-  color: #7fdbca;
-}
-
-code[class*='language-'] .token.namespace {
-  opacity: 0.7;
+  color: #393a34;
 }
 
 code[class*='language-'] .token.property,
@@ -57,41 +49,39 @@ code[class*='language-'] .token.tag,
 code[class*='language-'] .token.boolean,
 code[class*='language-'] .token.number,
 code[class*='language-'] .token.constant,
-code[class*='language-'] .token.symbol,
-code[class*='language-'] .token.deleted {
-  color: #82aaff;
+code[class*='language-'] .token.symbol {
+  color: #0550ae;
 }
 
 code[class*='language-'] .token.selector,
 code[class*='language-'] .token.attr-name,
 code[class*='language-'] .token.string,
 code[class*='language-'] .token.char,
-code[class*='language-'] .token.builtin,
-code[class*='language-'] .token.inserted {
-  color: #ecc48d;
+code[class*='language-'] .token.builtin {
+  color: #0a3069;
 }
 
 code[class*='language-'] .token.operator,
 code[class*='language-'] .token.entity,
 code[class*='language-'] .token.url,
 code[class*='language-'] .token.variable {
-  color: #c792ea;
+  color: #d73a49;
 }
 
 code[class*='language-'] .token.atrule,
 code[class*='language-'] .token.attr-value,
-code[class*='language-'] .token.keyword {
-  color: #c792ea;
+code[class*='language-'] .token.keyword,
+code[class*='language-'] .token.class-name {
+  color: #d73a49;
 }
 
-code[class*='language-'] .token.function,
-code[class*='language-'] .token.class-name {
-  color: #82aaff;
+code[class*='language-'] .token.function {
+  color: #6f42c1;
 }
 
 code[class*='language-'] .token.regex,
 code[class*='language-'] .token.important {
-  color: #ecc48d;
+  color: #e36209;
 }
 
 code[class*='language-'] .token.important,
@@ -103,39 +93,114 @@ code[class*='language-'] .token.italic {
   font-style: italic;
 }
 
-code[class*='language-'] .token.entity {
-  cursor: help;
+/* Syntax tokens - Dark mode */
+.dark code[class*='language-'] .token.comment,
+.dark code[class*='language-'] .token.prolog,
+.dark code[class*='language-'] .token.doctype,
+.dark code[class*='language-'] .token.cdata {
+  color: #8b949e;
+  font-style: italic;
 }
 
-/* Language-specific overrides - Simplified for Night Owl */
+.dark code[class*='language-'] .token.punctuation {
+  color: #c9d1d9;
+}
+
+.dark code[class*='language-'] .token.property,
+.dark code[class*='language-'] .token.tag,
+.dark code[class*='language-'] .token.boolean,
+.dark code[class*='language-'] .token.number,
+.dark code[class*='language-'] .token.constant,
+.dark code[class*='language-'] .token.symbol {
+  color: #79c0ff;
+}
+
+.dark code[class*='language-'] .token.selector,
+.dark code[class*='language-'] .token.attr-name,
+.dark code[class*='language-'] .token.string,
+.dark code[class*='language-'] .token.char,
+.dark code[class*='language-'] .token.builtin {
+  color: #a5d6ff;
+}
+
+.dark code[class*='language-'] .token.operator,
+.dark code[class*='language-'] .token.entity,
+.dark code[class*='language-'] .token.url,
+.dark code[class*='language-'] .token.variable {
+  color: #ff7b72;
+}
+
+.dark code[class*='language-'] .token.atrule,
+.dark code[class*='language-'] .token.attr-value,
+.dark code[class*='language-'] .token.keyword,
+.dark code[class*='language-'] .token.class-name {
+  color: #ff7b72;
+}
+
+.dark code[class*='language-'] .token.function {
+  color: #d2a8ff;
+}
+
+.dark code[class*='language-'] .token.regex,
+.dark code[class*='language-'] .token.important {
+  color: #ffa657;
+}
+
+/* Language-specific styles */
 code[class*='language-typescript'] .token.keyword,
 code[class*='language-tsx'] .token.keyword {
-  color: #c792ea;
+  color: #0550ae;
 }
 
+.dark code[class*='language-typescript'] .token.keyword,
+.dark code[class*='language-tsx'] .token.keyword {
+  color: #79c0ff;
+}
+
+/* JSX/TSX tags */
 code[class*='language-jsx'] .token.tag,
 code[class*='language-tsx'] .token.tag {
-  color: #7fdbca;
+  color: #116329;
 }
 
+.dark code[class*='language-jsx'] .token.tag,
+.dark code[class*='language-tsx'] .token.tag {
+  color: #7ee787;
+}
+
+/* JSON */
 code[class*='language-json'] .token.property {
-  color: #c792ea;
+  color: #0550ae;
 }
 
+.dark code[class*='language-json'] .token.property {
+  color: #79c0ff;
+}
+
+/* Shell/Bash */
 code[class*='language-bash'] .token.function,
 code[class*='language-sh'] .token.function {
-  color: #82aaff;
+  color: #6f42c1;
+}
+
+.dark code[class*='language-bash'] .token.function,
+.dark code[class*='language-sh'] .token.function {
+  color: #d2a8ff;
 }
 
 /* Line highlighting */
 .code-line-highlighted {
-  background-color: rgba(130, 170, 255, 0.1);
-  border-left: 2px solid #82aaff;
+  background-color: rgba(var(--primary-rgb), 0.05);
+  border-left: 2px solid hsl(var(--primary));
   padding-left: 0.5rem;
   margin-left: -0.5rem;
 }
 
-/* Scrollbar styling for code blocks - Force Dark */
+.dark .code-line-highlighted {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Scrollbar styling for code blocks */
 pre::-webkit-scrollbar {
   height: 8px;
 }
@@ -145,10 +210,18 @@ pre::-webkit-scrollbar-track {
 }
 
 pre::-webkit-scrollbar-thumb {
-  background: rgba(214, 222, 235, 0.2);
+  background: hsl(var(--muted-foreground) / 0.2);
   border-radius: 4px;
 }
 
 pre::-webkit-scrollbar-thumb:hover {
-  background: rgba(214, 222, 235, 0.3);
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+.dark pre::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+.dark pre::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
 }

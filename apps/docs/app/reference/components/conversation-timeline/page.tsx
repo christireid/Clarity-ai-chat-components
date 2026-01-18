@@ -444,11 +444,11 @@ render(<AgentDebugDashboard />)`}
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import {
-  ConversationTimeline,
+          <code>{`import { 
+  ConversationTimeline, 
   type ConversationTimelineProps,
-  type ConversationTimelineEvent
-} from '@clarity-chat/react'
+  type ConversationTimelineEvent 
+} from '@clarity-chat/react/internal'
 
 // Event structure
 interface ConversationTimelineEvent {

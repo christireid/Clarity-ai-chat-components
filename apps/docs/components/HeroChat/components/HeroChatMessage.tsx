@@ -2,12 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
-import { MarkdownRendererEnhanced } from '@clarity-chat/react'
+import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
 import { ToolUIRegistry } from '../ToolUIRegistry'
 import { durations } from '@/lib/animations'
-import { HeroChatMessageReactions, ReactionType } from './HeroChatMessageReactions'
-import { HeroChatMessageEditor } from './HeroChatMessageEditor'
-import { HeroChatBranchIndicator } from './HeroChatBranching'
 
 interface ToolResult {
   id: string
@@ -22,7 +19,6 @@ interface Message {
   content: string
   timestamp: Date
   toolResults?: ToolResult[]
-  reaction?: ReactionType
 }
 
 interface HeroChatMessageProps {
@@ -30,17 +26,6 @@ interface HeroChatMessageProps {
   isStreaming: boolean
   isLastMessage: boolean
   onContextMenu: (e: React.MouseEvent) => void
-  // Reactions
-  onReact?: (messageId: string, reaction: ReactionType) => void
-  onCopyMessage?: (content: string) => void
-  onRegenerateMessage?: (messageId: string) => void
-  // Editing
-  isEditing?: boolean
-  onEditSave?: (messageId: string, content: string) => void
-  onEditCancel?: () => void
-  // Branching
-  branchCount?: number
-  onShowBranches?: (messageId: string) => void
 }
 
 export function HeroChatMessage({
@@ -48,17 +33,6 @@ export function HeroChatMessage({
   isStreaming,
   isLastMessage,
   onContextMenu,
-  // Reactions
-  onReact,
-  onCopyMessage,
-  onRegenerateMessage,
-  // Editing
-  isEditing,
-  onEditSave,
-  onEditCancel,
-  // Branching
-  branchCount = 0,
-  onShowBranches,
 }: HeroChatMessageProps) {
   const isUser = message.role === 'user'
   const showThinking =
@@ -101,60 +75,38 @@ export function HeroChatMessage({
           <div
             className={`flex flex-col gap-2 ${isUser ? 'items-end' : 'items-start'}`}
           >
-            {/* Message bubble - with editing support */}
-            {isEditing && isUser && onEditSave && onEditCancel ? (
-              <HeroChatMessageEditor
-                initialContent={message.content}
-                onSave={(content) => onEditSave(message.id, content)}
-                onCancel={onEditCancel}
-              />
-            ) : (
-              <motion.div
-                className={`px-4 py-3 rounded-2xl ${
-                  isUser
-                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-tr-sm'
-                    : 'bg-bg-primary dark:bg-slate-800 text-text-primary border border-border dark:border-slate-700 rounded-tl-sm shadow-sm'
-                }`}
-                whileHover={{ scale: 1.01 }}
-              >
-                {message.content ? (
-                  isUser ? (
-                    // User messages: plain text (no markdown needed)
-                    <p className="text-sm whitespace-pre-wrap">
-                      {message.content}
-                    </p>
-                  ) : (
-                    // Assistant messages: render with markdown
-                    <div className="text-sm prose-sm dark:prose-invert max-w-none">
-                      <MarkdownRendererEnhanced
-                        content={message.content}
-                        enableMath={true}
-                        enableGFM={true}
-                        enableHighlight={true}
-                        enableCodeCopy={true}
-                        components={{}}
-                        onMathError={() => {}}
-                        className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-                      />
-                    </div>
-                  )
-                ) : showThinking ? (
-                  <ThinkingIndicator />
-                ) : null}
-              </motion.div>
-            )}
-
-            {/* Reactions for assistant messages */}
-            {!isUser && onReact && !isStreaming && message.content && (
-              <HeroChatMessageReactions
-                messageId={message.id}
-                reaction={message.reaction || null}
-                onReact={onReact}
-                onCopy={onCopyMessage ? () => onCopyMessage(message.content) : undefined}
-                onRegenerate={onRegenerateMessage ? () => onRegenerateMessage(message.id) : undefined}
-                showActions={true}
-              />
-            )}
+            {/* Message bubble */}
+            <motion.div
+              className={`px-4 py-3 rounded-2xl ${
+                isUser
+                  ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-tr-sm'
+                  : 'bg-bg-primary dark:bg-slate-800 text-text-primary border border-border dark:border-slate-700 rounded-tl-sm shadow-sm'
+              }`}
+              whileHover={{ scale: 1.01 }}
+            >
+              {message.content ? (
+                isUser ? (
+                  // User messages: plain text (no markdown needed)
+                  <p className="text-sm whitespace-pre-wrap">
+                    {message.content}
+                  </p>
+                ) : (
+                  // Assistant messages: render with markdown
+                  <div className="text-sm prose-sm dark:prose-invert max-w-none">
+                    <MarkdownRendererEnhanced
+                      content={message.content}
+                      enableMath={true}
+                      enableGFM={true}
+                      enableHighlight={true}
+                      enableCodeCopy={true}
+                      className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                    />
+                  </div>
+                )
+              ) : showThinking ? (
+                <ThinkingIndicator />
+              ) : null}
+            </motion.div>
 
             {/* Tool results */}
             {message.toolResults && message.toolResults.length > 0 && (
@@ -178,25 +130,16 @@ export function HeroChatMessage({
               </div>
             )}
 
-            {/* Timestamp and branch indicator */}
-            <div className="flex items-center gap-2">
-              <time
-                className="text-xs text-slate-400"
-                dateTime={message.timestamp.toISOString()}
-              >
-                {message.timestamp.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </time>
-              {/* Branch indicator */}
-              {branchCount > 0 && onShowBranches && (
-                <HeroChatBranchIndicator
-                  branchCount={branchCount}
-                  onClick={() => onShowBranches(message.id)}
-                />
-              )}
-            </div>
+            {/* Timestamp */}
+            <time
+              className="text-xs text-slate-400"
+              dateTime={message.timestamp.toISOString()}
+            >
+              {message.timestamp.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </time>
           </div>
         </div>
       </div>

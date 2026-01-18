@@ -53,7 +53,7 @@ export default function VoiceChatRecipePage() {
   ChatWindow,
   VoiceInput,
   useChat,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 export default function VoiceAssistant() {
   const chat = useChat({ id: 'voice', api: '/api/chat/voice' })

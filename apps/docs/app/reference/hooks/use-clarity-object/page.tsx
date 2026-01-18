@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider, useClarityObject } from '@clarity-chat/react'
+import { ToastProvider, useClarityObject } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -19,14 +19,10 @@ interface Product {
 }
 
 function ProductDemo() {
-  const { object, run, isLoading, error } = useClarityObject({
+  const { object, run, isLoading, error } = useClarityObject<Product[]>({
     api: '/api/generate-products',
     initialInput: { query: 'laptops' },
   })
-
-  // Type guard to ensure proper typing
-  const products = object as Product[] | null
-  const errorMessage = error as Error | null
 
   return (
     <div className="w-full max-w-2xl space-y-4">
@@ -59,16 +55,16 @@ function ProductDemo() {
         </button>
       </div>
 
-      {errorMessage && (
+      {error && (
         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded text-red-600 dark:text-red-400">
-          Error: {errorMessage.message}
+          Error: {error.message}
         </div>
       )}
 
-      {products && (
+      {object && (
         <div className="space-y-4">
           <h3 className="font-semibold">Generated Products:</h3>
-          {products.map((product: Product) => (
+          {object.map((product: Product) => (
             <div
               key={`${product.name}-${product.price}`}
               className="p-4 border rounded-lg"
@@ -466,7 +462,7 @@ function UserGenerator() {
         <h3>Complete Example with All Features</h3>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react'
+          code={`import { useClarityObject } from '@clarity-chat/react/internal'
 
 interface BlogPost {
   title: string
@@ -660,7 +656,7 @@ export async function POST(req: Request) {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react'
+          code={`import { useClarityObject } from '@clarity-chat/react/internal'
 import { z } from 'zod'
 
 // Define Zod schema for runtime validation

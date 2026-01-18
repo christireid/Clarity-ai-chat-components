@@ -55,7 +55,7 @@ export default function UseDocumentIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with document platforms:</p>
         <CodePlayground
-          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
+          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function DocumentManager() {
   const {
@@ -97,7 +97,7 @@ function DocumentManager() {
         <h2>Content Extraction for RAG</h2>
         <p>Extract content chunks for RAG:</p>
         <CodePlayground
-          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
+          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function RAGExtraction() {
   const { fetchDocument, extractContent } = useDocumentIntegration()
@@ -132,7 +132,7 @@ function RAGExtraction() {
         <h2>Document Export</h2>
         <p>Export documents in various formats:</p>
         <CodePlayground
-          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
+          initialCode={`import { useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function DocumentExporter() {
   const { exportDocument } = useDocumentIntegration()

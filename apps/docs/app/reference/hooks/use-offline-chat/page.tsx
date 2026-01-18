@@ -55,7 +55,7 @@ export default function UseOfflineChatPage() {
         <h2>Basic Usage</h2>
         <p>Enable offline chat functionality:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function OfflineChatApp({ messages }: { messages: Message[] }) {
@@ -91,7 +91,7 @@ function OfflineChatApp({ messages }: { messages: Message[] }) {
         <h2>Manual Sync</h2>
         <p>Manually trigger sync:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function ManualSync() {
   const { sync, isSyncing, lastSyncTime } = useOfflineChat()
@@ -114,7 +114,7 @@ function ManualSync() {
         <h2>Pending Operations</h2>
         <p>Track and manage pending operations:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function PendingOps() {
   const { pendingOperations, retryOperation, clearPending } = useOfflineChat()
@@ -142,7 +142,7 @@ function PendingOps() {
         <h2>Stored Messages</h2>
         <p>Access messages stored in IndexedDB:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function StoredMessages() {
   const { storedMessages, loadStoredMessages } = useOfflineChat()
@@ -167,7 +167,7 @@ function StoredMessages() {
         <h2>Configuration</h2>
         <p>Configure offline storage:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function ConfiguredOffline() {
   const { syncStatus } = useOfflineChat({

@@ -67,7 +67,7 @@ export default function UseCommandPalettePage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useCommandPalette, CommandPalette } from '@clarity-chat/react'
+          code={`import { useCommandPalette, CommandPalette } from '@clarity-chat/react/internal'
 
 function App() {
   const {

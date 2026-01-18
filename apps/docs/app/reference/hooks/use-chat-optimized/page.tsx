@@ -40,7 +40,7 @@ export default function UseChatOptimizedPage() {
         <h2 className="text-2xl font-semibold mb-3">Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useChatOptimized } from '@clarity-chat/react'
+            <code>{`import { useChatOptimized } from '@clarity-chat/react/internal'
 
 const {
   messages,

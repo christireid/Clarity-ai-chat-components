@@ -17,15 +17,6 @@
   --color-brand: #3b82f6;
   --color-brand-hover: #2563eb;
 
-  /* Glassmorphism design system */
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-bg-elevated: rgba(255, 255, 255, 0.92);
-  --glass-border: rgba(255, 255, 255, 0.3);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --glass-shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.12);
-  --glass-blur: 12px;
-  --glass-blur-strong: 20px;
-
   /* Code block colors */
   --tw-prose-body: #374151;
   --tw-prose-headings: #111827;
@@ -46,13 +37,6 @@
   --color-border: #374151;
   --color-brand: #60a5fa;
   --color-brand-hover: #3b82f6;
-
-  /* Glassmorphism design system - dark mode */
-  --glass-bg: rgba(17, 24, 39, 0.88);
-  --glass-bg-elevated: rgba(17, 24, 39, 0.95);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glass-shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.5);
 
   /* Code block colors */
   --tw-prose-body: #d1d5db;
@@ -89,11 +73,9 @@ a {
   text-decoration: none;
 }
 
-/* Smooth scrolling - respects reduced motion preference */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Selection styling */
@@ -121,58 +103,32 @@ a {
   background: var(--color-text-secondary);
 }
 
-/* Code block styling - Night Owl forced */
+/* Code block styling - Ant Design inspired */
 /* Scoped to prose/docs areas to avoid overriding component-specific styles */
 .prose pre,
 .docs-content pre,
-.docs-section pre,
-.code-block,
-div[data-rehype-pretty-code-fragment] pre,
-pre[class*='language-'] {
-  @apply rounded-xl overflow-hidden shadow-sm !important;
-  background-color: #011627 !important;
-  color: #d6deeb !important;
-  border: 1px solid #1e293b !important;
+.docs-section pre {
+  @apply rounded-xl overflow-x-auto p-4 my-6 border-2 shadow-sm;
+  background-color: var(--color-bg-tertiary);
   transition: all 0.2s ease;
   max-width: 100%;
-  margin: 1.5rem 0 !important;
-  padding: 0 !important; /* Reset padding to let components handle it */
-}
-
-/* Ensure code area inside components is clean */
-.code-block pre {
-  margin: 0 !important;
-  padding: 1.25rem !important;
-  border: none !important;
-  background-color: transparent !important;
-  font-family:
-    'Fira Code', 'JetBrains Mono', ui-monospace, monospace !important;
-}
-
-/* Clear any prose-injected padding */
-.prose pre code {
-  padding: 0 !important;
-  background-color: transparent !important;
-  border: none !important;
 }
 
 .prose pre:hover,
 .docs-content pre:hover,
-.docs-section pre:hover,
-.code-block:hover {
-  @apply shadow-md !important;
+.docs-section pre:hover {
+  @apply shadow-md;
 }
 
 code {
   @apply font-mono text-sm;
 }
 
-/* Inline code - Night Owl forced */
+/* Inline code - Ant Design inspired */
 :not(pre) > code {
-  @apply px-2 py-1 rounded-lg border !important;
-  background-color: #011627 !important;
-  color: #d6deeb !important;
-  border-color: #1e293b !important;
+  @apply px-2 py-1 rounded-lg border;
+  background-color: var(--tw-prose-code-bg);
+  color: var(--tw-prose-code);
   font-size: 0.875em;
   font-weight: 500;
   word-break: break-word;
@@ -349,12 +305,7 @@ table {
 }
 
 thead {
-  @apply bg-gray-50 dark:bg-gray-800 sticky top-0 z-10;
-}
-
-/* Zebra striping for better readability */
-tbody tr:nth-child(even) {
-  @apply bg-gray-50/50 dark:bg-gray-800/30;
+  @apply bg-gray-50 dark:bg-gray-800;
 }
 
 th {
@@ -415,7 +366,7 @@ tbody tr:hover {
   height: auto;
 }
 
-/* Scrollbar Utilities */
+/* Utilities */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -423,30 +374,6 @@ tbody tr:hover {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Thin scrollbar for compact areas */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: var(--color-text-tertiary);
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
-}
-
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-text-tertiary) transparent;
 }
 
 /* Accessibility Features */
@@ -470,14 +397,14 @@ tbody tr:hover {
   --color-bg-secondary: #1a1a1a !important;
   --color-bg-tertiary: #333333 !important;
   --color-border: #666666 !important;
-  --color-brand: #0052a3 !important; /* Improved contrast ratio 7.3:1 for AAA */
+  --color-brand: #66aaff !important;
   --color-brand-hover: #4488dd !important;
 }
 
 .reduced-motion * {
-  animation-duration: 0s !important;
+  animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
-  transition-duration: 0s !important;
+  transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }
 
@@ -564,23 +491,6 @@ tbody tr:hover {
     min-width: 44px;
     min-height: 44px;
   }
-
-  /* Safe area utilities for mobile devices with notches */
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-
-  .pt-safe {
-    padding-top: env(safe-area-inset-top, 0);
-  }
-
-  .pl-safe {
-    padding-left: env(safe-area-inset-left, 0);
-  }
-
-  .pr-safe {
-    padding-right: env(safe-area-inset-right, 0);
-  }
 }
 
 /* Safe area insets for mobile devices with notches */
@@ -590,48 +500,4 @@ tbody tr:hover {
 
 .safe-area-top {
   padding-top: env(safe-area-inset-top, 0);
-}
-
-/* Glassmorphism Utility Classes */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-
-.glass-elevated {
-  background: var(--glass-bg-elevated);
-  backdrop-filter: blur(var(--glass-blur-strong));
-  -webkit-backdrop-filter: blur(var(--glass-blur-strong));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-elevated);
-}
-
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: 1rem;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glass-shadow-elevated);
-}
-
-/* Glass popover - fully opaque to prevent text bleed-through */
-.glass-popover {
-  background: var(--glass-bg-elevated);
-  backdrop-filter: blur(var(--glass-blur-strong));
-  -webkit-backdrop-filter: blur(var(--glass-blur-strong));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow-elevated);
-  border-radius: 0.5rem;
 }

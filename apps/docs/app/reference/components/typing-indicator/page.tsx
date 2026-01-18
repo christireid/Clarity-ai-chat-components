@@ -1,6 +1,6 @@
 'use client'
 
-import { TypingIndicator } from '@clarity-chat/react'
+import { TypingIndicator } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -12,7 +12,7 @@ import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 function TypingIndicatorDemo() {
   return (
     <div className="flex flex-col gap-4 p-4 border border-border rounded-lg bg-background">
-      <TypingIndicator avatarSrc="" className="" />
+      <TypingIndicator />
     </div>
   )
 }
@@ -22,15 +22,15 @@ function VariantsDemo() {
     <div className="flex flex-col gap-6 p-4 border border-border rounded-lg bg-background">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Dots (Default)</p>
-        <TypingIndicator variant="dots" avatarSrc="" className="" />
+        <TypingIndicator variant="dots" />
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Pulse</p>
-        <TypingIndicator variant="pulse" avatarSrc="" className="" />
+        <TypingIndicator variant="pulse" />
       </div>
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Wave</p>
-        <TypingIndicator variant="wave" avatarSrc="" className="" />
+        <TypingIndicator variant="wave" />
       </div>
     </div>
   )

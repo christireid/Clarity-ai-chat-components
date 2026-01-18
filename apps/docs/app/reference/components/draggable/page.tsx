@@ -1,15 +1,11 @@
-// TODO: Draggable and DropZone are planned but not yet implemented
-// in @clarity-chat/react. This page documents the intended API and features.
-
 'use client'
 
 import { useState } from 'react'
-import { ToastProvider } from '@clarity-chat/react'
-// TODO: Uncomment when implemented:
-// import {
-//   Draggable,
-//   DropZone,
-// } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  Draggable,
+  DropZone,
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -20,21 +16,30 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-// Placeholder demo component - shows Coming Soon notice
 function BasicDragDemo() {
+  const [droppedItem, setDroppedItem] = useState<string | null>(null)
+
   return (
     <div className="flex gap-8 items-center justify-center p-8 bg-background border rounded-lg min-h-[300px]">
-      <div className="text-center">
-        <div className="w-24 h-24 bg-blue-500/20 rounded-lg shadow-lg flex items-center justify-center text-blue-600 font-bold border-2 border-dashed border-blue-500/50 mb-4">
+      <Draggable dragId="item-1">
+        <div className="w-24 h-24 bg-blue-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold cursor-grab active:cursor-grabbing hover:scale-105 transition-transform">
           Drag Me
         </div>
-        <p className="text-muted-foreground text-sm">Coming Soon</p>
-      </div>
+      </Draggable>
 
-      <div className="w-48 h-48 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center bg-muted/30">
+      <DropZone
+        dropId="zone-1"
+        onDrop={(dragId: string) => setDroppedItem(dragId)}
+        className="w-48 h-48 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center bg-muted/30"
+        activeClassName="border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+      >
         <p className="text-sm text-muted-foreground font-medium">Drop Zone</p>
-        <p className="text-xs text-muted-foreground mt-2">Not yet implemented</p>
-      </div>
+        {droppedItem && (
+          <div className="mt-2 text-xs text-green-600 font-semibold animate-in fade-in zoom-in">
+            Dropped: {droppedItem}
+          </div>
+        )}
+      </DropZone>
     </div>
   )
 }
@@ -142,19 +147,10 @@ export default function DraggablePage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <Callout type="warning" className="mb-8">
-            <p>
-              <strong>Coming Soon:</strong> Draggable and DropZone are planned but not yet
-              implemented in @clarity-chat/react. This page documents the intended API.
-            </p>
-          </Callout>
-        </ScrollReveal>
-
-        <ScrollReveal delay={0.2}>
           <ViewInStorybook component="Draggable" />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.3}>
+        <ScrollReveal delay={0.2}>
           <h2 id="basic-usage">Basic Usage</h2>
           <p className="mb-4">
             Wrap elements in <code>Draggable</code> to make them movable, and
@@ -165,7 +161,7 @@ export default function DraggablePage() {
             title="Drag and Drop Demo"
             description="Drag the blue box into the drop zone."
             code={`import { useState } from 'react'
-import { Draggable, DropZone } from '@clarity-chat/react'
+import { Draggable, DropZone } from '@clarity-chat/react/internal'
 
 function DragDemo() {
   const [status, setStatus] = useState('Waiting...')
@@ -192,44 +188,51 @@ function DragDemo() {
           </ComponentPreview>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.4}>
+        <ScrollReveal delay={0.3}>
           <h2 id="import">Import</h2>
           <EnhancedCodeBlock
-            code={`// Coming soon:
-import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react'`}
+            code={`import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react'`}
             language="tsx"
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.5}>
+        <ScrollReveal delay={0.4}>
           <section className="my-12">
             <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
             <p className="mb-6 text-muted-foreground">
               Experiment with constraints and drag options:
             </p>
             <CodePlayground
-              initialCode={`// Draggable is coming soon!
-// This playground will be functional once the component is implemented.
-
-function Example() {
+              initialCode={`function Example() {
   return (
     <div className="h-64 border rounded-lg bg-background relative overflow-hidden p-8">
       <p className="text-center text-muted-foreground mb-8">
-        Draggable components coming soon!
+        Try dragging these items!
       </p>
-
+      
       <div className="flex justify-center gap-8">
-        <div className="w-20 h-20 bg-purple-500/20 rounded-lg shadow-lg flex items-center justify-center text-purple-600 border-2 border-dashed border-purple-500/50">
+        <Draggable 
+          dragId="free" 
+          className="w-20 h-20 bg-purple-500 rounded-lg shadow-lg flex items-center justify-center text-white"
+        >
           Free
-        </div>
+        </Draggable>
 
-        <div className="w-20 h-20 bg-pink-500/20 rounded-lg shadow-lg flex items-center justify-center text-pink-600 border-2 border-dashed border-pink-500/50">
+        <Draggable 
+          dragId="x-axis" 
+          axis="x"
+          className="w-20 h-20 bg-pink-500 rounded-lg shadow-lg flex items-center justify-center text-white"
+        >
           X-Only
-        </div>
+        </Draggable>
 
-        <div className="w-20 h-20 bg-orange-500/20 rounded-lg shadow-lg flex items-center justify-center text-orange-600 border-2 border-dashed border-orange-500/50">
+        <Draggable 
+          dragId="y-axis" 
+          axis="y"
+          className="w-20 h-20 bg-orange-500 rounded-lg shadow-lg flex items-center justify-center text-white"
+        >
           Y-Only
-        </div>
+        </Draggable>
       </div>
     </div>
   )
@@ -240,7 +243,7 @@ render(<Example />)`}
           </section>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.6}>
+        <ScrollReveal delay={0.5}>
           <h2 id="kanban-example">Kanban Board Example</h2>
           <p className="mb-4">
             Build complex interfaces like Kanban boards using{' '}
@@ -248,7 +251,7 @@ render(<Example />)`}
           </p>
           <EnhancedCodeBlock
             language="tsx"
-            code={`import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react'
+            code={`import { Draggable, DropZone, useDragDrop } from '@clarity-chat/react/internal'
 
 function KanbanBoard() {
   const { items, handleDrop } = useDragDrop({
@@ -259,8 +262,8 @@ function KanbanBoard() {
   return (
     <div className="kanban-columns">
       {columns.map(column => (
-        <DropZone
-          key={column.id}
+        <DropZone 
+          key={column.id} 
           dropId={column.id}
           onDrop={(itemId) => handleDrop(itemId, column.id)}
         >
@@ -280,7 +283,7 @@ function KanbanBoard() {
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.7}>
+        <ScrollReveal delay={0.6}>
           <h2 id="props">Props</h2>
 
           <h3 className="text-xl font-semibold mt-8 mb-4">Draggable</h3>
@@ -290,7 +293,7 @@ function KanbanBoard() {
           <PropsTable props={dropZoneProps} />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.8}>
+        <ScrollReveal delay={0.7}>
           <h2 id="animations">Physics & Animations</h2>
           <p className="mb-4">
             Draggable uses Framer Motion under the hood for smooth, spring-based
@@ -298,23 +301,23 @@ function KanbanBoard() {
           </p>
           <ul className="mb-8 space-y-2">
             <li>
-              <strong>Elastic constraints:</strong> Items bounce back when
+              🎯 <strong>Elastic constraints:</strong> Items bounce back when
               dragged too far
             </li>
             <li>
-              <strong>Ghost previews:</strong> Visual feedback while dragging
+              👻 <strong>Ghost previews:</strong> Visual feedback while dragging
             </li>
             <li>
-              <strong>Drop animations:</strong> Smooth transitions when
+              ✨ <strong>Drop animations:</strong> Smooth transitions when
               released
             </li>
             <li>
-              <strong>Touch support:</strong> Optimized for mobile gestures
+              📱 <strong>Touch support:</strong> Optimized for mobile gestures
             </li>
           </ul>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.9}>
+        <ScrollReveal delay={0.8}>
           <h2 id="related">Related</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <a

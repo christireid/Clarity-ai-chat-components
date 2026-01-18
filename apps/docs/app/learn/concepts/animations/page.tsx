@@ -7,7 +7,7 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { TypingIndicator, StreamingMessage } from '@clarity-chat/react'
+import { TypingIndicator, StreamingMessage } from '@clarity-chat/react/internal'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
 function TypingIndicatorDemo() {
@@ -30,7 +30,7 @@ function TypingIndicatorDemo() {
           </button>
         ))}
       </div>
-      <TypingIndicator variant={variant} avatarSrc="" className="" />
+      <TypingIndicator variant={variant} />
     </div>
   )
 }
@@ -149,21 +149,14 @@ export default function AnimationsConceptPage() {
           <CodeBlock
             language="tsx"
             code={`import {
-  getDurationInMs,
-  getDurationInSeconds,
-  createFadeVariant,
-  createSlideVariant,
-  createInteractionVariant,
-} from '@clarity-chat/react'
+  ANIMATION_DURATION,
+  ANIMATION_EASING,
+  ANIMATION_VARIANTS,
+  INTERACTION_VARIANTS,
+} from '@clarity-chat/react/internal'
 
-// Get duration values
-console.log(getDurationInMs('normal'))     // 200
-console.log(getDurationInSeconds('normal')) // 0.2
-
-// Create animation variants
-const fadeIn = createFadeVariant('normal', 'out')
-const slideUp = createSlideVariant('up', 20, 'normal', 'out')
-const buttonInteraction = createInteractionVariant(1.02, 0.98)`}
+logger.debug(ANIMATION_DURATION.normal) // 250
+logger.debug(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
           />
         </section>
       </ScrollReveal>
@@ -184,7 +177,7 @@ const buttonInteraction = createInteractionVariant(1.02, 0.98)`}
           <ComponentPreview
             title="Typing Indicator"
             description="Interactive demo of typing indicator variants."
-            code={`import { TypingIndicator } from '@clarity-chat/react'
+            code={`import { TypingIndicator } from '@clarity-chat/react/internal'
 
 // Render
 <TypingIndicator variant="dots" />`}
@@ -201,11 +194,6 @@ const buttonInteraction = createInteractionVariant(1.02, 0.98)`}
             <StreamingMessage
               content="This message is streaming in real-time. It uses a smooth reveal animation that makes reading easier and feels more natural than a sudden block of text appearing at once."
               isStreaming={true}
-              currentThinkingStep=""
-              error=""
-              onToolApprove={() => {}}
-              onToolReject={() => {}}
-              onRetry={() => {}}
             />
           </div>
         </section>
@@ -222,21 +210,17 @@ const buttonInteraction = createInteractionVariant(1.02, 0.98)`}
             language="tsx"
             code={`import { motion } from 'framer-motion'
 import {
-  createBounceAnimation,
-  getDurationInSeconds,
+  ANIMATION_VARIANTS,
+  ANIMATION_DURATION,
   StreamingMessage,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
-// Use the built-in bounce animation creator
-const bounceVariant = createBounceAnimation(-4, 0.5)
-
-// Or create a custom variant using duration helpers
-const customBounceVariant = {
+const bounceVariant = {
   initial: { y: 0 },
   animate: {
     y: [0, -4, 0],
     transition: {
-      duration: getDurationInSeconds('normal'),
+      duration: ANIMATION_DURATION.normal / 1000,
       repeat: Infinity,
     },
   },
@@ -246,7 +230,7 @@ function LiveTypingIndicator() {
   return (
     <div className="flex items-center gap-1">
       <motion.span variants={bounceVariant} animate="animate" />
-      <StreamingMessage content="Loading..." isStreaming />
+      <StreamingMessage status="streaming" />
     </div>
   )
 }`}

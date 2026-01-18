@@ -25,7 +25,7 @@ vi.mock('../hooks/useParticlesEngine', () => ({
   useParticlesEngine: vi.fn(() => ({
     isInitialized: true,
     error: null,
-    isInitializing: false,
+    isLoading: false,
   })),
 }))
 
@@ -69,9 +69,8 @@ beforeEach(() => {
   mockUseThemeMode.mockReturnValue(false)
   mockUseParticlesEngine.mockReturnValue({
     isInitialized: true,
-    isInitializing: false,
-    hasError: false,
     error: null,
+    isLoading: false,
   })
 })
 
@@ -92,9 +91,8 @@ describe('AnimatedBackground', () => {
     it('should not render when not initialized', () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: false,
-        isInitializing: true,
-        hasError: false,
         error: null,
+        isLoading: true,
       })
 
       render(
@@ -109,9 +107,8 @@ describe('AnimatedBackground', () => {
     it('should render particles after initialization', async () => {
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: true,
-        isInitializing: false,
-        hasError: false,
         error: null,
+        isLoading: false,
       })
 
       render(
@@ -220,9 +217,8 @@ describe('AnimatedBackground', () => {
       const initError = new Error('Initialization failed')
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: false,
-        isInitializing: false,
-        hasError: true,
         error: initError,
+        isLoading: false,
       })
 
       render(
@@ -239,9 +235,8 @@ describe('AnimatedBackground', () => {
       // Simulate recovery from error
       mockUseParticlesEngine.mockReturnValue({
         isInitialized: true,
-        isInitializing: false,
-        hasError: false,
         error: null,
+        isLoading: false,
       })
 
       render(

@@ -42,13 +42,6 @@ const MobileBottomNav = dynamic(() =>
   }))
 )
 
-// Lazy load network offline indicator
-const NetworkOfflineIndicator = dynamic(() =>
-  import('@/components/UI/NetworkOfflineIndicator').then((mod) => ({
-    default: mod.NetworkOfflineIndicator,
-  }))
-)
-
 // Font CSS classes using system font stacks (no external font loading required)
 const fontClasses = {
   sans: 'font-sans',
@@ -127,14 +120,13 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased overflow-x-hidden bg-bg-primary text-text-primary" suppressHydrationWarning>
+      <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
         <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content
           </a>
-          <NetworkOfflineIndicator />
-          <ScrollProgress variant="gradient" />
+          <ScrollProgress variant="gradient" showScrollTop />
           <div className="min-h-screen flex flex-col">
             <Navigation />
             <main id="main-content" className="flex-1">

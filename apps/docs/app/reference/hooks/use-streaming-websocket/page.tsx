@@ -1,12 +1,10 @@
-// TODO: useStreamingWebSocket is planned but not yet implemented in @clarity-chat/react.
-// This page documents the intended API and features.
-
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider } from '@clarity-chat/react'
-// TODO: Uncomment when implemented:
-// import { useStreamingWebSocket } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  useStreamingWebSocket,
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -16,36 +14,122 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// Placeholder demo component - shows Coming Soon notice
+// Basic demo component
 function BasicWebSocketDemo() {
+  const [connected, setConnected] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const {
+    status,
+    messages,
+    lastMessage,
+    error,
+    connect,
+    disconnect,
+    send,
+    sendJson,
+  } = useStreamingWebSocket({
+    url: 'wss://echo.websocket.org', // Public echo server for demo
+    onMessage: (msg: { data: unknown; timestamp: number }) => {
+      console.log('Received:', msg.data)
+    },
+    onError: (err: Error) => {
+      console.error('WebSocket Error:', err)
+    },
+  })
+
+  useEffect(() => {
+    if (connected && status === 'idle') {
+      connect()
+    }
+  }, [connected, connect, status])
+
+  const handleSend = useCallback(() => {
+    if (message.trim() && status === 'connected') {
+      sendJson({ type: 'message', content: message })
+      setMessage('')
+    }
+  }, [message, status, sendJson])
+
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <button
-            disabled
+            onClick={() => {
+              setConnected(true)
+              connect()
+            }}
+            disabled={status !== 'idle'}
             className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
             aria-label="Connect to WebSocket"
           >
-            Connect (Coming Soon)
+            Connect
           </button>
           <button
-            disabled
+            onClick={() => {
+              disconnect()
+              setConnected(false)
+            }}
+            disabled={status === 'idle'}
             className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
             aria-label="Disconnect from WebSocket"
           >
             Disconnect
           </button>
           <span className="text-sm text-muted-foreground">
-            Status: idle
+            Status: {status}
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-          <p className="text-amber-700 dark:text-amber-400 text-sm">
-            useStreamingWebSocket is planned but not yet implemented.
-          </p>
-        </div>
+        {status === 'connected' && (
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSend()
+                  }
+                }}
+                placeholder="Type a message..."
+                className="flex-1 px-3 py-2 border border-border rounded"
+              />
+              <button
+                onClick={handleSend}
+                disabled={!message.trim()}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+
+        {messages.length > 0 && (
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {messages.map((msg: { data: unknown; timestamp: number }, i: number) => (
+              <div key={i} className="p-2 bg-muted rounded text-sm">
+                <p className="text-xs text-muted-foreground mb-1">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </p>
+                <p>
+                  {typeof msg.data === 'string'
+                    ? msg.data
+                    : JSON.stringify(msg.data)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 bg-destructive/10 text-destructive rounded">
+            <p className="text-sm">Error: {error.type}</p>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -252,13 +336,6 @@ export default function UseStreamingWebSocketPage() {
           lifecycle management.
         </p>
 
-        <Callout type="warning" className="mb-6">
-          <p>
-            <strong>Coming Soon:</strong> useStreamingWebSocket is planned but not yet
-            implemented in @clarity-chat/react. This page documents the intended API.
-          </p>
-        </Callout>
-
         <Callout type="info">
           <p>
             For chat streaming, use{' '}
@@ -277,23 +354,27 @@ export default function UseStreamingWebSocketPage() {
             back.
           </p>
           <CodePlayground
-            initialCode={`// useStreamingWebSocket is coming soon!
-// This playground will be functional once the hook is implemented.
-
-function Example() {
-  // Once implemented:
-  // const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
-  //   url: 'wss://echo.websocket.org',
-  //   onMessage: (msg) => {
-  //     console.log('Received:', msg.data)
-  //   },
-  // })
+            initialCode={`function Example() {
+  const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
+    url: 'wss://echo.websocket.org',
+    onMessage: (msg) => {
+      logger.debug('Received:', msg.data)
+    },
+  })
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-900 rounded-lg border">
-      <p className="text-center text-muted-foreground py-8">
-        useStreamingWebSocket coming soon...
-      </p>
+    <div>
+      <button onClick={connect} disabled={status !== 'idle'}>
+        Connect
+      </button>
+      <button onClick={disconnect} disabled={status === 'idle'}>
+        Disconnect
+      </button>
+      <button onClick={() => sendJson({ type: 'test', message: 'Hello' })}>
+        Send Test
+      </button>
+      <p>Status: {status}</p>
+      <p>Messages: {messages.length}</p>
     </div>
   )
 }
@@ -305,8 +386,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`// Coming soon:
-import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSocketReturn } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -318,7 +398,7 @@ import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSoc
         <ComponentPreview
           title="Simple WebSocket Connection"
           description="Basic WebSocket connection with send/receive"
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function SimpleWebSocket() {
@@ -331,7 +411,7 @@ function SimpleWebSocket() {
   } = useStreamingWebSocket({
     url: 'wss://api.example.com/ws',
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
   })
 
@@ -356,12 +436,99 @@ function SimpleWebSocket() {
           <BasicWebSocketDemo />
         </ComponentPreview>
 
+        <h2 id="connect-on-mount">Connect on Mount</h2>
+
+        <p>Automatically connect when component mounts:</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+
+function AutoConnectWebSocket() {
+  const {
+    status,
+    messages,
+    disconnect,
+    sendJson,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    connectOnMount: true, // Connect automatically
+    onMessage: (msg) => {
+      logger.debug('Received:', msg.data)
+    },
+  })
+
+  return (
+    <div>
+      <p>Status: {status}</p>
+      <button onClick={disconnect}>Disconnect</button>
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="sending-messages">Sending Messages</h2>
+
+        <p>Send text, JSON, or binary messages:</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+
+function WebSocketWithSend() {
+  const {
+    status,
+    send,
+    sendJson,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    connectOnMount: true,
+  })
+
+  const handleSendText = () => {
+    send('Hello, WebSocket!')
+  }
+
+  const handleSendJson = () => {
+    sendJson({
+      type: 'chat',
+      message: 'Hello',
+      userId: 'user-123',
+    })
+  }
+
+  const handleSendBinary = () => {
+    const buffer = new ArrayBuffer(8)
+    const view = new Uint8Array(buffer)
+    view[0] = 0x48 // 'H'
+    view[1] = 0x65 // 'e'
+    send(buffer)
+  }
+
+  return (
+    <div>
+      <button onClick={handleSendText} disabled={status !== 'connected'}>
+        Send Text
+      </button>
+      <button onClick={handleSendJson} disabled={status !== 'connected'}>
+        Send JSON
+      </button>
+      <button onClick={handleSendBinary} disabled={status !== 'connected'}>
+        Send Binary
+      </button>
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
         <h2 id="automatic-reconnection">Automatic Reconnection</h2>
 
         <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function WebSocketWithReconnect() {
   const {
@@ -376,7 +543,7 @@ function WebSocketWithReconnect() {
     reconnectDelay: 1000,
     maxReconnectDelay: 30000,
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
       console.error('Max reconnection attempts reached')
@@ -401,7 +568,7 @@ function WebSocketWithReconnect() {
         <p>Keep connection alive with heartbeat mechanism:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
 
 function WebSocketWithHeartbeat() {
   const {
@@ -437,6 +604,54 @@ function WebSocketWithHeartbeat() {
             considered dead and reconnection is attempted.
           </p>
         </Callout>
+
+        <h2 id="message-handling">Message Handling</h2>
+
+        <p>Handle different message types:</p>
+
+        <EnhancedCodeBlock
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+import type { WebSocketMessage } from '@clarity-chat/react/internal'
+
+function WebSocketWithMessageHandling() {
+  const {
+    messages,
+    lastMessage,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    connectOnMount: true,
+    onMessage: (msg: WebSocketMessage) => {
+      switch (msg.type) {
+        case 'text':
+          logger.debug('Text message:', msg.data)
+          break
+        case 'binary':
+          logger.debug('Binary message:', msg.raw)
+          break
+        case 'blob':
+          logger.debug('Blob message:', msg.raw)
+          break
+      }
+    },
+  })
+
+  return (
+    <div>
+      <p>Total messages: {messages.length}</p>
+      {lastMessage && (
+        <p>
+          Last message ({lastMessage.type}):{' '}
+          {typeof lastMessage.data === 'string'
+            ? lastMessage.data
+            : JSON.stringify(lastMessage.data)}
+        </p>
+      )}
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
 
         <h2 id="options">Options</h2>
 
@@ -485,6 +700,138 @@ function WebSocketWithHeartbeat() {
             <strong>3 (CLOSED):</strong> Connection is closed
           </li>
         </ul>
+
+        <h2 id="complete-example">Complete Example</h2>
+
+        <EnhancedCodeBlock
+          code={`import { useState, useEffect, useCallback } from 'react'
+import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+import type { WebSocketMessage } from '@clarity-chat/react/internal'
+
+function CompleteWebSocketExample() {
+  const [input, setInput] = useState('')
+
+  const {
+    status,
+    messages,
+    lastMessage,
+    error,
+    connect,
+    disconnect,
+    send,
+    sendJson,
+    reconnect,
+    reset,
+    isReconnecting,
+    reconnectAttempt,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    enableHeartbeat: true,
+    heartbeatInterval: 30000,
+    onMessage: (msg: WebSocketMessage) => {
+      logger.debug('Received:', msg.data)
+    },
+    onError: (err) => {
+      console.error('WebSocket Error:', err)
+    },
+    onReconnecting: (attempt, delay) => {
+      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+    },
+  })
+
+  const handleSend = useCallback(() => {
+    if (input.trim() && status === 'connected') {
+      sendJson({ type: 'message', content: input })
+      setInput('')
+    }
+  }, [input, status, sendJson])
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={connect}
+          disabled={status !== 'idle'}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Connect
+        </button>
+        <button
+          onClick={disconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Disconnect
+        </button>
+        <button
+          onClick={reconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Reconnect
+        </button>
+        <button
+          onClick={reset}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div>
+        <p>Status: {status}</p>
+        {isReconnecting && (
+          <p>Reconnecting... (attempt {reconnectAttempt})</p>
+        )}
+        {error && <p className="text-destructive">Error: {error.type}</p>}
+      </div>
+
+      {status === 'connected' && (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSend()
+              }
+            }}
+            placeholder="Type a message..."
+            className="flex-1 px-3 py-2 border border-border rounded"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+          >
+            Send
+          </button>
+        </div>
+      )}
+
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {messages.map((msg, i) => (
+          <div key={i} className="p-2 bg-muted rounded">
+            <p className="text-xs text-muted-foreground mb-1">
+              {new Date(msg.timestamp).toLocaleTimeString()} ({msg.type})
+            </p>
+            <p>
+              {typeof msg.data === 'string'
+                ? msg.data
+                : JSON.stringify(msg.data)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
 
         <Callout type="warning">
           <p>

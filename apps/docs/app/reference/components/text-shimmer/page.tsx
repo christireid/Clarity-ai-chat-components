@@ -74,7 +74,7 @@ export default function TextShimmerPage() {
   HeadingShimmer,
   CodeShimmer,
   useTextShimmer
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -82,7 +82,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { TextShimmer } from '@clarity-chat/react'
+        code={`import { TextShimmer } from '@clarity-chat/react/internal'
 
 function Example() {
   return (
@@ -133,7 +133,7 @@ function Example() {
   HeadingShimmer,
   CodeShimmer,
   InlineShimmer
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function Example() {
   return (
@@ -166,7 +166,7 @@ function Example() {
       <h2 id="with-hook">With useTextShimmer Hook</h2>
 
       <EnhancedCodeBlock
-        code={`import { TextShimmer, useTextShimmer } from '@clarity-chat/react'
+        code={`import { TextShimmer, useTextShimmer } from '@clarity-chat/react/internal'
 
 function Example() {
   const shimmer = useTextShimmer({
@@ -193,7 +193,7 @@ function Example() {
       </p>
 
       <EnhancedCodeBlock
-        code={`import { TextShimmerGroup, HeadingShimmer, ParagraphShimmer } from '@clarity-chat/react'
+        code={`import { TextShimmerGroup, HeadingShimmer, ParagraphShimmer } from '@clarity-chat/react/internal'
 
 function Example() {
   return (

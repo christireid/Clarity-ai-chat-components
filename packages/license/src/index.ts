@@ -1,5 +1,3 @@
-'use client'
-
 /**
  * @clarity-chat/license
  *

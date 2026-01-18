@@ -154,12 +154,12 @@ export type CodeThemeName = keyof typeof CODE_THEMES
 /**
  * Default theme for dark mode
  */
-export const DEFAULT_DARK_THEME: CodeThemeName = 'night-owl'
+export const DEFAULT_DARK_THEME: CodeThemeName = 'github-dark'
 
 /**
  * Default theme for light mode
  */
-export const DEFAULT_LIGHT_THEME: CodeThemeName = 'night-owl'
+export const DEFAULT_LIGHT_THEME: CodeThemeName = 'github-light'
 
 /**
  * Get all dark themes

@@ -8,10 +8,10 @@
  */
 
 import { useState, useCallback, useRef, useMemo } from 'react'
-import { useLocalStorage } from '@clarity-chat/react'
-import { useClipboard } from '@clarity-chat/react'
-import { useRetryWithBackoff } from '@clarity-chat/react'
-import { useVoiceInput } from '@clarity-chat/react'
+import { useLocalStorage } from '@clarity-chat/react/internal'
+import { useClipboard } from '@clarity-chat/react/internal'
+import { useRetryWithBackoff } from '@clarity-chat/react/internal'
+import { useVoiceInput } from '@clarity-chat/react/internal'
 
 // ============================================================================
 // TYPES
@@ -135,17 +135,16 @@ export function useHeroChat(): UseHeroChatReturn {
   // -------------------------------------------------------------------------
   // Storage - Conversations
   // -------------------------------------------------------------------------
-  const [conversations, setConversations] = useLocalStorage(
+  const [conversations, setConversations] = useLocalStorage<Conversation[]>(
     STORAGE_KEY_CONVERSATIONS,
-    [] as Conversation[]
+    []
   )
 
-  const [currentConversationId, setCurrentConversationId] = useLocalStorage(
-    STORAGE_KEY_CURRENT_ID,
-    null as string | null
-  )
+  const [currentConversationId, setCurrentConversationId] = useLocalStorage<
+    string | null
+  >(STORAGE_KEY_CURRENT_ID, null)
 
-  const [theme, setTheme] = useLocalStorage(STORAGE_KEY_THEME, 'system' as Theme)
+  const [theme, setTheme] = useLocalStorage<Theme>(STORAGE_KEY_THEME, 'system')
 
   // -------------------------------------------------------------------------
   // Local state

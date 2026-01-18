@@ -18,7 +18,6 @@ import { generateEmbedding, cosineSimilarity } from './embeddings'
 import { getVectorStore, type SearchResult } from './vectorStore'
 import { searchDocumentation, formatSearchResultsForRAG } from './keywordSearch'
 import { SYSTEM_PROMPT, getContextualPrompt } from './prompts'
-import { logger } from '@/lib/logger'
 
 // ============================================================================
 // Types
@@ -204,13 +203,8 @@ async function performSemanticSearch(
       })
     })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    logger.warn('Semantic search failed, falling back to keyword-only:', {
-      error: errorMessage,
-      query: query.substring(0, 50),
-    })
+    console.error('Semantic search error:', error)
     // Return empty map on error - keyword search will still work
-    // This is expected when embeddings aren't indexed yet
   }
 
   return resultMap

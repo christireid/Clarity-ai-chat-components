@@ -37,7 +37,7 @@ export default function NextJSIntegrationPage() {
           language="tsx"
           code={`'use client'
 
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 

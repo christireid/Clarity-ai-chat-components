@@ -76,7 +76,7 @@ if ('serviceWorker' in navigator) {
         <h2>Offline Chat with IndexedDB</h2>
         <p>Use OfflineChatSync for offline functionality:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function PWAChat({ messages }: { messages: Message[] }) {
@@ -193,7 +193,7 @@ React.useEffect(() => {
       deferredPrompt.prompt()
       const { outcome } = await deferredPrompt.userChoice
       if (outcome === 'accepted') {
-        console.log('App installed')
+        logger.debug('App installed')
       }
       setDeferredPrompt(null)
       setShowPrompt(false)
@@ -216,7 +216,7 @@ React.useEffect(() => {
         <h2>Complete PWA Setup</h2>
         <p>Complete PWA implementation:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import { useEffect, useState } from 'react'
 
 function PWAApp() {

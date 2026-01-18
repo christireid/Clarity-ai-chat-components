@@ -1,11 +1,7 @@
-// TODO: TokenOptimizationDashboard is planned but not yet implemented in @clarity-chat/react.
-// This page documents the intended API and features.
-
 'use client'
 
 import React from 'react'
-// TODO: Uncomment when implemented:
-// import { TokenOptimizationDashboard } from '@clarity-chat/react'
+import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -15,64 +11,43 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Callout } from '@/components/MDX/Callout'
 
-// Placeholder demo component - shows Coming Soon notice
 function DashboardDemo() {
-  return (
-    <div className="w-full border border-border rounded-xl overflow-hidden bg-background shadow-sm p-8">
-      <div className="text-center">
-        <p className="font-medium text-muted-foreground mb-2">Coming Soon</p>
-        <p className="text-sm text-muted-foreground">TokenOptimizationDashboard is planned but not yet implemented.</p>
+  // Mock data for the dashboard
+  const mockStats = {
+    totalSavings: 154200,
+    compressionRatio: 0.65,
+    monthlyBudget: 1000000,
+    usedTokens: 450000,
+  }
 
-        {/* Mock dashboard preview */}
-        <div className="mt-6 grid grid-cols-3 gap-4">
-          <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
-            <p className="text-2xl font-bold text-green-700 dark:text-green-400">154K</p>
-            <p className="text-sm text-green-600 dark:text-green-300">Tokens Saved</p>
-          </div>
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
-            <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">31%</p>
-            <p className="text-sm text-blue-600 dark:text-blue-300">Compression</p>
-          </div>
-          <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/30 rounded-lg">
-            <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">$0.45</p>
-            <p className="text-sm text-purple-600 dark:text-purple-300">Cost Saved</p>
-          </div>
-        </div>
-      </div>
+  return (
+    <div className="w-full border border-border rounded-xl overflow-hidden bg-background shadow-sm">
+      <TokenOptimizationDashboard
+        stats={mockStats}
+        period="last-30-days"
+        showCharts={true}
+      />
     </div>
   )
 }
 
 const props: Prop[] = [
   {
-    name: 'metrics',
-    type: 'OptimizationMetrics',
-    required: true,
-    description: 'Current optimization metrics including tokens saved, cost saved, and breakdown by technique.',
+    name: 'stats',
+    type: 'TokenStats',
+    description: 'Statistical data to display (savings, usage, etc.).',
   },
   {
-    name: 'showBreakdown',
+    name: 'period',
+    type: '"last-24h" | "last-7-days" | "last-30-days"',
+    default: '"last-30-days"',
+    description: 'Time period for the data.',
+  },
+  {
+    name: 'showCharts',
     type: 'boolean',
     default: 'true',
-    description: 'Show detailed breakdown by optimization technique.',
-  },
-  {
-    name: 'realTime',
-    type: 'boolean',
-    default: 'false',
-    description: 'Enable real-time updates.',
-  },
-  {
-    name: 'refreshInterval',
-    type: 'number',
-    default: '5000',
-    description: 'Refresh interval for real-time updates (ms).',
-  },
-  {
-    name: 'costPerToken',
-    type: 'number',
-    default: '0.000002',
-    description: 'Cost per token for calculations.',
+    description: 'Whether to render visual charts.',
   },
   {
     name: 'className',
@@ -100,29 +75,20 @@ export default function TokenOptimizationDashboardPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.1}>
-        <Callout type="warning" className="mb-8">
-          <p>
-            <strong>Coming Soon:</strong> TokenOptimizationDashboard is planned but not yet
-            implemented in @clarity-chat/react. This page documents the intended API.
-          </p>
-        </Callout>
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.2}>
         <ViewInStorybook component="TokenOptimizationDashboard" />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.3}>
+      <ScrollReveal delay={0.2}>
         <h2 id="preview">Dashboard Preview</h2>
         <p className="mb-4">A comprehensive view of your token metrics:</p>
         <ComponentPreview
           title="Token Dashboard"
           description="Monitoring token usage and savings."
-          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react'
+          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 
 function AnalyticsView() {
   return (
-    <TokenOptimizationDashboard
+    <TokenOptimizationDashboard 
       period="last-30-days"
       stats={{
         totalSavings: 154200, // Tokens saved
@@ -138,7 +104,7 @@ function AnalyticsView() {
         </ComponentPreview>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.4}>
+      <ScrollReveal delay={0.3}>
         <div className="grid md:grid-cols-3 gap-6 my-12">
           <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
             <h3 className="font-semibold text-green-700 dark:text-green-400 mb-2">
@@ -167,34 +133,25 @@ function AnalyticsView() {
         </div>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.5}>
-        <h2 id="import">Import</h2>
-        <EnhancedCodeBlock
-          code={`// Coming soon:
-import { TokenOptimizationDashboard } from '@clarity-chat/react'`}
-          language="tsx"
-        />
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.6}>
+      <ScrollReveal delay={0.4}>
         <h2 id="props">Props</h2>
         <PropsTable props={props} />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.7}>
+      <ScrollReveal delay={0.5}>
         <h2 id="integration">Integration</h2>
         <p className="mb-4">
           Connect with <code>useTokenTracker</code> for live data:
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react'
+          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react/internal'
 
 function LiveDashboard() {
   const { stats } = useTokenTracker()
 
   return (
-    <TokenOptimizationDashboard
+    <TokenOptimizationDashboard 
       stats={stats}
       period="last-24h"
     />
@@ -203,7 +160,7 @@ function LiveDashboard() {
         />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.8}>
+      <ScrollReveal delay={0.6}>
         <h2 id="related">Related</h2>
         <div className="flex gap-4">
           <a

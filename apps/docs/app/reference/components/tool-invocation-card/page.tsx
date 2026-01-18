@@ -1,13 +1,8 @@
-// TODO: ToolInvocationCard is planned but not yet implemented in @clarity-chat/react.
-// This page documents the intended API and features.
-
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider } from '@clarity-chat/react'
-// TODO: Uncomment when implemented:
-// import { ToolInvocationCard } from '@clarity-chat/react'
-// import type { ToolCall } from '@clarity-chat/react'
+import { ToastProvider, ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -17,36 +12,69 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// Placeholder type definition until component is implemented
-interface ToolCall {
-  id: string
-  type: 'function'
-  function: {
-    name: string
-    arguments: string
-  }
-}
-
-// Placeholder demo component - shows Coming Soon notice
+// Basic demo component
 function BasicToolCardDemo() {
+  const toolCall: ToolCall = {
+    id: 'call-1',
+    type: 'function',
+    function: {
+      name: 'get_weather',
+      arguments: JSON.stringify({ location: 'San Francisco', unit: 'celsius' }),
+    },
+  }
+
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
-      <div className="text-muted-foreground">
-        <p className="font-medium mb-2">Coming Soon</p>
-        <p className="text-sm">ToolInvocationCard is planned but not yet implemented.</p>
-      </div>
+    <div className="w-full max-w-2xl">
+      <ToolInvocationCard
+        toolCall={toolCall}
+        status="pending"
+        requiresApproval
+      />
     </div>
   )
 }
 
-// Placeholder demo component
+// With approval demo
 function ToolCardWithApprovalDemo() {
+  const [status, setStatus] = useState<
+    'pending' | 'approved' | 'executing' | 'success'
+  >('pending')
+  const [result, setResult] = useState<any>(null)
+
+  const toolCall: ToolCall = {
+    id: 'call-1',
+    type: 'function',
+    function: {
+      name: 'search_database',
+      arguments: JSON.stringify({ query: 'customer data', limit: 10 }),
+    },
+  }
+
+  const handleApprove = useCallback(() => {
+    setStatus('approved')
+    setTimeout(() => {
+      setStatus('executing')
+      setTimeout(() => {
+        setStatus('success')
+        setResult({ results: [{ id: 1, name: 'Customer 1' }] })
+      }, 2000)
+    }, 500)
+  }, [])
+
+  const handleReject = useCallback(() => {
+    console.log('Tool rejected')
+  }, [])
+
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
-      <div className="text-muted-foreground">
-        <p className="font-medium mb-2">Coming Soon</p>
-        <p className="text-sm">Approval workflow will be available when ToolInvocationCard is implemented.</p>
-      </div>
+    <div className="w-full max-w-2xl">
+      <ToolInvocationCard
+        toolCall={toolCall}
+        status={status}
+        result={result}
+        requiresApproval
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
     </div>
   )
 }
@@ -137,13 +165,6 @@ export default function ToolInvocationCardPage() {
           agent tool usage in conversations.
         </p>
 
-        <Callout type="warning" className="mb-6">
-          <p>
-            <strong>Coming Soon:</strong> ToolInvocationCard is planned but not yet implemented
-            in @clarity-chat/react. This page documents the intended API and features.
-          </p>
-        </Callout>
-
         <Callout type="info">
           <p>
             ToolInvocationCard is used to display individual tool calls. For
@@ -166,10 +187,7 @@ export default function ToolInvocationCardPage() {
             changes through the workflow.
           </p>
           <CodePlayground
-            initialCode={`// ToolInvocationCard is coming soon!
-// This playground will be functional once the component is implemented.
-
-function Example() {
+            initialCode={`function Example() {
   const toolCall = {
     id: 'call-1',
     type: 'function',
@@ -180,20 +198,13 @@ function Example() {
   }
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-900 rounded-lg border">
-      <p className="text-center text-muted-foreground py-8">
-        ToolInvocationCard coming soon...
-      </p>
-      {/* Once implemented:
-      <ToolInvocationCard
-        toolCall={toolCall}
-        status="pending"
-        requiresApproval
-        onApprove={() => console.log('Approved')}
-        onReject={() => console.log('Rejected')}
-      />
-      */}
-    </div>
+    <ToolInvocationCard
+      toolCall={toolCall}
+      status="pending"
+      requiresApproval
+      onApprove={() => console.log('Approved')}
+      onReject={() => console.log('Rejected')}
+    />
   )
 }
 
@@ -204,9 +215,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`// Coming soon:
-import { ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -221,8 +231,8 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Tool Card"
           description="Basic tool call display"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
-import type { ToolCall } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
 
 function SimpleToolCard() {
   const toolCall: ToolCall = {
@@ -255,7 +265,7 @@ function SimpleToolCard() {
         <ComponentPreview
           title="With Approval Workflow"
           description="Tool call requiring user approval"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 import { useState, useCallback } from 'react'
 
 function ToolWithApproval() {
@@ -307,7 +317,7 @@ function ToolWithApproval() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
 
 // Pending - awaiting approval
 <ToolInvocationCard
@@ -366,6 +376,100 @@ function ToolWithApproval() {
           </ul>
         </Callout>
 
+        <h2 id="with-results">Displaying Results</h2>
+
+        <p>Show tool execution results in an expandable section:</p>
+
+        <EnhancedCodeBlock
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+
+function ToolWithResult() {
+  const toolCall: ToolCall = {
+    id: 'call-1',
+    type: 'function',
+    function: {
+      name: 'get_weather',
+      arguments: JSON.stringify({ location: 'San Francisco' }),
+    },
+  }
+
+  const result = {
+    location: 'San Francisco',
+    temperature: 18,
+    condition: 'Sunny',
+    humidity: 65,
+  }
+
+  return (
+    <ToolInvocationCard
+      toolCall={toolCall}
+      status="success"
+      result={result}
+      expandableResult={true} // Result is expandable (default)
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="error-handling">Error Handling</h2>
+
+        <p>Display error messages and provide retry functionality:</p>
+
+        <EnhancedCodeBlock
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+
+function ToolWithError() {
+  const toolCall: ToolCall = {
+    id: 'call-1',
+    type: 'function',
+    function: {
+      name: 'api_call',
+      arguments: JSON.stringify({ endpoint: '/api/data' }),
+    },
+  }
+
+  const handleRetry = useCallback(() => {
+    // Retry the tool call
+    console.log('Retrying tool call...')
+  }, [])
+
+  return (
+    <ToolInvocationCard
+      toolCall={toolCall}
+      status="error"
+      error="Network error: Failed to connect to server"
+      onRetry={handleRetry}
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="custom-formatting">Custom Argument Formatting</h2>
+
+        <p>Control how arguments are displayed:</p>
+
+        <EnhancedCodeBlock
+          code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+
+// Formatted JSON (default)
+<ToolInvocationCard
+  toolCall={toolCall}
+  formatArguments={true} // Pretty-print JSON
+/>
+
+// Raw JSON string
+<ToolInvocationCard
+  toolCall={toolCall}
+  formatArguments={false} // Show raw string
+/>`}
+          language="tsx"
+          showLineNumbers
+        />
+
         <h2 id="props">Props</h2>
 
         <PropsTable props={toolInvocationCardProps} />
@@ -389,16 +493,133 @@ function ToolWithApproval() {
           showLineNumbers
         />
 
+        <h2 id="complete-example">Complete Example</h2>
+
+        <EnhancedCodeBlock
+          code={`import { useState, useCallback } from 'react'
+import { ToolInvocationCard } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react/internal'
+
+function CompleteToolCard() {
+  const [status, setStatus] = useState<'pending' | 'approved' | 'executing' | 'success' | 'error'>('pending')
+  const [result, setResult] = useState<any>(null)
+  const [error, setError] = useState<string | undefined>(undefined)
+
+  const toolCall: ToolCall = {
+    id: 'call-1',
+    type: 'function',
+    function: {
+      name: 'process_payment',
+      arguments: JSON.stringify({
+        amount: 100,
+        currency: 'USD',
+        paymentMethod: 'card',
+      }),
+    },
+  }
+
+  const handleApprove = useCallback(async () => {
+    setStatus('approved')
+    
+    try {
+      setStatus('executing')
+      
+      // Execute tool
+      const response = await fetch('/api/process-payment', {
+        method: 'POST',
+        body: JSON.parse(toolCall.function.arguments),
+      })
+
+      if (!response.ok) {
+        throw new Error('Payment processing failed')
+      }
+
+      const data = await response.json()
+      setStatus('success')
+      setResult(data)
+    } catch (err) {
+      setStatus('error')
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    }
+  }, [toolCall])
+
+  const handleRetry = useCallback(() => {
+    setError(undefined)
+    handleApprove()
+  }, [handleApprove])
+
+  return (
+    <ToolInvocationCard
+      toolCall={toolCall}
+      status={status}
+      result={result}
+      error={error}
+      requiresApproval
+      onApprove={handleApprove}
+      onReject={() => {
+        setStatus('rejected')
+      }}
+      onRetry={handleRetry}
+      formatArguments
+      expandableResult
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The API endpoint{' '}
+            <code>/api/process-payment</code> is a placeholder. You'll need to
+            implement your own backend endpoint for tool execution.
+          </p>
+        </Callout>
+
+        <h2 id="integration-with-streaming">Integration with Streaming</h2>
+
+        <p>ToolInvocationCard works seamlessly with streaming messages:</p>
+
+        <EnhancedCodeBlock
+          code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react/internal'
+import { useStreamingSSE } from '@clarity-chat/react/internal'
+
+function StreamingWithTools() {
+  const { toolCalls, content } = useStreamingSSE({ api: '/api/stream' })
+
+  return (
+    <div className="space-y-4">
+      <StreamingMessage content={content} toolCalls={toolCalls} />
+      
+      {toolCalls.map((toolCall) => (
+        <ToolInvocationCard
+          key={toolCall.id}
+          toolCall={toolCall}
+          status="pending"
+          requiresApproval
+          onApprove={(tool) => {
+            // Execute tool
+          }}
+        />
+      ))}
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
         <h2 id="accessibility">Accessibility</h2>
 
         <p>ToolInvocationCard is built with accessibility in mind:</p>
 
         <ul>
-          <li>Semantic HTML structure</li>
-          <li>ARIA labels for all interactive elements</li>
-          <li>Keyboard navigation for buttons</li>
-          <li>Status announcements for screen readers</li>
-          <li>Focus management</li>
+          <li>✅ Semantic HTML structure</li>
+          <li>✅ ARIA labels for all interactive elements</li>
+          <li>✅ Keyboard navigation for buttons</li>
+          <li>✅ Status announcements for screen readers</li>
+          <li>✅ Focus management</li>
         </ul>
 
         <h2 id="related">Related</h2>

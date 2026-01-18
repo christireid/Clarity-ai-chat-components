@@ -45,9 +45,10 @@ export const ScrollArea = React.forwardRef<
             'overflow-y-auto overflow-x-hidden',
             // Prevent scroll chaining to parent elements
             'overscroll-contain',
-            // Hide scrollbar but keep scrolling functional
-            '[scrollbar-width:none] [-ms-overflow-style:none]',
-            '[&::-webkit-scrollbar]:hidden',
+            // Custom scrollbar styling with refined opacity
+            'scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent',
+            'hover:scrollbar-thumb-muted-foreground/40',
+            'transition-colors duration-200 ease-out',
             className
           )}
           {...props}

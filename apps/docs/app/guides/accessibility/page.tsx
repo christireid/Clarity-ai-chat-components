@@ -61,7 +61,7 @@ export default function AccessibilityGuidePage() {
   KeyboardShortcutsProvider,
   useKeyboardShortcut,
   defaultShortcuts,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function AppShortcuts({ children }: { children: React.ReactNode }) {
   useKeyboardShortcut(['Ctrl+Enter', 'Cmd+Enter'], () => sendMessage(), {
@@ -110,7 +110,7 @@ export function AppShell() {
   useFocusTrap,
   useRovingTabIndex,
   useFocusVisible,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function CommandPalette({ onClose }: { onClose: () => void }) {
   const dialogRef = useFocusTrap<HTMLDivElement>()
@@ -163,7 +163,7 @@ function CommandPalette({ onClose }: { onClose: () => void }) {
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ScreenReaderAnnouncement } from '@clarity-chat/react'
+          code={`import { ScreenReaderAnnouncement } from '@clarity-chat/react/internal'
 
 function StreamingStatus({ step }: { step: string }) {
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -271,7 +271,7 @@ import {
   createMockMessage,
   createMockMessages,
 } from '@clarity-chat/react/test-utils'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 describe('ChatWindow', () => {
   it('renders messages correctly', () => {
@@ -338,7 +338,7 @@ describe('ChatWindow', () => {
                 code={`import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import { renderWithTheme } from '@clarity-chat/react/test-utils'
-import { Message } from '@clarity-chat/react'
+import { Message } from '@clarity-chat/react/internal'
 
 describe('Message theming', () => {
   const mockMessage = {
@@ -393,7 +393,7 @@ import {
   createMockReadableStream,
   mockFetch,
 } from '@clarity-chat/react/test-utils'
-import { ChatWindow } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
 
 describe('Streaming', () => {
   it('displays streaming text progressively', async () => {
@@ -451,7 +451,7 @@ import {
   assertChatState,
   waitForChatUpdate,
 } from '@clarity-chat/react/test-utils'
-import { useClarityChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react/internal'
 
 // Mock the hook module
 vi.mock('@clarity-chat/react', async () => {
@@ -543,7 +543,7 @@ import {
   renderWithProviders,
   mockSpeechRecognition,
 } from '@clarity-chat/react/test-utils'
-import { VoiceInput } from '@clarity-chat/react'
+import { VoiceInput } from '@clarity-chat/react/internal'
 
 describe('VoiceInput', () => {
   beforeEach(() => {

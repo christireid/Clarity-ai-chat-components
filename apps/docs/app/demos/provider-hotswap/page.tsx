@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   RefreshCw,
@@ -28,24 +28,17 @@ import {
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 // Simple auto-scroll hook
-function useAutoScroll(options?: {
+function useAutoScroll(_options?: {
   dependencies?: unknown[]
   threshold?: number
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = () => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [])
-
-  // Auto-scroll when dependencies change
-  useEffect(() => {
-    scrollToBottom()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, options?.dependencies || [])
-
+  }
   return { scrollRef, scrollToBottom }
 }
 
@@ -118,8 +111,8 @@ const providerResponses: Record<string, Record<string, string>> = {
 
 interface Message {
   id: string
-  content: string
-  role: 'user' | 'assistant' | 'system'
+  text: string
+  sender: 'user' | 'bot'
   provider?: string
   timestamp: Date
   isStreaming?: boolean
@@ -157,8 +150,8 @@ export default function ProviderHotswapDemo() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hello! I'm GPT-4o from OpenAI. Try switching providers using the buttons above - your conversation will continue seamlessly!",
-      role: 'assistant',
+      text: "Hello! I'm GPT-4o from OpenAI. Try switching providers using the buttons above - your conversation will continue seamlessly!",
+      sender: 'bot',
       provider: 'openai',
       timestamp: new Date(),
     },
@@ -199,8 +192,8 @@ export default function ProviderHotswapDemo() {
     // Add a system message about the switch
     const switchMessage: Message = {
       id: generateId(),
-      content: `Switched to ${provider.name} (${provider.model}). The conversation continues...`,
-      role: 'assistant',
+      text: `Switched to ${provider.name} (${provider.model}). The conversation continues...`,
+      sender: 'bot',
       provider: providerId,
       timestamp: new Date(),
     }
@@ -217,7 +210,7 @@ export default function ProviderHotswapDemo() {
       currentText += (i > 0 ? ' ' : '') + words[i]
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId ? { ...msg, content: currentText } : msg
+          msg.id === messageId ? { ...msg, text: currentText } : msg
         )
       )
       scrollToBottom()
@@ -239,8 +232,8 @@ export default function ProviderHotswapDemo() {
 
     const userMessage: Message = {
       id: generateId(),
-      content: input,
-      role: 'user',
+      text: input,
+      sender: 'user',
       timestamp: new Date(),
     }
 
@@ -274,8 +267,8 @@ export default function ProviderHotswapDemo() {
       ...prev,
       {
         id: botMessageId,
-        content: '',
-        role: 'assistant',
+        text: '',
+        sender: 'bot',
         provider: activeProvider,
         timestamp: new Date(),
         isStreaming: true,
@@ -393,18 +386,18 @@ export default function ProviderHotswapDemo() {
                           : { opacity: 1, y: 0 }
                       }
                       className={`flex items-start gap-3 ${
-                        message.role === 'user' ? 'flex-row-reverse' : ''
+                        message.sender === 'user' ? 'flex-row-reverse' : ''
                       }`}
                     >
                       <div
                         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                          message.role === 'assistant'
+                          message.sender === 'bot'
                             ? msgProvider?.bgColor ||
                               'bg-gray-100 dark:bg-gray-800'
                             : 'bg-purple-100 dark:bg-purple-900'
                         }`}
                       >
-                        {message.role === 'assistant' ? (
+                        {message.sender === 'bot' ? (
                           <span className="text-lg">
                             {msgProvider?.logo || '🤖'}
                           </span>
@@ -414,13 +407,13 @@ export default function ProviderHotswapDemo() {
                       </div>
                       <div
                         className={`max-w-[75%] rounded-2xl px-4 py-3 ${
-                          message.role === 'assistant'
+                          message.sender === 'bot'
                             ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
                             : 'bg-brand-500 text-white rounded-tr-sm'
                         }`}
                       >
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {message.content}
+                          {message.text}
                           {message.isStreaming && (
                             <span className="inline-block w-2 h-4 ml-1 bg-brand-500 animate-pulse" />
                           )}
@@ -433,11 +426,9 @@ export default function ProviderHotswapDemo() {
                 {isTyping && (
                   <TypingIndicator
                     showAvatar
-                    avatarSrc=""
                     avatarFallback={currentProvider.logo}
                     label={`${currentProvider.name} is thinking...`}
                     variant="dots"
-                    className=""
                   />
                 )}
               </div>

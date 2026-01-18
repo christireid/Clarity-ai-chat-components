@@ -278,7 +278,7 @@ export function MessageList({
     >
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}
-        className="flex-1 min-h-0 bg-transparent px-2 py-3 sm:px-3"
+        className="flex-1 min-h-0 bg-transparent px-2 py-4 sm:px-4"
       >
         <AnimatePresence mode="wait" initial={false}>
           {/* Loading skeletons - only when no messages exist */}
@@ -289,7 +289,7 @@ export function MessageList({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: DURATION_SECONDS.fast }}
-              className="space-y-2 px-2 py-3"
+              className="space-y-4 px-4 py-6"
             >
               {Array.from({ length: loadingCount }).map((_, index) => (
                 <SkeletonMessage
@@ -320,7 +320,7 @@ export function MessageList({
           {messages.length > 0 && (
             <motion.div
               key="messages-container"
-              className="space-y-2 px-2 pb-3 sm:px-3"
+              className="space-y-3 px-2 pb-6 sm:px-4"
               variants={containerVariants}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -346,7 +346,6 @@ export function MessageList({
                 return (
                   <motion.div
                     key={message.id}
-                    data-message-id={message.id}
                     initial={{
                       opacity: 0,
                       y: prefersReducedMotion ? 0 : 10,

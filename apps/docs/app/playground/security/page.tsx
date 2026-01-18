@@ -25,7 +25,6 @@ const ATTACK_EXAMPLES = [
     name: 'JavaScript Protocol',
     category: 'XSS',
     severity: 'High',
-    // eslint-disable-next-line no-script-url
     text: 'javascript:alert("XSS")',
     expectedWarning: true,
   },

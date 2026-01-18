@@ -15,7 +15,6 @@ import {
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import type { AnalyticsSummary } from '@/lib/ai/analytics'
-import { logger } from '@/lib/logger'
 
 export interface AnalyticsDashboardProps {
   className?: string
@@ -48,7 +47,7 @@ export function AnalyticsDashboard({
       setSummary(data.data)
       setLastUpdated(new Date())
     } catch (err) {
-      logger.error('Failed to fetch analytics:', err)
+      console.error('Failed to fetch analytics:', err)
       setError(err instanceof Error ? err.message : 'Failed to load analytics')
     } finally {
       setLoading(false)

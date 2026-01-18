@@ -32,7 +32,7 @@ export default function UseVoiceInputPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useVoiceInput } from '@clarity-chat/react'
+            <code>{`import { useVoiceInput } from '@clarity-chat/react/internal'
 
 function VoiceInput() {
   const {

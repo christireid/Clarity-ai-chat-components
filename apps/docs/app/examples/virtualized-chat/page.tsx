@@ -46,25 +46,29 @@ export default function VirtualizedChatExamplePage() {
       <section className="docs-section">
         <h2>Live Demo</h2>
         <CodePlayground
-          initialCode={`function generateMessages(count) {
-  const now = Date.now()
+          initialCode={`import { useMemo, useState } from 'react'
+import {
+  MessageList,
+  useMessageListScroll,
+  useJumpToBottom,
+  Message,
+} from '@clarity-chat/react/internal'
+
+function generateMessages(count: number): Message[] {
   return Array.from({ length: count }, (_, index) => ({
     id: \`msg-\${index}\`,
-    chatId: 'demo',
     role: index % 2 === 0 ? 'assistant' : 'user',
     content: index % 2 === 0
       ? \`Insight #\${index}: Virtualization keeps the UI fast.\`
       : \`User question #\${index}: How does virtualization work?\`,
-    status: 'sent',
-    createdAt: new Date(now - (count - index) * 1000),
-    updatedAt: new Date(now - (count - index) * 1000),
   }))
 }
 
-function VirtualizedChat() {
-  const initialMessages = useMemo(() => generateMessages(500), [])
+export default function VirtualizedChat() {
+  const initialMessages = useMemo(() => generateMessages(5000), [])
   const [messages, setMessages] = useState(initialMessages)
-  const { showButton, scrollToBottom } = useJumpToBottom()
+  const { isNearBottom, handleScroll, shouldAutoScroll } = useMessageListScroll(messages)
+  const { showButton, newMessageCount, resetNewMessages, incrementNewMessages } = useJumpToBottom(isNearBottom)
 
   const addMessage = () => {
     const nextIndex = messages.length + 1
@@ -72,35 +76,42 @@ function VirtualizedChat() {
       ...prev,
       {
         id: \`msg-\${nextIndex}\`,
-        chatId: 'demo',
         role: nextIndex % 2 === 0 ? 'assistant' : 'user',
         content: \`New message \${nextIndex} added on demand.\`,
-        status: 'sent',
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     ])
+    incrementNewMessages()
   }
 
   return (
-    <div className="h-[520px] flex flex-col border rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-100 dark:bg-gray-800 border-b">
-        <h2 className="font-semibold text-sm">Virtualized Conversation ({messages.length} messages)</h2>
-        <button onClick={addMessage} className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+    <div className="h-[520px] flex flex-col border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 bg-bg-secondary border-b border-border">
+        <h2 className="font-semibold text-sm uppercase tracking-wide">Virtualized Conversation</h2>
+        <button onClick={addMessage} className="px-3 py-1 text-sm bg-brand-500 text-white rounded">
           Add message
         </button>
       </div>
-      <div className="flex-1 relative overflow-auto">
-        <TanStackMessageList
+      <div className="flex-1 relative">
+        <MessageList
+          virtualizationThreshold={120}
           messages={messages}
-          estimateSize={() => 60}
+          renderMessage={(message) => (
+            <div className="px-4 py-2 border-b border-border/60 text-sm">
+              <span className="font-semibold mr-2">{message.role === 'assistant' ? '🤖' : '🙋‍♀️'}</span>
+              {message.content}
+            </div>
+          )}
+          onScroll={handleScroll}
+          autoScrollToBottom={shouldAutoScroll}
         />
         {showButton && (
           <button
-            onClick={scrollToBottom}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-blue-500 text-white rounded-full shadow-lg"
+            onClick={() => {
+              resetNewMessages()
+            }}
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-brand-500 text-white rounded-full shadow-lg"
           >
-            Jump to latest
+            {newMessageCount} new messages — Jump to latest
           </button>
         )}
       </div>
@@ -108,7 +119,7 @@ function VirtualizedChat() {
   )
 }
 
-render(<VirtualizedChat />)`}
+render(<generateMessages />)`}
         />
       </section>
 

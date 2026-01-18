@@ -1,13 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 
-// Extend Window interface for Google Analytics gtag
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void
-  }
-}
-
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;

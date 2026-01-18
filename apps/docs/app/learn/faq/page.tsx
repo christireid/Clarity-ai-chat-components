@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 
 type FAQItem = {
   question: string
@@ -95,7 +95,7 @@ module.exports = {
           endpoint:
         </p>
         <EnhancedCodeBlock
-          code={`import { ClarityChat } from '@clarity-chat/react'
+          code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -184,7 +184,7 @@ function App() {
         <EnhancedCodeBlock
           code={`'use client'
 
-import { useClarityChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react/internal'
 
 export function ChatComponent() {
   const { messages } = useClarityChat({ api: '/api/chat' })
@@ -281,7 +281,7 @@ export function ChatComponent() {
           component:
         </p>
         <EnhancedCodeBlock
-          code={`import { MarkdownRenderer } from '@clarity-chat/react'
+          code={`import { MarkdownRenderer } from '@clarity-chat/react/internal'
 
 <MarkdownRenderer
   content={message.content}
@@ -318,7 +318,7 @@ export function ChatComponent() {
           HTML element (standard Tailwind approach). You can also force a theme:
         </p>
         <EnhancedCodeBlock
-          code={`import { ThemeProvider } from '@clarity-chat/react'
+          code={`import { ThemeProvider } from '@clarity-chat/react/internal'
 
 <ThemeProvider defaultTheme="dark">
   <ClarityChat api="/api/chat" />
@@ -402,7 +402,7 @@ export function ChatComponent() {
             <strong>Missing provider:</strong> Wrap your app with necessary
             providers
             <EnhancedCodeBlock
-              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react'
+              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react/internal'
 
 <ThemeProvider>
   <ToastProvider>
@@ -525,7 +525,7 @@ const message: Message = {
       <div className="space-y-4">
         <p>Use the token tracking hooks and components:</p>
         <EnhancedCodeBlock
-          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
+          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
 
 function Chat() {
   const { messages } = useClarityChat({ api: '/api/chat' })

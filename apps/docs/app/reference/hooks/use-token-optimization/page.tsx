@@ -46,14 +46,14 @@ export default function UseTokenOptimizationPage() {
           </p>
           <EnhancedCodeBlock
             code={`// Old (deprecated)
-import { useTokenOptimization } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react/internal'
 
 const { optimizePrompt } = useTokenOptimization({
   enablePromptShortening: true,
 })
 
 // New (recommended)
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
 
 const { optimizePrompt } = useTokenOptimizationEnhanced({
   preset: 'balanced', // or customize individual options

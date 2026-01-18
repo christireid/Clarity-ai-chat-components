@@ -98,7 +98,7 @@ export const EnhancedMarkdownRenderer = React.memo(
       enableMermaid = false,
       enableSyntaxHighlight = true,
       className,
-      codeTheme = 'dark',
+      codeTheme = 'light',
     } = config
 
     const containerRef = React.useRef<HTMLDivElement>(null)
@@ -115,7 +115,7 @@ export const EnhancedMarkdownRenderer = React.memo(
           mermaid.initialize({
             startOnLoad: false,
             theme,
-            securityLevel: 'strict',
+            securityLevel: 'loose',
             // Mermaid v11: Suppress error rendering to avoid inserting 'Syntax error' message to DOM
             // This allows us to handle errors gracefully in our UI
             suppressErrorRendering: true,

@@ -9,7 +9,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Message } from '@clarity-chat/types'
-import { logger } from '@/lib/logger'
 
 const BRANCHES_KEY = 'clarity-docs-assistant-branches'
 
@@ -96,7 +95,7 @@ function loadBranchStateFromStorage(): BranchState | null {
       }
     }
   } catch (e) {
-    logger.error('Failed to load branch state:', e)
+    console.error('Failed to load branch state:', e)
   }
   return null
 }
@@ -137,7 +136,7 @@ export function useBranching(
         localStorage.removeItem(BRANCHES_KEY)
       }
     } catch (e) {
-      logger.error('Failed to save branch state:', e)
+      console.error('Failed to save branch state:', e)
     }
   }, [branchState, isHydrated])
 

@@ -7,9 +7,6 @@
  * @packageDocumentation
  */
 
-// Re-export escapeHtml from canonical source
-export { escapeHtml } from '@clarity-chat/utils'
-
 /**
  * Parse line range string into a Set of line numbers
  *
@@ -48,6 +45,21 @@ export function parseLineRanges(rangeString?: string): Set<number> {
   }
 
   return result
+}
+
+/**
+ * Escape HTML special characters
+ *
+ * @param text - Raw text to escape
+ * @returns HTML-safe string
+ */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 
 /**

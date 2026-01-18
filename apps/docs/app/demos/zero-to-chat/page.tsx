@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
+import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 import { generateId, copyToClipboard, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
@@ -28,26 +28,28 @@ import {
 } from '@/lib/demos/analytics'
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
-const heroCode = `import { ClarityChat } from '@clarity-chat/react'
+const heroCode = `import { ClarityChat } from '@clarity-chat/react/internal'
 
 export default function App() {
   return (
     <ClarityChat
       api="/api/chat"
+      placeholder="Ask me anything..."
     />
   )
 }`
 
-const expandedCode = `import { ClarityChat } from '@clarity-chat/react'
+const expandedCode = `import { ClarityChat } from '@clarity-chat/react/internal'
 
 export default function App() {
   return (
     <ClarityChat
       api="/api/chat"
+      placeholder="Ask me anything..."
       theme="auto"
-      showHeader
-      showTokenCounter
-      onMessageCopy={(msg) => console.log('Copied:', msg)}
+      showTimestamps
+      enableMarkdown
+      onMessageSent={(msg) => logger.debug('Sent:', msg)}
     />
   )
 }`
@@ -291,16 +293,21 @@ export default function ZeroToChatDemo() {
                           <span className="text-cyan-300">api</span>=
                           <span className="text-green-400">"/api/chat"</span>
                           {'\n      '}
+                          <span className="text-cyan-300">placeholder</span>=
+                          <span className="text-green-400">
+                            "Ask me anything..."
+                          </span>
+                          {'\n      '}
                           <span className="text-cyan-300">theme</span>=
                           <span className="text-green-400">"auto"</span>
                           {'\n      '}
-                          <span className="text-cyan-300">showHeader</span>
+                          <span className="text-cyan-300">showTimestamps</span>
                           {'\n      '}
-                          <span className="text-cyan-300">showTokenCounter</span>
+                          <span className="text-cyan-300">enableMarkdown</span>
                           {'\n      '}
-                          <span className="text-cyan-300">onMessageCopy</span>=
+                          <span className="text-cyan-300">onMessageSent</span>=
                           <span className="text-yellow-300">
-                            {'{(msg) => console.log(\'Copied:\', msg)}'}
+                            {'{(msg) => logger.debug(msg)}'}
                           </span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>
@@ -332,6 +339,11 @@ export default function ZeroToChatDemo() {
                           {'\n      '}
                           <span className="text-cyan-300">api</span>=
                           <span className="text-green-400">"/api/chat"</span>
+                          {'\n      '}
+                          <span className="text-cyan-300">placeholder</span>=
+                          <span className="text-green-400">
+                            "Ask me anything..."
+                          </span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>
                           {'\n  '}){'\n'}
@@ -346,7 +358,7 @@ export default function ZeroToChatDemo() {
                 <div className="px-6 py-3 bg-gray-800 border-t border-gray-700">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-400">
-                      {showExpanded ? '13' : '9'} lines of code
+                      {showExpanded ? '14' : '8'} lines of code
                     </span>
                     <span className="text-green-400 flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
@@ -399,7 +411,7 @@ export default function ZeroToChatDemo() {
 
               {/* Messages */}
               <div
-                ref={scrollRef as React.RefObject<HTMLDivElement | null>}
+                ref={scrollRef as React.RefObject<HTMLDivElement>}
                 className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
               >
                 {messages.map((message) => (
@@ -444,11 +456,9 @@ export default function ZeroToChatDemo() {
                 {isTyping && (
                   <TypingIndicator
                     showAvatar
-                    avatarSrc=""
                     avatarFallback="AI"
                     label="Thinking..."
                     variant="dots"
-                    className=""
                   />
                 )}
               </div>

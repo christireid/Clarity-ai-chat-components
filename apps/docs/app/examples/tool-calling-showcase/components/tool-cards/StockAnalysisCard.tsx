@@ -7,7 +7,7 @@
  * and action buttons for further analysis.
  */
 
-import { memo, useMemo, useId } from 'react'
+import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { durations } from '@/lib/animations'
 import {
@@ -47,11 +47,9 @@ const ratingLabels: Record<string, string> = {
 function Sparkline({
   data,
   isPositive,
-  uniqueId,
 }: {
   data: number[]
   isPositive: boolean
-  uniqueId: string
 }) {
   if (data.length < 2) return null
 
@@ -72,7 +70,7 @@ function Sparkline({
     })
     .join(' ')
 
-  const gradientId = `sparkline-gradient-${uniqueId}`
+  const gradientId = `sparkline-gradient-${Math.random().toString(36).substr(2, 9)}`
 
   return (
     <svg width={width} height={height} className="overflow-visible">
@@ -151,7 +149,6 @@ export const StockAnalysisCard = memo(function StockAnalysisCard({
   onTrade,
 }: StockAnalysisCardProps) {
   const isPositive = data.change >= 0
-  const sparklineId = useId()
 
   // Memoize price history values to prevent recalculation on re-renders
   const priceHistoryValues = useMemo(
@@ -211,7 +208,7 @@ export const StockAnalysisCard = memo(function StockAnalysisCard({
         {/* Sparkline */}
         {priceHistoryValues.length > 0 && (
           <div className="mt-3 flex justify-end">
-            <Sparkline data={priceHistoryValues} isPositive={isPositive} uniqueId={sparklineId} />
+            <Sparkline data={priceHistoryValues} isPositive={isPositive} />
           </div>
         )}
       </div>

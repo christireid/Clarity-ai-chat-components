@@ -117,7 +117,7 @@ export function HeroChatMessageEditor({
           <ArrowRight className="w-3 h-3" />
           <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-xs">
             {typeof navigator !== 'undefined' &&
-            /mac/i.test(navigator.userAgent)
+            navigator.platform?.includes('Mac')
               ? '⌘'
               : 'Ctrl'}
             +Enter

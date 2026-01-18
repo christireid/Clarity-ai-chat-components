@@ -3,70 +3,57 @@
  *
  * @internal
  * These utilities are for internal use only and are not part of the public API.
- *
- * IMPORTANT: Prefer importing from @clarity-chat/utils when possible.
- * This file contains only React-specific utilities or thin wrappers.
+ * They provide common functionality used across the library.
  */
-
-// =============================================================================
-// Re-exports from @clarity-chat/utils (canonical source)
-// =============================================================================
-
-// Async utilities
-export {
-  debounce,
-  throttle,
-  retry,
-  sleep,
-} from '@clarity-chat/utils'
-
-// Format utilities
-export {
-  formatBytes,
-  formatRelativeTime,
-  truncate,
-} from '@clarity-chat/utils'
-
-// Cache utilities
-export { memoize } from '@clarity-chat/utils'
-
-// Math utilities
-export { clamp, calculatePercentage } from '@clarity-chat/utils'
-
-// Environment detection - re-export as computed constants for backward compatibility
-import {
-  isBrowser as _isBrowser,
-  isServer as _isServer,
-} from '@clarity-chat/utils'
 
 /**
- * Check if code is running in a browser environment
- * @deprecated Use isBrowser() function from @clarity-chat/utils instead
+ * Debounce a function
  */
-export const isBrowser = _isBrowser()
+export function debounce<T extends (...args: unknown[]) => unknown>(
+  fn: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
 
-/**
- * Check if code is running in a server environment
- * @deprecated Use isServer() function from @clarity-chat/utils instead
- */
-export const isServer = _isServer()
-
-// ID generation - re-export with wrapper for backward compatibility
-import {
-  generateId as _generateId,
-  generatePrefixedId,
-} from '@clarity-chat/utils'
-
-/**
- * Generate a unique ID (wrapper for backward compatibility with prefix support)
- */
-export function generateId(prefix = ''): string {
-  return prefix ? generatePrefixedId(prefix, '_') : _generateId()
+  return function debounced(...args: Parameters<T>) {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => {
+      fn(...args)
+      timeoutId = null
+    }, delay)
+  }
 }
 
-// =============================================================================
-// React-specific utilities (not in @clarity-chat/utils)
-// =============================================================================
+/**
+ * Throttle a function
+ */
+export function throttle<T extends (...args: unknown[]) => unknown>(
+  fn: T,
+  limit: number
+): (...args: Parameters<T>) => void {
+  let inThrottle = false
+
+  return function throttled(...args: Parameters<T>) {
+    if (!inThrottle) {
+      fn(...args)
+      inThrottle = true
+      setTimeout(() => {
+        inThrottle = false
+      }, limit)
+    }
+  }
+}
+
+/**
+ * Generate a unique ID
+ */
+export function generateId(prefix = ''): string {
+  const random = Math.random().toString(36).substring(2, 11)
+  const timestamp = Date.now().toString(36)
+  return prefix ? `${prefix}_${timestamp}_${random}` : `${timestamp}_${random}`
+}
 
 /**
  * Deep clone an object
@@ -132,6 +119,87 @@ export function deepMerge<T extends Record<string, unknown>>(
   return deepMerge(target, ...sources)
 }
 
+/**
+ * Clamp a number between min and max
+ */
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
+/**
+ * Sleep for a specified duration
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Retry an async operation with exponential backoff
+ */
+export async function retry<T>(
+  fn: () => Promise<T>,
+  options: {
+    maxAttempts?: number
+    baseDelay?: number
+    maxDelay?: number
+    shouldRetry?: (error: unknown) => boolean
+  } = {}
+): Promise<T> {
+  const {
+    maxAttempts = 3,
+    baseDelay = 1000,
+    maxDelay = 30000,
+    shouldRetry = () => true,
+  } = options
+
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn()
+    } catch (error) {
+      lastError = error
+
+      if (attempt === maxAttempts || !shouldRetry(error)) {
+        throw error
+      }
+
+      const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), maxDelay)
+      await sleep(delay)
+    }
+  }
+
+  throw lastError
+}
+
+/**
+ * Format bytes to human-readable string
+ */
+export function formatBytes(bytes: number, decimals: number = 2): string {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+/**
+ * Memoize a function with a single argument
+ */
+export function memoize<T, R>(fn: (arg: T) => R): (arg: T) => R {
+  const cache = new Map<T, R>()
+
+  return (arg: T): R => {
+    if (cache.has(arg)) {
+      return cache.get(arg)!
+    }
+
+    const result = fn(arg)
+    cache.set(arg, result)
+    return result
+  }
+}
 
 /**
  * Create a cancellable promise
@@ -166,6 +234,53 @@ export function cancellable<T>(promise: Promise<T>): {
 }
 
 /**
+ * Check if code is running in a browser environment
+ */
+export const isBrowser =
+  typeof window !== 'undefined' && typeof window.document !== 'undefined'
+
+/**
+ * Check if code is running in a server environment
+ */
+export const isServer = !isBrowser
+
+/**
+ * Format a date/timestamp as relative time (e.g., "2h ago", "Just now")
+ */
+export function formatRelativeTime(date: Date | number | undefined): string {
+  if (!date) return ''
+
+  const timestamp = date instanceof Date ? date.getTime() : date
+  const now = Date.now()
+  const diff = now - timestamp
+  const seconds = Math.floor(diff / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if (days > 0) return `${days}d ago`
+  if (hours > 0) return `${hours}h ago`
+  if (minutes > 0) return `${minutes}m ago`
+  return 'Just now'
+}
+
+/**
  * Alias for formatBytes - formats file size in human-readable format
  */
-export { formatBytes as formatFileSize } from '@clarity-chat/utils'
+export const formatFileSize = formatBytes
+
+/**
+ * Truncate a string to a maximum length with ellipsis
+ */
+export function truncate(str: string, maxLength: number): string {
+  if (str.length <= maxLength) return str
+  return str.slice(0, maxLength - 3) + '...'
+}
+
+/**
+ * Calculate percentage
+ */
+export function calculatePercentage(value: number, total: number): number {
+  if (total === 0) return 0
+  return Math.round((value / total) * 100)
+}

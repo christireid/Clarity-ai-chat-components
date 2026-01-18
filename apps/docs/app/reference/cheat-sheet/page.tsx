@@ -156,7 +156,7 @@ export default function CheatSheetPage() {
               Quick Start
             </h2>
             <pre className="cheat-sheet-code bg-muted p-3 rounded text-sm overflow-x-auto print:text-xs print:p-2">
-              <code>{`import { ClarityChat } from '@clarity-chat/react'
+              <code>{`import { ClarityChat } from '@clarity-chat/react/internal'
 
 <ClarityChat api="/api/chat" />`}</code>
             </pre>

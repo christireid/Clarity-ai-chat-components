@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
-import { ToastProvider, useStreaming as useStreamingSSE } from '@clarity-chat/react'
+import { useState, useEffect, useCallback } from 'react'
+import { ToastProvider, useStreamingSSE } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -11,110 +11,64 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// SSEEvent type for demo purposes (useStreaming provides similar functionality)
-type SSEEvent = { type: string; data: unknown }
-
-// Basic demo component showing useStreaming for SSE-like behavior
+// Basic demo component
 function BasicSSEDemo() {
-  const [errorState, setErrorState] = useState<Error | null>(null)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const [connected, setConnected] = useState(false)
 
-  // useStreaming returns: content, isStreaming, startStreaming, stopStreaming, reset
-  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreamingSSE({
-    onChunk: (chunk: string) => {
-      console.log('Received chunk:', chunk)
-    },
-    onComplete: (fullText: string) => {
-      console.log('Stream complete:', fullText)
+  const { status, data, events, error, connect, disconnect } = useStreamingSSE({
+    url: '/api/stream',
+    method: 'POST',
+    body: { message: 'Hello' },
+    onMessage: (event: MessageEvent) => {
+      console.log('Received event:', event)
     },
     onError: (err: Error) => {
-      console.error('Streaming Error:', err)
-      setErrorState(err)
+      console.error('SSE Error:', err)
     },
   })
 
-  // Simulate connecting to an SSE endpoint
-  const handleConnect = useCallback(async () => {
-    setErrorState(null)
-    abortControllerRef.current = new AbortController()
-
-    try {
-      // In a real app, you would fetch from an SSE endpoint
-      // For demo, we simulate a streaming response
-      const response = await fetch('/api/stream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Hello' }),
-        signal: abortControllerRef.current.signal,
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`)
-      }
-
-      if (response.body) {
-        await startStreaming(response.body, { signal: abortControllerRef.current.signal })
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        setErrorState(err)
-      }
+  useEffect(() => {
+    if (connected && status === 'idle') {
+      connect()
     }
-  }, [startStreaming])
-
-  const handleDisconnect = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-      abortControllerRef.current = null
-    }
-    stopStreaming()
-  }, [stopStreaming])
-
-  const handleReset = useCallback(() => {
-    handleDisconnect()
-    reset()
-    setErrorState(null)
-  }, [handleDisconnect, reset])
-
-  // Derive status from isStreaming state
-  const status = isStreaming ? 'streaming' : 'idle'
+  }, [connected, connect, status])
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <button
-            onClick={handleConnect}
-            disabled={isStreaming}
+            onClick={() => {
+              setConnected(true)
+              connect()
+            }}
+            disabled={status !== 'idle'}
             className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
           >
             Connect
           </button>
           <button
-            onClick={handleDisconnect}
-            disabled={!isStreaming}
+            onClick={() => {
+              disconnect()
+              setConnected(false)
+            }}
+            disabled={status === 'idle'}
             className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
           >
             Disconnect
-          </button>
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
-          >
-            Reset
           </button>
           <span className="text-sm text-muted-foreground">
             Status: {status}
           </span>
         </div>
-        {content && (
+        {data && (
           <div className="p-3 bg-muted rounded">
-            <p className="text-sm font-mono whitespace-pre-wrap">{content}</p>
+            <p className="text-sm">{data}</p>
           </div>
         )}
-        {errorState && (
+        {error && (
           <div className="p-3 bg-destructive/10 text-destructive rounded">
-            <p className="text-sm">Error: {errorState.message}</p>
+            <p className="text-sm">Error: {error.message}</p>
           </div>
         )}
       </div>
@@ -357,7 +311,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -369,7 +323,7 @@ import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@c
         <ComponentPreview
           title="Simple SSE Connection"
           description="Basic SSE connection with manual connect/disconnect"
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function SimpleSSE() {
@@ -408,7 +362,7 @@ function SimpleSSE() {
         <p>Send data with POST request:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithPost() {
   const {
@@ -449,7 +403,7 @@ function SSEWithPost() {
         <p>Add authentication token or use cookie-based auth:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithAuth() {
   const userToken = 'your-auth-token'
@@ -486,7 +440,7 @@ function SSEWithAuth() {
         <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithReconnect() {
   const {
@@ -534,8 +488,8 @@ function SSEWithReconnect() {
         <p>Handle different event types:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
-import type { SSEEvent } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+import type { SSEEvent } from '@clarity-chat/react/internal'
 
 function SSEWithEventHandling() {
   const {
@@ -582,7 +536,7 @@ function SSEWithEventHandling() {
         <p>Resume streaming from the last event ID after reconnection:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react'
+          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
 
 function SSEWithResume() {
   const {
@@ -643,8 +597,8 @@ function SSEWithResume() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { useStreamingSSE } from '@clarity-chat/react'
-import type { SSEEvent } from '@clarity-chat/react'
+import { useStreamingSSE } from '@clarity-chat/react/internal'
+import type { SSEEvent } from '@clarity-chat/react/internal'
 
 function CompleteSSEExample() {
   const [messages, setMessages] = useState<string[]>([])

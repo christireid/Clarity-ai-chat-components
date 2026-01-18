@@ -6,7 +6,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 
 const entryPointComparison: Prop[] = [
@@ -133,7 +133,7 @@ export default function BundleSizeGuidePage() {
               Best for: Full-featured apps that use most components
             </p>
             <EnhancedCodeBlock
-              code={`import { ClarityChat } from '@clarity-chat/react'
+              code={`import { ClarityChat } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
               language="tsx"
               showCopyButton

@@ -14,13 +14,13 @@ export default defineConfig({
   treeshake: true,
   outExtension({ format }) {
     return {
-      js: format === 'cjs' ? '.cjs' : '.js',
+      js: format === 'cjs' ? '.js' : '.mjs',
     }
   },
   async onSuccess() {
     // Post-build: Add 'use client' directive to compiled files
     const distDir = join(process.cwd(), 'dist')
-    const files = ['index.js', 'index.cjs']
+    const files = ['index.mjs', 'index.js']
     
     for (const file of files) {
       const filePath = join(distDir, file)

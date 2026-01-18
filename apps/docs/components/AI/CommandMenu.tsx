@@ -32,7 +32,7 @@ import {
   Search,
   Terminal,
 } from 'lucide-react'
-import { useReducedMotion } from '@clarity-chat/react'
+import { useReducedMotion } from '@clarity-chat/react/internal'
 import { cn } from '@/lib/utils'
 import { fadeIn, fadeInUp } from '@/lib/animations'
 
@@ -466,28 +466,18 @@ export const CommandMenu = memo(function CommandMenu({
         initial="initial"
         animate="animate"
         exit="exit"
-                role="listbox"
-                id="command-menu"
-                aria-label={
-                  triggerType === '/' ? 'Slash commands' : 'Mention suggestions'
-                }
-                aria-labelledby="command-menu-label"
-                aria-describedby="command-menu-description"
+        role="listbox"
+        aria-label={
+          triggerType === '/' ? 'Slash commands' : 'Mention suggestions'
+        }
         className={cn(
-          'absolute z-[100]',
-          // Responsive width - full width on mobile, fixed on desktop
-          'w-full sm:w-80 max-w-[calc(100vw-2rem)]',
-          'max-h-64 overflow-y-auto',
-          'bg-white dark:bg-gray-900 border border-border rounded-lg',
-          'shadow-xl backdrop-blur-xl',
-          // Position above input
-          'bottom-full mb-2',
-          // Align with input (left edge)
-          'left-0'
+          'absolute z-50 w-72 max-h-64 overflow-y-auto',
+          'bg-popover border border-border rounded-lg shadow-lg',
+          'backdrop-blur-sm'
         )}
         style={{
-          backgroundColor: 'var(--glass-bg-elevated)',
-          boxShadow: 'var(--glass-shadow-elevated)',
+          bottom: position?.top !== undefined ? `calc(100% + 8px)` : 'auto',
+          left: position?.left ?? 0,
         }}
       >
         {/* Header */}
@@ -561,22 +551,9 @@ export const CommandMenu = memo(function CommandMenu({
           ))}
         </div>
 
-        {/* Hidden description for screen readers */}
-        <div id="command-menu-description" className="sr-only">
-          {triggerType === '/' 
-            ? 'Use arrow keys to navigate, Enter to select, Escape to close'
-            : 'Use arrow keys to navigate mentions, Enter to select, Escape to close'}
-        </div>
-        
         {/* Footer hint */}
         <div className="px-3 py-1.5 border-t border-border/50 bg-muted/30">
-          <p 
-            id="command-menu-label"
-            className="sr-only"
-          >
-            {triggerType === '/' ? 'Slash commands' : 'Mention suggestions'}
-          </p>
-          <p className="text-[10px] text-muted-foreground flex items-center gap-2" aria-hidden="true">
+          <p className="text-[10px] text-muted-foreground flex items-center gap-2">
             <span className="flex items-center gap-1">
               <kbd className="px-1 py-0.5 text-[9px] font-mono bg-background border border-border rounded">
                 ↑↓

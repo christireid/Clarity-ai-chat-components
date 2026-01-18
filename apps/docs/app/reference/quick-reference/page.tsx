@@ -178,7 +178,7 @@ export default function QuickReferencePage() {
         <h2 className="text-xl font-bold mb-4">Minimal Setup</h2>
         <div className="relative">
           <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm">
-            <code>{`import { ClarityChat } from '@clarity-chat/react'
+            <code>{`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function App() {
   return <ClarityChat api="/api/chat" />
@@ -186,7 +186,7 @@ function App() {
           </pre>
           <div className="absolute top-2 right-2">
             <CopyButton
-              text={`import { ClarityChat } from '@clarity-chat/react'
+              text={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function App() {
   return <ClarityChat api="/api/chat" />

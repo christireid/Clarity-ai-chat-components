@@ -542,7 +542,7 @@ render(<ConditionalTooltips />)`}
 
         <h3>Tooltip with Keyboard Shortcut</h3>
         <pre>
-          <code>{`import { Tooltip, Button } from '@clarity-chat/primitives'
+          <code>{`import { Tooltip, Button } from '@clarity-chat/react/internal'
 
 const TooltipWithShortcut = () => (
   <Tooltip
@@ -594,7 +594,7 @@ const TooltipWithShortcut = () => (
 
         <h3>Tooltip Group</h3>
         <pre>
-          <code>{`import { TooltipProvider } from '@clarity-chat/primitives'
+          <code>{`import { TooltipProvider } from '@clarity-chat/react/internal'
 
 // Share delay settings across multiple tooltips
 <TooltipProvider delay={300}>
@@ -707,7 +707,7 @@ const TooltipWithShortcut = () => (
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { Tooltip, TooltipProps } from '@clarity-chat/primitives'
+          <code>{`import { Tooltip, TooltipProps } from '@clarity-chat/react/internal'
 
 interface TooltipProps {
   content: React.ReactNode

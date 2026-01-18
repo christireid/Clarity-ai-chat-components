@@ -46,7 +46,7 @@ export default function OfflineFirstChatRecipePage() {
         <h2>Basic Setup</h2>
         <p>Set up offline chat with automatic sync:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function OfflineChatApp() {
@@ -58,10 +58,10 @@ function OfflineChatApp() {
       <OfflineChatSync
         messages={messages}
         onStatusChange={(status) => {
-          console.log('Sync status:', status)
+          logger.debug('Sync status:', status)
         }}
         onSyncComplete={(synced) => {
-          console.log(\`Synced \${synced} messages\`)
+          logger.debug(\`Synced \${synced} messages\`)
         }}
       />
       {!isOnline && (
@@ -80,7 +80,7 @@ function OfflineChatApp() {
         <h2>Send Messages Offline</h2>
         <p>Send messages that queue when offline:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function OfflineMessageSender() {
   const { isOnline, sync } = useOfflineChat()
@@ -116,7 +116,7 @@ function OfflineMessageSender() {
         <h2>Load Stored Messages</h2>
         <p>Load messages from IndexedDB on app start:</p>
         <CodePlayground
-          initialCode={`import { useOfflineChat } from '@clarity-chat/react'
+          initialCode={`import { useOfflineChat } from '@clarity-chat/react/internal'
 
 function LoadStoredMessages() {
   const { storedMessages, loadStoredMessages, isOnline } = useOfflineChat()
@@ -167,7 +167,8 @@ function LoadStoredMessages() {
         <h2>Complete Example</h2>
         <p>Complete offline-first chat implementation:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat, ChatWindow, ChatInput } from '@clarity-chat/react'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+import { ChatWindow, ChatInput } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function CompleteOfflineChat() {

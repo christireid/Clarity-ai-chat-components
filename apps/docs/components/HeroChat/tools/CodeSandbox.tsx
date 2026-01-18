@@ -115,14 +115,10 @@ export function CodeSandbox({
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className="w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl border border-[#1e293b]"
-      style={{ backgroundColor: '#011627' }}
+      className="w-full max-w-lg overflow-hidden rounded-2xl bg-slate-900 shadow-2xl border border-slate-700"
     >
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-3 border-b border-[#1e293b]"
-        style={{ backgroundColor: '#0b2942' }}
-      >
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700">
         <div className="flex items-center gap-3">
           {/* Traffic lights */}
           <div className="flex gap-1.5">
@@ -134,7 +130,7 @@ export function CodeSandbox({
           {/* Title and language */}
           <div className="flex items-center gap-2">
             <Code2 className="w-4 h-4 text-slate-400" />
-            {title && <span className="text-sm text-[#d6deeb]">{title}</span>}
+            {title && <span className="text-sm text-slate-300">{title}</span>}
             <span
               className={`px-2 py-0.5 rounded text-xs font-medium text-white ${languageColors[language] || 'bg-slate-600'}`}
             >
@@ -176,20 +172,14 @@ export function CodeSandbox({
 
       {/* Description */}
       {description && (
-        <div
-          className="px-4 py-2 border-b border-[#1e293b]"
-          style={{ backgroundColor: '#0b294280' }}
-        >
+        <div className="px-4 py-2 bg-slate-800/50 border-b border-slate-700">
           <p className="text-sm text-slate-400">{description}</p>
         </div>
       )}
 
       {/* Code */}
       <div className="relative overflow-x-auto">
-        <pre
-          className="p-4 text-sm leading-relaxed"
-          style={{ backgroundColor: '#011627' }}
-        >
+        <pre className="p-4 text-sm leading-relaxed">
           <code className="font-mono">
             {lines.map((line, index) => (
               <motion.div
@@ -203,7 +193,7 @@ export function CodeSandbox({
                   {index + 1}
                 </span>
                 <span
-                  className="text-[#d6deeb]"
+                  className="text-slate-100"
                   dangerouslySetInnerHTML={{
                     __html: Prism.languages[prismLanguage]
                       ? Prism.highlight(
@@ -225,15 +215,12 @@ export function CodeSandbox({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          className="border-t border-[#1e293b]"
+          className="border-t border-slate-700"
         >
-          <div
-            className="px-4 py-2 text-xs text-slate-400 font-medium"
-            style={{ backgroundColor: '#0b2942' }}
-          >
+          <div className="px-4 py-2 bg-slate-800 text-xs text-slate-400 font-medium">
             Output
           </div>
-          <pre className="p-4 text-sm font-mono text-emerald-400 bg-[#010e17] max-h-32 overflow-auto">
+          <pre className="p-4 text-sm font-mono text-emerald-400 bg-slate-950 max-h-32 overflow-auto">
             {output}
           </pre>
         </motion.div>

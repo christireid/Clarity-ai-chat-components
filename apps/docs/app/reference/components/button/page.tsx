@@ -556,7 +556,7 @@ render(<ConfirmationButtons />)`}
 
         <h3>Split Button with Dropdown</h3>
         <pre>
-          <code>{`import { Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@clarity-chat/primitives'
+          <code>{`import { Button, Dropdown } from '@clarity-chat/react/internal'
 
 function SplitButton() {
   const actions = [
@@ -583,7 +583,7 @@ function SplitButton() {
 
         <h3>Button with Badge</h3>
         <pre>
-          <code>{`import { Button, Badge } from '@clarity-chat/primitives'
+          <code>{`import { Button, Badge } from '@clarity-chat/react/internal'
 
 <Button variant="primary">
   <div className="relative">
@@ -640,7 +640,7 @@ function SplitButton() {
 
         <h3>Button with Tooltip</h3>
         <pre>
-          <code>{`import { Button, Tooltip } from '@clarity-chat/primitives'
+          <code>{`import { Button, Tooltip } from '@clarity-chat/react/internal'
 
 <Tooltip content="Save your changes (⌘S)">
   <Button variant="primary" iconOnly>
@@ -752,7 +752,7 @@ function SplitButton() {
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { Button, ButtonProps } from '@clarity-chat/primitives'
+          <code>{`import { Button, ButtonProps } from '@clarity-chat/react/internal'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 

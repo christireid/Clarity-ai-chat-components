@@ -18,7 +18,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useCommandPalette } from '@clarity-chat/react'
+import { useCommandPalette } from '@clarity-chat/react/internal'
 
 // Decomposed components
 import {
@@ -39,12 +39,6 @@ import {
   HeroChatVoicePreview,
   HeroChatStorageIndicator,
   exportAllConversations,
-  // Reactions, Editing, and Branching
-  HeroChatBranching,
-  HeroChatCreateBranchDialog,
-  useConversationBranching,
-  useMessageEditing,
-  type ReactionType,
 } from './components'
 
 // Hooks
@@ -181,36 +175,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
     type: 'success' | 'error'
   } | null>(null)
 
-  // Reactions state (messageId -> reaction)
-  const [reactions, setReactions] = useState<Record<string, ReactionType>>({})
-
-  // Branching state
-  const [showBranchDialog, setShowBranchDialog] = useState<{
-    isOpen: boolean
-    messageId: string
-    messageContent: string
-  }>({ isOpen: false, messageId: '', messageContent: '' })
-
-  // -------------------------------------------------------------------------
-  // Branching and Editing hooks
-  // -------------------------------------------------------------------------
-  const {
-    branches,
-    currentBranch,
-    createBranch,
-    switchBranch,
-    deleteBranch,
-    backToMain,
-    getBranchesForMessage,
-  } = useConversationBranching(currentConversation?.id || null)
-
-  const {
-    editingMessageId,
-    startEditing,
-    stopEditing,
-    isEditing,
-  } = useMessageEditing()
-
   // -------------------------------------------------------------------------
   // Library hooks
   // -------------------------------------------------------------------------
@@ -303,63 +267,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
     stopVoiceInput,
     showToast,
   ])
-
-  // -------------------------------------------------------------------------
-  // Handle reactions
-  // -------------------------------------------------------------------------
-  const handleReaction = useCallback((messageId: string, reaction: ReactionType) => {
-    setReactions(prev => ({
-      ...prev,
-      [messageId]: reaction,
-    }))
-    if (reaction === 'like') {
-      showToast('Thanks for the feedback!')
-    } else if (reaction === 'dislike') {
-      showToast('We\'ll work to improve')
-    }
-  }, [showToast])
-
-  // -------------------------------------------------------------------------
-  // Handle message editing
-  // -------------------------------------------------------------------------
-  const handleEditSave = useCallback(async (messageId: string, newContent: string) => {
-    // Find the message and regenerate from that point
-    const messageIndex = messages.findIndex(m => m.id === messageId)
-    if (messageIndex === -1) return
-
-    // Clear messages after this one and send the edited message
-    // This will trigger a new response
-    stopEditing()
-    await sendMessage(newContent)
-    showToast('Message updated')
-  }, [messages, sendMessage, stopEditing, showToast])
-
-  // -------------------------------------------------------------------------
-  // Handle branch creation
-  // -------------------------------------------------------------------------
-  const handleCreateBranch = useCallback((messageId: string, name?: string) => {
-    // Convert messages with Date timestamps for the branching hook
-    const messagesWithDateTimestamps = messages.map(m => ({
-      ...m,
-      timestamp: new Date(m.timestamp),
-    }))
-    const branch = createBranch(messageId, messagesWithDateTimestamps, name)
-    if (branch) {
-      showToast(`Created branch: ${branch.name}`)
-    }
-    setShowBranchDialog({ isOpen: false, messageId: '', messageContent: '' })
-  }, [createBranch, messages, showToast])
-
-  const openBranchDialog = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (message) {
-      setShowBranchDialog({
-        isOpen: true,
-        messageId,
-        messageContent: message.content.slice(0, 100) + (message.content.length > 100 ? '...' : ''),
-      })
-    }
-  }, [messages])
 
   // -------------------------------------------------------------------------
   // Command palette actions
@@ -516,23 +423,12 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
           deleteMessage(messageId)
           showToast('Message deleted')
           break
-        case 'edit':
-          // Only allow editing user messages
-          if (message.role === 'user') {
-            startEditing(messageId)
-          } else {
-            showToast('Can only edit your messages', 'error')
-          }
-          break
-        case 'branch':
-          openBranchDialog(messageId)
-          break
         default:
           showToast('Action not implemented yet')
       }
       setContextMenu(null)
     },
-    [messages, copyMessage, regenerateMessage, deleteMessage, showToast, startEditing, openBranchDialog]
+    [messages, copyMessage, regenerateMessage, deleteMessage, showToast]
   )
 
   // -------------------------------------------------------------------------
@@ -573,7 +469,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
   const displayMessages = messages.map((m) => ({
     ...m,
     timestamp: new Date(m.timestamp),
-    reaction: reactions[m.id] || null,
   }))
 
   // -------------------------------------------------------------------------
@@ -616,23 +511,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
         conversationCount={conversations.length}
       />
 
-      {/* Branch indicator (when in a branch or when branches exist) */}
-      {(currentBranch || branches.length > 0) && (
-        <div className="relative z-10 px-4 py-2 border-b border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-          <HeroChatBranching
-            currentBranch={currentBranch}
-            branches={branches}
-            onCreateBranch={(parentMessageId, name) => handleCreateBranch(parentMessageId, name)}
-            onSwitchBranch={switchBranch}
-            onDeleteBranch={(branchId) => {
-              deleteBranch(branchId)
-              showToast('Branch deleted')
-            }}
-            onBackToMain={backToMain}
-          />
-        </div>
-      )}
-
       {/* Messages */}
       <div
         ref={containerRef}
@@ -670,17 +548,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
                   messageRole: message.role,
                 })
               }}
-              // Reactions
-              onReact={handleReaction}
-              onCopyMessage={copyMessage}
-              onRegenerateMessage={regenerateMessage}
-              // Editing
-              isEditing={isEditing(message.id)}
-              onEditSave={handleEditSave}
-              onEditCancel={stopEditing}
-              // Branching
-              branchCount={getBranchesForMessage(message.id).length}
-              onShowBranches={openBranchDialog}
             />
           ))}
         </AnimatePresence>
@@ -748,14 +615,6 @@ function HeroChatInner({ className = '' }: HeroChatProps) {
 
       {/* Toast */}
       <HeroChatToast toast={toast} />
-
-      {/* Branch Creation Dialog */}
-      <HeroChatCreateBranchDialog
-        isOpen={showBranchDialog.isOpen}
-        onClose={() => setShowBranchDialog({ isOpen: false, messageId: '', messageContent: '' })}
-        onConfirm={(name) => handleCreateBranch(showBranchDialog.messageId, name)}
-        messagePreview={showBranchDialog.messageContent}
-      />
     </div>
   )
 }

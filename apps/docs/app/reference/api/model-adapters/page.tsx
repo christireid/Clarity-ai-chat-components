@@ -100,7 +100,7 @@ export default function ModelAdaptersAPIPage() {
         <p>OpenAI GPT models adapter:</p>
         <CodeBlock
           language="typescript"
-          code={`import { openAIAdapter } from '@clarity-chat/react'
+          code={`import { openAIAdapter } from '@clarity-chat/react/internal'
 
 const response = await openAIAdapter.chat(messages, {
   provider: 'openai',
@@ -113,7 +113,7 @@ const response = await openAIAdapter.chat(messages, {
         <h3>anthropicAdapter</h3>
         <CodeBlock
           language="typescript"
-          code={`import { anthropicAdapter } from '@clarity-chat/react'
+          code={`import { anthropicAdapter } from '@clarity-chat/react/internal'
 
 const response = await anthropicAdapter.chat(messages, {
   provider: 'anthropic',
@@ -125,7 +125,7 @@ const response = await anthropicAdapter.chat(messages, {
         <h3>googleAdapter</h3>
         <CodeBlock
           language="typescript"
-          code={`import { googleAdapter } from '@clarity-chat/react'
+          code={`import { googleAdapter } from '@clarity-chat/react/internal'
 
 const response = await googleAdapter.chat(messages, {
   provider: 'google',

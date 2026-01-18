@@ -93,7 +93,7 @@ export default function OutputPreferenceSelectorPage() {
         <h2>Basic Usage</h2>
         <p>Select output preference with default configuration:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
 
 function ChatWithPreference() {
   const [preference, setPreference] = React.useState('balanced')
@@ -123,7 +123,7 @@ render(<ChatWithPreference />)`}
           tokens:
         </p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
 
 function TokenAwareSelector() {
   const [preference, setPreference] = React.useState('balanced')
@@ -147,7 +147,7 @@ function TokenAwareSelector() {
         <h2>Task-Specific Preferences</h2>
         <p>Configure task-specific token calculations:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
 
 function TaskSpecificSelector() {
   return (
@@ -171,7 +171,7 @@ function TaskSpecificSelector() {
         <h2>Display Modes</h2>
         <p>Use compact or expanded display modes:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
 
 function CompactSelector() {
   return (

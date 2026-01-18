@@ -92,8 +92,8 @@ const accentColors = [
 
 interface PreviewMessage {
   id: string
-  content: string
-  role: 'user' | 'assistant' | 'system'
+  text: string
+  sender: 'user' | 'bot'
   timestamp: Date
 }
 
@@ -103,20 +103,20 @@ const FIXED_BASE_TIME = new Date('2025-01-11T10:30:00').getTime()
 const previewMessages: PreviewMessage[] = [
   {
     id: '1',
-    content: 'Hello! How can I help you today?',
-    role: 'assistant',
+    text: 'Hello! How can I help you today?',
+    sender: 'bot',
     timestamp: new Date(FIXED_BASE_TIME - 60000),
   },
   {
     id: '2',
-    content: 'I need help with my React project.',
-    role: 'user',
+    text: 'I need help with my React project.',
+    sender: 'user',
     timestamp: new Date(FIXED_BASE_TIME - 30000),
   },
   {
     id: '3',
-    content: "Of course! I'd be happy to help with your React project. What specifically would you like assistance with?",
-    role: 'assistant',
+    text: "Of course! I'd be happy to help with your React project. What specifically would you like assistance with?",
+    sender: 'bot',
     timestamp: new Date(FIXED_BASE_TIME),
   },
 ]
@@ -157,7 +157,7 @@ export default function CustomizationPlaygroundDemo() {
     const accentColor = getConfigValue('accentColor')
     if (accentColor !== '#3b82f6') props.push(`accentColor="${accentColor}"`)
 
-    return `import { ClarityChat } from '@clarity-chat/react'
+    return `import { ClarityChat } from '@clarity-chat/react/internal'
 
 export default function Chat() {
   return (
@@ -186,16 +186,16 @@ export default function Chat() {
   const showAvatars = getConfigValue('showAvatars')
 
   // Get message style classes
-  const getMessageClasses = (role: 'user' | 'assistant' | 'system') => {
+  const getMessageClasses = (sender: 'user' | 'bot') => {
     const base = 'px-4 py-3'
 
     if (messageStyle === 'bubbles') {
-      return role === 'assistant'
+      return sender === 'bot'
         ? `${base} rounded-2xl rounded-tl-sm bg-gray-100 dark:bg-gray-800`
         : `${base} rounded-2xl rounded-tr-sm text-white`
     }
     if (messageStyle === 'flat') {
-      return role === 'assistant'
+      return sender === 'bot'
         ? `${base} bg-gray-50 dark:bg-gray-900 border-l-4`
         : `${base} bg-gray-50 dark:bg-gray-900 border-l-4`
     }
@@ -411,7 +411,7 @@ export default function Chat() {
                       key={message.id}
                       layout
                       className={`flex items-start gap-3 ${
-                        message.role === 'user' ? 'flex-row-reverse' : ''
+                        message.sender === 'user' ? 'flex-row-reverse' : ''
                       }`}
                     >
                       <AnimatePresence>
@@ -428,7 +428,7 @@ export default function Chat() {
                               prefersReducedMotion ? { duration: 0 } : undefined
                             }
                             className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                              message.role === 'assistant'
+                              message.sender === 'bot'
                                 ? previewTheme === 'dark'
                                   ? 'bg-gray-700'
                                   : 'bg-gray-200'
@@ -436,12 +436,12 @@ export default function Chat() {
                             }`}
                             style={{
                               backgroundColor:
-                                message.role === 'user'
+                                message.sender === 'user'
                                   ? accentColor
                                   : undefined,
                             }}
                           >
-                            {message.role === 'assistant' ? (
+                            {message.sender === 'bot' ? (
                               <Bot
                                 className={`w-5 h-5 ${previewTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
                               />
@@ -453,10 +453,10 @@ export default function Chat() {
                       </AnimatePresence>
                       <div className="max-w-[75%]">
                         <div
-                          className={getMessageClasses(message.role)}
+                          className={getMessageClasses(message.sender)}
                           style={{
                             backgroundColor:
-                              message.role === 'user' &&
+                              message.sender === 'user' &&
                               messageStyle === 'bubbles'
                                 ? accentColor
                                 : undefined,
@@ -469,9 +469,9 @@ export default function Chat() {
                               previewTheme === 'dark'
                                 ? 'text-gray-100'
                                 : 'text-gray-900'
-                            } ${message.role === 'user' && messageStyle === 'bubbles' ? 'text-white' : ''}`}
+                            } ${message.sender === 'user' && messageStyle === 'bubbles' ? 'text-white' : ''}`}
                           >
-                            {message.content}
+                            {message.text}
                           </p>
                         </div>
                         <AnimatePresence>
@@ -497,7 +497,7 @@ export default function Chat() {
                                 previewTheme === 'dark'
                                   ? 'text-gray-500'
                                   : 'text-gray-400'
-                              } ${message.role === 'user' ? 'text-right' : ''}`}
+                              } ${message.sender === 'user' ? 'text-right' : ''}`}
                             >
                               {message.timestamp.toLocaleTimeString([], {
                                 hour: '2-digit',

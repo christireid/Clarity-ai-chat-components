@@ -87,8 +87,8 @@ export default function PromptContainerPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { PromptContainer, useFileAttachments } from '@clarity-chat/react'
-import type { SuggestionCategory, FileAttachment } from '@clarity-chat/react'
+        code={`import { PromptContainer, useFileAttachments } from '@clarity-chat/react/internal'
+import type { SuggestionCategory, FileAttachment } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -96,8 +96,8 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { PromptContainer } from '@clarity-chat/react'
-import { ChatInput } from '@clarity-chat/react'
+        code={`import { PromptContainer } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react/internal'
 
 function Example() {
   const suggestions = [
@@ -136,7 +136,7 @@ function Example() {
       <h2 id="with-attachments">With File Attachments</h2>
 
       <EnhancedCodeBlock
-        code={`import { PromptContainer, useFileAttachments } from '@clarity-chat/react'
+        code={`import { PromptContainer, useFileAttachments } from '@clarity-chat/react/internal'
 
 function Example() {
   const {

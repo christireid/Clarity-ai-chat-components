@@ -12,10 +12,6 @@
 
 import type { Message } from '@clarity-chat/types'
 import type { TokenOptimizationConfig } from './types'
-import {
-  MODEL_REGISTRY,
-  tryGetModelConfig,
-} from '../utils/tokenization/model-registry'
 
 // =============================================================================
 // Types
@@ -57,68 +53,77 @@ export interface TokenEstimate {
 }
 
 // =============================================================================
-// Token Estimation by Model (derived from MODEL_REGISTRY)
+// Token Estimation by Model
 // =============================================================================
 
 /**
- * Default characters per token for unknown models
+ * Model-specific token estimation multipliers
+ * Different models have different tokenization schemes
  */
-const DEFAULT_CHARS_PER_TOKEN = 4
+const MODEL_CHAR_PER_TOKEN: Record<string, number> = {
+  // OpenAI models
+  'gpt-4': 4,
+  'gpt-4-turbo': 4,
+  'gpt-4-turbo-preview': 4,
+  'gpt-4o': 4,
+  'gpt-4o-mini': 4,
+  'gpt-3.5-turbo': 4,
+  'gpt-3.5-turbo-16k': 4,
 
-/**
- * Default pricing (USD per 1K tokens) for unknown models
- */
-const DEFAULT_PRICING = { input: 0.001, output: 0.002 }
+  // Anthropic models
+  'claude-3-opus': 4,
+  'claude-3-sonnet': 4,
+  'claude-3-haiku': 4,
+  'claude-3-5-sonnet': 4,
 
-/**
- * Get characters per token for a model
- * Uses MODEL_REGISTRY as the canonical source
- */
-function getCharPerToken(model: string): number {
-  // Try exact match first
-  const config = tryGetModelConfig(model)
-  if (config) {
-    return config.charsPerToken
-  }
+  // Other models
+  'mistral-7b': 4.5,
+  'llama-3': 4.2,
+  'gemini-pro': 4,
 
-  // Fuzzy match against registry
-  const modelLower = model.toLowerCase()
-  for (const [id, cfg] of Object.entries(MODEL_REGISTRY)) {
-    if (modelLower.includes(id.toLowerCase())) {
-      return cfg.charsPerToken
-    }
-  }
-
-  return DEFAULT_CHARS_PER_TOKEN
+  // Default
+  default: 4,
 }
 
 /**
- * Get pricing for a model (converted to per-1K tokens for backwards compatibility)
- * Uses MODEL_REGISTRY as the canonical source
+ * Model pricing (USD per 1K tokens)
+ */
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  'gpt-4': { input: 0.03, output: 0.06 },
+  'gpt-4-turbo': { input: 0.01, output: 0.03 },
+  'gpt-4o': { input: 0.005, output: 0.015 },
+  'gpt-4o-mini': { input: 0.00015, output: 0.0006 },
+  'gpt-3.5-turbo': { input: 0.0005, output: 0.0015 },
+  'claude-3-opus': { input: 0.015, output: 0.075 },
+  'claude-3-sonnet': { input: 0.003, output: 0.015 },
+  'claude-3-haiku': { input: 0.00025, output: 0.00125 },
+  'claude-3-5-sonnet': { input: 0.003, output: 0.015 },
+  default: { input: 0.001, output: 0.002 },
+}
+
+/**
+ * Get characters per token for a model
+ */
+function getCharPerToken(model: string): number {
+  // Find best match
+  for (const [key, value] of Object.entries(MODEL_CHAR_PER_TOKEN)) {
+    if (model.toLowerCase().includes(key.toLowerCase())) {
+      return value
+    }
+  }
+  return MODEL_CHAR_PER_TOKEN.default
+}
+
+/**
+ * Get pricing for a model
  */
 function getModelPricing(model: string): { input: number; output: number } {
-  // Try exact match first
-  const config = tryGetModelConfig(model)
-  if (config) {
-    // Convert from per-1M to per-1K for backwards compatibility
-    return {
-      input: config.inputCostPer1M / 1000,
-      output: config.outputCostPer1M / 1000,
+  for (const [key, value] of Object.entries(MODEL_PRICING)) {
+    if (model.toLowerCase().includes(key.toLowerCase())) {
+      return value
     }
   }
-
-  // Fuzzy match against registry
-  const modelLower = model.toLowerCase()
-  for (const [id, cfg] of Object.entries(MODEL_REGISTRY)) {
-    if (modelLower.includes(id.toLowerCase())) {
-      return {
-        input: cfg.inputCostPer1M / 1000,
-        output: cfg.outputCostPer1M / 1000,
-      }
-    }
-  }
-
-  return DEFAULT_PRICING
+  return MODEL_PRICING.default
 }
 
 /**

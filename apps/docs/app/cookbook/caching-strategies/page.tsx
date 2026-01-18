@@ -34,7 +34,7 @@ export default function CachingStrategiesPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react'
+          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react/internal'
 
 function CachedChat() {
   const cache = useSmartCache({
@@ -56,7 +56,7 @@ function CachedChat() {
 
     // Callback when cache is hit
     onCacheHit: (cached) => {
-      console.log('Cache hit! Saved API call.')
+      logger.debug('Cache hit! Saved API call.')
     },
   })
 
@@ -73,7 +73,7 @@ function CachedChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { createCacheProvider } from '@clarity-chat/react'
+          code={`import { createCacheProvider } from '@clarity-chat/react/internal'
 
 // Layer 1: In-memory cache (fastest, limited size)
 const memoryCache = createCacheProvider({
@@ -115,7 +115,7 @@ const cache = createCacheProvider({
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react'
+          code={`import { useSmartCache } from '@clarity-chat/react/internal'
 
 const cache = useSmartCache({
   // Use embeddings for similarity matching
@@ -158,7 +158,7 @@ const cache = useSmartCache({
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react'
+          code={`import { useSmartCache, useClarityChat } from '@clarity-chat/react/internal'
 
 function StreamingCachedChat() {
   const cache = useSmartCache({
@@ -176,7 +176,7 @@ function StreamingCachedChat() {
 
     onCacheHit: (cached) => {
       // Cached response will stream with animation
-      console.log('Replaying cached response')
+      logger.debug('Replaying cached response')
     },
   })
 
@@ -219,7 +219,7 @@ function StreamingCachedChat() {
 
   // Manual invalidation
   onInvalidate: (key) => {
-    console.log(\`Cache invalidated: \${key}\`)
+    logger.debug(\`Cache invalidated: \${key}\`)
   },
 })
 
@@ -250,7 +250,7 @@ cache.invalidatePattern(/^user-.*/) // Regex pattern`}
 
 // Access cache stats
 const stats = cache.getStats()
-console.log({
+logger.debug({
   hitRate: stats.hitRate,      // 0.65 = 65% hit rate
   missRate: stats.missRate,    // 0.35
   totalHits: stats.hits,       // 1234

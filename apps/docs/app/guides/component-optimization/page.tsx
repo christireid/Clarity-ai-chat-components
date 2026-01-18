@@ -38,7 +38,7 @@ export default function ComponentOptimizationPage() {
         <p>Optimize component rendering:</p>
         <CodePlayground
           initialCode={`import { memo, useMemo } from 'react'
-import { Message } from '@clarity-chat/react'
+import { Message } from '@clarity-chat/react/internal'
 
 // Memoize expensive components
 const OptimizedMessage = memo(({ message }: { message: Message }) => {
@@ -69,7 +69,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
         <p>Reduce unnecessary re-renders:</p>
         <CodePlayground
           initialCode={`import { useCallback, useMemo } from 'react'
-import { ChatInput } from '@clarity-chat/react'
+import { ChatInput } from '@clarity-chat/react/internal'
 
 function OptimizedChat() {
   const [messages, setMessages] = useState([])
@@ -147,12 +147,12 @@ const SettingsPage = lazy(() => import('./SettingsPage'))`}
         <p>Optimize bundle size:</p>
         <CodePlayground
           initialCode={`// Import only what you need
-import { ChatWindow } from '@clarity-chat/react'
-// Instead of: import * from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react/internal'
+// Instead of: import * from '@clarity-chat/react/internal'
 
 // Tree-shake unused code
-import { useClarityChat } from '@clarity-chat/react'
-// Instead of: import { useClarityChat } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react/hooks'
+// Instead of: import { useClarityChat } from '@clarity-chat/react/internal'
 
 // Use dynamic imports for optional features
 function ConditionalFeature() {
@@ -190,7 +190,7 @@ export default {
         <p>Measure component performance:</p>
         <CodePlayground
           initialCode={`import { Profiler } from 'react'
-import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
+import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
 
 function MeasuredChat() {
   const onRenderCallback = (

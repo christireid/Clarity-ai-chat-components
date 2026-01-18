@@ -105,8 +105,8 @@ export default function ROICalculatorPage() {
     const savingsPercent = (totalSavings / inputs.monthlyApiCost) * 100
     const annualSavings = totalSavings * 12
 
-    // Payback period calculation based on Enterprise pricing ($2,499/year = ~$208/month)
-    const clarityMonthlyCost = 208
+    // Payback period calculation (assuming ~$500/month for Clarity Chat enterprise)
+    const clarityMonthlyCost = 500
     let paybackPeriod = 'Immediate'
     if (totalSavings > clarityMonthlyCost) {
       paybackPeriod = 'Immediate ROI'
@@ -508,7 +508,7 @@ export default function ROICalculatorPage() {
   autoOptimize,
   PromptCacheManager,
   useTokenOptimization
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 // 1. Set up prompt caching
 const cacheManager = new PromptCacheManager({

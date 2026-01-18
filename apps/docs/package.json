@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev -H localhost",
+    "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext ts,tsx --ignore-pattern scripts --max-warnings 800",
@@ -19,10 +19,7 @@
     "perf:analyze": "cross-env ANALYZE=true next build",
     "generate:llms": "tsx scripts/generate-llms.ts",
     "generate:llms:preview": "tsx scripts/generate-llms.ts --dry-run",
-    "generate:llms:watch": "tsx scripts/generate-llms.ts --watch",
-    "index-docs": "tsx scripts/index-docs.ts",
-    "index-embeddings": "tsx scripts/index-embeddings.ts",
-    "index-all": "npm run index-docs && npm run index-embeddings"
+    "generate:llms:watch": "tsx scripts/generate-llms.ts --watch"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.24",

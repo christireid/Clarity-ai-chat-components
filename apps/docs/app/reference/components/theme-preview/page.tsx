@@ -76,7 +76,7 @@ export default function ThemePreviewPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 
 function App() {
@@ -257,7 +257,7 @@ interface CompleteThemeConfig {
         <h2 className="text-3xl font-semibold mb-4">Theme Builder Example</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -354,7 +354,7 @@ function ThemeBuilder() {
         <h2 className="text-3xl font-semibold mb-4">Settings Page Example</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { useTheme } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -419,7 +419,7 @@ function ThemeSettings() {
         </h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemeComparison } from '@clarity-chat/react'
+            <code>{`import { ThemeComparison } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -510,7 +510,7 @@ function ThemeShowcase() {
         </h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 import { ThemeProvider } from '@clarity-chat/react/theme'
 import { useState } from 'react'
 
@@ -626,8 +626,8 @@ function ThemeImporter() {
   ThemePreviewProps,
   ThemeComparisonProps,
   CompleteThemeConfig
-} from '@clarity-chat/react'
-import { ThemePreview, ThemeComparison } from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
+import { ThemePreview, ThemeComparison } from '@clarity-chat/react/internal'
 
 // Type-safe theme preview
 const preview Props: ThemePreviewProps = {
@@ -703,7 +703,7 @@ function TypedThemePreview() {
         </p>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemePreview } from '@clarity-chat/react'
+            <code>{`import { ThemePreview } from '@clarity-chat/react/internal'
 
 function StyledThemePreview() {
   return (

@@ -18,7 +18,7 @@ export default function LinkPreviewPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { LinkPreview } from '@clarity-chat/react'
+          <code>{`import { LinkPreview } from '@clarity-chat/react/internal'
 
 const metadata = {
   url: 'https://example.com',

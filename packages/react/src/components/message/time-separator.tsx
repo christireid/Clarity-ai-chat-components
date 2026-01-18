@@ -46,7 +46,7 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
         damping: 20,
         stiffness: 280,
       }}
-      className={cn('relative flex items-center justify-center py-6', className)}
+      className={cn('relative flex items-center justify-center py-4', className)}
       role="separator"
       aria-label={`Messages from ${children}`}
     >

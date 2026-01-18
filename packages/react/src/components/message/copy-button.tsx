@@ -214,9 +214,8 @@ export function CopyButton({
     return (
       <Tooltip
         content={copied ? 'Copied!' : tooltipText}
-        side="bottom"
+        side="top"
         delay={300}
-        sideOffset={8}
       >
         {button}
       </Tooltip>

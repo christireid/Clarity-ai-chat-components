@@ -6,7 +6,6 @@
  */
 
 import OpenAI from 'openai'
-import { logger } from '@/lib/logger'
 
 // OpenAI client (singleton)
 let openaiClient: OpenAI | null = null
@@ -55,7 +54,7 @@ export async function generateEmbedding(
 
     return response.data[0].embedding
   } catch (error) {
-    logger.error('Error generating embedding:', error)
+    console.error('Error generating embedding:', error)
     throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -91,7 +90,7 @@ export async function generateEmbeddingsBatch(
 
     return embeddings
   } catch (error) {
-    logger.error('Error generating embeddings batch:', error)
+    console.error('Error generating embeddings batch:', error)
     throw new Error(`Failed to generate embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

@@ -1,13 +1,8 @@
-// TODO: CommandPalette and CommandItem are planned but not yet implemented
-// in @clarity-chat/react. This page documents the intended API and features.
-
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { ToastProvider } from '@clarity-chat/react'
-// TODO: Uncomment when implemented:
-// import { CommandPalette } from '@clarity-chat/react'
-// import type { CommandItem } from '@clarity-chat/react'
+import { ToastProvider, CommandPalette } from '@clarity-chat/react/internal'
+import type { CommandItem } from '@clarity-chat/react/internal'
 import { Badge } from '@clarity-chat/primitives'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -30,43 +25,78 @@ import {
   Calendar,
 } from 'lucide-react'
 
-// Placeholder type definition until component is implemented
-interface CommandItem {
-  id: string
-  label: string
-  icon?: React.ReactNode
-  category?: string
-  shortcut?: string[]
-  onSelect?: () => void
-}
-
-// Placeholder demo component - shows Coming Soon notice
 function BasicCommandPaletteDemo() {
   const [open, setOpen] = useState(false)
   const [lastAction, setLastAction] = useState<string | null>(null)
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const commands: CommandItem[] = [
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      icon: <MessageSquare className="w-4 h-4" />,
+      category: 'Actions',
+      shortcut: ['⌘', 'N'],
+      onSelect: () => setLastAction('Created new chat'),
+    },
+    {
+      id: 'search',
+      label: 'Search Messages',
+      icon: <Search className="w-4 h-4" />,
+      category: 'Actions',
+      shortcut: ['⌘', 'F'],
+      onSelect: () => setLastAction('Opened search'),
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-4 h-4" />,
+      category: 'System',
+      onSelect: () => setLastAction('Opened settings'),
+    },
+    {
+      id: 'theme',
+      label: 'Toggle Theme',
+      icon: <Moon className="w-4 h-4" />,
+      category: 'System',
+      shortcut: ['⌘', 'D'],
+      onSelect: () => setLastAction('Toggled theme'),
+    },
+  ]
+
   return (
     <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-background min-h-[200px]">
       <button
-        onClick={() => setLastAction('Command palette is coming soon!')}
+        onClick={() => setOpen(true)}
         className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm font-medium flex items-center gap-2"
       >
         <Terminal className="w-4 h-4" />
-        Open Command Palette (Coming Soon)
+        Open Command Palette (⌘K)
       </button>
 
       {lastAction && (
         <div className="mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-2">
+          Last action:{' '}
           <span className="font-semibold text-foreground">{lastAction}</span>
         </div>
       )}
 
-      {/* Coming Soon Notice */}
-      <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center">
-        <p className="text-amber-700 dark:text-amber-400 text-sm">
-          CommandPalette is planned but not yet implemented.
-        </p>
-      </div>
+      <CommandPalette
+        items={commands}
+        open={open}
+        onClose={() => setOpen(false)}
+        placeholder="Type a command or search..."
+      />
     </div>
   )
 }
@@ -167,19 +197,10 @@ export default function CommandPalettePage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <Callout type="warning" className="mb-8">
-            <p>
-              <strong>Coming Soon:</strong> CommandPalette is planned but not yet implemented
-              in @clarity-chat/react. This page documents the intended API and features.
-            </p>
-          </Callout>
-        </ScrollReveal>
-
-        <ScrollReveal delay={0.2}>
           <ViewInStorybook component="CommandPalette" />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.3}>
+        <ScrollReveal delay={0.2}>
           <Callout type="tip" className="mb-8">
             <p>
               The CommandPalette is accessible by default, managing focus trap,
@@ -189,13 +210,13 @@ export default function CommandPalettePage() {
           </Callout>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.4}>
+        <ScrollReveal delay={0.3}>
           <h2 id="demo">Interactive Demo</h2>
           <ComponentPreview
             title="Command Palette"
             description="Press Cmd+K or click the button to open."
             code={`import { useState, useEffect } from 'react'
-import { CommandPalette, type CommandItem } from '@clarity-chat/react'
+import { CommandPalette, CommandItem } from '@clarity-chat/react/internal'
 import { MessageSquare, Search, Settings } from 'lucide-react'
 
 function Demo() {
@@ -218,8 +239,8 @@ function Demo() {
       id: 'new',
       label: 'New Chat',
       icon: <MessageSquare className="w-4 h-4" />,
-      shortcut: 'Cmd+N',
-      onSelect: () => console.log('New Chat'),
+      shortcut: '⌘N',
+      onSelect: () => logger.debug('New Chat'),
     },
     // ... more commands
   ]
@@ -240,17 +261,16 @@ function Demo() {
           </ComponentPreview>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.5}>
+        <ScrollReveal delay={0.4}>
           <h2 id="import">Import</h2>
           <EnhancedCodeBlock
-            code={`// Coming soon:
-import { CommandPalette } from '@clarity-chat/react'
+            code={`import { CommandPalette } from '@clarity-chat/react/internal'
 import type { CommandItem } from '@clarity-chat/react'`}
             language="tsx"
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.6}>
+        <ScrollReveal delay={0.5}>
           <h2 id="configuration">Configuration</h2>
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
@@ -267,7 +287,7 @@ import type { CommandItem } from '@clarity-chat/react'`}
     label: 'Save Changes',
     icon: <SaveIcon />,
     group: 'File',
-    shortcut: 'Cmd+S',
+    shortcut: '⌘S',
     onSelect: () => save(),
   }
 ]`}
@@ -290,7 +310,7 @@ import type { CommandItem } from '@clarity-chat/react'`}
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.7}>
+        <ScrollReveal delay={0.6}>
           <h2 id="dynamic-commands">Dynamic Commands</h2>
           <p className="mb-4">
             You can generate commands dynamically based on application state:
@@ -299,7 +319,7 @@ import type { CommandItem } from '@clarity-chat/react'`}
             language="tsx"
             code={`function useCommands() {
   const { theme, setTheme } = useTheme()
-
+  
   return useMemo(() => [
     {
       id: 'theme',
@@ -312,33 +332,33 @@ import type { CommandItem } from '@clarity-chat/react'`}
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.8}>
+        <ScrollReveal delay={0.7}>
           <h2 id="props">Props</h2>
           <PropsTable props={commandPaletteProps} />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.9}>
+        <ScrollReveal delay={0.8}>
           <h2 id="accessibility">Accessibility</h2>
           <ul className="mb-8 space-y-2">
             <li>
-              <strong>Focus Trap:</strong> Keeps focus within the modal when
+              ✅ <strong>Focus Trap:</strong> Keeps focus within the modal when
               open
             </li>
             <li>
-              <strong>Keyboard Navigation:</strong> Arrow keys to move, Enter
+              ✅ <strong>Keyboard Navigation:</strong> Arrow keys to move, Enter
               to select
             </li>
             <li>
-              <strong>Screen Reader:</strong> Announces results and selection
+              ✅ <strong>Screen Reader:</strong> Announces results and selection
             </li>
             <li>
-              <strong>ARIA:</strong> Proper roles for combobox/listbox
+              ✅ <strong>ARIA:</strong> Proper roles for combobox/listbox
               pattern
             </li>
           </ul>
         </ScrollReveal>
 
-        <ScrollReveal delay={1.0}>
+        <ScrollReveal delay={0.9}>
           <h2 id="related">Related</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <a

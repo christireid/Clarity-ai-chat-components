@@ -1,0 +1,29 @@
+{
+  "agent_id": "F",
+  "scope": [
+    "Research and install QA tooling (Playwright)",
+    "Add smoke tests for routes and console errors",
+    "Audit dependency licenses for paid product",
+    "Remove MIT license claims if inappropriate",
+    "Create deployment and release artifacts"
+  ],
+  "non_scope": [
+    "Do NOT change UI components",
+    "Do NOT modify demos",
+    "Do NOT change docs content"
+  ],
+  "current_focus": "Initial recon - setting up Playwright and smoke tests",
+  "completed": [],
+  "todo_next": [
+    {"id": "F-001", "desc": "Verify Playwright installation", "why": "Foundation for tests", "dependencies": [], "risk": "low"},
+    {"id": "F-002", "desc": "Create initial smoke test suite", "why": "Route validation", "dependencies": ["F-001"], "risk": "medium"},
+    {"id": "F-003", "desc": "Audit license files", "why": "Legal compliance", "dependencies": [], "risk": "medium"}
+  ],
+  "blocked": [],
+  "key_decisions": [],
+  "initial_recon": {
+    "top_5_risks": [],
+    "top_5_quick_wins": [],
+    "unknowns": []
+  }
+}

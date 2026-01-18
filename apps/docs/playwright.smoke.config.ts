@@ -25,7 +25,7 @@ export default defineConfig({
     ['html', { open: 'never', outputFolder: 'test-results/smoke-report' }],
     ['list'],
     ['json', { outputFile: 'test-results/smoke-results.json' }],
-    ...(process.env.CI ? [['github', {}] as const] : []),
+    ...(process.env.CI ? [['github' as const]] : []),
   ],
 
   // Global settings

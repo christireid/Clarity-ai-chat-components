@@ -1,12 +1,8 @@
-// TODO: FileUpload is planned but not yet implemented in @clarity-chat/react.
-// This page documents the intended API and features.
-
 'use client'
 
 import { useState, useCallback } from 'react'
-// TODO: Uncomment when implemented:
-// import { FileUpload } from '@clarity-chat/react'
-// import type { MessageAttachment } from '@clarity-chat/types'
+import { FileUpload } from '@clarity-chat/react/internal'
+import type { MessageAttachment } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -15,16 +11,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
-
-// Placeholder type definition until component is implemented
-interface MessageAttachment {
-  id: string
-  type: 'image' | 'video' | 'document' | 'audio' | 'link'
-  url: string
-  name: string
-  size?: number
-  mimeType?: string
-}
 
 const fileUploadProps: Prop[] = [
   {
@@ -77,17 +63,32 @@ const fileUploadProps: Prop[] = [
   },
 ]
 
-// Placeholder demo component - shows Coming Soon notice
 function BasicFileUploadDemo() {
+  const handleUpload = useCallback(
+    async (files: File[]): Promise<MessageAttachment[]> => {
+      // Simulate upload delay
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      return files.map((file) => ({
+        id: Math.random().toString(36).substring(7),
+        type: file.type.startsWith('image/') ? 'image' as const : 'document' as const,
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+        mimeType: file.type,
+      }))
+    },
+    []
+  )
+
   return (
     <div className="w-full max-w-xl p-4 border border-border rounded-lg bg-background">
-      <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
-        <div className="text-muted-foreground">
-          <p className="font-medium mb-2">Coming Soon</p>
-          <p className="text-sm">FileUpload is planned but not yet implemented.</p>
-          <p className="text-sm mt-2">Drag & drop files here, or click to select</p>
-        </div>
-      </div>
+      <FileUpload
+        onUpload={handleUpload}
+        maxFiles={3}
+        maxFileSize={5 * 1024 * 1024}
+        acceptedFileTypes={['image/*', 'application/pdf']}
+      />
     </div>
   )
 }
@@ -110,42 +111,33 @@ export default function FileUploadPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.1}>
-        <Callout type="warning" className="mb-8">
-          <p>
-            <strong>Coming Soon:</strong> FileUpload is planned but not yet implemented
-            in @clarity-chat/react. This page documents the intended API and features.
-          </p>
-        </Callout>
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.2}>
         <ViewInStorybook component="FileUpload" />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.3}>
+      <ScrollReveal delay={0.2}>
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Features</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
-              <h3 className="font-semibold mb-2">Drag & Drop</h3>
+              <h3 className="font-semibold mb-2">🖱️ Drag & Drop</h3>
               <p className="text-sm text-muted-foreground">
                 Intuitive drag and drop interface with visual feedback states.
               </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
-              <h3 className="font-semibold mb-2">File Previews</h3>
+              <h3 className="font-semibold mb-2">👁️ File Previews</h3>
               <p className="text-sm text-muted-foreground">
                 Automatic thumbnail generation for images and file type icons.
               </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
-              <h3 className="font-semibold mb-2">Progress Tracking</h3>
+              <h3 className="font-semibold mb-2">📊 Progress Tracking</h3>
               <p className="text-sm text-muted-foreground">
                 Built-in loading states and progress indicators during upload.
               </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
-              <h3 className="font-semibold mb-2">Validation</h3>
+              <h3 className="font-semibold mb-2">🛡️ Validation</h3>
               <p className="text-sm text-muted-foreground">
                 Client-side validation for file types, sizes, and counts.
               </p>
@@ -154,17 +146,16 @@ export default function FileUploadPage() {
         </section>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.4}>
+      <ScrollReveal delay={0.3}>
         <h2 id="import">Import</h2>
         <EnhancedCodeBlock
-          code={`// Coming soon:
-import { FileUpload } from '@clarity-chat/react'
+          code={`import { FileUpload } from '@clarity-chat/react/internal'
 import type { MessageAttachment } from '@clarity-chat/types'`}
           language="tsx"
         />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.5}>
+      <ScrollReveal delay={0.4}>
         <h2 id="usage">Usage</h2>
         <p className="mb-4 text-muted-foreground">
           The FileUpload component requires an <code>onUpload</code> handler
@@ -174,7 +165,7 @@ import type { MessageAttachment } from '@clarity-chat/types'`}
         <ComponentPreview
           title="Basic File Upload"
           description="Drag and drop images or PDFs (max 5MB)."
-          code={`import { FileUpload } from '@clarity-chat/react'
+          code={`import { FileUpload } from '@clarity-chat/react/internal'
 import type { MessageAttachment } from '@clarity-chat/types'
 
 function UploadDemo() {
@@ -183,15 +174,15 @@ function UploadDemo() {
     const uploadPromises = files.map(async (file) => {
       const formData = new FormData()
       formData.append('file', file)
-
+      
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })
-
+      
       return await response.json()
     })
-
+    
     return Promise.all(uploadPromises)
   }
 
@@ -209,22 +200,19 @@ function UploadDemo() {
         </ComponentPreview>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.6}>
+      <ScrollReveal delay={0.5}>
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-muted-foreground">
             Try customizing the accepted file types and limits.
           </p>
           <CodePlayground
-            initialCode={`// FileUpload is coming soon!
-// This playground will be functional once the component is implemented.
-
-function Example() {
+            initialCode={`function Example() {
   const handleUpload = async (files) => {
-    console.log('Uploading...', files)
+    logger.debug('Uploading...', files)
     // Simulate 1s upload delay
     await new Promise(r => setTimeout(r, 1000))
-
+    
     return files.map(f => ({
       id: Date.now().toString(),
       type: 'file',
@@ -236,17 +224,12 @@ function Example() {
 
   return (
     <div className="p-4 bg-white dark:bg-gray-900 rounded-lg">
-      <p className="text-center text-muted-foreground py-8">
-        FileUpload coming soon...
-      </p>
-      {/* Once implemented:
       <FileUpload
         onUpload={handleUpload}
         maxFiles={5}
         maxFileSize={1024 * 1024} // 1MB
         dropzoneText="Drop files here!"
       />
-      */}
     </div>
   )
 }
@@ -256,7 +239,7 @@ render(<Example />)`}
         </section>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.7}>
+      <ScrollReveal delay={0.6}>
         <h2 id="validation">Validation Patterns</h2>
         <div className="space-y-4">
           <p className="text-muted-foreground">
@@ -297,12 +280,12 @@ render(<Example />)`}
         </div>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.8}>
+      <ScrollReveal delay={0.7}>
         <h2 id="props">Props</h2>
         <PropsTable props={fileUploadProps} />
       </ScrollReveal>
 
-      <ScrollReveal delay={0.9}>
+      <ScrollReveal delay={0.8}>
         <h2 id="best-practices">Best Practices</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-8">
           <li>Always validate file types on the server side as well.</li>
@@ -320,7 +303,7 @@ render(<Example />)`}
         </ul>
       </ScrollReveal>
 
-      <ScrollReveal delay={1.0}>
+      <ScrollReveal delay={0.9}>
         <div className="flex flex-col gap-4 border-t border-border pt-8 mt-12">
           <h2 className="text-2xl font-bold">Related Components</h2>
           <div className="grid md:grid-cols-2 gap-4">

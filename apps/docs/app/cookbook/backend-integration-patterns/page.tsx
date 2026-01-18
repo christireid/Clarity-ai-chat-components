@@ -93,7 +93,7 @@ app.post('/api/chat', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000')
+  logger.debug('Server running on http://localhost:3000')
 })`}
         />
       </section>

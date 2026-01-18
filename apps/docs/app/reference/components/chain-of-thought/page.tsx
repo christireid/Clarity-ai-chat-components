@@ -6,93 +6,52 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { ChainOfThought } from '@clarity-chat/react'
-
-// Define types locally since they're not exported from the package
-type ChainOfThoughtStepStatus =
-  | 'pending'
-  | 'in-progress'
-  | 'complete'
-  | 'error'
-  | 'skipped'
-
-interface ChainOfThoughtStep {
-  id: string
-  title: string
-  content: string
-  status: ChainOfThoughtStepStatus
-  icon?: React.ReactNode
-  timestamp?: Date
-  duration?: number
-  progress?: number
-  metadata?: Record<string, string | number | boolean>
-  subSteps?: ChainOfThoughtStep[]
-  error?: string
-}
+import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
+import type { ChainOfThoughtStep } from '@clarity-chat/react/internal'
 
 // Demo component
 function ChainOfThoughtDemo() {
-  const demoSteps = [
-    {
-      id: '1',
-      title: 'Analyzing query',
-      content: 'Understanding the user\'s request and breaking down the problem into manageable steps.',
-      status: 'complete' as const,
-      duration: 1200,
-    },
-    {
-      id: '2',
-      title: 'Searching knowledge base',
-      content: 'Querying relevant documents and previous conversations to gather context.',
-      status: 'complete' as const,
-      duration: 2500,
-    },
-    {
-      id: '3',
-      title: 'Generating response',
-      content: 'Formulating a comprehensive answer based on the gathered information.',
-      status: 'in-progress' as const,
-      progress: 65,
-    },
-    {
-      id: '4',
-      title: 'Verifying accuracy',
-      content: 'Cross-checking facts and ensuring response quality.',
-      status: 'pending' as const,
-    },
-  ]
-
-  const [expandedSteps, setExpandedSteps] = useState<string[]>([])
-
-  // Stub handlers for callbacks
-  const handleExpandedStepsChange = (stepIds: string[]) => {
-    setExpandedSteps(stepIds)
-  }
-  const handleStepClick = (stepId: string) => {
-    console.log('Step clicked:', stepId)
-  }
-  const handleRetry = (stepId: string) => {
-    console.log('Retry requested for step:', stepId)
-  }
+  const { steps, addStep, updateStep } = useChainOfThought({
+    initialSteps: [
+      {
+        id: '1',
+        title: 'Analyzing query',
+        content: 'Understanding the user\'s request and breaking down the problem into manageable steps.',
+        status: 'complete',
+        duration: 1200,
+      },
+      {
+        id: '2',
+        title: 'Searching knowledge base',
+        content: 'Querying relevant documents and previous conversations to gather context.',
+        status: 'complete',
+        duration: 2500,
+      },
+      {
+        id: '3',
+        title: 'Generating response',
+        content: 'Formulating a comprehensive answer based on the gathered information.',
+        status: 'in-progress',
+        progress: 65,
+      },
+      {
+        id: '4',
+        title: 'Verifying accuracy',
+        content: 'Cross-checking facts and ensuring response quality.',
+        status: 'pending',
+      },
+    ],
+  })
 
   return (
     <div className="w-full max-w-2xl">
       <ChainOfThought
-        steps={demoSteps}
+        steps={steps}
         title="AI Reasoning Process"
         subtitle="See how the AI thinks through your request"
         showTimestamps
         showDuration
         variant="default"
-        expandedSteps={expandedSteps}
-        onExpandedStepsChange={handleExpandedStepsChange}
-        onStepClick={handleStepClick}
-        onRetry={handleRetry}
-        maxVisibleSteps={10}
-        className=""
-        containerClassName=""
-        stepClassName=""
-        aria-label="AI Reasoning Process Demo"
       />
     </div>
   )
@@ -233,7 +192,7 @@ export default function ChainOfThoughtPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
+        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -248,7 +207,7 @@ import '@clarity-chat/react/styles.css'`}
       <ComponentPreview
         title="Basic Chain of Thought"
         description="Simple reasoning visualization with multiple steps"
-        code={`import { ChainOfThought } from '@clarity-chat/react'
+        code={`import { ChainOfThought } from '@clarity-chat/react/internal'
 
 function Example() {
   const steps = [
@@ -293,7 +252,7 @@ function Example() {
       </p>
 
       <EnhancedCodeBlock
-        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
+        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
 
 function Example() {
   const { steps, addStep, updateStep, isProcessing } = useChainOfThought()

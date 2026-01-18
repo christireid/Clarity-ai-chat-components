@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react/internal'
 
 export function ClientToastProvider({
   children,

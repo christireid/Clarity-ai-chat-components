@@ -7,38 +7,6 @@
 import LZString from 'lz-string'
 import type { PlaygroundExportConfig } from '../types'
 
-/**
- * Copy text to the clipboard
- *
- * Uses the modern Clipboard API when available, with a fallback for older browsers.
- */
-export async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    // Try modern Clipboard API first
-    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      await navigator.clipboard.writeText(text)
-      return true
-    }
-
-    // Fallback for older browsers or non-secure contexts
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    textarea.setAttribute('readonly', '')
-    textarea.style.position = 'fixed'
-    textarea.style.left = '-9999px'
-    textarea.style.top = '0'
-    document.body.appendChild(textarea)
-    textarea.select()
-    textarea.setSelectionRange(0, text.length) // For mobile devices
-    const success = document.execCommand ? document.execCommand('copy') : false
-    document.body.removeChild(textarea)
-    return success
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
-    return false
-  }
-}
-
 interface SandboxFile {
   content: string
   isBinary?: boolean
@@ -360,6 +328,47 @@ export async function downloadAsZip(
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+/**
+ * Copies text to clipboard with fallback for older browsers
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // Try modern Clipboard API first
+  if (
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === 'function'
+  ) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      // Fall through to fallback
+    }
+  }
+
+  // Fallback for older browsers using execCommand
+  try {
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+
+    // Avoid scrolling to bottom
+    textArea.style.top = '0'
+    textArea.style.left = '0'
+    textArea.style.position = 'fixed'
+    textArea.style.opacity = '0'
+    textArea.style.pointerEvents = 'none'
+
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+
+    const success = document.execCommand('copy')
+    document.body.removeChild(textArea)
+    return success
+  } catch {
+    return false
+  }
 }
 
 /**

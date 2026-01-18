@@ -18,7 +18,7 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
   img-src 'self' data: https: blob:;
-  font-src 'self' https://fonts.gstatic.com data:;
+  font-src 'self' https://fonts.gstatic.com;
   connect-src 'self' https://api.openai.com https://api.anthropic.com https://api.github.com https://www.google-analytics.com wss:;
   media-src 'self';
   object-src 'none';
@@ -49,6 +49,12 @@ const nextConfig: NextConfig = {
         loaders: ['@svgr/webpack'],
         as: '*.js',
       },
+    },
+    resolveAlias: {
+      '@clarity-chat/primitives': require('path').resolve(
+        __dirname,
+        '../../packages/primitives/dist/index.mjs'
+      ),
     },
   },
 
@@ -173,31 +179,9 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Redirects for legacy routes and consolidated pages
+  // Redirects for legacy routes
   async redirects() {
     return [
-      // ============================================
-      // Consolidated Page Redirects (Jan 2026)
-      // ============================================
-
-      // Demos main page redirects to combined examples page
-      // Note: Individual demo pages (/demos/zero-to-chat, etc.) still work
-      {
-        source: '/demos',
-        destination: '/examples',
-        permanent: false, // Soft redirect during consolidation
-      },
-      // Showcase page redirects to examples (examples is the primary)
-      {
-        source: '/showcase',
-        destination: '/examples',
-        permanent: false,
-      },
-
-      // ============================================
-      // Learn/Guides Consolidation
-      // ============================================
-
       // Redirect /guides sub-routes that have been moved to /learn/guides
       {
         source: '/guides/testing',
@@ -209,17 +193,6 @@ const nextConfig: NextConfig = {
         destination: '/learn/guides/accessibility',
         permanent: true,
       },
-      // Main guides page redirects to learn page
-      {
-        source: '/guides',
-        destination: '/learn',
-        permanent: false, // Soft redirect - guides index still accessible via dropdown
-      },
-
-      // ============================================
-      // Legacy Routes
-      // ============================================
-
       // Redirect legacy /concepts routes
       {
         source: '/concepts/animations',
@@ -256,6 +229,15 @@ const nextConfig: NextConfig = {
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],
       '.jsx': ['.jsx', '.tsx'],
+    }
+
+    // Resolve workspace packages
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@clarity-chat/primitives': require('path').resolve(
+        __dirname,
+        '../../packages/primitives/dist/index.mjs'
+      ),
     }
 
     // Security: Disable source maps in production

@@ -4,20 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   ToastProvider,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react'
-
-// Define TrimResult interface locally to avoid build-time type resolution issues
-interface TrimResult {
-  originalContent: string[]
-  trimmedContent: string[]
-  tokensRemoved: number
-  removedItems: Array<{
-    index: number
-    preview: string
-    tokens: number
-  }>
-  reason: 'critical' | 'exceeded' | 'manual'
-}
+} from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -40,7 +27,7 @@ function BasicBudgetMonitorDemo() {
     isExceeded,
     updateMessages,
     trimToCritical,
-    lastTrimResult: rawLastTrimResult,
+    lastTrimResult,
   } = useTokenBudgetMonitor({
     maxInputTokens: 1000, // Small limit for demo
     warningThreshold: 0.8,
@@ -53,9 +40,6 @@ function BasicBudgetMonitorDemo() {
       console.debug('Critical:', usage.utilizationPercent)
     },
   })
-
-  // Cast to local TrimResult type for proper type inference
-  const lastTrimResult = rawLastTrimResult as TrimResult | null
 
   useEffect(() => {
     updateMessages(messages)
@@ -373,7 +357,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResult } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -385,7 +369,7 @@ import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResul
         <ComponentPreview
           title="Basic Token Budget Monitor"
           description="Monitor token usage with warnings and critical alerts"
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
 import { useEffect } from 'react'
 
 function BasicMonitor() {

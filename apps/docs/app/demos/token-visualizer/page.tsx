@@ -19,7 +19,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { durations } from '@/lib/animations'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react'
+import { useAutoScroll } from '@clarity-chat/react/internal'
 import {
   generateId,
   sleep,
@@ -43,8 +43,8 @@ interface TokenStats {
 
 interface Message {
   id: string
-  content: string
-  role: 'user' | 'assistant' | 'system'
+  text: string
+  sender: 'user' | 'bot'
   tokens: number
   timestamp: Date
 }
@@ -64,8 +64,8 @@ export default function TokenVisualizerDemo() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
-      role: 'assistant',
+      text: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
+      sender: 'bot',
       tokens: 28,
       timestamp: new Date(),
     },
@@ -103,8 +103,8 @@ export default function TokenVisualizerDemo() {
     setMessages([
       {
         id: '1',
-        content: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
-        role: 'assistant',
+        text: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
+        sender: 'bot',
         tokens: 28,
         timestamp: new Date(),
       },
@@ -132,8 +132,8 @@ export default function TokenVisualizerDemo() {
     const inputTokens = estimateTokens(input)
     const userMessage: Message = {
       id: generateId(),
-      content: input,
-      role: 'user',
+      text: input,
+      sender: 'user',
       tokens: inputTokens,
       timestamp: new Date(),
     }
@@ -164,8 +164,8 @@ export default function TokenVisualizerDemo() {
 
     const botMessage: Message = {
       id: generateId(),
-      content: responseText,
-      role: 'assistant',
+      text: responseText,
+      sender: 'bot',
       tokens: outputTokens,
       timestamp: new Date(),
     }
@@ -361,7 +361,7 @@ export default function TokenVisualizerDemo() {
 
               {/* Messages */}
               <div
-                ref={scrollRef as React.RefObject<HTMLDivElement | null>}
+                ref={scrollRef as React.RefObject<HTMLDivElement>}
                 className="h-[400px] overflow-y-auto p-6 space-y-4 scroll-smooth"
               >
                 {messages.map((message) => (
@@ -370,17 +370,17 @@ export default function TokenVisualizerDemo() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex items-start gap-3 ${
-                      message.role === 'user' ? 'flex-row-reverse' : ''
+                      message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
                   >
                     <div
                       className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.role === 'assistant'
+                        message.sender === 'bot'
                           ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
                           : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
                       }`}
                     >
-                      {message.role === 'assistant' ? (
+                      {message.sender === 'bot' ? (
                         <Bot className="w-5 h-5" />
                       ) : (
                         <User className="w-5 h-5" />
@@ -389,18 +389,18 @@ export default function TokenVisualizerDemo() {
                     <div className="max-w-[75%]">
                       <div
                         className={`rounded-2xl px-4 py-3 ${
-                          message.role === 'assistant'
+                          message.sender === 'bot'
                             ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
                             : 'bg-brand-500 text-white rounded-tr-sm'
                         }`}
                       >
                         <p className="text-sm leading-relaxed">
-                          {message.content}
+                          {message.text}
                         </p>
                       </div>
                       <div
                         className={`text-xs text-text-secondary mt-1 ${
-                          message.role === 'user' ? 'text-right' : ''
+                          message.sender === 'user' ? 'text-right' : ''
                         }`}
                       >
                         {message.tokens} tokens
@@ -468,7 +468,7 @@ export default function TokenVisualizerDemo() {
                     <div key={msg.id} className="flex items-center gap-3">
                       <div
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                          msg.role === 'assistant'
+                          msg.sender === 'bot'
                             ? 'bg-indigo-100 dark:bg-indigo-900'
                             : 'bg-purple-100 dark:bg-purple-900'
                         }`}
@@ -479,7 +479,7 @@ export default function TokenVisualizerDemo() {
                         <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              msg.role === 'assistant'
+                              msg.sender === 'bot'
                                 ? 'bg-indigo-500'
                                 : 'bg-purple-500'
                             }`}

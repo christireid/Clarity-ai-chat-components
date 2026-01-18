@@ -134,17 +134,12 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
   const [showSMA50, setShowSMA50] = useState(false)
   const [showVolume, setShowVolume] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null)
 
-  // Detect mobile viewport and set client-side timestamp
+  // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640)
     checkMobile()
     window.addEventListener('resize', checkMobile)
-
-    // Set timestamp only on client to prevent hydration mismatch
-    setLastUpdated(new Date().toLocaleTimeString())
-
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -717,7 +712,7 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
       <div className="px-3 sm:px-4 py-2 bg-green-500/5 border-t border-green-200/50 dark:border-green-500/20 flex items-center justify-between text-[10px] sm:text-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Clock className="w-3 h-3" aria-hidden="true" />
-          <span>Last updated: {lastUpdated || '—'}</span>
+          <span>Last updated: {new Date().toLocaleTimeString()}</span>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           {showSMA20 && (

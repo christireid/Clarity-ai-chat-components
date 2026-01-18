@@ -10,7 +10,6 @@ import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
 import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
 import { Testimonials } from '@/components/Layout/Testimonials'
-import { TokenOptimizationShowcase } from '@/components/Layout/TokenOptimizationShowcase'
 // AnimatedBackground is a 'use client' component with built-in lazy loading
 import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 import {
@@ -37,7 +36,7 @@ export default function HomePage() {
             <span className="text-brand-500">That Don't Fight You</span>
           </>
         }
-        description="You've rebuilt chat from scratch three times already. Stop. 155+ production-ready components with streaming, accessibility, and theming—plus built-in token optimization that cuts AI costs 30-50%. Copy, paste, ship."
+        description="You've rebuilt chat from scratch three times already. Stop. 155+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
         installCommand="npm install @clarity-chat/react"
         primaryCta={{
           text: 'Get Started in 60s',
@@ -63,9 +62,6 @@ export default function HomePage() {
 
         <LiveChatDemo />
       </section>
-
-      {/* Token Optimization Showcase - Our #1 Differentiator */}
-      <TokenOptimizationShowcase />
 
       {/* Quick Example */}
       <section className="bg-bg-secondary py-24">

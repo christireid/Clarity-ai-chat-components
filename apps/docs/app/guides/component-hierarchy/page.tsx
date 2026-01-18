@@ -40,7 +40,7 @@ export default function ComponentHierarchyPage() {
         <p>Complete, ready-to-use components:</p>
         <CodePlayground
           initialCode={`// Top-level: Complete solution
-import { ClarityChat } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react/internal'
 
 <ClarityChat api="/api/chat" />
 
@@ -57,7 +57,7 @@ import { ClarityChat } from '@clarity-chat/react'
         <p>Building blocks for custom interfaces:</p>
         <CodePlayground
           initialCode={`// Mid-level: Composable components
-import { ChatWindow, ChatInput, MessageList } from '@clarity-chat/react'
+import { ChatWindow, ChatInput, MessageList } from '@clarity-chat/react/internal'
 
 function CustomChat() {
   return (
@@ -73,11 +73,11 @@ function CustomChat() {
         <p>Utilities and internal APIs:</p>
         <CodePlayground
           initialCode={`// Low-level: Utilities
-import {
+import { 
   normalizeMessages,
   convertCoreMessageToMessage,
-  estimateTokens
-} from '@clarity-chat/react'
+  estimateTokens 
+} from '@clarity-chat/react/internal'
 
 const normalized = normalizeMessages(rawMessages)
 const tokens = estimateTokens(normalized)`}
@@ -197,7 +197,7 @@ const chat = useClarityChat({ api: '/api/chat' })
   MessageList,
   TokenCounter,
   useClarityChat,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 
 function CustomChatInterface() {
   const chat = useClarityChat({ api: '/api/chat' })

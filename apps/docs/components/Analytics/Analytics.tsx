@@ -3,13 +3,6 @@
 import { useEffect, useCallback, createContext, useContext, type ReactNode } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
-// Extend Window interface for Google Analytics gtag
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void
-  }
-}
-
 interface AnalyticsEvent {
   name: string
   properties?: Record<string, string | number | boolean>
@@ -255,5 +248,17 @@ export function useDocAnalytics() {
         })
       },
     },
+  }
+}
+
+// Type augmentation for window.gtag
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'config' | 'event' | 'js',
+      targetId: string | Date,
+      config?: Record<string, unknown>
+    ) => void
+    dataLayer?: unknown[]
   }
 }

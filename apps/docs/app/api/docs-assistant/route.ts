@@ -23,7 +23,6 @@ import {
   getStreamingFunctionWithRouting,
   getProviderStatus,
   streamFromClaudeWithTools,
-  streamFromDemo,
   checkRateLimit,
   validateRequest,
   handleStreamError,
@@ -154,7 +153,7 @@ export async function POST(request: NextRequest) {
           request.headers.get('user-agent') || undefined
         )
       } catch (error) {
-        logger.error('Session error:', error)
+        console.error('Session error:', error)
         // Continue without session if it fails
       }
     }
@@ -606,9 +605,9 @@ async function* streamWithEnhancedRAG(
           model: modelOverride || process.env.AI_MODEL || 'unknown',
           contextHash,
         })
-        } catch (error) {
-          logger.error('Failed to cache response:', error)
-        }
+      } catch (error) {
+        console.error('Failed to cache response:', error)
+      }
     }
 
     // Save messages to session
@@ -631,7 +630,7 @@ async function* streamWithEnhancedRAG(
       }
     }
   } catch (error) {
-    logger.error('Enhanced RAG streaming error:', error)
+    console.error('Enhanced RAG streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -698,39 +697,13 @@ async function* streamWithoutRAG(
 
     // Stream response from LLM (use model override if provided)
     const streamingFn = getStreamingFunction()
-    
-    try {
-      const stream = streamingFn(messages, { model: modelOverride })
+    const stream = streamingFn(messages, { model: modelOverride })
 
-      for await (const chunk of stream) {
-        if (chunk.type === 'text' && chunk.content) {
-          assistantResponse += chunk.content
-          yield chunk
-        } else if (chunk.type === 'error') {
-          // If we get an error (e.g., invalid API key), fall back to demo mode
-          logger.warn('Streaming error received, falling back to demo mode:', chunk.content)
-          const demoStream = streamFromDemo(messages)
-          for await (const demoChunk of demoStream) {
-            if (demoChunk.type === 'text' && demoChunk.content) {
-              assistantResponse += demoChunk.content
-            }
-            yield demoChunk
-          }
-          return // Exit after demo mode completes
-        } else {
-          yield chunk
-        }
+    for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
       }
-    } catch (error) {
-      // If streaming fails (e.g., invalid API key), fall back to demo mode
-      logger.warn('Streaming failed, falling back to demo mode:', error)
-      const demoStream = streamFromDemo(messages)
-      for await (const chunk of demoStream) {
-        if (chunk.type === 'text' && chunk.content) {
-          assistantResponse += chunk.content
-        }
-        yield chunk
-      }
+      yield chunk
     }
 
     // Cache the response after streaming completes

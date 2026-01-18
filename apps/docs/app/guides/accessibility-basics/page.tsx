@@ -37,7 +37,7 @@ export default function AccessibilityBasicsPage() {
         <h2>ARIA Patterns</h2>
         <p>Use proper ARIA attributes:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function AccessibleChat() {
   return (
@@ -68,7 +68,8 @@ function AccessibleChat() {
         <h2>Keyboard Navigation</h2>
         <p>Ensure keyboard accessibility:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput, useKeyboardShortcuts } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react/internal'
+import { useKeyboardShortcuts } from '@clarity-chat/react/internal'
 
 function KeyboardAccessibleChat() {
   const { registerShortcut } = useKeyboardShortcuts()
@@ -103,7 +104,7 @@ function KeyboardAccessibleChat() {
         <h2>Screen Reader Support</h2>
         <p>Optimize for screen readers:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function ScreenReaderOptimized() {
   return (
@@ -139,7 +140,7 @@ function announceToScreenReader(text: string) {
         <h2>Focus Management</h2>
         <p>Manage focus properly:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react/internal'
 import { useEffect, useRef } from 'react'
 
 function FocusManagedChat() {
@@ -180,7 +181,7 @@ function FocusManagedChat() {
         <h2>WCAG Compliance</h2>
         <p>Ensure WCAG 2.1 AA compliance:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react'
+          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
 
 function WCAGCompliantChat() {
   return (

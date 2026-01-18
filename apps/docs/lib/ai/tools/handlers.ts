@@ -10,7 +10,6 @@ import {
   type ToolInputs,
   type ToolOutputs,
 } from './definitions'
-import { logger } from '@/lib/logger'
 
 // Bundle size data for the calculator
 const BUNDLE_SIZES = {
@@ -217,7 +216,7 @@ async function handleLookupComponent(
       },
     }
   } catch (error) {
-    logger.error('Error looking up component:', error)
+    console.error('Error looking up component:', error)
     return {
       success: false,
       error: `Failed to look up component: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -287,7 +286,7 @@ async function handleLookupHook(
       },
     }
   } catch (error) {
-    logger.error('Error looking up hook:', error)
+    console.error('Error looking up hook:', error)
     return {
       success: false,
       error: `Failed to look up hook: ${error instanceof Error ? error.message : 'Unknown error'}`,

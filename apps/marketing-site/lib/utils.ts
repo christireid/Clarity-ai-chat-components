@@ -1,2 +1,6 @@
-// Re-export cn from primitives (canonical source)
-export { cn } from '@clarity-chat/primitives'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}

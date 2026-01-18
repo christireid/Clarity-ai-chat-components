@@ -1,15 +1,12 @@
 'use client'
 
-import { CodeBlock, type CodeBlockProps } from '@clarity-chat/react'
+import { CodeBlock } from '@clarity-chat/react/internal'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
-
-// Type assertion helper for CodeBlock to handle monorepo type resolution
-const TypedCodeBlock = CodeBlock as React.ComponentType<CodeBlockProps>
 
 function BasicCodeBlockDemo() {
   const code = `function greeting(name: string) {
@@ -19,14 +16,14 @@ function BasicCodeBlockDemo() {
 
   return (
     <div className="w-full max-w-2xl">
-      <TypedCodeBlock
+      <CodeBlock
         language="typescript"
         title="greeting.ts"
         showLineNumbers
         highlightLines="2"
       >
         {code}
-      </TypedCodeBlock>
+      </CodeBlock>
     </div>
   )
 }

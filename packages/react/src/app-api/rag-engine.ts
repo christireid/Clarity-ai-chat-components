@@ -11,7 +11,6 @@
  */
 
 import type { RAGSource, RAGConfig } from './types'
-import { estimateTokens as _estimateTokens, CHARS_PER_TOKEN } from '@clarity-chat/utils'
 
 // =============================================================================
 // Types
@@ -56,8 +55,12 @@ export interface RAGEngineState {
 const SENTENCE_ENDINGS = /[.!?]+[\s\n]+/g
 const PARAGRAPH_BREAKS = /\n\s*\n+/g
 
-// Use canonical estimateTokens from @clarity-chat/utils
-const estimateTokens = _estimateTokens
+/**
+ * Estimate token count from text (approx 4 chars per token)
+ */
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4)
+}
 
 /**
  * Split text into chunks using fixed-size strategy
@@ -68,8 +71,8 @@ function chunkFixed(
   overlap: number
 ): string[] {
   const chunks: string[] = []
-  const chunkSize = maxTokens * CHARS_PER_TOKEN.default // Convert tokens to chars
-  const overlapSize = overlap * CHARS_PER_TOKEN.default
+  const chunkSize = maxTokens * 4 // Convert tokens to chars
+  const overlapSize = overlap * 4
 
   let start = 0
   while (start < text.length) {

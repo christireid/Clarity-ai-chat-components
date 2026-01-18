@@ -203,8 +203,8 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Welcome to your new chat app!',
-      role: 'system',
+      text: 'Welcome to your new chat app! 👋',
+      sender: 'system',
       timestamp: new Date(),
     },
   ])
@@ -212,21 +212,21 @@ function App() {
   const handleSendMessage = (text: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
-      content: text,
-      role: 'user',
+      text,
+      sender: 'user',
       timestamp: new Date(),
     }
     setMessages((prev) => [...prev, newMessage])
 
-    // Simulate assistant response
+    // Simulate bot response
     setTimeout(() => {
-      const assistantMessage: Message = {
+      const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Thanks for your message! I'm a demo assistant.",
-        role: 'assistant',
+        text: "Thanks for your message! I'm a demo bot.",
+        sender: 'bot',
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, botMessage])
     }, 1000)
   }
 
@@ -272,8 +272,8 @@ export default App`}
           code={`const [messages, setMessages] = useState<Message[]>([
   {
     id: '1',
-    content: 'Welcome to your new chat app!',
-    role: 'system',
+    text: 'Welcome to your new chat app! 👋',
+    sender: 'system',
     timestamp: new Date(),
     avatar: {
       src: 'https://api.dicebear.com/7.x/bottts/svg?seed=system',
@@ -285,8 +285,8 @@ export default App`}
 const handleSendMessage = (text: string) => {
   const newMessage: Message = {
     id: Date.now().toString(),
-    content: text,
-    role: 'user',
+    text,
+    sender: 'user',
     timestamp: new Date(),
     avatar: {
       src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
@@ -296,17 +296,17 @@ const handleSendMessage = (text: string) => {
   setMessages((prev) => [...prev, newMessage])
 
   setTimeout(() => {
-    const assistantMessage: Message = {
+    const botMessage: Message = {
       id: (Date.now() + 1).toString(),
-      content: "Thanks for your message!",
-      role: 'assistant',
+      text: "Thanks for your message!",
+      sender: 'bot',
       timestamp: new Date(),
       avatar: {
-        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=assistant',
-        alt: 'Assistant',
+        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+        alt: 'Bot',
       },
     }
-    setMessages((prev) => [...prev, assistantMessage])
+    setMessages((prev) => [...prev, botMessage])
   }, 1000)
 }`}
           language="tsx"
@@ -321,7 +321,11 @@ const handleSendMessage = (text: string) => {
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
+<<<<<<< HEAD
+import { ChatWindow, Message, useTyping } from '@clarity-chat/react/internal'
+=======
 import { ChatWindow, Message, useTyping } from '@clarity-chat/react'
+>>>>>>> origin/main
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -330,24 +334,24 @@ function App() {
   const handleSendMessage = (text: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
-      content: text,
-      role: 'user',
+      text,
+      sender: 'user',
       timestamp: new Date(),
     }
     setMessages((prev) => [...prev, newMessage])
 
     // Show typing indicator
-    startTyping('assistant')
+    startTyping('bot')
 
     setTimeout(() => {
-      stopTyping('assistant')
-      const assistantMessage: Message = {
+      stopTyping('bot')
+      const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Thanks for your message!",
-        role: 'assistant',
+        text: "Thanks for your message!",
+        sender: 'bot',
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, botMessage])
     }, 2000)
   }
 
@@ -356,7 +360,7 @@ function App() {
     <ChatWindow
       messages={messages}
       onSendMessage={handleSendMessage}
-      typingUsers={isTyping ? [{ id: 'assistant', name: 'Assistant' }] : []}
+      typingUsers={isTyping ? [{ id: 'bot', name: 'Bot' }] : []}
     />
   )
 }`}
@@ -407,7 +411,11 @@ return (
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
+<<<<<<< HEAD
+import { ChatWindow, ThemeProvider } from '@clarity-chat/react/internal'
+=======
 import { ChatWindow, ThemeProvider } from '@clarity-chat/react'
+>>>>>>> origin/main
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
@@ -469,7 +477,7 @@ import {
   Message,
   ThemeProvider,
   useTyping,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import '@clarity-chat/react/styles.css'
 import './App.css'
 
@@ -477,12 +485,12 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Welcome! Try sending a message.',
-      role: 'assistant',
+      text: 'Welcome! Try sending a message.',
+      sender: 'bot',
       timestamp: new Date(),
       avatar: {
-        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=assistant',
-        alt: 'Assistant',
+        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+        alt: 'Bot',
       },
     },
   ])
@@ -492,8 +500,8 @@ function App() {
   const handleSendMessage = (text: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
-      content: text,
-      role: 'user',
+      text,
+      sender: 'user',
       timestamp: new Date(),
       avatar: {
         src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
@@ -502,21 +510,21 @@ function App() {
     }
     setMessages((prev) => [...prev, newMessage])
 
-    startTyping('assistant')
+    startTyping('bot')
 
     setTimeout(() => {
-      stopTyping('assistant')
-      const assistantMessage: Message = {
+      stopTyping('bot')
+      const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: \`You said: "\${text}". That's interesting!\`,
-        role: 'assistant',
+        text: \`You said: "\${text}". That's interesting!\`,
+        sender: 'bot',
         timestamp: new Date(),
         avatar: {
-          src: 'https://api.dicebear.com/7.x/bottts/svg?seed=assistant',
-          alt: 'Assistant',
+          src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+          alt: 'Bot',
         },
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, botMessage])
     }, 2000)
   }
 
@@ -551,7 +559,7 @@ function App() {
             messages={messages}
             onSendMessage={handleSendMessage}
             onReaction={handleReaction}
-            typingUsers={isTyping ? [{ id: 'assistant', name: 'Assistant' }] : []}
+            typingUsers={isTyping ? [{ id: 'bot', name: 'Bot' }] : []}
             enableReactions
             showTimestamps
             showAvatars

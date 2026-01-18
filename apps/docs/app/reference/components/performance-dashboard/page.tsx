@@ -133,7 +133,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Integration with Observability</h2>
         <pre>
-          <code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react'
+          <code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react/internal'
 
 export default function DevTools() {
   const tracer = new Tracer({

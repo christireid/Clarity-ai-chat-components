@@ -1,12 +1,9 @@
 import type { IOptions, RecursivePartial } from '@tsparticles/engine'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ParticleOptions = RecursivePartial<IOptions> & { particles?: any; interactivity?: any }
-
 /**
  * Base particle configuration shared between dark and light modes.
  */
-const baseConfig: ParticleOptions = {
+const baseConfig: RecursivePartial<IOptions> = {
   background: {
     color: {
       value: 'transparent',
@@ -19,7 +16,7 @@ const baseConfig: ParticleOptions = {
         enable: true,
         mode: 'push' as const,
       },
-      resize: { enable: true },
+      resize: true,
     },
   },
   particles: {
@@ -43,7 +40,7 @@ const baseConfig: ParticleOptions = {
  * Dark mode particle configuration.
  * Features: Glowing nodes with vibrant blue colors, more particles, higher opacity.
  */
-export const darkParticlesConfig: ParticleOptions = {
+export const darkParticlesConfig: RecursivePartial<IOptions> = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
@@ -92,7 +89,7 @@ export const darkParticlesConfig: ParticleOptions = {
       animation: {
         enable: true,
         speed: 0.5,
-        min: 0.3,
+        minimumValue: 0.3,
         sync: false,
       },
     },
@@ -101,7 +98,7 @@ export const darkParticlesConfig: ParticleOptions = {
       animation: {
         enable: true,
         speed: 2,
-        min: 0.5,
+        minimumValue: 0.5,
         sync: false,
       },
     },
@@ -112,7 +109,7 @@ export const darkParticlesConfig: ParticleOptions = {
  * Light mode particle configuration.
  * Features: Subtle mesh with softer colors, fewer particles, lower opacity.
  */
-export const lightParticlesConfig: ParticleOptions = {
+export const lightParticlesConfig: RecursivePartial<IOptions> = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
@@ -163,7 +160,7 @@ export const lightParticlesConfig: ParticleOptions = {
       animation: {
         enable: true,
         speed: 0.3,
-        min: 0.2,
+        minimumValue: 0.2,
         sync: false,
       },
     },
@@ -172,7 +169,7 @@ export const lightParticlesConfig: ParticleOptions = {
       animation: {
         enable: true,
         speed: 1,
-        min: 0.3,
+        minimumValue: 0.3,
         sync: false,
       },
     },

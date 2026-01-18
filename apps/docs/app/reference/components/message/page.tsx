@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, Message } from '@clarity-chat/react'
+import { ToastProvider, Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -26,20 +26,7 @@ function BasicMessageDemo() {
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
-      <Message
-        message={message}
-        onFeedback={() => {}}
-        onRetry={() => {}}
-        onEdit={() => {}}
-        onRegenerate={() => {}}
-        onDelete={() => {}}
-        onStopGeneration={() => {}}
-        onSaveEdit={() => {}}
-        onCancelEdit={() => {}}
-        className=""
-        errorDetails={undefined}
-        ref={null}
-      />
+      <Message message={message} />
     </div>
   )
 }
@@ -79,12 +66,6 @@ function MessageWithActionsDemo() {
         onEdit={() => console.log('Edit')}
         onRegenerate={() => console.log('Regenerate')}
         onDelete={() => console.log('Delete')}
-        onStopGeneration={() => console.log('Stop generation')}
-        onSaveEdit={() => console.log('Save edit')}
-        onCancelEdit={() => console.log('Cancel edit')}
-        className=""
-        errorDetails={undefined}
-        ref={null}
       />
     </div>
   )
@@ -235,7 +216,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
@@ -251,7 +232,7 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Message"
           description="A basic message with default styling"
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function SimpleMessage() {
@@ -281,7 +262,7 @@ function SimpleMessage() {
         <ComponentPreview
           title="With All Actions"
           description="Message with copy, feedback, retry, edit, regenerate, and delete actions"
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function MessageWithActions() {
@@ -319,7 +300,7 @@ function MessageWithActions() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 function MarkdownMessage() {
   const message: MessageType = {
@@ -365,7 +346,7 @@ function greet(name: string) {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 function StreamingMessage() {
   const message: MessageType = {
@@ -389,7 +370,7 @@ function StreamingMessage() {
         <p>Display error information for failed messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 function ErrorMessage() {
   const message: MessageType = {
@@ -425,7 +406,7 @@ function ErrorMessage() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 function GroupedMessages() {
   const messages: MessageType[] = [
@@ -501,7 +482,7 @@ function GroupedMessages() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 
 function MessageWithFeedback() {
   const [message, setMessage] = useState<MessageType>({
@@ -564,7 +545,7 @@ function MessageWithFeedback() {
         <h2 id="complete-example">Complete Example</h2>
 
         <EnhancedCodeBlock
-          code={`import { Message } from '@clarity-chat/react'
+          code={`import { Message } from '@clarity-chat/react/internal'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function CompleteMessageExample() {

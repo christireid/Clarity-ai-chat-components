@@ -6,64 +6,51 @@ export const metadata: Metadata = {
   description: 'Try out Clarity Chat components with live code editing',
 }
 
-const exampleCode = `import { ToastProvider, useToast, TypingIndicator, useClipboard } from '@clarity-chat/react'
+const exampleCode = `import { Button, Badge, ToastProvider, useToast } from '@clarity-chat/react/internal'
+import { Send } from 'lucide-react'
 
 function App() {
-  const { success, error, info } = useToast()
-  const { copy, copied } = useClipboard()
-  const [showTyping, setShowTyping] = React.useState(false)
+  const { success } = useToast()
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h2 className="text-2xl font-bold">Toast Notifications</h2>
+      <h2 className="text-2xl font-bold">Button Examples</h2>
 
       <div className="flex items-center gap-3 flex-wrap">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-          onClick={() => success('Operation completed successfully!')}
-        >
-          Success Toast
-        </button>
-        <button
-          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-          onClick={() => error('Something went wrong!')}
-        >
-          Error Toast
-        </button>
-        <button
-          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
-          onClick={() => info('Here is some information')}
-        >
-          Info Toast
-        </button>
+        <Button variant="primary" onClick={() => success('Primary clicked!')}>
+          Primary
+        </Button>
+        <Button variant="secondary">
+          Secondary
+        </Button>
+        <Button variant="success">
+          Success
+        </Button>
+        <Button variant="outline">
+          Outline
+        </Button>
       </div>
 
-      <h2 className="text-2xl font-bold mt-4">Typing Indicator</h2>
+      <h2 className="text-2xl font-bold mt-4">Badge Examples</h2>
 
-      <div className="flex items-center gap-3">
-        <button
-          className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
-          onClick={() => setShowTyping(!showTyping)}
-        >
-          {showTyping ? 'Hide' : 'Show'} Typing Indicator
-        </button>
-        {showTyping && (
-          <div className="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
-            <TypingIndicator />
-            <span className="text-sm text-gray-600 dark:text-gray-300">AI is thinking...</span>
-          </div>
-        )}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge>Default</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge variant="success">Success</Badge>
+        <Badge variant="destructive">Destructive</Badge>
+        <Badge variant="outline">Outline</Badge>
       </div>
 
-      <h2 className="text-2xl font-bold mt-4">Clipboard Hook</h2>
+      <h2 className="text-2xl font-bold mt-4">With Icons</h2>
 
       <div className="flex items-center gap-3">
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-          onClick={() => copy('Hello from Clarity Chat!')}
-        >
-          {copied ? '✓ Copied!' : 'Copy to Clipboard'}
-        </button>
+        <Button variant="primary">
+          <Send className="w-4 h-4 mr-2" />
+          Send Message
+        </Button>
+        <Button isLoading variant="secondary">
+          Loading...
+        </Button>
       </div>
     </div>
   )
@@ -151,16 +138,14 @@ export default function PlaygroundDemoPage() {
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
           <h4 className="font-semibold mb-2">Components</h4>
           <code className="text-sm text-gray-700 dark:text-gray-300">
-            ChatWindow, ClarityChat, TypingIndicator, ToastProvider,
-            MarkdownRendererEnhanced, MemoryProvider, and other @clarity-chat/react
-            components
+            Button, Badge, ChatWindow, Message, ToastProvider, and all other
+            @clarity-chat/react components
           </code>
 
           <h4 className="font-semibold mt-4 mb-2">Hooks</h4>
           <code className="text-sm text-gray-700 dark:text-gray-300">
             useState, useEffect, useCallback, useMemo, useRef, useContext,
-            createContext, useToast, useClipboard, useLocalStorage, useStreaming,
-            useAutoScroll, useClarityChat, and other hooks
+            createContext, useToast, and all other React hooks
           </code>
 
           <h4 className="font-semibold mt-4 mb-2">Utilities</h4>

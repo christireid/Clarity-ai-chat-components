@@ -132,7 +132,7 @@ export default function PromptSuggestionsEnhancedPage() {
         <h2>Basic Usage</h2>
         <p>Use the component with the enhanced hook for ML-based ranking:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithSuggestions() {
@@ -183,7 +183,7 @@ render(<ChatWithSuggestions />)`}
         <h2>ML-Based Ranking</h2>
         <p>Configure ML-based ranking for intelligent suggestion ordering:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 import type { Message } from '@clarity-chat/types'
 
 function MLRankedSuggestions({ messages }: { messages: Message[] }) {
@@ -220,7 +220,7 @@ function MLRankedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Personalization</h2>
         <p>Enable personalization features to learn from user behavior:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 
 function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
   return (
@@ -249,7 +249,7 @@ function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
         <h2>A/B Testing</h2>
         <p>Enable A/B testing to compare suggestion strategies:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 
 function ABTestedSuggestions({ messages }: { messages: Message[] }) {
   const { abVariant, stats } = usePromptSuggestionsEnhanced(messages, {
@@ -287,7 +287,7 @@ function ABTestedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Effectiveness Tracking</h2>
         <p>Track suggestion effectiveness metrics:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 
 function TrackedSuggestions({ messages }: { messages: Message[] }) {
   const { suggestions, trackInteraction, stats } = usePromptSuggestionsEnhanced(messages, {
@@ -319,7 +319,7 @@ function TrackedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Fallback Strategies</h2>
         <p>Configure fallback behavior when ML is unavailable:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
 
 function FallbackSuggestions({ messages }: { messages: Message[] }) {
   return (

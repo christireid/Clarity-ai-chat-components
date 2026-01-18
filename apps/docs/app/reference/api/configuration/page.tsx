@@ -30,7 +30,7 @@ export default function ConfigurationPage() {
 
         <CodeBlock
           language="tsx"
-          code={`import { ClarityChatProvider } from '@clarity-chat/react'
+          code={`import { ClarityChatProvider } from '@clarity-chat/react/internal'
 
 function App({ children }) {
   return (

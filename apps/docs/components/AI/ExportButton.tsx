@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Download, Copy, FileText, FileCode, File, Check } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
 import {
   exportAsMarkdown,
   exportAsJSON,
@@ -59,7 +58,7 @@ export function ExportButton({
       setTimeout(() => setDownloading(false), 500)
       setTimeout(() => setShowMenu(false), 1000)
     } catch (error) {
-      logger.error('Export failed:', error)
+      console.error('Export failed:', error)
       setDownloading(false)
     }
   }

@@ -144,7 +144,7 @@ export default function UseAssistantPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react'
+          code={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Assistant() {
   const { messages, append, status, toolInvocations } = useAssistant({
@@ -184,7 +184,7 @@ function Assistant() {
           Experiment with useAssistant:
         </p>
         <CodePlayground
-          initialCode={`import { useAssistant } from '@clarity-chat/react'
+          initialCode={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Example() {
   const { messages, append, status, toolInvocations } = useAssistant({
@@ -214,7 +214,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Tool Calling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react'
+          code={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Assistant() {
   const { messages, append, toolInvocations } = useAssistant({
@@ -245,7 +245,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react'
+          code={`import { useAssistant } from '@clarity-chat/react/internal'
 import { useState } from 'react'
 
 function Assistant() {
@@ -279,7 +279,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react'
+          code={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Assistant() {
   const { messages, append, status, toolInvocations } = useAssistant({
@@ -309,7 +309,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react'
+          code={`import { useAssistant } from '@clarity-chat/react/internal'
 
 function Assistant() {
   const { messages, append, toolInvocations } = useAssistant({

@@ -45,38 +45,42 @@ export default function AdvancedRAGPatternsRecipePage() {
         <h2>Document Integration for RAG</h2>
         <p>Extract and chunk documents for RAG:</p>
         <CodePlayground
-          initialCode={`import { RAGProvider, useRAG } from '@clarity-chat/react'
+          initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function RAGDocumentSetup() {
-  const { addDocument, searchDocuments } = useRAG()
+  const { extractContent, fetchDocument } = useDocumentIntegration()
 
-  const processDocument = async (documentId: string, content: string) => {
-    // Add document to RAG context with chunking
-    await addDocument({
-      id: documentId,
-      content,
-      metadata: {
-        source: 'google-docs',
-        chunkSize: 1000,
-        chunkOverlap: 200,
-      },
-    })
+  const processDocument = async (documentId: string) => {
+    // Fetch document
+    const document = await fetchDocument(documentId, 'google-docs')
+    
+    // Extract chunks
+    const chunks = await extractContent(document, 1000, 200)
+    
+    // Generate embeddings and store in vector DB
+    for (const chunk of chunks) {
+      const embedding = await generateEmbedding(chunk.content)
+      await vectorStore.add({
+        id: chunk.id,
+        content: chunk.content,
+        embedding,
+        metadata: {
+          documentId: document.id,
+          documentTitle: document.metadata.title,
+          startIndex: chunk.startIndex,
+          endIndex: chunk.endIndex,
+        },
+      })
+    }
   }
 
   return (
-    <RAGProvider
-      config={{
-        chunkSize: 1000,
-        chunkOverlap: 200,
-        embeddingModel: 'text-embedding-3-small',
+    <DocumentIntegration
+      platforms={['google-docs', 'notion']}
+      onDocumentSelect={async (document) => {
+        await processDocument(document.id)
       }}
-    >
-      <div>
-        <button onClick={() => processDocument('doc-1', 'Document content...')}>
-          Add Document
-        </button>
-      </div>
-    </RAGProvider>
+    />
   )
 }`}
         />
@@ -86,43 +90,43 @@ function RAGDocumentSetup() {
         <h2>Semantic Search</h2>
         <p>Use semantic search to find relevant context:</p>
         <CodePlayground
-          initialCode={`import { RAGProvider, useRAG } from '@clarity-chat/react'
+          initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react/internal'
 
 function RAGSearch() {
-  const { searchDocuments } = useRAG()
-  const [results, setResults] = React.useState([])
+  const [query, setQuery] = React.useState('')
 
   const handleSearch = async (searchQuery: string) => {
-    // Search documents using RAG provider
-    const searchResults = await searchDocuments(searchQuery, {
+    // Generate query embedding
+    const queryEmbedding = await generateEmbedding(searchQuery)
+    
+    // Search vector store
+    const results = await vectorStore.search(queryEmbedding, {
       topK: 5,
       minSimilarity: 0.7,
     })
-
-    setResults(searchResults)
-    return searchResults
+    
+    return results.map(r => ({
+      content: r.content,
+      metadata: r.metadata,
+      similarity: r.similarity,
+    }))
   }
 
   return (
-    <RAGProvider
+    <SemanticMessageSearch
+      messages={messages}
+      onResultsFound={(results) => {
+        // Use results as context for RAG
+        useAsContext(results)
+      }}
       config={{
-        embeddingModel: 'text-embedding-3-small',
+        embeddings: {
+          provider: 'openai',
+          model: 'text-embedding-3-small',
+        },
         similarityThreshold: 0.7,
       }}
-    >
-      <div>
-        <input
-          type="text"
-          placeholder="Search documents..."
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        <ul>
-          {results.map((result, i) => (
-            <li key={i}>{result.content} (Score: {result.similarity})</li>
-          ))}
-        </ul>
-      </div>
-    </RAGProvider>
+    />
   )
 }`}
         />
@@ -132,31 +136,39 @@ function RAGSearch() {
         <h2>RAG Context in Chat</h2>
         <p>Use retrieved context in chat:</p>
         <CodePlayground
-          initialCode={`import { ClarityChat, RAGProvider, useRAG } from '@clarity-chat/react'
+          initialCode={`import { ClarityChat } from '@clarity-chat/react/internal'
 
 function RAGChat() {
-  const { searchDocuments } = useRAG()
+  const [context, setContext] = React.useState<string[]>([])
 
   const retrieveContext = async (query: string) => {
-    // Search for relevant documents
-    const results = await searchDocuments(query, { topK: 3 })
-    return results.map(r => r.content)
+    // Generate embedding
+    const embedding = await generateEmbedding(query)
+    
+    // Search vector store
+    const results = await vectorStore.search(embedding, { topK: 3 })
+    
+    // Extract content
+    const contextTexts = results.map(r => r.content)
+    setContext(contextTexts)
+    
+    return contextTexts
   }
 
   return (
-    <RAGProvider config={{ embeddingModel: 'text-embedding-3-small' }}>
-      <ClarityChat
-        api="/api/chat/rag"
-        onBeforeSend={async (message) => {
-          // Retrieve relevant context before sending
-          const context = await retrieveContext(message.content)
-          return {
-            ...message,
-            context,
-          }
-        }}
-      />
-    </RAGProvider>
+    <ClarityChat
+      api="/api/chat/rag"
+      onMessage={async (message) => {
+        // Retrieve relevant context
+        const context = await retrieveContext(message.content)
+        
+        // Send with context
+        return {
+          ...message,
+          context,
+        }
+      }}
+    />
   )
 }`}
         />
@@ -186,22 +198,29 @@ function RAGChat() {
         <h2>Context Management</h2>
         <p>Manage RAG context efficiently:</p>
         <CodePlayground
-          initialCode={`import { TokenCounter, TokenBudgetProvider, Message } from '@clarity-chat/react'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
 
 function RAGContextManager({ messages }: { messages: Message[] }) {
+  const { utilization, recommendations } = useContextMonitor(messages, {
+    maxTokens: 128000,
+    enableRecommendations: true,
+  })
+
+  // Use recommendations to optimize context
+  React.useEffect(() => {
+    recommendations.forEach(rec => {
+      if (rec.action === 'prune') {
+        // Prune less relevant context
+        pruneContext(rec.metadata?.contextIds)
+      }
+    })
+  }, [recommendations])
+
   return (
-    <TokenBudgetProvider maxTokens={128000}>
-      <div>
-        <TokenCounter
-          messages={messages}
-          showBreakdown
-          onBudgetExceeded={(info) => {
-            console.log('Token budget exceeded:', info)
-            // Implement context pruning logic
-          }}
-        />
-      </div>
-    </TokenBudgetProvider>
+    <div>
+      <div>Context tokens: {utilization.breakdown.retrievedContext}</div>
+      <div>Total tokens: {utilization.totalTokens}</div>
+    </div>
   )
 }`}
         />
@@ -211,47 +230,41 @@ function RAGContextManager({ messages }: { messages: Message[] }) {
         <h2>Complete RAG Implementation</h2>
         <p>Complete RAG implementation:</p>
         <CodePlayground
-          initialCode={`import { RAGProvider, useRAG, ClarityChat, TokenBudgetProvider, TokenCounter } from '@clarity-chat/react'
+          initialCode={`import { DocumentIntegration, SemanticMessageSearch, ClarityChat } from '@clarity-chat/react/internal'
+import { useDocumentIntegration } from '@clarity-chat/react/internal'
 
 function CompleteRAG() {
-  const { addDocument, searchDocuments } = useRAG()
+  const { extractContent } = useDocumentIntegration()
+  const [vectorStore, setVectorStore] = React.useState(null)
 
   // Process documents
-  const processDocument = async (content: string, metadata: object) => {
-    await addDocument({
-      id: crypto.randomUUID(),
-      content,
-      metadata,
-    })
+  const processDocument = async (document) => {
+    const chunks = await extractContent(document)
+    // Add to vector store
+    await addToVectorStore(chunks)
   }
 
   // Retrieve context
   const retrieveContext = async (query: string) => {
-    const results = await searchDocuments(query, { topK: 5 })
+    const embedding = await generateEmbedding(query)
+    const results = await vectorStore.search(embedding, { topK: 5 })
     return results.map(r => r.content)
   }
 
   return (
-    <RAGProvider
-      config={{
-        chunkSize: 1000,
-        chunkOverlap: 200,
-        embeddingModel: 'text-embedding-3-small',
-      }}
-    >
-      <TokenBudgetProvider maxTokens={128000}>
-        <div>
-          <TokenCounter showBreakdown />
-          <ClarityChat
-            api="/api/chat/rag"
-            onBeforeSend={async (message) => {
-              const context = await retrieveContext(message.content)
-              return { ...message, context }
-            }}
-          />
-        </div>
-      </TokenBudgetProvider>
-    </RAGProvider>
+    <div>
+      <DocumentIntegration
+        platforms={['google-docs', 'notion']}
+        onDocumentSelect={processDocument}
+      />
+      <ClarityChat
+        api="/api/chat/rag"
+        onMessage={async (message) => {
+          const context = await retrieveContext(message.content)
+          return { ...message, context }
+        }}
+      />
+    </div>
   )
 }`}
         />
@@ -274,22 +287,20 @@ function CompleteRAG() {
         <h2>Related</h2>
         <ul>
           <li>
-            <a href="/reference/components/rag-provider">RAGProvider</a> - RAG
-            context provider component
-          </li>
-          <li>
-            <a href="/reference/hooks/use-rag">useRAG</a> - RAG hook for
-            document management and search
-          </li>
-          <li>
-            <a href="/reference/components/token-counter">TokenCounter</a> -
-            Token usage monitoring component
-          </li>
-          <li>
-            <a href="/reference/components/token-budget-provider">
-              TokenBudgetProvider
+            <a href="/reference/components/document-integration">
+              DocumentIntegration
             </a>{' '}
-            - Token budget management provider
+            - Document integration component
+          </li>
+          <li>
+            <a href="/reference/components/semantic-message-search">
+              SemanticMessageSearch
+            </a>{' '}
+            - Semantic search component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-context-monitor">useContextMonitor</a>{' '}
+            - Context monitoring hook
           </li>
         </ul>
       </section>

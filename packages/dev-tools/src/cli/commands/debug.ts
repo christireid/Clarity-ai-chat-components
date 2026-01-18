@@ -8,7 +8,6 @@ import { Command } from 'commander'
 import { createLogger, type LogLevel } from '../../debug/logger'
 import { successBox, infoBox, warningBox } from '../../ui/box'
 import { keyValueTable } from '../../ui/table'
-import { sleep } from '@clarity-chat/utils'
 import chalk from 'chalk'
 
 export const debugCommand = new Command('debug').description(
@@ -214,4 +213,6 @@ debugCommand
     console.debug()
   })
 
-// sleep is now imported from @clarity-chat/utils
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}

@@ -20,24 +20,10 @@
 import * as React from 'react'
 import {
   CodeBlock as UnifiedCodeBlock,
-  type CodeBlockProps as UnifiedCodeBlockProps,
   parseCodeBlocks as parseCodeBlocksUtil,
+  type ParsedCodeBlock,
 } from '@clarity-chat/react'
 import { cn } from '@/lib/utils'
-
-// Type assertion helper for CodeBlock to handle monorepo type resolution
-const TypedUnifiedCodeBlock = UnifiedCodeBlock as React.ComponentType<UnifiedCodeBlockProps>
-
-/**
- * Parsed code block structure
- */
-export interface ParsedCodeBlock {
-  type: 'code' | 'text'
-  content: string
-  language?: string
-  startLine?: number
-  endLine?: number
-}
 
 /**
  * Props for the AI CodeBlock wrapper
@@ -87,7 +73,7 @@ export function CodeBlock({
     : undefined
 
   return (
-    <TypedUnifiedCodeBlock
+    <UnifiedCodeBlock
       language={language}
       title={filename}
       showLineNumbers={showLineNumbers}
@@ -99,7 +85,7 @@ export function CodeBlock({
       className={className}
     >
       {code}
-    </TypedUnifiedCodeBlock>
+    </UnifiedCodeBlock>
   )
 }
 
@@ -133,7 +119,7 @@ export function InlineCode({
  * Re-exported from unified component for convenience
  */
 export function parseCodeBlocks(text: string): ParsedCodeBlock[] {
-  return parseCodeBlocksUtil(text) as ParsedCodeBlock[]
+  return parseCodeBlocksUtil(text)
 }
 
 /**
@@ -237,4 +223,5 @@ export function getLanguageDisplayName(lang: string): string {
   return names[lang.toLowerCase()] || lang.toUpperCase()
 }
 
-// ParsedCodeBlock is already exported via the interface declaration above
+// Re-export types
+export type { ParsedCodeBlock }
