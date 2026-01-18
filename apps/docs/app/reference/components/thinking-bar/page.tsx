@@ -5,7 +5,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { ThinkingBar, useThinkingBar } from '@clarity-chat/react/internal'
+import { ThinkingBar, useThinkingBar } from '@clarity-chat/react'
 
 // Demo component
 function ThinkingBarDemo() {
@@ -17,18 +17,39 @@ function ThinkingBarDemo() {
         status="thinking"
         message="Analyzing your request..."
         progress={35}
+        estimatedTime={5000}
+        className=""
+        progressClassName=""
+        indeterminate={false}
+        onComplete={() => {}}
+        aria-label="Processing"
+        icon={null}
       />
       <ThinkingBar
         status="searching"
         message="Searching knowledge base..."
         progress={60}
         variant="detailed"
+        estimatedTime={5000}
+        className=""
+        progressClassName=""
+        indeterminate={false}
+        onComplete={() => {}}
+        aria-label="Processing"
+        icon={null}
       />
       <ThinkingBar
         status="generating"
         message="Generating response..."
         progress={85}
         variant="default"
+        estimatedTime={5000}
+        className=""
+        progressClassName=""
+        indeterminate={false}
+        onComplete={() => {}}
+        aria-label="Processing"
+        icon={null}
       />
     </div>
   )
@@ -118,7 +139,7 @@ export default function ThinkingBarPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { ThinkingBar, useThinkingBar } from '@clarity-chat/react/internal'
+        code={`import { ThinkingBar, useThinkingBar } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -128,7 +149,7 @@ import '@clarity-chat/react/styles.css'`}
       <ComponentPreview
         title="Basic Thinking Bar"
         description="Simple progress indicator for AI processing"
-        code={`import { ThinkingBar } from '@clarity-chat/react/internal'
+        code={`import { ThinkingBar } from '@clarity-chat/react'
 
 function Example() {
   return (
@@ -177,7 +198,7 @@ function Example() {
       </p>
 
       <EnhancedCodeBlock
-        code={`import { ThinkingBar, useThinkingBar } from '@clarity-chat/react/internal'
+        code={`import { ThinkingBar, useThinkingBar } from '@clarity-chat/react'
 
 function Example() {
   const thinking = useThinkingBar()

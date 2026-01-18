@@ -165,7 +165,7 @@ describe('PageTransition Component', () => {
 
   describe('Edge Cases', () => {
     it('handles empty children', () => {
-      const { container } = render(<PageTransition></PageTransition>)
+      const { container } = render(<PageTransition>{null}</PageTransition>)
       expect(container).toBeInTheDocument()
     })
 

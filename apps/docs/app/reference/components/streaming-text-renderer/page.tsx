@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { StreamingTextRenderer } from '@clarity-chat/react/internal'
+import { StreamingTextRenderer } from '@clarity-chat/react'
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -40,6 +40,9 @@ function BasicStreamingDemo() {
         <StreamingTextRenderer
           text={text}
           isStreaming={isStreaming}
+          className=""
+          onStreamingComplete={() => {}}
+          onCharacterDisplayed={() => {}}
         />
       </div>
       <button
@@ -131,7 +134,7 @@ export default function StreamingTextRendererPage() {
           title="Streaming Demo"
           description="Simulated token stream with cursor."
           code={`import { useState } from 'react'
-import { StreamingTextRenderer } from '@clarity-chat/react/internal'
+import { StreamingTextRenderer } from '@clarity-chat/react'
 
 function Demo() {
   const [text, setText] = useState('')

@@ -1,8 +1,26 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { ToastProvider, StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+import { ToastProvider, StreamingMessage } from '@clarity-chat/react'
+
+// Define types locally to avoid build-time type resolution issues
+interface AIToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string
+  }
+}
+
+interface Citation {
+  id: string
+  source: string
+  chunkText: string
+  confidence?: number
+  metadata?: Record<string, unknown>
+  url?: string
+}
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -35,7 +53,15 @@ function BasicStreamingDemo() {
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
-      <StreamingMessage content={content} isStreaming={isStreaming} />
+      <StreamingMessage
+        content={content}
+        isStreaming={isStreaming}
+        currentThinkingStep={undefined}
+        error={undefined}
+        onToolApprove={() => {}}
+        onToolReject={() => {}}
+        onRetry={() => {}}
+      />
     </div>
   )
 }
@@ -44,7 +70,7 @@ function BasicStreamingDemo() {
 function StreamingWithToolsDemo() {
   const [content, setContent] = useState('I need to check the weather.')
   const [isStreaming] = useState(false)
-  const [toolCalls] = useState<ToolCall[]>([
+  const [toolCalls] = useState<AIToolCall[]>([
     {
       id: 'call-1',
       type: 'function',
@@ -58,7 +84,7 @@ function StreamingWithToolsDemo() {
     },
   ])
 
-  const handleToolApprove = useCallback((tool: ToolCall) => {
+  const handleToolApprove = useCallback((tool: AIToolCall) => {
     console.log('Tool approved:', tool)
   }, [])
 
@@ -70,6 +96,10 @@ function StreamingWithToolsDemo() {
         toolCalls={toolCalls}
         showTools
         onToolApprove={handleToolApprove}
+        currentThinkingStep={undefined}
+        error={undefined}
+        onToolReject={() => {}}
+        onRetry={() => {}}
       />
     </div>
   )
@@ -223,8 +253,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { AIToolCall, Citation } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -239,7 +269,7 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Streaming Message"
           description="Basic streaming with token-by-token display"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 
 function SimpleStreaming() {
@@ -283,8 +313,8 @@ function SimpleStreaming() {
         <ComponentPreview
           title="Streaming with Tool Calls"
           description="Tool calls with approval workflow"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall } from '@clarity-chat/react'
 
 function StreamingWithTools() {
   const toolCalls: ToolCall[] = [
@@ -298,7 +328,7 @@ function StreamingWithTools() {
     },
   ]
 
-  const handleToolApprove = (tool: ToolCall) => {
+  const handleToolApprove = (tool: AIToolCall) => {
     // Execute the tool
     console.log('Approved:', tool)
   }
@@ -323,8 +353,8 @@ function StreamingWithTools() {
         <p>Display citations and sources referenced in the response:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { Citation } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { Citation } from '@clarity-chat/react'
 
 function StreamingWithCitations() {
   const citations: Citation[] = [
@@ -361,7 +391,7 @@ function StreamingWithCitations() {
         <p>Show chain-of-thought reasoning steps during AI processing:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingWithThinking() {
   const thinkingSteps = [
@@ -390,7 +420,7 @@ function StreamingWithThinking() {
         <p>Display error messages when streaming fails:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingWithError() {
   return (
@@ -413,7 +443,7 @@ function StreamingWithError() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingJSON() {
   const [content, setContent] = useState('{"name": "John", "age": 30')
@@ -444,13 +474,13 @@ function StreamingJSON() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+import { StreamingMessage } from '@clarity-chat/react'
+import type { AIToolCall, Citation } from '@clarity-chat/react'
 
 function CompleteStreamingExample() {
   const [content, setContent] = useState('')
   const [isStreaming, setIsStreaming] = useState(true)
-  const [toolCalls, setToolCalls] = useState<ToolCall[]>([])
+  const [toolCalls, setToolCalls] = useState<AIToolCall[]>([])
   const [citations, setCitations] = useState<Citation[]>([])
   const [thinkingSteps, setThinkingSteps] = useState<string[]>([])
 
@@ -495,7 +525,7 @@ function CompleteStreamingExample() {
     simulateStream()
   }, [])
 
-  const handleToolApprove = useCallback((tool: ToolCall) => {
+  const handleToolApprove = useCallback((tool: AIToolCall) => {
     // Execute tool
     console.log('Executing tool:', tool)
   }, [])
@@ -560,8 +590,8 @@ function CompleteStreamingExample() {
         <p>StreamingMessage works seamlessly with streaming hooks:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import { useStreamingSSE } from '@clarity-chat/react'
 
 function StreamingWithHook() {
   const { content, isStreaming, toolCalls, citations, error } = useStreamingSSE({

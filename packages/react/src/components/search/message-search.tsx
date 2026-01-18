@@ -295,19 +295,19 @@ export function MessageSearch({
   // Size variants
   const sizeClasses = {
     sm: {
-      input: 'h-8 text-sm pl-8 pr-16',
-      icon: 'h-3.5 w-3.5 left-2.5',
+      input: 'h-8 text-sm pl-9 pr-16',
+      icon: 'h-3.5 w-3.5 left-3',
       clearBtn: 'h-5 w-5',
       badge: 'text-xs',
     },
     md: {
-      input: 'h-10 text-sm pl-9 pr-20',
+      input: 'h-10 text-sm pl-10 pr-20',
       icon: 'h-4 w-4 left-3',
       clearBtn: 'h-6 w-6',
       badge: 'text-xs',
     },
     lg: {
-      input: 'h-12 text-base pl-11 pr-24',
+      input: 'h-12 text-base pl-12 pr-24',
       icon: 'h-5 w-5 left-3.5',
       clearBtn: 'h-7 w-7',
       badge: 'text-sm',

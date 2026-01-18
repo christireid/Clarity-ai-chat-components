@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * React Hooks for License Verification
  *

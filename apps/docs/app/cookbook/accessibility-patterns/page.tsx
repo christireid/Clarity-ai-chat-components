@@ -37,7 +37,7 @@ export default function AccessibilityPatternsPage() {
         <h2>ARIA Attributes</h2>
         <p>Add ARIA attributes for accessibility:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatWindow, Message } from '@clarity-chat/react'
 
 function AccessibleChat() {
   return (
@@ -84,8 +84,8 @@ function AccessibleMessage({ message }: { message: Message }) {
         <h2>Keyboard Navigation</h2>
         <p>Implement keyboard navigation:</p>
         <CodePlayground
-          initialCode={`import { ChatInput } from '@clarity-chat/react/internal'
-import { useKeyboardNavigation } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatWindow, ChatInput, useKeyboardShortcuts } from '@clarity-chat/react'
+import { useState } from 'react'
 
 function KeyboardAccessibleChat() {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -132,7 +132,8 @@ function KeyboardAccessibleChat() {
         <h2>Screen Reader Support</h2>
         <p>Support screen readers:</p>
         <CodePlayground
-          initialCode={`import { ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { ChatWindow, Message } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
 
 function ScreenReaderChat() {
   const [announcements, setAnnouncements] = useState([])
@@ -192,7 +193,7 @@ function AccessibleMessage({ message }: { message: Message }) {
         <p>Manage focus for accessibility:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow, ChatInput } from '@clarity-chat/react'
 
 function FocusManagedChat() {
   const chatContainerRef = useRef<HTMLDivElement>(null)

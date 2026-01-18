@@ -670,8 +670,7 @@ useKeyboardShortcuts({
 
         <h3>With Command Palette</h3>
         <pre>
-          <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react/internal'
-import { CommandPalette } from '@clarity-chat/react/internal'
+          <code>{`import { useKeyboardShortcuts, CommandPalette } from '@clarity-chat/react'
 
 function ChatWithCommandPalette() {
   const [isOpen, setIsOpen] = useState(false)
@@ -719,8 +718,7 @@ function ChatWithCommandPalette() {
 
         <h3>With Undo/Redo</h3>
         <pre>
-          <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react/internal'
-import { useUndoRedo } from '@clarity-chat/react/internal'
+          <code>{`import { useKeyboardShortcuts, useUndoRedo } from '@clarity-chat/react'
 
 function ChatWithUndoRedo() {
   const { undo, redo, canUndo, canRedo } = useUndoRedo()
@@ -859,7 +857,7 @@ function ChatWithUndoRedo() {
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { useKeyboardShortcuts, KeyboardShortcutConfig } from '@clarity-chat/react/internal'
+          <code>{`import { useKeyboardShortcuts, KeyboardShortcutConfig } from '@clarity-chat/react'
 
 interface ShortcutMap {
   [key: string]: (event: KeyboardEvent) => boolean | void

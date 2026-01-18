@@ -180,7 +180,12 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
       <div
         className={cn(
           'code-block streaming-code-block group relative rounded-lg border overflow-hidden',
-          'border-border bg-card',
+          // Darker border for dark themes to match terminal appearance - ensure visible in both light and dark site themes
+          themeType === 'dark' 
+            ? 'border-[#1e293b] dark:border-[#1e293b]' 
+            : 'border-border',
+          // Only apply bg-card for light themes, dark themes use Shiki's background
+          themeType === 'light' ? 'bg-card' : '',
           themeType === 'dark' && 'dark',
           className
         )}
@@ -227,7 +232,9 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
             'p-4 overflow-auto',
             'text-sm leading-relaxed font-mono',
             'font-fira-code font-ligatures',
-            isHighlighting && 'opacity-80'
+            isHighlighting && 'opacity-80',
+            // Ensure dark background for dark themes (Shiki will override with its own background)
+            themeType === 'dark' && 'bg-[#011627]'
           )}
           style={{ maxHeight }}
           tabIndex={0}

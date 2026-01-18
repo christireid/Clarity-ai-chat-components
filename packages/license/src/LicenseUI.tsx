@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * License UI Components
  *

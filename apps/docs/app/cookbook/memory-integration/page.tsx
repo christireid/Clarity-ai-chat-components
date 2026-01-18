@@ -39,19 +39,19 @@ export default function MemoryIntegrationPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
   return (
-    <ClarityChat
-      api="/api/chat"
-      memory={{
-        enabled: true,
+    <MemoryProvider
+      config={{
         strategy: 'sliding-window',
         maxTokens: 8000,
       }}
-    />
+    >
+      <ClarityChat api="/api/chat" />
+    </MemoryProvider>
   )
 }`}
         />
@@ -72,14 +72,16 @@ function Chat() {
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`<ClarityChat
-  api="/api/chat"
-  memory={{
-    enabled: true,
+          code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react'
+
+<MemoryProvider
+  config={{
     strategy: 'sliding-window',
     maxTokens: 8000, // Keep last 8000 tokens
   }}
-/>`}
+>
+  <ClarityChat api="/api/chat" />
+</MemoryProvider>`}
         />
 
         <h3 className="text-xl font-semibold mt-6 mb-4">Summary</h3>
@@ -88,15 +90,17 @@ function Chat() {
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`<ClarityChat
-  api="/api/chat"
-  memory={{
-    enabled: true,
+          code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react'
+
+<MemoryProvider
+  config={{
     strategy: 'summary',
     maxTokens: 4000,
     summaryThreshold: 0.8, // Summarize when 80% of budget used
   }}
-/>`}
+>
+  <ClarityChat api="/api/chat" />
+</MemoryProvider>`}
         />
 
         <h3 className="text-xl font-semibold mt-6 mb-4">Fixed</h3>
@@ -105,14 +109,16 @@ function Chat() {
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`<ClarityChat
-  api="/api/chat"
-  memory={{
-    enabled: true,
+          code={`import { MemoryProvider, ClarityChat } from '@clarity-chat/react'
+
+<MemoryProvider
+  config={{
     strategy: 'fixed',
     maxMessages: 10, // Keep last 10 messages
   }}
-/>`}
+>
+  <ClarityChat api="/api/chat" />
+</MemoryProvider>`}
         />
       </section>
 
@@ -124,21 +130,17 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, ChatWindow, MemoryProvider, useMemoryContext } from '@clarity-chat/react'
 
-function Chat() {
-  const { messages, append, memoryInfo } = useClarityChat({
+function ChatWithMemory() {
+  const { messages, append } = useClarityChat({
     api: '/api/chat',
-    memory: {
-      enabled: true,
-      strategy: 'sliding-window',
-      maxTokens: 8000,
-    },
   })
+  const { memoryInfo } = useMemoryContext()
 
   // Access memory information
-  logger.debug('Memory tokens used:', memoryInfo?.tokensUsed)
-  logger.debug('Memory messages:', memoryInfo?.messageCount)
+  console.log('Memory tokens used:', memoryInfo?.tokensUsed)
+  console.log('Memory messages:', memoryInfo?.messageCount)
 
   return (
     <ChatWindow
@@ -147,6 +149,19 @@ function Chat() {
         await append({ role: 'user', content })
       }}
     />
+  )
+}
+
+function Chat() {
+  return (
+    <MemoryProvider
+      config={{
+        strategy: 'sliding-window',
+        maxTokens: 8000,
+      }}
+    >
+      <ChatWithMemory />
+    </MemoryProvider>
   )
 }`}
         />
@@ -163,19 +178,15 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
-function Chat() {
+function ChatWithPersistence() {
   const chatId = 'my-chat-session'
-  
+
   const chat = useClarityChat({
     api: '/api/chat',
     chatId,
-    memory: {
-      enabled: true,
-      strategy: 'sliding-window',
-    },
   })
 
   // Load memory from localStorage
@@ -198,25 +209,29 @@ function Chat() {
   }, [chat.messages])
 
   return <ChatWindow messages={chat.messages} />
+}
+
+function Chat() {
+  return (
+    <MemoryProvider config={{ strategy: 'sliding-window' }}>
+      <ChatWithPersistence />
+    </MemoryProvider>
+  )
 }`}
         />
 
         <h3 className="text-xl font-semibold mt-6 mb-4">Backend Persistence</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
-function Chat() {
+function ChatWithBackend() {
   const chatId = 'user-123-session-456'
-  
+
   const chat = useClarityChat({
     api: '/api/chat',
     chatId,
-    memory: {
-      enabled: true,
-      strategy: 'sliding-window',
-    },
   })
 
   // Load memory from backend
@@ -242,6 +257,14 @@ function Chat() {
   }, [chat.messages])
 
   return <ChatWindow messages={chat.messages} />
+}
+
+function Chat() {
+  return (
+    <MemoryProvider config={{ strategy: 'sliding-window' }}>
+      <ChatWithBackend />
+    </MemoryProvider>
+  )
 }`}
         />
       </section>
@@ -254,17 +277,13 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, MemoryProvider, useMemoryContext, ChatWindow } from '@clarity-chat/react'
 
-function Chat() {
-  const { messages, memoryInfo, memoryErrorInfo } = useClarityChat({
+function ChatMonitor() {
+  const { messages } = useClarityChat({
     api: '/api/chat',
-    memory: {
-      enabled: true,
-      strategy: 'sliding-window',
-      maxTokens: 8000,
-    },
   })
+  const { memoryInfo, memoryError } = useMemoryContext()
 
   return (
     <div>
@@ -275,15 +294,28 @@ function Chat() {
           <p>Usage: {((memoryInfo.tokensUsed / memoryInfo.maxTokens) * 100).toFixed(1)}%</p>
         </div>
       )}
-      
-      {memoryErrorInfo && (
+
+      {memoryError && (
         <div className="memory-error">
-          <p>Memory error: {memoryErrorInfo.message}</p>
+          <p>Memory error: {memoryError.message}</p>
         </div>
       )}
 
       <ChatWindow messages={messages} />
     </div>
+  )
+}
+
+function Chat() {
+  return (
+    <MemoryProvider
+      config={{
+        strategy: 'sliding-window',
+        maxTokens: 8000,
+      }}
+    >
+      <ChatMonitor />
+    </MemoryProvider>
   )
 }`}
         />

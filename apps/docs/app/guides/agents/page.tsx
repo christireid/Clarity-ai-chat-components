@@ -99,8 +99,8 @@ export default function AgentsGuidePage() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
-import type { Tool } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
+import type { Tool } from '@clarity-chat/react'
 
 // Define tools
 const weatherTool: Tool = {
@@ -167,7 +167,7 @@ const agent = createAgent({
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function AgentExample() {
@@ -238,7 +238,7 @@ function AgentExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+            code={`import { AgentRunFeed } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 
 function AgentRunFeedExample() {
@@ -373,7 +373,7 @@ interface AgentExecution {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
 
 const agent = createAgent({
   name: 'EmailAgent',
@@ -532,8 +532,8 @@ const execution = await Promise.race([
 
           <EnhancedCodeBlock
             code={`import { useState } from 'react'
-import { createAgent, AgentRunFeed } from '@clarity-chat/react/internal'
-import type { Tool, AgentRunStep } from '@clarity-chat/react/internal'
+import { createAgent, AgentRunFeed } from '@clarity-chat/react'
+import type { Tool, AgentRunStep } from '@clarity-chat/react'
 
 function CompleteAgentExample() {
   const [steps, setSteps] = useState<AgentRunStep[]>([])

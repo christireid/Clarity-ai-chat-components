@@ -52,17 +52,15 @@ export default function CustomStylingExamplePage() {
   const messages = [
     {
       id: '1',
-      text: 'This chat uses CSS variables for theming!',
-      sender: { id: 'user1', name: 'Alice' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'This chat uses CSS variables for theming!',
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'The colors adapt to the custom theme.',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'The colors adapt to the custom theme.',
+      timestamp: new Date()
     }
   ]
 
@@ -87,7 +85,7 @@ export default function CustomStylingExamplePage() {
     >
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         placeholder="Message with custom theme..."
       />
     </div>
@@ -140,17 +138,15 @@ render(<CSSVariablesExample />)`}
   const messages = [
     {
       id: '1',
-      text: 'Styled with Tailwind utilities! 🎨',
-      sender: { id: 'user1', name: 'Designer' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'Styled with Tailwind utilities! 🎨',
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'Love the gradient background!',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'Love the gradient background!',
+      timestamp: new Date()
     }
   ]
 
@@ -158,7 +154,7 @@ render(<CSSVariablesExample />)`}
     <div className="h-[500px]">
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl shadow-2xl"
         messageClassName="backdrop-blur-sm"
         ownMessageClassName="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
@@ -187,17 +183,15 @@ function CustomCSSExample() {
   const messages = [
     {
       id: '1',
-      text: 'This chat has completely custom styling!',
-      sender: { id: 'user1', name: 'Creative' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'This chat has completely custom styling!',
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'The animations are smooth 🎭',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'The animations are smooth 🎭',
+      timestamp: new Date()
     }
   ]
 
@@ -264,7 +258,7 @@ function CustomCSSExample() {
       
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         className="custom-chat"
         messageClassName="custom-message"
         ownMessageClassName="custom-own-message"
@@ -374,17 +368,15 @@ function BrandThemesExample() {
   const messages = [
     {
       id: '1',
-      text: \`This is the \${themes[selectedTheme].name} theme!\`,
-      sender: { id: 'user1', name: 'Theme Master' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: \`This is the \${themes[selectedTheme].name} theme!\`,
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'Switch themes to see different styles!',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'Switch themes to see different styles!',
+      timestamp: new Date()
     }
   ]
 
@@ -409,7 +401,7 @@ function BrandThemesExample() {
       <div style={themes[selectedTheme].colors} className="h-[500px]">
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           placeholder={\`Message in \${themes[selectedTheme].name} style...\`}
         />
       </div>
@@ -469,17 +461,15 @@ function DarkModeExample() {
   const messages = [
     {
       id: '1',
-      text: 'This chat supports dark mode!',
-      sender: { id: 'user1', name: 'Night Owl' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'This chat supports dark mode!',
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'Toggle to see the difference 🌓',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'Toggle to see the difference 🌓',
+      timestamp: new Date()
     }
   ]
 
@@ -503,7 +493,7 @@ function DarkModeExample() {
       >
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           placeholder="Message in any theme..."
         />
       </div>
@@ -524,24 +514,21 @@ render(<DarkModeExample />)`}
   const messages = [
     {
       id: '1',
-      text: 'Gradients make everything more exciting! 🌈',
-      sender: { id: 'user1', name: 'Colorful' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'Gradients make everything more exciting! 🌈',
+      timestamp: new Date()
     },
     {
       id: '2',
-      text: 'This looks amazing!',
-      sender: { id: 'user2', name: 'You' },
-      timestamp: new Date(),
-      isOwn: true
+      role: 'user',
+      content: 'This looks amazing!',
+      timestamp: new Date()
     },
     {
       id: '3',
-      text: 'The gradient background is so smooth',
-      sender: { id: 'user1', name: 'Colorful' },
-      timestamp: new Date(),
-      isOwn: false
+      role: 'assistant',
+      content: 'The gradient background is so smooth',
+      timestamp: new Date()
     }
   ]
 
@@ -601,7 +588,7 @@ render(<DarkModeExample />)`}
       <div className="gradient-chat h-full p-6">
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           className="h-full"
           messageClassName="text-white"
           ownMessageClassName="own-glass-message"
@@ -627,59 +614,60 @@ render(<GradientThemeExample />)`}
   const messages = [
     {
       id: '1',
-      text: 'Check out this custom styling! 🎨',
-      sender: { id: 'user1', name: 'Alice', avatar: '👩' },
+      role: 'assistant',
+      content: 'Check out this custom styling! 🎨',
       timestamp: new Date(Date.now() - 300000),
-      isOwn: false,
       type: 'text'
     },
     {
       id: '2',
-      text: 'Important announcement!',
-      sender: { id: 'system', name: 'System', avatar: '🔔' },
+      role: 'system',
+      content: 'Important announcement!',
       timestamp: new Date(Date.now() - 200000),
-      isOwn: false,
       type: 'system'
     },
     {
       id: '3',
-      text: 'I love these custom styles!',
-      sender: { id: 'user2', name: 'You', avatar: '😊' },
+      role: 'user',
+      content: 'I love these custom styles!',
       timestamp: new Date(Date.now() - 100000),
-      isOwn: true,
       type: 'text'
     },
     {
       id: '4',
-      text: '⚠️ Warning: Maintenance scheduled for tonight',
-      sender: { id: 'system', name: 'System', avatar: '⚙️' },
+      role: 'system',
+      content: '⚠️ Warning: Maintenance scheduled for tonight',
       timestamp: new Date(),
-      isOwn: false,
       type: 'warning'
     }
   ]
 
   const renderMessage = (message) => {
     const baseClasses = "p-3 rounded-lg mb-2 max-w-[80%]"
-    
+
     const typeStyles = {
-      text: message.isOwn 
-        ? "bg-blue-500 text-white ml-auto" 
+      text: message.role === 'user'
+        ? "bg-blue-500 text-white ml-auto"
         : "bg-gray-200 dark:bg-gray-700",
       system: "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 w-full max-w-full",
       warning: "bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 w-full max-w-full"
     }
 
+    const roleLabels = {
+      user: 'You',
+      assistant: 'Assistant',
+      system: 'System'
+    }
+
     return (
       <div key={message.id} className={\`\${baseClasses} \${typeStyles[message.type]}\`}>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-lg">{message.sender.avatar}</span>
-          <span className="font-semibold text-sm">{message.sender.name}</span>
+          <span className="font-semibold text-sm">{roleLabels[message.role]}</span>
           <span className="text-xs opacity-70">
             {message.timestamp.toLocaleTimeString()}
           </span>
         </div>
-        <p className="text-sm">{message.text}</p>
+        <p className="text-sm">{message.content}</p>
       </div>
     )
   }
@@ -793,7 +781,7 @@ const theme = generateTheme('#3b82f6')
         <p>Use styled-components for type-safe, scoped styling:</p>
         <pre>
           <code>{`import styled from 'styled-components'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 const StyledChatWindow = styled(ChatWindow)\`
   background: \${props => props.theme.background};

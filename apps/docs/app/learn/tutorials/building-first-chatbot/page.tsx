@@ -106,7 +106,7 @@ export async function POST(req: Request) {
         <CodePlayground
           initialCode={`'use client'
 import { useState } from 'react'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 export default function Home() {
   const [messages, setMessages] = useState([
@@ -254,7 +254,7 @@ export async function POST(req: Request) {
 
         <h3>Add File Upload</h3>
         <pre>
-          <code>{`import { ChatWindow } from '@clarity-chat/react/internal'
+          <code>{`import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
   // ... existing props
@@ -274,7 +274,7 @@ export async function POST(req: Request) {
 
         <h3>Add Custom Theming</h3>
         <pre>
-          <code>{`import { ThemeProvider } from '@clarity-chat/react/internal'
+          <code>{`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider
   theme={{

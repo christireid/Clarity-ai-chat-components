@@ -189,7 +189,7 @@ export async function POST(req: Request) {
           language="typescript"
           code={`'use client'
 
-import { ChatWindow, AgentRunFeed } from '@clarity-chat/react/internal'
+import { ChatWindow, ToolExecutionCard } from '@clarity-chat/react'
 import { useState } from 'react'
 
 export default function AgentChatPage() {
@@ -247,12 +247,18 @@ export default function AgentChatPage() {
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
       />
-      
+
       <div className="border-l p-4 overflow-auto">
         <h3 className="font-semibold mb-4">Agent Activity</h3>
-        {agentSteps.length > 0 && (
-          <AgentRunFeed steps={agentSteps} />
-        )}
+        {agentSteps.map((step) => (
+          <ToolExecutionCard
+            key={step.id}
+            toolName={step.tool}
+            args={step.args}
+            result={step.result}
+            status={step.status}
+          />
+        ))}
       </div>
     </div>
   )

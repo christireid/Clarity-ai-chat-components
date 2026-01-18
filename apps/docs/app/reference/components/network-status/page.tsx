@@ -95,7 +95,7 @@ export default function NetworkStatusPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          code={`import { NetworkStatus } from '@clarity-chat/react'
 
 function ChatApp() {
   return (
@@ -114,7 +114,7 @@ function ChatApp() {
           Experiment with NetworkStatus:
         </p>
         <CodePlayground
-          initialCode={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          initialCode={`import { NetworkStatus } from '@clarity-chat/react'
 
 function Example() {
   return (
@@ -138,7 +138,7 @@ function Example() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          code={`import { NetworkStatus } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function ChatWithNetworkStatus() {
@@ -174,7 +174,7 @@ function ChatWithNetworkStatus() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          code={`import { NetworkStatus } from '@clarity-chat/react'
 
 function DetailedNetworkStatus() {
   return (
@@ -198,7 +198,7 @@ function DetailedNetworkStatus() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { NetworkStatus, OfflineChatSync } from '@clarity-chat/react/internal'
+          code={`import { NetworkStatus, OfflineChatSync } from '@clarity-chat/react'
 
 function OfflineChat() {
   return (

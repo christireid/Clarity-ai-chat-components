@@ -29,7 +29,7 @@ export default function TroubleshootingPage() {
         </Callout>
         <pre>
           <code>{`// Add to your app
-import { enableDebugMode } from '@clarity-chat/react/internal'
+import { enableDebugMode } from '@clarity-chat/react'
 
 if (process.env.NODE_ENV === 'development') {
   enableDebugMode({
@@ -187,7 +187,7 @@ module.exports = {
           <strong>Solutions:</strong>
         </p>
         <pre>
-          <code>{`import { RateLimiter } from '@clarity-chat/react/utils'
+          <code>{`import { RateLimiter } from '@clarity-chat/react'
 
 const limiter = new RateLimiter({
   tokensPerInterval: 10,
@@ -198,14 +198,14 @@ const limiter = new RateLimiter({
 // In API route
 export async function POST(req: Request) {
   const identifier = req.headers.get('x-forwarded-for') || 'anonymous'
-  
+
   if (!await limiter.tryRemoveTokens(1, identifier)) {
     return Response.json(
       { error: 'Rate limit exceeded. Try again later.' },
       { status: 429 }
     )
   }
-  
+
   // Process request
 }`}</code>
         </pre>
@@ -265,7 +265,7 @@ export async function POST(req: Request) {
         </p>
         <pre>
           <code>{`// Use virtualization for long message lists
-import { VirtualizedMessageList } from '@clarity-chat/react/internal'
+import { VirtualizedMessageList } from '@clarity-chat/react'
 
 <VirtualizedMessageList
   messages={messages}
@@ -274,7 +274,7 @@ import { VirtualizedMessageList } from '@clarity-chat/react/internal'
 />
 
 // Enable message optimization
-import { MessageOptimized } from '@clarity-chat/react/internal'
+import { MessageOptimized } from '@clarity-chat/react'
 
 <MessageOptimized
   content={message.content}
@@ -354,7 +354,7 @@ import { Pinecone } from '@pinecone-database/pinecone'
 
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY })
 const indexes = await pinecone.listIndexes()
-logger.debug('Available indexes:', indexes)`}</code>
+console.log('Available indexes:', indexes)`}</code>
         </pre>
 
         <h3>Context Window Exceeded</h3>
@@ -366,7 +366,7 @@ logger.debug('Available indexes:', indexes)`}</code>
           <strong>Solutions:</strong>
         </p>
         <pre>
-          <code>{`import { useTokenOptimization } from '@clarity-chat/react/hooks'
+          <code>{`import { useTokenOptimization } from '@clarity-chat/react'
 
 const { optimizedMessages } = useTokenOptimization(messages, {
   slidingWindow: {
@@ -389,7 +389,7 @@ const { optimizedMessages } = useTokenOptimization(messages, {
         </p>
         <pre>
           <code>{`// Batch embeddings
-import { RequestBatcher } from '@clarity-chat/react/utils'
+import { RequestBatcher } from '@clarity-chat/react'
 
 const batcher = new RequestBatcher({
   maxBatchSize: 100,
@@ -403,7 +403,7 @@ const batcher = new RequestBatcher({
 })
 
 // Cache embeddings
-import { SmartCache } from '@clarity-chat/react/utils'
+import { SmartCache } from '@clarity-chat/react'
 
 const cache = new SmartCache({ maxSize: 10000, ttl: 86400000 })
 const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text))`}</code>
@@ -422,7 +422,7 @@ const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text
         </p>
         <pre>
           <code>{`// Wrap app with ThemeProvider
-import { ThemeProvider } from '@clarity-chat/react/internal'
+import { ThemeProvider } from '@clarity-chat/react'
 
 export default function App() {
   return (
@@ -478,7 +478,7 @@ npm install remark-gfm rehype-highlight
 </div>
 
 // Adjust on keyboard open
-import { useMobileKeyboard } from '@clarity-chat/react/hooks'
+import { useMobileKeyboard } from '@clarity-chat/react'
 
 const { isKeyboardOpen, keyboardHeight } = useMobileKeyboard()
 
@@ -581,11 +581,11 @@ export async function POST(req: Request) {
         <h3>Enable Verbose Logging</h3>
         <pre>
           <code>{`// Log all events
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
   onDebug={(event, data) => {
-    logger.debug(\`[DEBUG] \${event}\`, data)
+    console.log(\`[DEBUG] \${event}\`, data)
   }}
   debug={true}
 />`}</code>
@@ -611,7 +611,7 @@ import { ChatWindow } from '@clarity-chat/react/internal'
 
         <h3>Error Boundaries</h3>
         <pre>
-          <code>{`import { ErrorBoundary } from '@clarity-chat/react/internal'
+          <code>{`import { ErrorBoundary } from '@clarity-chat/react'
 
 <ErrorBoundary
   fallback={(error, reset) => (

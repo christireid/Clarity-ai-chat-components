@@ -28,7 +28,7 @@ export default function UseClarityChatPage() {
       <section className="mb-12 p-6 bg-muted rounded-xl">
         <h2 className="text-xl font-bold mb-4">Quick Start</h2>
         <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm mb-4">
-          <code>{`import { useClarityChat } from '@clarity-chat/react/internal'
+          <code>{`import { useClarityChat } from '@clarity-chat/react'
 
 const { messages, append, isLoading } = useClarityChat({
   api: '/api/chat'
@@ -134,7 +134,7 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
         <div className="space-y-6">
           <CollapsibleSection title="Simple Chat" defaultOpen={true}>
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function ChatComponent() {
@@ -166,7 +166,7 @@ function ChatComponent() {
   useClarityChat,
   useChatHandlers,
   ChatWindow
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function ChatComponent() {
   const chat = useClarityChat({
@@ -195,7 +195,7 @@ function ChatComponent() {
         <div className="space-y-4">
           <CollapsibleSection title="With Memory Integration" badge="Pro">
             <CodePlayground
-              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   const chat = useClarityChat({
@@ -239,7 +239,7 @@ function App() {
             badge="Cost Saving"
           >
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const chat = useClarityChat({
@@ -274,7 +274,7 @@ function OptimizedChat() {
 
           <CollapsibleSection title="With WebSocket Transport">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function WebSocketChat() {
   const chat = useClarityChat({
@@ -300,7 +300,7 @@ function WebSocketChat() {
 
           <CollapsibleSection title="Error Handling">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithErrorHandling() {
   const chat = useClarityChat({
@@ -417,12 +417,60 @@ function ChatWithErrorHandling() {
                     </td>
                   </tr>
                   <tr>
+                    <td className="p-3 font-mono text-sm">setMessages</td>
+                    <td className="p-3 font-mono text-sm">
+                      (messages) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Directly set messages array.
+                    </td>
+                  </tr>
+                  <tr>
                     <td className="p-3 font-mono text-sm">append</td>
                     <td className="p-3 font-mono text-sm">
                       (message) =&gt; Promise
                     </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Add message and trigger AI response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">reload</td>
+                    <td className="p-3 font-mono text-sm">() =&gt; Promise</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Regenerate the last assistant response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">stop</td>
+                    <td className="p-3 font-mono text-sm">() =&gt; void</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Stop current streaming response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">handleSubmit</td>
+                    <td className="p-3 font-mono text-sm">
+                      (e: FormEvent) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Form submission handler for chat input.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">input</td>
+                    <td className="p-3 font-mono text-sm">string</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Current input field value.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">setInput</td>
+                    <td className="p-3 font-mono text-sm">
+                      (input: string) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Set the input field value.
                     </td>
                   </tr>
                   <tr>
@@ -440,6 +488,22 @@ function ChatWithErrorHandling() {
                     </td>
                   </tr>
                   <tr>
+                    <td className="p-3 font-mono text-sm">data</td>
+                    <td className="p-3 font-mono text-sm">
+                      JSONValue | undefined
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Additional data from the API response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">abort</td>
+                    <td className="p-3 font-mono text-sm">() =&gt; void</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Abort the current request.
+                    </td>
+                  </tr>
+                  <tr>
                     <td className="p-3 font-mono text-sm">memoryInfo</td>
                     <td className="p-3 font-mono text-sm">
                       ClarityChatMemoryInfo
@@ -449,28 +513,21 @@ function ChatWithErrorHandling() {
                     </td>
                   </tr>
                   <tr>
+                    <td className="p-3 font-mono text-sm">memoryErrorInfo</td>
+                    <td className="p-3 font-mono text-sm">
+                      MemoryErrorInfo | null
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Memory-specific error information.
+                    </td>
+                  </tr>
+                  <tr>
                     <td className="p-3 font-mono text-sm">tokenStats</td>
                     <td className="p-3 font-mono text-sm">
                       TokenStats | undefined
                     </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Token usage statistics.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono text-sm">setMessages</td>
-                    <td className="p-3 font-mono text-sm">
-                      (messages) =&gt; void
-                    </td>
-                    <td className="p-3 text-sm text-muted-foreground">
-                      Directly set messages array.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono text-sm">stop</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; void</td>
-                    <td className="p-3 text-sm text-muted-foreground">
-                      Stop current streaming response.
                     </td>
                   </tr>
                 </tbody>

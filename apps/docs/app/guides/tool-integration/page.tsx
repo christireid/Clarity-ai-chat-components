@@ -154,8 +154,8 @@ const response = await openai.chat.completions.create({
           </p>
 
           <EnhancedCodeBlock
-            code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
-import type { ToolCall } from '@clarity-chat/react/internal'
+            code={`import { ToolInvocationCard } from '@clarity-chat/react'
+import type { ToolCall } from '@clarity-chat/react'
 
 function ToolCardExample() {
   const [status, setStatus] = useState<'pending' | 'executing' | 'success' | 'error'>('pending')
@@ -238,8 +238,8 @@ function ToolCardExample() {
 
           <h3 className="text-2xl font-semibold mb-3">Creating a Registry</h3>
           <EnhancedCodeBlock
-            code={`import { createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolComponentProps } from '@clarity-chat/react/internal'
+            code={`import { createToolUIRegistry } from '@clarity-chat/react'
+import type { ToolComponentProps } from '@clarity-chat/react'
 
 // Custom component for weather tool
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -280,7 +280,7 @@ const toolRegistry = createToolUIRegistry({
             Using the Registry
           </h3>
           <EnhancedCodeBlock
-            code={`import { ClarityToolResult } from '@clarity-chat/react/internal'
+            code={`import { ClarityToolResult } from '@clarity-chat/react'
 
 function ToolResultExample() {
   const toolCall = {
@@ -316,7 +316,7 @@ function ToolResultExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { ToolInvocationCard } from '@clarity-chat/react/internal'
+            code={`import { ToolInvocationCard } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function ApprovalWorkflow() {
@@ -385,7 +385,7 @@ function ApprovalWorkflow() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+            code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function MessageWithToolCall() {
   const toolCalls: ToolCall[] = [
@@ -425,9 +425,9 @@ function MessageWithToolCall() {
 
           <EnhancedCodeBlock
             code={`import { useState } from 'react'
-import { useClarityChat } from '@clarity-chat/react/internal'
-import { ToolInvocationCard, ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolCall } from '@clarity-chat/react/internal'
+import { useClarityChat } from '@clarity-chat/react'
+import { ToolInvocationCard, ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+import type { ToolCall } from '@clarity-chat/react'
 
 // Custom tool result components
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -623,7 +623,7 @@ function ChatWithTools() {
           <EnhancedCodeBlock
             code={`// app/api/tools/execute/route.ts
 import { NextResponse } from 'next/server'
-import type { ToolCall } from '@clarity-chat/react/internal'
+import type { ToolCall } from '@clarity-chat/react'
 
 export async function POST(req: Request) {
   const toolCall: ToolCall = await req.json()

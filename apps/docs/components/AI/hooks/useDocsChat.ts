@@ -3,7 +3,7 @@ import {
   useToast,
   useLocalStorage,
   useThrottledCallback,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 // Use local stub to avoid tiktoken WASM issues with Turbopack
 import { useTokenTrackerStub as useTokenTracker } from './useTokenTrackerStub'
 import type { Message, AIStatus } from '@clarity-chat/types'
@@ -47,6 +47,7 @@ import {
   downloadExport,
 } from '../utils'
 import { useOfflineQueue, createPendingMessage } from './'
+import { logger } from '@/lib/logger'
 
 export function useDocsChat() {
   // State
@@ -71,6 +72,8 @@ export function useDocsChat() {
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
   const partialContentRef = useRef<string>('')
+  const isRequestInProgressRef = useRef<boolean>(false)
+  const requestTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Library hooks
   const toast = useToast()
@@ -107,14 +110,14 @@ export function useDocsChat() {
   })
 
   // Session ID
-  const [sessionId] = useLocalStorage<string>(
+  const [sessionId] = useLocalStorage(
     SESSION_ID_KEY,
     generateSessionId()
   )
 
   // Persistent conversation storage
   const [savedConversation, setSavedConversation, clearSavedConversation] =
-    useLocalStorage<SavedConversation | null>(MESSAGES_KEY, null)
+    useLocalStorage(MESSAGES_KEY, null as SavedConversation | null)
 
   // Initialize messages from saved conversation
   useEffect(() => {
@@ -145,6 +148,12 @@ export function useDocsChat() {
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort()
+      abortControllerRef.current = null
+      if (requestTimeoutRef.current) {
+        clearTimeout(requestTimeoutRef.current)
+        requestTimeoutRef.current = null
+      }
+      isRequestInProgressRef.current = false
     }
   }, [])
 
@@ -166,8 +175,7 @@ export function useDocsChat() {
             if (data.provider.isDemoMode) {
               toast.info(
                 'Running in demo mode. Configure an API key for full AI functionality.',
-                'Demo Mode',
-                8000
+                'Demo Mode'
               )
             }
           }
@@ -177,7 +185,7 @@ export function useDocsChat() {
         if (error instanceof Error && error.name === 'AbortError') {
           return
         }
-        console.error('Failed to fetch provider status:', error)
+        logger.error('Failed to fetch provider status:', error)
         setApiError('Unable to connect to AI service')
       }
     }
@@ -273,6 +281,12 @@ export function useDocsChat() {
         return
       }
 
+      // Prevent duplicate concurrent requests
+      if (isRequestInProgressRef.current && currentRetry === 0) {
+        toast.info('Request already in progress. Please wait...')
+        return
+      }
+
       // Only add user message on first attempt
       if (currentRetry === 0) {
         const userMessage: Message = {
@@ -294,6 +308,7 @@ export function useDocsChat() {
       setRetryCount(currentRetry)
       setCurrentCitations([])
       partialContentRef.current = ''
+      isRequestInProgressRef.current = true
       setAiStatus({
         stage: 'researching',
         topic:
@@ -302,6 +317,18 @@ export function useDocsChat() {
             : 'Searching documentation',
         startedAt: new Date(),
       })
+
+      // Set request timeout (5 minutes)
+      const REQUEST_TIMEOUT_MS = 5 * 60 * 1000
+      if (requestTimeoutRef.current) {
+        clearTimeout(requestTimeoutRef.current)
+      }
+      requestTimeoutRef.current = setTimeout(() => {
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort()
+          toast.error('Request timed out. Please try again.')
+        }
+      }, REQUEST_TIMEOUT_MS)
 
       try {
         abortControllerRef.current?.abort()
@@ -325,13 +352,42 @@ export function useDocsChat() {
         })
 
         if (!response.ok) {
-          throw new Error(`API error: ${response.status}`)
+          const errorText = await response.text().catch(() => 'Unknown error')
+          let errorMessage = `API error: ${response.status}`
+          
+          // Provide more specific error messages
+          if (response.status === 401) {
+            errorMessage = 'Authentication failed. Please check your API key.'
+          } else if (response.status === 429) {
+            errorMessage = 'Rate limit exceeded. Please wait before trying again.'
+          } else if (response.status >= 500) {
+            errorMessage = 'Server error. Please try again later.'
+          } else if (errorText && errorText.length < 200) {
+            try {
+              const errorJson = JSON.parse(errorText)
+              if (errorJson.error) {
+                errorMessage = errorJson.error
+              }
+            } catch {
+              // Not JSON, use text as-is if short
+              if (errorText.length < 100) {
+                errorMessage = errorText
+              }
+            }
+          }
+          
+          throw new Error(errorMessage)
         }
+        
+        // Clear any previous API errors on successful response
+        setApiError(null)
 
         const reader = response.body?.getReader()
         const decoder = new TextDecoder()
 
-        if (!reader) throw new Error('No response body')
+        if (!reader) {
+          throw new Error('No response body received from server')
+        }
 
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
@@ -344,7 +400,7 @@ export function useDocsChat() {
         }
 
         setMessages((prev) => [...prev, assistantMessage])
-        setIsLoading(false)
+        // Keep isLoading true until first content arrives
         setStreamingStatus('streaming')
         setAiStatus({
           stage: 'generating',
@@ -355,6 +411,7 @@ export function useDocsChat() {
         let accumulatedContent = ''
         let sources: Source[] = []
         let buffer = ''
+        let hasReceivedContent = false
 
         while (true) {
           const { done, value } = await reader.read()
@@ -373,12 +430,22 @@ export function useDocsChat() {
                 const data = JSON.parse(line.slice(6))
 
                 if (data.type === 'text' && data.content) {
-                  accumulatedContent += data.content
+                  // Backend sends accumulated content, so use it directly
+                  // Don't accumulate on frontend since backend already accumulates
+                  accumulatedContent = data.content
                   partialContentRef.current = accumulatedContent
+                  // Set isLoading to false once we receive first content
+                  if (!hasReceivedContent) {
+                    hasReceivedContent = true
+                    setIsLoading(false)
+                  }
                   updateStreamingMessage(
                     assistantMessage.id,
                     accumulatedContent
                   )
+                } else if (data.type === 'text' && !data.content) {
+                    // Log empty text chunks for debugging
+                    logger.debug('Received empty text chunk:', data)
                 } else if (data.type === 'tool_use') {
                   // Tool is being invoked - show progress
                   const toolUse: ToolUseProgress = {
@@ -438,32 +505,60 @@ export function useDocsChat() {
                     }))
                   setCurrentCitations(citations)
                 } else if (data.type === 'error') {
-                  throw new Error(data.content || 'Stream error')
+                  // If error contains API key issue, show helpful message
+                  const errorMsg = typeof data.content === 'string' ? data.content : 'Stream error'
+                  setApiError(errorMsg)
+                  
+                  if (errorMsg.includes('API key') || errorMsg.includes('Invalid API')) {
+                    accumulatedContent = `⚠️ **API Configuration Issue**\n\n${errorMsg}\n\n**Demo Mode Active:** Since no valid API keys are configured, I'm running in demo mode with limited responses.\n\nTo enable full AI-powered responses:\n1. Get an API key from [OpenAI](https://platform.openai.com/api-keys) or [Anthropic](https://console.anthropic.com/)\n2. Add it to \`.env.local\`:\n   \`\`\`\n   OPENAI_API_KEY=sk-your-actual-key\n   # or\n   ANTHROPIC_API_KEY=sk-ant-your-actual-key\n   \`\`\`\n3. Restart the dev server\n\n**What I can help with in demo mode:**\n- Installation & getting started\n- Component and hook references\n- Theming & customization\n- Code examples\n\nTry asking: "How do I install Clarity Chat?" or "What components are available?"`
+                    updateStreamingMessage(assistantMessage.id, accumulatedContent)
+                    // Don't throw - let it complete with the helpful message
+                  } else {
+                    throw new Error(errorMsg)
+                  }
                 } else if (data.type === 'done') {
                   const finalContent =
                     normalizeLinksInContent(accumulatedContent)
-                  tokenTracker.addMessage({
-                    role: 'assistant',
-                    content: finalContent,
-                  })
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessage.id
-                        ? {
-                            ...m,
-                            content: finalContent,
-                            status: 'sent' as const,
-                          }
-                        : m
+                  
+                  // Always finalize the message, even if content is empty
+                  // This handles cases where the stream completes without text chunks
+                  if (finalContent && finalContent.length > 0) {
+                    tokenTracker.addMessage({
+                      role: 'assistant',
+                      content: finalContent,
+                    })
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === assistantMessage.id
+                          ? {
+                              ...m,
+                              content: finalContent,
+                              status: 'sent' as const,
+                            }
+                          : m
+                      )
                     )
-                  )
-                  generateFollowUps(finalContent)
+                    generateFollowUps(finalContent)
+                  } else {
+                    // No content received - mark as error or show helpful message
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === assistantMessage.id
+                          ? {
+                              ...m,
+                              content: 'I apologize, but I didn\'t receive any content in the response. Please try asking your question again, or check if API keys are configured.',
+                              status: 'error' as const,
+                            }
+                          : m
+                      )
+                    )
+                    toast.warning('No content received in response. Check API configuration.')
+                  }
                   setAiStatus(undefined)
+                  setIsLoading(false)
                 }
               } catch (parseError) {
-                if (process.env.NODE_ENV === 'development') {
-                  console.debug('[DocsAssistant] JSON parse error:', parseError)
-                }
+                logger.debug('JSON parse error (non-fatal):', parseError)
               }
             }
           }
@@ -481,9 +576,34 @@ export function useDocsChat() {
           )
           tokenTracker.addMessage({ role: 'assistant', content: finalContent })
           generateFollowUps(finalContent)
+          setIsLoading(false)
+          setAiStatus(undefined)
+        } else if (assistantMessage.status === 'streaming') {
+          // Stream completed but no content was received
+          // This can happen if the stream ends without sending text chunks
+          const errorMessage = apiError || 'No content received in response. This might be due to a configuration issue or API error.'
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessage.id && m.status === 'streaming'
+                ? {
+                    ...m,
+                    content: `I apologize, but I didn't receive any content in the response.\n\n**Possible causes:**\n- API key configuration issue\n- Network connectivity problem\n- Server error\n\n**Error:** ${errorMessage}\n\nPlease check your API configuration or try asking again.`,
+                    status: 'error' as const,
+                  }
+                : m
+            )
+          )
+          setIsLoading(false)
+          setAiStatus(undefined)
+          toast.error('No content received. Check API configuration or try again.')
         }
 
         abortControllerRef.current = null
+        isRequestInProgressRef.current = false
+        if (requestTimeoutRef.current) {
+          clearTimeout(requestTimeoutRef.current)
+          requestTimeoutRef.current = null
+        }
         setIsLoading(false)
         setStreamingStatus('idle')
         setRetryCount(0)
@@ -506,6 +626,12 @@ export function useDocsChat() {
             )
             toast.info('Response interrupted. Partial content preserved.')
           }
+          abortControllerRef.current = null
+          isRequestInProgressRef.current = false
+          if (requestTimeoutRef.current) {
+            clearTimeout(requestTimeoutRef.current)
+            requestTimeoutRef.current = null
+          }
           setIsLoading(false)
           setStreamingStatus('idle')
           setAiStatus(undefined)
@@ -513,6 +639,11 @@ export function useDocsChat() {
         }
 
         abortControllerRef.current = null
+        isRequestInProgressRef.current = false
+        if (requestTimeoutRef.current) {
+          clearTimeout(requestTimeoutRef.current)
+          requestTimeoutRef.current = null
+        }
         const err = error instanceof Error ? error : new Error('Unknown error')
         const errorMsg = err.message
 
@@ -622,6 +753,62 @@ export function useDocsChat() {
     [messages, toast, handleSendMessage]
   )
 
+  // Regenerate handler - removes assistant message and resends the previous user message
+  const handleRegenerate = useCallback(
+    (messageId: string) => {
+      const messageIndex = messages.findIndex((m) => m.id === messageId)
+      if (messageIndex === -1) {
+        toast.error('Message not found')
+        return
+      }
+
+      const messageToRegenerate = messages[messageIndex]
+      
+      // Only regenerate assistant messages
+      if (messageToRegenerate.role !== 'assistant') {
+        toast.warning('Can only regenerate assistant messages')
+        return
+      }
+
+      // Find the previous user message
+      if (messageIndex === 0) {
+        toast.warning('No previous message to regenerate from')
+        return
+      }
+
+      const previousMessage = messages[messageIndex - 1]
+      if (previousMessage.role !== 'user') {
+        toast.warning('Previous message must be from user')
+        return
+      }
+
+      // Remove the assistant message and any subsequent messages in the same turn
+      // (in case there are tool results or follow-ups)
+      setMessages((prev) => {
+        const newMessages = [...prev]
+        // Remove the assistant message and everything after it until the next user message
+        const removeFromIndex = messageIndex
+        const nextUserIndex = newMessages.findIndex(
+          (m, idx) => idx > removeFromIndex && m.role === 'user'
+        )
+        const removeToIndex = nextUserIndex === -1 ? newMessages.length : nextUserIndex
+        newMessages.splice(removeFromIndex, removeToIndex - removeFromIndex)
+        return newMessages
+      })
+
+      // Clear any related state
+      setCurrentCitations([])
+      setSuggestedFollowUps([])
+      setCurrentToolUse(null)
+      setToolResults(new Map())
+
+      // Resend the user message
+      toast.info('Regenerating response...')
+      handleSendMessage(previousMessage.content)
+    },
+    [messages, toast, handleSendMessage]
+  )
+
   // Feedback handler
   const handleFeedback = useCallback(
     async (messageId: string, type: 'up' | 'down') => {
@@ -662,7 +849,7 @@ export function useDocsChat() {
             : "Feedback received. We'll work on improving."
         )
       } catch (error) {
-        console.error('Failed to submit feedback:', error)
+        logger.error('Failed to submit feedback:', error)
         toast.error('Failed to submit feedback. Please try again.')
         // Revert optimistic update on failure
         setMessages((prev) =>
@@ -696,7 +883,7 @@ export function useDocsChat() {
           throw new Error(downloadResult.error || 'Download failed')
         }
       } catch (error) {
-        console.error('Failed to export conversation:', error)
+        logger.error('Failed to export conversation:', error)
         toast.error('Failed to export conversation')
         throw error
       }
@@ -708,6 +895,11 @@ export function useDocsChat() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+      isRequestInProgressRef.current = false
+      if (requestTimeoutRef.current) {
+        clearTimeout(requestTimeoutRef.current)
+        requestTimeoutRef.current = null
+      }
       setIsLoading(false)
       setStreamingStatus('idle')
       setAiStatus(undefined)
@@ -731,10 +923,15 @@ export function useDocsChat() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
-      setIsLoading(false)
-      setStreamingStatus('idle')
-      setAiStatus(undefined)
     }
+    isRequestInProgressRef.current = false
+    if (requestTimeoutRef.current) {
+      clearTimeout(requestTimeoutRef.current)
+      requestTimeoutRef.current = null
+    }
+    setIsLoading(false)
+    setStreamingStatus('idle')
+    setAiStatus(undefined)
 
     setMessages([])
     clearSavedConversation()
@@ -766,6 +963,7 @@ export function useDocsChat() {
     isDemoMode: providerInfo?.isDemoMode ?? false,
     handleSendMessage,
     handleMessageRetry,
+    handleRegenerate,
     handleFeedback,
     handleExportWithFormat,
     handleClear,

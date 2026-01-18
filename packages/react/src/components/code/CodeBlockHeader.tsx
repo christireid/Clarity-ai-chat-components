@@ -50,45 +50,49 @@ export const CodeBlockHeader = React.memo<CodeBlockHeaderProps>(
     const displayLanguage =
       language && language !== 'text' && language !== 'plaintext'
 
-    // Don't render if there's nothing to show
-    if (!title && !displayLanguage && !actions && !children) {
-      return null
-    }
-
     return (
       <div
         className={cn(
           'flex items-center justify-between',
-          'px-4 py-2',
-          'border-b border-border/50',
-          'bg-muted/30',
+          'px-4 py-2.5',
+          'border-b border-[#1e293b]',
+          'bg-[#0b2942]',
+          'select-none',
           className
         )}
       >
-        {/* Left side: Title and Language Badge */}
-        <div className="flex items-center gap-2 min-w-0">
-          {title && (
-            <span
-              className={cn(
-                'text-sm font-medium text-muted-foreground',
-                'truncate max-w-[200px]'
-              )}
-              title={title}
-            >
-              {title}
-            </span>
-          )}
-          {showLanguageBadge && displayLanguage && (
-            <span
-              className={cn(
-                'text-xs px-2 py-0.5 rounded',
-                'bg-muted text-muted-foreground',
-                'font-mono uppercase tracking-wide'
-              )}
-            >
-              {getLanguageDisplayName(language)}
-            </span>
-          )}
+        {/* Left side: Window Controls, Title and Language Badge */}
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Mac-style Window Controls */}
+          <div
+            className="flex items-center gap-1.5 opacity-75 hover:opacity-100 transition-opacity flex-shrink-0"
+            aria-hidden="true"
+          >
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+          </div>
+
+          <div className="flex items-center gap-2 min-w-0">
+            {title && (
+              <span
+                className={cn('text-sm font-medium text-white', 'truncate')}
+                title={title}
+              >
+                {title}
+              </span>
+            )}
+            {showLanguageBadge && displayLanguage && (
+              <span
+                className={cn(
+                  'text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider opacity-70',
+                  'bg-[#1e293b] text-[#d6deeb]'
+                )}
+              >
+                {getLanguageDisplayName(language)}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Right side: Actions and Children */}

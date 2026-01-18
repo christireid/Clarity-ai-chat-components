@@ -467,6 +467,14 @@ export { useThrottledCallback } from './hooks/ui/use-throttle'
 
 // Token tracking
 export { useTokenTracker } from './hooks/token/use-token-tracker'
+export {
+  useTokenBudgetMonitor,
+  type TokenBudgetConfig,
+  type TokenBudgetMonitorReturn,
+  type TokenUsage,
+  type BudgetMessage,
+  type TrimResult,
+} from './hooks/token/use-token-budget-monitor'
 
 // Streaming
 export { useStreaming } from './hooks/streaming/use-streaming'
@@ -559,3 +567,110 @@ export {
   type ChatEmptyStateProps,
   type ChatLoadingIndicatorProps,
 } from './primitives/chat'
+
+// ============================================================================
+// ADDITIONAL COMPONENTS (For Reference Documentation Pages)
+// ============================================================================
+
+// Message Components (Core)
+export { Message } from './components/message/message'
+// Note: MessageList is already exported above as the default export from virtualized-message-list
+// The simple MessageList from message/message-list is exported as SimpleMessageList
+export { MessageList as SimpleMessageList } from './components/message/message-list'
+export { default as VirtualizedMessageList } from './components/chat/virtualized-message-list'
+
+// Tool Components
+export { ClarityToolResult } from './components/message/clarity-tool-result'
+export { ToolInvocationCard } from './components/message/tool-invocation-card'
+
+// Tool UI Registry
+export {
+  createToolUIRegistry,
+  getToolComponent,
+  hasToolComponent,
+  validateToolRegistry,
+  getRegistryStats,
+  type ToolComponentProps,
+  type ToolComponentRegistry,
+} from './agents/tool-ui-registry'
+
+// Agent Components
+export {
+  AgentRunFeed,
+  type AgentRunFeedProps,
+  type AgentRunStep,
+  type AgentRunStatus,
+} from './components/ai/agent-run-feed'
+
+// Advanced Input Components
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+
+// Command Palette
+export { CommandPalette, type CommandItem } from './components/navigation/command-palette'
+export {
+  CommandPaletteEnhanced,
+  type CommandAction,
+  type CommandPaletteEnhancedProps,
+} from './components/navigation/command-palette-enhanced'
+
+// Drag and Drop
+export {
+  Draggable,
+  DropZone,
+  useDragDrop,
+  type DraggableProps,
+  type DropZoneProps,
+  type DragInfo,
+  type UseDragDropOptions,
+} from './components/ui/draggable'
+
+// Token Optimization
+export { TokenOptimizationDashboard } from './components/token/token-optimization-dashboard'
+export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
+export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
+export { TokenBudgetBar } from './components/token/token-budget-bar'
+export {
+  TokenUsageMeter,
+  MODEL_PRICING_PRESETS,
+  type TokenUsageMeterProps,
+} from './components/token/token-usage-meter'
+export type {
+  TokenUsage as TokenUsageMeterData,
+  ModelPricing as TokenUsageMeterPricing,
+} from './components/token/token-usage-meter'
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  type TokenEstimate as TokenCostEstimate,
+} from './components/token/TokenCostPreview'
+
+// File Upload
+export { FileUpload } from './components/input/file-upload'
+
+// Model Selector
+export { ModelSelector } from './components/ai/model-selector'
+export type { ModelInfo } from './adapters/types'
+// AIToolCall is the OpenAI-style tool call format used by StreamingMessage
+// The internal ToolCall from app-api is for tool execution state management
+export type { ToolCall as AIToolCall } from './adapters/types'
+// Note: Citation is already exported from './components/ai/citation'
+
+// Streaming Text Renderer
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+
+// Structured Input Builder
+export {
+  StructuredInputBuilder,
+  useStructuredInput,
+  PRESET_FIELDS,
+  type StructuredInputField,
+  type StructuredInputResult,
+  type StructuredInputBuilderProps,
+  type FieldPriority,
+  type FieldSection,
+  type FieldType,
+  type SelectOption,
+  type TokenBreakdown,
+} from './components/input/structured-input-builder'

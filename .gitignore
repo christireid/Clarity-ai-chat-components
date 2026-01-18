@@ -172,3 +172,5 @@ archive/documentation-overhaul/
 
 # Build reports
 build-report.json
+
+.early.coverage

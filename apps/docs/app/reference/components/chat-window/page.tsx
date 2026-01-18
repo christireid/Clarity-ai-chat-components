@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ChatWindow } from '@clarity-chat/react/internal'
+import { ToastProvider, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -57,6 +57,28 @@ function BasicChatDemo() {
       <ChatWindow
         messages={messages}
         onSendMessage={handleSend}
+        onStopGeneration={() => {}}
+        onMessageCopy={() => {}}
+        onMessageFeedback={() => {}}
+        onMessageRetry={() => {}}
+        onEditMessage={() => {}}
+        onRegenerateMessage={() => {}}
+        onDeleteMessage={() => {}}
+        aiStatus={undefined}
+        editingMessageId={null}
+        onSaveEdit={() => {}}
+        onCancelEdit={() => {}}
+        emptyState={undefined}
+        showHeader={false}
+        sessionTitle=""
+        sessionSubtitle=""
+        headerActions={undefined}
+        showMessageCount={false}
+        onExport={undefined}
+        onClear={undefined}
+        error={null}
+        onRetry={undefined}
+        onDismissError={undefined}
         className="border border-border rounded-lg"
       />
     </div>
@@ -72,13 +94,6 @@ const chatWindowProps: Prop[] = [
       'Array of message objects to display. Accepts either Message[] (from @clarity-chat/types) or CoreMessage[] (Vercel AI SDK compatible format).',
   },
   {
-    name: 'onSendMessage',
-    type: '(content: string) => void',
-    required: true,
-    description:
-      'Callback function triggered when user sends a message. Receives the message content as a string.',
-  },
-  {
     name: 'isLoading',
     type: 'boolean',
     default: 'false',
@@ -90,6 +105,19 @@ const chatWindowProps: Prop[] = [
     type: 'AIStatus',
     description:
       'AI processing status for the thinking indicator. Shows when the AI is processing (thinking, reasoning, etc.).',
+  },
+  {
+    name: 'onSendMessage',
+    type: '(content: string) => void',
+    required: true,
+    description:
+      'Callback function triggered when user sends a message. Receives the message content as a string.',
+  },
+  {
+    name: 'onStopGeneration',
+    type: '() => void',
+    description:
+      'Callback to stop the current AI generation. Shows a stop button when AI is generating.',
   },
   {
     name: 'onMessageCopy',
@@ -113,7 +141,7 @@ const chatWindowProps: Prop[] = [
     name: 'onEditMessage',
     type: '(messageId: string) => void',
     description:
-      'Callback when user edits a message. Enables edit functionality.',
+      'Callback when user initiates editing a message. Enables edit functionality.',
   },
   {
     name: 'onRegenerateMessage',
@@ -126,6 +154,24 @@ const chatWindowProps: Prop[] = [
     type: '(messageId: string) => void',
     description:
       'Callback when user deletes a message. Enables delete functionality.',
+  },
+  {
+    name: 'editingMessageId',
+    type: 'string | null',
+    description:
+      'ID of the message currently being edited. Used to show inline edit mode for a specific message.',
+  },
+  {
+    name: 'onSaveEdit',
+    type: '(messageId: string, newContent: string) => void',
+    description:
+      'Callback when user saves an edited message. Receives the message ID and new content.',
+  },
+  {
+    name: 'onCancelEdit',
+    type: '() => void',
+    description:
+      'Callback when user cancels editing a message. Clears the editing state.',
   },
   {
     name: 'emptyState',
@@ -178,10 +224,54 @@ const chatWindowProps: Prop[] = [
       'Callback function triggered when user clears the chat. Shows clear button in header.',
   },
   {
+    name: 'error',
+    type: 'Error | null',
+    description:
+      'Error object to display in the chat window. Shows an error message with retry option.',
+  },
+  {
+    name: 'onRetry',
+    type: '() => void',
+    description:
+      'Callback when user clicks retry after an error. Used with the error prop.',
+  },
+  {
+    name: 'onDismissError',
+    type: '() => void',
+    description:
+      'Callback when user dismisses the error message. Clears the error state.',
+  },
+  {
     name: 'className',
     type: 'string',
     description:
       'Additional CSS classes to apply to the chat container element.',
+  },
+  {
+    name: 'starterPrompts',
+    type: 'StarterPrompt[]',
+    description:
+      'Array of starter prompts to display when the chat is empty. Each prompt has a title and optional description.',
+  },
+  {
+    name: 'followUpSuggestions',
+    type: 'string[]',
+    description:
+      'Array of follow-up suggestion strings to display after assistant messages.',
+  },
+  {
+    name: 'showStarterPrompts',
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Whether to show starter prompts when the chat is empty and starterPrompts are provided.',
+  },
+  {
+    name: 'showFollowUpSuggestions',
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Whether to show follow-up suggestions after assistant messages.',
   },
 ]
 
@@ -213,8 +303,8 @@ export default function ChatWindowPage() {
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
             Experiment with the ChatWindow component! Try different
-            configurations including avatars, timestamps, and loading states to
-            see how they enhance the chat experience.
+            configurations including header options, loading states, and message
+            actions to see how they enhance the chat experience.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -255,7 +345,7 @@ export default function ChatWindowPage() {
   return (
     <ToastProvider>
     <div className="h-96 border rounded-lg">
-      <ChatWindow messages={messages} onSendMessage={handleSend} showAvatars />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
     </div>
     </ToastProvider>
   )
@@ -268,7 +358,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -286,7 +376,7 @@ import '@clarity-chat/react/styles.css'`}
           title="Simple Chat Interface"
           description="A minimal chat window with messages and input"
           code={`import { useState, useCallback } from 'react'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function BasicChat() {
@@ -339,18 +429,17 @@ function BasicChat() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
-import { Button } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 
 function ChatWithHeader() {
   const handleExport = () => {
     // Export conversation logic
-    logger.debug('Exporting conversation...')
+    console.log('Exporting conversation...')
   }
 
   const handleClear = () => {
     // Clear conversation logic
-    logger.debug('Clearing conversation...')
+    console.log('Clearing conversation...')
   }
 
   return (
@@ -364,9 +453,9 @@ function ChatWithHeader() {
       onExport={handleExport}
       onClear={handleClear}
       headerActions={
-        <Button variant="ghost" size="sm">
+        <button className="px-3 py-1 text-sm hover:bg-gray-100 rounded">
           Settings
-        </Button>
+        </button>
       }
     />
   )
@@ -382,7 +471,7 @@ function ChatWithHeader() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { AIStatus } from '@clarity-chat/types'
 
 function ChatWithAIStatus() {
@@ -427,7 +516,7 @@ function ChatWithAIStatus() {
         <p>Enable message editing, deletion, regeneration, and feedback:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithOperations() {
@@ -478,7 +567,7 @@ function ChatWithOperations() {
         <p>Provide a custom empty state when there are no messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 
 function ChatWithCustomEmptyState() {
   const customEmptyState = (
@@ -514,7 +603,7 @@ function ChatWithCustomEmptyState() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 
 function ChatWithHook() {
   const chat = useClarityChat({
@@ -612,7 +701,7 @@ function ChatWithHook() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
+import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function CompleteChat() {
@@ -679,7 +768,7 @@ function CompleteChat() {
         <h3>With Message Attachments</h3>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message, MessageAttachment } from '@clarity-chat/types'
 
 function ChatWithAttachments() {

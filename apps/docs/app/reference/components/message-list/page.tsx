@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, MessageList } from '@clarity-chat/react/internal'
+import { ToastProvider, SimpleMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -40,7 +40,21 @@ function BasicMessageListDemo() {
       className="w-full max-w-2xl border border-border rounded-lg"
       style={{ height: '400px' }}
     >
-      <MessageList messages={messages} />
+      <MessageList
+        messages={messages}
+        onMessageCopy={() => {}}
+        onMessageFeedback={() => {}}
+        onMessageRetry={() => {}}
+        onEditMessage={() => {}}
+        onRegenerateMessage={() => {}}
+        onDeleteMessage={() => {}}
+        onStopGeneration={() => {}}
+        editingMessageId={null}
+        onSaveEdit={() => {}}
+        onCancelEdit={() => {}}
+        emptyState={null}
+        className=""
+      />
     </div>
   )
 }
@@ -55,7 +69,23 @@ function MessageListWithLoadingDemo() {
       className="w-full max-w-2xl border border-border rounded-lg"
       style={{ height: '400px' }}
     >
-      <MessageList messages={messages} isLoading={isLoading} loadingCount={3} />
+      <MessageList
+        messages={messages}
+        isLoading={isLoading}
+        loadingCount={3}
+        onMessageCopy={() => {}}
+        onMessageFeedback={() => {}}
+        onMessageRetry={() => {}}
+        onEditMessage={() => {}}
+        onRegenerateMessage={() => {}}
+        onDeleteMessage={() => {}}
+        onStopGeneration={() => {}}
+        editingMessageId={null}
+        onSaveEdit={() => {}}
+        onCancelEdit={() => {}}
+        emptyState={null}
+        className=""
+      />
     </div>
   )
 }
@@ -208,7 +238,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
@@ -224,7 +254,7 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Message List"
           description="A basic message list with auto-scrolling"
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function SimpleMessageList() {
@@ -266,7 +296,7 @@ function SimpleMessageList() {
         <ComponentPreview
           title="With Loading State"
           description="Loading skeletons while fetching messages"
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 
 function MessageListWithLoading() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -297,7 +327,7 @@ function MessageListWithLoading() {
         <p>Enable message operations by providing callback functions:</p>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 
 function MessageListWithOperations() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -349,7 +379,7 @@ function MessageListWithOperations() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 
 function GroupedMessages() {
   const messages: Message[] = [
@@ -406,7 +436,7 @@ function GroupedMessages() {
         <p>Show time separators between messages from different days:</p>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 
 function MessageListWithSeparators() {
   const messages: Message[] = [
@@ -446,7 +476,7 @@ function MessageListWithSeparators() {
         <p>Provide a custom empty state when there are no messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
 
 function MessageListWithCustomEmpty() {
   const customEmptyState = (
@@ -482,8 +512,8 @@ function MessageListWithCustomEmpty() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { MessageList } from '@clarity-chat/react/internal'
-import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { MessageList } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
 
 function MessageListWithAutoScroll() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -510,7 +540,7 @@ function MessageListWithAutoScroll() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { MessageList, useClarityChat } from '@clarity-chat/react/internal'
+import { MessageList, useClarityChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function CompleteMessageList() {

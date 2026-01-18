@@ -737,7 +737,7 @@ function generateColor(str) {
 
         <h3>With Tooltip</h3>
         <pre>
-          <code>{`import { Avatar, Tooltip } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, Tooltip } from '@clarity-chat/primitives'
 
 <Tooltip content="John Doe - Senior Developer">
   <Avatar
@@ -750,7 +750,7 @@ function generateColor(str) {
 
         <h3>Avatar with Dropdown</h3>
         <pre>
-          <code>{`import { Avatar, Dropdown } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@clarity-chat/primitives'
 
 function AvatarMenu() {
   const menuItems = [
@@ -870,7 +870,7 @@ function AvatarMenu() {
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { Avatar, AvatarProps, AvatarGroup } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, AvatarProps } from '@clarity-chat/primitives'
 
 interface AvatarProps {
   src?: string

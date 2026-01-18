@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { StructuredInputBuilder } from '@clarity-chat/react/internal'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -42,6 +42,7 @@ function BasicBuilderDemo() {
       label: 'Additional Details',
       type: 'textarea' as const,
       rows: 3,
+      required: false,
     },
   ]
 
@@ -166,7 +167,7 @@ export function StructuredInputBuilderContent() {
           title="Prompt Builder"
           description="A simple form to build a structured prompt."
           code={`import { useState } from 'react'
-import { StructuredInputBuilder } from '@clarity-chat/react/internal'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 
 function PromptBuilder() {
   const [values, setValues] = useState({})

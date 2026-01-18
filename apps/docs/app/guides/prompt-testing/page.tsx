@@ -44,7 +44,7 @@ export default function PromptTestingPage() {
         <h2>Test Dataset Creation</h2>
         <p>Create test datasets:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 const testDataset = [
   {
@@ -80,7 +80,7 @@ function TestSetup() {
         <h2>Running Tests</h2>
         <p>Run prompt tests:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 function RunTests() {
   const [results, setResults] = useState([])
@@ -108,7 +108,7 @@ function RunTests() {
         <h2>Evaluating Results</h2>
         <p>Evaluate test results:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
 function EvaluateResults({ results }: { results: TestResult[] }) {
   const metrics = {
@@ -136,7 +136,7 @@ function EvaluateResults({ results }: { results: TestResult[] }) {
         <h2>A/B Testing Prompts</h2>
         <p>Compare prompt versions:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 function ABTestPrompts() {
   const promptA = "You are a helpful assistant."
@@ -171,7 +171,7 @@ function ABTestPrompts() {
         <p>Set up continuous testing:</p>
         <CodePlayground
           initialCode={`// CI/CD integration
-import { runPromptTests } from '@clarity-chat/react/testing'
+import { runPromptTests } from '@clarity-chat/react'
 
 async function runTestsInCI() {
   const results = await runPromptTests({

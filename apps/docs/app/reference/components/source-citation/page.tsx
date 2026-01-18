@@ -4,8 +4,20 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { SourceCitation, useSourceCitation } from '@clarity-chat/react/internal'
-import type { Source } from '@clarity-chat/react/internal'
+import { SourceCitation, useSourceCitation } from '@clarity-chat/react'
+
+// Define Source interface locally to avoid build-time type resolution issues
+interface Source {
+  url: string
+  title: string
+  snippet: string
+  favicon?: string
+  confidence?: number
+  domain?: string
+  date?: string | Date
+  author?: string
+  metadata?: Record<string, string | number | boolean>
+}
 
 const sourceCitationProps: Prop[] = [
   {
@@ -128,8 +140,8 @@ export default function SourceCitationPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { SourceCitation, useSourceCitation } from '@clarity-chat/react/internal'
-import type { Source } from '@clarity-chat/react/internal'
+        code={`import { SourceCitation, useSourceCitation } from '@clarity-chat/react'
+import type { Source } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -137,7 +149,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { SourceCitation } from '@clarity-chat/react/internal'
+        code={`import { SourceCitation } from '@clarity-chat/react'
 
 function Example() {
   const sources = [
@@ -245,7 +257,7 @@ function Example() {
       <h2 id="with-hook">With useSourceCitation Hook</h2>
 
       <EnhancedCodeBlock
-        code={`import { SourceCitation, useSourceCitation } from '@clarity-chat/react/internal'
+        code={`import { SourceCitation, useSourceCitation } from '@clarity-chat/react'
 
 function Example() {
   const {

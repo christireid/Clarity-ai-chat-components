@@ -19,6 +19,7 @@ export interface TooltipProps {
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
   delay?: number // milliseconds
+  sideOffset?: number // pixels offset from trigger
   showArrow?: boolean
   className?: string
   contentClassName?: string
@@ -37,6 +38,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   side = 'top',
   align = 'center',
   delay = 200,
+  sideOffset = 8,
   showArrow = true,
   className,
   contentClassName,
@@ -80,7 +82,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         <ShadcnTooltipContent
           side={side}
           align={radixAlign}
-          sideOffset={8}
+          sideOffset={sideOffset}
           className={cn(
             'text-xs font-medium rounded-lg backdrop-blur-sm',
             showArrow && 'relative',

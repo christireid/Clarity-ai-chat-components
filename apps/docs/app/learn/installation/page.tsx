@@ -301,14 +301,14 @@ module.exports = {
         <p className="mb-4">Test your installation with a simple component:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 
 function App() {
   return (
     <div style={{ height: '100vh' }}>
       <ChatWindow
         messages={[]}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
       />
     </div>
   )

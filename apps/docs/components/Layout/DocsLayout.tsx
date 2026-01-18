@@ -25,7 +25,10 @@ interface DocsLayoutProps {
 
 /**
  * Skeleton loader shown during SSR hydration
+ * Uses deterministic widths to prevent hydration mismatch
  */
+const SKELETON_WIDTHS = ['75%', '90%', '65%', '85%', '70%', '80%', '95%', '60%']
+
 function DocsLayoutSkeleton() {
   return (
     <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,11 +36,11 @@ function DocsLayoutSkeleton() {
         {/* Sidebar skeleton */}
         <aside className="hidden lg:block w-[280px] shrink-0">
           <div className="p-6 space-y-4">
-            {[...Array(8)].map((_, i) => (
+            {SKELETON_WIDTHS.map((width, i) => (
               <div
                 key={i}
                 className="h-8 bg-bg-secondary rounded-lg animate-pulse"
-                style={{ width: `${60 + Math.random() * 40}%` }}
+                style={{ width }}
               />
             ))}
           </div>
@@ -181,7 +184,7 @@ export function DocsLayout({
           id="docs-sidebar"
           className={clsx(
             'hidden lg:block',
-            'sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto',
+            'sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide',
             'bg-bg-primary',
             transformTransitionClasses,
             !sidebar.visible && 'lg:w-0 lg:opacity-0 lg:overflow-hidden'
@@ -258,7 +261,7 @@ export function DocsLayout({
           id="docs-sidebar-mobile"
           className={clsx(
             'lg:hidden fixed top-16 left-0 z-40',
-            'h-[calc(100vh-4rem)] w-80 max-w-[85vw] overflow-y-auto overflow-x-hidden',
+            'h-[calc(100vh-4rem)] w-80 max-w-[85vw] overflow-y-auto overflow-x-hidden scrollbar-hide',
             'bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl',
             'border-r border-slate-200/50 dark:border-slate-700/50',
             'shadow-2xl shadow-slate-900/10 dark:shadow-slate-900/30',

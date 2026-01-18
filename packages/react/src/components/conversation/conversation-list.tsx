@@ -769,7 +769,7 @@ export function ConversationList({
                         {/* Meta info */}
                         <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                           <span>
-                            {formatRelativeTime(conversation.timestamp)}
+                            {formatRelativeTime(new Date(conversation.timestamp))}
                           </span>
                           <span>•</span>
                           <span>{conversation.messageCount} messages</span>

@@ -86,10 +86,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           onDismiss(toast.id)
         }
       }}
-      transition={{
-        duration: durations.fast,
-        ease: springs.smooth.ease,
-      }}
+      transition={springs.smooth}
       className={cn(
         'relative flex items-start gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',
         'min-w-[320px] max-w-md',

@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^6.20.0"
+    "react-router-dom": "^6.30.3"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

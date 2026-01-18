@@ -26,10 +26,11 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
-import { useClipboard, useReducedMotion } from '@clarity-chat/react/internal'
+import { useClipboard, useReducedMotion } from '@clarity-chat/react'
 import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { createFadeVariant, createSlideVariant } from '@/lib/animations'
+import { logger } from '@/lib/logger'
 
 // ============================================================================
 // Types
@@ -185,7 +186,7 @@ const MermaidDiagram = memo(function MermaidDiagram({
         mermaid.default.initialize({
           startOnLoad: false,
           theme: 'default',
-          securityLevel: 'loose',
+          securityLevel: 'strict',
           suppressErrorRendering: true,
         })
 
@@ -198,7 +199,7 @@ const MermaidDiagram = memo(function MermaidDiagram({
           setError(null)
         }
       } catch (err) {
-        console.error('Mermaid rendering error:', err)
+        logger.error('Mermaid rendering error:', err)
         setError(
           err instanceof Error ? err.message : 'Failed to render diagram'
         )

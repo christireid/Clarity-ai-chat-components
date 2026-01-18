@@ -20,9 +20,16 @@ export default defineConfig({
   },
   format: ['esm', 'cjs'],
   dts: true,
-  splitting: true,
+  splitting: false, // Disabled to fix re-export issues with main index
   sourcemap: true,
   clean: true,
-  treeshake: true,
+  treeshake: false, // Disabled to ensure all exports are available
   minify: false, // Keep readable for debugging
+  // Bundle internal imports (submodule re-exports) into main index
+  bundle: true,
+  outExtension({ format }) {
+    return {
+      js: format === 'cjs' ? '.cjs' : '.js',
+    }
+  },
 })

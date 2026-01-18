@@ -1,12 +1,17 @@
+// TODO: AdvancedChatInput, MessageAttachment, SavedPrompt, and InputSuggestion are planned
+// but not yet implemented in @clarity-chat/react. This page documents the intended API.
+
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react/internal'
-import type {
-  MessageAttachment,
-  SavedPrompt,
-  InputSuggestion,
-} from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
+// TODO: Uncomment when implemented:
+// import { AdvancedChatInput } from '@clarity-chat/react'
+// import type {
+//   MessageAttachment,
+//   SavedPrompt,
+//   InputSuggestion,
+// } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -17,71 +22,53 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-// Basic demo component
+// Placeholder type definitions until component is implemented
+interface MessageAttachment {
+  id: string
+  type: 'image' | 'video' | 'document' | 'audio' | 'link'
+  url: string
+  name: string
+  size?: number
+  mimeType?: string
+  thumbnail?: string
+}
+
+interface SavedPrompt {
+  id: string
+  userId: string
+  name: string
+  content: string
+  description?: string
+  category?: string
+  tags: string[]
+  variables: unknown[]
+  usageCount: number
+  lastUsed?: Date
+  isFavorite: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Placeholder demo component - shows Coming Soon notice
 function BasicAdvancedInputDemo() {
-  const [value, setValue] = useState('')
-
-  const handleSubmit = useCallback(
-    (text: string, attachments?: MessageAttachment[]) => {
-      console.log('Message:', text)
-      console.log('Attachments:', attachments)
-      setValue('')
-    },
-    []
-  )
-
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg bg-background">
-      <AdvancedChatInput
-        value={value}
-        onChange={setValue}
-        onSubmit={handleSubmit}
-        placeholder="Type @ for prompts, / for commands..."
-      />
+    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
+      <div className="text-muted-foreground">
+        <p className="font-medium mb-2">Coming Soon</p>
+        <p className="text-sm">AdvancedChatInput is planned but not yet implemented.</p>
+      </div>
     </div>
   )
 }
 
-// With file upload demo
+// Placeholder demo component
 function FileUploadDemo() {
-  const [value, setValue] = useState('')
-
-  const handleFileUpload = useCallback(
-    async (files: File[]): Promise<MessageAttachment[]> => {
-      // Simulate file upload
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      return files.map((file) => ({
-        id: `${Date.now()}-${file.name}`,
-        type: file.type.startsWith('image/') ? 'image' : 'document',
-        name: file.name,
-        size: file.size,
-        mimeType: file.type,
-        url: URL.createObjectURL(file),
-      }))
-    },
-    []
-  )
-
-  const handleSubmit = useCallback(
-    (text: string, attachments?: MessageAttachment[]) => {
-      console.log('Message:', text)
-      console.log('Attachments:', attachments)
-      setValue('')
-    },
-    []
-  )
-
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg bg-background">
-      <AdvancedChatInput
-        value={value}
-        onChange={setValue}
-        onSubmit={handleSubmit}
-        onFileUpload={handleFileUpload}
-        maxFiles={5}
-        acceptedFileTypes={['image/*', 'application/pdf', '.txt']}
-      />
+    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
+      <div className="text-muted-foreground">
+        <p className="font-medium mb-2">Coming Soon</p>
+        <p className="text-sm">File upload functionality will be available when AdvancedChatInput is implemented.</p>
+      </div>
     </div>
   )
 }
@@ -195,6 +182,17 @@ export default function AdvancedChatInputPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
+          <Callout type="warning" className="mb-8">
+            <p>
+              <strong>Coming Soon:</strong> AdvancedChatInput is planned but not yet implemented
+              in @clarity-chat/react. This page documents the intended API and features.
+              For now, use the basic{' '}
+              <a href="/reference/components/chat-input">ChatInput</a> component.
+            </p>
+          </Callout>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.2}>
           <Callout type="info" className="mb-8">
             <p>
               AdvancedChatInput extends the basic{' '}
@@ -205,11 +203,11 @@ export default function AdvancedChatInputPage() {
           </Callout>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.2}>
+        <ScrollReveal delay={0.3}>
           <ViewInStorybook component="AdvancedChatInput" />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.3}>
+        <ScrollReveal delay={0.4}>
           <section className="my-12">
             <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
             <p className="mb-6 text-muted-foreground">
@@ -217,7 +215,10 @@ export default function AdvancedChatInputPage() {
               features!
             </p>
             <CodePlayground
-              initialCode={`function Example() {
+              initialCode={`// AdvancedChatInput is coming soon!
+// This playground will be functional once the component is implemented.
+
+function Example() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = (text, attachments) => {
@@ -228,12 +229,17 @@ export default function AdvancedChatInputPage() {
 
   return (
     <div className="p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
+      <p className="text-center text-muted-foreground py-8">
+        AdvancedChatInput coming soon...
+      </p>
+      {/* Once implemented:
       <AdvancedChatInput
         value={value}
         onChange={setValue}
         onSubmit={handleSubmit}
         placeholder="Type @ for prompts, / for commands..."
       />
+      */}
     </div>
   )
 }
@@ -243,18 +249,19 @@ render(<Example />)`}
           </section>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.4}>
+        <ScrollReveal delay={0.5}>
           <h2 id="import">Import</h2>
 
           <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment, SavedPrompt, InputSuggestion } from '@clarity-chat/react/internal'
+            code={`// Coming soon:
+import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment, SavedPrompt, InputSuggestion } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
             language="tsx"
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.5}>
+        <ScrollReveal delay={0.6}>
           <h2 id="basic-usage">Basic Usage</h2>
 
           <p className="mb-4">
@@ -267,8 +274,8 @@ import '@clarity-chat/react/styles.css'`}
             title="Simple Advanced Input"
             description="Basic usage with file upload support"
             code={`import { useState, useCallback } from 'react'
-import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment } from '@clarity-chat/react/internal'
+import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/react'
 
 function SimpleAdvancedInput() {
   const [value, setValue] = useState('')
@@ -293,7 +300,7 @@ function SimpleAdvancedInput() {
           </ComponentPreview>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.6}>
+        <ScrollReveal delay={0.7}>
           <h2 id="file-uploads">File Uploads</h2>
 
           <p className="mb-4">
@@ -304,8 +311,8 @@ function SimpleAdvancedInput() {
           <ComponentPreview
             title="With File Upload"
             description="File upload with preview and size limits"
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/react'
 
 function ChatWithFileUpload() {
   const [value, setValue] = useState('')
@@ -352,7 +359,7 @@ function ChatWithFileUpload() {
           </Callout>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.7}>
+        <ScrollReveal delay={0.8}>
           <h2 id="autocomplete">@Mentions and /Commands</h2>
 
           <p className="mb-4">
@@ -362,8 +369,8 @@ function ChatWithFileUpload() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { InputSuggestion, SavedPrompt } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
+import type { InputSuggestion, SavedPrompt } from '@clarity-chat/react'
 
 function ChatWithAutocomplete() {
   const [value, setValue] = useState('')
@@ -473,146 +480,13 @@ function ChatWithAutocomplete() {
           </Callout>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.8}>
-          <h2 id="link-preview">Link Preview</h2>
-
-          <p className="mb-4">
-            Automatically fetch link previews when URLs are pasted:
-          </p>
-
-          <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-
-function ChatWithLinkPreview() {
-  const handleLinkPaste = async (url: string) => {
-    // Fetch link metadata from your API or a service
-    const response = await fetch(\`/api/link-preview?url=\${encodeURIComponent(url)}\`)
-    const data = await response.json()
-    
-    return {
-      title: data.title,
-      description: data.description,
-      image: data.image,
-    }
-  }
-
-  return (
-    <AdvancedChatInput
-      value={value}
-      onChange={setValue}
-      onSubmit={handleSubmit}
-      onLinkPaste={handleLinkPaste}
-    />
-  )
-}`}
-            language="tsx"
-            showLineNumbers
-          />
-        </ScrollReveal>
-
         <ScrollReveal delay={0.9}>
-          <h2 id="character-limit">Character Limit</h2>
-
-          <p className="mb-4">
-            Set a maximum character count with visual feedback:
-          </p>
-
-          <EnhancedCodeBlock
-            code={`<AdvancedChatInput
-  value={value}
-  onChange={setValue}
-  onSubmit={handleSubmit}
-  maxLength={2000}
-/>`}
-            language="tsx"
-            showLineNumbers
-          />
-        </ScrollReveal>
-
-        <ScrollReveal delay={1.0}>
-          <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
-
-          <p className="mb-4">
-            AdvancedChatInput supports comprehensive keyboard navigation:
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Input</h3>
-              <ul className="space-y-2">
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Enter
-                  </kbd>{' '}
-                  - Send message
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Shift
-                  </kbd>{' '}
-                  +{' '}
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Enter
-                  </kbd>{' '}
-                  - New line
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    @
-                  </kbd>{' '}
-                  - Trigger mentions/prompts
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    /
-                  </kbd>{' '}
-                  - Trigger commands
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-2">
-                Autocomplete Navigation
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    ↑
-                  </kbd>{' '}
-                  /{' '}
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    ↓
-                  </kbd>{' '}
-                  - Navigate suggestions
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Tab
-                  </kbd>{' '}
-                  or{' '}
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Enter
-                  </kbd>{' '}
-                  - Select suggestion
-                </li>
-                <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
-                    Esc
-                  </kbd>{' '}
-                  - Close suggestions
-                </li>
-              </ul>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={1.1}>
           <h2 id="props">Props</h2>
 
           <PropsTable props={advancedChatInputProps} />
         </ScrollReveal>
 
-        <ScrollReveal delay={1.2}>
+        <ScrollReveal delay={1.0}>
           <h2 id="types">TypeScript Types</h2>
 
           <h3>InputSuggestion</h3>
@@ -669,145 +543,22 @@ function ChatWithLinkPreview() {
           />
         </ScrollReveal>
 
-        <ScrollReveal delay={1.3}>
-          <h2 id="complete-example">Complete Example</h2>
-
-          <EnhancedCodeBlock
-            code={`import { useState, useCallback } from 'react'
-import { AdvancedChatInput, useClarityChat } from '@clarity-chat/react/internal'
-import type { MessageAttachment, InputSuggestion, SavedPrompt } from '@clarity-chat/react/internal'
-
-function CompleteAdvancedChat() {
-  const chat = useClarityChat({ api: '/api/chat' })
-  const [value, setValue] = useState('')
-
-  const savedPrompts: SavedPrompt[] = [
-    // Your saved prompts...
-  ]
-
-  const handleFileUpload = async (files: File[]): Promise<MessageAttachment[]> => {
-    const formData = new FormData()
-    files.forEach(file => formData.append('files', file))
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    })
-
-    const data = await response.json()
-    return data.attachments
-  }
-
-  const handleSuggestionRequest = async (
-    query: string,
-    trigger: '@' | '/'
-  ): Promise<InputSuggestion[]> => {
-    if (trigger === '@') {
-      // Search prompts from API
-      const response = await fetch(\`/api/prompts/search?q=\${query}\`)
-      const prompts = await response.json()
-      return prompts.map((p: SavedPrompt) => ({
-        id: p.id,
-        type: 'prompt' as const,
-        label: p.name,
-        description: p.description,
-        value: p.content,
-      }))
-    } else {
-      // Return commands
-      return [
-        { id: '1', type: 'command', label: 'help', value: '/help' },
-        { id: '2', type: 'command', label: 'clear', value: '/clear' },
-      ]
-    }
-  }
-
-  const handleSubmit = useCallback(
-    async (text: string, attachments?: MessageAttachment[]) => {
-      await chat.append({
-        role: 'user',
-        content: text,
-        // Include attachments in message if needed
-      })
-      setValue('')
-    },
-    [chat]
-  )
-
-  return (
-    <div className="flex flex-col h-screen">
-      {/* Your message list here */}
-      
-      <AdvancedChatInput
-        value={value}
-        onChange={setValue}
-        onSubmit={handleSubmit}
-        onFileUpload={handleFileUpload}
-        onSuggestionRequest={handleSuggestionRequest}
-        savedPrompts={savedPrompts}
-        maxFiles={10}
-        acceptedFileTypes={['image/*', 'application/pdf', '.txt', '.docx']}
-        maxLength={2000}
-        disabled={chat.isLoading}
-        placeholder="Type @ for prompts, / for commands, or drag files here..."
-      />
-    </div>
-  )
-}`}
-            language="tsx"
-            showLineNumbers
-          />
-
-          <Callout type="warning">
-            <p>
-              <strong>Note:</strong> The API endpoints (<code>/api/upload</code>
-              , <code>/api/prompts/search</code>, etc.) are placeholders. You'll
-              need to implement your own backend endpoints.
-            </p>
-          </Callout>
-        </ScrollReveal>
-
-        <ScrollReveal delay={1.4}>
+        <ScrollReveal delay={1.1}>
           <h2 id="accessibility">Accessibility</h2>
 
           <p>AdvancedChatInput is built with accessibility in mind:</p>
 
           <ul className="mb-8">
-            <li>✅ Full keyboard navigation support</li>
-            <li>✅ ARIA attributes for autocomplete suggestions</li>
-            <li>✅ Screen reader announcements for file uploads</li>
-            <li>✅ Focus management for all interactive elements</li>
-            <li>✅ Proper labeling for file input</li>
-            <li>✅ Keyboard shortcuts documented and accessible</li>
+            <li>Full keyboard navigation support</li>
+            <li>ARIA attributes for autocomplete suggestions</li>
+            <li>Screen reader announcements for file uploads</li>
+            <li>Focus management for all interactive elements</li>
+            <li>Proper labeling for file input</li>
+            <li>Keyboard shortcuts documented and accessible</li>
           </ul>
         </ScrollReveal>
 
-        <ScrollReveal delay={1.5}>
-          <h2 id="performance">Performance</h2>
-
-          <p>AdvancedChatInput is optimized for performance:</p>
-
-          <ul className="mb-8">
-            <li>
-              <strong>React Concurrent Features:</strong> Uses{' '}
-              <code>useTransition</code> for non-blocking suggestion updates
-            </li>
-            <li>
-              <strong>Memoized handlers:</strong> Event handlers are memoized to
-              prevent unnecessary re-renders
-            </li>
-            <li>
-              <strong>Efficient file handling:</strong> File previews use object
-              URLs for fast rendering
-            </li>
-            <li>
-              <strong>Debounced autocomplete:</strong> Suggestions are loaded
-              efficiently without blocking UI
-            </li>
-          </ul>
-        </ScrollReveal>
-
-        <ScrollReveal delay={1.6}>
+        <ScrollReveal delay={1.2}>
           <h2 id="related">Related</h2>
 
           <ul>

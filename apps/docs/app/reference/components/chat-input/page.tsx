@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ChatInput } from '@clarity-chat/react/internal'
+import { ToastProvider, ChatInput } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -29,6 +29,10 @@ function BasicInputDemo() {
         onChange={setValue}
         onSubmit={handleSubmit}
         placeholder="Type a message..."
+        maxLength={4000}
+        className=""
+        id="chat-input-demo"
+        aria-label="Chat input"
       />
     </div>
   )
@@ -54,6 +58,9 @@ function CharacterLimitDemo() {
         warningThreshold={0.9}
         showCharCounter
         placeholder="Type a message (280 char limit)..."
+        className=""
+        id="chat-input-limit-demo"
+        aria-label="Chat input with character limit"
       />
     </div>
   )
@@ -190,7 +197,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+          code={`import { ChatInput } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -206,7 +213,7 @@ import '@clarity-chat/react/styles.css'`}
           title="Simple Chat Input"
           description="A basic chat input with submit handling"
           code={`import { useState, useCallback } from 'react'
-import { ChatInput } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react'
 
 function SimpleChatInput() {
   const [value, setValue] = useState('')
@@ -244,7 +251,7 @@ function SimpleChatInput() {
         <ComponentPreview
           title="With Character Limit"
           description="Character counter with warning threshold"
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+          code={`import { ChatInput } from '@clarity-chat/react'
 
 function ChatWithLimit() {
   const [value, setValue] = useState('')
@@ -291,7 +298,7 @@ function ChatWithLimit() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
+          code={`import { ChatInput } from '@clarity-chat/react'
 
 function ChatWithAsyncSubmit() {
   const [value, setValue] = useState('')
@@ -343,8 +350,7 @@ function ChatWithAsyncSubmit() {
         <p>Disable the input during loading or when chat is unavailable:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatInput } from '@clarity-chat/react/internal'
-import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ChatInput, useClarityChat } from '@clarity-chat/react'
 
 function ChatWithDisabledState() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -424,7 +430,7 @@ function ChatWithDisabledState() {
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
-import { ChatInput, useClarityChat } from '@clarity-chat/react/internal'
+import { ChatInput, useClarityChat } from '@clarity-chat/react'
 
 function ChatWithHook() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -456,7 +462,7 @@ function ChatWithHook() {
 
         <EnhancedCodeBlock
           code={`import { useState } from 'react'
-import { ChatInput } from '@clarity-chat/react/internal'
+import { ChatInput } from '@clarity-chat/react'
 
 function ChatWithValidation() {
   const [value, setValue] = useState('')

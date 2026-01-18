@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
   ToastProvider,
-  VirtualizedMessageList,
+  MessageList as VirtualizedMessageList,
   Message,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -22,7 +22,7 @@ function generateDemoMessages(count: number): MessageType[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `msg-${i}`,
     chatId: 'demo-chat',
-    role: i % 2 === 0 ? 'user' : 'assistant',
+    role: (i % 2 === 0 ? 'user' : 'assistant') as 'user' | 'assistant',
     content: `This is message ${i + 1} in a large conversation. It demonstrates virtual scrolling for efficient rendering of many messages.`,
     status: 'sent' as const,
     createdAt: new Date(Date.now() - (count - i) * 60000),
@@ -51,6 +51,9 @@ function BasicVirtualizedDemo() {
         messages={messages}
         renderMessage={renderMessage}
         estimatedItemSize={100}
+        className=""
+        onScroll={() => {}}
+        itemKey={(index: number, data: MessageType[]) => data[index]?.id ?? `msg-${index}`}
       />
     </div>
   )
@@ -198,7 +201,7 @@ render(<Example />)`}
         <ScrollReveal delay={0.4}>
           <h2 id="import">Import</h2>
           <EnhancedCodeBlock
-            code={`import { VirtualizedMessageList } from '@clarity-chat/react/internal'
+            code={`import { VirtualizedMessageList } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'`}
             language="tsx"
           />
@@ -215,7 +218,7 @@ import type { Message as MessageType } from '@clarity-chat/types'`}
           <ComponentPreview
             title="Simple Virtualized List"
             description="Rendering 100 messages with virtual scrolling"
-            code={`import { VirtualizedMessageList, Message } from '@clarity-chat/react/internal'
+            code={`import { VirtualizedMessageList, Message } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 function SimpleVirtualizedList() {

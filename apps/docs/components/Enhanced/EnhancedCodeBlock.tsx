@@ -17,8 +17,12 @@
  * - WCAG 2.1 AA accessible
  */
 
-import { CodeBlock as UnifiedCodeBlock } from '@clarity-chat/react'
+import * as React from 'react'
+import { CodeBlock as UnifiedCodeBlock, type CodeBlockProps as UnifiedCodeBlockProps } from '@clarity-chat/react'
 import { ExternalLink } from 'lucide-react'
+
+// Type assertion helper for CodeBlock to handle monorepo type resolution
+const TypedUnifiedCodeBlock = UnifiedCodeBlock as React.ComponentType<UnifiedCodeBlockProps>
 
 /**
  * Props for the enhanced CodeBlock wrapper
@@ -100,7 +104,7 @@ export function EnhancedCodeBlock({
         </div>
       )}
 
-      <UnifiedCodeBlock
+      <TypedUnifiedCodeBlock
         language={language}
         title={displayTitle}
         showLineNumbers={showLineNumbers}
@@ -112,7 +116,7 @@ export function EnhancedCodeBlock({
         className={className}
       >
         {code}
-      </UnifiedCodeBlock>
+      </TypedUnifiedCodeBlock>
     </div>
   )
 }

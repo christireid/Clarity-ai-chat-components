@@ -38,7 +38,7 @@ export default function RateLimitingRecipePage() {
           code={`import {
   TokenBucketRateLimiter,
   MemoryRateLimitStorage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const limiter = new TokenBucketRateLimiter({
   maxRequests: 5,
@@ -82,7 +82,7 @@ export async function withRateLimit<T>(
           code={`import {
   QuotaManager,
   MemoryQuotaStorage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const quotas = new QuotaManager({
   storage: new MemoryQuotaStorage(),

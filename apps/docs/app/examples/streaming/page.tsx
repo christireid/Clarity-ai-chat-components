@@ -68,14 +68,16 @@ npm run dev`}
         <h2>Implementation Snippet</h2>
         <CodeBlock
           language="tsx"
-          code={`import { useStreamingChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat } from '@clarity-chat/react'
 
-const { messages, streamMessage } = useStreamingChat({ chatId: 'streaming-demo' })
+// Basic streaming setup
+const { messages, send, isStreaming } = useClarityChat({
+  api: '/api/chat/stream',
+  transport: 'sse',
+})
 
-await streamMessage({
-  role: 'user',
-  content: 'Outline a migration plan from REST to GraphQL',
-})`}
+// Send a message (streaming happens automatically)
+await send('Outline a migration plan from REST to GraphQL')`}
         />
         <p>
           Inspect <code>examples/streaming-chat</code> for environment setup,

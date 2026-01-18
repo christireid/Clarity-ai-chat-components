@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Brain as BrainCircuit,
   ChevronLeft,
   User,
-  Bot,
   Send,
   Clock,
   FileText,
@@ -26,17 +25,24 @@ import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
 import { durations } from '@/lib/animations'
 
 // Simple auto-scroll hook (useAutoScroll not exported from @clarity-chat/react yet)
-function useAutoScroll(_options?: {
+function useAutoScroll(options?: {
   dependencies?: unknown[]
   threshold?: number
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: 'smooth',
     })
-  }
+  }, [])
+
+  // Auto-scroll when dependencies change
+  useEffect(() => {
+    scrollToBottom()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, options?.dependencies || [])
+
   return { scrollRef, scrollToBottom }
 }
 
@@ -51,8 +57,8 @@ interface MemoryItem {
 
 interface Message {
   id: string
-  text: string
-  sender: 'user' | 'bot'
+  content: string
+  role: 'user' | 'assistant' | 'system'
   timestamp: Date
   memoryUsed?: string[]
 }
@@ -88,8 +94,8 @@ export default function MemoryContextDemo() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
-      sender: 'bot',
+      content: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
+      role: 'assistant',
       timestamp: new Date(),
       memoryUsed: ['1', '2', '3'],
     },
@@ -197,8 +203,8 @@ export default function MemoryContextDemo() {
 
     const userMessage: Message = {
       id: generateId(),
-      text: input,
-      sender: 'user',
+      content: input,
+      role: 'user',
       timestamp: new Date(),
     }
 
@@ -221,8 +227,8 @@ export default function MemoryContextDemo() {
 
     const botMessage: Message = {
       id: generateId(),
-      text,
-      sender: 'bot',
+      content: text,
+      role: 'assistant',
       timestamp: new Date(),
       memoryUsed: memoryIds,
     }
@@ -238,8 +244,8 @@ export default function MemoryContextDemo() {
     setMessages([
       {
         id: '1',
-        text: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
-        sender: 'bot',
+        content: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
+        role: 'assistant',
         timestamp: new Date(),
         memoryUsed: ['1', '2', '3'],
       },
@@ -357,17 +363,17 @@ export default function MemoryContextDemo() {
                         : { opacity: 1, y: 0 }
                     }
                     className={`flex items-start gap-3 ${
-                      message.sender === 'user' ? 'flex-row-reverse' : ''
+                      message.role === 'user' ? 'flex-row-reverse' : ''
                     }`}
                   >
                     <div
                       className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.sender === 'bot'
+                        message.role === 'assistant'
                           ? 'bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-400'
                           : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
                       }`}
                     >
-                      {message.sender === 'bot' ? (
+                      {message.role === 'assistant' ? (
                         <BrainCircuit className="w-5 h-5" />
                       ) : (
                         <User className="w-5 h-5" />
@@ -376,13 +382,13 @@ export default function MemoryContextDemo() {
                     <div className="max-w-[75%]">
                       <div
                         className={`rounded-2xl px-4 py-3 ${
-                          message.sender === 'bot'
+                          message.role === 'assistant'
                             ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
                             : 'bg-brand-500 text-white rounded-tr-sm'
                         }`}
                       >
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                          {message.text}
+                          {message.content}
                         </p>
                       </div>
                       {message.memoryUsed && message.memoryUsed.length > 0 && (

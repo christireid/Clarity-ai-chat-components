@@ -76,7 +76,7 @@ function normalizeResponse(response: ProviderResponse) {
         <CodeBlock
           language="ts"
           code={`import type { Message } from '@clarity-chat/types'
-import { useChat } from '@clarity-chat/react/internal'
+import { useChat } from '@clarity-chat/react'
 
 interface SupportMessage extends Message {
   sentiment?: 'positive' | 'neutral' | 'negative'

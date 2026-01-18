@@ -64,7 +64,7 @@ export default function UseMemoryContextPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react/internal'
+          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   const memory = useMemoryContext()

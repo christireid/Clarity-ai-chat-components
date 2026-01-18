@@ -85,7 +85,7 @@ const treeShakeExamples: TreeShakeExample[] = [
   },
   {
     name: 'Minimal Setup',
-    code: `import { useChat } from '@clarity-chat/react/hooks'`,
+    code: `import { useHeadlessChat } from '@clarity-chat/react'`,
     size: '4KB',
     savings: '85% smaller',
   },

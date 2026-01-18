@@ -329,9 +329,11 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
     <div
       ref={containerRef}
       className={cn(
-        'code-block group relative rounded-lg border overflow-hidden',
-        'border-border bg-card',
-        themeType === 'dark' && 'dark',
+        'code-block group relative rounded-xl border overflow-hidden transition-all duration-300',
+        // Dark glassmorphism container
+        'bg-[#030712b3] backdrop-blur-xl border-[#ffffff10] shadow-2xl',
+        // Always apply dark class
+        'dark',
         className
       )}
       data-theme={theme}
@@ -373,7 +375,9 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
                 'focus-visible:opacity-100',
                 'transition-opacity duration-200'
               )}
-              aria-label={enableKeyboardShortcuts ? 'Copy code (Cmd+Shift+C)' : undefined}
+              aria-label={
+                enableKeyboardShortcuts ? 'Copy code (Cmd+Shift+C)' : undefined
+              }
             />
           )}
         </div>
@@ -400,24 +404,37 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
             />
           )}
 
-          {/* Code */}
-          <div
-            className={cn(
-              'flex-1 p-4 overflow-x-auto',
-              'text-sm leading-relaxed',
-              fontClass,
-              enableLigatures && 'font-ligatures',
-              wordWrap && 'whitespace-pre-wrap break-words',
-              isLoading && 'animate-pulse'
+          <div className="flex-1 relative min-w-0">
+            {highlightedHtml ? (
+              <div
+                className="shiki-container"
+                dangerouslySetInnerHTML={{
+                  __html: highlightedHtml.replace(
+                    /<pre[^>]*>/,
+                    '<pre style="margin: 0; padding: 1.25rem; background-color: transparent !important;">'
+                  ),
+                }}
+              />
+            ) : (
+              <pre
+                className={cn(
+                  'flex-1 p-5 overflow-x-auto',
+                  'text-sm leading-relaxed',
+                  fontClass,
+                  enableLigatures && 'font-ligatures',
+                  wordWrap && 'whitespace-pre-wrap break-words',
+                  isLoading && 'animate-pulse',
+                  'bg-[#011627] text-[#d6deeb]'
+                )}
+                style={{
+                  backgroundColor: '#011627',
+                  color: '#d6deeb',
+                }}
+              >
+                <code>{children}</code>
+              </pre>
             )}
-            tabIndex={0}
-            role="region"
-            aria-label={`Code block${title ? `: ${title}` : ''}${language !== 'text' ? ` (${language})` : ''}`}
-            // SECURITY: Sanitize HTML output from syntax highlighter to prevent XSS
-            dangerouslySetInnerHTML={{
-              __html: sanitizeCodeHtml(highlightedHtml),
-            }}
-          />
+          </div>
         </div>
 
         {/* Collapse Gradient Overlay */}
@@ -442,9 +459,11 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
             'w-full py-2 px-4',
             'flex items-center justify-center gap-1',
             'text-sm text-muted-foreground',
-            'hover:text-foreground hover:bg-muted/50',
+            'hover:text-foreground',
+            themeType === 'dark'
+              ? 'hover:bg-gray-800 border-t border-[#1e293b] dark:border-t dark:border-[#1e293b]'
+              : 'hover:bg-muted/50 border-t border-border/50',
             'transition-colors duration-200',
-            'border-t border-border/50',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
           )}
           aria-expanded={isExpanded}

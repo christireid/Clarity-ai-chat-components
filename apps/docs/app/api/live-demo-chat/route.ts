@@ -17,6 +17,7 @@ import {
 import {
   streamFromGemini,
   streamFromDemo,
+  streamFromRAG,
   type StreamChunk,
 } from '@/lib/ai/streaming'
 import { trackChatInteraction } from '@/lib/ai/chat-analytics'
@@ -66,9 +67,11 @@ const MAX_MESSAGE_LENGTH = 4096
 
 /**
  * Create a plain text streaming response from StreamChunk generator
+ * Falls back to demo mode if the generator fails
  */
 function createPlainTextStream(
-  generator: AsyncGenerator<StreamChunk>
+  generator: AsyncGenerator<StreamChunk>,
+  fallbackMessage?: string
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
 
@@ -82,8 +85,44 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        logger.error('Streaming error:', error)
-        controller.error(error)
+        logger.error('Streaming error, falling back to demo mode:', error)
+        
+        // Fallback to RAG mode with error message
+        try {
+          logger.info('Attempting fallback to RAG mode')
+          const fallbackGenerator = streamFromRAG([
+            { role: 'user', content: fallbackMessage || 'Help' }
+          ])
+          
+          for await (const chunk of fallbackGenerator) {
+            if (chunk.type === 'text' && chunk.content) {
+              controller.enqueue(encoder.encode(chunk.content))
+            }
+          }
+          logger.info('Fallback to RAG mode completed successfully')
+          controller.close()
+        } catch (fallbackError) {
+          logger.error('RAG fallback failed, trying demo mode:', fallbackError)
+          // Last resort: try demo mode
+          try {
+            const demoGenerator = streamFromDemo([
+              { role: 'user', content: fallbackMessage || 'Help' }
+            ])
+            
+            for await (const chunk of demoGenerator) {
+              if (chunk.type === 'text' && chunk.content) {
+                controller.enqueue(encoder.encode(chunk.content))
+              }
+            }
+            controller.close()
+          } catch (demoError) {
+            logger.error('All fallbacks failed:', demoError)
+            // Final fallback: send a simple error message
+            const errorMsg = 'I apologize, but I\'m having trouble connecting right now. Please try again in a moment!'
+            controller.enqueue(encoder.encode(errorMsg))
+            controller.close()
+          }
+        }
       }
     },
   })
@@ -122,47 +161,89 @@ export async function POST(request: NextRequest) {
     }
 
     // Search documentation for relevant context
-    const searchResults = searchDocumentation(message, {
-      topK: 3,
-      minScore: 0.5,
-    })
-
-    const { context: docsContext } = formatSearchResultsForRAG(searchResults)
+    let searchResults: any[] = []
+    let docsContext = ''
+    try {
+      searchResults = searchDocumentation(message, {
+        topK: 3,
+        minScore: 0.5,
+      })
+      const formatted = formatSearchResultsForRAG(searchResults)
+      docsContext = formatted.context || ''
+    } catch (error) {
+      logger.warn('Documentation search failed, continuing without context:', error)
+    }
 
     // Build message with context
     const messageWithContext = docsContext
       ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${message}`
       : message
 
-    // Choose streaming function based on API key availability
-    const hasGeminiKey = !!process.env.GEMINI_API_KEY
+    // Check for API key from environment or request header (client-provided)
+    const clientApiKey = request.headers.get('X-Gemini-API-Key')
+    const envApiKey = process.env.GEMINI_API_KEY
+    
+    // Use client-provided key if available, otherwise fall back to env key
+    const geminiApiKey = clientApiKey || envApiKey
+    
+    const hasGeminiKey = !!geminiApiKey && 
+                         geminiApiKey.trim() !== '' &&
+                         !geminiApiKey.includes('your-') &&
+                         !geminiApiKey.includes('placeholder')
 
     let generator: AsyncGenerator<StreamChunk>
+    let provider: 'gemini' | 'rag' | 'demo' = 'rag'
 
-    if (hasGeminiKey) {
-      // Use shared Gemini streaming utility
-      generator = streamFromGemini(
-        [{ role: 'user', content: messageWithContext }],
+    logger.info(`Processing chat request: message="${message.substring(0, 50)}...", hasGeminiKey=${hasGeminiKey}`)
+
+    try {
+      if (hasGeminiKey) {
+        // Use shared Gemini streaming utility
+        logger.info('Attempting to use Gemini API')
+        generator = streamFromGemini(
+          [{ role: 'user', content: messageWithContext }],
+          { 
+            systemPrompt: SYSTEM_PROMPT,
+            apiKey: geminiApiKey // Pass API key directly (client-provided or env)
+          }
+        )
+        provider = 'gemini'
+      } else {
+        // Use RAG system as fallback (searches documentation for contextual answers)
+        logger.info('Using RAG mode (no valid Gemini API key)')
+        generator = streamFromRAG(
+          [{ role: 'user', content: message }],
+          { systemPrompt: SYSTEM_PROMPT }
+        )
+        provider = 'rag'
+      }
+    } catch (error) {
+      // Fallback to RAG if Gemini initialization fails
+      logger.warn('Failed to initialize Gemini, falling back to RAG mode:', error)
+      generator = streamFromRAG(
+        [{ role: 'user', content: message }],
         { systemPrompt: SYSTEM_PROMPT }
       )
-    } else {
-      // Use shared demo streaming utility
-      generator = streamFromDemo([{ role: 'user', content: message }])
+      provider = 'rag'
     }
 
-    // Create streaming response
-    const stream = createPlainTextStream(generator)
+    // Create streaming response with fallback support
+    const stream = createPlainTextStream(generator, message)
 
     // Next.js 16: Use after() to log analytics after response is sent
     // This doesn't block the response - analytics are processed asynchronously
     after(() => {
       // Track chat interaction using the analytics service
-      trackChatInteraction({
-        messageLength: message.length,
-        hasDocsContext: !!docsContext,
-        searchResultsCount: searchResults.length,
-        provider: hasGeminiKey ? 'gemini' : 'demo',
-      })
+      try {
+        trackChatInteraction({
+          messageLength: message.length,
+          hasDocsContext: !!docsContext,
+          searchResultsCount: searchResults.length,
+          provider,
+        })
+      } catch (error) {
+        logger.warn('Failed to track chat interaction:', error)
+      }
     })
 
     return new Response(stream, {
@@ -170,11 +251,15 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
+        'X-Response-Provider': provider, // Indicate which provider was used
       },
     })
   } catch (error) {
-    console.error('API error:', error)
-    return Response.json({ error: 'Internal server error' }, { status: 500 })
+    logger.error('API error:', error)
+    return Response.json(
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
   }
 }
 

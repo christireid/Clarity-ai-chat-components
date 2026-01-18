@@ -63,7 +63,7 @@ export default function ClarityChatPresetsPage() {
             Minimal configuration - perfect for getting started quickly.
           </p>
           <CodePlayground
-            code={`import { ClarityChatPresets } from '@clarity-chat/react/internal'
+            code={`import { ClarityChatPresets } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function SimpleChat() {
@@ -90,7 +90,7 @@ function SimpleChat() {
             conversations that need to remember context.
           </p>
           <CodePlayground
-            code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react/internal'
+            code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react'
 
 function MemoryChat() {
   return (
@@ -154,7 +154,7 @@ function App() {
             features.
           </p>
           <CodePlayground
-            code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react/internal'
+            code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react'
 
 function EnterpriseChat() {
   return (
@@ -197,7 +197,7 @@ function App() {
             (default) and WebSocket.
           </p>
           <CodePlayground
-            code={`import { ClarityChatPresets } from '@clarity-chat/react/internal'
+            code={`import { ClarityChatPresets } from '@clarity-chat/react'
 
 function StreamingChat() {
   // SSE (default)
@@ -240,7 +240,7 @@ function WebSocketChat() {
             props, so you can customize them to your needs.
           </p>
           <CodePlayground
-            code={`import { ClarityChatPresets } from '@clarity-chat/react/internal'
+            code={`import { ClarityChatPresets } from '@clarity-chat/react'
 
 function CustomizedChat() {
   return (

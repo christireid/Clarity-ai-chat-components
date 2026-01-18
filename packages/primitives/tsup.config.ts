@@ -1,4 +1,6 @@
 import { defineConfig } from 'tsup'
+import { writeFileSync, readFileSync, existsSync } from 'fs'
+import { join } from 'path'
 
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -12,7 +14,26 @@ export default defineConfig({
   treeshake: true,
   outExtension({ format }) {
     return {
-      js: format === 'cjs' ? '.js' : '.mjs',
+      js: format === 'cjs' ? '.cjs' : '.js',
+    }
+  },
+  async onSuccess() {
+    // Post-build: Add 'use client' directive to compiled files
+    const distDir = join(process.cwd(), 'dist')
+    const files = ['index.js', 'index.cjs']
+    
+    for (const file of files) {
+      const filePath = join(distDir, file)
+      if (existsSync(filePath)) {
+        let content = readFileSync(filePath, 'utf-8')
+        // Remove any existing 'use client' directives
+        content = content.replace(/^['"]use client['"];?\s*\n?/gm, '')
+        // Add 'use client' at the very top
+        if (!content.trim().startsWith("'use client'")) {
+          content = "'use client'\n" + content
+        }
+        writeFileSync(filePath, content, 'utf-8')
+      }
     }
   },
 })

@@ -11,15 +11,14 @@ import {
   Code,
   Bot,
   User,
-  Send,
   ArrowRight,
   Loader2,
   ExternalLink,
   Check,
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll } from '@clarity-chat/react/internal'
+import { useAutoScroll } from '@clarity-chat/react'
 import { generateId, sleep } from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackToolExecuted } from '@/lib/demos/analytics'
@@ -72,8 +71,8 @@ interface ToolInvocation {
 
 interface Message {
   id: string
-  text: string
-  sender: 'user' | 'bot'
+  content: string
+  role: 'user' | 'assistant' | 'system'
   toolInvocation?: ToolInvocation
   timestamp: Date
 }
@@ -152,8 +151,8 @@ export default function ToolCallingDemo() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "I'm an AI agent with access to tools! Try selecting a tool below and watch how I execute it with custom UI rendering.",
-      sender: 'bot',
+      content: "I'm an AI agent with access to tools! Try selecting a tool below and watch how I execute it with custom UI rendering.",
+      role: 'assistant',
       timestamp: new Date(),
     },
   ])
@@ -186,24 +185,24 @@ export default function ToolCallingDemo() {
     // Add user message
     const userMessage: Message = {
       id: generateId(),
-      text: demo.prompt,
-      sender: 'user',
+      content: demo.prompt,
+      role: 'user',
       timestamp: new Date(),
     }
     setMessages((prev) => [...prev, userMessage])
     scrollToBottom()
 
-    // Add bot message with tool invocation starting
+    // Add assistant message with tool invocation starting
     await sleep(500)
     if (!isMountedRef.current) {
       setIsExecuting(false)
       return
     }
-    const botMessageId = generateId()
-    const botMessage: Message = {
-      id: botMessageId,
-      text: `I'll use the ${tool.name} tool to help with that.`,
-      sender: 'bot',
+    const assistantMessageId = generateId()
+    const assistantMessage: Message = {
+      id: assistantMessageId,
+      content: `I'll use the ${tool.name} tool to help with that.`,
+      role: 'assistant',
       toolInvocation: {
         toolId,
         status: 'pending',
@@ -211,7 +210,7 @@ export default function ToolCallingDemo() {
       },
       timestamp: new Date(),
     }
-    setMessages((prev) => [...prev, botMessage])
+    setMessages((prev) => [...prev, assistantMessage])
     scrollToBottom()
 
     // Update to running
@@ -222,7 +221,7 @@ export default function ToolCallingDemo() {
     }
     setMessages((prev) =>
       prev.map((msg) =>
-        msg.id === botMessageId && msg.toolInvocation
+        msg.id === assistantMessageId && msg.toolInvocation
           ? {
               ...msg,
               toolInvocation: { ...msg.toolInvocation, status: 'running' },
@@ -241,7 +240,7 @@ export default function ToolCallingDemo() {
     // Update to complete
     setMessages((prev) =>
       prev.map((msg) =>
-        msg.id === botMessageId && msg.toolInvocation
+        msg.id === assistantMessageId && msg.toolInvocation
           ? {
               ...msg,
               toolInvocation: {
@@ -483,7 +482,7 @@ export default function ToolCallingDemo() {
 
             {/* Messages */}
             <div
-              ref={scrollRef as React.RefObject<HTMLDivElement>}
+              ref={scrollRef as React.RefObject<HTMLDivElement | null>}
               className="h-[450px] overflow-y-auto p-6 space-y-4 scroll-smooth"
             >
               {messages.map((message) => (
@@ -492,17 +491,17 @@ export default function ToolCallingDemo() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex items-start gap-3 ${
-                    message.sender === 'user' ? 'flex-row-reverse' : ''
+                    message.role === 'user' ? 'flex-row-reverse' : ''
                   }`}
                 >
                   <div
                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.sender === 'bot'
+                      message.role === 'assistant'
                         ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400'
                         : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
                     }`}
                   >
-                    {message.sender === 'bot' ? (
+                    {message.role === 'assistant' ? (
                       <Bot className="w-5 h-5" />
                     ) : (
                       <User className="w-5 h-5" />
@@ -511,12 +510,12 @@ export default function ToolCallingDemo() {
                   <div className="max-w-[80%]">
                     <div
                       className={`rounded-2xl px-4 py-3 ${
-                        message.sender === 'bot'
+                        message.role === 'assistant'
                           ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
                           : 'bg-brand-500 text-white rounded-tr-sm'
                       }`}
                     >
-                      <p className="text-sm leading-relaxed">{message.text}</p>
+                      <p className="text-sm leading-relaxed">{message.content}</p>
 
                       {/* Tool Invocation UI */}
                       {message.toolInvocation && (

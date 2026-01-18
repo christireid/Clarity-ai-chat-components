@@ -20,6 +20,10 @@ import {
   ChefHat,
   Code2,
   GitCompare,
+  Zap,
+  ChevronDown,
+  Sparkles,
+  Palette,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import {
@@ -35,20 +39,30 @@ import { durations } from '@/lib/animations'
 const ANIMATION_DURATION = 0.3
 const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
-const navigation = [
-  { name: 'Demos', href: '/demos', icon: Play },
+// Primary navigation - always visible
+const primaryNavigation = [
+  { name: 'Token Optimization', href: '/tools/roi-calculator', icon: Zap, highlight: true },
+  { name: 'Showcase', href: '/showcase', icon: Sparkles },
   { name: 'Learn', href: '/learn/quick-start', icon: GraduationCap },
-  { name: 'Guides', href: '/guides', icon: Map },
   { name: 'Reference', href: '/reference/components', icon: Library },
-  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
+]
+
+// Secondary navigation - in dropdown
+const secondaryNavigation = [
   { name: 'Examples', href: '/examples', icon: Code2 },
+  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
+  { name: 'Themes', href: '/demos/theming', icon: Palette },
   { name: 'Compare', href: '/compare', icon: GitCompare },
 ]
+
+// All navigation for mobile
+const navigation = [...primaryNavigation, ...secondaryNavigation]
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [accessibilityOpen, setAccessibilityOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -58,10 +72,25 @@ export function Navigation() {
     setMounted(true)
   }, [])
 
-  // Close mobile menu on route change
+  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false)
+    setDropdownOpen(false)
   }, [pathname])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('[data-dropdown]')) {
+        setDropdownOpen(false)
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [dropdownOpen])
 
   // Handle keyboard shortcut for search (Cmd+K or Ctrl+K)
   useEffect(() => {
@@ -96,9 +125,8 @@ export function Navigation() {
     }
 
     toast.success(
-      `Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
+      `${themeIcons[newTheme as keyof typeof themeIcons]} Switched to ${newTheme} mode`,
       {
-        description: `Switched to ${themeIcons[newTheme as keyof typeof themeIcons]} ${newTheme} mode`,
         duration: durations.slower,
       }
     )
@@ -134,8 +162,9 @@ export function Navigation() {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-1">
-                {navigation.map((item, index) => (
+              <div className="hidden lg:flex items-center gap-2">
+                {/* Primary Navigation Items */}
+                {primaryNavigation.map((item, index) => (
                   <motion.div
                     key={item.name}
                     initial={{ opacity: 0, y: -10 }}
@@ -151,37 +180,86 @@ export function Navigation() {
                       href={item.href}
                       aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
                       className={clsx(
-                        'relative px-4 py-2 min-h-[44px] flex items-center rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
+                        'relative px-4 py-2 min-h-[44px] flex items-center gap-1.5 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
                         pathname?.startsWith(item.href)
                           ? 'bg-bg-tertiary text-brand-500'
+                          : 'highlight' in item && item.highlight
+                          ? 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30'
                           : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
                       )}
                     >
+                      <item.icon className="w-4 h-4" />
                       {item.name}
-                      {!pathname?.startsWith(item.href) && (
-                        <motion.span
-                          className="absolute bottom-1 left-4 right-4 h-0.5 bg-brand-500"
-                          initial={{ scaleX: 0 }}
-                          whileHover={{ scaleX: 1 }}
-                          transition={{ duration: durations.normal }}
-                          aria-hidden="true"
-                        />
-                      )}
                     </Link>
                   </motion.div>
                 ))}
+
+                {/* More Dropdown */}
+                <div className="relative" data-dropdown>
+                  <motion.button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={clsx(
+                      'relative px-4 py-2 min-h-[44px] flex items-center gap-1 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
+                      dropdownOpen
+                        ? 'bg-bg-tertiary text-brand-500'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                    )}
+                    aria-expanded={dropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    More
+                    <ChevronDown className={clsx('w-4 h-4 transition-transform', dropdownOpen && 'rotate-180')} />
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full right-0 mt-2 w-56 rounded-xl bg-bg-primary border border-border shadow-lg overflow-hidden z-50"
+                      >
+                        <div className="py-2">
+                          {secondaryNavigation.map((item) => {
+                            const Icon = item.icon
+                            const isActive = pathname?.startsWith(item.href)
+                            return (
+                              <Link
+                                key={item.name}
+                                href={item.href}
+                                onClick={() => setDropdownOpen(false)}
+                                className={clsx(
+                                  'flex items-center gap-3 px-4 py-2.5 text-sm transition-colors',
+                                  isActive
+                                    ? 'bg-bg-secondary text-brand-500'
+                                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                                )}
+                              >
+                                <Icon className="w-4 h-4" />
+                                {item.name}
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {/* Search */}
               <motion.button
                 onClick={() => setSearchOpen(true)}
                 whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 className={clsx(
-                  'hidden sm:flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-lg',
+                  'hidden sm:flex items-center gap-2 px-4 py-2 min-h-[44px] min-w-[180px] rounded-lg',
                   'border border-border/50 dark:border-slate-700/50',
                   'bg-bg-secondary/80 dark:bg-slate-800/50',
                   'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
@@ -192,9 +270,9 @@ export function Navigation() {
                 )}
                 aria-label="Search documentation (Press Cmd+K)"
               >
-                <Search className="w-4 h-4" aria-hidden="true" />
-                <span className="hidden md:inline">Search docs...</span>
-                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border/50 dark:border-slate-600 bg-bg-primary dark:bg-slate-800 px-1.5 font-mono text-xs text-text-tertiary">
+                <Search className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                <span className="whitespace-nowrap">Search docs...</span>
+                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border/50 dark:border-slate-600 bg-bg-primary dark:bg-slate-800 px-1.5 font-mono text-xs text-text-tertiary flex-shrink-0">
                   <span className="text-xs">Cmd</span>K
                 </kbd>
               </motion.button>
@@ -267,7 +345,7 @@ export function Navigation() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu"
@@ -311,7 +389,7 @@ export function Navigation() {
                   duration: durations.moderate,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
-                className="md:hidden overflow-hidden border-t border-border"
+                className="lg:hidden overflow-hidden border-t border-border"
                 role="navigation"
                 aria-label="Mobile navigation"
               >

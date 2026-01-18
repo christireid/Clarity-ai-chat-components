@@ -52,7 +52,8 @@ function reducer(
  * Hook for Model Comparison with optimistic updates
  */
 export function useModelComparison(comparator?: ModelComparator) {
-  const modelComparator = comparator || React.useMemo(() => new ModelComparator(), [])
+  const defaultComparator = React.useMemo(() => new ModelComparator(), [])
+  const modelComparator = comparator ?? defaultComparator
 
   // Initialize state
   const [initialState] = React.useState<ModelComparisonState>(() => ({

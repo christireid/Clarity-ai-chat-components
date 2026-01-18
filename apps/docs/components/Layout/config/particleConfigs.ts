@@ -1,10 +1,13 @@
 import type { ISourceOptions } from '@tsparticles/engine'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ParticleConfig = ISourceOptions & { particles?: any; interactivity?: any }
+
 /**
  * Creates dark mode particle configuration
  * Glowing nodes with connecting lines for cyberpunk aesthetic
  */
-export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
+export function createDarkModeConfig(reducedMotion: boolean): ParticleConfig {
   return {
     background: {
       color: {
@@ -17,7 +20,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
         value: reducedMotion ? 0 : 50,
         density: {
           enable: true,
-          value_area: 800,
+          area: 800,
         },
       },
       color: {
@@ -73,7 +76,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
         onClick: {
           enable: false,
         },
-        resize: true,
+        resize: { enable: true },
       },
       modes: {
         grab: {
@@ -92,7 +95,7 @@ export function createDarkModeConfig(reducedMotion: boolean): ISourceOptions {
  * Creates light mode particle configuration
  * Subtle flowing mesh with soft gradient waves
  */
-export function createLightModeConfig(reducedMotion: boolean): ISourceOptions {
+export function createLightModeConfig(reducedMotion: boolean): ParticleConfig {
   return {
     background: {
       color: {
@@ -105,7 +108,7 @@ export function createLightModeConfig(reducedMotion: boolean): ISourceOptions {
         value: reducedMotion ? 0 : 40,
         density: {
           enable: true,
-          value_area: 1000,
+          area: 1000,
         },
       },
       color: {
@@ -161,7 +164,7 @@ export function createLightModeConfig(reducedMotion: boolean): ISourceOptions {
         onClick: {
           enable: false,
         },
-        resize: true,
+        resize: { enable: true },
       },
       modes: {
         grab: {

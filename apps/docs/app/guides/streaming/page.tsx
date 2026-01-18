@@ -139,7 +139,7 @@ export default function StreamingGuidePage() {
           </div>
 
           <EnhancedCodeBlock
-            code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+            code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEChat() {
   const {
@@ -233,7 +233,7 @@ function SSEChat() {
           </div>
 
           <EnhancedCodeBlock
-            code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+            code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function WebSocketChat() {
   const {
@@ -356,7 +356,7 @@ function WebSocketChat() {
             SSE Transport (Default)
           </h3>
           <EnhancedCodeBlock
-            code={`import { useClarityChat } from '@clarity-chat/react/internal'
+            code={`import { useClarityChat } from '@clarity-chat/react'
 
 function SSEChat() {
   const {
@@ -384,7 +384,7 @@ function SSEChat() {
             WebSocket Transport
           </h3>
           <EnhancedCodeBlock
-            code={`import { useClarityChat } from '@clarity-chat/react/internal'
+            code={`import { useClarityChat } from '@clarity-chat/react'
 
 function WebSocketChat() {
   const {
@@ -542,7 +542,7 @@ wss.on('connection', (ws) => {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useClarityChat } from '@clarity-chat/react/internal'
+            code={`import { useClarityChat } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function CancellableChat() {
@@ -592,7 +592,7 @@ function CancellableChat() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useClarityChat } from '@clarity-chat/react/internal'
+            code={`import { useClarityChat } from '@clarity-chat/react'
 
 function ChatWithErrorHandling() {
   const {
@@ -643,7 +643,7 @@ function ChatWithErrorHandling() {
 
           <h3 className="text-2xl font-semibold mb-3">SSE Reconnection</h3>
           <EnhancedCodeBlock
-            code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+            code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEReconnect() {
   const {
@@ -680,7 +680,7 @@ function SSEReconnect() {
             WebSocket Reconnection
           </h3>
           <EnhancedCodeBlock
-            code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+            code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function WebSocketReconnect() {
   const {

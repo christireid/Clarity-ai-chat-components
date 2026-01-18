@@ -1,23 +1,12 @@
-'use client'
+import * as React from 'react'
+import {
+  CodeBlock as UnifiedCodeBlock,
+  type CodeBlockProps as UnifiedCodeBlockProps,
+} from '@clarity-chat/react'
 
-/**
- * CodeBlock - Docs App Wrapper
- *
- * This is a thin wrapper around the unified CodeBlock from @clarity-chat/react.
- * It adapts the docs-specific API (code prop) to the unified component (children prop).
- *
- * Features inherited from unified component:
- * - Shiki syntax highlighting (VS Code engine)
- * - 15+ popular themes
- * - Line numbers and highlighting
- * - Diff visualization
- * - Copy and download buttons
- * - Expand/collapse for long blocks
- * - Keyboard shortcuts
- * - WCAG 2.1 AA accessible
- */
-
-import { CodeBlock as UnifiedCodeBlock, type CodeBlockProps as UnifiedCodeBlockProps } from '@clarity-chat/react'
+// Type assertion helper for CodeBlock to handle monorepo type resolution
+const TypedUnifiedCodeBlock =
+  UnifiedCodeBlock as React.ComponentType<UnifiedCodeBlockProps>
 
 /**
  * Props for the docs CodeBlock wrapper
@@ -40,47 +29,50 @@ export interface CodeBlockProps {
 
 /**
  * CodeBlock component for documentation pages
- *
- * This wrapper maintains backwards compatibility with the docs-specific API
- * while using the production-ready unified CodeBlock component.
- *
- * @example
- * ```tsx
- * <CodeBlock
- *   code="const x = 1;"
- *   language="typescript"
- *   showLineNumbers
- * />
- * ```
  */
 export function CodeBlock({
   code,
-  language,
+  language = 'typescript',
   title,
-  showLineNumbers = false,
+  showLineNumbers: showLineNumbersProp,
   highlightLines = [],
   className,
 }: CodeBlockProps) {
+  // Smart line numbers:
+  // 1. Respect explicit prop if provided
+  // 2. Hide for terminal/shell/text
+  // 3. Hide for very short snippets (<= 3 lines) unless it's a code file
+  const isTerminal = [
+    'bash',
+    'sh',
+    'shell',
+    'zsh',
+    'terminal',
+    'cmd',
+    'powershell',
+  ].includes(language.toLowerCase())
+  const lineCount = code.trim().split('\n').length
+
+  const showLineNumbers = showLineNumbersProp ?? (!isTerminal && lineCount > 3)
+
   // Convert array-based highlightLines to string format
-  const highlightLinesString = highlightLines.length > 0
-    ? highlightLines.join(',')
-    : undefined
+  const highlightLinesString =
+    highlightLines.length > 0 ? highlightLines.join(',') : undefined
 
   return (
-    <UnifiedCodeBlock
+    <TypedUnifiedCodeBlock
       language={language}
       title={title}
       showLineNumbers={showLineNumbers}
       highlightLines={highlightLinesString}
       showCopyButton
-      showDownloadButton
-      enableKeyboardShortcuts
       className={className}
+      theme="night-owl"
     >
       {code}
-    </UnifiedCodeBlock>
+    </TypedUnifiedCodeBlock>
   )
 }
 
-// Re-export types from unified component for advanced usage
-export type { UnifiedCodeBlockProps as AdvancedCodeBlockProps }
+// Type for advanced usage
+export type AdvancedCodeBlockProps = CodeBlockProps

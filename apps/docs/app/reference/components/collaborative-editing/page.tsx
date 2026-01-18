@@ -110,7 +110,7 @@ export default function CollaborativeEditorPage() {
         <h2>Basic Usage</h2>
         <p>Enable collaborative editing for a message:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function CollaborativeMessage({ message }: { message: Message }) {
@@ -156,7 +156,7 @@ function CollaborativeMessage({ message }: { message: Message }) {
         <h2>Message Locking</h2>
         <p>Implement message locking to prevent conflicts:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
 function WithLocking({ message }: { message: Message }) {
   return (
@@ -188,7 +188,7 @@ function WithLocking({ message }: { message: Message }) {
         <h2>Conflict Resolution</h2>
         <p>Configure conflict resolution strategy:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
 function WithConflictResolution({ message }: { message: Message }) {
   return (
@@ -211,7 +211,7 @@ function WithConflictResolution({ message }: { message: Message }) {
         <h2>Cursor Tracking</h2>
         <p>Track and display cursor positions:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
 function WithCursors({ message }: { message: Message }) {
   return (
@@ -235,7 +235,7 @@ function WithCursors({ message }: { message: Message }) {
         <h2>Presence Indicators</h2>
         <p>Show presence indicators for active editors:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
 function WithPresence({ message }: { message: Message }) {
   return (

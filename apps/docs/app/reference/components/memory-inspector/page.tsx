@@ -261,7 +261,7 @@ render(<ManageableMemory />)`}
   type MemoryInspectorProps,
   type MemoryItem,
   type MemoryScope
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 interface MemoryItem {
   id: string

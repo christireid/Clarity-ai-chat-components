@@ -66,7 +66,7 @@ export default function SeatInviteDialogPage() {
         <h2>Basic Usage</h2>
         <p>Invite team members:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
 function TeamInvites() {
   return (
@@ -95,7 +95,7 @@ function TeamInvites() {
         <h2>Custom Roles</h2>
         <p>Define custom roles:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
 function CustomRoles() {
   return (
@@ -115,7 +115,7 @@ function CustomRoles() {
         <h2>Welcome Email</h2>
         <p>Control welcome email sending:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
 function WithWelcomeEmail() {
   return (
@@ -141,7 +141,7 @@ function WithWelcomeEmail() {
         <h2>Seat Management</h2>
         <p>Integrate with seat management:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
 function SeatManagement({ availableSeats }: { availableSeats: number }) {
   return (

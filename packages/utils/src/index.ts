@@ -27,16 +27,55 @@
 // Format Utilities
 // ============================================================================
 
+export * from './format/index.js'
+
+// ============================================================================
+// ID Generation
+// ============================================================================
+
 export {
-  formatBytes,
-  formatSize,
-  formatDelta,
-  formatDuration,
-  formatNumber,
-  formatPercent,
-  formatRelativeTime,
-  truncate,
-} from './format/index.js'
+  generateId,
+  generatePrefixedId,
+  generateSimpleId,
+  isGeneratedId,
+  extractTimestamp,
+} from './id.js'
+
+// ============================================================================
+// Environment Detection
+// ============================================================================
+
+export {
+  isBrowser,
+  isServer,
+  isNode,
+  isServerless,
+  detectEnvironment,
+  isIndexedDBAvailable,
+  isLocalStorageAvailable,
+  isFetchAvailable,
+  isWebWorkerAvailable,
+  isDevelopment,
+  isProduction,
+  isTest,
+  type RuntimeEnvironment,
+} from './env.js'
+
+// ============================================================================
+// Math Utilities
+// ============================================================================
+
+export {
+  clamp,
+  calculatePercentage,
+  lerp,
+  inverseLerp,
+  round,
+  mapRange,
+  inRange,
+  average,
+  sum,
+} from './math.js'
 
 // ============================================================================
 // Cache Utilities
@@ -302,8 +341,9 @@ export {
 // ============================================================================
 // File System Utilities
 // ============================================================================
-
-export { pathExists, directoryExists, fileExists } from './fs.js'
+// NOTE: File system utilities are NOT exported from the main entry to keep
+// the bundle browser-compatible. Use '@clarity-chat/utils/fs' for server-side
+// file system utilities (pathExists, directoryExists, fileExists).
 
 // ============================================================================
 // Configuration Manager
@@ -353,3 +393,44 @@ export {
   type ProcessedError,
   type RetryConfig,
 } from './error-handler.js'
+
+// ============================================================================
+// String Utilities
+// ============================================================================
+
+export {
+  escapeHtml,
+  unescapeHtml,
+  kebabCase,
+  camelCase,
+  pascalCase,
+  snakeCase,
+  randomString,
+} from './string.js'
+
+// ============================================================================
+// DOM Utilities (Browser-specific, SSR-safe)
+// ============================================================================
+
+export {
+  copyToClipboard,
+  downloadFile,
+  scrollIntoView,
+  getScrollPosition,
+  isInViewport,
+} from './dom.js'
+
+// ============================================================================
+// Object Utilities
+// ============================================================================
+
+export {
+  isEqual,
+  deepEqual,
+  deepClone,
+  deepMerge,
+  isEmpty,
+  isNotEmpty,
+  getNestedValue,
+  setNestedValue,
+} from './object.js'

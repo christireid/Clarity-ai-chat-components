@@ -1,8 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { ModelSelector } from '@clarity-chat/react/internal'
-import type { ModelInfo } from '@clarity-chat/react/internal'
+import { ModelSelector } from '@clarity-chat/react'
+
+/** Model information type for the ModelSelector component */
+interface ModelInfo {
+  id: string
+  name: string
+  provider: 'openai' | 'anthropic' | 'google'
+  description?: string
+  contextWindow: number
+  vision?: boolean
+  toolCalling?: boolean
+  speed: 'fast' | 'medium' | 'slow'
+  cost: 'low' | 'medium' | 'high'
+  quality: 'good' | 'excellent' | 'best'
+}
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -135,7 +148,7 @@ export default function ModelSelectorPage() {
       <ScrollReveal delay={0.2}>
         <h2 id="import">Import</h2>
         <EnhancedCodeBlock
-          code={`import { ModelSelector } from '@clarity-chat/react/internal'
+          code={`import { ModelSelector } from '@clarity-chat/react'
 import type { ModelInfo } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -152,8 +165,8 @@ import type { ModelInfo } from '@clarity-chat/react'`}
           title="Basic Model Selector"
           description="Select between different AI models with visual indicators."
           code={`import { useState } from 'react'
-import { ModelSelector } from '@clarity-chat/react/internal'
-import type { ModelInfo } from '@clarity-chat/react/internal'
+import { ModelSelector } from '@clarity-chat/react'
+import type { ModelInfo } from '@clarity-chat/react'
 
 const models: ModelInfo[] = [
   {

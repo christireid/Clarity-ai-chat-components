@@ -156,7 +156,8 @@ export interface CachedResponse {
   metadata: any
 }
 
-export interface CacheStats {
+/** Stats specific to semantic caching (different from basic CacheStats) */
+export interface SemanticCacheStats {
   size: number
   totalAccesses: number
   hitRate: number

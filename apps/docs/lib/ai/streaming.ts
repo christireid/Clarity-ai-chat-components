@@ -10,6 +10,75 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
 import type { ToolName, ToolInputs } from './tools'
+import { searchDocumentation, formatSearchResultsForRAG } from './keywordSearch'
+import type { SearchResult as KeywordSearchResult } from './keywordSearch'
+
+// ============================================================================
+// RAG Configuration Constants
+// ============================================================================
+
+/** Minimum query length to perform search */
+const MIN_QUERY_LENGTH = 2
+
+/** Maximum number of search results to retrieve */
+const MAX_SEARCH_RESULTS = 5
+
+/** Minimum score threshold for search results */
+const MIN_SEARCH_SCORE = 0.2
+
+/** Minimum quality score to prefer results */
+const MIN_QUALITY_SCORE = 0.5
+
+/** Maximum number of quality results to use */
+const MAX_QUALITY_RESULTS = 3
+
+/** Fallback number of results if no quality results found */
+const FALLBACK_RESULTS = 2
+
+/** Maximum content length before truncation */
+const MAX_CONTENT_LENGTH = 600
+
+/** Minimum break point ratio for truncation (50% of max length) */
+const MIN_BREAK_POINT_RATIO = 0.5
+
+/** Fallback truncation offset */
+const TRUNCATION_FALLBACK_OFFSET = 100
+
+/** Streaming delay for small chunks (ms) */
+const STREAM_DELAY_SMALL = 4
+
+/** Streaming delay for large chunks (ms) */
+const STREAM_DELAY_LARGE = 2
+
+/** Chunk size threshold for determining delay (characters) */
+const LARGE_CHUNK_THRESHOLD = 200
+
+/** Question word patterns for detecting questions */
+const QUESTION_PATTERN = /^(what|how|when|where|why|can|is|are|do|does)/i
+
+/** Regex for matching code blocks */
+const CODE_BLOCK_REGEX = /```[\s\S]*?```/g
+
+/** Regex for normalizing excessive newlines */
+const EXCESSIVE_NEWLINES_REGEX = /\n{3,}/g
+
+/** Regex for spacing before code blocks */
+const SPACE_BEFORE_CODE_REGEX = /([^\n])\n```/g
+
+/** Regex for spacing after code blocks */
+const SPACE_AFTER_CODE_REGEX = /```\n([^\n])/g
+
+/** Maximum query length to prevent abuse */
+const MAX_QUERY_LENGTH = 500
+
+/** Search operation timeout (ms) */
+const SEARCH_TIMEOUT_MS = 10000
+
+/** Maximum retry attempts for transient errors */
+const MAX_RETRY_ATTEMPTS = 2
+
+/** Retry delay base (ms) */
+const RETRY_DELAY_BASE_MS = 100
 
 export interface StreamChunk {
   type:
@@ -50,7 +119,7 @@ export function createSSEStream(
 
         controller.close()
       } catch (error) {
-        console.error('Streaming error:', error)
+        logger.error('Streaming error:', error)
 
         const errorChunk = `data: ${JSON.stringify({
           type: 'error',
@@ -99,6 +168,7 @@ export async function* streamFromOpenAI(
       stream: true,
     })
 
+    let hasFinished = false
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content
 
@@ -116,10 +186,25 @@ export async function* streamFromOpenAI(
           type: 'text',
           content: '\n\n[Response truncated due to length]',
         }
+        hasFinished = true
+      } else if (finishReason && finishReason !== null) {
+        // Stream completed normally
+        hasFinished = true
       }
     }
+    
+    // Signal completion
+    yield { type: 'done' as const }
   } catch (error) {
-    console.error('OpenAI streaming error:', error)
+    logger.error('OpenAI streaming error:', error)
+    // If API key is invalid, yield error instead of throwing
+    if (error instanceof Error && (error.message.includes('401') || error.message.includes('Invalid API key') || error.message.includes('Incorrect API key'))) {
+      yield {
+        type: 'error',
+        content: 'Invalid API key. Please check your OPENAI_API_KEY in .env.local',
+      }
+      return
+    }
     throw error
   }
 }
@@ -176,8 +261,19 @@ export async function* streamFromClaude(
         }
       }
     }
+    
+    // Signal completion
+    yield { type: 'done' as const }
   } catch (error) {
-    console.error('Claude streaming error:', error)
+    logger.error('Claude streaming error:', error)
+    // If API key is invalid, yield error instead of throwing
+    if (error instanceof Error && (error.message.includes('401') || error.message.includes('Invalid API key') || error.message.includes('authentication'))) {
+      yield {
+        type: 'error',
+        content: 'Invalid API key. Please check your ANTHROPIC_API_KEY in .env.local',
+      }
+      return
+    }
     throw error
   }
 }
@@ -287,7 +383,7 @@ export async function* streamFromClaudeWithTools(
               tool_result: toolResult,
             }
           } catch (error) {
-            console.error(`Tool execution error for ${block.name}:`, error)
+            logger.error(`Tool execution error for ${block.name}:`, error)
             yield {
               type: 'tool_result',
               tool_name: block.name,
@@ -378,7 +474,7 @@ export async function* streamFromClaudeWithTools(
     // Emit done
     yield { type: 'done' }
   } catch (error) {
-    console.error('Claude with tools streaming error:', error)
+    logger.error('Claude with tools streaming error:', error)
     throw error
   }
 }
@@ -393,11 +489,13 @@ export async function* streamFromGemini(
     temperature?: number
     maxTokens?: number
     systemPrompt?: string
+    apiKey?: string // Allow API key to be passed directly
   } = {}
 ): AsyncGenerator<StreamChunk> {
-  const { model = 'gemini-1.5-flash', systemPrompt } = options
+  const { model = 'gemini-1.5-flash', systemPrompt, apiKey: providedApiKey } = options
 
-  const apiKey = process.env.GEMINI_API_KEY
+  // Use provided API key or fall back to environment variable
+  const apiKey = providedApiKey || process.env.GEMINI_API_KEY
 
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not set')
@@ -440,9 +538,656 @@ export async function* streamFromGemini(
         }
       }
     }
+    
+    // Signal completion
+    yield { type: 'done' as const }
   } catch (error) {
-    console.error('Gemini streaming error:', error)
+    logger.error('Gemini streaming error:', error)
     throw error
+  }
+}
+
+// ============================================================================
+// Types and Interfaces
+// ============================================================================
+
+interface ProcessedContent {
+  content: string
+  wasTruncated: boolean
+}
+
+interface SearchResultWithQuality extends KeywordSearchResult {
+  isHighQuality: boolean
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Get current page path (SSR-safe)
+ * @returns Current pathname or '/' as fallback
+ */
+function getCurrentPath(): string {
+  if (typeof window === 'undefined') return '/'
+  try {
+    return window.location.pathname || '/'
+  } catch {
+    return '/'
+  }
+}
+
+/**
+ * Validate and normalize query string
+ * @param query - Raw query string
+ * @returns Normalized query or null if invalid
+ */
+function validateQuery(query: string | undefined | null): string | null {
+  if (!query || typeof query !== 'string') return null
+  
+  const trimmed = query.trim()
+  
+  // Check minimum length
+  if (trimmed.length < MIN_QUERY_LENGTH) return null
+  
+  // Check maximum length (prevent abuse)
+  if (trimmed.length > MAX_QUERY_LENGTH) {
+    logger.warn(`Query exceeds max length: ${trimmed.length} chars`)
+    return trimmed.substring(0, MAX_QUERY_LENGTH).trim()
+  }
+  
+  return trimmed
+}
+
+/**
+ * Sanitize query for search (remove potentially problematic characters)
+ * @param query - Raw query string
+ * @returns Sanitized query
+ */
+function sanitizeQuery(query: string): string {
+  if (!query || typeof query !== 'string') return ''
+  
+  // Remove control characters but preserve normal whitespace and newlines
+  return query
+    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars (preserve \n, \t, \r)
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
+    .replace(/\s+/g, ' ') // Normalize whitespace to single spaces
+    .trim()
+}
+
+/**
+ * Performance metrics for RAG operations
+ */
+interface RAGMetrics {
+  searchDuration: number
+  processingDuration: number
+  streamingDuration: number
+  totalDuration: number
+  resultsFound: number
+  resultsUsed: number
+  chunksGenerated: number
+  responseLength: number
+}
+
+/**
+ * Create performance timer
+ */
+function createTimer(): { start: () => void; stop: () => number } {
+  let startTime = 0
+  return {
+    start: () => {
+      startTime = Date.now()
+    },
+    stop: () => {
+      return Date.now() - startTime
+    },
+  }
+}
+
+/**
+ * Check if error is transient (retryable)
+ */
+function isTransientError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  
+  const message = error.message.toLowerCase()
+  const transientPatterns = [
+    'timeout',
+    'network',
+    'econnreset',
+    'etimedout',
+    'enotfound',
+    'temporary',
+    'rate limit',
+    '429',
+    '503',
+    '502',
+  ]
+  
+  return transientPatterns.some((pattern) => message.includes(pattern))
+}
+
+/**
+ * Validate URL to prevent XSS attacks
+ * @param url - URL string to validate
+ * @returns True if URL is safe
+ */
+function isValidUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false
+  
+  try {
+    // Only allow http/https protocols
+    const parsed = new URL(url, 'https://example.com')
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    // Relative URLs are allowed (they'll be resolved by the browser)
+    return url.startsWith('/') || url.startsWith('#')
+  }
+}
+
+/**
+ * Filter and rank search results by quality
+ * @param results - Raw search results
+ * @returns Filtered and ranked results with quality metadata
+ */
+function filterSearchResults(
+  results: KeywordSearchResult[]
+): SearchResultWithQuality[] {
+  if (results.length === 0) {
+    logger.debug('No search results to filter')
+    return []
+  }
+
+  // Prefer high-quality results
+  const qualityResults = results
+    .filter((r) => r.score >= MIN_QUALITY_SCORE)
+    .map((r) => ({ ...r, isHighQuality: true }))
+
+  if (qualityResults.length > 0) {
+    logger.debug(`Found ${qualityResults.length} high-quality results`)
+    return qualityResults.slice(0, MAX_QUALITY_RESULTS)
+  }
+
+  // Fallback to top results if no quality matches
+  logger.debug('No high-quality results, using fallback')
+  return results
+    .slice(0, FALLBACK_RESULTS)
+    .map((r) => ({ ...r, isHighQuality: false }))
+}
+
+/**
+ * Clean and format markdown content
+ * @param content - Raw markdown content
+ * @returns Cleaned markdown content
+ */
+function cleanMarkdownContent(content: string): string {
+  if (!content || typeof content !== 'string') {
+    logger.warn('cleanMarkdownContent: Invalid input')
+    return ''
+  }
+
+  return content
+    .replace(EXCESSIVE_NEWLINES_REGEX, '\n\n') // Normalize excessive newlines
+    .replace(SPACE_BEFORE_CODE_REGEX, '$1\n\n```') // Space before code blocks
+    .replace(SPACE_AFTER_CODE_REGEX, '```\n\n$1') // Space after code blocks
+    .trim()
+}
+
+/**
+ * Truncate content while preserving code blocks
+ * @param content - Content to truncate
+ * @returns Truncated content with ellipsis if needed
+ */
+function truncateContent(content: string): string {
+  if (!content || typeof content !== 'string') {
+    logger.warn('truncateContent: Invalid input')
+    return ''
+  }
+
+  if (content.length <= MAX_CONTENT_LENGTH) return content
+
+  // Find all code blocks
+  const codeBlocks: Array<{ start: number; end: number }> = []
+  let match: RegExpExecArray | null
+
+  // Reset regex lastIndex to ensure consistent behavior
+  CODE_BLOCK_REGEX.lastIndex = 0
+  while ((match = CODE_BLOCK_REGEX.exec(content)) !== null) {
+    codeBlocks.push({
+      start: match.index,
+      end: match.index + match[0].length,
+    })
+  }
+
+  // Determine truncation point
+  let truncateAt = MAX_CONTENT_LENGTH
+
+  // Extend truncation if it would cut a code block
+  for (const block of codeBlocks) {
+    if (truncateAt > block.start && truncateAt < block.end) {
+      truncateAt = block.end
+      logger.debug(`Extended truncation to preserve code block: ${truncateAt}`)
+      break
+    }
+  }
+
+  // Try to break at sentence or paragraph boundary
+  const truncated = content.substring(0, truncateAt)
+  const lastSentence = truncated.lastIndexOf('.')
+  const lastParagraph = truncated.lastIndexOf('\n\n')
+
+  // Use best break point (prefer paragraph, then sentence)
+  const breakPoint = Math.max(
+    lastParagraph,
+    lastSentence,
+    truncateAt - TRUNCATION_FALLBACK_OFFSET
+  )
+
+  if (breakPoint > truncateAt * MIN_BREAK_POINT_RATIO) {
+    const result = content.substring(0, breakPoint + 1).trim() + '...'
+    logger.debug(`Truncated content: ${content.length} -> ${result.length} chars`)
+    return result
+  }
+
+  const result = truncated.trim() + '...'
+  logger.debug(`Truncated content (fallback): ${content.length} -> ${result.length} chars`)
+  return result
+}
+
+/**
+ * Process content chunk for display
+ * @param content - Raw content chunk
+ * @returns Processed content or null if invalid
+ */
+function processContentChunk(content: string): string | null {
+  if (!content || typeof content !== 'string') {
+    return null
+  }
+
+  const trimmed = content.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  try {
+    const cleaned = cleanMarkdownContent(trimmed)
+    return truncateContent(cleaned)
+  } catch (error) {
+    logger.error('Error processing content chunk:', error)
+    // Return original content as fallback
+    return trimmed
+  }
+}
+
+/**
+ * Detect if query is a question
+ * @param query - Query string to check
+ * @returns True if query appears to be a question
+ */
+function isQuestion(query: string): boolean {
+  if (!query || typeof query !== 'string') return false
+  return query.endsWith('?') || QUESTION_PATTERN.test(query)
+}
+
+/**
+ * Build response header based on query type
+ * @param isQuestion - Whether the query is a question
+ * @param resultCount - Number of results found
+ * @returns Formatted header string
+ */
+function buildResponseHeader(isQuestion: boolean, resultCount: number): string {
+  if (isQuestion) {
+    return `## 💡 Answer\n\nHere's what I found in the Clarity Chat documentation:\n\n---\n\n`
+  }
+  const resultText = resultCount === 1 ? 'result' : 'results'
+  return `## 📚 Documentation\n\nFound ${resultCount} ${resultText}:\n\n---\n\n`
+}
+
+/**
+ * Split response into streaming chunks for smooth rendering
+ * @param response - Full response string
+ * @returns Array of chunks ready for streaming
+ */
+function splitIntoChunks(response: string): string[] {
+  if (!response || typeof response !== 'string') {
+    logger.warn('splitIntoChunks: Invalid input')
+    return []
+  }
+
+  const chunks: string[] = []
+  const parts: Array<{ type: 'code' | 'text'; content: string }> = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  try {
+    // Extract code blocks and text sections
+    CODE_BLOCK_REGEX.lastIndex = 0
+    while ((match = CODE_BLOCK_REGEX.exec(response)) !== null) {
+      if (match.index > lastIndex) {
+        const text = response.substring(lastIndex, match.index)
+        if (text.trim()) parts.push({ type: 'text', content: text })
+      }
+      parts.push({ type: 'code', content: match[0] })
+      lastIndex = match.index + match[0].length
+    }
+
+    // Add remaining text
+    if (lastIndex < response.length) {
+      const text = response.substring(lastIndex)
+      if (text.trim()) parts.push({ type: 'text', content: text })
+    }
+
+    // Fallback if no parts found
+    if (parts.length === 0) {
+      parts.push({ type: 'text', content: response })
+    }
+
+    // Convert to chunks - split text by paragraphs
+    for (const part of parts) {
+      if (part.type === 'code') {
+        chunks.push(part.content)
+      } else {
+        const paragraphs = part.content.split(/\n\n+/)
+        for (const para of paragraphs) {
+          const trimmed = para.trim()
+          if (trimmed) chunks.push(trimmed + '\n\n')
+        }
+      }
+    }
+
+    logger.debug(`Split response into ${chunks.length} chunks`)
+    return chunks.length > 0 ? chunks : [response]
+  } catch (error) {
+    logger.error('Error splitting response into chunks:', error)
+    // Fallback: return response as single chunk
+    return [response]
+  }
+}
+
+// ============================================================================
+// Main RAG Streaming Function
+// ============================================================================
+
+/**
+ * RAG-based streaming function that uses documentation search to generate contextual responses.
+ * This provides intelligent answers without requiring an LLM API key.
+ *
+ * @param messages - Array of conversation messages
+ * @param options - Optional configuration
+ * @yields StreamChunk - Streaming chunks of the response
+ */
+export async function* streamFromRAG(
+  messages: { role: string; content: string }[],
+  options: {
+    systemPrompt?: string
+  } = {}
+): AsyncGenerator<StreamChunk> {
+  // Validate input
+  if (!messages || messages.length === 0) {
+    logger.warn('streamFromRAG: No messages provided')
+    yield* streamFromDemo(messages)
+    return
+  }
+
+  const lastMessage = messages[messages.length - 1]
+  const rawQuery = lastMessage?.content
+  
+  // Validate and sanitize query
+  const query = validateQuery(rawQuery)
+  if (!query) {
+    logger.debug('streamFromRAG: Invalid or empty query, falling back to demo')
+    yield* streamFromDemo(messages)
+    return
+  }
+
+  const sanitizedQuery = sanitizeQuery(query)
+  logger.debug(`streamFromRAG: Processing query: "${sanitizedQuery.substring(0, 50)}..."`)
+
+  // Initialize performance metrics
+  const metrics: RAGMetrics = {
+    searchDuration: 0,
+    processingDuration: 0,
+    streamingDuration: 0,
+    totalDuration: 0,
+    resultsFound: 0,
+    resultsUsed: 0,
+    chunksGenerated: 0,
+    responseLength: 0,
+  }
+  
+  const totalTimer = createTimer()
+  totalTimer.start()
+
+  try {
+    // Search documentation with balanced parameters and timeout protection
+    const searchTimer = createTimer()
+    searchTimer.start()
+    
+    let searchResults: ReturnType<typeof searchDocumentation>
+    
+    try {
+      // Wrap search in timeout promise
+      const searchPromise = Promise.resolve(
+        searchDocumentation(sanitizedQuery, {
+          topK: MAX_SEARCH_RESULTS,
+          minScore: MIN_SEARCH_SCORE,
+          currentPath: getCurrentPath(),
+        })
+      )
+      
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Search timeout')), SEARCH_TIMEOUT_MS)
+      })
+      
+      searchResults = await Promise.race([searchPromise, timeoutPromise])
+      metrics.searchDuration = searchTimer.stop()
+    } catch (searchError) {
+      metrics.searchDuration = searchTimer.stop()
+      
+      // Retry transient errors
+      if (isTransientError(searchError) && MAX_RETRY_ATTEMPTS > 0) {
+        logger.warn(`Search failed, retrying... (${searchError instanceof Error ? searchError.message : 'unknown error'})`)
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_BASE_MS))
+        
+        try {
+          searchResults = searchDocumentation(sanitizedQuery, {
+            topK: MAX_SEARCH_RESULTS,
+            minScore: MIN_SEARCH_SCORE,
+            currentPath: getCurrentPath(),
+          })
+          metrics.searchDuration += searchTimer.stop()
+        } catch (retryError) {
+          throw retryError // Re-throw if retry also fails
+        }
+      } else {
+        throw searchError // Re-throw non-transient errors
+      }
+    }
+
+    metrics.resultsFound = searchResults.length
+    logger.debug(`streamFromRAG: Found ${searchResults.length} search results in ${metrics.searchDuration}ms`)
+
+    // Filter and rank results
+    const finalResults = filterSearchResults(searchResults)
+
+    if (finalResults.length === 0) {
+      // No results found - fall back to demo mode
+      yield {
+        type: 'text',
+        content: `I couldn't find specific documentation for "${query}". Let me provide a general answer:\n\n---\n\n`,
+      }
+      yield* streamFromDemo(messages)
+      return
+    }
+
+    // Format search results for context
+    const { context: docsContext, sources } = formatSearchResultsForRAG(
+      finalResults
+    )
+
+    // Build response from search results
+    if (!docsContext || finalResults.length === 0) {
+      yield* streamFromDemo(messages)
+      return
+    }
+
+    // Build response header
+    const queryIsQuestion = isQuestion(sanitizedQuery)
+    
+    const processingTimer = createTimer()
+    processingTimer.start()
+    
+    let response = buildResponseHeader(queryIsQuestion, finalResults.length)
+    
+    logger.debug(`streamFromRAG: Using ${finalResults.length} filtered results (${queryIsQuestion ? 'question' : 'query'})`)
+
+    // Process top results
+    const topResults = finalResults.slice(0, Math.min(MAX_QUALITY_RESULTS, finalResults.length))
+    metrics.resultsUsed = topResults.length
+
+    for (let index = 0; index < topResults.length; index++) {
+      const result = topResults[index]
+      const { chunk } = result
+
+      // Add separator between sections (except first)
+      if (index > 0) {
+        response += '\n\n---\n\n'
+      }
+
+      // Section header
+      response +=
+        topResults.length > 1
+          ? `### ${index + 1}. ${chunk.title}\n\n`
+          : `### ${chunk.title}\n\n`
+
+      // Category badge (only if multiple results)
+      if (chunk.category && topResults.length > 1) {
+        response += `**Category:** \`${chunk.category}\`\n\n`
+      }
+
+      // Process content chunk
+      const processedContent = processContentChunk(chunk.content)
+      if (!processedContent) {
+        logger.debug(`Skipping empty content for chunk: ${chunk.title}`)
+        continue
+      }
+
+      response += processedContent + '\n\n'
+
+      // Add source link (validate URL to prevent XSS)
+      if (chunk.url && isValidUrl(chunk.url)) {
+        response += `🔗 **[Read full documentation: ${chunk.title}](${chunk.url})**\n\n`
+      } else if (chunk.url) {
+        logger.warn(`Invalid URL skipped: ${chunk.url}`)
+      }
+    }
+
+    // Additional resources (if available)
+    if (sources.length > topResults.length) {
+      response += `\n\n---\n\n### 📖 Additional Resources\n\n`
+      const additionalSources = sources.slice(
+        topResults.length,
+        topResults.length + MAX_QUALITY_RESULTS
+      )
+      for (const source of additionalSources) {
+        response += `- [${source.title}](${source.url})\n`
+      }
+    }
+
+    // Footer
+    response += `\n\n---\n\n<small>💡 *Generated from Clarity Chat documentation.*</small>`
+
+    metrics.processingDuration = processingTimer.stop()
+    metrics.responseLength = response.length
+    
+    logger.debug(`streamFromRAG: Built response (${response.length} chars) in ${metrics.processingDuration}ms`)
+
+    // Split response into chunks for streaming
+    const chunks = splitIntoChunks(response)
+    metrics.chunksGenerated = chunks.length
+
+    // Stream chunks with accumulated content for proper markdown rendering
+    let accumulatedContent = ''
+    const streamTimer = createTimer()
+    streamTimer.start()
+    
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      if (!chunk?.trim()) {
+        logger.debug(`Skipping empty chunk at index ${i}`)
+        continue
+      }
+
+      accumulatedContent += chunk
+
+      yield {
+        type: 'text',
+        content: accumulatedContent,
+      }
+
+      // Adaptive delay between chunks for smooth streaming
+      if (i < chunks.length - 1) {
+        const delay =
+          chunk.length > LARGE_CHUNK_THRESHOLD
+            ? STREAM_DELAY_LARGE
+            : STREAM_DELAY_SMALL
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
+    }
+    
+    metrics.streamingDuration = streamTimer.stop()
+    metrics.totalDuration = totalTimer.stop()
+    
+    // Log comprehensive metrics
+    logger.debug(`streamFromRAG: Completed successfully`, {
+      metrics: {
+        search: `${metrics.searchDuration}ms`,
+        processing: `${metrics.processingDuration}ms`,
+        streaming: `${metrics.streamingDuration}ms`,
+        total: `${metrics.totalDuration}ms`,
+        results: `${metrics.resultsUsed}/${metrics.resultsFound}`,
+        chunks: metrics.chunksGenerated,
+        responseLength: metrics.responseLength,
+      },
+    })
+    
+    // Signal completion
+    yield { type: 'done' as const }
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+    const isTransient = isTransientError(error)
+    
+    metrics.totalDuration = totalTimer.stop()
+    
+    logger.error('RAG streaming error, falling back to demo mode:', {
+      error: errorMessage,
+      errorType: isTransient ? 'transient' : 'permanent',
+      query: sanitizedQuery?.substring(0, 50) || 'unknown',
+      stack: error instanceof Error ? error.stack : undefined,
+      metrics: {
+        searchDuration: metrics.searchDuration,
+        totalDuration: metrics.totalDuration,
+        resultsFound: metrics.resultsFound,
+      },
+    })
+
+    // Graceful fallback to demo mode
+    try {
+      yield {
+        type: 'text',
+        content: `⚠️ I encountered an issue searching the documentation. Here's a general answer:\n\n---\n\n`,
+      }
+      yield* streamFromDemo(messages)
+    } catch (fallbackError) {
+      // If even fallback fails, yield error
+      logger.error('Demo mode fallback also failed:', fallbackError)
+      yield {
+        type: 'error',
+        content:
+          'Unable to retrieve documentation. Please check your connection and try again.',
+      }
+    }
   }
 }
 
@@ -573,23 +1318,64 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
   const matchedTopic =
     priorityKeys.find((key) => query.includes(key)) || 'default'
 
-  // Stream the response character by character
-  const words = response.split(' ')
-  let buffer = ''
+  // Stream the response smoothly in sentence-sized chunks
+  // Split by sentences, code blocks, and line breaks for natural streaming
+  const chunks: string[] = []
+  
+  // Split by code blocks first to preserve them
+  const codeBlockRegex = /```[\s\S]*?```/g
+  let lastIndex = 0
+  let match
+  
+  while ((match = codeBlockRegex.exec(response)) !== null) {
+    // Add text before code block
+    if (match.index > lastIndex) {
+      const textBefore = response.substring(lastIndex, match.index)
+      // Split text by sentences, filtering out empty ones
+      const sentences = textBefore.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || []
+      chunks.push(...sentences.filter(s => s.trim().length > 0))
+    }
+    // Add code block as single chunk
+    if (match[0].trim().length > 0) {
+      chunks.push(match[0])
+    }
+    lastIndex = match.index + match[0].length
+  }
+  
+  // Add remaining text
+  if (lastIndex < response.length) {
+    const remaining = response.substring(lastIndex)
+    const sentences = remaining.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || []
+    chunks.push(...sentences.filter(s => s.trim().length > 0))
+  }
+  
+  // If no chunks found, use original response
+  if (chunks.length === 0 && response.trim().length > 0) {
+    chunks.push(response)
+  }
 
-  for (let i = 0; i < words.length; i++) {
-    buffer += words[i] + (i < words.length - 1 ? ' ' : '')
+  // Yield accumulated chunks for proper rendering
+  let accumulatedContent = ''
+  for (let i = 0; i < chunks.length; i++) {
+    // Skip empty chunks
+    if (!chunks[i] || chunks[i].trim().length === 0) {
+      continue
+    }
+    
+    accumulatedContent += chunks[i]
+    
+    yield {
+      type: 'text',
+      content: accumulatedContent, // Yield accumulated content
+    }
 
-    // Yield chunks of ~5-10 words for natural streaming
-    if (buffer.split(' ').length >= 7 || i === words.length - 1) {
-      yield {
-        type: 'text',
-        content: buffer,
-      }
-      buffer = ''
-
-      // Small delay to simulate network latency
-      await new Promise((resolve) => setTimeout(resolve, 30))
+    // Minimal delay for smooth animation - batch multiple small chunks
+    // Only delay if not the last chunk and chunk is small
+    if (i < chunks.length - 1) {
+      const chunkSize = chunks[i].length
+      // Smaller chunks get shorter delays, larger chunks (like code blocks) get slightly longer
+      const delay = chunkSize > 100 ? 3 : chunkSize > 50 ? 5 : 8
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
@@ -601,7 +1387,7 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
     content: tokenFooter,
   }
 
-  // Yield thinking chunk with metadata for UI consumption
+  // Yield thinking chunk with metadata for UI consumption (before done signal)
   yield {
     type: 'thinking',
     data: {
@@ -614,6 +1400,9 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
       },
     },
   }
+  
+  // Signal completion (must be last)
+  yield { type: 'done' as const }
 }
 
 /**
@@ -736,6 +1525,69 @@ export interface ModelRoutingConfig {
 }
 
 /**
+ * Check if an API key is valid (not empty and not a placeholder)
+ */
+function isValidApiKey(key: string | undefined, type: 'openai' | 'anthropic' | 'gemini'): boolean {
+  if (!key || key.trim().length === 0) {
+    return false
+  }
+
+  const trimmedKey = key.trim().toLowerCase()
+
+  // Common placeholder patterns (be careful not to match valid keys)
+  const placeholderPatterns = [
+    'your-',
+    'placeholder',
+    'example',
+    'replace',
+    'add-your',
+    'paste-your',
+    'enter-your',
+    'sk-placeholder', // OpenAI placeholder
+    'sk-ant-placeholder', // Anthropic placeholder
+  ]
+
+  // Check for placeholder patterns (but allow valid key prefixes)
+  for (const pattern of placeholderPatterns) {
+    if (trimmedKey.includes(pattern)) {
+      return false
+    }
+  }
+  
+  // Check for incomplete keys that are just prefixes
+  if (trimmedKey === 'sk-' || trimmedKey === 'sk-ant-') {
+    return false
+  }
+
+  // Type-specific validation
+  if (type === 'openai') {
+    // OpenAI keys start with 'sk-' (or 'sk-proj-' for project keys) and are typically 51+ characters
+    if (!trimmedKey.startsWith('sk-')) {
+      return false
+    }
+    // Accept both regular keys (sk-) and project keys (sk-proj-)
+    if (trimmedKey.length < 20) {
+      return false
+    }
+  } else if (type === 'anthropic') {
+    // Anthropic keys start with 'sk-ant-' and are typically 50+ characters
+    if (!trimmedKey.startsWith('sk-ant-')) {
+      return false
+    }
+    if (trimmedKey.length < 20) {
+      return false
+    }
+  } else if (type === 'gemini') {
+    // Gemini keys can vary in format, but should be substantial
+    if (trimmedKey.length < 20) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
  * Get the appropriate streaming function based on configured model
  */
 export function getStreamingFunction():
@@ -743,14 +1595,18 @@ export function getStreamingFunction():
   | typeof streamFromClaude
   | typeof streamFromGemini
   | typeof streamFromDemo {
-  // Check if any API key is configured
-  const hasOpenAI = !!process.env.OPENAI_API_KEY
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
-  const hasGemini = !!process.env.GEMINI_API_KEY
+  // Check if any API key is configured (and not a placeholder)
+  const openaiKey = process.env.OPENAI_API_KEY
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+  const geminiKey = process.env.GEMINI_API_KEY
+  
+  const hasOpenAI = isValidApiKey(openaiKey, 'openai')
+  const hasAnthropic = isValidApiKey(anthropicKey, 'anthropic')
+  const hasGemini = isValidApiKey(geminiKey, 'gemini')
 
-  // If no API keys, use demo mode
+  // If no valid API keys, use demo mode
   if (!hasOpenAI && !hasAnthropic && !hasGemini) {
-    logger.warn('⚠️  No API keys configured - using demo mode')
+    logger.warn('⚠️  No valid API keys configured - using demo mode')
     return streamFromDemo
   }
 
@@ -769,7 +1625,7 @@ export function getStreamingFunction():
   }
 
   // Fallback to demo if configured model doesn't have a key
-  logger.warn('⚠️  Configured model has no API key - using demo mode')
+  logger.warn('⚠️  Configured model has no valid API key - using demo mode')
   return streamFromDemo
 }
 
@@ -789,15 +1645,17 @@ export function getStreamingFunctionWithRouting(
   model: string
   classification: QueryClassification
 } {
-  const hasOpenAI = !!process.env.OPENAI_API_KEY
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
-  const hasGemini = !!process.env.GEMINI_API_KEY
+  // Check for valid API keys (not placeholders)
+  const hasOpenAI = isValidApiKey(process.env.OPENAI_API_KEY, 'openai')
+  const hasAnthropic = isValidApiKey(process.env.ANTHROPIC_API_KEY, 'anthropic')
+  const hasGemini = isValidApiKey(process.env.GEMINI_API_KEY, 'gemini')
 
   // Classify query complexity
   const classification = classifyQueryComplexity(query, conversationLength)
 
-  // If no API keys, use demo mode
+  // If no valid API keys, use demo mode
   if (!hasOpenAI && !hasAnthropic && !hasGemini) {
+    logger.warn('⚠️  No valid API keys configured - using demo mode for routing')
     return {
       streamFn: streamFromDemo,
       model: 'demo',
@@ -949,7 +1807,7 @@ export function getProviderStatus(): ProviderStatusResult {
   const openaiKey = process.env.OPENAI_API_KEY
   providers.push({
     name: 'openai',
-    available: !!openaiKey && openaiKey.length > 10,
+    available: isValidApiKey(openaiKey, 'openai'),
     model: PROVIDER_MODELS.openai,
   })
 
@@ -957,7 +1815,7 @@ export function getProviderStatus(): ProviderStatusResult {
   const anthropicKey = process.env.ANTHROPIC_API_KEY
   providers.push({
     name: 'anthropic',
-    available: !!anthropicKey && anthropicKey.length > 10,
+    available: isValidApiKey(anthropicKey, 'anthropic'),
     model: PROVIDER_MODELS.anthropic,
   })
 
@@ -965,7 +1823,7 @@ export function getProviderStatus(): ProviderStatusResult {
   const googleKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY
   providers.push({
     name: 'google',
-    available: !!googleKey && googleKey.length > 10,
+    available: isValidApiKey(googleKey, 'gemini'),
     model: PROVIDER_MODELS.google,
   })
 
@@ -1082,7 +1940,7 @@ export function validateRequest(
  * Error handler for streaming errors
  */
 export function handleStreamError(error: unknown): StreamChunk {
-  console.error('Stream error:', error)
+  logger.error('Stream error:', error)
 
   let errorMessage = 'An unexpected error occurred'
 

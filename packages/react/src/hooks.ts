@@ -163,5 +163,4 @@ export * from './hooks/message'
 /** Security hooks - validation, sanitization */
 export * from './hooks/security'
 
-/** ClarityTokens hooks - AI token optimization (80%+ cost reduction) */
-export * from './hooks/clarity-tokens'
+

@@ -89,6 +89,21 @@ const clarityChatProps: Prop[] = [
       'Callback when user provides thumbs up/down feedback on a message.',
   },
   {
+    name: 'onEditMessage',
+    type: '(messageId: string, newContent: string) => void',
+    description: 'Callback when a message is edited.',
+  },
+  {
+    name: 'onRegenerateMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when a message regeneration is requested.',
+  },
+  {
+    name: 'onDeleteMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when a message is deleted.',
+  },
+  {
     name: 'theme',
     type: 'string',
     description: 'Theme name to apply to the chat interface.',
@@ -120,31 +135,6 @@ const clarityChatProps: Prop[] = [
     name: 'onError',
     type: '(error: Error, errorInfo?: React.ErrorInfo) => void',
     description: 'Error handler callback with error details.',
-  },
-  {
-    name: 'memory',
-    type: 'ClarityMemoryOptions',
-    description:
-      'Memory integration configuration. See useClarityChat documentation.',
-  },
-  {
-    name: 'transport',
-    type: '"sse" | "websocket"',
-    default: '"sse"',
-    description:
-      'Transport protocol for streaming. Default is Server-Sent Events.',
-  },
-  {
-    name: 'websocket',
-    type: 'ClarityWebSocketOptions',
-    description:
-      'WebSocket-specific options (only used when transport is "websocket").',
-  },
-  {
-    name: 'promptOptimization',
-    type: 'ClarityPromptOptimizationOptions',
-    description:
-      'Prompt optimization configuration for token budget management.',
   },
 ]
 
@@ -189,7 +179,7 @@ export default function ClarityChatPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -203,29 +193,16 @@ function App() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">With Memory Integration</h2>
+        <h2 className="text-3xl font-semibold mb-4">With Memory Strategy</h2>
         <CodePlayground
-          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   return (
     <ClarityChat
       api="/api/chat"
-      memory={{
-        enabled: true,
-        strategy: 'vector-store', // or 'sliding-window', 'semantic-chunks'
-        maxTokens: 8000,
-      }}
+      memoryStrategy="vector-store" // or 'sliding-window', 'semantic-chunks'
     />
-  )
-}
-
-// Wrap with MemoryProvider for vector-store strategy
-function App() {
-  return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ChatWithMemory />
-    </MemoryProvider>
   )
 }`}
         />
@@ -234,7 +211,7 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Custom Header</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
 function CustomHeaderChat() {
   return (
@@ -245,7 +222,7 @@ function CustomHeaderChat() {
       sessionSubtitle="Ask me anything!"
       showMessageCount
       headerActions={
-        <button onClick={() => logger.debug('Settings')}>
+        <button onClick={() => console.log('Settings')}>
           Settings
         </button>
       }
@@ -257,45 +234,17 @@ function CustomHeaderChat() {
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">
-          With Prompt Optimization
+          With Token Counter
         </h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function OptimizedChat() {
+function ChatWithTokenCounter() {
   return (
     <ClarityChat
       api="/api/chat"
-      promptOptimization={{
-        enabled: true,
-        targetTokens: 8000,
-        strategy: 'hybrid',
-        model: 'gpt-4',
-      }}
       showTokenCounter
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">
-          With WebSocket Transport
-        </h2>
-        <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
-
-function WebSocketChat() {
-  return (
-    <ClarityChat
-      api="/api/chat"
-      transport="websocket"
-      websocket={{
-        autoReconnect: true,
-        maxReconnectAttempts: 5,
-        enableHeartbeat: true,
-      }}
+      showNetworkStatus
     />
   )
 }`}
@@ -305,7 +254,7 @@ function WebSocketChat() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Message Operations</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
 function AdvancedChat() {
   return (
@@ -313,10 +262,19 @@ function AdvancedChat() {
       api="/api/chat"
       enableMessageOperations
       onMessageCopy={(id, content) => {
-        logger.debug('Message copied:', id)
+        console.log('Message copied:', id)
       }}
       onMessageFeedback={(messageId, feedbackType) => {
-        logger.debug('Feedback:', messageId, feedbackType)
+        console.log('Feedback:', messageId, feedbackType)
+      }}
+      onEditMessage={(messageId, newContent) => {
+        console.log('Message edited:', messageId)
+      }}
+      onRegenerateMessage={(messageId) => {
+        console.log('Regenerate:', messageId)
+      }}
+      onDeleteMessage={(messageId) => {
+        console.log('Message deleted:', messageId)
       }}
     />
   )

@@ -207,8 +207,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const handleSelect = useCallback(
     (item: SearchItem & { _score: number }) => {
       trackSearchClick(query, item.href, item.title)
-      toast.success('Navigating...', {
-        description: item.title,
+      toast.success(`Navigating to ${item.title}`, {
         duration: 2000,
       })
       router.push(item.href)
@@ -251,10 +250,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             initial={{ opacity: 0, scale: 0.96, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
-            transition={{
-              duration: durations.normal,
-              ease: springs.smooth.ease,
-            }}
+            transition={springs.smooth}
             className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4 z-50"
             onKeyDown={handleKeyDown}
           >
@@ -272,7 +268,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search documentation..."
-                  className="flex-1 bg-transparent border-none outline-none text-base placeholder:text-text-tertiary"
+                  className="flex-1 bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded text-base placeholder:text-text-tertiary"
                   aria-label="Search"
                   aria-autocomplete="list"
                   aria-controls="search-results"
@@ -285,10 +281,10 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 {query && (
                   <button
                     onClick={() => setQuery('')}
-                    className="p-1 rounded hover:bg-bg-secondary transition-colors"
+                    className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                     aria-label="Clear search"
                   >
-                    <X className="w-4 h-4 text-text-secondary" />
+                    <X className="w-5 h-5 text-text-secondary" />
                   </button>
                 )}
                 <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 text-xs font-mono text-text-tertiary bg-bg-secondary rounded border border-border">
@@ -327,9 +323,9 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 ) : (
                   <motion.div
                     className="space-y-4"
-                    variants={staggerContainer}
-                    initial="initial"
-                    animate="animate"
+                    variants={staggerContainer(0.05)}
+                    initial="hidden"
+                    animate="show"
                   >
                     {Object.entries(groupedResults).map(
                       ([category, items], groupIndex) => (

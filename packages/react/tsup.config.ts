@@ -35,7 +35,7 @@ const commonConfig = {
   },
   outExtension({ format }: { format: string }) {
     return {
-      js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+      js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
     }
   },
 }
@@ -51,7 +51,7 @@ export default defineConfig([
     },
     outExtension({ format }) {
       return {
-        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+        js: `.${format === 'cjs' ? 'cjs' : 'js'}`,
         css: '.css',
       }
     },

@@ -8,7 +8,7 @@ import {
   Key,
   ExternalLink,
   ChevronRight,
-  CirclePlay,
+  Play,
   Settings,
   Sparkles,
 } from 'lucide-react'
@@ -329,7 +329,7 @@ export function SetupRequired({
                 'hover:bg-gray-50 dark:hover:bg-gray-700'
               )}
             >
-              <CirclePlay className="w-4 h-4" />
+              <Play className="w-4 h-4" />
               Continue with Demo Mode
             </button>
           )}

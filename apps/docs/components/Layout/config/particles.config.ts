@@ -1,9 +1,12 @@
 import type { IOptions, RecursivePartial } from '@tsparticles/engine'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ParticleOptions = RecursivePartial<IOptions> & { particles?: any; interactivity?: any }
+
 /**
  * Base particle configuration shared between dark and light modes.
  */
-const baseConfig: RecursivePartial<IOptions> = {
+const baseConfig: ParticleOptions = {
   background: {
     color: {
       value: 'transparent',
@@ -16,7 +19,7 @@ const baseConfig: RecursivePartial<IOptions> = {
         enable: true,
         mode: 'push' as const,
       },
-      resize: true,
+      resize: { enable: true },
     },
   },
   particles: {
@@ -40,7 +43,7 @@ const baseConfig: RecursivePartial<IOptions> = {
  * Dark mode particle configuration.
  * Features: Glowing nodes with vibrant blue colors, more particles, higher opacity.
  */
-export const darkParticlesConfig: RecursivePartial<IOptions> = {
+export const darkParticlesConfig: ParticleOptions = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
@@ -89,7 +92,7 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 0.5,
-        minimumValue: 0.3,
+        min: 0.3,
         sync: false,
       },
     },
@@ -98,7 +101,7 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 2,
-        minimumValue: 0.5,
+        min: 0.5,
         sync: false,
       },
     },
@@ -109,7 +112,7 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
  * Light mode particle configuration.
  * Features: Subtle mesh with softer colors, fewer particles, lower opacity.
  */
-export const lightParticlesConfig: RecursivePartial<IOptions> = {
+export const lightParticlesConfig: ParticleOptions = {
   ...baseConfig,
   interactivity: {
     ...baseConfig.interactivity,
@@ -160,7 +163,7 @@ export const lightParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 0.3,
-        minimumValue: 0.2,
+        min: 0.2,
         sync: false,
       },
     },
@@ -169,7 +172,7 @@ export const lightParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 1,
-        minimumValue: 0.3,
+        min: 0.3,
         sync: false,
       },
     },

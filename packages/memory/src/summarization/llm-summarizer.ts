@@ -17,7 +17,7 @@
  */
 
 import type { Summarizer } from './summarizer'
-import { estimateTokens } from '../utils/core'
+import { estimateTokens, sleep } from '../utils/core'
 
 /**
  * Message format for summarization
@@ -231,12 +231,7 @@ class RateLimiter {
   }
 }
 
-/**
- * Sleep utility for retry delays
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+// sleep is now imported from '../utils/core' (re-exported from @clarity-chat/utils)
 
 /**
  * Calculate exponential backoff delay with jitter

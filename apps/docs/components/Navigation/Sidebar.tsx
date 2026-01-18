@@ -86,10 +86,10 @@ function NavGroup({
             level === 0 && 'font-medium',
             // Text overflow handling
             'truncate',
-            // Active state with enhanced visibility
+            // Active state with enhanced visibility and left border indicator
             isActive
-              ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300 shadow-sm font-medium'
-              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50'
+              ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300 shadow-sm font-medium border-l-2 border-brand-500'
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50 border-l-2 border-transparent'
           )}
           style={{ marginLeft: indentPadding }}
           title={item.title} // Show full title on hover for truncated text
@@ -133,7 +133,7 @@ function NavGroup({
                 setIsOpen(!isOpen)
               }}
               className={clsx(
-                'p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-md shrink-0',
+                'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md shrink-0',
                 'transition-colors duration-300 ease-in-out',
                 'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'

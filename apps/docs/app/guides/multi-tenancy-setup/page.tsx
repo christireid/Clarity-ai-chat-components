@@ -45,7 +45,7 @@ export default function MultiTenancySetupPage() {
         <h2>Tenant Context Setup</h2>
         <p>Set up tenant context:</p>
         <CodePlayground
-          initialCode={`import { TenantProvider } from '@clarity-chat/react/internal'
+          initialCode={`import { TenantProvider } from '@clarity-chat/react'
 
 function App({ tenantId }: { tenantId: string }) {
   return (
@@ -56,7 +56,7 @@ function App({ tenantId }: { tenantId: string }) {
 }
 
 // Access tenant context
-import { useTenantContext } from '@clarity-chat/react/internal'
+import { useTenantContext } from '@clarity-chat/react'
 
 function ChatApp() {
   const { tenantId, tenantConfig } = useTenantContext()
@@ -75,7 +75,7 @@ function ChatApp() {
         <h2>Seat Management</h2>
         <p>Manage seats for tenants:</p>
         <CodePlayground
-          initialCode={`import { SeatInviteDialog, AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { SeatInviteDialog, AuthTenantDashboard } from '@clarity-chat/react'
 
 function TenantManagement({ tenantId }: { tenantId: string }) {
   const [seats, setSeats] = useState([])
@@ -109,7 +109,7 @@ function TenantManagement({ tenantId }: { tenantId: string }) {
         <h2>SSO Configuration</h2>
         <p>Configure SSO for tenants:</p>
         <CodePlayground
-          initialCode={`import { SSOConfigWizard, AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard, AuthTenantDashboard } from '@clarity-chat/react'
 
 function SSOSetup({ tenantId }: { tenantId: string }) {
   return (
@@ -135,7 +135,7 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
         <h2>API Token Management</h2>
         <p>Manage API tokens per tenant:</p>
         <CodePlayground
-          initialCode={`import { ApiTokenManager } from '@clarity-chat/react/internal'
+          initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 
 function TokenManagement({ tenantId }: { tenantId: string }) {
   const [tokens, setTokens] = useState([])
@@ -172,7 +172,7 @@ function TokenManagement({ tenantId }: { tenantId: string }) {
   SeatInviteDialog,
   SSOConfigWizard,
   ApiTokenManager,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function MultiTenantApp({ tenantId }: { tenantId: string }) {
   return (

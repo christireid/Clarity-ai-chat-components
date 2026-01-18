@@ -51,6 +51,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, useReducedMotion } from '@clarity-chat/primitives'
+import { formatDuration } from '@clarity-chat/utils'
 import {
   DURATION_SECONDS as durations,
   EASING_FRAMER,
@@ -363,14 +364,7 @@ function getStatusIcon(
 // HELPER FUNCTIONS
 // =============================================================================
 
-/**
- * Format duration in milliseconds to human-readable string
- */
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
-  return `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`
-}
+// formatDuration is now imported from @clarity-chat/utils
 
 /**
  * Format timestamp to time string

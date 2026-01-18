@@ -213,7 +213,7 @@ function MessageOptimizedInner({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'group flex gap-3 p-4 rounded-lg transition-colors',
+        'group flex gap-4 p-4 rounded-lg transition-colors',
         isUser && 'flex-row-reverse',
         isHovered && 'bg-muted/50',
         className

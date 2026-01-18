@@ -11,68 +11,34 @@ export const metadata: Metadata = {
 }
 
 const themedChatCode = `function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Welcome to the themed chat! 🎨',
-      sender: 'bot',
-      timestamp: new Date(Date.now() - 120000),
-      avatar: {
-        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
-        alt: 'Bot',
-      },
-    },
-    {
-      id: '2',
-      text: 'Try toggling the theme with the button above!',
-      sender: 'bot',
-      timestamp: new Date(Date.now() - 60000),
-      avatar: {
-        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
-        alt: 'Bot',
-      },
-    },
+  const [theme, setTheme] = useState('light')
+  const [messages, setMessages] = useState([
+    createAssistantMessage('Welcome to the themed chat! 🎨'),
+    createAssistantMessage('Try toggling the theme with the button above!'),
   ])
 
-  const handleSendMessage = (text: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      sender: 'user',
-      timestamp: new Date(),
-      avatar: {
-        src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
-        alt: 'You',
-      },
-    }
-    
-    setMessages([...messages, newMessage])
+  const handleSendMessage = (content) => {
+    const userMessage = createUserMessage(content)
+    setMessages([...messages, userMessage])
 
-    // Bot response
+    // Assistant response
     setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: theme === 'dark' 
-          ? '🌙 Dark mode looks great, doesn\\'t it?' 
-          : '☀️ Light mode is so bright and cheerful!',
-        sender: 'bot',
-        timestamp: new Date(),
-        avatar: {
-          src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
-          alt: 'Bot',
-        },
-      }
-      setMessages((prev) => [...prev, botMessage])
+      const assistantMessage = createAssistantMessage(
+        theme === 'dark'
+          ? '🌙 Dark mode looks great, doesn\\'t it?'
+          : '☀️ Light mode is so bright and cheerful!'
+      )
+      setMessages((prev) => [...prev, assistantMessage])
     }, 1000)
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <div style={{ height: '650px', display: 'flex', flexDirection: 'column' }}>
+    <ThemeProvider>
+      <div style={{ height: '650px', display: 'flex', flexDirection: 'column' }}
+           className={theme === 'dark' ? 'dark' : ''}>
         {/* Theme Toggle */}
-        <div style={{ 
-          padding: '1rem', 
+        <div style={{
+          padding: '1rem',
           borderBottom: '1px solid #e5e7eb',
           backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
           color: theme === 'dark' ? '#f9fafb' : '#111827',
@@ -97,9 +63,6 @@ const themedChatCode = `function App() {
           <ChatWindow
             messages={messages}
             onSendMessage={handleSendMessage}
-            placeholder="Type your message..."
-            showTimestamps
-            showAvatars
           />
         </div>
       </div>
@@ -153,9 +116,9 @@ export default function ThemedChatExample() {
       <p>Wrap your app with ThemeProvider:</p>
 
       <CodeBlock
-        code={`import { ThemeProvider } from '@clarity-chat/react/internal'
+        code={`import { ThemeProvider } from '@clarity-chat/react'
 
-<ThemeProvider theme={theme}>
+<ThemeProvider>
   <YourApp />
 </ThemeProvider>`}
         language="tsx"
@@ -176,31 +139,26 @@ export default function ThemedChatExample() {
       <p>Create a custom theme with your brand colors:</p>
 
       <CodeBlock
-        code={`import { createTheme, ThemeProvider } from '@clarity-chat/react/internal'
+        code={`import { ThemeProvider } from '@clarity-chat/react'
 
-const customTheme = createTheme({
-  colors: {
-    primary: '#3b82f6',
-    secondary: '#8b5cf6',
-    background: '#ffffff',
-    text: '#111827',
-    border: '#e5e7eb',
-  },
-  fonts: {
-    sans: 'Inter, sans-serif',
-    mono: 'JetBrains Mono, monospace',
-  },
-  borderRadius: {
-    sm: '0.25rem',
-    md: '0.5rem',
-    lg: '1rem',
-  },
-})
+// Define CSS custom properties for your theme
+const customStyles = {
+  '--primary': '#3b82f6',
+  '--primary-foreground': '#ffffff',
+  '--background': '#ffffff',
+  '--foreground': '#111827',
+  '--border': '#e5e7eb',
+}
 
 function App() {
   return (
-    <ThemeProvider theme={customTheme}>
-      <ChatWindow {...props} />
+    <ThemeProvider>
+      <div style={customStyles}>
+        <ChatWindow
+          messages={messages}
+          onSendMessage={handleSendMessage}
+        />
+      </div>
     </ThemeProvider>
   )
 }`}

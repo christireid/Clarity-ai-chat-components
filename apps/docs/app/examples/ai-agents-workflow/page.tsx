@@ -180,23 +180,48 @@ export default function AIAgentsWorkflowPage() {
 
           <h2>🏗️ Implementation</h2>
 
-          <h3>Define Agents</h3>
+          <h3>Define Agents with Tool Integration</h3>
           <pre className="bg-surface-muted p-4 rounded-lg">
-            <code>{`import { createAgent } from '@clarity-chat/react/internal'
+            <code>{`import { useClarityChatWithTools } from '@clarity-chat/react'
 
-const dataAnalyst = createAgent({
-  name: 'data-analyst',
-  role: 'Analyze data and identify trends',
-  tools: ['query_database', 'create_chart', 'statistical_analysis'],
-  model: 'gpt-4'
-})
+// Define your agent tools
+const agentTools = {
+  analyze_sales: {
+    description: 'Analyze sales data and trends',
+    parameters: {
+      type: 'object',
+      properties: {
+        timeRange: { type: 'string' },
+        metrics: { type: 'array', items: { type: 'string' } }
+      }
+    },
+    execute: async (params) => {
+      const data = await fetchSalesData(params)
+      return analyzeData(data)
+    }
+  },
+  create_strategy: {
+    description: 'Create marketing strategy',
+    parameters: {
+      type: 'object',
+      properties: {
+        insights: { type: 'array' },
+        budget: { type: 'number' }
+      }
+    },
+    execute: async (params) => {
+      return generateStrategy(params)
+    }
+  }
+}
 
-const strategist = createAgent({
-  name: 'strategist',
-  role: 'Create actionable strategies',
-  tools: ['market_research', 'competitor_analysis', 'swot_analysis'],
-  model: 'gpt-4'
-})`}</code>
+function AgentWorkflow() {
+  const { messages, append, toolInvocations } = useClarityChatWithTools({
+    api: '/api/agent',
+    tools: agentTools
+  })
+  // ...
+}`}</code>
           </pre>
 
           <h3>Orchestrate Workflow</h3>

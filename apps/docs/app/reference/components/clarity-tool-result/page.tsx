@@ -1,12 +1,16 @@
+// TODO: ClarityToolResult and createToolUIRegistry are planned but not yet implemented
+// in @clarity-chat/react. This page documents the intended API and features.
+
 'use client'
 
 import { useState, useCallback } from 'react'
-import {
-  ToastProvider,
-  ClarityToolResult,
-  createToolUIRegistry,
-} from '@clarity-chat/react/internal'
-import type { CoreMessage } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
+// TODO: Uncomment when implemented:
+// import {
+//   ClarityToolResult,
+//   createToolUIRegistry,
+// } from '@clarity-chat/react'
+// import type { CoreMessage } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -16,107 +20,51 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// Weather result component example
-function WeatherResult({ data, toolCall }: { data: any; toolCall?: any }) {
+// Weather result component example (for documentation purposes)
+function WeatherResult({ data, toolCall }: { data: Record<string, unknown>; toolCall?: Record<string, unknown> }) {
   return (
     <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-2xl">🌤️</span>
+        <span className="text-2xl">Weather Icon</span>
         <h3 className="font-semibold">
-          Weather in {toolCall?.args?.location || 'Unknown'}
+          Weather in {String((toolCall?.args as Record<string, unknown>)?.location || 'Unknown')}
         </h3>
       </div>
       <div className="space-y-1">
         <p>
-          <strong>Temperature:</strong> {data.temperature}°C
+          <strong>Temperature:</strong> {String(data.temperature)}C
         </p>
         <p>
-          <strong>Condition:</strong> {data.condition}
+          <strong>Condition:</strong> {String(data.condition)}
         </p>
         <p>
-          <strong>Humidity:</strong> {data.humidity}%
+          <strong>Humidity:</strong> {String(data.humidity)}%
         </p>
       </div>
     </div>
   )
 }
 
-// Search results component example
-function SearchResults({ data }: { data: any }) {
-  return (
-    <div className="p-4 border rounded-lg">
-      <h3 className="font-semibold mb-2">Search Results</h3>
-      <ul className="space-y-2">
-        {data.results?.map((result: any, i: number) => (
-          <li key={i} className="border-b pb-2">
-            <a href={result.url} className="text-primary hover:underline">
-              {result.title}
-            </a>
-            <p className="text-sm text-muted-foreground">{result.snippet}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-// Basic demo component
+// Placeholder demo component - shows Coming Soon notice
 function BasicToolResultDemo() {
-  const registry = createToolUIRegistry({
-    weather: WeatherResult,
-    search: SearchResults,
-  })
-
-  const toolCall = {
-    name: 'weather',
-    args: { location: 'San Francisco' },
-    id: 'call-1',
-  }
-
-  const result = {
-    temperature: 18,
-    condition: 'Sunny',
-    humidity: 65,
-  }
-
-  const messages: CoreMessage[] = []
-
   return (
-    <div className="w-full max-w-2xl">
-      <ClarityToolResult
-        registry={registry}
-        toolCall={toolCall}
-        result={result}
-        messages={messages}
-      />
+    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
+      <div className="text-muted-foreground">
+        <p className="font-medium mb-2">Coming Soon</p>
+        <p className="text-sm">ClarityToolResult is planned but not yet implemented.</p>
+      </div>
     </div>
   )
 }
 
-// Fallback demo
+// Placeholder fallback demo
 function ToolResultWithFallbackDemo() {
-  const registry = createToolUIRegistry({
-    weather: WeatherResult,
-  })
-
-  const toolCall = {
-    name: 'unknown_tool', // Not in registry
-    args: {},
-    id: 'call-1',
-  }
-
-  const result = { data: 'Some result data' }
-  const messages: CoreMessage[] = []
-
   return (
-    <div className="w-full max-w-2xl">
-      <ClarityToolResult
-        registry={registry}
-        toolCall={toolCall}
-        result={result}
-        messages={messages}
-        // Uses default fallback (JSON display)
-      />
+    <div className="w-full max-w-2xl border border-border rounded-lg bg-background p-8 text-center">
+      <div className="text-muted-foreground">
+        <p className="font-medium mb-2">Coming Soon</p>
+        <p className="text-sm">Fallback rendering will be available when ClarityToolResult is implemented.</p>
+      </div>
     </div>
   )
 }
@@ -201,6 +149,13 @@ export default function ClarityToolResultPage() {
           components, with automatic fallback for unregistered tools.
         </p>
 
+        <Callout type="warning" className="mb-6">
+          <p>
+            <strong>Coming Soon:</strong> ClarityToolResult and createToolUIRegistry are planned
+            but not yet implemented in @clarity-chat/react. This page documents the intended API.
+          </p>
+        </Callout>
+
         <Callout type="info">
           <p>
             ClarityToolResult uses a registry pattern to map tool names to React
@@ -218,25 +173,37 @@ export default function ClarityToolResultPage() {
             while unregistered ones fall back to JSON.
           </p>
           <CodePlayground
-            initialCode={`function Example() {
-  const registry = createToolUIRegistry({
-    weather: ({ data }) => (
-      <div className="p-4 border rounded-lg">
-        <h3>Weather: {data.temperature}°C</h3>
-      </div>
-    ),
-  })
+            initialCode={`// ClarityToolResult is coming soon!
+// This playground will be functional once the component is implemented.
 
-  const toolCall = { name: 'weather', args: { location: 'SF' } }
-  const result = { temperature: 18, condition: 'Sunny' }
-
+function Example() {
   return (
-    <ClarityToolResult
-      registry={registry}
-      toolCall={toolCall}
-      result={result}
-      messages={[]}
-    />
+    <div className="p-4 bg-white dark:bg-gray-900 rounded-lg border">
+      <p className="text-center text-muted-foreground py-8">
+        ClarityToolResult coming soon...
+      </p>
+      {/* Once implemented:
+      const registry = createToolUIRegistry({
+        weather: ({ data }) => (
+          <div className="p-4 border rounded-lg">
+            <h3>Weather: {data.temperature}C</h3>
+          </div>
+        ),
+      })
+
+      const toolCall = { name: 'weather', args: { location: 'SF' } }
+      const result = { temperature: 18, condition: 'Sunny' }
+
+      return (
+        <ClarityToolResult
+          registry={registry}
+          toolCall={toolCall}
+          result={result}
+          messages={[]}
+        />
+      )
+      */}
+    </div>
   )
 }
 
@@ -247,8 +214,9 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { CoreMessage, ToolComponentProps } from '@clarity-chat/react/internal'
+          code={`// Coming soon:
+import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+import type { CoreMessage, ToolComponentProps } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -263,15 +231,15 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Tool Result"
           description="Custom UI for weather tool results"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolComponentProps } from '@clarity-chat/react/internal'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+import type { ToolComponentProps } from '@clarity-chat/react'
 
 // Custom component for weather tool
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
   return (
     <div className="p-4 border rounded-lg bg-blue-50">
       <h3 className="font-semibold">Weather in {toolCall?.args?.location}</h3>
-      <p>Temperature: {data.temperature}°C</p>
+      <p>Temperature: {data.temperature}C</p>
       <p>Condition: {data.condition}</p>
     </div>
   )
@@ -315,8 +283,8 @@ function ToolResultExample() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolComponentProps } from '@clarity-chat/react/internal'
+          code={`import { createToolUIRegistry } from '@clarity-chat/react'
+import type { ToolComponentProps } from '@clarity-chat/react'
 
 // Define your tool result components
 function WeatherResult({ data, toolCall }: ToolComponentProps) {
@@ -353,10 +321,10 @@ export { toolRegistry }`}
           code={`interface ToolComponentProps<TData = any> {
   /** Tool execution result data */
   data: TData
-  
+
   /** All messages in the conversation */
   messages: CoreMessage[]
-  
+
   /** Tool call metadata */
   toolCall?: {
     name: string
@@ -366,62 +334,6 @@ export { toolRegistry }`}
           language="tsx"
           showLineNumbers
         />
-
-        <h2 id="multiple-tools">Multiple Tools</h2>
-
-        <p>Register multiple tools in a single registry:</p>
-
-        <ComponentPreview
-          title="Multiple Tool Results"
-          description="Registry with multiple tool components"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-
-// Weather tool component
-function WeatherResult({ data }: ToolComponentProps) {
-  return (
-    <div className="p-4 border rounded-lg">
-      <h3>Weather: {data.temperature}°C</h3>
-    </div>
-  )
-}
-
-// Search tool component
-function SearchResults({ data }: ToolComponentProps) {
-  return (
-    <div className="p-4 border rounded-lg">
-      <h3>Search Results</h3>
-      <ul>
-        {data.results?.map((r, i) => (
-          <li key={i}>{r.title}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-// Create registry with multiple tools
-const registry = createToolUIRegistry({
-  weather: WeatherResult,
-  search: SearchResults,
-})
-
-// Use for different tools
-<ClarityToolResult
-  registry={registry}
-  toolCall={{ name: 'weather', args: {} }}
-  result={{ temperature: 18 }}
-  messages={[]}
-/>
-
-<ClarityToolResult
-  registry={registry}
-  toolCall={{ name: 'search', args: {} }}
-  result={{ results: [{ title: 'Result 1' }] }}
-  messages={[]}
-/>`}
-        >
-          <BasicToolResultDemo />
-        </ComponentPreview>
 
         <h2 id="fallback">Fallback for Unregistered Tools</h2>
 
@@ -433,7 +345,7 @@ const registry = createToolUIRegistry({
         <ComponentPreview
           title="Unregistered Tool Fallback"
           description="Default JSON display for unregistered tools"
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
+          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
 
 const registry = createToolUIRegistry({
   weather: WeatherResult,
@@ -462,279 +374,9 @@ function UnregisteredTool() {
           <ToolResultWithFallbackDemo />
         </ComponentPreview>
 
-        <h2 id="custom-fallback">Custom Fallback Component</h2>
-
-        <p>Provide a custom fallback component for unregistered tools:</p>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-
-function CustomFallback({ toolCall, result }: { toolCall: ToolCall; result: unknown }) {
-  return (
-    <div className="p-4 border border-dashed rounded-lg">
-      <p className="text-sm text-muted-foreground">
-        Tool "{toolCall.name}" is not registered. Raw result:
-      </p>
-      <pre className="mt-2 text-xs overflow-auto">
-        {JSON.stringify(result, null, 2)}
-      </pre>
-    </div>
-  )
-}
-
-const registry = createToolUIRegistry({
-  weather: WeatherResult,
-})
-
-<ClarityToolResult
-  registry={registry}
-  toolCall={{ name: 'unknown', args: {} }}
-  result={{ data: 'test' }}
-  messages={[]}
-  fallback={CustomFallback}
-/>`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="error-handling">Error Handling</h2>
-
-        <p>
-          ClarityToolResult includes error boundary support to catch rendering
-          errors:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-
-function ErrorProneTool({ data }: ToolComponentProps) {
-  // This might throw an error
-  return <div>{data.nonExistentProperty.value}</div>
-}
-
-const registry = createToolUIRegistry({
-  risky_tool: ErrorProneTool,
-})
-
-function CustomErrorFallback({ error, toolCall }: { error: Error; toolCall: ToolCall }) {
-  return (
-    <div className="p-4 border border-destructive rounded-lg bg-destructive/10">
-      <p className="text-destructive font-semibold">
-        Error rendering {toolCall.name}
-      </p>
-      <p className="text-sm text-muted-foreground">{error.message}</p>
-    </div>
-  )
-}
-
-<ClarityToolResult
-  registry={registry}
-  toolCall={{ name: 'risky_tool', args: {} }}
-  result={{}}
-  messages={[]}
-  enableErrorBoundary={true} // Default
-  errorFallback={CustomErrorFallback}
-/>`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="using-conversation-context">Using Conversation Context</h2>
-
-        <p>
-          Tool components receive the full conversation history for context:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react/internal'
-
-function ContextAwareTool({ data, messages, toolCall }: ToolComponentProps) {
-  // Access conversation context
-  const lastUserMessage = messages
-    .filter(m => m.role === 'user')
-    .pop()
-
-  return (
-    <div className="p-4 border rounded-lg">
-      <p className="text-sm text-muted-foreground mb-2">
-        Responding to: "{lastUserMessage?.content}"
-      </p>
-      <div>{/* Render tool result */}</div>
-    </div>
-  )
-}
-
-const registry = createToolUIRegistry({
-  context_aware_tool: ContextAwareTool,
-})
-
-<ClarityToolResult
-  registry={registry}
-  toolCall={{ name: 'context_aware_tool', args: {} }}
-  result={{}}
-  messages={conversationMessages} // Full conversation history
-/>`}
-          language="tsx"
-          showLineNumbers
-        />
-
         <h2 id="props">Props</h2>
 
         <PropsTable props={clarityToolResultProps} />
-
-        <h2 id="complete-example">Complete Example</h2>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react/internal'
-import type { ToolComponentProps, CoreMessage } from '@clarity-chat/react/internal'
-
-// Weather tool component
-function WeatherResult({ data, toolCall }: ToolComponentProps) {
-  return (
-    <div className="p-4 border rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl">🌤️</span>
-        <h3 className="font-semibold text-lg">
-          Weather in {toolCall?.args?.location || 'Unknown'}
-        </h3>
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <span className="text-muted-foreground">Temperature:</span>
-          <span className="ml-2 font-semibold">{data.temperature}°C</span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Condition:</span>
-          <span className="ml-2 font-semibold">{data.condition}</span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Humidity:</span>
-          <span className="ml-2 font-semibold">{data.humidity}%</span>
-        </div>
-        <div>
-          <span className="text-muted-foreground">Wind:</span>
-          <span className="ml-2 font-semibold">{data.windSpeed} km/h</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Search tool component
-function SearchResults({ data }: ToolComponentProps) {
-  return (
-    <div className="p-4 border rounded-lg">
-      <h3 className="font-semibold mb-3">Search Results</h3>
-      <div className="space-y-3">
-        {data.results?.map((result: any, i: number) => (
-          <div key={i} className="border-b pb-3 last:border-0">
-            <a
-              href={result.url}
-              className="text-primary hover:underline font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {result.title}
-            </a>
-            <p className="text-sm text-muted-foreground mt-1">{result.snippet}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Create registry
-const toolRegistry = createToolUIRegistry({
-  weather: WeatherResult,
-  search: SearchResults,
-})
-
-// Use in your app
-function App() {
-  const messages: CoreMessage[] = [
-    { role: 'user', content: 'What is the weather in San Francisco?' },
-  ]
-
-  const toolCall = {
-    name: 'weather',
-    args: { location: 'San Francisco' },
-    id: 'call-1',
-  }
-
-  const result = {
-    temperature: 18,
-    condition: 'Sunny',
-    humidity: 65,
-    windSpeed: 15,
-  }
-
-  return (
-    <ClarityToolResult
-      registry={toolRegistry}
-      toolCall={toolCall}
-      result={result}
-      messages={messages}
-      showHeader={false}
-      enableErrorBoundary={true}
-    />
-  )
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="integration-with-streaming">Integration with Streaming</h2>
-
-        <p>
-          Use ClarityToolResult with streaming messages to render tool results:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityToolResult, createToolUIRegistry, StreamingMessage } from '@clarity-chat/react/internal'
-import { useStreamingSSE } from '@clarity-chat/react/internal'
-
-function StreamingWithToolResults() {
-  const registry = createToolUIRegistry({
-    weather: WeatherResult,
-    search: SearchResults,
-  })
-
-  const { content, toolCalls, messages } = useStreamingSSE({ api: '/api/stream' })
-
-  return (
-    <div className="space-y-4">
-      <StreamingMessage content={content} toolCalls={toolCalls} />
-      
-      {toolCalls.map((toolCall) => {
-        // Get result from messages
-        const toolResult = messages.find(
-          m => m.role === 'tool' && m.toolCallId === toolCall.id
-        )?.content
-
-        if (!toolResult) return null
-
-        return (
-          <ClarityToolResult
-            key={toolCall.id}
-            registry={registry}
-            toolCall={{
-              name: toolCall.function.name,
-              args: JSON.parse(toolCall.function.arguments),
-              id: toolCall.id,
-            }}
-            result={toolResult}
-            messages={messages}
-          />
-        )
-      })}
-    </div>
-  )
-}`}
-          language="tsx"
-          showLineNumbers
-        />
 
         <h2 id="best-practices">Best Practices</h2>
 
@@ -767,11 +409,11 @@ function StreamingWithToolResults() {
 
         <ul>
           <li>
-            ✅ Error boundaries prevent crashes from affecting the rest of the
+            Error boundaries prevent crashes from affecting the rest of the
             UI
           </li>
-          <li>✅ Semantic HTML in tool components</li>
-          <li>✅ Screen reader compatibility</li>
+          <li>Semantic HTML in tool components</li>
+          <li>Screen reader compatibility</li>
         </ul>
 
         <h2 id="related">Related</h2>

@@ -41,16 +41,17 @@
  * ```
  */
 
-import { 
-  useCallback, 
-  useMemo, 
-  useRef, 
-  useEffect, 
-  useState, 
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
   useContext,
   DependencyList,
   useLayoutEffect
 } from 'react';
+import { deepEqual } from '@clarity-chat/utils';
 
 // ============================================================================
 // Core Performance Hooks
@@ -586,39 +587,7 @@ export function useMultipleContexts<T extends readonly [React.Context<unknown>, 
 // Utility Functions
 // ============================================================================
 
-/**
- * Deep equality comparison for objects and arrays
- */
-function deepEqual(a: unknown, b: unknown): boolean {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (typeof a !== typeof b) return false;
-
-  if (typeof a === 'object' && typeof b === 'object') {
-    const aIsArray = Array.isArray(a);
-    const bIsArray = Array.isArray(b);
-    if (aIsArray !== bIsArray) return false;
-
-    if (aIsArray && bIsArray) {
-      if (a.length !== b.length) return false;
-      return a.every((item, index) => deepEqual(item, b[index]));
-    }
-
-    const aObj = a as Record<string, unknown>;
-    const bObj = b as Record<string, unknown>;
-    const keysA = Object.keys(aObj);
-    const keysB = Object.keys(bObj);
-
-    if (keysA.length !== keysB.length) return false;
-
-    return keysA.every(key => {
-      if (!keysB.includes(key)) return false;
-      return deepEqual(aObj[key], bObj[key]);
-    });
-  }
-
-  return false;
-}
+// deepEqual is now imported from @clarity-chat/utils
 
 /**
  * Performance measurement utility

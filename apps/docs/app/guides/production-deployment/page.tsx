@@ -103,7 +103,7 @@ export default function ProductionDeploymentGuidePage() {
   getTracer,
   QuotaManager,
   WebhookManager,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const rateLimiter = new RateLimiter({
   storage: new RedisRateLimitStorage({ url: process.env.UPSTASH_URL! }),
@@ -161,7 +161,7 @@ export async function generateResponse({ tenantId, userId, messages }: GenerateR
         </p>
         <CodeBlock
           language="ts"
-          code={`import { getTracer, ObservabilityBackend, Trace } from '@clarity-chat/react/internal'
+          code={`import { getTracer, ObservabilityBackend, Trace } from '@clarity-chat/react'
 import { trace, context, SpanKind } from '@opentelemetry/api'
 
 class OpenTelemetryBackend implements ObservabilityBackend {

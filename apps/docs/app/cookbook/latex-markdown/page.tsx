@@ -35,7 +35,7 @@ export default function LatexMarkdownCookbook() {
         <h2>2. Import Component & Styles</h2>
         <CodeBlock
           language="tsx"
-          code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
+          code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github-dark.css'`}
         />

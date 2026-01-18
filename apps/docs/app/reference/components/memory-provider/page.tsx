@@ -58,7 +58,7 @@ export default function MemoryProviderPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { MemoryProvider, useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { MemoryProvider, useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function App() {
   return (
@@ -95,7 +95,7 @@ function ChatWithMemory() {
   MemoryProvider,
   createVectorStore,
   createEmbeddingProvider
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const vectorStore = createVectorStore({
   provider: 'qdrant',

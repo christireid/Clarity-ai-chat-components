@@ -23,20 +23,20 @@
     "email": "hello@codeandclarity.com",
     "url": "https://codeandclarity.com"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./styles.css": "./dist/styles.css",
     "./components/icons": {
       "types": "./dist/components/icons.d.ts",
       "import": "./dist/components/icons.js",
-      "require": "./dist/components/icons.js"
+      "require": "./dist/components/icons.cjs"
     }
   },
   "files": [

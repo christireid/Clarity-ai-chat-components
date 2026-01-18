@@ -3,6 +3,13 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { DemoErrorFallback } from './DemoErrorFallback'
 
+// Extend Window interface for Google Analytics gtag
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void
+  }
+}
+
 interface Props {
   children: ReactNode
   demoName?: string
@@ -45,9 +52,8 @@ export class DemoErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, errorInfo)
 
     // Track error in analytics (if available)
-    if (typeof window !== 'undefined' && (window as { gtag?: (...args: unknown[]) => void }).gtag) {
-      const gtag = (window as { gtag: (...args: unknown[]) => void }).gtag
-      gtag('event', 'demo_error', {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'demo_error', {
         event_category: 'demos',
         event_label: this.props.demoName || 'unknown',
         error_message: error.message,

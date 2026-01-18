@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Higher-Order Components for License Verification
  *

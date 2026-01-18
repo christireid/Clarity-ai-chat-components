@@ -48,26 +48,35 @@ export default function MultiUserChatExamplePage() {
         <h2>Complete Implementation</h2>
         <CodePlayground
           initialCode={`import { useState, useEffect, useRef } from 'react'
+import { Message } from '@clarity-chat/react'
+
+// Extended message type for multi-user chat features
+interface MultiUserMessage extends Message {
+  user: { id: string; name: string; avatar: string }
+  timestamp: Date
+  reactions: Record<string, string[]>
+  readBy: string[]
+}
 
 function MultiUserChat() {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<MultiUserMessage[]>([])
   const [currentUser, setCurrentUser] = useState({
     id: 'user1',
     name: 'You',
     avatar: '😊',
     status: 'online'
   })
-  
+
   const [users, setUsers] = useState([
     { id: 'user1', name: 'You', avatar: '😊', status: 'online' },
     { id: 'user2', name: 'Alice', avatar: '👩', status: 'online' },
     { id: 'user3', name: 'Bob', avatar: '👨', status: 'away' },
     { id: 'user4', name: 'Charlie', avatar: '🧑', status: 'offline' }
   ])
-  
+
   const [typingUsers, setTypingUsers] = useState([])
   const [onlineUsers, setOnlineUsers] = useState(['user2'])
-  
+
   // Simulate other users sending messages
   useEffect(() => {
     const interval = setInterval(() => {
@@ -82,32 +91,32 @@ function MultiUserChat() {
         'I agree with that approach',
         'When is the next meeting?'
       ]
-      
+
       const randomUser = users[Math.floor(Math.random() * (users.length - 1)) + 1]
-      
+
       // Simulate typing
       setTypingUsers(prev => [...prev, randomUser.id])
-      
+
       setTimeout(() => {
         setTypingUsers(prev => prev.filter(id => id !== randomUser.id))
-        
-        const newMessage = {
+
+        const newMessage: MultiUserMessage = {
           id: \`msg-\${Date.now()}\`,
-          text: randomMessages[Math.floor(Math.random() * randomMessages.length)],
-          sender: randomUser,
+          role: 'assistant',
+          content: randomMessages[Math.floor(Math.random() * randomMessages.length)],
+          user: randomUser,
           timestamp: new Date(),
-          isOwn: false,
           reactions: {},
           readBy: []
         }
-        
+
         setMessages(prev => [...prev, newMessage])
       }, 2000)
     }, 8000)
-    
+
     return () => clearInterval(interval)
   }, [users])
-  
+
   // Simulate user presence changes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -120,32 +129,32 @@ function MultiUserChat() {
         }
       })
     }, 15000)
-    
+
     return () => clearInterval(interval)
   }, [users])
 
-  const handleSend = (text) => {
-    const newMessage = {
+  const handleSend = (content: string) => {
+    const newMessage: MultiUserMessage = {
       id: \`msg-\${Date.now()}\`,
-      text,
-      sender: currentUser,
+      role: 'user',
+      content,
+      user: currentUser,
       timestamp: new Date(),
-      isOwn: true,
       reactions: {},
       readBy: onlineUsers // Simulate read receipts
     }
-    
+
     setMessages(prev => [...prev, newMessage])
   }
-  
-  const handleReaction = (messageId, emoji) => {
+
+  const handleReaction = (messageId: string, emoji: string) => {
     setMessages(prev => prev.map(msg => {
       if (msg.id === messageId) {
         const reactions = { ...msg.reactions }
         if (!reactions[emoji]) {
           reactions[emoji] = []
         }
-        
+
         if (reactions[emoji].includes(currentUser.id)) {
           reactions[emoji] = reactions[emoji].filter(id => id !== currentUser.id)
           if (reactions[emoji].length === 0) {
@@ -154,12 +163,14 @@ function MultiUserChat() {
         } else {
           reactions[emoji].push(currentUser.id)
         }
-        
+
         return { ...msg, reactions }
       }
       return msg
     }))
   }
+
+  const isOwnMessage = (message: MultiUserMessage) => message.user.id === currentUser.id
 
   return (
     <div className="flex h-[600px] border rounded-lg overflow-hidden">
@@ -217,19 +228,20 @@ function MultiUserChat() {
             </div>
           ) : (
             messages.map((message, index) => {
-              const showAvatar = index === 0 || 
-                messages[index - 1].sender.id !== message.sender.id
-              
+              const showAvatar = index === 0 ||
+                messages[index - 1].user.id !== message.user.id
+              const isOwn = isOwnMessage(message)
+
               return (
                 <div
                   key={message.id}
-                  className={\`flex gap-3 \${message.isOwn ? 'flex-row-reverse' : ''}\`}
+                  className={\`flex gap-3 \${isOwn ? 'flex-row-reverse' : ''}\`}
                 >
                   {/* Avatar */}
                   <div className="flex-shrink-0">
                     {showAvatar ? (
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xl">
-                        {message.sender.avatar}
+                        {message.user.avatar}
                       </div>
                     ) : (
                       <div className="w-10" />
@@ -237,27 +249,27 @@ function MultiUserChat() {
                   </div>
 
                   {/* Message content */}
-                  <div className={\`flex-1 max-w-[70%] \${message.isOwn ? 'items-end' : 'items-start'}\`}>
+                  <div className={\`flex-1 max-w-[70%] \${isOwn ? 'items-end' : 'items-start'}\`}>
                     {showAvatar && (
-                      <div className={\`flex items-center gap-2 mb-1 \${message.isOwn ? 'flex-row-reverse' : ''}\`}>
+                      <div className={\`flex items-center gap-2 mb-1 \${isOwn ? 'flex-row-reverse' : ''}\`}>
                         <span className="font-semibold text-sm">
-                          {message.sender.name}
+                          {message.user.name}
                         </span>
                         <span className="text-xs text-gray-500">
                           {message.timestamp.toLocaleTimeString()}
                         </span>
                       </div>
                     )}
-                    
+
                     <div
                       className={\`p-3 rounded-lg \${
-                        message.isOwn
+                        isOwn
                           ? 'bg-blue-500 text-white rounded-br-none'
                           : 'bg-gray-100 dark:bg-gray-800 rounded-bl-none'
                       }\`}
                     >
                       <p className="text-sm whitespace-pre-wrap break-words">
-                        {message.text}
+                        {message.content}
                       </p>
                     </div>
 
@@ -290,7 +302,7 @@ function MultiUserChat() {
                     )}
 
                     {/* Read receipts */}
-                    {message.isOwn && message.readBy.length > 0 && (
+                    {isOwn && message.readBy.length > 0 && (
                       <div className="text-xs text-gray-500 mt-1">
                         Seen by {message.readBy.length} {message.readBy.length === 1 ? 'person' : 'people'}
                       </div>
@@ -457,12 +469,12 @@ const markAsRead = (messageId, userId) => {
         <pre>
           <code>{`const showAvatar = (index) => {
   if (index === 0) return true
-  return messages[index - 1].sender.id !== messages[index].sender.id
+  return messages[index - 1].user.id !== messages[index].user.id
 }
 
 // In render
 {showAvatar(index) ? (
-  <Avatar user={message.sender} />
+  <Avatar user={message.user} />
 ) : (
   <div className="avatar-spacer" />
 )}`}</code>
@@ -531,11 +543,12 @@ function useWebSocketChat(roomId) {
     }
   }, [roomId])
 
-  const sendMessage = (text) => {
+  const sendMessage = (content) => {
     const message = {
       type: 'message',
-      text,
-      sender: currentUser,
+      role: 'user',
+      content,
+      user: currentUser,
       timestamp: new Date()
     }
     ws.current.send(JSON.stringify(message))
@@ -616,11 +629,12 @@ function useFirebaseChat(roomId) {
     }
   }, [roomId])
 
-  const sendMessage = (text) => {
+  const sendMessage = (content) => {
     const messagesRef = ref(db, \`rooms/\${roomId}/messages\`)
     push(messagesRef, {
-      text,
-      sender: currentUser,
+      role: 'user',
+      content,
+      user: currentUser,
       timestamp: Date.now()
     })
   }
@@ -678,11 +692,12 @@ function useSocketIOChat(roomId) {
     }
   }, [roomId])
 
-  const sendMessage = (text) => {
+  const sendMessage = (content) => {
     socket.current.emit('send-message', {
       roomId,
-      text,
-      sender: currentUser,
+      role: 'user',
+      content,
+      user: currentUser,
       timestamp: new Date()
     })
   }
@@ -704,11 +719,12 @@ function useSocketIOChat(roomId) {
         <pre>
           <code>{`const [threads, setThreads] = useState({})
 
-const replyToMessage = (parentId, text) => {
+const replyToMessage = (parentId, content) => {
   const reply = {
     id: generateId(),
-    text,
-    sender: currentUser,
+    role: 'user',
+    content,
+    user: currentUser,
     timestamp: new Date(),
     parentId
   }
@@ -748,12 +764,13 @@ const replyToMessage = (parentId, text) => {
   return mentions
 }
 
-const sendMessage = (text) => {
-  const mentions = parseMentions(text)
-  
+const sendMessage = (content) => {
+  const mentions = parseMentions(content)
+
   const message = {
-    text,
-    sender: currentUser,
+    role: 'user',
+    content,
+    user: currentUser,
     mentions,
     timestamp: new Date()
   }
@@ -773,9 +790,9 @@ const sendMessage = (text) => {
           <code>{`const [searchQuery, setSearchQuery] = useState('')
 
 const searchMessages = (query) => {
-  return messages.filter(msg => 
-    msg.text.toLowerCase().includes(query.toLowerCase()) ||
-    msg.sender.name.toLowerCase().includes(query.toLowerCase())
+  return messages.filter(msg =>
+    msg.content.toLowerCase().includes(query.toLowerCase()) ||
+    msg.user.name.toLowerCase().includes(query.toLowerCase())
   )
 }
 
@@ -799,12 +816,12 @@ const startEditing = (messageId) => {
   setEditingMessageId(messageId)
 }
 
-const saveEdit = (messageId, newText) => {
+const saveEdit = (messageId, newContent) => {
   setMessages(prev => prev.map(msg => {
     if (msg.id === messageId) {
       return {
         ...msg,
-        text: newText,
+        content: newContent,
         edited: true,
         editedAt: new Date()
       }
@@ -823,8 +840,8 @@ const saveEdit = (messageId, newText) => {
 
 {editingMessageId === message.id && (
   <EditMessageInput
-    initialValue={message.text}
-    onSave={(text) => saveEdit(message.id, text)}
+    initialValue={message.content}
+    onSave={(content) => saveEdit(message.id, content)}
     onCancel={() => setEditingMessageId(null)}
   />
 )}`}</code>
@@ -963,11 +980,12 @@ const handleInputChange = (text) => {
           <code>{`const [isConnected, setIsConnected] = useState(true)
 const [messageQueue, setMessageQueue] = useState([])
 
-const sendMessage = (text) => {
+const sendMessage = (content) => {
   const message = {
     id: generateId(),
-    text,
-    sender: currentUser,
+    role: 'user',
+    content,
+    user: currentUser,
     timestamp: new Date(),
     pending: !isConnected
   }

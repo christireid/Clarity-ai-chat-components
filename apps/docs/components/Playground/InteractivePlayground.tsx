@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Play,
-  RotateCcw,
+  RefreshCw,
   Copy,
   Check,
   Code2,
@@ -221,7 +221,7 @@ export function InteractivePlayground({
                 <button
                   onClick={() => setViewMode('code')}
                   className={cn(
-                    'p-1.5 rounded transition-colors',
+                    'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded transition-colors',
                     viewMode === 'code'
                       ? 'bg-bg-primary text-text-primary shadow-sm'
                       : 'text-text-secondary hover:text-text-primary'
@@ -233,7 +233,7 @@ export function InteractivePlayground({
                 <button
                   onClick={() => setViewMode('split')}
                   className={cn(
-                    'p-1.5 rounded transition-colors',
+                    'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded transition-colors',
                     viewMode === 'split'
                       ? 'bg-bg-primary text-text-primary shadow-sm'
                       : 'text-text-secondary hover:text-text-primary'
@@ -245,7 +245,7 @@ export function InteractivePlayground({
                 <button
                   onClick={() => setViewMode('preview')}
                   className={cn(
-                    'p-1.5 rounded transition-colors',
+                    'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded transition-colors',
                     viewMode === 'preview'
                       ? 'bg-bg-primary text-text-primary shadow-sm'
                       : 'text-text-secondary hover:text-text-primary'
@@ -263,21 +263,21 @@ export function InteractivePlayground({
                 onClick={handleRun}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
               >
                 <Play className="w-3.5 h-3.5" />
-                Run
+                <span className="hidden sm:inline">Run</span>
               </motion.button>
               <button
                 onClick={handleReset}
-                className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
                 aria-label="Reset code"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCopy}
-                className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
                 aria-label="Copy code"
               >
                 {copied ? (
@@ -288,7 +288,7 @@ export function InteractivePlayground({
               </button>
               <button
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
               >
                 {isFullscreen ? (

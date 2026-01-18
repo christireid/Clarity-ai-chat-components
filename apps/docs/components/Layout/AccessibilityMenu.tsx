@@ -10,27 +10,83 @@ interface AccessibilityMenuProps {
   onClose: () => void
 }
 
+const STORAGE_KEY = 'clarity-accessibility-settings'
+
+interface AccessibilitySettings {
+  highContrast: boolean
+  reducedMotion: boolean
+  largerText: boolean
+  screenReaderMode: boolean
+}
+
+function loadSettings(): AccessibilitySettings {
+  if (typeof window === 'undefined') {
+    return { highContrast: false, reducedMotion: false, largerText: false, screenReaderMode: false }
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch {
+    // Ignore parsing errors
+  }
+  return { highContrast: false, reducedMotion: false, largerText: false, screenReaderMode: false }
+}
+
+function saveSettings(settings: AccessibilitySettings) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+  } catch {
+    // Ignore storage errors (quota exceeded, etc.)
+  }
+}
+
 export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
   const [highContrast, setHighContrast] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [largerText, setLargerText] = useState(false)
   const [screenReaderMode, setScreenReaderMode] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previousActiveElement = useRef<HTMLElement | null>(null)
 
+  // Load settings from localStorage on mount
   useEffect(() => {
-    // Check system preferences
+    const settings = loadSettings()
+    setHighContrast(settings.highContrast)
+    setLargerText(settings.largerText)
+    setScreenReaderMode(settings.screenReaderMode)
+    // For reduced motion, prefer system setting but allow override
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mediaQuery.matches)
+    setReducedMotion(settings.reducedMotion || mediaQuery.matches)
+    setIsInitialized(true)
+  }, [])
+
+  // Save settings whenever they change (after initialization)
+  useEffect(() => {
+    if (!isInitialized) return
+    saveSettings({ highContrast, reducedMotion, largerText, screenReaderMode })
+  }, [highContrast, reducedMotion, largerText, screenReaderMode, isInitialized])
+
+  useEffect(() => {
+    // Listen to system preference changes for reduced motion
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setReducedMotion(e.matches)
+      // Only auto-update if user hasn't explicitly set it differently
+      if (!isInitialized) return
+      const settings = loadSettings()
+      if (!settings.reducedMotion && e.matches) {
+        setReducedMotion(true)
+      }
     }
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
+  }, [isInitialized])
 
   useEffect(() => {
     if (highContrast) {
@@ -287,7 +343,7 @@ export function AccessibilityButton({ onClick }: { onClick: () => void }) {
       aria-label="Open accessibility menu"
       title="Accessibility options"
     >
-      <Eye className="w-4 h-4" />
+      <Eye className="w-5 h-5" />
     </button>
   )
 }

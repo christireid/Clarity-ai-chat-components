@@ -100,7 +100,7 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
     ref
   ) => {
     return (
-      <Tooltip content={tooltipContent} side="top" delay={300}>
+      <Tooltip content={tooltipContent} side="bottom" delay={300} sideOffset={8}>
         <motion.div
           variants={buttonVariants}
           initial="initial"

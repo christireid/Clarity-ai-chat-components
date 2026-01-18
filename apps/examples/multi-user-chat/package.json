@@ -11,12 +11,12 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
-    "@remix-run/node": "^2.15.1",
-    "@remix-run/react": "^2.15.1",
-    "@remix-run/serve": "^2.15.1",
+    "@remix-run/node": "^2.17.4",
+    "@remix-run/react": "^2.17.4",
+    "@remix-run/serve": "^2.17.4",
     "express": "^4.21.2",
     "isbot": "^5.1.17",
     "react": "^19.2.0",
@@ -25,7 +25,7 @@
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.4",
+    "@remix-run/dev": "^2.17.4",
     "@types/express": "^5.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

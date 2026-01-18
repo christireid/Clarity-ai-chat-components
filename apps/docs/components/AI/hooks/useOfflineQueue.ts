@@ -11,6 +11,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Message } from '@clarity-chat/types'
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
 
 const MESSAGE_QUEUE_KEY = 'clarity-docs-assistant-queue'
 
@@ -77,11 +78,11 @@ function loadQueueFromStorage(): QueuedMessage[] {
         return result.data
       }
       // Invalid data - log warning and return empty (data may be corrupted)
-      console.warn('Invalid queue data in localStorage, clearing:', result.error.message)
+      logger.warn('Invalid queue data in localStorage, clearing:', result.error.message)
       localStorage.removeItem(MESSAGE_QUEUE_KEY)
     }
   } catch (e) {
-    console.error('Failed to load message queue:', e)
+    logger.error('Failed to load message queue:', e)
   }
   return []
 }
@@ -140,7 +141,7 @@ export function useOfflineQueue(
         localStorage.removeItem(MESSAGE_QUEUE_KEY)
       }
     } catch (e) {
-      console.error('Failed to save message queue:', e)
+      logger.error('Failed to save message queue:', e)
     }
   }, [messageQueue, isHydrated])
 

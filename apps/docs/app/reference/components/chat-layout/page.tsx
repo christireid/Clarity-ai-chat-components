@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatLayout, ChatWindow } from '@clarity-chat/react/internal'
+import { ChatLayout, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -31,10 +31,33 @@ function BasicLayoutDemo() {
           <div className="p-4 border-r w-64 bg-muted/30">Sidebar Content</div>
         }
         footer={<div className="p-4 border-t bg-card">Footer</div>}
+        className=""
       >
         <ChatWindow
           messages={messages}
           onSendMessage={() => {}}
+          onStopGeneration={() => {}}
+          onMessageCopy={() => {}}
+          onMessageFeedback={() => {}}
+          onMessageRetry={() => {}}
+          onEditMessage={() => {}}
+          onRegenerateMessage={() => {}}
+          onDeleteMessage={() => {}}
+          aiStatus={undefined}
+          editingMessageId={null}
+          onSaveEdit={() => {}}
+          onCancelEdit={() => {}}
+          emptyState={undefined}
+          showHeader={false}
+          sessionTitle=""
+          sessionSubtitle=""
+          headerActions={undefined}
+          showMessageCount={false}
+          onExport={undefined}
+          onClear={undefined}
+          error={null}
+          onRetry={undefined}
+          onDismissError={undefined}
           className="h-full border-0 shadow-none rounded-none"
         />
       </ChatLayout>

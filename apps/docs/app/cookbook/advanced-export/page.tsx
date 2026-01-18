@@ -26,7 +26,7 @@ export default function AdvancedExportCookbook() {
         <h2>1. Configure Export Options</h2>
         <CodeBlock
           language="ts"
-          code={`import { exportToMarkdown, calculateAnalytics } from '@clarity-chat/react/utils/export-utils'
+          code={`import { exportToMarkdown, calculateAnalytics } from '@clarity-chat/react'
 
 const exportOptions = {
   format: 'markdown' as const,
@@ -43,7 +43,7 @@ const exportOptions = {
         <h2>2. Trigger from UI</h2>
         <CodeBlock
           language="tsx"
-          code={`import { ExportDialog } from '@clarity-chat/react/internal'
+          code={`import { ExportDialog } from '@clarity-chat/react'
 
 <ExportDialog
   open={isExportOpen}
@@ -61,7 +61,7 @@ const exportOptions = {
         <h2>3. Generate HTML + PDF</h2>
         <CodeBlock
           language="ts"
-          code={`import { exportToHTML } from '@clarity-chat/react/utils/export-utils'
+          code={`import { exportToHTML } from '@clarity-chat/react'
 import { renderToPDF } from './lib/pdf'
 
 const html = exportToHTML(messages, {
@@ -80,7 +80,7 @@ fs.writeFileSync('conversation.pdf', pdfBuffer)`}
         <h2>4. Batch Export</h2>
         <CodeBlock
           language="ts"
-          code={`import { BatchExportDialog } from '@clarity-chat/react/internal'
+          code={`import { BatchExportDialog } from '@clarity-chat/react'
 
 <BatchExportDialog
   open={isBatchOpen}

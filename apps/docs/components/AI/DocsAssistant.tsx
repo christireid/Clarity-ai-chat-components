@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * DocsAssistant - Documentation Assistant Component
+ * DocsAssistant - Premium Documentation Assistant Component
  *
  * A fully integrated documentation assistant that leverages the @clarity-chat/react
  * library components and hooks instead of custom implementations.
@@ -37,7 +37,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertCircle, Search, Terminal, History } from 'lucide-react'
+import { AlertCircle, Search, Terminal, History, Sparkles, X, Trash2 } from 'lucide-react'
 import {
   // Components
   ChatWindow,
@@ -56,11 +56,16 @@ import {
   useClipboard,
   useReducedMotion,
   // Types
-  type PromptSuggestion,
+  type PromptSuggestion as PromptSuggestionBase,
   // Accessibility hooks
   useFocusTrap,
   useFocusRestoration,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
+import { logger } from '@/lib/logger'
+
+// Re-export the type with proper typing for local use
+type PromptSuggestion = PromptSuggestionBase
+
 import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
@@ -68,7 +73,7 @@ import { HistorySidebar } from './HistorySidebar'
 import { ToolResultRenderer, ToolUseIndicator } from './ToolResultRenderer'
 import { DocsAssistantInput } from './DocsAssistantInput'
 import { cn } from '@/lib/utils'
-import { durations } from '@/lib/animations'
+import { durations, springs } from '@/lib/animations'
 
 // Local imports
 import type { DocsAssistantProps } from './types'
@@ -80,9 +85,6 @@ import {
   TOKEN_COST_PER_TOKEN,
   TOKEN_WARNING_THRESHOLD,
   TOKEN_CRITICAL_THRESHOLD,
-  BACKDROP_VARIANTS,
-  DIALOG_VARIANTS_REDUCED,
-  DIALOG_VARIANTS_NORMAL,
   DOCS_STARTER_PROMPTS,
 } from './constants'
 import {
@@ -91,6 +93,40 @@ import {
   openInPlayground,
 } from './utils'
 import { useBranching, useDocsChat } from './hooks'
+
+// ============================================================================
+// Animation Variants - Premium Spring Physics
+// ============================================================================
+
+const dialogVariantsNormal = {
+  initial: {
+    opacity: 0,
+    scale: 0.96,
+    y: 12,
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.98,
+    y: 8,
+  },
+}
+
+const dialogVariantsReduced = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+}
+
+const backdropVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+}
 
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
@@ -126,10 +162,12 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     isDemoMode,
     handleSendMessage,
     handleMessageRetry,
+    handleRegenerate,
     handleFeedback,
     handleExportWithFormat,
     handleClear,
     handleNetworkStatusChange,
+    handleStop,
   } = useDocsChat()
 
   // Library hooks
@@ -142,8 +180,35 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   })
 
   // Focus trap for modal accessibility
-  const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen)
+  const focusTrapRef = useFocusTrap(isOpen)
   const { saveFocus, restoreFocus } = useFocusRestoration()
+
+  // Hide ChatWindow's built-in input to prevent duplicate inputs
+  useEffect(() => {
+    if (isOpen) {
+      // Use a very specific selector that ONLY targets the ChatInput textarea
+      // This avoids accidentally hiding messages or other content
+      const style = document.createElement('style')
+      style.id = 'docs-assistant-hide-input'
+      style.textContent = `
+        /* Hide only the ChatInput textarea - very specific to avoid hiding messages */
+        .docs-assistant-chat-window textarea[aria-label="Type your message"] {
+          display: none !important;
+        }
+        /* Hide the parent container that has border-t and contains the hidden textarea */
+        .docs-assistant-chat-window div:has(> textarea[aria-label="Type your message"]) {
+          display: none !important;
+        }
+      `
+      document.head.appendChild(style)
+      return () => {
+        const existingStyle = document.getElementById('docs-assistant-hide-input')
+        if (existingStyle) {
+          document.head.removeChild(existingStyle)
+        }
+      }
+    }
+  }, [isOpen])
 
   // Branching hook
   const {
@@ -179,10 +244,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
         }
         setIsOpen(willOpen)
         if (willOpen) {
+          // Note: toast.info accepts (description, title?) - duration uses provider default
           toast.info(
             'Press Escape or Cmd+. to close',
-            'Documentation Assistant',
-            TOAST_DURATION_MS
+            'Documentation Assistant'
           )
         } else {
           restoreFocus()
@@ -227,11 +292,46 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   useEffect(() => {
     if (isOpen && dialogRef.current) {
       const timer = setTimeout(() => {
-        const textarea = dialogRef.current?.querySelector('textarea')
-        textarea?.focus()
+        // Try to focus the custom input first (DocsAssistantInput)
+        const customTextarea = dialogRef.current?.querySelector('[aria-label="Message input"]') as HTMLTextAreaElement
+        if (customTextarea) {
+          customTextarea.focus()
+        } else {
+          // Fallback to any textarea
+          const textarea = dialogRef.current?.querySelector('textarea') as HTMLTextAreaElement
+          textarea?.focus()
+        }
       }, FOCUS_DELAY_MS)
       return () => clearTimeout(timer)
     }
+  }, [isOpen])
+
+  // Enhanced keyboard navigation - improve focus management
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleTabNavigation = (e: KeyboardEvent) => {
+      // If Tab is pressed and we're at the last focusable element, wrap to first
+      const focusableElements = dialogRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      
+      if (!focusableElements || focusableElements.length === 0) return
+
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault()
+        lastElement.focus()
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleTabNavigation)
+    return () => document.removeEventListener('keydown', handleTabNavigation)
   }, [isOpen])
 
   // Switch branch wrapper
@@ -300,6 +400,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     return result
   }, [messages])
 
+  // Memoize completed messages count to avoid recalculation
+  const completedMessagesCount = useMemo(() => {
+    return messages.filter(
+      (m) => 
+        m.status !== 'streaming' && 
+        m.status !== 'sending' && 
+        (m.role === 'user' || m.role === 'assistant')
+    ).length
+  }, [messages])
+
   // Message copy handler
   const handleMessageCopy = useCallback(
     async (_messageId: string, content: string) => {
@@ -326,6 +436,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const handleSelectSuggestion = useCallback(
     (suggestion: PromptSuggestion) => {
       handleSendMessage(suggestion.text)
+      // Focus input after selecting suggestion for better UX
+      setTimeout(() => {
+        const textarea = dialogRef.current?.querySelector('[aria-label="Message input"]') as HTMLTextAreaElement
+        textarea?.focus()
+      }, 100)
     },
     [handleSendMessage]
   )
@@ -335,6 +450,92 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       handleSendMessage(text)
     },
     [handleSendMessage]
+  )
+
+  // Handle search results change
+  const handleSearchResultsChange = useCallback(
+    (filteredMessages: typeof messages) => {
+      // Could highlight or filter messages if needed
+      // For now, just keep track of search state
+    },
+    []
+  )
+
+  // Handle message selection from search
+  const handleMessageSelect = useCallback(
+    (message: typeof messages[0]) => {
+      // Scroll to the selected message
+      if (message?.id) {
+        // Try to find message element by data attribute first (most reliable)
+        let messageElement = document.querySelector(
+          `[data-message-id="${message.id}"]`
+        ) as HTMLElement | null
+        
+        // Fallback: find by role="article" and index
+        if (!messageElement) {
+          const allMessageElements = document.querySelectorAll('[role="article"]')
+          const messageIndex = messages.findIndex((m) => m.id === message.id)
+          
+          if (messageIndex >= 0 && allMessageElements[messageIndex]) {
+            messageElement = allMessageElements[messageIndex] as HTMLElement
+          }
+        }
+        
+        if (messageElement) {
+          // Wait a bit for any animations to complete
+          setTimeout(() => {
+            // Get the scroll container (ChatWindow's message list)
+            const scrollContainer = messageElement.closest('.overflow-y-auto, [data-scroll-container]') || 
+                                   document.querySelector('[role="log"]') ||
+                                   messageElement.parentElement
+            
+            // Calculate position relative to scroll container
+            const elementRect = messageElement.getBoundingClientRect()
+            const containerRect = scrollContainer?.getBoundingClientRect() || { top: 0, height: window.innerHeight }
+            
+            // Scroll into view with smooth behavior
+            messageElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'nearest',
+            })
+            
+            // Highlight the message briefly with a visible ring and pulse animation
+            messageElement.classList.add(
+              'ring-2', 
+              'ring-primary/50', 
+              'ring-offset-2',
+              'ring-offset-background',
+              'transition-all', 
+              'duration-300',
+              'rounded-lg',
+              'animate-pulse'
+            )
+            
+            // Remove pulse after 1 second, keep ring for 2 more seconds
+            setTimeout(() => {
+              messageElement?.classList.remove('animate-pulse')
+            }, 1000)
+            
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+              messageElement?.classList.remove(
+                'ring-2', 
+                'ring-primary/50',
+                'ring-offset-2',
+                'ring-offset-background'
+              )
+            }, 2000)
+          }, 100)
+        } else {
+          // If still not found, log for debugging
+          logger.warn('Message element not found for ID:', message.id)
+        }
+      }
+      // Close search panel after selection
+      setShowSearch(false)
+    },
+    [messages]
   )
 
   // Get tool results for the current conversation
@@ -350,10 +551,23 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     return results
   }, [toolResults])
 
-  // Animation variants
+  // Animation variants based on reduced motion preference
   const dialogVariants = useMemo(
+    () => (prefersReducedMotion ? dialogVariantsReduced : dialogVariantsNormal),
+    [prefersReducedMotion]
+  )
+
+  // Spring transition for smooth animations
+  const springTransition = useMemo(
     () =>
-      prefersReducedMotion ? DIALOG_VARIANTS_REDUCED : DIALOG_VARIANTS_NORMAL,
+      prefersReducedMotion
+        ? { duration: 0.1 }
+        : {
+            type: 'spring' as const,
+            stiffness: 380,
+            damping: 32,
+            mass: 0.8,
+          },
     [prefersReducedMotion]
   )
 
@@ -376,7 +590,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       <ChatButton onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
       {/* Chat Window */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
             ref={setDialogRefs}
@@ -384,19 +598,39 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{
-              duration: prefersReducedMotion ? 0.1 : 0.25,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
+            transition={springTransition}
             className={cn(
-              'fixed inset-2 sm:inset-4 md:inset-6',
-              'lg:right-6 lg:left-auto lg:top-6 lg:bottom-6 lg:w-[640px] xl:w-[720px]',
-              'z-[70]',
+              // Base positioning - full screen on mobile with safe areas
+              'fixed z-[70]',
+              'inset-0 sm:inset-2 md:inset-4 lg:inset-6',
+              // Mobile: full screen with safe areas
+              'sm:rounded-2xl',
+              // Desktop: right-aligned panel
+              'lg:right-6 lg:left-auto lg:top-6 lg:bottom-6',
+              'lg:w-[600px] xl:w-[680px] 2xl:w-[720px]',
+              // Mobile optimizations
+              'touch-pan-y',
+              'overscroll-contain',
+              // Layout
               'flex flex-col',
-              'rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden',
-              'bg-white dark:bg-gray-900',
-              'border border-gray-200/80 dark:border-gray-800',
+              // Premium glass-morphism background
+              'bg-white/[0.97] dark:bg-gray-900/[0.98]',
+              'backdrop-blur-2xl backdrop-saturate-150',
+              // Refined borders and shadows with enhanced depth
+              'rounded-2xl sm:rounded-[20px]',
+              'border border-gray-200/60 dark:border-gray-700/50',
+              'shadow-2xl shadow-gray-900/10 dark:shadow-black/30',
+              // Ring for extra depth with subtle glow
+              'ring-1 ring-black/[0.03] dark:ring-white/[0.03]',
+              // Enhanced shadow on focus/interaction
+              'focus-within:shadow-2xl focus-within:shadow-primary/5',
+              // Performance optimizations
+              'will-change-transform',
               'touch-manipulation',
+              // Safe area for mobile notches
+              'pb-safe',
+              // Smooth transitions
+              'transition-shadow duration-300',
               className
             )}
             role="dialog"
@@ -404,15 +638,298 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             aria-labelledby="docs-assistant-title"
             aria-describedby="docs-assistant-description"
           >
-            {/* Screen reader title */}
+            {/* Screen reader content */}
             <h2 id="docs-assistant-title" className="sr-only">
               Documentation Assistant
             </h2>
             <span id="docs-assistant-description" className="sr-only">
               Chat with the Clarity Chat documentation assistant.
             </span>
+            {/* ARIA live region for streaming content announcements */}
+            <div
+              aria-live="polite"
+              aria-atomic="false"
+              className="sr-only"
+              role="status"
+              aria-label="AI response status"
+            >
+              {isLoading && 'AI is typing a response...'}
+              {!isLoading && messages.length > 0 && messages[messages.length - 1]?.role === 'assistant' &&
+                `AI response complete: ${messages[messages.length - 1].content.substring(0, 100)}${messages[messages.length - 1].content.length > 100 ? '...' : ''}`}
+              {apiError && `Error: ${apiError}`}
+              {isDemoMode && 'Running in demo mode. Add API key for full functionality.'}
+            </div>
+            
+            {/* Additional ARIA region for important status changes */}
+            <div
+              aria-live="assertive"
+              aria-atomic="true"
+              className="sr-only"
+              role="alert"
+            >
+              {apiError && `Error occurred: ${apiError}`}
+            </div>
 
-            {/* History Sidebar */}
+            {/* Premium Header Bar */}
+            <header className={cn(
+              'relative flex items-center justify-between',
+              'px-3 sm:px-4 md:px-5 py-2.5 sm:py-3 md:py-4',
+              'border-b border-gray-100 dark:border-gray-800/80',
+              // Subtle gradient header background with enhanced depth
+              'bg-gradient-to-b from-gray-50/80 to-transparent dark:from-gray-800/40 dark:to-transparent',
+              // Subtle shadow for separation
+              'shadow-sm shadow-gray-900/5 dark:shadow-black/10',
+              // Mobile safe area
+              'pt-safe',
+            )}>
+              {/* Left Section: History Toggle + Title */}
+              <div className="flex items-center gap-3">
+                {/* History Button */}
+                <button
+                  onClick={() => setShowHistory((prev) => !prev)}
+                  className={cn(
+                    'flex items-center justify-center',
+                    'w-8 h-8 sm:w-9 sm:h-9 rounded-xl',
+                    'transition-all duration-200 ease-out',
+                    'hover:bg-gray-100 dark:hover:bg-gray-800',
+                    'hover:scale-105 active:scale-95',
+                    'touch-manipulation', // Better touch handling
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+                    showHistory && 'bg-gray-100 dark:bg-gray-800 shadow-sm'
+                  )}
+                  aria-label="Toggle chat history"
+                  aria-expanded={showHistory}
+                >
+                  <History className={cn(
+                    'w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200',
+                    'text-gray-600 dark:text-gray-400',
+                    showHistory && 'text-primary'
+                  )} />
+                </button>
+
+                {/* Title + AI Badge */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      'flex items-center justify-center',
+                      'w-7 h-7 rounded-lg',
+                      'bg-gradient-to-br from-primary/20 to-primary/10',
+                      'dark:from-primary/30 dark:to-primary/15'
+                    )}>
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          {currentBranch.name || 'AI Assistant'}
+                        </h3>
+                        {(() => {
+                          const messageCount = completedMessagesCount
+                          return messageCount > 0 && (
+                            <motion.span
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.2 }}
+                              className={cn(
+                                'px-2 py-0.5 rounded-full text-xs font-medium',
+                                'bg-primary/10 text-primary',
+                                'dark:bg-primary/20 dark:text-primary',
+                                'transition-all duration-200',
+                                'shadow-sm'
+                              )}
+                              aria-label={`${messageCount} ${messageCount === 1 ? 'message' : 'messages'} in conversation`}
+                            >
+                              {messageCount} {messageCount === 1 ? 'message' : 'messages'}
+                            </motion.span>
+                          )
+                        })()}
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-none mt-0.5">
+                        <span aria-label="AI model status">
+                          {isDemoMode ? (
+                            <span className="inline-flex items-center gap-1">
+                              <span>Demo Mode</span>
+                              <span className="text-[10px]" aria-label="Demo mode indicator">⚠️</span>
+                            </span>
+                          ) : (
+                            providerInfo?.model || 'Powered by AI'
+                          )}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Section: Actions */}
+              <div className="flex items-center gap-1.5">
+                {/* Voice Input */}
+                <VoiceInput
+                  onTranscript={handleVoiceTranscript}
+                  size="sm"
+                  variant="ghost"
+                  tooltipText="Speak your question"
+                  autoSubmit
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  icon={undefined}
+                  listeningIcon={undefined}
+                  onStart={() => {}}
+                  onStop={() => {}}
+                  onError={() => {}}
+                />
+
+                {/* Clear Conversation */}
+                {messages.length > 0 && (
+                  <button
+                    onClick={() => {
+                      if (confirm('Are you sure you want to clear the conversation? This cannot be undone.')) {
+                        handleClear()
+                      }
+                    }}
+                    className={cn(
+                      'flex items-center justify-center',
+                      'w-8 h-8 sm:w-9 sm:h-9 rounded-xl',
+                      'transition-all duration-200 ease-out',
+                      'text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400',
+                      'hover:bg-red-50 dark:hover:bg-red-900/20',
+                      'hover:scale-105 active:scale-95',
+                      'touch-manipulation', // Better touch handling
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2'
+                    )}
+                    title="Clear conversation"
+                    aria-label="Clear conversation"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200" />
+                  </button>
+                )}
+
+                {/* Search Toggle */}
+                {messages.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setShowSearch((prev) => !prev)
+                      // Focus search input when opened
+                      if (!showSearch) {
+                        setTimeout(() => {
+                          const searchInput = document.querySelector('[placeholder*="Search conversation"]') as HTMLInputElement
+                          searchInput?.focus()
+                        }, 100)
+                      }
+                    }}
+                    className={cn(
+                      'flex items-center justify-center',
+                      'w-8 h-8 sm:w-9 sm:h-9 rounded-xl',
+                      'transition-all duration-200 ease-out',
+                      'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+                      'hover:bg-gray-100 dark:hover:bg-gray-800',
+                      'hover:scale-105 active:scale-95',
+                      'touch-manipulation', // Better touch handling
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+                      showSearch && 'bg-primary/10 text-primary dark:bg-primary/20 shadow-sm'
+                    )}
+                    title="Search messages (Cmd+K)"
+                    aria-label="Toggle message search"
+                    aria-expanded={showSearch}
+                  >
+                    <Search className={cn(
+                      'w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 transition-transform duration-200',
+                      showSearch && 'scale-110'
+                    )} />
+                  </button>
+                )}
+
+                {/* Close Button */}
+                <button
+                  onClick={() => {
+                    setIsOpen(false)
+                    restoreFocus()
+                  }}
+                  className={cn(
+                    'flex items-center justify-center',
+                    'w-8 h-8 sm:w-9 sm:h-9 rounded-xl',
+                    'transition-all duration-200 ease-out',
+                    'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+                    'hover:bg-gray-100 dark:hover:bg-gray-800',
+                    'hover:scale-105 active:scale-95',
+                    'touch-manipulation', // Better touch handling
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2'
+                  )}
+                  aria-label="Close assistant"
+                >
+                  <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200" />
+                </button>
+              </div>
+            </header>
+
+            {/* Status Indicators Row */}
+            <AnimatePresence>
+              {(tokenTracker.tokenCount > 0 || !isOnline || messageQueue.length > 0) && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: durations.fast }}
+                  className={cn(
+                    'flex items-center gap-3 px-4 py-2',
+                    'border-b border-gray-100/80 dark:border-gray-800/60',
+                    'bg-gray-50/50 dark:bg-gray-800/30',
+                    'overflow-x-auto overflow-y-hidden',
+                    'min-w-0'
+                  )}
+                >
+                  {/* Token Counter */}
+                  {tokenTracker.tokenCount > 0 && (
+                    <TokenCounter
+                      currentTokens={tokenTracker.tokenCount}
+                      maxTokens={MODEL_MAX_TOKENS}
+                      costPerToken={TOKEN_COST_PER_TOKEN}
+                      showWarning={tokenTracker.isWarning || tokenTracker.isCritical}
+                      warningThreshold={TOKEN_WARNING_THRESHOLD}
+                      criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
+                      showCost
+                      showBar
+                      size="sm"
+                      className="flex-shrink-0 min-w-0"
+                      onWarning={() => {}}
+                      onCritical={() => {}}
+                      onPruneSuggested={() => {}}
+                    />
+                  )}
+
+                  {/* Network Status */}
+                  <NetworkStatus
+                    status={isOnline ? 'online' : 'offline'}
+                    show={!isOnline || messageQueue.length > 0}
+                    onStatusChange={handleNetworkStatusChange}
+                    showDetails={!isOnline}
+                  />
+
+                  {/* Offline Queue Indicator */}
+                  {messageQueue.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, x: -10 }}
+                      animate={{ opacity: 1, scale: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                      className={cn(
+                        'flex items-center gap-1.5 px-2.5 py-1',
+                        'bg-amber-100 dark:bg-amber-900/30',
+                        'text-amber-700 dark:text-amber-400',
+                        'rounded-lg text-xs font-medium',
+                        'shadow-sm border border-amber-200/50 dark:border-amber-800/50',
+                        'transition-all duration-200'
+                      )}
+                      title="Messages waiting to be sent"
+                    >
+                      <span className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+                      {messageQueue.length} queued
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* History Sidebar - Slides over content */}
             <HistorySidebar
               isOpen={showHistory}
               onClose={() => setShowHistory(false)}
@@ -422,67 +939,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               onCreateBranch={handleCreateBranch}
             />
 
-            {/* Network Status Indicator */}
-            <NetworkStatus
-              className="absolute top-2 right-12 z-10"
-              show={!isOnline || messageQueue.length > 0}
-              onStatusChange={handleNetworkStatusChange}
-              showDetails={!isOnline}
-            />
-
-            {/* Offline Queue Indicator */}
-            {messageQueue.length > 0 && (
-              <div
-                className="absolute top-2 right-4 z-10 flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-md text-xs font-medium"
-                title="Messages waiting to be sent"
-              >
-                <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                {messageQueue.length} queued
-              </div>
-            )}
-
-            {/* Voice Input Button */}
-            <div className="absolute top-2 right-24 z-10">
-              <VoiceInput
-                onTranscript={handleVoiceTranscript}
-                size="sm"
-                variant="ghost"
-                tooltipText="Speak your question"
-                autoSubmit
-              />
-            </div>
-
-            {/* Branch Selector Toggle */}
-            <div className="absolute top-2 left-4 z-10">
-              <button
-                onClick={() => setShowHistory((prev) => !prev)}
-                className={cn(
-                  'flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-md transition-colors',
-                  'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
-                )}
-                aria-label="Toggle chat history"
-              >
-                <History className="w-3.5 h-3.5" />
-                {currentBranch.name}
-              </button>
-            </div>
-
-            {/* Search Toggle Button */}
-            {messages.length > 0 && (
-              <button
-                onClick={() => setShowSearch((prev) => !prev)}
-                className={cn(
-                  'absolute top-2 right-36 z-10 p-2 rounded-lg transition-colors',
-                  'hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring/40',
-                  showSearch && 'bg-accent text-accent-foreground'
-                )}
-                title="Search messages (Cmd+K)"
-                aria-label="Toggle message search"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            )}
-
             {/* Message Search Panel */}
             <AnimatePresence>
               {showSearch && (
@@ -491,41 +947,36 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
-                  className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
+                  className={cn(
+                    'border-b border-gray-100 dark:border-gray-800/80',
+                    'bg-gray-50/80 dark:bg-gray-800/50',
+                    'overflow-hidden'
+                  )}
                 >
-                  <div className="p-3">
+                  <div className="p-3 sm:p-4">
                     <MessageSearch
                       messages={messages}
                       placeholder="Search conversation..."
                       className="w-full"
+                      onResultsChange={handleSearchResultsChange}
+                      onMessageSelect={handleMessageSelect}
+                      enableKeyboardShortcut={true}
+                      autoFocus={true}
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Token Counter */}
-            {tokenTracker.tokenCount > 0 && (
-              <div className="absolute top-2 left-4 z-10 max-w-[200px] mt-8 lg:mt-0 lg:left-32">
-                <TokenCounter
-                  currentTokens={tokenTracker.tokenCount}
-                  maxTokens={MODEL_MAX_TOKENS}
-                  costPerToken={TOKEN_COST_PER_TOKEN}
-                  showWarning={
-                    tokenTracker.isWarning || tokenTracker.isCritical
-                  }
-                  warningThreshold={TOKEN_WARNING_THRESHOLD}
-                  criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
-                  showCost
-                  showBar
-                  size="sm"
-                  className="bg-background/80 backdrop-blur-sm rounded-lg p-2 border border-border/40"
-                />
-              </div>
-            )}
-
-            {/* Wrapper to hide ChatWindow's internal input - we use our own with command support */}
-            <div className="flex-1 min-h-0 [&_.docs-assistant-chat-window>div:last-child]:hidden">
+            {/* Main Chat Area */}
+            <div 
+              className="flex-1 min-h-0 overflow-hidden"
+              role="region"
+              aria-label="Chat conversation"
+              aria-live="polite"
+              aria-atomic="false"
+              aria-busy={isLoading}
+            >
               <ChatWindow
                 messages={messages}
                 isLoading={isLoading}
@@ -534,21 +985,39 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 onMessageCopy={handleMessageCopy}
                 onMessageRetry={handleMessageRetry}
                 onMessageFeedback={handleFeedback}
-                showHeader
-                sessionTitle="Documentation Assistant"
-                sessionSubtitle={
-                  isDemoMode
-                    ? 'Demo Mode - Configure API key for full functionality'
-                    : providerInfo?.model
-                      ? `Powered by ${providerInfo.model}`
-                      : 'Powered by Clarity Chat'
-                }
-                error={apiError}
+                onStopGeneration={handleStop}
+                onEditMessage={() => {
+                  // Edit message functionality - can be implemented later
+                  toast.info('Edit message feature coming soon')
+                }}
+                onRegenerateMessage={handleRegenerate}
+                onDeleteMessage={(messageId: string) => {
+                  // Delete message functionality
+                  setMessages((prev) => prev.filter((m) => m.id !== messageId))
+                  toast.success('Message deleted')
+                }}
+                editingMessageId={null}
+                onSaveEdit={() => {}}
+                onCancelEdit={() => {}}
+                onRetry={() => {
+                  // Retry last failed request
+                  if (messages.length > 0) {
+                    const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')
+                    if (lastUserMessage) {
+                      handleSendMessage(lastUserMessage.content)
+                    }
+                  }
+                }}
+                starterPrompts={messages.length === 0 ? DOCS_STARTER_PROMPTS : undefined}
+                followUpSuggestions={undefined}
+                showStarterPrompts={messages.length === 0}
+                showFollowUpSuggestions={false}
+                showHeader={false}
+                sessionSubtitle={undefined}
+                error={apiError || undefined}
                 onDismissError={() => {/* apiError will be cleared on successful fetch */}}
-                showMessageCount
-                onExport={
-                  messages.length > 0 ? handleOpenExportDialog : undefined
-                }
+                showMessageCount={false}
+                onExport={messages.length > 0 ? handleOpenExportDialog : undefined}
                 onClear={messages.length > 0 ? handleClear : undefined}
                 headerActions={
                   <div className="flex items-center gap-2">
@@ -560,7 +1029,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
                     {/* Playground button - only when code is available */}
                     {messagesWithPlaygroundCode.size > 0 && (
-                      <button
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => {
                           const lastWithCode = [...messages]
                             .reverse()
@@ -573,22 +1046,32 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                             handleOpenInPlayground(lastWithCode.id)
                           }
                         }}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                        className={cn(
+                          'flex items-center gap-1.5 px-3 py-1.5',
+                          'text-xs font-medium',
+                          'text-primary bg-primary/10 hover:bg-primary/15',
+                          'dark:bg-primary/20 dark:hover:bg-primary/25',
+                          'rounded-lg transition-all duration-200',
+                          'shadow-sm hover:shadow-md',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+                        )}
                         title="Open code in playground"
                         aria-label="Open code in CodeSandbox playground"
                       >
-                        <Terminal className="w-3.5 h-3.5" />
-                        Try{' '}
-                        {messagesWithPlaygroundCode.get(
-                          [...messages]
-                            .reverse()
-                            .find(
-                              (m) =>
-                                m.role === 'assistant' &&
-                                messagesWithPlaygroundCode.has(m.id)
-                            )?.id || ''
-                        ) || 'Code'}
-                      </button>
+                        <Terminal className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-12" />
+                        <span>
+                          Try{' '}
+                          {messagesWithPlaygroundCode.get(
+                            [...messages]
+                              .reverse()
+                              .find(
+                                (m) =>
+                                  m.role === 'assistant' &&
+                                  messagesWithPlaygroundCode.has(m.id)
+                              )?.id || ''
+                          ) || 'Code'}
+                        </span>
+                      </motion.button>
                     )}
                   </div>
                 }
@@ -596,42 +1079,93 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   <EmptyChatState
                     suggestions={DOCS_STARTER_PROMPTS}
                     onSuggestionSelect={handleSelectSuggestion}
-                    showSuggestions
+                    showSuggestions={true}
+                    onStartChat={() => {
+                      // Focus the input when "Start Chat" is clicked
+                      setTimeout(() => {
+                        const textarea = dialogRef.current?.querySelector('textarea')
+                        textarea?.focus()
+                      }, 100)
+                    }}
+                    className={cn(
+                      // Enhanced empty state styling
+                      'px-4 sm:px-6',
+                      'py-8 sm:py-12',
+                    )}
                   />
                 }
                 className="h-full flex flex-col docs-assistant-chat-window"
-              >
-                {/* Tool Use Progress Indicator */}
-                <AnimatePresence>
-                  {currentToolUse && (
-                    <div className="px-4 py-2">
-                      <ToolUseIndicator toolUse={currentToolUse} />
-                    </div>
-                  )}
-                </AnimatePresence>
+              />
 
-                {/* Tool Results - rendered inline after messages */}
-                {messageToolResults.length > 0 && (
-                  <div className="px-4 space-y-2">
-                    {messageToolResults.map(({ result }) => (
+              {/* Tool Use Progress Indicator - rendered outside ChatWindow */}
+              <AnimatePresence>
+                {currentToolUse && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                    transition={{ 
+                      type: 'spring',
+                      stiffness: 400,
+                      damping: 25
+                    }}
+                    className="px-4 py-2"
+                  >
+                    <ToolUseIndicator toolUse={currentToolUse} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Tool Results */}
+              {messageToolResults.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="px-4 space-y-3"
+                >
+                  {messageToolResults.map(({ result }, index) => (
+                    <motion.div
+                      key={result.tool_use_id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: index * 0.1,
+                        duration: 0.3,
+                        ease: 'easeOut'
+                      }}
+                    >
                       <ToolResultRenderer
-                        key={result.tool_use_id}
                         result={result}
                       />
-                    ))}
-                  </div>
-                )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
 
-                {/* Follow-up Suggestions at bottom of chat */}
-                {suggestedFollowUps.length > 0 && !isLoading && (
-                  <div className="px-4 pb-4">
-                    <FollowUpSuggestions
-                      suggestions={suggestedFollowUps}
-                      onSelect={handleSelectFollowUp}
-                    />
-                  </div>
-                )}
-              </ChatWindow>
+              {/* Follow-up Suggestions - transform string[] to FollowUpSuggestion[] */}
+              {suggestedFollowUps.length > 0 && !isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: 0.2,
+                    duration: 0.3,
+                    ease: 'easeOut'
+                  }}
+                  className="px-4 pb-4"
+                >
+                  <FollowUpSuggestions
+                    suggestions={suggestedFollowUps.map((text, index) => ({
+                      id: `followup-${index}`,
+                      title: text,
+                    }))}
+                    onSelect={(suggestion: { id: string; title: string }) => handleSelectFollowUp(suggestion.title)}
+                    emptyState={null}
+                    className=""
+                  />
+                </motion.div>
+              )}
             </div>
 
             {/* Custom Input with Slash/@ Commands */}
@@ -650,19 +1184,28 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: durations.normal, ease: 'easeOut' }}
-                  className="border-t border-border/40 bg-muted/30 overflow-hidden"
+                  className={cn(
+                    'border-t border-gray-100 dark:border-gray-800/80',
+                    'bg-gradient-to-b from-gray-50/80 to-gray-50/40',
+                    'dark:from-gray-800/50 dark:to-gray-800/20',
+                    'overflow-hidden'
+                  )}
                 >
-                  <div className="p-3">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                  <div className="p-4">
+                    <h3 className={cn(
+                      'text-xs font-semibold uppercase tracking-wider mb-3',
+                      'text-gray-500 dark:text-gray-400'
+                    )}>
                       Sources ({currentCitations.length})
                     </h3>
-                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    <div className="space-y-2 max-h-[200px] overflow-y-auto scrollbar-thin">
                       {currentCitations.map((citation) => (
                         <CitationCard
                           key={citation.id}
                           citation={citation}
                           previewLength={80}
                           showConfidence
+                          onClick={() => {}}
                           onSourceClick={(url: string) =>
                             window.open(url, '_blank', 'noopener,noreferrer')
                           }
@@ -678,21 +1221,26 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
         )}
       </AnimatePresence>
 
-      {/* Backdrop */}
+      {/* Backdrop with Premium Blur */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            variants={BACKDROP_VARIANTS}
+            variants={backdropVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ duration: prefersReducedMotion ? 0.1 : 0.25 }}
-            className="fixed inset-0 bg-black/40 sm:bg-black/30 backdrop-blur-sm sm:backdrop-blur-md z-[60]"
+            transition={{ duration: prefersReducedMotion ? 0.1 : 0.2 }}
+            className={cn(
+              'fixed inset-0 z-[60]',
+              'bg-gray-900/20 dark:bg-black/40',
+              'backdrop-blur-sm sm:backdrop-blur-md',
+              'supports-[backdrop-filter]:bg-gray-900/10',
+              'dark:supports-[backdrop-filter]:bg-black/30'
+            )}
             onClick={() => {
               setIsOpen(false)
               restoreFocus()
             }}
-            style={{ backdropFilter: 'blur(8px)' }}
             aria-hidden="true"
           />
         )}
@@ -711,6 +1259,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
         onExport={handleExportWithFormat}
         resourceType="chat"
         resourceName="Documentation Assistant Conversation"
+        className=""
       />
     </>
   )
@@ -787,40 +1336,69 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         const { title, message, suggestion } = getUserFriendlyErrorMessage(error)
 
         return (
-          <div className="fixed bottom-4 right-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg shadow-lg max-w-sm z-[100]">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-              <div className="space-y-2">
-                <h3 className="font-semibold text-foreground">
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className={cn(
+              'fixed bottom-4 right-4 z-[100]',
+              'max-w-sm p-5',
+              'bg-white dark:bg-gray-900',
+              'rounded-2xl',
+              'border border-red-200/60 dark:border-red-800/40',
+              'shadow-xl shadow-red-900/10 dark:shadow-red-900/20',
+              'ring-1 ring-red-500/10'
+            )}
+          >
+            <div className="flex items-start gap-4">
+              <div className={cn(
+                'flex items-center justify-center',
+                'w-10 h-10 rounded-xl flex-shrink-0',
+                'bg-red-100 dark:bg-red-900/30'
+              )}>
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                   {title}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {message}
                 </p>
-                <p className="text-xs text-muted-foreground/80">
+                <p className="text-xs text-gray-500 dark:text-gray-500">
                   {suggestion}
                 </p>
-                <div className="flex gap-2 pt-1">
+                <div className="flex items-center gap-3 pt-2">
                   <button
                     onClick={resetError}
-                    className="text-sm font-medium text-primary hover:underline"
+                    className={cn(
+                      'text-sm font-medium',
+                      'text-primary hover:text-primary/80',
+                      'transition-colors',
+                      'focus-visible:outline-none focus-visible:underline'
+                    )}
                   >
                     Try Again
                   </button>
                   <a
                     href="/guides/configuration"
-                    className="text-sm text-muted-foreground hover:underline"
+                    className={cn(
+                      'text-sm',
+                      'text-gray-500 hover:text-gray-700',
+                      'dark:text-gray-400 dark:hover:text-gray-300',
+                      'transition-colors'
+                    )}
                   >
                     Configuration Guide
                   </a>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )
       }}
-      onError={(error: Error, errorInfo: { componentStack: string }) => {
-        console.error('[DocsAssistant] Error:', error, errorInfo)
+      onError={(error: Error, errorInfo: React.ErrorInfo) => {
+        logger.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {
         toast.info('Documentation Assistant has been reset')

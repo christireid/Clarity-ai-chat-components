@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, useTokenTracker } from '@clarity-chat/react/internal'
+import { ToastProvider, useTokenTracker } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -326,7 +326,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 import type { UseTokenTrackerOptions, UseTokenTrackerReturn, MessageWithTokens } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -338,7 +338,7 @@ import type { UseTokenTrackerOptions, UseTokenTrackerReturn, MessageWithTokens }
         <ComponentPreview
           title="Basic Token Tracker"
           description="Track tokens and costs with automatic model pricing"
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function BasicTracker() {
@@ -381,7 +381,7 @@ function BasicTracker() {
         <p>Check if a message would exceed the token limit:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 
 function CheckBeforeSend() {
   const { canSend, estimateTokens, addMessage } = useTokenTracker({
@@ -408,7 +408,7 @@ function CheckBeforeSend() {
         <p>Track costs for different models:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 
 function CostTracking() {
   const gpt4 = useTokenTracker({ modelName: 'gpt-4' })
@@ -434,7 +434,7 @@ function CostTracking() {
         <p>Override automatic pricing with custom costs:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 
 function CustomPricing() {
   const {
@@ -463,7 +463,7 @@ function CustomPricing() {
         <p>Get alerts when approaching token limits:</p>
 
         <EnhancedCodeBlock
-          code={`import { useTokenTracker } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker } from '@clarity-chat/react'
 
 function ThresholdAlerts() {
   const {
@@ -554,8 +554,8 @@ function ThresholdAlerts() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { useTokenTracker } from '@clarity-chat/react/internal'
-import type { MessageWithTokens } from '@clarity-chat/react/internal'
+import { useTokenTracker } from '@clarity-chat/react'
+import type { MessageWithTokens } from '@clarity-chat/react'
 
 function CompleteTrackerExample() {
   const [messages, setMessages] = useState<MessageWithTokens[]>([])

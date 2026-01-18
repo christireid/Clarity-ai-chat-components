@@ -118,6 +118,8 @@
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "turbo": "^2.6.3",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.6",
     "vitest": "^4.0.16"
@@ -133,7 +135,8 @@
       "dompurify": ">=3.2.4",
       "estree-util-value-to-estree": ">=3.3.3",
       "jsondiffpatch": ">=0.7.2",
-      "valibot": ">=1.2.0"
+      "valibot": ">=1.2.0",
+      "prismjs": ">=1.30.0"
     }
   },
   "engines": {

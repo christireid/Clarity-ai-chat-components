@@ -106,7 +106,7 @@ import { Message } from 'ai'`}</code>
           <strong>After (Clarity Chat):</strong>
         </p>
         <pre>
-          <code>{`import { useChat, ChatWindow } from '@clarity-chat/react/internal'
+          <code>{`import { useChat, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/react/types'`}</code>
         </pre>
 
@@ -226,7 +226,7 @@ export async function POST(req: Request) {
 
         <h3>Add Memory & RAG</h3>
         <pre>
-          <code>{`import { ChatWindow, MemoryProvider } from '@clarity-chat/react/internal'
+          <code>{`import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
 import { useChat } from '@clarity-chat/react/hooks'
 
 export default function ChatWithMemory() {
@@ -273,7 +273,7 @@ export default function ChatWithMemory() {
 
         <h3>Add Custom Theming</h3>
         <pre>
-          <code>{`import { ThemeProvider } from '@clarity-chat/react/internal'
+          <code>{`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider
   theme={{
@@ -501,7 +501,7 @@ const { messages } = useAgent({
         <pre>
           <code>{`// utils/chat-adapter.ts
 import { useChat as useVercelChat } from 'ai/react'
-import { useChat as useClarityChat } from '@clarity-chat/react/internal'
+import { useChat as useClarityChat } from '@clarity-chat/react'
 
 export function useChat(config: ChatConfig) {
   // Use feature flag to switch

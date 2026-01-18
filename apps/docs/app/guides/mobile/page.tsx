@@ -49,7 +49,7 @@ export default function MobileGuidePage() {
   ChatWindow,
   useChat,
   useMobileKeyboard,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function MobileChat() {
   const chat = useChat({ api: '/api/chat/mobile' })
@@ -100,7 +100,7 @@ export function MobileChat() {
   usePullToRefresh,
   useLongPress,
   hapticFeedback,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function MobileThread({ children }: { children: React.ReactNode }) {
   const swipeHandlers = useSwipe((event) => {
@@ -158,7 +158,7 @@ export function MobileThread({ children }: { children: React.ReactNode }) {
   useSafeAreaInsets,
   getTouchTargetClass,
   TOUCH_TARGET,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function MobileActions() {
   const insets = useSafeAreaInsets()
