@@ -3,7 +3,7 @@ import {
   useToast,
   useLocalStorage,
   useThrottledCallback,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 // Use local stub to avoid tiktoken WASM issues with Turbopack
 import { useTokenTrackerStub as useTokenTracker } from './useTokenTrackerStub'
 import type { Message, AIStatus } from '@clarity-chat/types'

@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
+import path from 'path'
 
 /**
  * Next.js 16 Configuration for Documentation Site
@@ -50,12 +51,8 @@ const nextConfig: NextConfig = {
         as: '*.js',
       },
     },
-    resolveAlias: {
-      '@clarity-chat/primitives': require('path').resolve(
-        __dirname,
-        '../../packages/primitives/dist/index.mjs'
-      ),
-    },
+    // Note: resolveAlias with path.resolve() causes Turbopack to treat absolute
+    // paths as relative (prepending './'). Relying on pnpm workspace linking instead.
   },
 
   // Experimental features
@@ -231,14 +228,25 @@ const nextConfig: NextConfig = {
       '.jsx': ['.jsx', '.tsx'],
     }
 
-    // Resolve workspace packages
+    // Resolve workspace packages - fallback for when pnpm workspace linking fails
+    // This ensures webpack (non-Turbopack builds) can find packages even if
+    // workspace symlinks aren't properly set up (e.g., in sandboxed environments)
+    const primitivesPath = path.resolve(__dirname, '../../packages/primitives')
     config.resolve.alias = {
-      ...config.resolve.alias,
-      '@clarity-chat/primitives': require('path').resolve(
-        __dirname,
-        '../../packages/primitives/dist/index.mjs'
-      ),
+      ...(config.resolve.alias || {}),
+      // Point to package root so package.json exports can resolve correctly
+      '@clarity-chat/primitives': primitivesPath,
     }
+    
+    // Also add to modules for better resolution
+    if (!config.resolve.modules) {
+      config.resolve.modules = ['node_modules']
+    }
+    config.resolve.modules.push(primitivesPath)
+    
+    // Ensure package.json exports are respected
+    config.resolve.conditionNames = ['import', 'require', 'default']
+    config.resolve.mainFields = ['exports', 'module', 'main']
 
     // Security: Disable source maps in production
     if (!dev && !isServer) {

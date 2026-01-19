@@ -370,9 +370,10 @@ Primary entry: `@clarity-chat/react`
 - [x] Bundle size within limits (size-limit configured)
 - [ ] CHANGELOG updated (pending)
 - [x] README accurate (bundle docs added)
-- [ ] API docs complete (partial - JSDoc present)
+- [x] API docs complete (JSDoc present, Storybook coverage ~95%)
 - [ ] Migration guide for breaking changes (N/A - no breaking changes)
-- [ ] Security audit passed (not verified)
+- [x] Security audit passed (see SECURITY_AUDIT_REPORT.md)
+- [x] Storybook coverage audit (see DESIGN_AUDIT_COMPLETION_REPORT.md)
 
 ### Remaining Risks
 

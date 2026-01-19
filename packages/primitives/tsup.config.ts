@@ -19,6 +19,10 @@ export default defineConfig({
   },
   async onSuccess() {
     // Post-build: Add 'use client' directive to compiled files
+    // This is required for Next.js App Router to recognize client components
+    // that use React hooks (useState, useEffect, useRef, etc.)
+    // Without this directive, Next.js will throw errors when importing these
+    // components in Server Components or during SSR
     const distDir = join(process.cwd(), 'dist')
     const files = ['index.mjs', 'index.js']
     

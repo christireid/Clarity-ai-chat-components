@@ -32,7 +32,7 @@ import {
   Search,
   Terminal,
 } from 'lucide-react'
-import { useReducedMotion } from '@clarity-chat/react/internal'
+import { useReducedMotion } from '@clarity-chat/react'
 import { cn } from '@/lib/utils'
 import { fadeIn, fadeInUp } from '@/lib/animations'
 

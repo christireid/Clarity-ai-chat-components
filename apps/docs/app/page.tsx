@@ -4,22 +4,17 @@ import { QuickStartTutorial } from '@/components/Layout/QuickStartTutorial'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
 import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
-import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
-import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
-import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
-import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
-import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
-import { Testimonials } from '@/components/Layout/Testimonials'
+// PerformanceComparison, FeatureMatrix, BundleSizeAnalyzer moved to dedicated pages
+// ComponentShowcase removed - redundant hero mockup added unnecessary length
+// Testimonials removed - fabricated quotes should not be displayed
 // AnimatedBackground is a 'use client' component with built-in lazy loading
 import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 import {
   Zap,
   Palette,
   Accessibility,
-  Code,
   Heart,
   Layers,
-  Smartphone,
 } from 'lucide-react'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 
@@ -141,50 +136,12 @@ function CustomChat() {
               description:
                 'WCAG AAA compliant. Full keyboard navigation, screen reader support, and ARIA attributes.',
             },
-            {
-              icon: <Code className="w-8 h-8" />,
-              title: 'TypeScript First',
-              description:
-                'Comprehensive type definitions. IntelliSense for every prop. Catch errors at compile time.',
-            },
-            {
-              icon: <Smartphone className="w-8 h-8" />,
-              title: 'Mobile Optimized',
-              description:
-                'Touch gestures. Virtual keyboard handling. Responsive design. Perfect on any device.',
-            },
           ]}
         />
 
-        {/* Performance Comparison */}
-        <div className="mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Performance You Don't Have to Think About
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Virtual scrolling. React.memo. Tree-shaking. Already done.
-            </p>
-          </div>
-          <PerformanceComparison />
-        </div>
-
-        {/* Feature Comparison */}
-        <div className="mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              More Features, Less Work
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              See how Clarity stacks up against the alternatives.
-            </p>
-          </div>
-          <FeatureMatrix />
-        </div>
       </section>
 
-      {/* Testimonials - Developer social proof */}
-      <Testimonials />
+      {/* Testimonials section removed - fabricated quotes should not be displayed */}
 
       {/* CTA Section */}
       <section className="container-docs py-24">
@@ -221,141 +178,6 @@ function CustomChat() {
         </div>
       </section>
 
-      {/* Component Showcase */}
-      <ComponentShowcase />
-
-      {/* Bundle Size Analyzer */}
-      <BundleSizeAnalyzer />
-
-      {/* Links Section */}
-      <section className="container-docs py-24 border-t border-border">
-        <ScrollReveal
-          stagger
-          staggerDelay={0.15}
-          className="grid md:grid-cols-3 gap-8"
-        >
-          <ScrollRevealItem>
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Learn</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="/learn/quick-start"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Quick Start</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/learn/tutorial"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Tutorial</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/learn/concepts"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Core Concepts</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </ScrollRevealItem>
-          <ScrollRevealItem>
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Reference</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="/reference/components"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Components</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/reference/hooks"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Hooks</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/reference/api"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>API Reference</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </ScrollRevealItem>
-          <ScrollRevealItem>
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Community</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="https://github.com/christireid/Clarity-ai-chat-components"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>GitHub</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/cookbook"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Cookbook</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/examples"
-                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                  >
-                    <span>Examples</span>
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </ScrollRevealItem>
-        </ScrollReveal>
-      </section>
     </div>
   )
 }

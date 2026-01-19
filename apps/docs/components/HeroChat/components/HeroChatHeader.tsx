@@ -49,6 +49,7 @@ export function HeroChatHeader({
           className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: durations.slower, repeat: Infinity }}
+          viewport={{ once: true }}
           aria-hidden="true"
         >
           <Sparkles className="w-5 h-5 text-white" />
@@ -58,7 +59,7 @@ export function HeroChatHeader({
             Clarity Chat
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Powered by Gemini
+            Powered by Claude
           </p>
         </div>
       </div>

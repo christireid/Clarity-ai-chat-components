@@ -5,11 +5,11 @@
  */
 
 import { Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
-import type { PromptSuggestion } from '@clarity-chat/react/internal'
+import type { PromptSuggestion } from '@clarity-chat/react'
 import {
   createSlideVariant,
   createFadeVariant,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // ============================================================================
 // Storage Keys

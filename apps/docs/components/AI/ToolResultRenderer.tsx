@@ -26,7 +26,7 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
-import { useClipboard, useReducedMotion } from '@clarity-chat/react/internal'
+import { useClipboard, useReducedMotion } from '@clarity-chat/react'
 import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { createFadeVariant, createSlideVariant } from '@/lib/animations'

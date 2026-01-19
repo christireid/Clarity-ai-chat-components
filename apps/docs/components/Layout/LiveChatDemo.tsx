@@ -257,6 +257,7 @@ export function LiveChatDemo() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         className="flex items-center justify-center gap-2 mb-4"
       >
         <Sparkles className="w-4 h-4 text-brand-500 animate-pulse" />
@@ -291,7 +292,7 @@ export function LiveChatDemo() {
                   </span>
                 </div>
                 <div className="text-xs opacity-90 font-medium">
-                  Powered by Gemini
+                  Powered by Claude
                 </div>
               </div>
             </div>
@@ -300,6 +301,7 @@ export function LiveChatDemo() {
               onClick={handleReset}
               whileHover={{ rotate: 180, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              viewport={{ once: true }}
               className="p-2.5 min-w-[44px] min-h-[44px] rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none flex items-center justify-center"
               title="Reset Demo"
               aria-label="Reset chat demo"
@@ -324,6 +326,7 @@ export function LiveChatDemo() {
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 layout
+                viewport={{ once: true }}
                 transition={{
                   duration: durations.moderate,
                   type: 'spring',
@@ -470,6 +473,7 @@ export function LiveChatDemo() {
                 initial={{ opacity: 0, y: 10, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                viewport={{ once: true }}
                 className="flex items-center gap-3"
               >
                 <div className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center ring-1 ring-inset ring-brand-500/20">
@@ -496,6 +500,7 @@ export function LiveChatDemo() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
+                viewport={{ once: true }}
                 className="relative"
               >
                 <div className="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide mask-linear-fade">
@@ -556,6 +561,7 @@ export function LiveChatDemo() {
                   initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.5, opacity: 0 }}
+                  viewport={{ once: true }}
                   type="submit"
                   disabled={isTyping || isStreaming}
                   whileHover={{ scale: 1.05 }}
@@ -571,6 +577,7 @@ export function LiveChatDemo() {
                   initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 0.5 }}
                   exit={{ scale: 0.5, opacity: 0 }}
+                  viewport={{ once: true }}
                   className="absolute right-2 top-1.5 bottom-1.5 aspect-square flex items-center justify-center pointer-events-none"
                 >
                   <Sparkles className="w-4 h-4 text-text-tertiary" />
@@ -585,7 +592,7 @@ export function LiveChatDemo() {
             />
             {isError
               ? 'Connection interrupted'
-              : 'Powered by Gemini - Reads entire documentation in real-time'}
+              : 'Powered by Claude - Reads entire documentation in real-time'}
           </div>
         </div>
       </motion.div>

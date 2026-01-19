@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev",
+    "dev": "NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 next dev -H localhost",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext ts,tsx --ignore-pattern scripts --max-warnings 800",
@@ -64,6 +64,7 @@
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "simplex-noise": "4.0.3",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^2.2.0",
     "three": "0.172.0",
     "tsparticles": "^3.9.1",

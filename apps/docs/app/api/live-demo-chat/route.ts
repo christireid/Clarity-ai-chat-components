@@ -15,7 +15,7 @@ import {
   formatSearchResultsForRAG,
 } from '@/lib/ai/keywordSearch'
 import {
-  streamFromGemini,
+  streamFromClaude,
   streamFromDemo,
   type StreamChunk,
 } from '@/lib/ai/streaming'
@@ -135,15 +135,19 @@ export async function POST(request: NextRequest) {
       : message
 
     // Choose streaming function based on API key availability
-    const hasGeminiKey = !!process.env.GEMINI_API_KEY
+    const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+      process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
 
     let generator: AsyncGenerator<StreamChunk>
 
-    if (hasGeminiKey) {
-      // Use shared Gemini streaming utility
-      generator = streamFromGemini(
-        [{ role: 'user', content: messageWithContext }],
-        { systemPrompt: SYSTEM_PROMPT }
+    if (hasAnthropicKey) {
+      // Use Claude streaming utility with system prompt
+      generator = streamFromClaude(
+        [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: messageWithContext }
+        ],
+        { model: 'claude-sonnet-4-20250514' }
       )
     } else {
       // Use shared demo streaming utility
@@ -161,7 +165,7 @@ export async function POST(request: NextRequest) {
         messageLength: message.length,
         hasDocsContext: !!docsContext,
         searchResultsCount: searchResults.length,
-        provider: hasGeminiKey ? 'gemini' : 'demo',
+        provider: hasAnthropicKey ? 'claude' : 'demo',
       })
     })
 
@@ -182,9 +186,11 @@ export async function POST(request: NextRequest) {
  * GET /api/live-demo-chat - Health check
  */
 export async function GET() {
+  const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+    process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
   return Response.json({
     status: 'ok',
     service: 'Live Demo Chat',
-    hasGeminiKey: !!process.env.GEMINI_API_KEY,
+    hasAnthropicKey,
   })
 }
