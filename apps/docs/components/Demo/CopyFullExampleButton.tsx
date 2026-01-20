@@ -39,13 +39,13 @@ export function CopyFullExampleButton({
     return (
       <button
         onClick={handleCopy}
-        className={`p-2 hover:bg-gray-700 rounded transition-colors ${className}`}
+        className={`p-2 hover:bg-secondary rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${className}`}
         title="Copy full working example"
       >
         {copied ? (
-          <Check className="w-4 h-4 text-green-400" />
+          <Check className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
         ) : (
-          <Download className="w-4 h-4 text-gray-400" />
+          <Download className="w-4 h-4 text-muted-foreground" />
         )}
       </button>
     )
@@ -54,11 +54,11 @@ export function CopyFullExampleButton({
   return (
     <button
       onClick={handleCopy}
-      className={`inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-lg text-sm font-medium transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${className}`}
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4 text-green-400" />
+          <Check className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
           Copied!
         </>
       ) : (

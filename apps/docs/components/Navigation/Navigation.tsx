@@ -20,6 +20,8 @@ import {
   ChefHat,
   Code2,
   GitCompare,
+  Zap,
+  MoreHorizontal,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import {
@@ -35,20 +37,30 @@ import { durations } from '@/lib/animations'
 const ANIMATION_DURATION = 0.3
 const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
-const navigation = [
-  { name: 'Demos', href: '/demos', icon: Play },
-  { name: 'Learn', href: '/learn/quick-start', icon: GraduationCap },
-  { name: 'Guides', href: '/guides', icon: Map },
+// Primary nav items always visible - only Token Optimization (maximizes search bar width)
+const primaryNav = [
+  { name: 'Token Optimization', href: '/guides/token-optimization', icon: Zap, highlight: true, description: 'Reduce API costs by 90%' },
+]
+
+// All other nav items hidden in "More" dropdown for cleaner design
+const moreNav = [
+  { name: 'Docs', href: '/learn/quick-start', icon: GraduationCap },
   { name: 'Reference', href: '/reference/components', icon: Library },
-  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
+  { name: 'Demos', href: '/demos', icon: Play },
   { name: 'Examples', href: '/examples', icon: Code2 },
+  { name: 'Guides', href: '/guides', icon: Map },
+  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
   { name: 'Compare', href: '/compare', icon: GitCompare },
 ]
+
+// Combined for mobile
+const navigation = [...primaryNav, ...moreNav]
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [accessibilityOpen, setAccessibilityOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -111,191 +123,165 @@ export function Navigation() {
     return <Monitor className="w-5 h-5" />
   }
 
+  // Close more dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setMoreOpen(false)
+    if (moreOpen) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [moreOpen])
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-[var(--glass-medium-bg)] backdrop-blur-[var(--glass-medium-blur)] backdrop-saturate-150 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_12px_rgba(0,0,0,0.2)] border-[var(--glass-border-subtle)] transition-all duration-300">
+      <header className="sticky top-0 z-50 w-full border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl">
         <nav className="container-docs" aria-label="Main navigation">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-8">
-              <Link
-                href="/"
-                className="group flex items-center gap-2 font-bold text-xl min-h-[44px]"
-              >
-                <motion.div
-                  whileHover={{ rotate: 15, scale: 1.1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                >
-                  <BookOpen className="w-6 h-6 text-brand-500" />
-                </motion.div>
-                <span className="group-hover:text-brand-500 transition-colors">
-                  Clarity Chat
-                </span>
-              </Link>
-
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-1">
-                {navigation.map((item, index) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: durations.moderate,
-                      delay: index * 0.05,
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Link
-                      href={item.href}
-                      aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
-                      className={clsx(
-                        'relative px-4 py-2 min-h-[44px] flex items-center rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
-                        pathname?.startsWith(item.href)
-                          ? 'bg-bg-tertiary text-brand-500'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
-                      )}
-                    >
-                      {item.name}
-                      {!pathname?.startsWith(item.href) && (
-                        <motion.span
-                          className="absolute bottom-1 left-4 right-4 h-0.5 bg-brand-500"
-                          initial={{ scaleX: 0 }}
-                          whileHover={{ scaleX: 1 }}
-                          transition={{ duration: durations.normal }}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </Link>
-                  </motion.div>
-                ))}
+          <div className="flex h-14 items-center gap-6">
+            {/* Logo - compact with hover glow */}
+            <Link
+              href="/"
+              className="group flex items-center gap-1.5 font-semibold text-base shrink-0"
+            >
+              <div className="relative">
+                <BookOpen className="w-5 h-5 text-brand-500 relative z-10 transition-transform duration-200 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-brand-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true" />
               </div>
-            </div>
+              <span className="bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent whitespace-nowrap">Clarity Chat</span>
+            </Link>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              {/* Search */}
-              <motion.button
-                onClick={() => setSearchOpen(true)}
-                whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-                className={clsx(
-                  'hidden sm:flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-lg',
-                  'border border-border/50 dark:border-slate-700/50',
-                  'bg-bg-secondary/80 dark:bg-slate-800/50',
-                  'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
-                  'text-sm text-text-secondary hover:text-text-primary',
-                  'transition-all duration-300 ease-in-out',
-                  'hover:shadow-sm hover:border-brand-500/30',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2'
-                )}
-                aria-label="Search documentation (Press Cmd+K)"
-              >
-                <Search className="w-4 h-4" aria-hidden="true" />
-                <span className="hidden md:inline">Search docs...</span>
-                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border/50 dark:border-slate-600 bg-bg-primary dark:bg-slate-800 px-1.5 font-mono text-xs text-text-tertiary">
-                  <span className="text-xs">Cmd</span>K
-                </kbd>
-              </motion.button>
-
-              {/* Mobile Search */}
-              <motion.button
-                onClick={() => setSearchOpen(true)}
-                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
-                className={clsx(
-                  'sm:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg',
-                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
-                  'transition-colors duration-300',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
-                )}
-                aria-label="Search documentation"
-              >
-                <Search className="w-5 h-5" aria-hidden="true" />
-              </motion.button>
-
-              {/* Theme Toggle */}
-              <motion.button
-                onClick={cycleTheme}
-                whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 15 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
-                className={clsx(
-                  'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg',
-                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
-                  'transition-colors duration-300',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
-                )}
-                aria-label={`Current theme: ${mounted ? theme : 'system'}. Click to cycle through themes: light, dark, and system`}
-              >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={mounted ? theme : 'loading'}
-                    initial={prefersReducedMotion ? {} : { rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={prefersReducedMotion ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
-                    transition={{ duration: ANIMATION_DURATION }}
+            {/* Desktop Navigation - elevated with icons */}
+            <div className="hidden md:flex items-center gap-1">
+              {primaryNav.map((item) => {
+                const Icon = item.icon
+                const isHighlight = 'highlight' in item && item.highlight
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    aria-current={pathname?.startsWith(item.href) ? 'page' : undefined}
+                    className={clsx(
+                      'flex items-center gap-1.5 px-2.5 py-1.5 text-[13px] font-medium transition-all',
+                      isHighlight
+                        ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 rounded-full border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50'
+                        : pathname?.startsWith(item.href)
+                          ? 'text-neutral-900 dark:text-white'
+                          : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
+                    )}
                   >
-                    {getThemeIcon()}
-                  </motion.div>
-                </AnimatePresence>
-              </motion.button>
+                    <Icon className={clsx('w-3.5 h-3.5', isHighlight && 'text-indigo-500 dark:text-indigo-400')} />
+                    {item.name}
+                  </Link>
+                )
+              })}
 
-              {/* Accessibility Menu */}
-              <AccessibilityButton onClick={() => setAccessibilityOpen(true)} />
+              {/* More dropdown - refined */}
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setMoreOpen(!moreOpen)
+                  }}
+                  aria-label="Browse all sections"
+                  aria-expanded={moreOpen}
+                  aria-haspopup="menu"
+                  className={clsx(
+                    'flex items-center justify-center w-8 h-8 rounded-lg transition-all',
+                    moreOpen
+                      ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white'
+                      : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                  )}
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
 
-              {/* GitHub */}
-              <motion.a
-                href="https://github.com/christireid/Clarity-ai-chat-components"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
-                className={clsx(
-                  'hidden sm:flex p-2.5 min-w-[44px] min-h-[44px] items-center justify-center rounded-lg',
-                  'hover:bg-bg-secondary dark:hover:bg-slate-800',
-                  'transition-colors duration-300',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
-                )}
-                aria-label="View project on GitHub (opens in new tab)"
-              >
-                <ExternalLink className="w-5 h-5" aria-hidden="true" />
-              </motion.a>
-
-              {/* Mobile Menu Toggle */}
-              <motion.button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                aria-expanded={mobileMenuOpen}
-                aria-controls="mobile-menu"
-              >
-                <AnimatePresence mode="wait">
-                  {mobileMenuOpen ? (
+                <AnimatePresence>
+                  {moreOpen && (
                     <motion.div
-                      key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: durations.normal }}
+                      initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      transition={{ duration: 0.12, ease: 'easeOut' }}
+                      className="absolute top-full left-0 mt-2 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800/80 rounded-xl shadow-xl shadow-black/5 dark:shadow-black/20 min-w-[160px] backdrop-blur-xl"
                     >
-                      <X className="w-6 h-6" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: durations.normal }}
-                    >
-                      <Menu className="w-6 h-6" />
+                      {moreNav.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => setMoreOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                          >
+                            <Icon className="w-3.5 h-3.5 text-neutral-400" />
+                            {item.name}
+                          </Link>
+                        )
+                      })}
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.button>
+              </div>
+            </div>
+
+            {/* Spacer to push right items */}
+            <div className="flex-1" />
+
+            {/* Right actions - search and icons */}
+            <div className="flex items-center gap-2 ml-auto">
+              {/* Search - compact on right side with premium focus */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="group/search hidden sm:flex w-48 items-center gap-2 px-3 py-1.5 text-[13px] text-neutral-400 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-800/60 rounded-lg hover:border-brand-300 dark:hover:border-brand-700 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:border-brand-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.1)]"
+                aria-label="Search documentation (Press Cmd+K)"
+              >
+                <Search className="w-3.5 h-3.5 text-neutral-400 group-hover/search:text-brand-500 transition-colors" />
+                <span className="flex-1 text-left truncate">Search...</span>
+                <kbd className="text-[11px] text-neutral-400/80 bg-white dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/60 px-1.5 py-0.5 rounded font-medium group-hover/search:border-brand-300 dark:group-hover/search:border-brand-700 transition-colors">⌘K</kbd>
+              </button>
+
+              {/* Mobile Search */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="sm:hidden p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={cycleTheme}
+                className="p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                aria-label={`Theme: ${mounted ? theme : 'system'}`}
+              >
+                {getThemeIcon()}
+              </button>
+
+              {/* GitHub */}
+              <a
+                href="https://github.com/christireid/Clarity-ai-chat-components"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                aria-label="GitHub"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+
+              {/* Accessibility - in More dropdown for cleaner nav */}
+              <div className="hidden">
+                <AccessibilityButton onClick={() => setAccessibilityOpen(true)} />
+              </div>
+
+              {/* Mobile Menu */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
 

@@ -98,7 +98,7 @@ export default function CommonPatternsPage() {
   MemoryProvider,
   ErrorBoundary,
   ToastProvider,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function App() {
   return (
@@ -156,7 +156,7 @@ function ErrorFallback() {
   useTokenTracker,
   useMemoryContext,
   useTheme,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function useEnhancedChat(options: { api: string }) {
   // Core chat functionality
@@ -243,7 +243,7 @@ function Chat() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ErrorBoundary, useToast } from '@clarity-chat/react/internal'
+          code={`import { ErrorBoundary, useToast } from '@clarity-chat/react'
 
 // Granular error boundaries for different failure modes
 function ChatApp() {
@@ -318,7 +318,7 @@ function SidebarFallback() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, StreamingMessage } from '@clarity-chat/react'
 import { useRef, useCallback } from 'react'
 
 function StreamingChat() {
@@ -402,7 +402,7 @@ function StreamingChat() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, useIndexedDB } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, useIndexedDB } from '@clarity-chat/react'
 import { useEffect, useCallback } from 'react'
 
 function PersistentChat() {
@@ -492,7 +492,7 @@ function SimplePersistence() {
         <p>Show user messages immediately for better perceived performance:</p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, type Message } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, type Message } from '@clarity-chat/react'
 import { useState, useCallback } from 'react'
 
 function OptimisticChat() {
@@ -571,7 +571,7 @@ function OptimisticChat() {
 
         <EnhancedCodeBlock
           code={`import { lazy, Suspense } from 'react'
-import { ClarityChat, FeatureLoader } from '@clarity-chat/react/internal'
+import { ClarityChat, FeatureLoader } from '@clarity-chat/react'
 
 // Lazy load heavy features
 const VoiceInput = lazy(() => import('@clarity-chat/react/voice'))

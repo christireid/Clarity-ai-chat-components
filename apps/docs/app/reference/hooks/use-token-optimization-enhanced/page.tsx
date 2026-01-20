@@ -143,7 +143,7 @@ export default function UseTokenOptimizationEnhancedPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -170,10 +170,10 @@ function OptimizedChat() {
       })
       
       // Use optimized content
-      logger.debug('Tokens:', optimized.tokens.total)
-      logger.debug('Cost: $', cost.total)
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Cost: $', cost.total)
       if (stats) {
-        logger.debug('Savings: $', stats.overall.totalCostSaved)
+        console.log('Savings: $', stats.overall.totalCostSaved)
       }
     } catch (error) {
       console.error('Optimization failed:', error)
@@ -269,7 +269,7 @@ function OptimizedChat() {
           for structured data.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function ToonOptimized() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -290,9 +290,9 @@ function ToonOptimized() {
 
       const optimized = await optimizeData(data)
       // Result: 30-60% fewer tokens, same data
-      logger.debug('Format:', optimized.format) // 'toon'
-      logger.debug('Tokens:', optimized.tokens.total)
-      logger.debug('Savings:', optimized.optimizations.toon?.savingsPercent)
+      console.log('Format:', optimized.format) // 'toon'
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Savings:', optimized.optimizations.toon?.savingsPercent)
     } catch (error) {
       console.error('TOON optimization failed:', error)
     }
@@ -310,7 +310,7 @@ function ToonOptimized() {
           (Anthropic/OpenAI).
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function CachedChat() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -327,7 +327,7 @@ function CachedChat() {
       })
 
       if (optimized.optimizations.cached) {
-        logger.debug('Used cached prompt - 50-90% cost savings!')
+        console.log('Used cached prompt - 50-90% cost savings!')
       }
     } catch (error) {
       console.error('Caching failed:', error)
@@ -345,7 +345,7 @@ function CachedChat() {
           Cache responses based on semantic similarity for 40-60% savings.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function SemanticCachedChat() {
   const { optimizeData, stats } = useTokenOptimizationEnhanced({
@@ -360,8 +360,8 @@ function SemanticCachedChat() {
       
       // Check cache stats (stats may be undefined initially)
       if (stats) {
-        logger.debug('Cache Hit Rate:', stats.semanticCache.hitRate)
-        logger.debug('Tokens Saved:', stats.semanticCache.tokensSaved)
+        console.log('Cache Hit Rate:', stats.semanticCache.hitRate)
+        console.log('Tokens Saved:', stats.semanticCache.tokensSaved)
       }
     } catch (error) {
       console.error('Semantic caching failed:', error)
@@ -379,7 +379,7 @@ function SemanticCachedChat() {
           Track costs in real-time and see savings from optimizations.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function CostTrackedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -400,12 +400,12 @@ function CostTrackedChat() {
         outputTokens,
       })
 
-      logger.debug('Input Cost: $', cost.input)
-      logger.debug('Output Cost: $', cost.output)
-      logger.debug('Total Cost: $', cost.total)
+      console.log('Input Cost: $', cost.input)
+      console.log('Output Cost: $', cost.output)
+      console.log('Total Cost: $', cost.total)
       
       if (stats) {
-        logger.debug('Savings: $', stats.costs.savingsFromOptimization)
+        console.log('Savings: $', stats.costs.savingsFromOptimization)
       }
     } catch (error) {
       console.error('Cost tracking failed:', error)

@@ -106,8 +106,8 @@ const { result, metrics } = await profiler.profile('chat', async () => {
   })
 })
 
-logger.debug('Duration', metrics.duration)
-logger.debug('Response', result.choices[0].message)
+console.log('Duration', metrics.duration)
+console.log('Response', result.choices[0].message)
 `}
         />
       </section>

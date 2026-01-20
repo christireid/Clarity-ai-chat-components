@@ -31,7 +31,7 @@ export default function TokenCounterUtilPage() {
 
 const tokens = countTokens('Hello world', 'gpt-4')
 const cost = estimateCost(tokens, 'gpt-4')
-logger.debug(\`\${tokens} tokens = $\${cost}\`)`}</code></pre>
+console.log(\`\${tokens} tokens = $\${cost}\`)`}</code></pre>
         </div>
       </section>
     </div>

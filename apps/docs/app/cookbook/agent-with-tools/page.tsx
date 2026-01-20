@@ -189,7 +189,7 @@ export async function POST(req: Request) {
           language="typescript"
           code={`'use client'
 
-import { ChatWindow, AgentRunFeed } from '@clarity-chat/react/internal'
+import { ChatWindow, AgentRunFeed } from '@clarity-chat/react'
 import { useState } from 'react'
 
 export default function AgentChatPage() {

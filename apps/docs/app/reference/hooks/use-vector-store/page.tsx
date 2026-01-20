@@ -115,7 +115,7 @@ export default function UseVectorStorePage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
 
 function VectorSearch() {
   const vectorStore = useVectorStore({
@@ -153,7 +153,7 @@ function VectorSearch() {
           Experiment with useVectorStore:
         </p>
         <CodePlayground
-          initialCode={`import { useVectorStore } from '@clarity-chat/react/internal'
+          initialCode={`import { useVectorStore } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -202,8 +202,8 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Adding Documents</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
-import { useEmbeddings } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
+import { useEmbeddings } from '@clarity-chat/react'
 
 function DocumentManager() {
   const vectorStore = useVectorStore({
@@ -252,7 +252,7 @@ function DocumentManager() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
 
 function VectorSearch() {
   const vectorStore = useVectorStore({
@@ -285,7 +285,7 @@ function VectorSearch() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
 
 // Pinecone
 const pineconeStore = useVectorStore({
@@ -330,7 +330,7 @@ const chromaStore = useVectorStore({
         <h3 className="text-xl font-semibold mt-6 mb-4">Error Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
 
 function RobustVectorStore() {
   const vectorStore = useVectorStore({
@@ -378,7 +378,7 @@ function RobustVectorStore() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Getting Statistics</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useVectorStore } from '@clarity-chat/react/internal'
+          code={`import { useVectorStore } from '@clarity-chat/react'
 import { useEffect, useState } from 'react'
 
 function VectorStoreStats() {

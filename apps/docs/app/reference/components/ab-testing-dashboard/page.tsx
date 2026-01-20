@@ -71,7 +71,7 @@ export default function ABTestingDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display A/B testing dashboard:</p>
         <CodePlayground
-          initialCode={`import { ABTestingDashboard, useABTesting } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard, useABTesting } from '@clarity-chat/react'
 
 function ABTestingView() {
   const { experiments, getExperiment } = useABTesting()
@@ -82,7 +82,7 @@ function ABTestingView() {
       showSignificance={true}
       showRecommendations={true}
       onExperimentClick={(experiment) => {
-        logger.debug('Selected experiment:', experiment.id)
+        console.log('Selected experiment:', experiment.id)
       }}
     />
   )
@@ -94,14 +94,14 @@ function ABTestingView() {
         <h2>Variant Comparison</h2>
         <p>Compare variant performance:</p>
         <CodePlayground
-          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
 function VariantComparison({ experiments }: { experiments: ExperimentResult[] }) {
   return (
     <ABTestingDashboard
       experiments={experiments}
       onVariantSelect={(experimentId, variantId) => {
-        logger.debug(\`Selected variant \${variantId} for experiment \${experimentId}\`)
+        console.log(\`Selected variant \${variantId} for experiment \${experimentId}\`)
         // Apply variant
       }}
     />
@@ -114,7 +114,7 @@ function VariantComparison({ experiments }: { experiments: ExperimentResult[] })
         <h2>Statistical Significance</h2>
         <p>Display statistical significance tests:</p>
         <CodePlayground
-          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
 function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) {
   return (
@@ -123,9 +123,9 @@ function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) 
       showSignificance={true}
       onExperimentClick={(experiment) => {
         if (experiment.significance?.isSignificant) {
-          logger.debug('Experiment is statistically significant!')
-          logger.debug('P-value:', experiment.significance.pValue)
-          logger.debug('Confidence:', experiment.significance.confidenceLevel)
+          console.log('Experiment is statistically significant!')
+          console.log('P-value:', experiment.significance.pValue)
+          console.log('Confidence:', experiment.significance.confidenceLevel)
         }
       }}
     />
@@ -138,7 +138,7 @@ function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) 
         <h2>Experiment Recommendations</h2>
         <p>Show experiment recommendations:</p>
         <CodePlayground
-          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
 function RecommendationsView({ experiments }: { experiments: ExperimentResult[] }) {
   return (
@@ -147,7 +147,7 @@ function RecommendationsView({ experiments }: { experiments: ExperimentResult[] 
       showRecommendations={true}
       onExperimentClick={(experiment) => {
         if (experiment.recommendation) {
-          logger.debug('Recommendation:', experiment.recommendation)
+          console.log('Recommendation:', experiment.recommendation)
           // Apply recommendation
         }
       }}

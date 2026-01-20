@@ -182,7 +182,7 @@ export default function AIAgentsWorkflowPage() {
 
           <h3>Define Agents</h3>
           <pre className="bg-surface-muted p-4 rounded-lg">
-            <code>{`import { createAgent } from '@clarity-chat/react/internal'
+            <code>{`import { createAgent } from '@clarity-chat/react'
 
 const dataAnalyst = createAgent({
   name: 'data-analyst',
@@ -208,8 +208,8 @@ const strategist = createAgent({
   context: { salesData, budget: 10000 }
 })
 
-logger.debug(result.strategy)
-logger.debug(result.agentChain) // Shows which agents ran`}</code>
+console.log(result.strategy)
+console.log(result.agentChain) // Shows which agents ran`}</code>
           </pre>
 
           <h2>🛠️ Custom Tools</h2>

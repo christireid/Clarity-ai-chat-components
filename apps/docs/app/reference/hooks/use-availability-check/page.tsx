@@ -55,7 +55,7 @@ export default function UseAvailabilityCheckPage() {
         <h2>Basic Usage</h2>
         <p>Check availability:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
 function AvailabilityView() {
   const {
@@ -70,7 +70,7 @@ function AvailabilityView() {
     const end = new Date('2025-01-20T17:00:00')
     
     const slots = await checkAvailability(start, end)
-    logger.debug('Availability:', slots)
+    console.log('Availability:', slots)
   }
 
   return (
@@ -87,7 +87,7 @@ function AvailabilityView() {
         <h2>Find Free Slots</h2>
         <p>Find free time slots for meetings:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
 function FreeSlotFinder() {
   const { findFreeSlots } = useAvailabilityCheck({
@@ -102,9 +102,9 @@ function FreeSlotFinder() {
     const freeSlots = await findFreeSlots(start, end, duration)
     
     if (freeSlots.length > 0) {
-      logger.debug('Available slots:', freeSlots)
+      console.log('Available slots:', freeSlots)
     } else {
-      logger.debug('No free slots found')
+      console.log('No free slots found')
     }
   }
 
@@ -117,7 +117,7 @@ function FreeSlotFinder() {
         <h2>Suggest Meeting Times</h2>
         <p>Suggest optimal meeting times:</p>
         <CodePlayground
-          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react/internal'
+          initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
 function MeetingTimeSuggestions() {
   const { suggestMeetingTime } = useAvailabilityCheck()
@@ -130,7 +130,7 @@ function MeetingTimeSuggestions() {
     
     const suggestions = await suggestMeetingTime(start, end, duration, attendees)
     
-    logger.debug('Suggested times:', suggestions)
+    console.log('Suggested times:', suggestions)
   }
 
   return <button onClick={getSuggestions}>Get Suggestions</button>

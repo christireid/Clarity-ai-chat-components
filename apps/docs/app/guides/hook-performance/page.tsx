@@ -38,7 +38,7 @@ export default function HookPerformancePage() {
         <p>Optimize hook dependencies:</p>
         <CodePlayground
           initialCode={`import { useMemo, useCallback } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const [messages, setMessages] = useState([])
@@ -84,7 +84,7 @@ function BadExample() {
         <p>Memoize expensive hook computations:</p>
         <CodePlayground
           initialCode={`import { useMemo } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 function MemoizedResults() {
   const optimization = useTokenOptimizationEnhanced({
@@ -126,7 +126,7 @@ function FilteredMessages() {
         <h2>Avoiding Unnecessary Hook Calls</h2>
         <p>Avoid calling hooks unnecessarily:</p>
         <CodePlayground
-          initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 // ✅ Good: Conditional logic inside hook
 function ConditionalOptimization({ enableOptimization }: { enableOptimization: boolean }) {
@@ -177,7 +177,7 @@ function SmartOptimization() {
   useClarityChat,
   useTokenOptimizationEnhanced,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // ✅ Good: Compose hooks in order
 function ComposedHooks() {
@@ -233,7 +233,7 @@ function ChatWithOptimization() {
         <p>Measure hook performance:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 function MeasuredOptimization() {
   const startTime = useRef(Date.now())
@@ -245,10 +245,10 @@ function MeasuredOptimization() {
 
   useEffect(() => {
     const duration = Date.now() - startTime.current
-    logger.debug(\`Optimization took \${duration}ms\`)
+    console.log(\`Optimization took \${duration}ms\`)
 
     if (duration > 100) {
-      logger.warn('Optimization is slow')
+      console.warn('Optimization is slow')
     }
   }, [optimization.messages])
 

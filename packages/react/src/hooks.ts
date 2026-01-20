@@ -131,7 +131,30 @@ export * from './hooks/streaming'
 export * from './hooks/resilience'
 
 /** Token hooks - budget monitoring, tracking, optimization */
-export * from './hooks/token'
+// Using explicit exports to avoid name collisions with ./hooks/clarity-tokens
+// which exports the same names (useTokenCounter, UseTokenCounterReturn, TokenEncoding)
+export {
+  useTokenOptimization,
+  type UseTokenOptimizationOptions,
+  type UseTokenOptimizationReturn,
+  type TokenOptimizationStats,
+  useTokenOptimizationEnhanced,
+  type EnhancedTokenOptimizationOptions,
+  type EnhancedOptimizationStats,
+  type EnhancedOptimizationResult,
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  type TokenBudgetConfig,
+  type TokenBudgetMonitorReturn,
+  type TokenUsage,
+  type TokenUsageStatus,
+  type TrimResult,
+  type BudgetMessage,
+  type BudgetMonitorModel,
+} from './hooks/token'
+export * from './hooks/token/use-token-tracker'
 
 /** UI hooks - clipboard, scroll, animations, etc. */
 export * from './hooks/ui'

@@ -5,7 +5,6 @@
  */
 
 import type { Message } from '@clarity-chat/types'
-import { escapeHtml as baseEscapeHtml } from '@clarity-chat/utils'
 
 export interface ExportOptions {
   format: 'json' | 'html' | 'markdown'
@@ -20,11 +19,17 @@ export interface ExportResult {
 }
 
 /**
- * Escape HTML to prevent XSS in HTML exports
+ * Escape HTML special characters to prevent XSS in HTML exports
  * Also converts newlines to <br> for HTML rendering
  */
 export function escapeHtml(text: string): string {
-  return baseEscapeHtml(text).replace(/\n/g, '<br>')
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+  return escaped.replace(/\n/g, '<br>')
 }
 
 /**

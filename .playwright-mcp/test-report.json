@@ -1,0 +1,88 @@
+{
+  "passed": [
+    "Navigate to docs site",
+    "Find AI Assistant button",
+    "Open AI Assistant",
+    "UI Element: Model Info",
+    "UI Element: Starter Prompts",
+    "UI Element: Input with Placeholder",
+    "UI Element: Keyboard Hints",
+    "Manual Input: Text Entry",
+    "AI Response: Installation Question",
+    "Accuracy: Package name @clarity-chat/react mentioned",
+    "Accuracy: Install command (npm/pnpm) mentioned",
+    "Close with Escape",
+    "Reopen after close",
+    "Keyboard: Cmd+. opens dialog",
+    "Keyboard: Cmd+. toggles dialog"
+  ],
+  "failed": [
+    "UI Element: Header",
+    "Starter Prompt: Get Started",
+    "Question: ChatWindow Props",
+    "Question: useClarityChat Hook",
+    "Accuracy: ChatWindow component mentioned",
+    "Accuracy: useClarityChat hook mentioned",
+    "Streaming Behavior",
+    "Error Handling"
+  ],
+  "warnings": [],
+  "issues": [
+    {
+      "severity": "medium",
+      "category": "UI",
+      "description": "Documentation Assistant header not visible",
+      "details": null,
+      "timestamp": "2026-01-19T17:57:44.448Z"
+    },
+    {
+      "severity": "medium",
+      "category": "UI",
+      "description": "Get Started button not visible",
+      "details": null,
+      "timestamp": "2026-01-19T17:57:45.841Z"
+    },
+    {
+      "severity": "high",
+      "category": "Response",
+      "description": "Failed to test ChatWindow Props",
+      "details": "locator.scrollIntoViewIfNeeded: Timeout 2330.1839999999975ms exceeded.\nCall log:\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    3 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n",
+      "timestamp": "2026-01-19T17:57:54.555Z"
+    },
+    {
+      "severity": "high",
+      "category": "Response",
+      "description": "Failed to test useClarityChat Hook",
+      "details": "locator.scrollIntoViewIfNeeded: Timeout 2972.6659999999974ms exceeded.\nCall log:\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    4 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n",
+      "timestamp": "2026-01-19T17:57:57.673Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Accuracy",
+      "description": "Response missing: ChatWindow component",
+      "details": null,
+      "timestamp": "2026-01-19T17:57:57.689Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Accuracy",
+      "description": "Response missing: useClarityChat hook",
+      "details": null,
+      "timestamp": "2026-01-19T17:57:57.690Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Streaming",
+      "description": "Failed to test streaming",
+      "details": "locator.scrollIntoViewIfNeeded: Timeout 2967.936000000005ms exceeded.\nCall log:\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    4 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n",
+      "timestamp": "2026-01-19T17:58:01.276Z"
+    },
+    {
+      "severity": "medium",
+      "category": "Error Handling",
+      "description": "Error handling test failed",
+      "details": "locator.scrollIntoViewIfNeeded: Timeout 2984.6020000000062ms exceeded.\nCall log:\n\u001b[2m  - attempting scroll into view action\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    4 × waiting for element to be stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying scroll into view action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n",
+      "timestamp": "2026-01-19T17:58:12.770Z"
+    }
+  ]
+}

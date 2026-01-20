@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Play,
-  RotateCcw,
+  RefreshCw,
   Copy,
   Check,
   Code2,
@@ -273,7 +273,7 @@ export function InteractivePlayground({
                 className="p-1.5 rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-colors"
                 aria-label="Reset code"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCopy}

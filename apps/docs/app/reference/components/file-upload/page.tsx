@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { FileUpload } from '@clarity-chat/react/internal'
+import { FileUpload } from '@clarity-chat/react'
 import type { MessageAttachment } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -149,7 +149,7 @@ export default function FileUploadPage() {
       <ScrollReveal delay={0.3}>
         <h2 id="import">Import</h2>
         <EnhancedCodeBlock
-          code={`import { FileUpload } from '@clarity-chat/react/internal'
+          code={`import { FileUpload } from '@clarity-chat/react'
 import type { MessageAttachment } from '@clarity-chat/types'`}
           language="tsx"
         />
@@ -165,7 +165,7 @@ import type { MessageAttachment } from '@clarity-chat/types'`}
         <ComponentPreview
           title="Basic File Upload"
           description="Drag and drop images or PDFs (max 5MB)."
-          code={`import { FileUpload } from '@clarity-chat/react/internal'
+          code={`import { FileUpload } from '@clarity-chat/react'
 import type { MessageAttachment } from '@clarity-chat/types'
 
 function UploadDemo() {
@@ -209,7 +209,7 @@ function UploadDemo() {
           <CodePlayground
             initialCode={`function Example() {
   const handleUpload = async (files) => {
-    logger.debug('Uploading...', files)
+    console.log('Uploading...', files)
     // Simulate 1s upload delay
     await new Promise(r => setTimeout(r, 1000))
     

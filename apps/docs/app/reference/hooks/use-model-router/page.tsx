@@ -46,7 +46,7 @@ export default function UseModelRouterPage() {
 
   const handleSend = async (message: string) => {
     const model = await route(message)
-    logger.debug(\`Using model: \${model.name}\`)
+    console.log(\`Using model: \${model.name}\`)
     // Use selected model for request
   }
 
@@ -196,7 +196,7 @@ function ProductionChat() {
       maxCostPerUser: 10.0,
       maxCostPerDay: 1000.0,
       onBudgetExceeded: (user) => {
-        logger.warn(\`Budget exceeded for \${user}\`)
+        console.warn(\`Budget exceeded for \${user}\`)
       }
     },
     

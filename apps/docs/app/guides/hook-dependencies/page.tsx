@@ -40,7 +40,7 @@ export default function HookDependenciesPage() {
   useClarityChat,
   useTokenOptimizationEnhanced,
   useStreaming,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function ChatWithHooks() {
   // 1. Base chat hook (no dependencies)

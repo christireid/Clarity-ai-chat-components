@@ -737,7 +737,7 @@ function generateColor(str) {
 
         <h3>With Tooltip</h3>
         <pre>
-          <code>{`import { Avatar, Tooltip } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, Tooltip } from '@clarity-chat/react'
 
 <Tooltip content="John Doe - Senior Developer">
   <Avatar
@@ -750,7 +750,7 @@ function generateColor(str) {
 
         <h3>Avatar with Dropdown</h3>
         <pre>
-          <code>{`import { Avatar, Dropdown } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, Dropdown } from '@clarity-chat/react'
 
 function AvatarMenu() {
   const menuItems = [
@@ -780,8 +780,8 @@ function AvatarMenu() {
   src="/large-avatar.jpg"
   name="User Name"
   loading="lazy"
-  onLoad={() => logger.debug('Avatar loaded')}
-  onError={() => logger.debug('Avatar failed to load')}
+  onLoad={() => console.log('Avatar loaded')}
+  onError={() => console.log('Avatar failed to load')}
 />`}</code>
         </pre>
       </section>
@@ -870,7 +870,7 @@ function AvatarMenu() {
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { Avatar, AvatarProps, AvatarGroup } from '@clarity-chat/react/internal'
+          <code>{`import { Avatar, AvatarProps, AvatarGroup } from '@clarity-chat/react'
 
 interface AvatarProps {
   src?: string

@@ -61,7 +61,7 @@ export default function UseStructuredInputPage() {
         <h2>Basic Usage</h2>
         <p>Manage structured input form:</p>
         <CodePlayground
-          initialCode={`import { useStructuredInput } from '@clarity-chat/react/internal'
+          initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
 function PromptBuilder() {
   const fields = [
@@ -102,7 +102,7 @@ function PromptBuilder() {
       e.preventDefault()
       submit()
       if (isValid) {
-        logger.debug('Formatted prompt:', result.formattedPrompt)
+        console.log('Formatted prompt:', result.formattedPrompt)
       }
     }}>
       {fields.map(field => (
@@ -126,7 +126,7 @@ function PromptBuilder() {
         <h2>Token Tracking</h2>
         <p>Track token usage per field:</p>
         <CodePlayground
-          initialCode={`import { useStructuredInput } from '@clarity-chat/react/internal'
+          initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
 function WithTokenTracking() {
   const { result, tokenBreakdown } = useStructuredInput({
@@ -152,7 +152,7 @@ function WithTokenTracking() {
         <h2>Custom Prompt Formatting</h2>
         <p>Provide custom prompt formatting:</p>
         <CodePlayground
-          initialCode={`import { useStructuredInput } from '@clarity-chat/react/internal'
+          initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
 function CustomFormatter() {
   const { result } = useStructuredInput({
@@ -172,7 +172,7 @@ function CustomFormatter() {
         <h2>Field Validation</h2>
         <p>Validate fields with custom validation functions:</p>
         <CodePlayground
-          initialCode={`import { useStructuredInput } from '@clarity-chat/react/internal'
+          initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
 function WithValidation() {
   const fields = [

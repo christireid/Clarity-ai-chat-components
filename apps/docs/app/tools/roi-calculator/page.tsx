@@ -508,7 +508,7 @@ export default function ROICalculatorPage() {
   autoOptimize,
   PromptCacheManager,
   useTokenOptimization
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // 1. Set up prompt caching
 const cacheManager = new PromptCacheManager({

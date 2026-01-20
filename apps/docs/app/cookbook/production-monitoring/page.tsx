@@ -251,7 +251,7 @@ export const logger = new Logger({
 })
 
 // Usage
-logger.info('Chat message sent', {
+console.info('Chat message sent', {
   userId,
   messageId,
   model: 'gpt-4',

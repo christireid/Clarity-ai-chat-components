@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   ToastProvider,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -357,7 +357,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
 import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResult } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -369,7 +369,7 @@ import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResul
         <ComponentPreview
           title="Basic Token Budget Monitor"
           description="Monitor token usage with warnings and critical alerts"
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function BasicMonitor() {

@@ -8,7 +8,7 @@
 ## Fixed Issues
 
 ### Module Resolution Errors
-- **Problem**: TypeScript couldn't resolve `@clarity-chat/react` and `@clarity-chat/react/internal` imports
+- **Problem**: TypeScript couldn't resolve `@clarity-chat/react` and `@clarity-chat/react` imports
 - **Root Cause**: TypeScript with `moduleResolution: "bundler"` doesn't resolve workspace packages correctly
 - **Solution**: Added path mappings in `tsconfig.json`:
   ```json
@@ -29,7 +29,7 @@ These are actual type mismatches in the code, not module resolution issues:
 
 1. **Security Playground** (`app/playground/security/page.tsx`)
    - `ValidationResult` type mismatch - using `isValid`/`error`/`sanitized` but type has `valid`/`errors`
-   - Need to align with actual `ValidationResult` type from `@clarity-chat/react/internal`
+   - Need to align with actual `ValidationResult` type from `@clarity-chat/react`
 
 2. **Component Reference Pages** (various)
    - Type mismatches in draggable component (null handling)

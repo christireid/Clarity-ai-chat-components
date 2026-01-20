@@ -61,7 +61,7 @@ export default function UseEmbeddingsPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useEmbeddings } from '@clarity-chat/react/internal'
+          code={`import { useEmbeddings } from '@clarity-chat/react'
 
 function SemanticSearch() {
   const { embed, embedBatch, isLoading, error } = useEmbeddings({
@@ -103,7 +103,7 @@ function SemanticSearch() {
   useEmbeddings,
   createCachedEmbeddingProvider,
   MemoryEmbeddingCache
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function CachedEmbeddings() {
   const { embed } = useEmbeddings({

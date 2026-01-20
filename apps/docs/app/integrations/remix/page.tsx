@@ -53,7 +53,7 @@ export function links() {
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 

@@ -46,7 +46,7 @@ yarn add @clarity-chat/react`}
         <h2 className="text-2xl font-bold mb-4">3 Lines of Code</h2>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -248,7 +248,7 @@ app.post('/api/chat', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  logger.debug('Server running on http://localhost:3000')
+  console.log('Server running on http://localhost:3000')
 })`}
         />
       </section>

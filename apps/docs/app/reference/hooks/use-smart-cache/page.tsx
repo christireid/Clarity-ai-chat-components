@@ -109,7 +109,7 @@ export default function UseSmartCachePage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react/internal'
+          code={`import { useSmartCache } from '@clarity-chat/react'
 
 function CachedChat() {
   const cache = useSmartCache({
@@ -149,7 +149,7 @@ function CachedChat() {
           Experiment with useSmartCache:
         </p>
         <CodePlayground
-          initialCode={`import { useSmartCache } from '@clarity-chat/react/internal'
+          initialCode={`import { useSmartCache } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -189,7 +189,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With IndexedDB</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react/internal'
+          code={`import { useSmartCache } from '@clarity-chat/react'
 
 function PersistentCache() {
   const cache = useSmartCache({
@@ -217,7 +217,7 @@ function PersistentCache() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react/internal'
+          code={`import { useSmartCache } from '@clarity-chat/react'
 
 function SemanticCache() {
   const cache = useSmartCache({
@@ -245,16 +245,16 @@ function SemanticCache() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useSmartCache } from '@clarity-chat/react/internal'
+          code={`import { useSmartCache } from '@clarity-chat/react'
 
 function CachedChat() {
   const cache = useSmartCache({
     cacheType: 'memory',
     onCacheHit: (key) => {
-      logger.debug('Cache hit:', key)
+      console.log('Cache hit:', key)
     },
     onCacheMiss: (key) => {
-      logger.debug('Cache miss:', key)
+      console.log('Cache miss:', key)
     },
   })
 

@@ -23,32 +23,45 @@ module.exports = {
           900: '#111827',
           950: '#030712',
         },
-        // Primary color (alias to brand for consistency)
+        // Primary color - Indigo for premium consistency
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          DEFAULT: '#3b82f6',
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          DEFAULT: '#6366f1',
           foreground: '#ffffff',
         },
         brand: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+        },
+        // Accent color - Pink to complement indigo (premium warmth)
+        accent: {
+          50: '#fdf2f8',
+          100: '#fce7f3',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: '#ec4899',
+          600: '#db2777',
+          700: '#be185d',
+          800: '#9d174d',
+          900: '#831843',
         },
         // Semantic colors for foreground, muted, card, etc.
         foreground: '#111827',
@@ -147,10 +160,11 @@ module.exports = {
         xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
-        // Colored shadows for interactive elements
-        'brand-glow': '0 0 0 3px rgba(59, 130, 246, 0.1)',
-        'brand-glow-lg': '0 0 0 6px rgba(59, 130, 246, 0.08)',
-        'focus-ring': '0 0 0 3px rgba(59, 130, 246, 0.5)',
+        // Colored shadows for interactive elements - Premium Indigo
+        'brand-glow': '0 0 0 3px rgba(99, 102, 241, 0.15)',
+        'brand-glow-lg': '0 0 0 6px rgba(99, 102, 241, 0.1)',
+        'focus-ring': '0 0 0 3px rgba(99, 102, 241, 0.5)',
+        'indigo-glow': '0 0 20px rgba(99, 102, 241, 0.3)',
         // Glass effect shadows - subtle for dark mode
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
         'glass-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
@@ -190,8 +204,8 @@ module.exports = {
           '100%': { backgroundPosition: '1000px 0' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0)' },
-          '50%': { boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.1)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(99, 102, 241, 0)' },
+          '50%': { boxShadow: '0 0 0 8px rgba(99, 102, 241, 0.15)' },
         },
       },
     },
@@ -223,6 +237,55 @@ module.exports = {
         // Border utilities
         '.border-border': {
           borderColor: 'var(--color-border)',
+        },
+        // Semantic color utilities - use CSS variables for auto light/dark
+        '.text-info': {
+          color: 'var(--color-info)',
+        },
+        '.text-success': {
+          color: 'var(--color-success)',
+        },
+        '.text-warning': {
+          color: 'var(--color-warning)',
+        },
+        '.text-error': {
+          color: 'var(--color-error)',
+        },
+        '.bg-info': {
+          backgroundColor: 'var(--color-info)',
+        },
+        '.bg-info-subtle': {
+          backgroundColor: 'var(--color-info-subtle)',
+        },
+        '.bg-success': {
+          backgroundColor: 'var(--color-success)',
+        },
+        '.bg-success-subtle': {
+          backgroundColor: 'var(--color-success-subtle)',
+        },
+        '.bg-warning': {
+          backgroundColor: 'var(--color-warning)',
+        },
+        '.bg-warning-subtle': {
+          backgroundColor: 'var(--color-warning-subtle)',
+        },
+        '.bg-error': {
+          backgroundColor: 'var(--color-error)',
+        },
+        '.bg-error-subtle': {
+          backgroundColor: 'var(--color-error-subtle)',
+        },
+        '.border-info': {
+          borderColor: 'var(--color-info)',
+        },
+        '.border-success': {
+          borderColor: 'var(--color-success)',
+        },
+        '.border-warning': {
+          borderColor: 'var(--color-warning)',
+        },
+        '.border-error': {
+          borderColor: 'var(--color-error)',
         },
       }
       addUtilities(newUtilities, ['hover', 'focus', 'active', 'dark'])
