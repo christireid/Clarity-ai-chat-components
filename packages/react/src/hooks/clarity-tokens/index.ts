@@ -93,10 +93,18 @@ export {
   useLazyTokenCounter,
   preloadTokenizer,
   isTokenizerLoaded,
+  getLoadedModel,
+  destroySharedTokenCounter,
 } from './use-lazy-token-counter'
 export { useCostEstimator } from './use-cost-estimator'
 export { useContextWindow } from './use-context-window'
 export { useResponseCache } from './use-response-cache'
+
+// =============================================================================
+// Unified Token Optimization Hook
+// =============================================================================
+
+export { useTokenOptimization } from './use-token-optimization'
 
 // =============================================================================
 // P1 Hooks - Core Optimization
@@ -268,3 +276,20 @@ export type {
   UseLazyTokenCounterReturn,
   LazyTokenCounterState,
 } from './use-lazy-token-counter'
+
+// useContextWindow compression types
+export type {
+  CompressionStrategyType,
+  ContextCompressionOptions,
+  UseContextWindowConfigWithCompression,
+} from './use-context-window'
+
+// useTokenOptimization types
+export type {
+  UseTokenOptimizationOptions,
+  CompressionOptions as TokenOptimizationCompressionOptions,
+  CompressionResult as TokenOptimizationCompressionResult,
+  CachedResponse as TokenOptimizationCachedResponse,
+  ModelInfo,
+  TokenOptimizationResult,
+} from './use-token-optimization'
