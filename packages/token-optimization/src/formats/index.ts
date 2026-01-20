@@ -73,3 +73,18 @@ export type {
 export { HTMLOptimizer, htmlToText, htmlToMarkdown } from './html-optimizer'
 
 export type { HTMLToTextOptions } from './html-optimizer'
+
+// Binary serialization using msgpackr
+export {
+  BinarySerializer,
+  createBinarySerializer,
+  serializeBinary,
+  deserializeBinary,
+  optimizeAndSerialize,
+} from './binary-serialization'
+
+export type {
+  BinarySerializationOptions,
+  SerializationResult,
+  DeserializationResult,
+} from './binary-serialization'

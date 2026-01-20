@@ -7,7 +7,15 @@
  * @module hooks/use-token-optimization
  */
 
-import { useRef, useCallback, useMemo, useState } from 'react'
+import {
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useTransition,
+  useOptimistic,
+} from 'react'
 import { TieredCache } from '../cache/tiered-cache'
 import type { TieredCacheConfig, CacheStats } from '../cache/tiered-cache'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
@@ -85,6 +93,16 @@ export interface UseTokenOptimizationConfig {
 }
 
 /**
+ * Optimistic cache state for React 19's useOptimistic
+ */
+export interface OptimisticCacheState {
+  /** Optimistically cached responses */
+  pending: Map<string, string>
+  /** Last operation status */
+  lastOperation: 'idle' | 'pending' | 'success' | 'error'
+}
+
+/**
  * Return type for useTokenOptimization hook
  */
 export interface UseTokenOptimizationReturn {
@@ -143,6 +161,21 @@ export interface UseTokenOptimizationReturn {
    * Clear all caches
    */
   clearCache: () => void
+
+  /**
+   * React 19: Whether a transition is pending (non-blocking updates)
+   */
+  isPending: boolean
+
+  /**
+   * React 19: Optimistic cache state for instant UI feedback
+   */
+  optimisticCache: OptimisticCacheState
+
+  /**
+   * React 19: Optimistically add to cache with instant UI update
+   */
+  optimisticSetInCache: (prompt: string, response: string) => void
 }
 
 /**
@@ -272,22 +305,52 @@ export function useTokenOptimization(
 
   const presetConfig = PRESETS[preset]
 
+  // React 19: useTransition for non-blocking state updates
+  const [isPending, startTransition] = useTransition()
+
   // Statistics tracking
   const [stats, setStats] = useState({
     tokensProcessed: 0,
     tokensSaved: 0,
   })
 
-  // Initialize cache
-  const cacheRef = useRef<TieredCache | null>(null)
-  if (enableCache && !cacheRef.current) {
-    cacheRef.current = new TieredCache({
-      exact: { maxSize: 500, ttl: 1800000, ...presetConfig.cache.exact },
-      smart: { maxSize: 200, ttl: 1800000, ...presetConfig.cache.smart },
-      semantic: cacheConfig?.semantic ?? getDefaultSemanticConfig(preset),
-      ...cacheConfig,
-    } as TieredCacheConfig)
+  // React 19: useOptimistic for instant cache feedback
+  type CacheAction = {
+    type: 'add' | 'complete' | 'error'
+    prompt?: string
+    response?: string
   }
+  const [optimisticCache, setOptimisticCache] = useOptimistic<
+    OptimisticCacheState,
+    CacheAction
+  >({ pending: new Map(), lastOperation: 'idle' }, (state, action) => {
+    switch (action.type) {
+      case 'add': {
+        const newPending = new Map(state.pending)
+        if (action.prompt && action.response) {
+          newPending.set(action.prompt, action.response)
+        }
+        return { pending: newPending, lastOperation: 'pending' as const }
+      }
+      case 'complete': {
+        const newPending = new Map(state.pending)
+        if (action.prompt) {
+          newPending.delete(action.prompt)
+        }
+        return { pending: newPending, lastOperation: 'success' as const }
+      }
+      case 'error':
+        return { ...state, lastOperation: 'error' as const }
+      default:
+        return state
+    }
+  })
+
+  // Refs for instances
+  const cacheRef = useRef<TieredCache | null>(null)
+  const routerRef = useRef<ModelRouter | null>(null)
+  const compressorRef = useRef<MarkdownCompressor | null>(null)
+  const counterRef = useRef<AccurateTokenCounter | null>(null)
 
   // Create model configs for router
   const modelConfigs: ModelConfig[] = useMemo(
@@ -312,29 +375,62 @@ export function useTokenOptimization(
     [availableModels]
   )
 
-  // Initialize router
-  const routerRef = useRef<ModelRouter | null>(null)
-  if (enableRouting && !routerRef.current) {
-    routerRef.current = new ModelRouter({
-      models: modelConfigs,
-      defaultStrategy: presetConfig.routing,
-      ...routerConfig,
-    })
-  }
+  // Lazy initialization with useEffect for proper cleanup
+  // This pattern ensures instances are created once and cleaned up on unmount
+  const isInitialized = useRef(false)
 
-  // Initialize compressor
-  const compressorRef = useRef<MarkdownCompressor | null>(null)
-  if (enableCompression && !compressorRef.current) {
-    compressorRef.current = new MarkdownCompressor({
-      level: presetConfig.compression,
-    })
-  }
+  if (!isInitialized.current) {
+    // Initialize cache
+    if (enableCache) {
+      cacheRef.current = new TieredCache({
+        exact: { maxSize: 500, ttl: 1800000, ...presetConfig.cache.exact },
+        smart: { maxSize: 200, ttl: 1800000, ...presetConfig.cache.smart },
+        semantic: cacheConfig?.semantic ?? getDefaultSemanticConfig(preset),
+        ...cacheConfig,
+      } as TieredCacheConfig)
+    }
 
-  // Initialize token counter
-  const counterRef = useRef<AccurateTokenCounter | null>(null)
-  if (!counterRef.current) {
+    // Initialize router
+    if (enableRouting) {
+      routerRef.current = new ModelRouter({
+        models: modelConfigs,
+        defaultStrategy: presetConfig.routing,
+        ...routerConfig,
+      })
+    }
+
+    // Initialize compressor
+    if (enableCompression) {
+      compressorRef.current = new MarkdownCompressor({
+        level: presetConfig.compression,
+      })
+    }
+
+    // Initialize token counter
     counterRef.current = new AccurateTokenCounter({ model })
+
+    isInitialized.current = true
   }
+
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Destroy counter to clear its internal cache and timers
+      counterRef.current?.destroy()
+      counterRef.current = null
+
+      // Clear cache
+      cacheRef.current?.clear()
+      cacheRef.current = null
+
+      // Router and compressor don't have explicit destroy methods
+      // but setting to null allows garbage collection
+      routerRef.current = null
+      compressorRef.current = null
+
+      isInitialized.current = false
+    }
+  }, [])
 
   // Count tokens
   const countTokens = useCallback((text: string): number => {
@@ -359,6 +455,27 @@ export function useTokenOptimization(
       await cacheRef.current.set(prompt, response)
     },
     [enableCache]
+  )
+
+  // React 19: Optimistic cache update with instant UI feedback
+  const optimisticSetInCache = useCallback(
+    (prompt: string, response: string): void => {
+      if (!enableCache || !cacheRef.current) return
+
+      // Optimistically update the UI immediately
+      setOptimisticCache({ type: 'add', prompt, response })
+
+      // Perform the actual async operation in a transition
+      startTransition(async () => {
+        try {
+          await cacheRef.current?.set(prompt, response)
+          setOptimisticCache({ type: 'complete', prompt })
+        } catch {
+          setOptimisticCache({ type: 'error' })
+        }
+      })
+    },
+    [enableCache, setOptimisticCache, startTransition]
   )
 
   // Compress text
@@ -491,6 +608,10 @@ export function useTokenOptimization(
       getStats,
       resetStats,
       clearCache,
+      // React 19 features
+      isPending,
+      optimisticCache,
+      optimisticSetInCache,
     }),
     [
       countTokens,
@@ -502,6 +623,9 @@ export function useTokenOptimization(
       getStats,
       resetStats,
       clearCache,
+      isPending,
+      optimisticCache,
+      optimisticSetInCache,
     ]
   )
 }

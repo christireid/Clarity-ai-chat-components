@@ -7,7 +7,7 @@
  * @module token-budget-bar
  */
 
-import React, { useMemo, useEffect, useRef } from 'react'
+import React, { useMemo, useEffect, useRef, useId } from 'react'
 
 /**
  * Budget status levels
@@ -200,11 +200,8 @@ export const TokenBudgetBar = React.memo(function TokenBudgetBar({
   const formattedCurrent = current.toLocaleString()
   const formattedMax = max.toLocaleString()
 
-  // Generate unique ID for accessibility
-  const id = useMemo(
-    () => `token-budget-${Math.random().toString(36).slice(2, 9)}`,
-    []
-  )
+  // Generate unique ID for accessibility (React 19's useId is SSR-safe)
+  const id = useId()
 
   return (
     <div

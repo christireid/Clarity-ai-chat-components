@@ -26,7 +26,14 @@
  * ```
  */
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useDeferredValue,
+} from 'react'
 import { AccurateTokenCounter } from '../tokenizers/accurate-counter'
 import { DEFAULT_MODEL, DEFAULT_DEBOUNCE_MS } from '../defaults'
 
@@ -98,6 +105,13 @@ export interface UseTokenCountReturn {
    * Force a recount immediately, bypassing debounce.
    */
   recount: () => void
+
+  /**
+   * React 19: Whether the displayed count is for stale (previous) text.
+   * True when text has changed but count hasn't updated yet.
+   * Useful for showing a subtle "calculating" indicator without blocking UI.
+   */
+  isStale: boolean
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -187,11 +201,18 @@ export function useTokenCount(
     enabled = true,
   } = options ?? {}
 
+  // React 19: useDeferredValue prevents UI jank during expensive token counting
+  // The deferred text allows the UI to remain responsive while counting
+  const deferredText = useDeferredValue(text)
+
   // State
   const [count, setCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | undefined>(undefined)
   const [info, setInfo] = useState({ characters: 0, words: 0, ratio: 0 })
+
+  // Track if we're showing stale data (React 19 pattern)
+  const isStale = text !== deferredText
 
   // Refs
   const counterRef = useRef<AccurateTokenCounter | null>(null)
@@ -247,6 +268,7 @@ export function useTokenCount(
   }, [text, doCount])
 
   // Effect to count tokens with debouncing
+  // Uses deferredText (React 19) to prevent UI blocking during rapid typing
   useEffect(() => {
     if (!enabled) {
       setCount(0)
@@ -255,7 +277,7 @@ export function useTokenCount(
     }
 
     // Handle empty text immediately
-    if (!text) {
+    if (!deferredText) {
       setCount(0)
       setInfo({ characters: 0, words: 0, ratio: 0 })
       setIsLoading(false)
@@ -272,11 +294,11 @@ export function useTokenCount(
     // Debounce the count
     if (debounceMs > 0) {
       debounceTimerRef.current = setTimeout(() => {
-        doCount(text)
+        doCount(deferredText)
       }, debounceMs)
     } else {
       // No debounce, count immediately
-      doCount(text)
+      doCount(deferredText)
     }
 
     // Cleanup
@@ -286,7 +308,7 @@ export function useTokenCount(
         debounceTimerRef.current = null
       }
     }
-  }, [text, debounceMs, enabled, doCount])
+  }, [deferredText, debounceMs, enabled, doCount])
 
   // Memoize return value
   return useMemo(
@@ -296,8 +318,9 @@ export function useTokenCount(
       error,
       info,
       recount,
+      isStale,
     }),
-    [count, isLoading, error, info, recount]
+    [count, isLoading, error, info, recount, isStale]
   )
 }
 

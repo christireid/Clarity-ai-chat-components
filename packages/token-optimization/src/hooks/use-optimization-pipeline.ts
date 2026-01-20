@@ -227,21 +227,44 @@ export function useOptimizationPipeline(
   // Reactive stats
   const [stats, setStats] = useState<PipelineStats | null>(null)
 
+  // Track if initialized
+  const isInitialized = useRef(false)
+
   // Initialize components lazily (refs can be set during render)
-  if (config.cache && !cacheRef.current) {
-    cacheRef.current = new TieredCache(config.cache)
+  if (!isInitialized.current) {
+    if (config.cache) {
+      cacheRef.current = new TieredCache(config.cache)
+    }
+
+    if (config.compressionLevel) {
+      compressorRef.current = new MarkdownCompressor({
+        level: config.compressionLevel,
+        enableTOON: true,
+      })
+    }
+
+    if (config.router) {
+      routerRef.current = new ModelRouter(config.router)
+    }
+
+    isInitialized.current = true
   }
 
-  if (config.compressionLevel && !compressorRef.current) {
-    compressorRef.current = new MarkdownCompressor({
-      level: config.compressionLevel,
-      enableTOON: true,
-    })
-  }
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Clear cache
+      cacheRef.current?.clear()
+      cacheRef.current = null
 
-  if (config.router && !routerRef.current) {
-    routerRef.current = new ModelRouter(config.router)
-  }
+      // Router and compressor don't have explicit destroy methods
+      // but setting to null allows garbage collection
+      routerRef.current = null
+      compressorRef.current = null
+
+      isInitialized.current = false
+    }
+  }, [])
 
   // Initialize stats in effect to avoid setState during render
   useEffect(() => {

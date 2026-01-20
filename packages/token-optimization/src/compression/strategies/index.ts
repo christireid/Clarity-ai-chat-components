@@ -125,6 +125,31 @@ export {
   type MemoryNoCompressionResult,
 } from './memory-adaptive'
 
+// Binary compression using fflate (WASM-accelerated)
+export {
+  BinaryCompressor,
+  createBinaryCompressor,
+  compressBinary,
+  decompressBinary,
+  type BinaryCompressionOptions,
+  type BinaryCompressionResult,
+  type BinaryDecompressionResult,
+} from './binary-compression'
+
+// String compression using lz-string (UTF-16 optimized)
+export {
+  StringCompressor,
+  createStringCompressor,
+  compressString,
+  decompressString,
+  compressForURL,
+  decompressFromURL,
+  ConversationCache,
+  type StringCompressionFormat,
+  type StringCompressionOptions,
+  type StringCompressionResult,
+} from './string-compression'
+
 /**
  * Common quality metrics interface used across all strategies
  */

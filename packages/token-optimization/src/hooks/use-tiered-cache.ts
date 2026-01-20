@@ -7,7 +7,15 @@
  * @module use-tiered-cache
  */
 
-import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
+import {
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useTransition,
+  useOptimistic,
+} from 'react'
 import { TieredCache } from '../cache/tiered-cache'
 import type {
   TieredCacheConfig,
@@ -23,6 +31,15 @@ import type { CacheContext } from '../caching/advanced-semantic-cache'
 export interface UseTieredCacheConfig extends TieredCacheConfig {
   /** Enable automatic stats tracking (triggers re-render on stats change) */
   trackStats?: boolean
+}
+
+/**
+ * Optimistic entry state for React 19
+ */
+export interface OptimisticEntry {
+  prompt: string
+  response: string
+  status: 'pending' | 'confirmed' | 'failed'
 }
 
 /**
@@ -84,6 +101,25 @@ export interface UseTieredCacheReturn {
    * Whether the cache is ready
    */
   isReady: boolean
+
+  /**
+   * React 19: Whether a cache operation is in a transition
+   */
+  isPending: boolean
+
+  /**
+   * React 19: Optimistic entries that haven't been confirmed yet
+   */
+  optimisticEntries: OptimisticEntry[]
+
+  /**
+   * React 19: Set cache entry with optimistic update (instant UI feedback)
+   */
+  optimisticSet: (
+    prompt: string,
+    response: string,
+    metadata?: Record<string, unknown>
+  ) => void
 }
 
 /**
@@ -122,11 +158,51 @@ export function useTieredCache(
 ): UseTieredCacheReturn {
   const { trackStats = false, ...cacheConfig } = config
 
+  // React 19: useTransition for non-blocking cache operations
+  const [isPending, startTransition] = useTransition()
+
   // Persist cache instance across renders
   const cacheRef = useRef<TieredCache | null>(null)
 
   // Track stats reactively if enabled
   const [stats, setStats] = useState<CacheStats | null>(null)
+
+  // React 19: useOptimistic for instant UI feedback on cache operations
+  type CacheEntryAction = {
+    type: 'add' | 'confirm' | 'fail' | 'remove'
+    prompt: string
+    response?: string
+  }
+  const [optimisticEntries, updateOptimistic] = useOptimistic<
+    OptimisticEntry[],
+    CacheEntryAction
+  >([], (state, action) => {
+    switch (action.type) {
+      case 'add':
+        return [
+          ...state,
+          {
+            prompt: action.prompt,
+            response: action.response ?? '',
+            status: 'pending' as const,
+          },
+        ]
+      case 'confirm':
+        return state.map((e) =>
+          e.prompt === action.prompt
+            ? { ...e, status: 'confirmed' as const }
+            : e
+        )
+      case 'fail':
+        return state.map((e) =>
+          e.prompt === action.prompt ? { ...e, status: 'failed' as const } : e
+        )
+      case 'remove':
+        return state.filter((e) => e.prompt !== action.prompt)
+      default:
+        return state
+    }
+  })
 
   // Initialize cache lazily (refs can be set during render)
   if (!cacheRef.current) {
@@ -224,6 +300,36 @@ export function useTieredCache(
     return cacheRef.current.getStats()
   }, [])
 
+  // React 19: Optimistic set with instant UI feedback
+  const optimisticSet = useCallback(
+    (
+      prompt: string,
+      response: string,
+      metadata?: Record<string, unknown>
+    ): void => {
+      if (!cacheRef.current) return
+
+      // Optimistically show the entry as pending
+      updateOptimistic({ type: 'add', prompt, response })
+
+      // Perform actual cache operation in a transition
+      startTransition(async () => {
+        try {
+          await cacheRef.current?.set(prompt, response, metadata)
+          updateOptimistic({ type: 'confirm', prompt })
+          updateStats()
+          // Remove from optimistic state after a short delay
+          setTimeout(() => {
+            updateOptimistic({ type: 'remove', prompt })
+          }, 1000)
+        } catch {
+          updateOptimistic({ type: 'fail', prompt })
+        }
+      })
+    },
+    [updateOptimistic, startTransition, updateStats]
+  )
+
   // Memoized return value
   return useMemo(
     () => ({
@@ -235,7 +341,22 @@ export function useTieredCache(
       getStats,
       stats,
       isReady: cacheRef.current !== null,
+      // React 19 features
+      isPending,
+      optimisticEntries,
+      optimisticSet,
     }),
-    [get, set, invalidate, prefetch, clear, getStats, stats]
+    [
+      get,
+      set,
+      invalidate,
+      prefetch,
+      clear,
+      getStats,
+      stats,
+      isPending,
+      optimisticEntries,
+      optimisticSet,
+    ]
   )
 }
