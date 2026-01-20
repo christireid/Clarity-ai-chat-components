@@ -7,7 +7,7 @@
  * @module use-optimization-pipeline
  */
 
-import { useRef, useCallback, useMemo, useState } from 'react'
+import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { TieredCache } from '../cache/tiered-cache'
 import type {
   TieredCacheConfig,
@@ -227,7 +227,7 @@ export function useOptimizationPipeline(
   // Reactive stats
   const [stats, setStats] = useState<PipelineStats | null>(null)
 
-  // Initialize components lazily
+  // Initialize components lazily (refs can be set during render)
   if (config.cache && !cacheRef.current) {
     cacheRef.current = new TieredCache(config.cache)
   }
@@ -243,10 +243,12 @@ export function useOptimizationPipeline(
     routerRef.current = new ModelRouter(config.router)
   }
 
-  // Initialize stats if tracking enabled
-  if (trackStats && stats === null) {
-    setStats(buildStats())
-  }
+  // Initialize stats in effect to avoid setState during render
+  useEffect(() => {
+    if (trackStats && stats === null) {
+      setStats(buildStats())
+    }
+  }, [trackStats, stats])
 
   // Build combined stats
   function buildStats(): PipelineStats {

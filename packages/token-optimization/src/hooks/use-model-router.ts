@@ -7,7 +7,7 @@
  * @module use-model-router
  */
 
-import { useRef, useCallback, useMemo, useState } from 'react'
+import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
 import type {
   ModelRouterConfig,
@@ -119,13 +119,17 @@ export function useModelRouter(
   // Track stats reactively if enabled
   const [stats, setStats] = useState<RouterStats | null>(null)
 
-  // Initialize router lazily
+  // Initialize router lazily (refs can be set during render)
   if (!routerRef.current) {
     routerRef.current = new ModelRouter(routerConfig)
-    if (trackStats) {
+  }
+
+  // Initialize stats in effect to avoid setState during render
+  useEffect(() => {
+    if (trackStats && routerRef.current) {
       setStats(routerRef.current.getStats())
     }
-  }
+  }, [trackStats])
 
   // Update stats helper
   const updateStats = useCallback(() => {

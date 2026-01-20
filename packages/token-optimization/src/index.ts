@@ -1,13 +1,71 @@
 /**
- * Token Optimization Package - Enhanced Implementation
+ * Token Optimization Package
  *
- * This package provides advanced token optimization capabilities including:
- * - Enhanced security with comprehensive threat protection
- * - Quality gates with 85% minimum quality preservation
- * - Cost-aware optimization with budget management
- * - Advanced semantic caching with 90%+ cost reduction
- * - Dynamic compression with quality preservation
+ * The simplest way to count and optimize LLM tokens.
+ *
+ * @example Quick Start (React)
+ * ```tsx
+ * import { useTokenCount } from '@clarity-chat/token-optimization'
+ *
+ * function MyComponent() {
+ *   const { count } = useTokenCount(text)
+ *   return <span>{count} tokens</span>
+ * }
+ * ```
+ *
+ * @example Quick Start (Node.js)
+ * ```typescript
+ * import { countTokens, DEFAULTS } from '@clarity-chat/token-optimization'
+ *
+ * const count = countTokens('Hello world') // Uses gpt-4o by default
+ * console.log(`${count} tokens using ${DEFAULTS.model}`)
+ * ```
+ *
+ * @example With Model Router
+ * ```typescript
+ * const router = ModelRouter.default()
+ * // or with builder:
+ * const router = ModelRouter.builder()
+ *   .useOpenAIModels()
+ *   .withStrategy('cost-optimized')
+ *   .build()
+ * ```
+ *
+ * @packageDocumentation
  */
+
+// ============================================================================
+// Sensible Defaults (Start Here!)
+// ============================================================================
+
+export {
+  // Core defaults
+  DEFAULT_MODEL,
+  DEFAULT_DEBOUNCE_MS,
+  DEFAULT_MAX_CACHE_SIZE,
+  DEFAULT_CACHE_TTL_MS,
+  DEFAULT_SIMILARITY_THRESHOLD,
+  // Component defaults
+  DEFAULT_TOKEN_COUNTER_OPTIONS,
+  DEFAULT_COUNT_OPTIONS,
+  DEFAULT_COMPRESSION_OPTIONS,
+  DEFAULT_LLMLINGUA_OPTIONS,
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_TIERED_CACHE_BY_PRESET,
+  DEFAULT_ROUTING_CONFIG,
+  DEFAULT_FALLBACK_MODEL,
+  DEFAULT_SECURITY_CONFIG,
+  DEFAULT_BUDGET_OPTIONS,
+  // Hook defaults
+  DEFAULT_USE_TOKEN_COUNT_OPTIONS,
+  DEFAULT_USE_TOKEN_BUDGET_OPTIONS,
+  DEFAULT_USE_TOKEN_OPTIMIZATION_OPTIONS,
+  // Presets
+  PRESETS,
+  // All-in-one defaults object
+  DEFAULTS,
+} from './defaults'
+export type { PresetName } from './defaults'
 
 // Security exports (Node.js only - uses events module via security-dashboard)
 // export { EnhancedSecurityManager } from './security/enhanced-security'
@@ -294,7 +352,11 @@ export type {
   ComplexityWeights,
 } from './routing/complexity-analyzer'
 
-export { ModelRouter, RoutingStrategy } from './routing/model-router'
+export {
+  ModelRouter,
+  ModelRouterBuilder,
+  RoutingStrategy,
+} from './routing/model-router'
 export type {
   ModelRouterConfig,
   ModelConfig,
@@ -306,11 +368,18 @@ export type {
 
 // React Hooks
 export {
+  // Simple hooks (recommended starting point)
+  useTokenCount,
+  // Full-featured hooks
   useTieredCache,
   useModelRouter,
   useOptimizationPipeline,
 } from './hooks'
 export type {
+  // Simple hook types
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+  // Full-featured hook types
   UseTieredCacheConfig,
   UseTieredCacheReturn,
   UseModelRouterConfig,
@@ -366,8 +435,21 @@ export type {
 
 // Error Handling System
 export {
+  // Base errors
   TokenOptimizationError,
   TokenErrorCode,
+  // Helpful errors with suggestions and docs links
+  HelpfulError,
+  UnsupportedModelError,
+  TokenBudgetExceededError,
+  ValidationError,
+  CacheError,
+  CompressionError,
+  QualityThresholdError,
+  SecurityViolationError,
+  // Factory function
+  createError,
+  // Utilities
   isRecoverable,
   withRetry,
   withTimeout,

@@ -7,7 +7,7 @@
  * @module use-tiered-cache
  */
 
-import { useRef, useCallback, useMemo, useState } from 'react'
+import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { TieredCache } from '../cache/tiered-cache'
 import type {
   TieredCacheConfig,
@@ -128,13 +128,17 @@ export function useTieredCache(
   // Track stats reactively if enabled
   const [stats, setStats] = useState<CacheStats | null>(null)
 
-  // Initialize cache lazily
+  // Initialize cache lazily (refs can be set during render)
   if (!cacheRef.current) {
     cacheRef.current = new TieredCache(cacheConfig)
-    if (trackStats) {
+  }
+
+  // Initialize stats in effect to avoid setState during render
+  useEffect(() => {
+    if (trackStats && cacheRef.current) {
       setStats(cacheRef.current.getStats())
     }
-  }
+  }, [trackStats])
 
   // Update stats helper
   const updateStats = useCallback(() => {

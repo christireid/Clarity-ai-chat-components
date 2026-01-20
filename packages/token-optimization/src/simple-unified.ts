@@ -15,6 +15,14 @@ import {
 import { TokenOptimizationError, TokenErrorCode } from './errors'
 import { Logger } from './observability'
 
+/**
+ * Options for simple optimization
+ */
+export interface SimpleOptimizationOptions {
+  strategy?: 'basic' | 'toon' | 'compression' | 'truncated'
+  maxTokens?: number
+}
+
 export interface SimpleOptimizationResult {
   original: string
   optimized: string
@@ -25,7 +33,7 @@ export interface SimpleOptimizationResult {
   method: string
   security: {
     sanitized: boolean
-    threats: any[]
+    threats: string[]
     riskLevel: string
   }
 }
@@ -57,9 +65,9 @@ export class SimpleUnifiedOptimizer {
    */
   async optimize(
     text: string,
-    options: any = {}
+    options: SimpleOptimizationOptions = {}
   ): Promise<SimpleOptimizationResult> {
-    const strategy = options.strategy || 'basic'
+    const strategy = options.strategy ?? 'basic'
     const maxTokens = options.maxTokens
 
     // Check cache first
@@ -89,9 +97,8 @@ export class SimpleUnifiedOptimizer {
 
     try {
       // Check if it's structured data
-      let data: any
       try {
-        data = JSON.parse(secured.sanitized)
+        const data: unknown = JSON.parse(secured.sanitized)
         const toonOptimized = this.toonOptimizer.convertToToon(data)
         const originalTokens = this.tokenCounter.count(secured.sanitized)
         const toonTokens = this.tokenCounter.count(toonOptimized)
@@ -145,7 +152,7 @@ export class SimpleUnifiedOptimizer {
       method,
       security: {
         sanitized: true,
-        threats: secured.threats,
+        threats: secured.threats ?? [],
         riskLevel: secured.riskLevel,
       },
     }

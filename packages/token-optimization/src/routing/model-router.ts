@@ -115,25 +115,308 @@ export interface ModelRouterConfig {
   complexityAnalyzer?: ComplexityAnalyzer
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// MODEL ROUTER BUILDER
+// Fluent API for easy configuration
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fluent builder for creating ModelRouter instances.
+ *
+ * Makes it easy to configure a router with autocomplete and chainable methods.
+ *
+ * @example Basic Usage
+ * ```typescript
+ * const router = ModelRouter.builder()
+ *   .addModel('gpt-4o-mini', 'small', 0.15, 0.6)
+ *   .addModel('gpt-4o', 'medium', 2.5, 10)
+ *   .withStrategy('balanced')
+ *   .build()
+ * ```
+ *
+ * @example With Preset Models
+ * ```typescript
+ * const router = ModelRouter.builder()
+ *   .useOpenAIModels()  // Adds gpt-4o-mini, gpt-4o, gpt-4-turbo
+ *   .useClaudeModels()  // Adds claude-3-haiku, claude-3-sonnet, claude-3-opus
+ *   .build()
+ * ```
+ *
+ * @example Custom Configuration
+ * ```typescript
+ * const router = ModelRouter.builder()
+ *   .addModel({
+ *     id: 'my-fine-tuned-model',
+ *     tier: 'medium',
+ *     inputCostPer1M: 3.0,
+ *     outputCostPer1M: 6.0,
+ *     contextWindow: 8192,
+ *     maxOutput: 4096,
+ *     capabilities: ['chat', 'code']
+ *   })
+ *   .withStrategy('quality-first')
+ *   .build()
+ * ```
+ */
+export class ModelRouterBuilder {
+  private models: ModelConfig[] = []
+  private strategy: RoutingStrategy = RoutingStrategy.CostOptimized
+  private analyzer?: ComplexityAnalyzer
+
+  /**
+   * Add a model with full configuration
+   */
+  addModel(config: ModelConfig): this
+  /**
+   * Add a model with common defaults
+   */
+  addModel(
+    id: string,
+    tier: ModelTier,
+    inputCostPer1M: number,
+    outputCostPer1M: number,
+    contextWindow?: number,
+    maxOutput?: number,
+    capabilities?: string[]
+  ): this
+  addModel(
+    configOrId: ModelConfig | string,
+    tier?: ModelTier,
+    inputCostPer1M?: number,
+    outputCostPer1M?: number,
+    contextWindow = 128000,
+    maxOutput = 16384,
+    capabilities: string[] = ['chat', 'completion']
+  ): this {
+    if (typeof configOrId === 'string') {
+      this.models.push({
+        id: configOrId,
+        tier: tier!,
+        inputCostPer1M: inputCostPer1M!,
+        outputCostPer1M: outputCostPer1M!,
+        contextWindow,
+        maxOutput,
+        capabilities,
+      })
+    } else {
+      this.models.push(configOrId)
+    }
+    return this
+  }
+
+  /**
+   * Add all OpenAI models with current pricing (as of 2025)
+   */
+  useOpenAIModels(): this {
+    return this.addModel('gpt-4o-mini', 'small', 0.15, 0.6, 128000, 16384, [
+      'chat',
+      'completion',
+      'function_calling',
+    ])
+      .addModel('gpt-4o', 'medium', 2.5, 10, 128000, 16384, [
+        'chat',
+        'completion',
+        'function_calling',
+        'vision',
+      ])
+      .addModel('gpt-4-turbo', 'large', 10, 30, 128000, 4096, [
+        'chat',
+        'completion',
+        'function_calling',
+        'vision',
+      ])
+      .addModel('o1', 'premium', 15, 60, 200000, 100000, ['chat', 'reasoning'])
+  }
+
+  /**
+   * Add all Anthropic Claude models with current pricing (as of 2025)
+   */
+  useClaudeModels(): this {
+    return this.addModel('claude-3-haiku', 'small', 0.25, 1.25, 200000, 64000, [
+      'chat',
+      'completion',
+      'tool_use',
+    ])
+      .addModel('claude-3-sonnet', 'medium', 3, 15, 200000, 64000, [
+        'chat',
+        'completion',
+        'tool_use',
+        'vision',
+      ])
+      .addModel('claude-3-5-sonnet', 'large', 3, 15, 200000, 64000, [
+        'chat',
+        'completion',
+        'tool_use',
+        'vision',
+        'computer_use',
+      ])
+      .addModel('claude-3-opus', 'premium', 15, 75, 200000, 64000, [
+        'chat',
+        'completion',
+        'tool_use',
+        'vision',
+      ])
+  }
+
+  /**
+   * Add Google Gemini models with current pricing (as of 2025)
+   */
+  useGeminiModels(): this {
+    return this.addModel(
+      'gemini-2.0-flash-lite',
+      'small',
+      0.075,
+      0.3,
+      200000,
+      65536,
+      ['chat', 'completion']
+    )
+      .addModel('gemini-2.0-flash', 'medium', 0.5, 3, 200000, 65536, [
+        'chat',
+        'completion',
+        'vision',
+      ])
+      .addModel('gemini-2.0-pro', 'large', 2.5, 15, 1000000, 65536, [
+        'chat',
+        'completion',
+        'vision',
+      ])
+  }
+
+  /**
+   * Add all major provider models (OpenAI, Claude, Gemini)
+   */
+  useAllProviders(): this {
+    return this.useOpenAIModels().useClaudeModels().useGeminiModels()
+  }
+
+  /**
+   * Set the default routing strategy
+   * @param strategy - 'cost-optimized' | 'balanced' | 'quality-first'
+   */
+  withStrategy(
+    strategy: RoutingStrategy | 'cost-optimized' | 'balanced' | 'quality-first'
+  ): this {
+    if (typeof strategy === 'string') {
+      switch (strategy) {
+        case 'cost-optimized':
+          this.strategy = RoutingStrategy.CostOptimized
+          break
+        case 'balanced':
+          this.strategy = RoutingStrategy.Balanced
+          break
+        case 'quality-first':
+          this.strategy = RoutingStrategy.QualityFirst
+          break
+        default:
+          this.strategy = strategy as RoutingStrategy
+      }
+    } else {
+      this.strategy = strategy
+    }
+    return this
+  }
+
+  /**
+   * Use a custom complexity analyzer
+   */
+  withComplexityAnalyzer(analyzer: ComplexityAnalyzer): this {
+    this.analyzer = analyzer
+    return this
+  }
+
+  /**
+   * Build the ModelRouter instance
+   * @throws Error if no models have been configured
+   */
+  build(): ModelRouter {
+    if (this.models.length === 0) {
+      throw new Error(
+        'No models configured. Use addModel() or useOpenAIModels() etc.'
+      )
+    }
+
+    return new ModelRouter({
+      models: this.models,
+      defaultStrategy: this.strategy,
+      complexityAnalyzer: this.analyzer,
+    })
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODEL ROUTER
+// ═══════════════════════════════════════════════════════════════════════════
+
 /**
  * Cost-optimized model router
  *
- * @example
+ * Routes prompts to the most cost-effective model based on complexity analysis.
+ *
+ * @example Using Builder (Recommended)
+ * ```typescript
+ * const router = ModelRouter.builder()
+ *   .useOpenAIModels()
+ *   .withStrategy('balanced')
+ *   .build()
+ *
+ * const result = router.route('Write a sorting function')
+ * console.log(result.selectedModel?.id)  // 'gpt-4o-mini' for simple tasks
+ * console.log(result.estimatedCost)      // Cost estimate in USD
+ * ```
+ *
+ * @example Manual Configuration
  * ```typescript
  * const router = new ModelRouter({
  *   models: [
- *     { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, ... },
- *     { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, ... },
- *     { id: 'claude-3-opus', tier: 'premium', inputCostPer1M: 15, ... }
+ *     { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+ *     { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat', 'vision'] }
  *   ]
  * })
+ * ```
  *
- * const result = router.route('Write a sorting function')
- * console.log(result.selectedModel.id) // 'gpt-4o-mini' or 'gpt-4o'
- * console.log(result.estimatedCost)     // 0.00025
+ * @example With Options
+ * ```typescript
+ * const result = router.route(prompt, {
+ *   estimatedInputTokens: 5000,
+ *   estimatedOutputTokens: 1000,
+ *   requiredCapabilities: ['vision'],
+ *   strategy: RoutingStrategy.QualityFirst
+ * })
  * ```
  */
 export class ModelRouter {
+  /**
+   * Create a new ModelRouterBuilder for fluent configuration.
+   *
+   * @example
+   * ```typescript
+   * const router = ModelRouter.builder()
+   *   .useOpenAIModels()
+   *   .withStrategy('balanced')
+   *   .build()
+   * ```
+   */
+  static builder(): ModelRouterBuilder {
+    return new ModelRouterBuilder()
+  }
+
+  /**
+   * Create a router with sensible defaults (OpenAI models, balanced strategy).
+   *
+   * @example
+   * ```typescript
+   * const router = ModelRouter.default()
+   * const result = router.route('Hello world')
+   * ```
+   */
+  static default(): ModelRouter {
+    return ModelRouter.builder()
+      .useOpenAIModels()
+      .withStrategy('balanced')
+      .build()
+  }
+
   private models: ModelConfig[]
   private defaultStrategy: RoutingStrategy
   private complexityAnalyzer: ComplexityAnalyzer

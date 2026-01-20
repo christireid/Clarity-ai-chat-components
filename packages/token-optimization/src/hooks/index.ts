@@ -7,6 +7,13 @@
  * @module hooks
  */
 
+// Simple token counting (recommended starting point)
+export { useTokenCount } from './use-token-count'
+export type {
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+} from './use-token-count'
+
 export { useTieredCache } from './use-tiered-cache'
 export type {
   UseTieredCacheConfig,

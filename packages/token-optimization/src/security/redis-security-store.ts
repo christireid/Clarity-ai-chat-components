@@ -8,14 +8,41 @@
 // Optional Redis import - falls back to in-memory if not available
 // Redis is an optional peer dependency - consumers install it only if needed
 
-let createClient: any = null
+/**
+ * Redis client interface for type safety
+ */
+interface RedisClientLike {
+  connect: () => Promise<void>
+  disconnect: () => Promise<void>
+  quit: () => Promise<void>
+  get: (key: string) => Promise<string | null>
+  set: (
+    key: string,
+    value: string,
+    options?: { EX?: number }
+  ) => Promise<string | null>
+  setEx: (key: string, seconds: number, value: string) => Promise<string | null>
+  del: (key: string) => Promise<number>
+  keys: (pattern: string) => Promise<string[]>
+  on: (event: string, callback: (arg: unknown) => void) => void
+}
+
+/**
+ * Redis createClient function type
+ */
+type CreateClientFn = (options: {
+  url: string
+  socket?: { reconnectStrategy?: (retries: number) => number }
+}) => RedisClientLike
+
+let createClient: CreateClientFn | null = null
 
 // Dynamic import for optional Redis dependency
 const initRedis = async () => {
   try {
     // @ts-expect-error - redis is an optional peer dependency
     const redis = await import('redis')
-    createClient = redis.createClient
+    createClient = redis.createClient as CreateClientFn
   } catch {
     console.warn(
       '[REDIS SECURITY STORE] Redis not available, using in-memory fallback'
@@ -47,7 +74,7 @@ export interface SecurityStoreData {
  * Falls back to in-memory storage if Redis is not available
  */
 export class RedisSecurityStore {
-  private client: any = null
+  private client: RedisClientLike | null = null
   private isConnected = false
   private cleanupTimer: NodeJS.Timeout | null = null
   private fallbackStore: Map<string, SecurityStoreData> = new Map()
@@ -78,7 +105,7 @@ export class RedisSecurityStore {
         },
       })
 
-      this.client.on('error', (err: any) => {
+      this.client.on('error', (err: unknown) => {
         console.error('[REDIS SECURITY STORE] Error:', err)
         this.isConnected = false
       })

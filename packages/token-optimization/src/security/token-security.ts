@@ -580,7 +580,7 @@ export class TokenSecurityManager {
 
     try {
       return this.performSanitization(text)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[SANITIZATION ERROR]:', error)
 
       // Fail-safe: return original text with no threats detected
