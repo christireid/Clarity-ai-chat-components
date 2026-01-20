@@ -34,3 +34,11 @@ export type {
   PipelineStats,
   UseOptimizationPipelineReturn,
 } from './use-optimization-pipeline'
+
+// Unified hook (recommended for most use cases)
+export { useTokenOptimization } from './use-token-optimization'
+export type {
+  UseTokenOptimizationConfig,
+  UseTokenOptimizationReturn,
+  TokenOptimizationPreset,
+} from './use-token-optimization'

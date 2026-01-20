@@ -417,3 +417,19 @@ export type {
   CircuitBreakerStats,
   CircuitState,
 } from './resilience/circuit-breaker'
+
+// ============================================================================
+// Simplified API (Recommended Entry Point)
+// ============================================================================
+
+// Factory for non-React usage
+export { createOptimizer, OptimizerPresets } from './factory'
+export type { OptimizerConfig, OptimizerPreset, Optimizer } from './factory'
+
+// Unified React hook (recommended)
+export { useTokenOptimization } from './hooks/use-token-optimization'
+export type {
+  UseTokenOptimizationConfig,
+  UseTokenOptimizationReturn,
+  TokenOptimizationPreset,
+} from './hooks/use-token-optimization'

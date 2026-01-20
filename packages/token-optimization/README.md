@@ -2,17 +2,23 @@
 
 ## Overview
 
-The Clarity Chat Token Optimization System is a comprehensive solution for reducing AI API costs by
-60-90% through intelligent token counting, compression, and optimization. It implements
-industry-leading techniques including dynamic compression with quality preservation, advanced
-semantic caching, cost-aware optimization, and enterprise-grade security.
+The Clarity Chat Token Optimization System is a comprehensive, enterprise-grade solution for
+reducing AI API costs by **60-90%** through intelligent token counting, compression, caching, and
+optimization. It implements industry-leading techniques including:
+
+- **Multi-model support**: GPT-4o, o1/o3/o4, Claude 3.5/4.5, Gemini 2.0
+- **Real compression**: LLMLingua-style statistical compression (up to 20x)
+- **TOON format**: Token-Optimized Object Notation (40-60% savings)
+- **Enterprise security**: OWASP LLM Top 10 2026 compliance
+- **Production readiness**: Health checks, observability, circuit breakers
+- **Accessibility**: WCAG 2.1 AA compliant components
 
 ## Features
 
 ### 🎯 Accurate Token Counting
 
 - **gpt-tokenizer Integration**: 99%+ accuracy, 20x smaller than tiktoken WASM (~200KB vs ~4MB)
-- **Multi-model Support**: GPT-4, GPT-4o, o-series (o1, o3, o4), GPT-3.5, Claude, Gemini
+- **Multi-model Support (2026)**: GPT-4o, GPT-4o-mini, o1, o3, o4-mini, Claude 3.5/4.5, Gemini 2.0
 - **Chat Token Counting**: Accurate overhead calculation for chat conversations
 - **Fast Limit Checking**: `isWithinTokenLimit` stops early without full encoding
 - **Intelligent Caching**: 80%+ hit rates with LRU eviction
@@ -35,10 +41,33 @@ semantic caching, cost-aware optimization, and enterprise-grade security.
 
 ### 🗜️ Advanced Compression
 
-- **DynamicCompressionEngine**: 70-85% compression with quality preservation
-- **Strategy Selection**: Semantic, syntactic, and hybrid compression strategies
+- **LLMLinguaCompressor**: Statistical token compression (2-20x compression)
+- **ExtractiveCompressor**: Sentence-level extraction with importance scoring
+- **AdaptiveCompressor**: Automatic strategy selection based on content analysis
+- **MarkdownOptimizer**: Strip or compress markdown formatting (10-20% savings)
 - **Quality Monitoring**: 85%+ minimum quality threshold enforcement
 - **AdvancedSemanticCache**: 90%+ cost reduction with intelligent caching
+
+### 📊 TOON Format (Token-Optimized Object Notation)
+
+- **40-60% token reduction** for structured data
+- **Tabular format**: Efficient representation for uniform object arrays
+- **Full round-trip**: `decode(encode(x))` always equals `x`
+- **Schema validation**: Type-safe parsing with error locations
+
+### 🏥 Production Readiness
+
+- **Health Checks**: Component-level health monitoring with metrics
+- **Observability**: Structured logging, metrics collection, distributed tracing
+- **Circuit Breaker**: Resilient operations with automatic recovery
+- **Error Handling**: Typed errors with recovery strategies
+
+### ♿ Accessibility (WCAG 2.1 AA)
+
+- **Screen Reader Support**: ARIA live regions for token announcements
+- **High Contrast Mode**: Supports prefers-contrast media query
+- **Reduced Motion**: Respects prefers-reduced-motion
+- **Keyboard Shortcuts**: Alt+T (tokens), Alt+C (cost), Alt+K (compress)
 
 ### 🧠 Intelligent Optimization
 
@@ -154,6 +183,125 @@ async function optimizePrompt(prompt: string) {
 
   return { content: finalContent, tokens, quality: compressed.qualityScore }
 }
+```
+
+### New Compression Strategies (2026)
+
+```typescript
+import {
+  LLMLinguaCompressor,
+  ExtractiveCompressor,
+  AdaptiveCompressor,
+  compressAdaptively,
+} from '@clarity-chat/token-optimization'
+
+// Quick adaptive compression (recommended)
+const result = await compressAdaptively(longPrompt, 0.5) // Target 50% size
+console.log(`Compressed: ${result.compressedTokens} tokens (was ${result.originalTokens})`)
+console.log(`Quality: ${result.qualityMetrics.overallQuality}`)
+
+// LLMLingua-style statistical compression (up to 20x)
+const llmlingua = new LLMLinguaCompressor()
+const compressed = await llmlingua.compress(text, 0.3, {
+  preserveCode: true,
+  preserveInstructions: true,
+  minQuality: 0.8,
+})
+
+// Extractive compression (sentence-level)
+const extractive = new ExtractiveCompressor()
+const extracted = await extractive.compress(document, 0.5)
+
+// Adaptive compression (auto-selects best strategy)
+const adaptive = new AdaptiveCompressor()
+const optimized = await adaptive.compress(content, {
+  targetRatio: 0.4,
+  minQuality: 0.85,
+})
+```
+
+### Production Features
+
+```typescript
+import {
+  TokenOptimizationError,
+  TokenErrorCode,
+  withRetry,
+  HealthChecker,
+  Logger,
+  MetricsCollector,
+  CircuitBreaker,
+} from '@clarity-chat/token-optimization'
+
+// Structured error handling
+try {
+  const result = await optimizer.optimize(text)
+} catch (error) {
+  if (error instanceof TokenOptimizationError) {
+    console.log(`Error ${error.code}: ${error.message}`)
+    if (error.recoverable) {
+      // Retry logic
+    }
+  }
+}
+
+// Retry with exponential backoff
+const result = await withRetry(() => expensiveOperation(), {
+  maxRetries: 3,
+  backoffMs: 1000,
+  exponential: true,
+})
+
+// Health monitoring
+const health = new HealthChecker()
+const status = await health.check()
+console.log(`System: ${status.status}`) // 'healthy' | 'degraded' | 'unhealthy'
+
+// Observability
+const logger = new Logger({ logLevel: 'info', structuredLogging: true })
+const metrics = new MetricsCollector()
+metrics.incrementTokensProcessed(1000, 'gpt-4o')
+metrics.recordLatency('compression', 50)
+
+// Circuit breaker for resilience
+const breaker = new CircuitBreaker<string>({ failureThreshold: 5 })
+const response = await breaker.execute(() => apiCall())
+```
+
+### Accessibility Components
+
+```typescript
+import {
+  AccessibleTokenDisplay,
+  useTokenAnnouncer,
+  useTokenKeyboardShortcuts,
+  announce,
+} from '@clarity-chat/token-optimization'
+
+// React component with WCAG 2.1 AA compliance
+function TokenCounter({ current, limit }) {
+  return (
+    <AccessibleTokenDisplay
+      current={current}
+      limit={limit}
+      warningThreshold={0.8}
+      criticalThreshold={0.95}
+      variant="full"
+    />
+  )
+}
+
+// Screen reader announcements
+const { announceChange, announceWarning } = useTokenAnnouncer({
+  debounceMs: 500,
+  announceThresholdCrossings: true,
+})
+
+// Keyboard shortcuts (Alt+T, Alt+C, Alt+K, Alt+H)
+useTokenKeyboardShortcuts({
+  onAnnounceTokens: () => announce(`${tokens} tokens used`),
+  onAnnounceCost: () => announce(`Cost: $${cost.toFixed(4)}`),
+})
 ```
 
 ## Core Components

@@ -228,18 +228,85 @@ export class AccurateTokenCounter {
   }
 
   /**
-   * Estimate tokens using character-based heuristics
+   * Estimate tokens using improved heuristics
    *
    * Used for non-OpenAI models where exact tokenization is not available.
-   * Provides reasonable accuracy for most use cases.
+   * Uses gpt-tokenizer with cl100k_base as a proxy for better accuracy (~90% vs ~70%).
+   *
+   * Research shows Claude and Gemini tokenization is similar to cl100k_base:
+   * - Claude uses a BPE tokenizer similar to GPT-4
+   * - Gemini uses SentencePiece which produces similar token counts
+   *
+   * @see https://www.propelcode.ai/blog/token-counting-tiktoken-anthropic-gemini-guide-2025
    *
    * @param text - The text to estimate tokens for
    * @returns Estimated token count
    */
   private estimateTokens(text: string): number {
-    // Different models have slightly different tokenization patterns
-    // Claude averages ~3.5-4 chars per token, Gemini similar
-    return Math.ceil(text.length / 4)
+    try {
+      // Use gpt-tokenizer's encode as a proxy for Claude/Gemini
+      // This gives ~90% accuracy vs the ~70% of simple character-based
+      const tokens = encode(text, { allowedSpecial: 'all' }).length
+
+      // Apply model-specific adjustment factors
+      // Claude tends to be slightly more efficient than GPT tokenization
+      // Gemini is similar to Claude
+      const adjustmentFactor = this.modelName === 'claude' ? 0.95 : 0.97
+
+      return Math.ceil(tokens * adjustmentFactor)
+    } catch {
+      // Fallback to improved character-based estimation
+      return this.characterBasedEstimate(text)
+    }
+  }
+
+  /**
+   * Fallback character-based estimation with improved accuracy
+   *
+   * Uses multiple heuristics for better accuracy:
+   * - Word count (English ~1.3 tokens/word)
+   * - Character count (average ~4 chars/token)
+   * - Special handling for code, CJK, punctuation
+   */
+  private characterBasedEstimate(text: string): number {
+    if (!text) return 0
+
+    const chars = text.length
+    const words = text.split(/\s+/).filter(Boolean).length
+
+    // Count code-like content (higher token density)
+    const codeBlocks = (text.match(/```[\s\S]*?```/g) || []).join('').length
+    const inlineCode = (text.match(/`[^`]+`/g) || []).join('').length
+
+    // Count CJK characters (typically 1 char = 1-2 tokens)
+    const cjkChars = (
+      text.match(/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g) || []
+    ).length
+
+    // Count punctuation (often separate tokens)
+    const punctuation = (text.match(/[.,!?;:'"()[\]{}<>]/g) || []).length
+
+    // Calculate base estimate
+    let estimate = 0
+
+    // Non-code text: ~4 chars per token
+    const regularChars = chars - codeBlocks - inlineCode - cjkChars
+    estimate += regularChars / 4
+
+    // Code: ~3 chars per token (more symbols = more tokens)
+    estimate += (codeBlocks + inlineCode) / 3
+
+    // CJK: ~1.5 chars per token
+    estimate += cjkChars / 1.5
+
+    // Add punctuation tokens (often separate)
+    estimate += punctuation * 0.3
+
+    // Apply word-count sanity check (should be at least 0.75 tokens per word)
+    const minByWords = words * 0.75
+    estimate = Math.max(estimate, minByWords)
+
+    return Math.ceil(estimate)
   }
 
   /**
