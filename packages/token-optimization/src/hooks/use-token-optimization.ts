@@ -268,6 +268,9 @@ function getDefaultSemanticConfig(
  *
  * Provides a simple, all-in-one interface for token optimization.
  *
+ * @param config - Configuration including preset, model, and feature flags
+ * @returns Optimization interface with countTokens, compress, route, and optimize functions
+ *
  * @example
  * ```tsx
  * function ChatComponent() {

@@ -218,6 +218,24 @@ export class TypeSafeSecurityConfigBuilder implements SecurityConfigBuilder {
   }
 }
 
+/**
+ * Create a new security configuration builder with secure defaults.
+ *
+ * Returns a fluent builder for constructing type-safe security configurations.
+ * The builder starts with secure defaults and allows customization through
+ * method chaining.
+ *
+ * @returns A new SecurityConfigBuilder instance
+ *
+ * @example
+ * ```typescript
+ * const config = createSecurityConfig()
+ *   .withRateLimiting(60, 1000)
+ *   .withThreatDetection(0.7)
+ *   .withCompliance(['SOC2', 'GDPR'])
+ *   .build()
+ * ```
+ */
 export function createSecurityConfig(): SecurityConfigBuilder {
   return new TypeSafeSecurityConfigBuilder()
 }

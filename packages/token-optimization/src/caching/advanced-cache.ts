@@ -184,6 +184,22 @@ export class AdvancedContextCache {
   }
 }
 
+/**
+ * Cache context content with the given key.
+ *
+ * Creates a temporary cache instance and stores the content.
+ * For persistent caching, use the AdvancedContextCache class directly.
+ *
+ * @param key - Unique cache key
+ * @param content - Content to cache
+ * @param tokenCount - Token count of the content
+ * @param config - Optional cache configuration
+ *
+ * @example
+ * ```typescript
+ * await cacheContext('user-123-context', contextString, 1500)
+ * ```
+ */
 export async function cacheContext(
   key: string,
   content: string,
@@ -194,6 +210,20 @@ export async function cacheContext(
   await cache.set(key, content, tokenCount)
 }
 
+/**
+ * Get statistics from a cache instance.
+ *
+ * @param cache - The cache instance to get statistics from
+ * @returns Cache statistics including hit rate, size, and savings
+ *
+ * @example
+ * ```typescript
+ * const cache = new AdvancedContextCache()
+ * // ... use cache ...
+ * const stats = getCacheStats(cache)
+ * console.log(`Hit rate: ${stats.hitRate * 100}%`)
+ * ```
+ */
 export function getCacheStats(cache: AdvancedContextCache): CacheStats {
   return cache.getStats()
 }

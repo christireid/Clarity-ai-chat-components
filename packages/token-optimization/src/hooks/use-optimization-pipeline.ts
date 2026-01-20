@@ -167,6 +167,9 @@ export interface UseOptimizationPipelineReturn {
 /**
  * Unified optimization pipeline hook
  *
+ * @param config - Pipeline configuration for cache, compression, and routing
+ * @returns Pipeline interface with process, cache, compress, and route functions
+ *
  * @example
  * ```tsx
  * function AIChat() {

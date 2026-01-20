@@ -39,7 +39,11 @@
     "test:coverage": "vitest --coverage",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "size": "npx bundlephobia-cli ./dist/index.js"
+    "size": "npx bundlephobia-cli ./dist/index.js",
+    "doc:check": "tsx scripts/check-doc-sync.ts",
+    "doc:sync": "tsx scripts/sync-all-docs.ts",
+    "examples:typecheck": "tsc --noEmit examples/*.ts examples/*.tsx 2>/dev/null || true",
+    "precommit": "pnpm typecheck && pnpm doc:check"
   },
   "dependencies": {
     "gpt-tokenizer": "^2.8.0",

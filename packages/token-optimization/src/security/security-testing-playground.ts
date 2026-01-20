@@ -423,14 +423,46 @@ export class SecurityTestingPlayground {
   }
 }
 
-// Factory function for creating playground instances
+/**
+ * Create a new security testing playground instance.
+ *
+ * Factory function that initializes a SecurityTestingPlayground with
+ * predefined test cases for comprehensive security validation.
+ *
+ * @param securityManager - The EnhancedSecurityManager to test
+ * @returns A new SecurityTestingPlayground instance
+ *
+ * @example
+ * ```typescript
+ * const playground = createSecurityTestingPlayground(securityManager)
+ * const results = await playground.runAllTests()
+ * console.log(`Passed: ${results.filter(r => r.passed).length}`)
+ * ```
+ */
 export function createSecurityTestingPlayground(
   securityManager: EnhancedSecurityManager
 ): SecurityTestingPlayground {
   return new SecurityTestingPlayground(securityManager)
 }
 
-// Quick test runner for CI/CD integration
+/**
+ * Run all security tests and check if pass rate meets threshold.
+ *
+ * Convenience function for CI/CD integration that runs all predefined
+ * security tests and returns success based on 80% pass rate requirement.
+ *
+ * @param securityManager - The EnhancedSecurityManager to test
+ * @returns True if 80% or more tests pass, false otherwise
+ *
+ * @example
+ * ```typescript
+ * const passed = await runSecurityTests(securityManager)
+ * if (!passed) {
+ *   console.error('Security tests failed!')
+ *   process.exit(1)
+ * }
+ * ```
+ */
 export async function runSecurityTests(
   securityManager: EnhancedSecurityManager
 ): Promise<boolean> {

@@ -98,6 +98,25 @@ export class SimpleModelRouter {
   }
 }
 
+/**
+ * Route a request to the optimal model based on cost and requirements.
+ *
+ * Creates a temporary router and selects the cheapest model that
+ * meets the token requirements.
+ *
+ * @param request - The routing request with content and constraints
+ * @returns Routing decision with selected model and cost estimate
+ *
+ * @example
+ * ```typescript
+ * const decision = await routeToOptimalModel({
+ *   content: 'Hello, world!',
+ *   maxTokens: 4000,
+ *   priority: 'medium'
+ * })
+ * console.log(`Using ${decision.modelName} at $${decision.estimatedCost}`)
+ * ```
+ */
 export async function routeToOptimalModel(
   request: RoutingRequest
 ): Promise<RoutingDecision> {
@@ -105,6 +124,17 @@ export async function routeToOptimalModel(
   return await router.routeToOptimalModel(request)
 }
 
+/**
+ * Get a comparison of all available models and their pricing.
+ *
+ * @returns Array of model pricing information
+ *
+ * @example
+ * ```typescript
+ * const models = getModelCostComparison()
+ * models.forEach(m => console.log(`${m.name}: $${m.inputCost}/token`))
+ * ```
+ */
 export function getModelCostComparison(): ModelPricing[] {
   const router = new SimpleModelRouter()
   return Array.from(router['models'].values())

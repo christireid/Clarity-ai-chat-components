@@ -125,6 +125,9 @@ export interface UseTieredCacheReturn {
 /**
  * React hook for using the tiered cache system
  *
+ * @param config - Cache configuration for exact, smart, and semantic tiers
+ * @returns Cache interface with get, set, invalidate, prefetch, and clear functions
+ *
  * @example
  * ```tsx
  * function ChatComponent() {

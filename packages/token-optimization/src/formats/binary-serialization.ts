@@ -12,7 +12,7 @@
  * @module binary-serialization
  */
 
-import { pack, unpack, Packr, Unpackr } from 'msgpackr'
+import { Packr, Unpackr } from 'msgpackr'
 
 /**
  * Options for binary serialization
@@ -172,8 +172,6 @@ export class BinarySerializer {
    * @returns Estimated savings percentage
    */
   estimateSavings(data: unknown): number {
-    const jsonSize = JSON.stringify(data).length
-
     // MessagePack typically achieves:
     // - 20-30% savings for simple objects
     // - 30-50% savings for arrays of objects with repeated keys

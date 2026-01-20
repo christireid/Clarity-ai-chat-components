@@ -72,6 +72,9 @@ export interface UseModelRouterReturn {
 /**
  * React hook for cost-optimized model selection
  *
+ * @param config - Configuration for the model router including models and strategy
+ * @returns Router interface with route, getStats, and resetStats functions
+ *
  * @example
  * ```tsx
  * function AIChat() {

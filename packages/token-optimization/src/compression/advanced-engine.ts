@@ -912,7 +912,22 @@ export class AdvancedCompressionEngine {
 }
 
 /**
- * Convenience function for compression
+ * Convenience function for compressing text.
+ *
+ * Creates a temporary AdvancedCompressionEngine and compresses the text
+ * using the optimal strategy.
+ *
+ * @param text - The text content to compress
+ * @param targetRatio - Target compression ratio (0-1), defaults to 0.7
+ * @param strategy - Optional specific strategy name ('truncate', 'extract', 'adaptive')
+ * @param config - Optional compression engine configuration
+ * @returns Compression result with compressed text and metadata
+ *
+ * @example
+ * ```typescript
+ * const result = await compressText(longText, 0.6)
+ * console.log(`Compressed to ${result.compressedTokens} tokens`)
+ * ```
  */
 export async function compressText(
   text: string,
@@ -925,7 +940,22 @@ export async function compressText(
 }
 
 /**
- * Convenience function for batch compression
+ * Convenience function for batch compression.
+ *
+ * Creates a temporary AdvancedCompressionEngine and compresses multiple
+ * texts efficiently using parallel processing.
+ *
+ * @param texts - Array of text contents to compress
+ * @param targetRatio - Target compression ratio (0-1), defaults to 0.7
+ * @param strategy - Optional specific strategy name ('truncate', 'extract', 'adaptive')
+ * @param config - Optional compression engine configuration
+ * @returns Array of compression results in same order as input
+ *
+ * @example
+ * ```typescript
+ * const results = await compressTextBatch(documents, 0.5)
+ * const totalSaved = results.reduce((sum, r) => sum + r.originalTokens - r.compressedTokens, 0)
+ * ```
  */
 export async function compressTextBatch(
   texts: string[],
