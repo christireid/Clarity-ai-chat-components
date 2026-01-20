@@ -5,6 +5,9 @@
  * including monitoring, alerting, and performance tracking
  */
 
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability'
+
 export interface ProductionConfig {
   // Environment settings
   environment: 'production' | 'staging' | 'development'
@@ -356,10 +359,20 @@ export class ProductionDeploymentManager {
   private validateConfiguration(): void {
     // Validate configuration parameters
     if (!this.config.environment) {
-      throw new Error('Environment must be specified')
+      throw new TokenOptimizationError(
+        'Environment must be specified in deployment configuration',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { configKeys: Object.keys(this.config) }
+      )
     }
     if (!this.config.region) {
-      throw new Error('Region must be specified')
+      throw new TokenOptimizationError(
+        'Region must be specified in deployment configuration',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { environment: this.config.environment }
+      )
     }
   }
 
