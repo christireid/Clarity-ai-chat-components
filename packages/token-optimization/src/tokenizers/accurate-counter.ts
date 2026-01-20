@@ -13,6 +13,7 @@
  */
 
 import { encode, encodeChat, isWithinTokenLimit } from 'gpt-tokenizer'
+import { Logger } from '../observability'
 
 export interface TokenizerConfig {
   model: string
@@ -162,7 +163,16 @@ export class AccurateTokenCounter {
   /** Interval ID for monitoring timer */
   private monitoringInterval: ReturnType<typeof setInterval> | null = null
 
+  /** Logger instance for structured logging */
+  private readonly logger: Logger
+
   constructor(private config: TokenizerConfig) {
+    // Initialize logger with appropriate log level based on monitoring config
+    this.logger = new Logger({
+      logLevel: config.enableMonitoring ? 'info' : 'warn',
+      serviceName: 'token-counter',
+    })
+
     // Map the model name to gpt-tokenizer model name or encoding type
     const encoding = MODEL_ENCODING_MAP[config.model] || 'gpt-4o'
     this.modelName = encoding
@@ -213,7 +223,10 @@ export class AccurateTokenCounter {
       } catch (error) {
         // Fallback to character-based estimation
         tokens = this.estimateTokens(text)
-        console.warn(`Token encoding failed, using estimation: ${error}`)
+        this.logger.warn('Token encoding failed, using estimation', {
+          error: error instanceof Error ? error.message : String(error),
+          model: this.modelName,
+        })
       }
     }
 
@@ -446,7 +459,7 @@ export class AccurateTokenCounter {
       this.cacheMisses = 0
 
       if (this.config.enableMonitoring) {
-        console.log('[TokenCounter] Cache cleared')
+        this.logger.info('Cache cleared', { model: this.modelName })
       }
     }, 3600000)
   }
@@ -481,12 +494,13 @@ export class AccurateTokenCounter {
     const runtime = (Date.now() - this.monitoring.startTime) / 1000
     const cacheStats = this.getCacheStats()
 
-    console.log('[TokenCounter Monitoring]', {
+    this.logger.info('Token counter monitoring stats', {
       totalCalls: this.monitoring.totalCalls,
       totalTokens: this.monitoring.totalTokens,
       averageTokens: Math.round(this.monitoring.averageTokens * 100) / 100,
-      runtime: Math.round(runtime),
-      cacheHitRate: Math.round(cacheStats.hitRate * 100) + '%',
+      runtimeSeconds: Math.round(runtime),
+      cacheHitRate: Math.round(cacheStats.hitRate * 100),
+      model: this.modelName,
     })
   }
 

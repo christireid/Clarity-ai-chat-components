@@ -6,6 +6,8 @@
  */
 
 import { AdvancedTokenCounter, type ContentType } from './advanced-counter'
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability'
 
 /**
  * Compression strategy interface
@@ -655,11 +657,21 @@ export class AdvancedCompressionEngine {
 
     // Validate inputs
     if (!text || text.length === 0) {
-      throw new Error('Cannot compress empty text')
+      throw new TokenOptimizationError(
+        'Cannot compress empty text',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { targetRatio }
+      )
     }
 
     if (targetRatio <= 0 || targetRatio > 1) {
-      throw new Error('Target ratio must be between 0 and 1')
+      throw new TokenOptimizationError(
+        'Target ratio must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { targetRatio, validRange: '(0, 1]' }
+      )
     }
 
     // Check if compression is needed
