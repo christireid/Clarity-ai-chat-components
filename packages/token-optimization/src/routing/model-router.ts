@@ -7,11 +7,8 @@
  * @module model-router
  */
 
-import {
-  ComplexityAnalyzer,
-  ComplexityLevel,
-  ComplexityResult,
-} from './complexity-analyzer'
+import { ComplexityAnalyzer, ComplexityLevel } from './complexity-analyzer'
+import type { ComplexityResult } from './complexity-analyzer'
 
 /**
  * Model tier classification

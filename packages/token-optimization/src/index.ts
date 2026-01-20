@@ -86,7 +86,53 @@ export type {
   CacheStats,
 } from './caching/advanced-semantic-cache'
 
-// Compression exports
+// Compression exports - New real compression strategies (recommended)
+export {
+  LLMLinguaCompressor,
+  createLLMLinguaCompressor,
+  compressWithLLMLingua,
+  ExtractiveCompressor,
+  createExtractiveCompressor,
+  compressExtractively,
+  AdaptiveCompressor,
+  createAdaptiveCompressor,
+  compressAdaptively,
+  recommendStrategy,
+  normalizeWhitespace,
+  normalizeWhitespaceBatch,
+} from './compression'
+
+export type {
+  // LLMLingua types
+  LLMLinguaOptions,
+  LLMLinguaResult,
+  LLMLinguaQualityMetrics,
+  LLMLinguaDebugInfo,
+  // Extractive types
+  ExtractiveOptions,
+  ExtractiveResult,
+  ExtractiveQualityMetrics,
+  ExtractiveDebugInfo,
+  ScoredSentence,
+  // Adaptive types
+  AdaptiveOptions,
+  AdaptiveResult,
+  AdaptiveQualityMetrics,
+  AdaptiveDebugInfo,
+  ContentAnalysis,
+  ContentType,
+  LanguageFeatures,
+  CompressionStrategyType,
+  // Common types
+  CommonQualityMetrics,
+  CommonCompressionResult,
+  StrategyRecommendation,
+  // Normalization types
+  NormalizationConfig,
+  NormalizationResult,
+} from './compression'
+
+// Legacy compression exports (deprecated - use new strategies above)
 export { DynamicCompressionEngine } from './compression/dynamic-compression'
 export type {
   DynamicCompressionConfig,
@@ -118,3 +164,77 @@ export type {
   TextChunk,
   ChunkingResult,
 } from './chunking/text-chunker'
+
+// TOON (Token-Oriented Object Notation) format
+export {
+  ToonOptimizer,
+  TOONParseError,
+  encodeToon,
+  decodeToon,
+  validateToon,
+} from './formats/toon-optimizer'
+export type {
+  ToonConfig,
+  TOONSchema,
+  TOONSchemaField,
+  ValidationResult as TOONValidationResult,
+  ValidationError as TOONValidationError,
+  SavingsEstimate,
+  SavingsInfo,
+} from './formats/toon-optimizer'
+
+// Tiered Cache System
+export { ExactCache } from './cache/exact-cache'
+export type {
+  ExactCacheConfig,
+  ExactCacheResult,
+  ExactCacheStats,
+} from './cache/exact-cache'
+
+export { SmartCache } from './cache/smart-cache'
+export type {
+  SmartCacheConfig,
+  SmartCacheResult,
+  SmartCacheStats,
+} from './cache/smart-cache'
+
+export { TieredCache } from './cache/tiered-cache'
+export type {
+  TieredCacheConfig,
+  TieredCacheResult,
+  CacheStats as TieredCacheStats,
+  TierStats,
+  PrefetchItem,
+} from './cache/tiered-cache'
+
+// Markdown Compression
+export {
+  MarkdownCompressor,
+  CompressionLevel,
+} from './compression/markdown-compressor'
+export type {
+  MarkdownCompressorConfig,
+  CompressionResult as MarkdownCompressionResult,
+} from './compression/markdown-compressor'
+
+// Routing - Complexity Analysis & Model Selection
+export {
+  ComplexityAnalyzer,
+  ComplexityLevel,
+} from './routing/complexity-analyzer'
+export type {
+  ComplexityAnalyzerConfig,
+  ComplexityResult,
+  ComplexityFactors,
+  ComplexityWeights,
+} from './routing/complexity-analyzer'
+
+export { ModelRouter, RoutingStrategy } from './routing/model-router'
+export type {
+  ModelRouterConfig,
+  ModelConfig,
+  ModelTier,
+  RoutingOptions,
+  RoutingResult,
+  RouterStats,
+} from './routing/model-router'

@@ -54,15 +54,6 @@ export interface CompressionResult {
 }
 
 /**
- * Internal state for compression
- */
-interface CompressionState {
-  inCodeBlock: boolean
-  codeBlockLang: string
-  lines: string[]
-}
-
-/**
  * Token-optimized markdown compressor
  *
  * Replaces verbose markdown syntax with compact symbols:

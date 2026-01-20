@@ -9,10 +9,12 @@
  * @module tiered-cache
  */
 
-import { ExactCache, ExactCacheConfig } from './exact-cache'
-import { SmartCache, SmartCacheConfig } from './smart-cache'
-import {
-  AdvancedSemanticCache,
+import { ExactCache } from './exact-cache'
+import type { ExactCacheConfig } from './exact-cache'
+import { SmartCache } from './smart-cache'
+import type { SmartCacheConfig } from './smart-cache'
+import { AdvancedSemanticCache } from '../caching/advanced-semantic-cache'
+import type {
   SemanticCacheConfig,
   CacheContext,
 } from '../caching/advanced-semantic-cache'
