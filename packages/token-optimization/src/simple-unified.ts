@@ -12,6 +12,8 @@ import {
   DEFAULT_SECURITY_CONFIG,
   DEFAULT_TOON_CONFIG,
 } from './simple-index'
+import { TokenOptimizationError, TokenErrorCode } from './errors'
+import { Logger } from './observability'
 
 export interface SimpleOptimizationResult {
   original: string
@@ -37,9 +39,11 @@ export class SimpleUnifiedOptimizer {
   private toonOptimizer: ToonOptimizer
   private cache: Map<string, SimpleOptimizationResult> = new Map()
   private enableCaching: boolean
+  private logger: Logger
 
   constructor(enableCaching = true) {
     this.enableCaching = enableCaching
+    this.logger = new Logger({ serviceName: 'simple-unified-optimizer' })
     this.tokenCounter = new AccurateTokenCounter(
       DEFAULT_TOKENIZER_CONFIG.enableCaching,
       DEFAULT_TOKENIZER_CONFIG
@@ -71,7 +75,12 @@ export class SimpleUnifiedOptimizer {
     // Apply security measures
     const secured = this.securityManager.sanitizeInput(text)
     if (secured.riskLevel === 'high') {
-      throw new Error('Security threat detected')
+      throw new TokenOptimizationError(
+        'Security threat detected in input',
+        TokenErrorCode.SECURITY_VIOLATION,
+        false,
+        { riskLevel: secured.riskLevel, threats: secured.threats?.length || 0 }
+      )
     }
 
     // Try TOON optimization if applicable
@@ -104,7 +113,10 @@ export class SimpleUnifiedOptimizer {
         }
       }
     } catch (error) {
-      console.warn('Optimization failed:', error)
+      this.logger.warn('Optimization failed', {
+        error: error instanceof Error ? error.message : String(error),
+        strategy,
+      })
     }
 
     // Apply max tokens constraint if specified
