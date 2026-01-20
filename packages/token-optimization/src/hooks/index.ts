@@ -1,0 +1,36 @@
+/**
+ * React Hooks for Token Optimization
+ *
+ * This module exports React hooks that provide easy-to-use
+ * interfaces to the token optimization system.
+ *
+ * @module hooks
+ */
+
+export { useTieredCache } from './use-tiered-cache'
+export type {
+  UseTieredCacheConfig,
+  UseTieredCacheReturn,
+} from './use-tiered-cache'
+
+export { useModelRouter, RoutingStrategy } from './use-model-router'
+export type {
+  UseModelRouterConfig,
+  UseModelRouterReturn,
+  ModelConfig,
+  RoutingOptions,
+  RoutingResult,
+  RouterStats,
+} from './use-model-router'
+
+export {
+  useOptimizationPipeline,
+  CompressionLevel,
+  RoutingStrategy as PipelineRoutingStrategy,
+} from './use-optimization-pipeline'
+export type {
+  OptimizationPipelineConfig,
+  PipelineResult,
+  PipelineStats,
+  UseOptimizationPipelineReturn,
+} from './use-optimization-pipeline'

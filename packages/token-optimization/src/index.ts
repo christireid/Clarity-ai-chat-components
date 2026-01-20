@@ -100,6 +100,16 @@ export {
   recommendStrategy,
   normalizeWhitespace,
   normalizeWhitespaceBatch,
+  // Memory compression strategies (migrated from memory package)
+  MemoryExtractStrategy,
+  createMemoryExtractStrategy,
+  compressWithMemoryExtract,
+  MemorySummarizeStrategy,
+  createMemorySummarizeStrategy,
+  compressWithMemorySummarize,
+  MemoryAdaptiveStrategy,
+  createMemoryAdaptiveStrategy,
+  compressWithMemoryAdaptive,
 } from './compression'
 
 export type {
@@ -130,6 +140,18 @@ export type {
   // Normalization types
   NormalizationConfig,
   NormalizationResult,
+  // Memory compression types (migrated from memory package)
+  MemoryContent,
+  MemoryExtractResult,
+  MemoryExtractOptions,
+  LLMSummarizer,
+  Summarizer,
+  MemorySummarizeResult,
+  MemorySummarizeOptions,
+  MemoryAdaptiveResult,
+  MemoryAdaptiveOptions,
+  MemoryTruncateResult,
+  MemoryNoCompressionResult,
 } from './compression'
 
 // Legacy compression exports (deprecated - use new strategies above)
@@ -143,7 +165,30 @@ export type {
 } from './compression/dynamic-compression'
 
 // Token counting exports (legacy compatibility)
-export { TokenCounter } from './legacy-compatibility'
+export {
+  TokenCounter,
+  ContextOptimizer,
+  MemoryCompressor,
+  SemanticChunker,
+  TokenBudgetManager as LegacyTokenBudgetManager,
+  countTokens,
+  countTokensBatch,
+  truncateToTokens,
+} from './legacy-compatibility'
+
+// Memory Token Budget Manager (migrated from memory package)
+export {
+  MemoryTokenBudgetManager,
+  createMemoryTokenBudgetManager,
+  MemoryBudgetPresets,
+} from './budget/memory-budget'
+export type {
+  MemoryBudgetType,
+  MemoryTokenAllocation,
+  MemoryTokenBudgetConfig,
+  MemoryTokenBreakdown,
+  MemoryBudgetContext,
+} from './budget/memory-budget'
 
 // Tokenizers - using gpt-tokenizer (20x smaller than tiktoken WASM)
 export { AccurateTokenCounter } from './tokenizers/accurate-counter'
@@ -182,6 +227,26 @@ export type {
   SavingsEstimate,
   SavingsInfo,
 } from './formats/toon-optimizer'
+
+// Markdown Optimization - Strip/compress markdown for token reduction
+export {
+  MarkdownOptimizer,
+  stripMarkdown,
+  compressMarkdown,
+} from './formats/markdown-optimizer'
+export type {
+  MarkdownCompressOptions,
+  CodeBlock,
+  SavingsEstimate as MarkdownSavingsEstimate,
+} from './formats/markdown-optimizer'
+
+// HTML Optimization - Convert HTML to text/markdown for token reduction
+export {
+  HTMLOptimizer,
+  htmlToText,
+  htmlToMarkdown,
+} from './formats/html-optimizer'
+export type { HTMLToTextOptions } from './formats/html-optimizer'
 
 // Tiered Cache System
 export { ExactCache } from './cache/exact-cache'
@@ -238,3 +303,117 @@ export type {
   RoutingResult,
   RouterStats,
 } from './routing/model-router'
+
+// React Hooks
+export {
+  useTieredCache,
+  useModelRouter,
+  useOptimizationPipeline,
+} from './hooks'
+export type {
+  UseTieredCacheConfig,
+  UseTieredCacheReturn,
+  UseModelRouterConfig,
+  UseModelRouterReturn,
+  OptimizationPipelineConfig,
+  PipelineResult,
+  PipelineStats,
+  UseOptimizationPipelineReturn,
+} from './hooks'
+
+// React Components
+export { TokenBudgetBar, useTokenBudget } from './components'
+export type {
+  BudgetStatus as TokenBudgetStatus,
+  TokenBudgetTheme,
+  TokenBudgetBarProps,
+  UseTokenBudgetConfig,
+  UseTokenBudgetReturn,
+} from './components'
+
+// Accessibility - WCAG 2.1 AA compliant utilities
+export {
+  // Screen reader announcements
+  announce,
+  announceTokenUsage,
+  announceCost,
+  announceCompression,
+  announceThresholdCrossing,
+  cleanupAnnouncer,
+  // React hooks for accessibility
+  useTokenAnnouncer,
+  useTokenKeyboardShortcuts,
+  usePrefersReducedMotion,
+  usePrefersHighContrast,
+  // Accessible components
+  AccessibleTokenDisplay,
+  MemoizedAccessibleTokenDisplay,
+  useTokenDisplayState,
+} from './accessibility'
+export type {
+  AnnouncementPriority,
+  TokenAnnouncerOptions,
+  UseTokenAnnouncerReturn,
+  KeyboardShortcutOptions,
+  ReducedMotionOptions,
+  AccessibleTokenDisplayProps,
+  TokenDisplayState,
+} from './accessibility'
+
+// ============================================================================
+// Production & Enterprise Readiness Features
+// ============================================================================
+
+// Error Handling System
+export {
+  TokenOptimizationError,
+  TokenErrorCode,
+  isRecoverable,
+  withRetry,
+  withTimeout,
+  wrapError,
+} from './errors'
+export type { RetryOptions } from './errors'
+
+// Health Check System
+export {
+  HealthChecker,
+  createHealthEndpoint,
+  createLivenessCheck,
+  createReadinessCheck,
+} from './health'
+export type {
+  HealthStatus,
+  ComponentHealth,
+  HealthMetrics,
+  HealthCheckerConfig,
+} from './health'
+
+// Observability System
+export {
+  Logger,
+  MetricsCollector,
+  Tracer,
+  createObservability,
+} from './observability'
+export type {
+  ObservabilityConfig,
+  MetricsHandler,
+  LogHandler,
+  TraceHandler,
+  Span,
+  MetricsSnapshot,
+  LogLevel,
+} from './observability'
+
+// Resilience - Circuit Breaker
+export {
+  CircuitBreaker,
+  CircuitBreakerRegistry,
+  createCircuitBreaker,
+} from './resilience/circuit-breaker'
+export type {
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+  CircuitState,
+} from './resilience/circuit-breaker'
