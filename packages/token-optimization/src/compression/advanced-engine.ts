@@ -622,8 +622,10 @@ export class AdvancedCompressionEngine {
   private config: CompressionConfig
   private counter: AdvancedTokenCounter
   private analyzer: ContentAnalyzer
+  private logger: Logger
 
   constructor(config: Partial<CompressionConfig> = {}) {
+    this.logger = new Logger({ serviceName: 'compression-engine' })
     this.config = {
       strategies: ['truncate', 'extract', 'adaptive'],
       defaultStrategy: 'adaptive',
@@ -703,7 +705,18 @@ export class AdvancedCompressionEngine {
         selectedStrategy.compress(text, targetRatio),
         new Promise<never>((_, reject) =>
           setTimeout(
-            () => reject(new Error('Compression timeout')),
+            () =>
+              reject(
+                new TokenOptimizationError(
+                  `Compression timed out after ${this.config.maxProcessingTime}ms`,
+                  TokenErrorCode.TIMEOUT,
+                  true,
+                  {
+                    timeoutMs: this.config.maxProcessingTime,
+                    strategy: selectedStrategy.name,
+                  }
+                )
+              ),
             this.config.maxProcessingTime
           )
         ),
@@ -740,7 +753,11 @@ export class AdvancedCompressionEngine {
       }
     } catch (error) {
       // Fallback to simple truncation
-      console.warn(`Compression failed with ${selectedStrategy.name}:`, error)
+      this.logger.warn('Compression failed, using fallback', {
+        strategy: selectedStrategy.name,
+        error: error instanceof Error ? error.message : String(error),
+        targetRatio,
+      })
       return this.fallbackCompression(text, targetRatio, startTime)
     }
   }

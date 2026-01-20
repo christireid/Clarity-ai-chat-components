@@ -4,9 +4,13 @@
  */
 
 import type { EnhancedSecurityConfig } from './enhanced-security'
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
 
 export interface SecurityConfigBuilder {
-  withRateLimiting(maxPerMinute?: number, maxPerHour?: number): SecurityConfigBuilder
+  withRateLimiting(
+    maxPerMinute?: number,
+    maxPerHour?: number
+  ): SecurityConfigBuilder
   withEncryption(enable?: boolean, key?: string): SecurityConfigBuilder
   withThreatDetection(threshold?: number): SecurityConfigBuilder
   withZeroTrust(authRequired?: boolean): SecurityConfigBuilder
@@ -37,18 +41,31 @@ export class TypeSafeSecurityConfigBuilder implements SecurityConfigBuilder {
       enableRealTimeMonitoring: true,
       complianceStandards: ['SOC2', 'GDPR'],
       enableAutoQuarantine: true,
-      quarantineThreshold: 0.8
+      quarantineThreshold: 0.8,
     }
   }
 
-  withRateLimiting(maxPerMinute = 60, maxPerHour = 1000): SecurityConfigBuilder {
+  withRateLimiting(
+    maxPerMinute = 60,
+    maxPerHour = 1000
+  ): SecurityConfigBuilder {
     if (maxPerMinute <= 0 || maxPerHour <= 0) {
-      throw new Error('Rate limiting values must be positive')
+      throw new TokenOptimizationError(
+        'Rate limiting values must be positive',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { maxPerMinute, maxPerHour }
+      )
     }
     if (maxPerMinute > maxPerHour) {
-      throw new Error('Per-minute rate cannot exceed per-hour rate')
+      throw new TokenOptimizationError(
+        'Per-minute rate cannot exceed per-hour rate',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { maxPerMinute, maxPerHour }
+      )
     }
-    
+
     this.config.enableRateLimiting = true
     this.config.maxRequestsPerMinute = maxPerMinute
     this.config.maxRequestsPerHour = maxPerHour
@@ -57,7 +74,12 @@ export class TypeSafeSecurityConfigBuilder implements SecurityConfigBuilder {
 
   withEncryption(enable = true, key?: string): SecurityConfigBuilder {
     if (enable && !key) {
-      throw new Error('Encryption key required when encryption is enabled')
+      throw new TokenOptimizationError(
+        'Encryption key required when encryption is enabled',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { encryptionEnabled: enable }
+      )
     }
     this.config.enableEncryption = enable
     this.config.encryptionKey = key
@@ -66,7 +88,12 @@ export class TypeSafeSecurityConfigBuilder implements SecurityConfigBuilder {
 
   withThreatDetection(threshold = 0.7): SecurityConfigBuilder {
     if (threshold < 0 || threshold > 1) {
-      throw new Error('Threat detection threshold must be between 0 and 1')
+      throw new TokenOptimizationError(
+        'Threat detection threshold must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { threshold, validRange: '[0, 1]' }
+      )
     }
     this.config.enableMLThreatDetection = true
     this.config.threatDetectionThreshold = threshold
@@ -81,63 +108,112 @@ export class TypeSafeSecurityConfigBuilder implements SecurityConfigBuilder {
 
   withCompliance(standards = ['SOC2', 'GDPR']): SecurityConfigBuilder {
     const validStandards = ['SOC2', 'HIPAA', 'GDPR', 'PCI-DSS', 'ISO27001']
-    const invalidStandards = standards.filter(s => !validStandards.includes(s))
-    
+    const invalidStandards = standards.filter(
+      (s) => !validStandards.includes(s)
+    )
+
     if (invalidStandards.length > 0) {
-      throw new Error(`Invalid compliance standards: ${invalidStandards.join(', ')}`)
+      throw new TokenOptimizationError(
+        `Invalid compliance standards: ${invalidStandards.join(', ')}`,
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { invalidStandards, validStandards }
+      )
     }
-    
+
     this.config.complianceStandards = standards
     return this
   }
 
   withAutoQuarantine(threshold = 0.8): SecurityConfigBuilder {
     if (threshold < 0 || threshold > 1) {
-      throw new Error('Quarantine threshold must be between 0 and 1')
+      throw new TokenOptimizationError(
+        'Quarantine threshold must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { threshold, validRange: '[0, 1]' }
+      )
     }
     this.config.enableAutoQuarantine = true
     this.config.quarantineThreshold = threshold
     return this
   }
 
-  withRedisStore(url = 'redis://localhost:6379', prefix = 'security:'): SecurityConfigBuilder {
+  withRedisStore(
+    url = 'redis://localhost:6379',
+    prefix = 'security:'
+  ): SecurityConfigBuilder {
     this.config.redisStore = {
       enabled: true,
       redisUrl: url,
-      keyPrefix: prefix
+      keyPrefix: prefix,
     }
     return this
   }
 
   build(): EnhancedSecurityConfig {
     const finalConfig = this.config as EnhancedSecurityConfig
-    
+
     // Runtime validation
     this.validateConfig(finalConfig)
-    
+
     return finalConfig
   }
 
   private validateConfig(config: EnhancedSecurityConfig): void {
     if (config.enableRateLimiting) {
       if (config.maxRequestsPerMinute <= 0 || config.maxRequestsPerHour <= 0) {
-        throw new Error('Rate limiting values must be positive')
+        throw new TokenOptimizationError(
+          'Rate limiting values must be positive',
+          TokenErrorCode.INVALID_INPUT,
+          false,
+          {
+            maxRequestsPerMinute: config.maxRequestsPerMinute,
+            maxRequestsPerHour: config.maxRequestsPerHour,
+          }
+        )
       }
       if (config.maxRequestsPerMinute > config.maxRequestsPerHour) {
-        throw new Error('Per-minute rate cannot exceed per-hour rate')
+        throw new TokenOptimizationError(
+          'Per-minute rate cannot exceed per-hour rate',
+          TokenErrorCode.INVALID_INPUT,
+          false,
+          {
+            maxRequestsPerMinute: config.maxRequestsPerMinute,
+            maxRequestsPerHour: config.maxRequestsPerHour,
+          }
+        )
       }
     }
-    
+
     if (config.enableEncryption && !config.encryptionKey) {
-      throw new Error('Encryption key required when encryption is enabled')
+      throw new TokenOptimizationError(
+        'Encryption key required when encryption is enabled',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { encryptionEnabled: config.enableEncryption }
+      )
     }
-    
-    if (config.threatDetectionThreshold < 0 || config.threatDetectionThreshold > 1) {
-      throw new Error('Threat detection threshold must be between 0 and 1')
+
+    if (
+      config.threatDetectionThreshold < 0 ||
+      config.threatDetectionThreshold > 1
+    ) {
+      throw new TokenOptimizationError(
+        'Threat detection threshold must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { threshold: config.threatDetectionThreshold, validRange: '[0, 1]' }
+      )
     }
-    
+
     if (config.quarantineThreshold < 0 || config.quarantineThreshold > 1) {
-      throw new Error('Quarantine threshold must be between 0 and 1')
+      throw new TokenOptimizationError(
+        'Quarantine threshold must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { threshold: config.quarantineThreshold, validRange: '[0, 1]' }
+      )
     }
   }
 }
@@ -183,5 +259,5 @@ export const SecurityProfiles = {
     .withZeroTrust(false)
     .withCompliance([])
     .withAutoQuarantine(1.0)
-    .build()
+    .build(),
 }

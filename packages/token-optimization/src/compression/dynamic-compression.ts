@@ -18,6 +18,8 @@
  * This class is maintained for backward compatibility only.
  */
 
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+
 export interface DynamicCompressionConfig {
   targetQuality: number // Target quality score (0.8-0.99)
   maxCompressionRatio: number // Maximum compression ratio (0.7-0.95)
@@ -278,7 +280,15 @@ export class DynamicCompressionEngine {
         )
 
       default:
-        throw new Error(`Unknown compression strategy: ${strategy.type}`)
+        throw new TokenOptimizationError(
+          `Unknown compression strategy: ${strategy.type}`,
+          TokenErrorCode.INVALID_INPUT,
+          false,
+          {
+            strategyType: strategy.type,
+            validTypes: ['llmlingua', 'semantic', 'syntactic', 'hybrid'],
+          }
+        )
     }
   }
 
