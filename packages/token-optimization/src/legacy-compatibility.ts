@@ -1,6 +1,6 @@
 /**
  * Legacy Compatibility Layer
- * 
+ *
  * Provides backward-compatible classes that match the old memory package API
  * while internally using the new optimized implementations
  */
@@ -50,8 +50,8 @@ export class TokenCounter {
     // Simple sentence splitting - enhanced version available in new package
     return text
       .split(/[.!?]+/)
-      .map(s => s.trim())
-      .filter(s => s.length > 0)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
   }
 }
 
@@ -71,7 +71,10 @@ export class TokenBudgetManager {
    * Calculate token budgets based on allocation percentages
    */
   private calculateBudgets(maxTokens: number): any {
-    return this.calculateBudgetsFromAllocation(maxTokens, this.config.allocation)
+    return this.calculateBudgetsFromAllocation(
+      maxTokens,
+      this.config.allocation
+    )
   }
 
   /**
@@ -93,15 +96,15 @@ export class TokenBudgetManager {
 
     // Increase recent context for high conversation activity
     if (context.conversationActivity === 'high') {
-      adjusted.recentContext += 0.10
+      adjusted.recentContext += 0.1
       adjusted.episodicMemory -= 0.05
       adjusted.semanticMemory -= 0.05
     }
 
     // Increase semantic memory for rich preferences
     if (context.preferenceRichness === 'high') {
-      adjusted.semanticMemory += 0.10
-      adjusted.episodicMemory -= 0.10
+      adjusted.semanticMemory += 0.1
+      adjusted.episodicMemory -= 0.1
     }
 
     // Increase system prompt for complex tasks
@@ -119,10 +122,7 @@ export class TokenBudgetManager {
   /**
    * Calculate token budgets from allocation percentages
    */
-  private calculateBudgetsFromAllocation(
-    maxTokens: number,
-    alloc: any
-  ): any {
+  private calculateBudgetsFromAllocation(maxTokens: number, alloc: any): any {
     return {
       systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
       userPreferences: Math.floor(maxTokens * alloc.userPreferences),
@@ -149,10 +149,16 @@ export class TokenBudgetManager {
         medium: 2,
         low: 1,
       }
-      
-      const scoreA = priorityWeight[a.priority as keyof typeof priorityWeight] * a.confidence * (priorities[a.id] || 1)
-      const scoreB = priorityWeight[b.priority as keyof typeof priorityWeight] * b.confidence * (priorities[b.id] || 1)
-      
+
+      const scoreA =
+        priorityWeight[a.priority as keyof typeof priorityWeight] *
+        a.confidence *
+        (priorities[a.id] || 1)
+      const scoreB =
+        priorityWeight[b.priority as keyof typeof priorityWeight] *
+        b.confidence *
+        (priorities[b.id] || 1)
+
       return scoreB - scoreA
     })
 
@@ -196,14 +202,19 @@ export class TokenBudgetManager {
   /**
    * Calculate optimal distribution across memory types
    */
-  distributeTokens(_totalMemories: number, _byType: Record<string, number>): Record<string, number> {
+  distributeTokens(
+    _totalMemories: number,
+    _byType: Record<string, number>
+  ): Record<string, number> {
     const distribution: Record<string, number> = {}
-    
+
     // Base allocation
     distribution['episodic'] = this.allocation.episodicMemory
     distribution['semantic'] = this.allocation.semanticMemory
     distribution['shortTerm'] = this.allocation.recentContext
-    distribution['procedural'] = Math.floor(this.allocation.semanticMemory * 0.2)
+    distribution['procedural'] = Math.floor(
+      this.allocation.semanticMemory * 0.2
+    )
 
     return distribution
   }
@@ -213,7 +224,6 @@ export class TokenBudgetManager {
  * Legacy MemoryCompressor - maintains backward compatibility
  */
 export class MemoryCompressor {
-
   /**
    * Compress conversation history
    */
@@ -286,7 +296,7 @@ export class MemoryCompressor {
       const msg = middleMessages[i]
       if (!msg) continue
       const tokens = TokenCounter.count(msg)
-      
+
       if (usedTokens + tokens <= remainingBudget) {
         selected.unshift(msg)
         usedTokens += tokens
@@ -299,7 +309,9 @@ export class MemoryCompressor {
     const omittedCount = middleMessages.length - selected.length
     const parts = [
       ...messages.slice(0, 2),
-      ...(omittedCount > 0 ? [`\n[... ${omittedCount} messages omitted ...]\n`] : []),
+      ...(omittedCount > 0
+        ? [`\n[... ${omittedCount} messages omitted ...]\n`]
+        : []),
       ...selected,
       ...messages.slice(-2),
     ]
@@ -313,21 +325,27 @@ export class MemoryCompressor {
   private summarizeConversation(messages: string[], budget: number): string {
     // In production, this would call an LLM to generate a summary
     // For now, use extractive summarization
-    
-    const sentences = messages.flatMap(msg => TokenCounter.splitSentences(msg))
+
+    const sentences = messages.flatMap((msg) =>
+      TokenCounter.splitSentences(msg)
+    )
     const targetCount = Math.min(sentences.length, Math.floor(budget / 20)) // ~20 tokens per sentence
-    
+
     // Simple extractive: take first, last, and evenly distributed sentences
     const step = Math.max(1, Math.floor(sentences.length / targetCount))
     const selected: string[] = []
-    
-    for (let i = 0; i < sentences.length && selected.length < targetCount; i += step) {
+
+    for (
+      let i = 0;
+      i < sentences.length && selected.length < targetCount;
+      i += step
+    ) {
       const sentence = sentences[i]
       if (sentence) {
         selected.push(sentence)
       }
     }
-    
+
     // Always include first and last
     const firstSentence = sentences[0]
     const lastSentence = sentences[sentences.length - 1]
@@ -337,7 +355,7 @@ export class MemoryCompressor {
     if (lastSentence && !selected.includes(lastSentence)) {
       selected.push(lastSentence)
     }
-    
+
     return selected.join('. ') + '.'
   }
 
@@ -380,7 +398,7 @@ export class SemanticChunker {
   chunkConversation(conversation: string): any[] {
     const sentences = TokenCounter.splitSentences(conversation)
     const chunks: any[] = []
-    
+
     let currentChunk: string[] = []
     let currentTokens = 0
     let chunkIndex = 0
@@ -389,7 +407,10 @@ export class SemanticChunker {
       const sentenceTokens = TokenCounter.count(sentence)
 
       // Check if adding this sentence exceeds chunk size
-      if (currentTokens + sentenceTokens > this.chunkSize && currentChunk.length > 0) {
+      if (
+        currentTokens + sentenceTokens > this.chunkSize &&
+        currentChunk.length > 0
+      ) {
         // Finalize current chunk
         const chunkText = currentChunk.join('. ') + '.'
         chunks.push({
@@ -399,11 +420,13 @@ export class SemanticChunker {
           embedding: [], // To be filled by embedding service
           chunkIndex,
         })
-        
+
         chunkIndex++
 
         // Start new chunk with overlap
-        const overlapSentences = currentChunk.slice(-Math.ceil(currentChunk.length * 0.2))
+        const overlapSentences = currentChunk.slice(
+          -Math.ceil(currentChunk.length * 0.2)
+        )
         currentChunk = [...overlapSentences, sentence]
         currentTokens = TokenCounter.countBatch(currentChunk)
       } else {
@@ -473,15 +496,29 @@ export class SemanticChunker {
   extractTopic(chunk: any): string {
     // Simple topic extraction - in production use NLP
     const words = chunk.text.toLowerCase().split(/\s+/)
-    const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'])
-    const keywords = words.filter((w: string) => w.length > 3 && !commonWords.has(w))
-    
+    const commonWords = new Set([
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+    ])
+    const keywords = words.filter(
+      (w: string) => w.length > 3 && !commonWords.has(w)
+    )
+
     // Return most frequent word
     const frequency: Record<string, number> = {}
     for (const word of keywords) {
       frequency[word] = (frequency[word] || 0) + 1
     }
-    
+
     const sorted = Object.entries(frequency).sort((a, b) => b[1] - a[1])
     return sorted[0]?.[0] || 'general'
   }
@@ -533,8 +570,11 @@ export class ContextOptimizer {
       : this.budgetManager.getAllocation()
 
     // Optimize each component
-    const systemPrompt = TokenCounter.truncate(options.systemPrompt, allocation.systemPrompt)
-    
+    const systemPrompt = TokenCounter.truncate(
+      options.systemPrompt,
+      allocation.systemPrompt
+    )
+
     const userPreferences = this.compressor.compressConversation(
       [JSON.stringify(options.userPreferences)],
       allocation.userPreferences
@@ -555,10 +595,10 @@ export class ContextOptimizer {
       allocation.episodicMemory
     )
 
-    const semanticMemory = optimizedSemantic.map(m => m.content).join('\n')
-    const episodicMemory = optimizedEpisodic.map(m => m.content).join('\n')
+    const semanticMemory = optimizedSemantic.map((m) => m.content).join('\n')
+    const episodicMemory = optimizedEpisodic.map((m) => m.content).join('\n')
 
-    const totalTokens = 
+    const totalTokens =
       TokenCounter.count(systemPrompt) +
       userPreferences.compressedTokens +
       recentContext.compressedTokens +
@@ -576,9 +616,9 @@ export class ContextOptimizer {
       stats: {
         totalTokens,
         allocation,
-        compressionRatio: (
-          (userPreferences.compressionRatio + recentContext.compressionRatio) / 2
-        ),
+        compressionRatio:
+          (userPreferences.compressionRatio + recentContext.compressionRatio) /
+          2,
       },
     }
   }
@@ -603,4 +643,40 @@ export class ContextOptimizer {
   getChunker(): SemanticChunker {
     return this.chunker
   }
+}
+
+// ============================================================================
+// Convenience Functions for Backward Compatibility
+// ============================================================================
+
+/**
+ * Count tokens in text - convenience function
+ * Wraps TokenCounter.count() for backward compatibility
+ *
+ * @param text - Text to count tokens in
+ * @returns Approximate token count
+ */
+export function countTokens(text: string): number {
+  return TokenCounter.count(text)
+}
+
+/**
+ * Count tokens in multiple texts - convenience function
+ *
+ * @param texts - Array of texts to count
+ * @returns Total token count
+ */
+export function countTokensBatch(texts: string[]): number {
+  return TokenCounter.countBatch(texts)
+}
+
+/**
+ * Truncate text to fit token budget - convenience function
+ *
+ * @param text - Text to truncate
+ * @param maxTokens - Maximum token budget
+ * @returns Truncated text
+ */
+export function truncateToTokens(text: string, maxTokens: number): string {
+  return TokenCounter.truncate(text, maxTokens)
 }

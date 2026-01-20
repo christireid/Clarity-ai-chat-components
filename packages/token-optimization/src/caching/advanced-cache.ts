@@ -1,8 +1,10 @@
 /**
  * Advanced Context Cache
- * 
+ *
  * High-performance caching with 90% cost reduction
  */
+
+import { toBase64 } from '../utils/crypto'
 
 export interface CacheConfig {
   maxSize: number
@@ -53,9 +55,9 @@ export class AdvancedContextCache {
       maxAge: 3600000, // 1 hour
       enableCompression: true,
       enableEncryption: false,
-      ...config
+      ...config,
     }
-    
+
     this.cache = new Map()
   }
 
@@ -68,7 +70,7 @@ export class AdvancedContextCache {
         found: false,
         cacheHit: false,
         processingTime: Date.now() - startTime,
-        savings: { tokens: 0, cost: 0, percentage: 0 }
+        savings: { tokens: 0, cost: 0, percentage: 0 },
       }
     }
 
@@ -80,7 +82,7 @@ export class AdvancedContextCache {
         found: false,
         cacheHit: false,
         processingTime: Date.now() - startTime,
-        savings: { tokens: 0, cost: 0, percentage: 0 }
+        savings: { tokens: 0, cost: 0, percentage: 0 },
       }
     }
 
@@ -100,23 +102,24 @@ export class AdvancedContextCache {
       savings: {
         tokens: tokensSaved,
         cost: costSaved,
-        percentage: 90 // Assume 90% cost reduction for cached content
-      }
+        percentage: 90, // Assume 90% cost reduction for cached content
+      },
     }
   }
 
   async set(
-    key: string, 
-    content: string, 
+    key: string,
+    content: string,
     tokenCount: number,
     metadata: Record<string, any> = {}
   ): Promise<void> {
     // Check cache size limit
     if (this.cache.size >= this.config.maxSize) {
       // Remove oldest entry
-      const oldestKey = Array.from(this.cache.entries())
-        .sort((a, b) => a[1].timestamp.getTime() - b[1].timestamp.getTime())[0]?.[0]
-      
+      const oldestKey = Array.from(this.cache.entries()).sort(
+        (a, b) => a[1].timestamp.getTime() - b[1].timestamp.getTime()
+      )[0]?.[0]
+
       if (oldestKey) {
         this.cache.delete(oldestKey)
       }
@@ -128,7 +131,7 @@ export class AdvancedContextCache {
       tokenCount,
       metadata,
       timestamp: new Date(),
-      accessCount: 0
+      accessCount: 0,
     }
 
     // Compress if enabled
@@ -139,21 +142,40 @@ export class AdvancedContextCache {
     this.cache.set(key, entry)
   }
 
+  /**
+   * Compress content using cross-platform base64 encoding.
+   *
+   * Uses the cross-platform toBase64 utility that works in both
+   * Node.js and browser environments.
+   *
+   * @param content - The content to compress
+   * @returns The base64-encoded content
+   */
   private async compress(content: string): Promise<string> {
-    // Simple compression - in production, use proper compression
-    return btoa(content)
+    // Simple compression using cross-platform base64 encoding
+    // In production, consider using proper compression algorithms
+    return toBase64(content)
   }
 
   getStats(): CacheStats {
     const entries = Array.from(this.cache.values())
-    
+
     return {
       totalEntries: entries.length,
       totalSize: entries.reduce((sum, entry) => sum + entry.content.length, 0),
-      hitRate: entries.length > 0 ? entries.filter(e => e.accessCount > 0).length / entries.length : 0,
+      hitRate:
+        entries.length > 0
+          ? entries.filter((e) => e.accessCount > 0).length / entries.length
+          : 0,
       averageSavings: 90, // Assume 90% savings
-      oldestEntry: entries.length > 0 ? new Date(Math.min(...entries.map(e => e.timestamp.getTime()))) : null,
-      newestEntry: entries.length > 0 ? new Date(Math.max(...entries.map(e => e.timestamp.getTime()))) : null
+      oldestEntry:
+        entries.length > 0
+          ? new Date(Math.min(...entries.map((e) => e.timestamp.getTime())))
+          : null,
+      newestEntry:
+        entries.length > 0
+          ? new Date(Math.max(...entries.map((e) => e.timestamp.getTime())))
+          : null,
     }
   }
 
@@ -163,8 +185,8 @@ export class AdvancedContextCache {
 }
 
 export async function cacheContext(
-  key: string, 
-  content: string, 
+  key: string,
+  content: string,
   tokenCount: number,
   config?: Partial<CacheConfig>
 ): Promise<void> {

@@ -1,8 +1,21 @@
 /**
  * Dynamic Compression Engine
  *
- * Implements adaptive compression with quality preservation
- * Provides 70-85% compression ratio with 95%+ quality preservation
+ * @deprecated This class has been superseded by the new compression strategies:
+ * - LLMLinguaCompressor: Real statistical compression (2-20x)
+ * - ExtractiveCompressor: Sentence-level extraction (2-5x)
+ * - AdaptiveCompressor: Auto-selects best strategy
+ *
+ * IMPORTANT: The claimed "70-85% compression ratio" was misleading.
+ * The actual compression achieved is primarily whitespace normalization
+ * (10-20% reduction) with some filler word removal.
+ *
+ * For real compression, use the new strategies:
+ * @see {@link LLMLinguaCompressor} for token-level compression
+ * @see {@link ExtractiveCompressor} for sentence-level compression
+ * @see {@link AdaptiveCompressor} for automatic strategy selection
+ *
+ * This class is maintained for backward compatibility only.
  */
 
 export interface DynamicCompressionConfig {
@@ -60,6 +73,10 @@ export interface QualityMetrics {
 
 /**
  * Dynamic compression engine with adaptive strategy selection
+ *
+ * @deprecated Use AdaptiveCompressor from './strategies/adaptive' instead.
+ * This class provides primarily whitespace normalization and filler word removal,
+ * achieving only 10-30% actual compression despite complex infrastructure.
  */
 export class DynamicCompressionEngine {
   private strategies: Map<string, CompressionStrategy>
