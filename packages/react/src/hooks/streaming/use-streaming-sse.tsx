@@ -290,6 +290,7 @@ export function useStreamingSSE(
   const reconnectTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const heartbeatTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const reconnectDelayRef = React.useRef(initialReconnectDelay)
+  const serverSuggestedRetryRef = React.useRef<number | null>(null) // SSE-6: Server-suggested retry persists across connections
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
 
@@ -442,7 +443,8 @@ export function useStreamingSSE(
       setStatus('connected')
       setReconnectAttempt(0)
       setIsReconnecting(false)
-      reconnectDelayRef.current = initialReconnectDelay
+      // SSE-6: Use server-suggested retry if available, otherwise use initial delay
+      reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
       onOpen?.()
 
       // Start heartbeat monitoring
@@ -515,6 +517,8 @@ export function useStreamingSSE(
             case 'retry':
               const retryMs = parseInt(value, 10)
               if (!isNaN(retryMs)) {
+                // SSE-6: Store server-suggested retry delay (persists across connections per SSE spec)
+                serverSuggestedRetryRef.current = retryMs
                 reconnectDelayRef.current = retryMs
               }
               break
@@ -646,6 +650,7 @@ export function useStreamingSSE(
     setReconnectAttempt(0)
     setIsReconnecting(false)
     lastEventIdRef.current = ''
+    serverSuggestedRetryRef.current = null // SSE-6: Clear server-suggested retry on reset
     reconnectDelayRef.current = initialReconnectDelay
   }, [initialReconnectDelay])
 
