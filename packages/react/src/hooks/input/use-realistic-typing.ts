@@ -3,6 +3,17 @@
 import * as React from 'react'
 
 /**
+ * Duration presets for realistic typing
+ */
+const durations = {
+  faster: 300,
+  fast: 500,
+  normal: 800,
+  slow: 1200,
+  slower: 1500,
+} as const
+
+/**
  * Typing stage configuration
  */
 export interface TypingStage {

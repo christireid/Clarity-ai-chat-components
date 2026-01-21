@@ -206,7 +206,19 @@ export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+export {
+  SecurityMonitor,
+  securityMonitor,
+  useSecureContent,
+  useCSP,
+  sanitizeHTML,
+  sanitizeMarkdown,
+  sanitizeUserInput,
+  DEFAULT_SECURITY_CONFIG,
+  type SecurityConfig,
+  type SecurityHeaders,
+  type SecurityAuditResult,
+} from './utils/security'
 
 // Re-export types from @clarity-chat/types for convenience
 export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'

@@ -8,24 +8,26 @@
 'use client'
 
 import * as React from 'react'
-import {
-  SyncManager,
+import { SyncManager, useSyncManager } from '../../utils/sync-manager'
+import type {
   SyncableData,
   SyncOptions,
-  useSyncManager,
   SyncResult,
 } from '../../utils/sync-manager'
-import type { Message } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage as Message } from '../../hooks/chat/use-chat-enhanced'
 
 // Convert messages to syncable format
-function messagesToSyncable(messages: Message[], conversationId: string): SyncableData {
+function messagesToSyncable(
+  messages: Message[],
+  conversationId: string
+): SyncableData {
   return {
     id: `conversation_${conversationId}`,
-    lastModified: Math.max(...messages.map(m => m.timestamp || 0), 0),
+    lastModified: Math.max(...messages.map((m) => m.timestamp || 0), 0),
     version: 1, // Would be incremented on changes
     data: {
       conversationId,
-      messages: messages.map(m => ({
+      messages: messages.map((m) => ({
         id: m.id,
         role: m.role,
         content: m.content,
@@ -61,7 +63,9 @@ class ChatLocalStorage {
 
     try {
       const messages = await this.getStoredMessages()
-      return messages.length > 0 ? [messagesToSyncable(messages, this.conversationId)] : []
+      return messages.length > 0
+        ? [messagesToSyncable(messages, this.conversationId)]
+        : []
     } catch (error) {
       console.warn('Failed to get local chat data:', error)
       return []
@@ -73,7 +77,9 @@ class ChatLocalStorage {
 
     try {
       const messages = await this.getStoredMessages()
-      return messages.length > 0 ? messagesToSyncable(messages, this.conversationId) : null
+      return messages.length > 0
+        ? messagesToSyncable(messages, this.conversationId)
+        : null
     } catch (error) {
       console.warn('Failed to get local chat data:', error)
       return null
@@ -273,7 +279,7 @@ export function useChatSync(
     conversationId,
     apiEndpoint,
     authToken,
-    enableRealtime = false,
+    enableRealtime: initialRealtimeEnabled = false,
     realtimeEndpoint,
     conflictStrategy = 'merge',
     onConflict,
@@ -281,8 +287,12 @@ export function useChatSync(
   } = options
 
   const [isSyncing, setIsSyncing] = React.useState(false)
-  const [lastSyncResult, setLastSyncResult] = React.useState<SyncResult | null>(null)
-  const [syncErrors, setSyncErrors] = React.useState<Array<{ timestamp: number; error: string }>>([])
+  const [lastSyncResult, setLastSyncResult] = React.useState<SyncResult | null>(
+    null
+  )
+  const [syncErrors, setSyncErrors] = React.useState<
+    Array<{ timestamp: number; error: string }>
+  >([])
 
   // Create storage adapters
   const localStorage = React.useMemo(
@@ -298,25 +308,30 @@ export function useChatSync(
   // Use sync manager
   const { syncManager, status } = useSyncManager(localStorage, remoteStorage, {
     conflictStrategy,
-    enableRealtime,
+    enableRealtime: initialRealtimeEnabled,
     syncInterval: 30000, // 30 seconds
     maxRetries: 3,
-    onConflict: onConflict || (async (conflict) => {
-      // Default conflict resolution: merge messages
-      console.warn('Chat sync conflict detected:', conflict)
-      // For now, prefer the newer version
-      return conflict.local.lastModified > conflict.remote.lastModified
-        ? conflict.local
-        : conflict.remote
-    }),
+    onConflict:
+      onConflict ||
+      (async (conflict) => {
+        // Default conflict resolution: merge messages
+        console.warn('Chat sync conflict detected:', conflict)
+        // For now, prefer the newer version
+        return conflict.local.lastModified > conflict.remote.lastModified
+          ? conflict.local
+          : conflict.remote
+      }),
     onProgress: (progress) => {
       setIsSyncing(progress.phase !== 'complete')
     },
     onError: (error) => {
-      setSyncErrors(prev => [...prev.slice(-9), {
-        timestamp: Date.now(),
-        error: error.message,
-      }])
+      setSyncErrors((prev) => [
+        ...prev.slice(-9),
+        {
+          timestamp: Date.now(),
+          error: error.message,
+        },
+      ])
     },
     ...syncOptions,
   })
@@ -339,22 +354,28 @@ export function useChatSync(
       }
     }
 
-    window.addEventListener('chat-sync-update', handleSyncUpdate as EventListener)
+    window.addEventListener(
+      'chat-sync-update',
+      handleSyncUpdate as EventListener
+    )
     return () => {
-      window.removeEventListener('chat-sync-update', handleSyncUpdate as EventListener)
+      window.removeEventListener(
+        'chat-sync-update',
+        handleSyncUpdate as EventListener
+      )
     }
   }, [conversationId, onMessagesChange])
 
   // Start real-time sync if enabled
   React.useEffect(() => {
-    if (enableRealtime && realtimeEndpoint) {
+    if (initialRealtimeEnabled && realtimeEndpoint) {
       syncManager.startRealtime(realtimeEndpoint)
     }
 
     return () => {
       syncManager.stopRealtime()
     }
-  }, [enableRealtime, realtimeEndpoint, syncManager])
+  }, [initialRealtimeEnabled, realtimeEndpoint, syncManager])
 
   const syncNow = async (): Promise<SyncResult> => {
     setIsSyncing(true)

@@ -73,7 +73,8 @@ class ErrorReporter {
   report(report: Omit<ErrorReport, 'timestamp' | 'userAgent' | 'url'>): void {
     const fullReport: ErrorReport = {
       timestamp: Date.now(),
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+      userAgent:
+        typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
       url: typeof window !== 'undefined' ? window.location.href : 'unknown',
       ...report,
     }
@@ -118,7 +119,7 @@ class ErrorReporter {
   } {
     const errorsByComponent: Record<string, number> = {}
 
-    this.reports.forEach(report => {
+    this.reports.forEach((report) => {
       const component = report.componentName || 'unknown'
       errorsByComponent[component] = (errorsByComponent[component] || 0) + 1
     })
@@ -146,7 +147,7 @@ export function ContentErrorFallback({
   errorInfo,
   resetError,
   componentName,
-  showDetails = false
+  showDetails = false,
 }: ErrorFallbackProps) {
   const [showStack, setShowStack] = React.useState(false)
 
@@ -159,7 +160,9 @@ export function ContentErrorFallback({
             Content Error
           </h3>
           <p className="text-sm text-red-600 dark:text-red-300">
-            {componentName ? `${componentName} failed to render` : 'Something went wrong'}
+            {componentName
+              ? `${componentName} failed to render`
+              : 'Something went wrong'}
           </p>
         </div>
       </div>
@@ -231,7 +234,7 @@ export function ContentErrorFallback({
 export function InlineErrorFallback({
   error,
   resetError,
-  componentName
+  componentName,
 }: ErrorFallbackProps) {
   return (
     <span
@@ -251,7 +254,7 @@ export function InlineErrorFallback({
 export function EmptyStateErrorFallback({
   error,
   resetError,
-  componentName
+  componentName,
 }: ErrorFallbackProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
@@ -260,7 +263,9 @@ export function EmptyStateErrorFallback({
         Unable to Load Content
       </h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-md">
-        {componentName ? `${componentName} encountered an error` : 'This content could not be loaded'}
+        {componentName
+          ? `${componentName} encountered an error`
+          : 'This content could not be loaded'}
         {error.message && `: ${error.message}`}
       </p>
       <Button onClick={resetError} variant="outline" size="sm">
@@ -286,11 +291,13 @@ export class BaseErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null, errorInfo: null }
   }
 
-  static getDerivedStateFromError(error: Error): Partial<typeof BaseErrorBoundary.prototype.state> {
+  static getDerivedStateFromError(
+    error: Error
+  ): Partial<typeof BaseErrorBoundary.prototype.state> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ errorInfo })
 
     // Report the error
@@ -303,7 +310,7 @@ export class BaseErrorBoundary extends React.Component<
           stack: error.stack,
         },
         errorInfo: {
-          componentStack: errorInfo.componentStack,
+          componentStack: errorInfo.componentStack ?? '',
         },
       })
     }
@@ -314,14 +321,14 @@ export class BaseErrorBoundary extends React.Component<
     }
   }
 
-  componentDidUpdate(prevProps: ErrorBoundaryProps) {
+  override componentDidUpdate(prevProps: ErrorBoundaryProps) {
     const { resetKeys, resetOnPropsChange } = this.props
     const { hasError } = this.state
 
     // Reset error state if reset keys changed
     if (hasError && resetKeys && prevProps.resetKeys) {
-      const hasResetKeyChanged = resetKeys.some((key, index) =>
-        key !== prevProps.resetKeys?.[index]
+      const hasResetKeyChanged = resetKeys.some(
+        (key, index) => key !== prevProps.resetKeys?.[index]
       )
 
       if (hasResetKeyChanged) {
@@ -339,7 +346,7 @@ export class BaseErrorBoundary extends React.Component<
     this.setState({ hasError: false, error: null, errorInfo: null })
   }
 
-  render() {
+  override render() {
     if (this.state.hasError && this.state.error) {
       const FallbackComponent = this.props.fallback || ContentErrorFallback
 
@@ -374,7 +381,9 @@ export function ContentErrorBoundary(props: ErrorBoundaryProps) {
 /**
  * Inline Content Error Boundary - For small inline content
  */
-export function InlineContentErrorBoundary(props: Omit<ErrorBoundaryProps, 'fallback'>) {
+export function InlineContentErrorBoundary(
+  props: Omit<ErrorBoundaryProps, 'fallback'>
+) {
   return (
     <BaseErrorBoundary
       {...props}
@@ -388,7 +397,11 @@ export function InlineContentErrorBoundary(props: Omit<ErrorBoundaryProps, 'fall
  * Media Error Boundary - Specialized for media components
  */
 export function MediaErrorBoundary(props: ErrorBoundaryProps) {
-  const MediaFallback = ({ error, resetError, componentName }: ErrorFallbackProps) => (
+  const MediaFallback = ({
+    error,
+    resetError,
+    componentName,
+  }: ErrorFallbackProps) => (
     <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
       <AlertTriangle className="w-8 h-8 text-gray-400 mb-2" />
       <p className="text-sm text-gray-500 text-center">
@@ -414,7 +427,11 @@ export function MediaErrorBoundary(props: ErrorBoundaryProps) {
  * Async Content Error Boundary - For components that load content asynchronously
  */
 export function AsyncContentErrorBoundary(props: ErrorBoundaryProps) {
-  const AsyncFallback = ({ error, resetError, componentName }: ErrorFallbackProps) => (
+  const AsyncFallback = ({
+    error,
+    resetError,
+    componentName,
+  }: ErrorFallbackProps) => (
     <div className="flex items-center justify-center p-4 border border-yellow-200 rounded bg-yellow-50 dark:bg-yellow-950/20">
       <div className="text-center">
         <AlertTriangle className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
@@ -424,7 +441,12 @@ export function AsyncContentErrorBoundary(props: ErrorBoundaryProps) {
         <p className="text-xs text-yellow-600 dark:text-yellow-300 mt-1">
           {error.message}
         </p>
-        <Button onClick={resetError} variant="outline" size="sm" className="mt-2">
+        <Button
+          onClick={resetError}
+          variant="outline"
+          size="sm"
+          className="mt-2"
+        >
           <RefreshCw className="w-4 h-4 mr-1" />
           Reload
         </Button>
@@ -451,23 +473,26 @@ export function AsyncContentErrorBoundary(props: ErrorBoundaryProps) {
 export function useErrorHandler(componentName?: string) {
   const [error, setError] = React.useState<Error | null>(null)
 
-  const handleError = React.useCallback((error: Error, errorInfo?: React.ErrorInfo) => {
-    setError(error)
+  const handleError = React.useCallback(
+    (error: Error, errorInfo?: React.ErrorInfo) => {
+      setError(error)
 
-    if (errorInfo) {
-      errorReporter.report({
-        componentName: componentName || 'UnknownComponent',
-        error: {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-        },
-        errorInfo: {
-          componentStack: errorInfo.componentStack,
-        },
-      })
-    }
-  }, [componentName])
+      if (errorInfo) {
+        errorReporter.report({
+          componentName: componentName || 'UnknownComponent',
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
+          errorInfo: {
+            componentStack: errorInfo.componentStack ?? '',
+          },
+        })
+      }
+    },
+    [componentName]
+  )
 
   const resetError = React.useCallback(() => {
     setError(null)
@@ -487,32 +512,37 @@ export function useErrorHandler(componentName?: string) {
 export function useAsyncErrorHandler(componentName?: string) {
   const [asyncError, setAsyncError] = React.useState<Error | null>(null)
 
-  const handleAsyncError = React.useCallback((error: Error | unknown) => {
-    const normalizedError = error instanceof Error ? error : new Error(String(error))
-    setAsyncError(normalizedError)
+  const handleAsyncError = React.useCallback(
+    (error: Error | unknown) => {
+      const normalizedError =
+        error instanceof Error ? error : new Error(String(error))
+      setAsyncError(normalizedError)
 
-    errorReporter.report({
-      componentName: componentName || 'AsyncComponent',
-      error: {
-        name: normalizedError.name,
-        message: normalizedError.message,
-        stack: normalizedError.stack,
-      },
-    })
-  }, [componentName])
+      errorReporter.report({
+        componentName: componentName || 'AsyncComponent',
+        error: {
+          name: normalizedError.name,
+          message: normalizedError.message,
+          stack: normalizedError.stack,
+        },
+      })
+    },
+    [componentName]
+  )
 
   const resetAsyncError = React.useCallback(() => {
     setAsyncError(null)
   }, [])
 
   // Wrap async functions with error handling
-  const wrapAsync = React.useCallback(<T extends any[], R>(
-    asyncFn: (...args: T) => Promise<R>
-  ) => {
-    return (...args: T): Promise<R> => {
-      return asyncFn(...args).catch(handleAsyncError)
-    }
-  }, [handleAsyncError])
+  const wrapAsync = React.useCallback(
+    <T extends any[], R>(asyncFn: (...args: T) => Promise<R>) => {
+      return (...args: T): Promise<R> => {
+        return asyncFn(...args).catch(handleAsyncError)
+      }
+    },
+    [handleAsyncError]
+  )
 
   return {
     asyncError,
@@ -568,7 +598,7 @@ export function ResilientErrorBoundary({
     if (retryCount < maxRetries) {
       // Auto-retry after timeout
       setTimeout(() => {
-        setRetryCount(prev => prev + 1)
+        setRetryCount((prev) => prev + 1)
         fallbackProps.resetError()
       }, resetTimeout)
 
@@ -576,7 +606,9 @@ export function ResilientErrorBoundary({
         <div className="flex items-center justify-center p-4">
           <div className="text-center">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-500" />
-            <p className="text-sm text-gray-600">Retrying... ({retryCount + 1}/{maxRetries})</p>
+            <p className="text-sm text-gray-600">
+              Retrying... ({retryCount + 1}/{maxRetries})
+            </p>
           </div>
         </div>
       )
@@ -606,10 +638,7 @@ export function ReportableErrorBoundary({
   ...props
 }: ErrorBoundaryProps & { enableReporting?: boolean }) {
   return (
-    <ContentErrorBoundary
-      {...props}
-      enableReporting={enableReporting}
-    >
+    <ContentErrorBoundary {...props} enableReporting={enableReporting}>
       {children}
     </ContentErrorBoundary>
   )
@@ -622,7 +651,13 @@ export function ReportableErrorBoundary({
 /**
  * Development-only error overlay
  */
-export function ErrorOverlay({ error, errorInfo }: { error: Error; errorInfo?: React.ErrorInfo }) {
+export function ErrorOverlay({
+  error,
+  errorInfo,
+}: {
+  error: Error
+  errorInfo?: React.ErrorInfo
+}) {
   if (process.env.NODE_ENV !== 'development') {
     return null
   }
@@ -647,10 +682,21 @@ export function ErrorOverlay({ error, errorInfo }: { error: Error; errorInfo?: R
       <h2 style={{ margin: '0 0 10px 0', fontSize: '16px' }}>
         🚨 Development Error Overlay
       </h2>
-      <div style={{ background: 'white', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
-        <strong>{error.name}: {error.message}</strong>
+      <div
+        style={{
+          background: 'white',
+          padding: '10px',
+          borderRadius: '4px',
+          marginBottom: '10px',
+        }}
+      >
+        <strong>
+          {error.name}: {error.message}
+        </strong>
       </div>
-      <details style={{ background: 'white', padding: '10px', borderRadius: '4px' }}>
+      <details
+        style={{ background: 'white', padding: '10px', borderRadius: '4px' }}
+      >
         <summary>Stack Trace</summary>
         <pre style={{ margin: '10px 0', whiteSpace: 'pre-wrap' }}>
           {error.stack}
