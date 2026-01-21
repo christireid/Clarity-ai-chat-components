@@ -151,3 +151,18 @@ export type {
   UseStreamingOptimizationConfig,
   StreamingState,
 } from './use-streaming-optimization'
+
+// ============================================================================
+// Telemetry Hooks (Week 6) - Observability for token optimization
+// ============================================================================
+
+// OpenTelemetry integration
+export {
+  useTelemetry,
+  useTelemetryMetrics,
+  usePerformanceMonitor,
+} from './use-telemetry'
+export type {
+  UseTelemetryConfig,
+  TelemetryState,
+} from './use-telemetry'
