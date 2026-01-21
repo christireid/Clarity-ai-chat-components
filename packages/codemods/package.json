@@ -34,8 +34,8 @@
     "vitest": "^1.0.0"
   },
   "peerDependencies": {
-    "@clarity-chat/react": "^1.0.0",
-    "@clarity-chat/primitives": "^1.0.0"
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*"
   },
   "files": [
     "dist",
