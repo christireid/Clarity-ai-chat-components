@@ -4,13 +4,14 @@ import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 
 export interface ProgressiveImageProps
-  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet'> {
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'crossOrigin'> {
   src: string
   alt: string
   lowQualitySrc?: string
   srcSet?: string
   sizes?: string
   placeholderClassName?: string
+  crossOrigin?: 'anonymous' | 'use-credentials' | ''
   onLoad?: () => void
   onError?: () => void
 }
@@ -22,6 +23,7 @@ export interface ProgressiveImageProps
  * - Native lazy loading with loading="lazy"
  * - Optional low-quality placeholder for blur-up effect
  * - Responsive images with srcSet and sizes support
+ * - CORS support for external images (crossOrigin attribute)
  * - Skeleton placeholder while loading
  * - Error state handling
  * - Smooth fade-in transition
@@ -53,6 +55,14 @@ export interface ProgressiveImageProps
  *   lowQualitySrc="/image-thumb.jpg"
  *   alt="Description"
  * />
+ *
+ * @example
+ * // With CORS for external images
+ * <ProgressiveImage
+ *   src="https://cdn.example.com/image.jpg"
+ *   crossOrigin="anonymous"
+ *   alt="External image"
+ * />
  */
 export const ProgressiveImage = React.memo(function ProgressiveImage({
   src,
@@ -62,6 +72,7 @@ export const ProgressiveImage = React.memo(function ProgressiveImage({
   sizes,
   className,
   placeholderClassName,
+  crossOrigin,
   onLoad,
   onError,
   ...props
@@ -75,6 +86,9 @@ export const ProgressiveImage = React.memo(function ProgressiveImage({
     if (lowQualitySrc && currentSrc === lowQualitySrc) {
       const img = new Image()
       img.src = src
+      if (crossOrigin) {
+        img.crossOrigin = crossOrigin
+      }
       img.onload = () => {
         setCurrentSrc(src)
       }
@@ -83,7 +97,7 @@ export const ProgressiveImage = React.memo(function ProgressiveImage({
         onError?.()
       }
     }
-  }, [lowQualitySrc, src, currentSrc, onError])
+  }, [lowQualitySrc, src, currentSrc, crossOrigin, onError])
 
   const handleLoad = () => {
     setIsLoaded(true)
@@ -146,6 +160,7 @@ export const ProgressiveImage = React.memo(function ProgressiveImage({
         sizes={sizes}
         alt={alt}
         loading="lazy"
+        crossOrigin={crossOrigin}
         onLoad={handleLoad}
         onError={handleError}
         className={cn(
