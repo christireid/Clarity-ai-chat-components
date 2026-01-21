@@ -391,7 +391,26 @@ The hooks demonstrate mature patterns:
 - [x] Run accessibility linter on modified components (ESLint jsx-a11y passes)
 - [x] Add accessibility tests for MentionInput (ARIA combobox pattern, listbox, keyboard nav)
 - [x] Add accessibility tests for ConversationList (button roles, aria-pressed, keyboard nav)
-- [ ] Update Storybook stories with accessibility annotations (future enhancement)
+- [x] Update Storybook stories with accessibility annotations
+
+### Phase 5: Performance Optimizations (January 2026)
+
+- [x] Add React.memo() wrapper to ConversationList for memoization
+- [x] Add useDebounce (150ms) to AdvancedChatInput for suggestion filtering
+- [x] Add useDebounce (150ms) to CommandPalette for search filtering
+- [x] Add displayName to ConversationList, AdvancedChatInput, CommandPalette
+
+### Phase 6: Memory Leak Prevention (January 2026)
+
+- [x] Add buttonStateTimeoutRef with cleanup to ChatInput
+- [x] Add focusTimeoutRef with cleanup to AdvancedChatInput
+- [x] Verify all setTimeout calls have proper cleanup in useEffect
+
+### Phase 7: TypeScript & Build Fixes (January 2026)
+
+- [x] Rename theme-helpers.ts to theme-helpers.tsx for JSX support
+- [x] Fix duplicate initial/animate motion props in chat-input.tsx
+- [x] Fix type-only imports for vitest Mock type in testing-helpers.tsx
 
 ---
 

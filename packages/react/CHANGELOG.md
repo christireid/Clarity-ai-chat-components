@@ -2,20 +2,61 @@
 
 All notable changes to @clarity-chat/react will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### 🔧 **Performance Improvements (January 2026 Audit)**
+
+#### Memory Leak Prevention
+
+- **ChatInput**: Added `buttonStateTimeoutRef` with proper cleanup to prevent memory leaks from
+  setTimeout
+- **AdvancedChatInput**: Added `focusTimeoutRef` with proper cleanup for focus timeout operations
+
+#### Performance Optimizations
+
+- **ConversationList**: Added `React.memo()` wrapper for component memoization
+- **AdvancedChatInput**: Added `useDebounce` hook (150ms) for suggestion filtering
+- **CommandPalette**: Added `useDebounce` hook (150ms) for search filtering to improve performance
+  with large datasets
+
+#### Developer Experience
+
+- **ConversationList**: Added `displayName` property for React DevTools debugging
+- **AdvancedChatInput**: Added `displayName` property for React DevTools debugging
+- **CommandPalette**: Added `displayName` property for React DevTools debugging
+
+### 🐛 **Bug Fixes**
+
+- **chat-input.tsx**: Fixed duplicate `initial`/`animate` motion props that caused TypeScript errors
+- **theme-helpers**: Renamed from `.ts` to `.tsx` to properly handle JSX syntax
+- **testing-helpers**: Fixed type-only imports for vitest `Mock` type (verbatimModuleSyntax
+  compliance)
+
+### 📚 **Documentation**
+
+- Updated accessibility guide with MentionInput and ConversationList ARIA patterns
+- Updated interactive components troubleshooting guide
+- Updated migration guide with January 2026 audit results
+
+---
 
 ## [1.0.0] - 2025-01-21
 
 ### 🎉 **Major Release: Enterprise-Ready AI Chat Components**
 
-This major release transforms Clarity Chat into a production-ready, enterprise-grade AI chat component library with comprehensive features for building sophisticated AI interfaces.
+This major release transforms Clarity Chat into a production-ready, enterprise-grade AI chat
+component library with comprehensive features for building sophisticated AI interfaces.
 
 ### ✨ **New Features**
 
 #### 🔄 **Cross-Device Chat Synchronization**
+
 - **Real-time sync**: Automatic synchronization across multiple devices with WebSocket support
-- **Conflict resolution**: Intelligent merging strategies (merge, last-write-wins, manual resolution)
+- **Conflict resolution**: Intelligent merging strategies (merge, last-write-wins, manual
+  resolution)
 - **Offline support**: Queue changes when offline, sync when connection restored
 - **Sync status UI**: Visual indicators for sync state, errors, and pending changes
 - **Version control**: Prevent data loss with conflict detection and resolution
@@ -28,7 +69,7 @@ function SyncedChat() {
     conversationId: 'my-chat',
     apiEndpoint: '/api/sync',
     enableRealtime: true,
-    conflictStrategy: 'merge'
+    conflictStrategy: 'merge',
   })
 
   return (
@@ -41,6 +82,7 @@ function SyncedChat() {
 ```
 
 #### 🛡️ **Advanced Rate Limiting System**
+
 - **Request queuing**: Intelligent queue management with priority support
 - **Exponential backoff**: Smart retry logic for failed requests
 - **Rate limit detection**: Automatic detection and handling of API rate limits
@@ -58,6 +100,7 @@ function SyncedChat() {
 ```
 
 #### 🎨 **Template Marketplace & Sharing**
+
 - **Template library**: Comprehensive local template management
 - **Community marketplace**: Share and discover templates from other users
 - **Template versioning**: Track changes and fork templates
@@ -75,16 +118,14 @@ function TemplateSystem() {
         enableSharing={true}
         onTemplateShare={handleShare}
       />
-      <TemplateMarketplace
-        currentUser={user}
-        onTemplateInstall={handleInstall}
-      />
+      <TemplateMarketplace currentUser={user} onTemplateInstall={handleInstall} />
     </div>
   )
 }
 ```
 
 #### 🧪 **Comprehensive Integration Testing**
+
 - **6 new integration test suites**: 100+ test scenarios covering all features
 - **Cross-package testing**: Verify component interoperability
 - **End-to-end workflows**: Complete user journey validation
@@ -94,18 +135,21 @@ function TemplateSystem() {
 ### 🔧 **Enhancements**
 
 #### **API Improvements**
+
 - **Unified hook API**: Consolidated `useClarityChat` as primary interface
 - **Deprecated export cleanup**: Removed legacy exports in favor of modern APIs
 - **Type safety**: Enhanced TypeScript types across all components
 - **Export consolidation**: Cleaner public API surface
 
 #### **Performance Optimizations**
+
 - **React 18/19 compatibility**: Optimized for latest React features
 - **Memory management**: Improved cleanup and resource management
 - **Bundle optimization**: Tree-shaking friendly exports
 - **Lazy loading**: Optional component loading for better performance
 
 #### **Developer Experience**
+
 - **Enhanced documentation**: Comprehensive guides and examples
 - **Better error messages**: Clearer error reporting and debugging
 - **TypeScript improvements**: Better type inference and IntelliSense
@@ -114,12 +158,14 @@ function TemplateSystem() {
 ### 🐛 **Bug Fixes**
 
 #### **Critical Fixes**
+
 - **Race condition fix**: Resolved chunk accumulation race in `useAssistant`
 - **State update optimization**: Fixed performance issues with `React.startTransition`
 - **Memory leak prevention**: Improved cleanup in long-running components
 - **Type safety**: Fixed TypeScript errors in complex component compositions
 
 #### **Component Fixes**
+
 - **Streaming stability**: Improved streaming response handling
 - **Error boundary coverage**: Better error isolation in component trees
 - **Accessibility**: Enhanced ARIA labels and keyboard navigation
@@ -128,6 +174,7 @@ function TemplateSystem() {
 ### 📚 **Documentation**
 
 #### **New Documentation**
+
 - **Integration guides**: Step-by-step setup for all major features
 - **API reference**: Comprehensive API documentation
 - **Migration guide**: Upgrade path from previous versions
@@ -135,6 +182,7 @@ function TemplateSystem() {
 - **Troubleshooting**: Common issues and solutions
 
 #### **Examples & Tutorials**
+
 - **Complete applications**: Full-featured chat applications
 - **Feature showcases**: Individual feature demonstrations
 - **Integration examples**: Third-party service integrations
@@ -143,12 +191,14 @@ function TemplateSystem() {
 ### 🔒 **Security & Reliability**
 
 #### **Security Enhancements**
+
 - **Input sanitization**: Improved XSS protection
 - **API key handling**: Secure credential management
 - **Content security**: Safe HTML rendering
 - **Rate limiting**: Client-side abuse prevention
 
 #### **Reliability Improvements**
+
 - **Error recovery**: Automatic retry and fallback mechanisms
 - **Connection handling**: Robust network failure recovery
 - **Memory management**: Prevent memory leaks in long sessions
@@ -157,6 +207,7 @@ function TemplateSystem() {
 ### 🧪 **Testing Infrastructure**
 
 #### **Test Coverage Expansion**
+
 - **Unit tests**: 200+ individual component/function tests
 - **Integration tests**: 6 comprehensive test suites
 - **End-to-end tests**: Complete workflow validation
@@ -164,6 +215,7 @@ function TemplateSystem() {
 - **Performance tests**: Load and stress testing
 
 #### **Testing Tools**
+
 - **Test utilities**: Enhanced testing helpers and fixtures
 - **Mock systems**: Realistic API and service mocking
 - **CI integration**: Automated testing pipelines
@@ -172,12 +224,14 @@ function TemplateSystem() {
 ### 📦 **Build & Distribution**
 
 #### **Build System Improvements**
+
 - **Multi-format outputs**: ESM, CJS, and UMD builds
 - **Tree shaking**: Optimized bundle sizes
 - **Source maps**: Better debugging experience
 - **Type definitions**: Comprehensive TypeScript support
 
 #### **Package Management**
+
 - **Monorepo optimization**: Improved build times and caching
 - **Dependency management**: Updated and audited dependencies
 - **Peer dependency handling**: Clear React version requirements
@@ -186,12 +240,14 @@ function TemplateSystem() {
 ### 🚀 **Migration Guide**
 
 #### **Breaking Changes**
+
 - **Hook consolidation**: `useChat` → `useClarityChat`
 - **Component renaming**: Some legacy component names updated
 - **API structure**: Streamlined public API surface
 - **Type definitions**: Enhanced but backward-compatible types
 
 #### **Upgrade Path**
+
 ```bash
 # Update to latest version
 npm install @clarity-chat/react@latest
@@ -202,13 +258,16 @@ import { useClarityChat } from '@clarity-chat/react' // instead of useChat
 
 ### 🙏 **Credits**
 
-This release includes contributions from the comprehensive AI Components & Hooks Audit, which identified and resolved 10+ critical issues and added 5 major new feature sets. Special thanks to the audit process for ensuring production readiness.
+This release includes contributions from the comprehensive AI Components & Hooks Audit, which
+identified and resolved 10+ critical issues and added 5 major new feature sets. Special thanks to
+the audit process for ensuring production readiness.
 
 ---
 
 ## Previous Versions
 
 ### [0.1.0-alpha.x] - 2024
+
 - Initial alpha releases with core chat functionality
 - Basic streaming support and component library
 - Foundation for enterprise features
@@ -216,6 +275,7 @@ This release includes contributions from the comprehensive AI Components & Hooks
 ---
 
 **Legend:**
+
 - ✨ **New Features**
 - 🔧 **Enhancements**
 - 🐛 **Bug Fixes**
@@ -227,4 +287,5 @@ This release includes contributions from the comprehensive AI Components & Hooks
 
 ---
 
-For more detailed information about each feature, see the [documentation](https://clarity-chat.dev) or [examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples).
+For more detailed information about each feature, see the [documentation](https://clarity-chat.dev)
+or [examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples).
