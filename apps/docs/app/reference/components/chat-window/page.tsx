@@ -64,6 +64,7 @@ function BasicChatDemo() {
 }
 
 const chatWindowProps: Prop[] = [
+  // Core props
   {
     name: 'messages',
     type: 'Message[] | CoreMessage[]',
@@ -73,7 +74,7 @@ const chatWindowProps: Prop[] = [
   },
   {
     name: 'onSendMessage',
-    type: '(content: string) => void',
+    type: '(content: string) => void | Promise<void>',
     required: true,
     description:
       'Callback function triggered when user sends a message. Receives the message content as a string.',
@@ -92,41 +93,51 @@ const chatWindowProps: Prop[] = [
       'AI processing status for the thinking indicator. Shows when the AI is processing (thinking, reasoning, etc.).',
   },
   {
-    name: 'onMessageCopy',
-    type: '(messageId: string, content: string) => void',
+    name: 'onStopGeneration',
+    type: '() => void',
     description:
-      'Callback when a message is copied to clipboard. Receives message ID and content.',
+      'Callback to stop/cancel the current AI generation. Shows a "Stop" button during loading state.',
+  },
+
+  // Grouped configuration props
+  {
+    name: 'messageActions',
+    type: 'ChatWindowMessageActions',
+    description:
+      'Grouped callbacks for message interactions (copy, feedback, retry, edit, regenerate, delete).',
   },
   {
-    name: 'onMessageFeedback',
-    type: '(messageId: string, type: "up" | "down") => void',
+    name: 'editActions',
+    type: 'ChatWindowEditActions',
     description:
-      'Callback when user provides feedback on a message (thumbs up/down).',
+      'Grouped callbacks for message editing (editingMessageId, onSaveEdit, onCancelEdit).',
   },
   {
-    name: 'onMessageRetry',
-    type: '(messageId: string) => void',
+    name: 'header',
+    type: 'ChatWindowHeaderConfig',
     description:
-      'Callback when user requests to retry a message. Enables retry button on failed messages.',
+      'Grouped header configuration (show, title, subtitle, actions, showMessageCount).',
   },
   {
-    name: 'onEditMessage',
-    type: '(messageId: string) => void',
+    name: 'actions',
+    type: 'ChatWindowActions',
     description:
-      'Callback when user edits a message. Enables edit functionality.',
+      'Grouped global actions (onExport, onClear).',
   },
   {
-    name: 'onRegenerateMessage',
-    type: '(messageId: string) => void',
+    name: 'errorHandling',
+    type: 'ChatWindowErrorHandling',
     description:
-      'Callback when user requests message regeneration. Enables regenerate button.',
+      'Grouped error handling configuration (error, onRetry, onDismissError).',
   },
   {
-    name: 'onDeleteMessage',
-    type: '(messageId: string) => void',
+    name: 'prompts',
+    type: 'ChatWindowPromptConfig',
     description:
-      'Callback when user deletes a message. Enables delete functionality.',
+      'Grouped prompt suggestions configuration (starterPrompts, followUpSuggestions, show flags).',
   },
+
+  // Other props
   {
     name: 'emptyState',
     type: 'ReactNode',
@@ -134,48 +145,123 @@ const chatWindowProps: Prop[] = [
       'Custom content to display when there are no messages. Defaults to a welcome message with bot icon.',
   },
   {
+    name: 'className',
+    type: 'string',
+    description: 'Optional CSS class name for the chat window container.',
+  },
+
+  // Legacy props (deprecated)
+  {
+    name: 'onMessageCopy',
+    type: '(messageId: string, content: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onCopy instead. Callback when a message is copied to clipboard.',
+  },
+  {
+    name: 'onMessageFeedback',
+    type: '(messageId: string, type: "up" | "down", comment?: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onFeedback instead. Callback when user provides feedback on a message.',
+  },
+  {
+    name: 'onMessageRetry',
+    type: '(messageId: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onRetry instead. Callback when user requests to retry a message.',
+  },
+  {
+    name: 'onEditMessage',
+    type: '(messageId: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onEdit instead. Callback when user edits a message.',
+  },
+  {
+    name: 'onRegenerateMessage',
+    type: '(messageId: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onRegenerate instead. Callback when user requests message regeneration.',
+  },
+  {
+    name: 'onDeleteMessage',
+    type: '(messageId: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use messageActions.onDelete instead. Callback when user deletes a message.',
+  },
+  {
+    name: 'editingMessageId',
+    type: 'string | null',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use editActions.editingMessageId instead. ID of message currently being edited.',
+  },
+  {
+    name: 'onSaveEdit',
+    type: '(messageId: string, newContent: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use editActions.onSaveEdit instead. Callback when edit is saved.',
+  },
+  {
+    name: 'onCancelEdit',
+    type: '(messageId: string) => void',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use editActions.onCancelEdit instead. Callback when edit is cancelled.',
+  },
+  {
     name: 'showHeader',
     type: 'boolean',
-    default: 'false',
+    deprecated: true,
     description:
-      'Show header with session information at the top of the chat window.',
+      '⚠️ DEPRECATED: Use header.show instead. Show header with session information.',
   },
   {
     name: 'sessionTitle',
     type: 'string',
-    default: '"Chat Session"',
-    description: 'Title displayed in the header when showHeader is true.',
+    deprecated: true,
+    description:
+      '⚠️ DEPRECATED: Use header.title instead. Title displayed in the header.',
   },
   {
     name: 'sessionSubtitle',
     type: 'string',
+    deprecated: true,
     description:
-      'Subtitle or description displayed in the header when showHeader is true.',
+      '⚠️ DEPRECATED: Use header.subtitle instead. Subtitle displayed in the header.',
   },
   {
     name: 'headerActions',
     type: 'ReactNode',
+    deprecated: true,
     description:
-      'Custom actions to display in the header (e.g., settings button, menu).',
+      '⚠️ DEPRECATED: Use header.actions instead. Custom actions in the header.',
   },
   {
     name: 'showMessageCount',
     type: 'boolean',
-    default: 'false',
+    deprecated: true,
     description:
-      'Show message count badge in the header when showHeader is true.',
+      '⚠️ DEPRECATED: Use header.showMessageCount instead. Show message count badge in the header.',
   },
   {
     name: 'onExport',
     type: '() => void',
+    deprecated: true,
     description:
-      'Callback function triggered when user exports the conversation. Shows export button in header.',
+      '⚠️ DEPRECATED: Use actions.onExport instead. Callback when user exports the conversation.',
   },
   {
     name: 'onClear',
     type: '() => void',
+    deprecated: true,
     description:
-      'Callback function triggered when user clears the chat. Shows clear button in header.',
+      '⚠️ DEPRECATED: Use actions.onClear instead. Callback when user clears the conversation.',
   },
   {
     name: 'className',
@@ -195,9 +281,18 @@ export default function ChatWindowPage() {
 
         <p className="lead">
           The ChatWindow component is the primary container for building chat
-          interfaces. It handles message display, input, and all core chat
-          functionality.
+          interfaces with a modern grouped props API. It handles message display,
+          input, and all core chat functionality with improved developer experience.
         </p>
+
+        <Callout type="success">
+          <h4>🎯 New Grouped Props API (Recommended)</h4>
+          <p>
+            ChatWindow now features a <strong>grouped props API</strong> that reduces prop count by 73%
+            (from 30+ to 8 grouped props) while maintaining full backward compatibility.
+            This makes configuration cleaner and more intuitive.
+          </p>
+        </Callout>
 
         <Callout type="info">
           <p>
@@ -357,17 +452,21 @@ function ChatWithHeader() {
     <ChatWindow
       messages={messages}
       onSendMessage={handleSend}
-      showHeader
-      sessionTitle="Customer Support"
-      sessionSubtitle="We're here to help"
-      showMessageCount
-      onExport={handleExport}
-      onClear={handleClear}
-      headerActions={
-        <Button variant="ghost" size="sm">
-          Settings
-        </Button>
-      }
+      header={{
+        show: true,
+        title: "Customer Support",
+        subtitle: "We're here to help",
+        showMessageCount: true,
+        actions: (
+          <Button variant="ghost" size="sm">
+            Settings
+          </Button>
+        ),
+      }}
+      actions={{
+        onExport: handleExport,
+        onClear: handleClear,
+      }}
     />
   )
 }`}
@@ -461,11 +560,13 @@ function ChatWithOperations() {
     <ChatWindow
       messages={messages}
       onSendMessage={handleSend}
-      onEditMessage={handleEdit}
-      onDeleteMessage={handleDelete}
-      onRegenerateMessage={handleRegenerate}
-      onMessageFeedback={handleFeedback}
-      onMessageCopy={handleCopy}
+      messageActions={{
+        onEdit: handleEdit,
+        onDelete: handleDelete,
+        onRegenerate: handleRegenerate,
+        onFeedback: handleFeedback,
+        onCopy: handleCopy,
+      }}
     />
   )
 }`}
@@ -546,7 +647,62 @@ function ChatWithHook() {
           </p>
         </Callout>
 
-        <h2 id="props">Props</h2>
+        <h2 id="grouped-props-api">🎯 Grouped Props API</h2>
+
+        <p>
+          ChatWindow features a modern <strong>grouped props API</strong> that organizes related functionality
+          into logical objects. This reduces the API surface by 73% while making it more intuitive to use.
+        </p>
+
+        <h3>Recommended Usage</h3>
+
+        <EnhancedCodeBlock
+          code={`<ChatWindow
+  messages={messages}
+  isLoading={isLoading}
+  onSendMessage={handleSendMessage}
+
+  // Clean, organized configuration
+  header={{
+    show: true,
+    title: 'AI Assistant',
+    subtitle: 'Powered by Clarity Chat',
+    showMessageCount: true
+  }}
+
+  messageActions={{
+    onCopy: handleCopy,
+    onFeedback: handleFeedback,
+    onRetry: handleRetry
+  }}
+
+  prompts={{
+    starterPrompts: starterPrompts,
+    followUpSuggestions: followUpSuggestions
+  }}
+/>`}
+          language="tsx"
+        />
+
+        <h3>Benefits</h3>
+
+        <ul>
+          <li><strong>73% fewer props</strong> - Reduced from 30+ individual props to 8 grouped objects</li>
+          <li><strong>Better organization</strong> - Related functionality is logically grouped</li>
+          <li><strong>Easier maintenance</strong> - Changes are localized to specific feature areas</li>
+          <li><strong>Enhanced DX</strong> - Better autocomplete and clearer intent</li>
+          <li><strong>Backward compatible</strong> - Old props still work with deprecation warnings</li>
+        </ul>
+
+        <Callout type="warning">
+          <h4>Migration Guide</h4>
+          <p>
+            Old individual props are deprecated but still supported. See the{' '}
+            <a href="/guide/migration">migration guide</a> for transition instructions.
+          </p>
+        </Callout>
+
+        <h2 id="props">Complete Props Reference</h2>
 
         <PropsTable props={chatWindowProps} />
 
@@ -647,17 +803,23 @@ function CompleteChat() {
             await chat.append({ role: 'user', content })
           }}
           isLoading={chat.isLoading}
-          showHeader
-          sessionTitle="AI Assistant"
-          sessionSubtitle="Powered by Clarity Chat"
-          showMessageCount
-          onExport={handleExport}
-          onClear={handleClear}
-          onMessageCopy={(id, content) => {
-            navigator.clipboard.writeText(content)
+          header={{
+            show: true,
+            title: "AI Assistant",
+            subtitle: "Powered by Clarity Chat",
+            showMessageCount: true,
           }}
-          onMessageFeedback={(id, type) => {
-            console.log('Feedback:', id, type)
+          actions={{
+            onExport: handleExport,
+            onClear: handleClear,
+          }}
+          messageActions={{
+            onCopy: (id, content) => {
+              navigator.clipboard.writeText(content)
+            },
+            onFeedback: (id, type) => {
+              console.log('Feedback:', id, type)
+            },
           }}
           className="border border-border rounded-lg shadow-lg"
         />

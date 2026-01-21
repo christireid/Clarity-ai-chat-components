@@ -2,7 +2,7 @@
   "name": "@clarity-chat/react",
   "version": "1.0.0",
   "type": "module",
-  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, enterprise-ready",
+  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, rate limiting, cross-device sync, template marketplace, enterprise-ready",
   "keywords": [
     "react",
     "chat",
@@ -18,7 +18,14 @@
     "accessibility",
     "wcag",
     "ui",
-    "chat-ui"
+    "chat-ui",
+    "rate-limiting",
+    "sync",
+    "cross-device",
+    "templates",
+    "marketplace",
+    "conflict-resolution",
+    "offline-support"
   ],
   "homepage": "https://clarity-chat.dev",
   "bugs": {
@@ -204,6 +211,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.15",
     "@vitest/ui": "^4.0.15",
+    "axe-core": "^4.10.2",
     "happy-dom": "^20.0.11",
     "jsdom": "^27.2.0",
     "size-limit": "^12.0.0",

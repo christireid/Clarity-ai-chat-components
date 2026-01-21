@@ -142,6 +142,10 @@ export default function QuickStartPage() {
               nextStepHref="#basic-usage"
               nextStepTitle="Basic Usage"
             >
+              <Callout type="warning" className="mb-4">
+                <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+              </Callout>
+
               <p className="text-text-secondary mb-4">
                 Install Clarity Chat UI using your preferred package manager:
               </p>
@@ -178,50 +182,81 @@ pnpm add @clarity-chat/react`}
               nextStepTitle="Manual Control"
             >
               <p className="text-text-secondary mb-4">
-                Use the new unified{' '}
-                <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
-                  ClarityChatApp
-                </code>{' '}
-                for the simplest integration with all advanced features
-                built-in:
+                Choose from our <strong>ultra-simple APIs</strong> - from 1 line to full control:
               </p>
 
-              <EnhancedCodeBlock
-                code={`import { ClarityChatApp } from '@clarity-chat/react'
+              <div className="space-y-4">
+                <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                  <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">🚀 Level 1: One Line (Simplest)</h4>
+                  <EnhancedCodeBlock
+                    code={`import { chat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 export default function App() {
-  // Basic usage - streaming chat in 3 minutes
-  return <ClarityChatApp api="/api/chat" />
+  return chat('/api/chat') // That's it!
 }`}
-                language="tsx"
-                filename="App.tsx"
-                showLineNumbers
-                showCopyButton
-              />
+                    language="tsx"
+                    filename="UltraSimple.tsx"
+                    showCopyButton
+                  />
+                </div>
+
+                <div className="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">🎯 Level 2: Named Presets</h4>
+                  <EnhancedCodeBlock
+                    code={`import { ChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return ChatPresets.Enterprise('/api/chat')
+}`}
+                    language="tsx"
+                    filename="WithPresets.tsx"
+                    showCopyButton
+                  />
+                </div>
+
+                <div className="border rounded-lg p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+                  <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">🏗️ Level 3: Builder Pattern</h4>
+                  <EnhancedCodeBlock
+                    code={`import { ChatBuilder } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return ChatBuilder.create('/api/chat')
+    .withMemory('vector-store')
+    .withHeader('My Chat')
+    .build()
+}`}
+                    language="tsx"
+                    filename="WithBuilder.tsx"
+                    showCopyButton
+                  />
+                </div>
+              </div>
 
               <Callout type="success" className="mt-6">
                 <p>
-                  <strong>That's it!</strong> ClarityChatApp handles all state
-                  management, streaming, error handling, and UI internally.
+                  <strong>That's it!</strong> All APIs handle streaming, error recovery,
+                  and beautiful UI automatically. Start simple, upgrade as needed!
                 </p>
               </Callout>
 
               <div className="my-6 p-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">
-                  🚀 Enable Advanced Features with One Line
+                  🛠️ Development Helpers
                 </h4>
                 <EnhancedCodeBlock
-                  code={`// Enable memory with one flag
-<ClarityChatApp api="/api/chat" features={{ memory: true }} />
+                  code={`import { QuickSetup, showQuickStart } from '@clarity-chat/react'
 
-// Use a preset for common configurations
-<ClarityChatApp api="/api/chat" preset="pro" />
+// Generate setup code interactively
+QuickSetup.enterprise('/api/chat')
 
-// Enterprise preset - all features enabled
-<ClarityChatApp api="/api/chat" preset="enterprise" />`}
+// Show code templates in console
+showQuickStart('basic')
+showQuickStart('enterprise')`}
                   language="tsx"
-                  filename="Advanced Examples"
+                  filename="DevHelpers.tsx"
                   showCopyButton
                 />
                 <p className="text-sm text-blue-700 dark:text-blue-400 mt-3">

@@ -2,46 +2,129 @@
 
 Complete reference for all Clarity Chat components.
 
-## ChatWindow
+## 🆕 ChatWindow - Enhanced with Grouped Props API
 
-The main container component that orchestrates the entire chat interface.
+The main container component that orchestrates the entire chat interface with a modern grouped props architecture.
 
-### Props
+### ✨ New Grouped Props Interface (Recommended)
 
 ```typescript
 interface ChatWindowProps {
-  messages: Message[]
+  // Core props
+  messages: Message[] | CoreMessage[]
   isLoading?: boolean
+  aiStatus?: AIStatus
   onSendMessage: (content: string) => void | Promise<void>
-  onCancel?: () => void
-  onEditMessage?: (messageId: string, newContent: string) => void
-  onRegenerateMessage?: (messageId: string) => void
-  onDeleteMessage?: (messageId: string) => void
-  onBranchMessage?: (messageId: string) => void
-  onFileUpload?: (files: File[]) => void
-  placeholder?: string
-  maxHeight?: string | number
-  enableFileUpload?: boolean
-  enableMessageOperations?: boolean
-  enableMarkdown?: boolean
-  enableCodeHighlight?: boolean
-  theme?: ThemeConfig
+  onStopGeneration?: () => void
+
+  // 🎯 Grouped configuration objects
+  messageActions?: {
+    onCopy?: (messageId: string, content: string) => void
+    onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+    onRetry?: (messageId: string) => void
+    onEdit?: (messageId: string) => void
+    onRegenerate?: (messageId: string) => void
+    onDelete?: (messageId: string) => void
+  }
+
+  editActions?: {
+    editingMessageId?: string | null
+    onSaveEdit?: (messageId: string, newContent: string) => void
+    onCancelEdit?: (messageId: string) => void
+  }
+
+  header?: {
+    show?: boolean
+    title?: string
+    subtitle?: string
+    actions?: React.ReactNode
+    showMessageCount?: boolean
+  }
+
+  actions?: {
+    onExport?: () => void
+    onClear?: () => void
+  }
+
+  errorHandling?: {
+    error?: string | null
+    onRetry?: () => void
+    onDismissError?: () => void
+  }
+
+  prompts?: {
+    starterPrompts?: PromptSuggestion[]
+    followUpSuggestions?: PromptSuggestion[]
+    showStarterPrompts?: boolean
+    showFollowUpSuggestions?: boolean
+  }
+
+  // Other props
+  emptyState?: React.ReactNode
   className?: string
+
+  // Legacy props for backward compatibility (deprecated)
+  onMessageCopy?: (messageId: string, content: string) => void
+  // ... other legacy props
 }
 ```
 
-### Usage
+### 🎯 Recommended Modern Usage
 
 ```tsx
+import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
+
+<MemoryProvider config={{ maxTokens: 10000 }}>
+  <ChatWindow
+    messages={messages}
+    isLoading={isLoading}
+    onSendMessage={handleSendMessage}
+
+    // Clean, organized configuration
+    header={{
+      show: true,
+      title: 'AI Assistant',
+      subtitle: 'Powered by Clarity Chat',
+      showMessageCount: true
+    }}
+
+    messageActions={{
+      onCopy: handleCopy,
+      onFeedback: handleFeedback,
+      onRetry: handleRetry
+    }}
+
+    prompts={{
+      starterPrompts: starterPrompts,
+      followUpSuggestions: followUpSuggestions
+    }}
+  />
+</MemoryProvider>
+```
+
+### 📚 Legacy API (Still Supported)
+
+```tsx
+// Old individual props API still works for backward compatibility
 <ChatWindow
   messages={messages}
-  isLoading={isLoading}
   onSendMessage={handleSendMessage}
-  onCancel={handleCancel}
-  placeholder="Type your message..."
-  maxHeight="600px"
-  enableFileUpload
-  enableMessageOperations
+  onMessageCopy={handleCopy}           // 30+ scattered props
+  onMessageFeedback={handleFeedback}
+  onMessageRetry={handleRetry}
+  showHeader={true}
+  sessionTitle="AI Assistant"
+  sessionSubtitle="Powered by Clarity Chat"
+  showMessageCount={true}
+  onExport={handleExport}
+  onClear={handleClear}
+  error={error}
+  onRetry={handleRetry}
+  onDismissError={handleDismissError}
+  starterPrompts={starterPrompts}
+  followUpSuggestions={followUpSuggestions}
+  showStarterPrompts={true}
+  showFollowUpSuggestions={true}
 />
 ```
 

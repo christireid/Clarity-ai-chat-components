@@ -456,16 +456,16 @@ function useSmoothStreaming(
       return
     }
 
-    // Smooth streaming animation loop
+    // Smooth streaming animation loop at exactly 60fps (~16.67ms intervals)
     const animate = (timestamp: number) => {
       if (!lastUpdateRef.current) {
         lastUpdateRef.current = timestamp
       }
 
       const elapsed = timestamp - lastUpdateRef.current
-      const charsToAdd = Math.floor(elapsed * charsPerMs)
 
-      if (charsToAdd > 0) {
+      // Only update at ~60fps intervals (16.67ms) for smooth animation
+      if (elapsed >= 16.67) {
         lastUpdateRef.current = timestamp
 
         setDisplayedContent((prev) => {
@@ -473,6 +473,9 @@ function useSmoothStreaming(
           if (prev.length >= target.length) {
             return prev
           }
+
+          // Calculate exact characters to add for this frame
+          const charsToAdd = Math.max(1, Math.floor(elapsed * charsPerMs))
           const nextLength = Math.min(prev.length + charsToAdd, target.length)
           return target.slice(0, nextLength)
         })

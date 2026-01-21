@@ -453,7 +453,7 @@ export interface ResponsiveSize {
   '2xl'?: number
 }
 
-export interface ResponsiveSkeletonProps {
+export interface AdvancedResponsiveSkeletonProps {
   baseSize: number
   responsive?: ResponsiveSize
   containerQueries?: boolean
@@ -467,7 +467,7 @@ export const createResponsiveSkeleton = ({
   containerQueries = true,
   fluid = false,
   aspectRatio,
-}: ResponsiveSkeletonProps) => {
+}: AdvancedResponsiveSkeletonProps) => {
   const sizes = {
     xs: responsive.xs || baseSize * 0.75,
     sm: responsive.sm || baseSize * 0.85,
@@ -663,7 +663,7 @@ export const useContainerSize = (ref: React.RefObject<HTMLElement | null>) => {
 // ADVANCED SKELETON COMPONENT
 // =============================================================================
 
-export interface AdvancedSkeletonProps {
+export interface AdvancedSkeletonComponentProps {
   variant: string
   size?: number
   responsive?: ResponsiveSize
@@ -676,7 +676,7 @@ export interface AdvancedSkeletonProps {
   style?: React.CSSProperties
 }
 
-export const AdvancedSkeleton: React.FC<AdvancedSkeletonProps> = ({
+export const AdvancedSkeleton: React.FC<AdvancedSkeletonComponentProps> = ({
   variant,
   size = 40,
   responsive,

@@ -60,6 +60,10 @@ export default function InstallationPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.3}>
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2 id="package-managers">Package Managers</h2>
         <p className="mb-4">Install using your preferred package manager:</p>
 

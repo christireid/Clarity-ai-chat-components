@@ -86,11 +86,12 @@ import { ChatWindow } from '@clarity-chat/react'
 />
 
 // After (v2)
-import { ChatInterface } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react'
 
-<ChatInterface
-  onSend={(msg) => console.log(msg)}
-  config={{ credentials: { apiKey: process.env.CLARITY_KEY } }}
+<ChatWindow
+  messages={[]}
+  isLoading={false}
+  onSendMessage={(msg) => console.log(msg)}
 />
 `}
         />
