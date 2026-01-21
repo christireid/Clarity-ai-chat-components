@@ -182,7 +182,7 @@ export interface ConversationListProps {
  * />
  * ```
  */
-export function ConversationList({
+export const ConversationList = memo(function ConversationList({
   conversations,
   folders = [],
   activeId,
@@ -944,6 +944,6 @@ export function ConversationList({
       </div>
     </div>
   )
-}
+})
 
 ConversationList.displayName = 'ConversationList'
