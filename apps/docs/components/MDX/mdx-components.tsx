@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CodeBlock } from './CodeBlock'
+import { InlineCode } from '@clarity-chat/react'
 import { Callout } from './Callout'
 import clsx from 'clsx'
 
@@ -164,15 +165,9 @@ export const mdxComponents = {
     )
   },
 
-  // Inline code
+  // Inline code - using canonical InlineCode component with Night Owl theming
   code: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
-    <code
-      className={clsx(
-        'relative rounded bg-bg-tertiary px-[0.3rem] py-[0.2rem] font-mono text-sm',
-        className
-      )}
-      {...props}
-    />
+    <InlineCode className={className} {...props} />
   ),
 
   // Custom components

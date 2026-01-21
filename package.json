@@ -61,8 +61,10 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "size": "size-limit",
     "analyze": "node tools/scripts/analyze-bundle.js",
+    "bundle-analysis": "tsx scripts/bundle-analysis.ts",
     "benchmark": "node tools/scripts/benchmark.js",
     "test:visual": "playwright test --config=tests/visual/playwright.config.ts",
+    "test:visual:update": "playwright test --config=tests/visual/playwright.config.ts --update-snapshots",
     "check:consistency": "tsx scripts/check-consistency.ts",
     "prepare": "husky",
     "// === DX TOOLS ===": "",
@@ -84,7 +86,11 @@
     "review:test": "vitest run --config scripts/vitest.config.ts",
     "review:test:watch": "vitest --config scripts/vitest.config.ts",
     "review:sync": "tsx scripts/sync-review-criteria.ts",
-    "review:sync:report": "tsx scripts/sync-review-criteria.ts --report"
+    "review:sync:report": "tsx scripts/sync-review-criteria.ts --report",
+    "// === SECURITY ===": "",
+    "security:audit": "tsx scripts/security-audit.ts",
+    "security:audit:json": "tsx scripts/security-audit.ts --format json --output security-report.json",
+    "security:audit:markdown": "tsx scripts/security-audit.ts --format markdown --output SECURITY_AUDIT_REPORT.md"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",

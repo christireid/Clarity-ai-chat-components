@@ -129,6 +129,9 @@ export function useClarityChat(
   const memoryContextRef = React.useRef<string>('')
   const lastQueryRef = React.useRef<string>('')
 
+  // State for current memory context to trigger re-renders
+  const [currentMemoryContext, setCurrentMemoryContext] = React.useState<string>('')
+
   // State for optimized messages and token stats
   const [optimizedMessagesState, setOptimizedMessagesState] = React.useState<{
     messages: CoreMessage[]
@@ -158,11 +161,12 @@ export function useClarityChat(
         enrichedMessages = originalTransform(enrichedMessages)
       }
 
-      if (memory?.enabled && memoryContextRef.current) {
+      // Use state variable to ensure reactivity
+      if (memory?.enabled && currentMemoryContext) {
         enrichedMessages = [
           {
             role: 'system',
-            content: `Relevant context from memory:\n${memoryContextRef.current}`,
+            content: `Relevant context from memory:\n${currentMemoryContext}`,
           } as CoreMessage,
           ...enrichedMessages,
         ]
@@ -170,7 +174,7 @@ export function useClarityChat(
 
       return enrichedMessages
     },
-    [memory?.enabled, originalTransform]
+    [memory?.enabled, originalTransform, currentMemoryContext]
   )
 
   // Enhanced onFinish callback to store messages in memory
@@ -255,6 +259,7 @@ export function useClarityChat(
       message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>,
       options?: { data?: Record<string, unknown> }
     ): Promise<string | null> => {
+      // Step 1: Query memory first and wait for completion if needed
       if (
         memory?.enabled &&
         memoryContext?.service &&
@@ -284,12 +289,14 @@ export function useClarityChat(
                     )
                   : await queryMemory()
 
-              memoryContextRef.current =
-                memoryResults.length > 0
-                  ? memoryResults
-                      .map((result) => result.memory.content)
-                      .join('\n\n')
-                  : ''
+              const contextString = memoryResults.length > 0
+                ? memoryResults
+                    .map((result) => result.memory.content)
+                    .join('\n\n')
+                : ''
+
+              memoryContextRef.current = contextString
+              setCurrentMemoryContext(contextString)
             } catch (error) {
               const err = error as Error
               const errorType = classifyError(err)
@@ -303,6 +310,7 @@ export function useClarityChat(
 
               if (errorType === 'memory' || errorType === 'unknown') {
                 memoryContextRef.current = ''
+                setCurrentMemoryContext('')
               }
             }
           }
@@ -315,6 +323,7 @@ export function useClarityChat(
             err.message
           )
           memoryContextRef.current = ''
+          setCurrentMemoryContext('')
         }
       }
 
@@ -393,7 +402,7 @@ export function useClarityChat(
     }
   }, [
     promptOptimization?.enabled,
-    chat.messages.length,
+    chat.messages, // Include full messages array to detect content changes
     promptOptimization?.targetTokens,
     promptOptimization?.strategy,
     promptOptimization?.model,
@@ -411,23 +420,30 @@ export function useClarityChat(
   React.useEffect(() => {
     if (memory?.enabled && memoryContext?.service) {
       try {
-        const stats = memoryContext.getStats()
-        const contextItems = memoryContextRef.current
-          ? memoryContextRef.current.split('\n\n').length
+        // Use getStats method if available, otherwise provide safe defaults
+        const stats = memoryContext.getStats?.() || { totalMemories: 0 }
+        const contextItems = currentMemoryContext
+          ? currentMemoryContext.split('\n\n').length
           : 0
         setMemoryStats({ count: stats.totalMemories ?? 0, contextItems })
-      } catch {
+      } catch (error) {
+        console.warn('[useClarityChat] Memory stats unavailable:', error)
         setMemoryStats({ count: 0, contextItems: 0 })
       }
     } else {
       setMemoryStats({ count: 0, contextItems: 0 })
     }
-  }, [memory?.enabled, memoryContext?.service, chat.messages.length])
+  }, [memory?.enabled, memoryContext?.service, chat.messages.length, currentMemoryContext])
 
   // Calculate memory info
   const memoryInfo: ClarityChatMemoryInfo = React.useMemo(() => {
     if (!memory?.enabled || !memoryContext?.service) {
-      return { memoryCount: 0, enabled: false }
+      // Even when memory is disabled, show the configured strategy for UX clarity
+      return {
+        memoryCount: 0,
+        enabled: false,
+        strategy: memory?.strategy,
+      }
     }
 
     return {

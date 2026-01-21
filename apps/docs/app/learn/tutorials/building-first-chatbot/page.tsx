@@ -45,6 +45,10 @@ export default function BuildingFirstChatbotTutorial() {
       </section>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Step 1: Setup Project</h2>
         <p>Create a new Next.js project and install dependencies:</p>
         <pre>

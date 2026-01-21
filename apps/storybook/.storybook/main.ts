@@ -25,6 +25,7 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-a11y'),
     getAbsolutePath('@vueless/storybook-dark-mode'),
     getAbsolutePath('@storybook/addon-docs'),
+    './.storybook/addons/clarity-a11y/register.tsx',
   ],
 
   framework: {
