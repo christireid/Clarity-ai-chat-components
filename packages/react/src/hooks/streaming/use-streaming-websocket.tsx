@@ -288,6 +288,7 @@ export function useStreamingWebSocket(
   const shouldReconnectRef = React.useRef(false)
   const lastPongRef = React.useRef<number>(Date.now())
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
+  const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
 
   /**
    * Parse message data
@@ -311,38 +312,51 @@ export function useStreamingWebSocket(
   const startHeartbeat = React.useCallback(() => {
     if (!enableHeartbeat) return
 
-    // Clear existing intervals
+    // Clear existing timers
     if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current)
+      clearTimeout(heartbeatIntervalRef.current)
     }
 
-    // Send ping at interval
-    heartbeatIntervalRef.current = setInterval(() => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(heartbeatMessage)
+    // RECONNECT-3: Recursive setTimeout with jitter for each heartbeat
+    const scheduleNextHeartbeat = () => {
+      // Add ±10% jitter to prevent synchronized heartbeats across clients
+      const jitterRange = heartbeatInterval * 0.1
+      const jitter = (Math.random() - 0.5) * 2 * jitterRange
+      const intervalWithJitter = Math.floor(heartbeatInterval + jitter)
 
-        // Set timeout for pong response
-        if (heartbeatTimeoutRef.current) {
-          clearTimeout(heartbeatTimeoutRef.current)
-        }
+      heartbeatIntervalRef.current = setTimeout(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(heartbeatMessage)
 
-        heartbeatTimeoutRef.current = setTimeout(() => {
-          const timeSinceLastPong = Date.now() - lastPongRef.current
-
-          if (timeSinceLastPong > heartbeatTimeout) {
-            logger.warn(
-              '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
-            )
-            onHeartbeatFailed?.()
-
-            // Trigger reconnection
-            if (autoReconnect && shouldReconnectRef.current) {
-              reconnectFnRef.current?.()
-            }
+          // Set timeout for pong response
+          if (heartbeatTimeoutRef.current) {
+            clearTimeout(heartbeatTimeoutRef.current)
           }
-        }, heartbeatTimeout)
-      }
-    }, heartbeatInterval)
+
+          heartbeatTimeoutRef.current = setTimeout(() => {
+            const timeSinceLastPong = Date.now() - lastPongRef.current
+
+            if (timeSinceLastPong > heartbeatTimeout) {
+              logger.warn(
+                '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
+              )
+              onHeartbeatFailed?.()
+
+              // Trigger reconnection
+              if (autoReconnect && shouldReconnectRef.current) {
+                reconnectFnRef.current?.()
+              }
+            }
+          }, heartbeatTimeout)
+
+          // Schedule next heartbeat
+          scheduleNextHeartbeat()
+        }
+      }, intervalWithJitter)
+    }
+
+    // Start first heartbeat
+    scheduleNextHeartbeat()
   }, [
     enableHeartbeat,
     heartbeatMessage,
@@ -384,6 +398,10 @@ export function useStreamingWebSocket(
       setError(null)
       shouldReconnectRef.current = true
 
+      // RECONNECT-1: Increment connection ID to prevent mount/unmount races
+      connectionIdRef.current += 1
+      const currentConnectionId = connectionIdRef.current
+
       // Create WebSocket connection
       const ws = new WebSocket(url, protocols)
       wsRef.current = ws
@@ -407,6 +425,12 @@ export function useStreamingWebSocket(
 
       // Handle connection open
       ws.addEventListener('open', (event) => {
+        // RECONNECT-1: Check connection ID to prevent stale connection updates
+        if (currentConnectionId !== connectionIdRef.current) {
+          logger.debug('[useStreamingWebSocket] Stale connection detected, aborting')
+          return
+        }
+
         // Clear connection timeout
         clearTimeout(timeoutId)
         logger.debug('[useStreamingWebSocket] Connected')
@@ -486,6 +510,12 @@ export function useStreamingWebSocket(
 
       // Handle errors
       ws.addEventListener('error', (event) => {
+        // RECONNECT-1: Check connection ID to prevent stale connection updates
+        if (currentConnectionId !== connectionIdRef.current) {
+          logger.debug('[useStreamingWebSocket] Stale connection error, ignoring')
+          return
+        }
+
         logger.error('[useStreamingWebSocket] Error:', event)
         setError(event)
         setStatus('error')

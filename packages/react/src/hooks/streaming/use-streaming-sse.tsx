@@ -302,6 +302,7 @@ export function useStreamingSSE(
   const serverSuggestedRetryRef = React.useRef<number | null>(null) // SSE-6: Server-suggested retry persists across connections
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
+  const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
 
   /**
    * Parse SSE event data
@@ -366,6 +367,11 @@ export function useStreamingSSE(
       clearTimeout(heartbeatTimeoutRef.current)
     }
 
+    // RECONNECT-3: Add ±10% jitter to prevent synchronized heartbeats across clients
+    const jitterRange = heartbeatInterval * 0.1 // 10% jitter
+    const jitter = (Math.random() - 0.5) * 2 * jitterRange // Random value between -10% and +10%
+    const intervalWithJitter = Math.floor(heartbeatInterval + jitter)
+
     heartbeatTimeoutRef.current = setTimeout(() => {
       logger.warn(
         '[useStreamingSSE] Heartbeat timeout - connection may be stale'
@@ -373,7 +379,7 @@ export function useStreamingSSE(
       if (autoReconnect && shouldReconnectRef.current) {
         reconnectFnRef.current?.()
       }
-    }, heartbeatInterval)
+    }, intervalWithJitter)
   }, [heartbeatInterval, autoReconnect])
 
   /**
@@ -394,6 +400,10 @@ export function useStreamingSSE(
       setStatus('connecting')
       setError(undefined)
       shouldReconnectRef.current = true
+
+      // RECONNECT-1: Increment connection ID to prevent mount/unmount races
+      connectionIdRef.current += 1
+      const currentConnectionId = connectionIdRef.current
 
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
@@ -451,6 +461,12 @@ export function useStreamingSSE(
 
       // Clear connection timeout - connection successful
       clearTimeout(timeoutId)
+
+      // RECONNECT-1: Check connection ID to prevent stale connection updates
+      if (currentConnectionId !== connectionIdRef.current) {
+        logger.debug('[useStreamingSSE] Stale connection detected, aborting')
+        return
+      }
 
       setStatus('connected')
       setReconnectAttempt(0)
@@ -558,6 +574,12 @@ export function useStreamingSSE(
       if (error.name === 'AbortError') {
         setStatus('closed')
         onClose?.()
+        return
+      }
+
+      // RECONNECT-1: Check connection ID to prevent stale connection updates
+      if (currentConnectionId !== connectionIdRef.current) {
+        logger.debug('[useStreamingSSE] Stale connection error, ignoring')
         return
       }
 
