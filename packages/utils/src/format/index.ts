@@ -19,9 +19,10 @@
 /**
  * Format bytes to human-readable string
  *
- * @param bytes - Number of bytes to format
+ * @param bytes - Number of bytes to format (must be non-negative)
  * @param decimals - Number of decimal places (default: 2)
  * @returns Human-readable string (e.g., "1.5 KB", "2.3 MB")
+ * @throws {RangeError} If bytes is negative
  *
  * @example
  * ```ts
@@ -29,14 +30,20 @@
  * formatBytes(1536) // "1.5 KB"
  * formatBytes(0) // "0 B"
  * formatBytes(1024 * 1024 * 2.5) // "2.5 MB"
+ * formatBytes(1024 ** 7) // "1024 PB" (clamped to largest unit)
  * ```
  */
 export function formatBytes(bytes: number, decimals = 2): string {
+  // Validate input
+  if (bytes < 0) {
+    throw new RangeError('bytes must be non-negative')
+  }
+
   if (bytes === 0) return '0 B'
 
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1)
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i]
 }
@@ -85,19 +92,25 @@ export function formatDelta(
 /**
  * Format duration in milliseconds to human-readable string
  *
- * @param ms - Duration in milliseconds
+ * @param ms - Duration in milliseconds (must be non-negative)
  * @returns Human-readable duration (e.g., "1.5s", "250ms", "2m 30s")
+ * @throws {RangeError} If ms is negative
  *
  * @example
  * ```ts
  * formatDuration(500) // "500ms"
  * formatDuration(1500) // "1.5s"
  * formatDuration(90000) // "1m 30s"
- * formatDuration(3600000) // "60m 0s"
+ * formatDuration(3600000) // "60m"
  * ```
  */
 export function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`
+  // Validate input
+  if (ms < 0) {
+    throw new RangeError('duration must be non-negative')
+  }
+
+  if (ms < 1000) return `${Math.round(ms)}ms`
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
 
   const minutes = Math.floor(ms / 60000)
@@ -199,15 +212,17 @@ export function formatRelativeTime(date: Date, now = new Date()): string {
  * Truncate a string to a maximum length with ellipsis
  *
  * @param str - String to truncate
- * @param maxLength - Maximum length including ellipsis
+ * @param maxLength - Maximum length including ellipsis (must be positive)
  * @param ellipsis - Ellipsis string (default: "...")
  * @returns Truncated string
+ * @throws {RangeError} If maxLength is less than 1
  *
  * @example
  * ```ts
  * truncate("Hello World", 8) // "Hello..."
  * truncate("Hi", 10) // "Hi"
  * truncate("Hello World", 8, "…") // "Hello W…"
+ * truncate("Hello", 2, "...") // "..." (ellipsis only when maxLength < ellipsis.length)
  * ```
  */
 export function truncate(
@@ -215,6 +230,17 @@ export function truncate(
   maxLength: number,
   ellipsis = '...'
 ): string {
+  // Validate input
+  if (maxLength < 1) {
+    throw new RangeError('maxLength must be at least 1')
+  }
+
   if (str.length <= maxLength) return str
+
+  // If maxLength is smaller than ellipsis, return truncated ellipsis
+  if (maxLength < ellipsis.length) {
+    return ellipsis.slice(0, maxLength)
+  }
+
   return str.slice(0, maxLength - ellipsis.length) + ellipsis
 }
