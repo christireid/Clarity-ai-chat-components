@@ -15,7 +15,7 @@ Multi-level intelligent caching for LLM responses. Combines memory, disk, and pr
 - Chat applications with common questions
 - Applications where sub-50ms response time matters
 - Cost-sensitive applications (90%+ cost reduction possible)
-- Systems with parameterized queries (e.g., "weather in {city}")
+- Systems with parameterized queries (e.g., "weather in `{city}`")
 - Multi-user applications with overlapping queries
 
 **When not to use:**
@@ -663,7 +663,7 @@ await cache.get('What is 2+2?')
 Pattern extraction for parameterized queries:
 
 ```tsx
-// Stores pattern: "What is the weather in {location}?"
+// Stores pattern: "What is the weather in `{location}`?"
 await cache.set('What is the weather in Paris?', 'Sunny, 22°C')
 
 // Different parameter = smart hit (< 5ms)
