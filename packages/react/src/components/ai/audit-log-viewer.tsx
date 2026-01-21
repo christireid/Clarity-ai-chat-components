@@ -47,7 +47,7 @@ function formatTimestamp(value: Date | string, timezone?: string) {
   })
 }
 
-export function AuditLogViewer({
+export const AuditLogViewer = React.memo(function AuditLogViewer({
   logs,
   className,
   timezone,
@@ -163,4 +163,6 @@ export function AuditLogViewer({
       </div>
     </div>
   )
-}
+})
+
+AuditLogViewer.displayName = 'AuditLogViewer'

@@ -32,7 +32,7 @@ export interface WorkflowSuggestionListProps {
 const defaultTitle = 'Workflow accelerators'
 const defaultSubtitle = 'Present curated workflows that help users accomplish routine tasks with minimal prompting.'
 
-export function WorkflowSuggestionList({
+export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList({
   workflows,
   onSelect,
   onPreview,
@@ -125,7 +125,7 @@ export function WorkflowSuggestionList({
       </CardContent>
     </Card>
   )
-}
+})
 
 WorkflowSuggestionList.displayName = 'WorkflowSuggestionList'
 

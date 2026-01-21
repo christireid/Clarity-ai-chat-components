@@ -10,6 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { ImageIcon, MicIcon, FileIcon, LinkIcon, PlayIcon } from '../ui/icons'
+import { ProgressiveImage } from '../ui/progressive-image'
 
 export type AttachmentType = 'image' | 'audio' | 'video' | 'file' | 'link'
 
@@ -83,10 +84,11 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   const renderThumbnail = (attachment: AttachmentPreview) => {
     if (attachment.thumbnailUrl) {
       return (
-        <img
+        <ProgressiveImage
           src={attachment.thumbnailUrl}
           alt={attachment.title}
           className="h-16 w-16 rounded-lg object-cover"
+          placeholderClassName="rounded-lg"
         />
       )
     }

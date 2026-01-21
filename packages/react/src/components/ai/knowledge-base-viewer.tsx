@@ -26,6 +26,204 @@ export interface KnowledgeBaseViewerProps {
   className?: string
 }
 
+interface KnowledgeSectionItemProps {
+  section: KnowledgeSection
+  index: number
+  isExpanded: boolean
+  isEditing: boolean
+  editable: boolean
+  editContent: { title: string; content: string }
+  onToggle: () => void
+  onStartEdit: () => void
+  onEditContentChange: (updates: { title?: string; content?: string }) => void
+  onSaveEdit: () => void
+  onCancelEdit: () => void
+  onDelete?: () => void
+  getConfidenceColor: (confidence: number) => string
+}
+
+// Memoized section component to prevent unnecessary re-renders
+const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
+  section,
+  index,
+  isExpanded,
+  isEditing,
+  editable,
+  editContent,
+  onToggle,
+  onStartEdit,
+  onEditContentChange,
+  onSaveEdit,
+  onCancelEdit,
+  onDelete,
+  getConfidenceColor,
+}: KnowledgeSectionItemProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <Card className="overflow-hidden">
+        {/* Header */}
+        <div
+          className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => !isEditing && onToggle()}
+        >
+          <div className="flex items-start gap-3">
+            <button
+              className="flex-shrink-0 w-6 h-6 flex items-center justify-center transition-transform"
+              style={{
+                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}
+            >
+              ▶
+            </button>
+
+            <div className="flex-1 min-w-0">
+              {isEditing ? (
+                <Input
+                  value={editContent.title}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    onEditContentChange({ title: e.target.value })
+                  }
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="Section title"
+                />
+              ) : (
+                <>
+                  <h3 className="font-semibold text-sm">{section.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'text-xs',
+                        getConfidenceColor(section.confidence)
+                      )}
+                    >
+                      {(section.confidence * 100).toFixed(0)}% confidence
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {section.sources.length} sources
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Actions */}
+            {editable && !isEditing && (
+              <div className="flex-shrink-0 flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onStartEdit()
+                  }}
+                  className="h-8 w-8"
+                >
+                  ✏️
+                </Button>
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (confirm(`Delete section "${section.title}"?`)) {
+                        onDelete()
+                      }
+                    }}
+                    className="h-8 w-8 text-destructive"
+                  >
+                    🗑️
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          {!isEditing && section.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2 ml-9">
+              {section.tags.map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-t"
+            >
+              <div className="p-4 ml-9 space-y-3">
+                {isEditing ? (
+                  <>
+                    <Textarea
+                      value={editContent.content}
+                      onChange={(e) =>
+                        onEditContentChange({ content: e.target.value })
+                      }
+                      rows={6}
+                      placeholder="Section content"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={onSaveEdit}>
+                        Save
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={onCancelEdit}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-sm whitespace-pre-wrap">{section.content}</p>
+                    </div>
+
+                    {/* Sources */}
+                    {section.sources.length > 0 && (
+                      <div className="pt-3 border-t">
+                        <p className="text-xs font-semibold mb-2">Sources:</p>
+                        <div className="space-y-2">
+                          {section.sources.map((source, i) => (
+                            <div
+                              key={i}
+                              className="p-2 rounded bg-muted/50 text-xs"
+                            >
+                              <p className="text-muted-foreground truncate">
+                                "{source.excerpt}"
+                              </p>
+                              <p className="text-muted-foreground mt-1">
+                                {source.timestamp.toLocaleString()}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Card>
+    </motion.div>
+  )
+})
+
 export function KnowledgeBaseViewer({
   knowledgeBase,
   onUpdate,
@@ -163,205 +361,26 @@ export function KnowledgeBaseViewer({
           ) : (
             <div className="space-y-3 pb-4">
               <AnimatePresence>
-                {filteredSections.map((section, index) => {
-                  const isExpanded = expandedSections.has(section.id)
-                  const isEditing = editingId === section.id
-
-                  return (
-                    <motion.div
-                      key={section.id}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <Card className="overflow-hidden">
-                        {/* Header */}
-                        <div
-                          className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() =>
-                            !isEditing && toggleSection(section.id)
-                          }
-                        >
-                          <div className="flex items-start gap-3">
-                            <button
-                              className="flex-shrink-0 w-6 h-6 flex items-center justify-center transition-transform"
-                              style={{
-                                transform: isExpanded
-                                  ? 'rotate(90deg)'
-                                  : 'rotate(0deg)',
-                              }}
-                            >
-                              ▶
-                            </button>
-
-                            <div className="flex-1 min-w-0">
-                              {isEditing ? (
-                                <Input
-                                  value={editContent.title}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                    setEditContent({
-                                      ...editContent,
-                                      title: e.target.value,
-                                    })
-                                  }
-                                  onClick={(e) => e.stopPropagation()}
-                                  placeholder="Section title"
-                                />
-                              ) : (
-                                <>
-                                  <h3 className="font-semibold text-sm">
-                                    {section.title}
-                                  </h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Badge
-                                      variant="outline"
-                                      className={cn(
-                                        'text-xs',
-                                        getConfidenceColor(section.confidence)
-                                      )}
-                                    >
-                                      {(section.confidence * 100).toFixed(0)}%
-                                      confidence
-                                    </Badge>
-                                    <span className="text-xs text-muted-foreground">
-                                      {section.sources.length} sources
-                                    </span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-
-                            {/* Actions */}
-                            {editable && !isEditing && (
-                              <div className="flex-shrink-0 flex gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    startEditing(section)
-                                  }}
-                                  className="h-8 w-8"
-                                >
-                                  ✏️
-                                </Button>
-                                {onDelete && (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      if (
-                                        confirm(
-                                          `Delete section "${section.title}"?`
-                                        )
-                                      ) {
-                                        onDelete(section.id)
-                                      }
-                                    }}
-                                    className="h-8 w-8 text-destructive"
-                                  >
-                                    🗑️
-                                  </Button>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Tags */}
-                          {!isEditing && section.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2 ml-9">
-                              {section.tags.map((tag) => (
-                                <Badge
-                                  key={tag}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <AnimatePresence>
-                          {isExpanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="border-t"
-                            >
-                              <div className="p-4 ml-9 space-y-3">
-                                {isEditing ? (
-                                  <>
-                                    <Textarea
-                                      value={editContent.content}
-                                      onChange={(e) =>
-                                        setEditContent({
-                                          ...editContent,
-                                          content: e.target.value,
-                                        })
-                                      }
-                                      rows={6}
-                                      placeholder="Section content"
-                                    />
-                                    <div className="flex gap-2">
-                                      <Button size="sm" onClick={saveEdit}>
-                                        Save
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={cancelEdit}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <>
-                                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                                      <p className="text-sm whitespace-pre-wrap">
-                                        {section.content}
-                                      </p>
-                                    </div>
-
-                                    {/* Sources */}
-                                    {section.sources.length > 0 && (
-                                      <div className="pt-3 border-t">
-                                        <p className="text-xs font-semibold mb-2">
-                                          Sources:
-                                        </p>
-                                        <div className="space-y-2">
-                                          {section.sources.map((source, i) => (
-                                            <div
-                                              key={i}
-                                              className="p-2 rounded bg-muted/50 text-xs"
-                                            >
-                                              <p className="text-muted-foreground truncate">
-                                                "{source.excerpt}"
-                                              </p>
-                                              <p className="text-muted-foreground mt-1">
-                                                {source.timestamp.toLocaleString()}
-                                              </p>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </Card>
-                    </motion.div>
-                  )
-                })}
+                {filteredSections.map((section, index) => (
+                  <KnowledgeSectionItem
+                    key={section.id}
+                    section={section}
+                    index={index}
+                    isExpanded={expandedSections.has(section.id)}
+                    isEditing={editingId === section.id}
+                    editable={editable}
+                    editContent={editContent}
+                    onToggle={() => toggleSection(section.id)}
+                    onStartEdit={() => startEditing(section)}
+                    onEditContentChange={(updates) =>
+                      setEditContent({ ...editContent, ...updates })
+                    }
+                    onSaveEdit={saveEdit}
+                    onCancelEdit={cancelEdit}
+                    onDelete={onDelete ? () => onDelete(section.id) : undefined}
+                    getConfidenceColor={getConfidenceColor}
+                  />
+                ))}
               </AnimatePresence>
             </div>
           )}

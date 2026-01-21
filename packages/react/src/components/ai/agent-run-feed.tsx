@@ -70,7 +70,7 @@ const defaultTitle = 'Agent execution feed'
 const defaultSubtitle =
   'Observe how the orchestrator called tools, merged evidence, and delivered the final answer.'
 
-export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
+export const AgentRunFeed: React.FC<AgentRunFeedProps> = React.memo(({
   steps,
   onRetry,
   onOpenLogs,
@@ -196,6 +196,6 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
 
 AgentRunFeed.displayName = 'AgentRunFeed'
