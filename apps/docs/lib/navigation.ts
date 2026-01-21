@@ -470,6 +470,10 @@ export const referenceNavigation: NavItem[] = [
         title: 'Testing Helpers',
         href: '/reference/utilities/testing-helpers',
       },
+      {
+        title: 'Migration Helpers',
+        href: '/reference/utilities/migration-helpers',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },
