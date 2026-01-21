@@ -1,0 +1,1 @@
+import {fileURLToPath}from'url';var n=(e=[],r={})=>[...e,r.renderTarget==="tab"?fileURLToPath(import.meta.resolve("@storybook/addon-designs/register-tab")):fileURLToPath(import.meta.resolve("@storybook/addon-designs/register-panel"))],s=e=>[...e,"@storybook/addon-designs/blocks","storybook/internal/components"];export{n as managerEntries,s as optimizeViteDeps};

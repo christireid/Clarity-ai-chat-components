@@ -57,11 +57,12 @@ const componentCategories = [
       description: 'Rich content display',
       components: [
         { name: 'CitationCard', href: '/reference/components/citation-card', description: 'Source citations' },
+        { name: 'InlineCode', href: '/reference/components/inline-code', description: 'Inline code snippets' },
         { name: 'LinkPreview', href: '/reference/components/link-preview', description: 'Rich link previews' },
         { name: 'ContextCard', href: '/reference/components/context-card', description: 'Context information' },
         { name: 'CollapsibleSection', href: '/reference/components/collapsible-section', description: 'Expandable content' },
         { name: 'InteractiveCard', href: '/reference/components/interactive-card', description: 'Interactive cards' },
-        { name: 'MarkdownRendererEnhanced', href: '/reference/components/markdown-renderer-enhanced', description: 'Markdown with LaTeX + syntax highlighting' },
+        { name: 'EnhancedMarkdownRenderer', href: '/reference/components/markdown-renderer-enhanced', description: 'Enhanced markdown with LaTeX + syntax highlighting' },
         { name: 'EmptyState', href: '/reference/components/empty-state', description: 'Empty state messages' },
       ],
     },

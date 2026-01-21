@@ -1,0 +1,34 @@
+{
+  "name": "@size-limit/time",
+  "version": "12.0.0",
+  "description": "Downloading and running time plugin for Size Limit",
+  "type": "module",
+  "keywords": [
+    "size-limit",
+    "plugin",
+    "performance",
+    "budget",
+    "performance budget"
+  ],
+  "author": "Andrey Sitnik <andrey@sitnik.ru>",
+  "license": "MIT",
+  "repository": "ai/size-limit",
+  "preferUnplugged": true,
+  "engines": {
+    "node": "^20.0.0 || ^22.0.0 || >=24.0.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "size-limit": "12.0.0"
+  },
+  "dependencies": {
+    "estimo": "^3.0.5"
+  },
+  "devDependencies": {
+    "nanoid": "^5.1.6",
+    "size-limit": "workspace:*"
+  }
+}

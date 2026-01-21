@@ -1,0 +1,213 @@
+"use strict";
+'use client';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importStar(require("react"));
+const react_markdown_1 = __importDefault(require("react-markdown"));
+const remark_gfm_1 = __importDefault(require("remark-gfm"));
+const rehype_raw_1 = __importDefault(require("rehype-raw"));
+const docco_1 = __importDefault(require("react-syntax-highlighter/dist/esm/styles/hljs/docco"));
+const SplitText_1 = __importDefault(require("./SplitText"));
+const AnimatedImage_1 = __importDefault(require("./AnimatedImage"));
+const animations_1 = require("../utils/animations");
+const DefaultCode_1 = __importDefault(require("./DefaultCode"));
+const DEFAULT_CUSTOM_COMPONENTS = {};
+// Function to create animation style object - extracted outside of component
+const createAnimationStyle = (animation, animationDuration, animationTimingFunction) => ({
+    animation: animation ? `${animation} ${animationDuration} ${animationTimingFunction}` : 'none',
+});
+// Memoized component for text elements to avoid creating many instances
+const MemoizedText = react_1.default.memo(({ children, animation, animationDuration, animationTimingFunction, sep }) => (react_1.default.createElement(SplitText_1.default, { input: children, sep: sep, animation: animation, animationDuration: animationDuration, animationTimingFunction: animationTimingFunction, animationIterationCount: 1 })));
+// Optimize rendering for lists to reduce memory usage
+const MemoizedList = react_1.default.memo(({ children, style }) => (react_1.default.createElement("li", { className: "custom-li", style: style }, children)));
+const MarkdownAnimateText = ({ content, sep = "diff", animation: animationName = "fadeIn", animationDuration = "1s", animationTimingFunction = "ease-in-out", codeStyle = null, customComponents = DEFAULT_CUSTOM_COMPONENTS, imgHeight = '20rem' }) => {
+    const animation = animations_1.animations[animationName] || animationName;
+    codeStyle = codeStyle || docco_1.default.docco;
+    // Memoize the animation style to avoid recreating it on every render
+    const animationStyle = (0, react_1.useMemo)(() => createAnimationStyle(animation, animationDuration, animationTimingFunction), [animation, animationDuration, animationTimingFunction]);
+    // Enhanced hidePartialCustomComponents function that also handles tag attributes
+    const hidePartialCustomComponents = react_1.default.useCallback((input) => {
+        if (!input || Object.keys(customComponents).length === 0)
+            return input;
+        // Check for any opening tag without a closing '>'
+        const lastOpeningBracketIndex = input.lastIndexOf('<');
+        if (lastOpeningBracketIndex !== -1) {
+            const textAfterLastOpeningBracket = input.substring(lastOpeningBracketIndex);
+            // If there's no closing bracket, then it's potentially a partial tag
+            if (!textAfterLastOpeningBracket.includes('>')) {
+                // Check if it starts with any of our custom component names
+                for (const tag of Object.keys(customComponents)) {
+                    // Check if the text starts with the tag name (allowing for partial tag name)
+                    // For example, '<Cus' would match a component named 'CustomTag'
+                    if (textAfterLastOpeningBracket.substring(1).startsWith(tag.substring(0, textAfterLastOpeningBracket.length - 1)) ||
+                        // Or it's a complete tag name followed by attributes
+                        textAfterLastOpeningBracket.match(new RegExp(`^<${tag}(\\s|$)`))) {
+                        // Remove the partial tag
+                        return input.substring(0, lastOpeningBracketIndex);
+                    }
+                }
+            }
+        }
+        return input;
+    }, [customComponents]);
+    // Memoize animateText function to prevent recreations
+    const animateText = react_1.default.useCallback((text) => {
+        text = Array.isArray(text) ? text : [text];
+        if (!animation)
+            return text;
+        return text.map((item, index) => {
+            if (typeof item === 'string') {
+                // Strings are handled by MemoizedText (SplitText), which now has the logic
+                // to avoid animating specific HTML strings like "<br>", "<ul>", etc.
+                return (react_1.default.createElement(MemoizedText, { key: `text-${index}`, children: hidePartialCustomComponents(item), animation: animation, animationDuration: animationDuration, animationTimingFunction: animationTimingFunction, sep: sep }));
+            }
+            else if (react_1.default.isValidElement(item)) {
+                // Check if the React element is one of the types we don't want to animate
+                const noAnimateElementTypes = ['br', 'ul', 'ol', 'td', 'th'];
+                let typeName = item.type;
+                if (typeof typeName === 'function') {
+                    typeName = typeName.name;
+                }
+                if (typeof typeName === 'string' && noAnimateElementTypes.includes(typeName)) {
+                    // Render these elements directly without an animation wrapper
+                    return item;
+                }
+                // For other React elements, wrap them in animation span if they are not container elements
+                // whose children are already animated by the `components` prop of ReactMarkdown
+                // This else block might still wrap elements if they are not explicitly handled
+                // by the ReactMarkdown components mapping (e.g. custom components not passing animateText to children)
+                // For standard HTML elements, the `components` mapping should handle animation of children.
+                return (react_1.default.createElement("span", { key: `other-element-${index}`, style: {
+                        animationName: animation,
+                        animationDuration,
+                        animationTimingFunction,
+                        animationIterationCount: 1,
+                        whiteSpace: 'pre-wrap',
+                        display: 'inline-block',
+                    } }, item));
+            }
+            // Fallback for other types (e.g. numbers, if they ever appear)
+            // This was the original 'else' block logic
+            return (react_1.default.createElement("span", { key: `other-${index}`, style: {
+                    animationName: animation,
+                    animationDuration,
+                    animationTimingFunction,
+                    animationIterationCount: 1,
+                    whiteSpace: 'pre-wrap',
+                    display: 'inline-block',
+                } }, item));
+        });
+    }, [animation, animationDuration, animationTimingFunction, sep, hidePartialCustomComponents]);
+    // Memoize components object to avoid recreating on every render
+    // Using proper React types instead of trying to import Components type
+    const components = (0, react_1.useMemo)(() => (Object.assign({ 
+        // Handle text node with specific memoization for performance
+        text: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return animateText(props.children);
+        }, h1: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h1", Object.assign({}, props), animateText(props.children));
+        }, h2: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h2", Object.assign({}, props), animateText(props.children));
+        }, h3: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h3", Object.assign({}, props), animateText(props.children));
+        }, h4: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h4", Object.assign({}, props), animateText(props.children));
+        }, h5: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h5", Object.assign({}, props), animateText(props.children));
+        }, h6: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("h6", Object.assign({}, props), animateText(props.children));
+        }, p: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("p", Object.assign({}, props), animateText(props.children));
+        }, li: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("li", Object.assign({}, props, { className: "custom-li", style: animationStyle }), animateText(props.children));
+        }, a: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("a", Object.assign({}, props, { href: props.href, target: "_blank", rel: "noopener noreferrer" }), animateText(props.children));
+        }, strong: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("strong", Object.assign({}, props), animateText(props.children));
+        }, em: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("em", Object.assign({}, props), animateText(props.children));
+        }, code: (_a) => {
+            var { node, className, children } = _a, props = __rest(_a, ["node", "className", "children"]);
+            return react_1.default.createElement(DefaultCode_1.default, Object.assign({ node: node, className: className, style: animationStyle, codeStyle: codeStyle, animateText: animateText, animation: animation, animationDuration: animationDuration, animationTimingFunction: animationTimingFunction }, props), children);
+        }, hr: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("hr", Object.assign({}, props, { style: {
+                    animationName: animation,
+                    animationDuration,
+                    animationTimingFunction,
+                    animationIterationCount: 1,
+                    whiteSpace: 'pre-wrap',
+                } }));
+        }, img: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement(AnimatedImage_1.default, { src: props.src, height: imgHeight, alt: props.alt, animation: animation || '', animationDuration: animationDuration, animationTimingFunction: animationTimingFunction, animationIterationCount: 1 });
+        }, table: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("table", Object.assign({}, props, { style: animationStyle }), props.children);
+        }, tr: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("tr", Object.assign({}, props), animateText(props.children));
+        }, td: (_a) => {
+            var { node } = _a, props = __rest(_a, ["node"]);
+            return react_1.default.createElement("td", Object.assign({}, props), animateText(props.children));
+        } }, Object.entries(customComponents).reduce((acc, [key, value]) => {
+        acc[key] = (elements) => value(Object.assign(Object.assign({}, elements), { animateText }));
+        return acc;
+    }, {}))), [animateText, customComponents, animation, animationDuration, animationTimingFunction, animationStyle, codeStyle, imgHeight]);
+    // Optimize for large content by chunking if needed
+    const optimizedContent = (0, react_1.useMemo)(() => {
+        // For extremely large content (>50KB), we could implement chunking or virtualization here
+        return content;
+    }, [content]);
+    return (react_1.default.createElement(react_markdown_1.default, { components: components, remarkPlugins: [remark_gfm_1.default], rehypePlugins: [rehype_raw_1.default] }, optimizedContent));
+};
+// Wrap the entire component in React.memo to prevent unnecessary rerenders
+exports.default = react_1.default.memo(MarkdownAnimateText);

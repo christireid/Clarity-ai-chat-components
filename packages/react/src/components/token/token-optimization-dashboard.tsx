@@ -1,8 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '@clarity-chat/primitives'
-import { glassVariants, getSemanticGradient } from '@clarity-chat/primitives/glass-variants'
+import { cn, glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
 
 export interface OptimizationMetrics {
   /** Total tokens processed */

@@ -29,15 +29,13 @@ export default function TroubleshootingPage() {
         </Callout>
         <pre>
           <code>{`// Add to your app
-import { enableDebugMode } from '@clarity-chat/react'
+// Debug mode is controlled via environment variables:
+// NEXT_PUBLIC_DEBUG=true npm run dev
 
-if (process.env.NODE_ENV === 'development') {
-  enableDebugMode({
-    verbose: true,
-    logRequests: true,
-    logTokens: true
-  })
-}`}</code>
+// Or set in your .env.local:
+// NEXT_PUBLIC_DEBUG=true
+// NEXT_PUBLIC_LOG_REQUESTS=true
+// NEXT_PUBLIC_LOG_TOKENS=true`}</code>
         </pre>
       </section>
 
@@ -326,7 +324,7 @@ const { messages } = useChat({
 const ChatWindow = dynamic(() => import('@clarity-chat/react').then(mod => mod.ChatWindow))
 
 // Tree-shake unused components
-import { ChatWindow } from '@clarity-chat/react/components/chat-window'
+import { ChatWindow } from '@clarity-chat/react'
 
 // Analyze bundle
 npm run build && npx @next/bundle-analyzer`}</code>
