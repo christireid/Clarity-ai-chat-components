@@ -85,7 +85,7 @@ export function TokenOptimizationPanel({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border/60 bg-card p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        'rounded-lg border border-border/60 bg-card p-4 shadow-sm',
         sizeClasses[size],
         className
       )}

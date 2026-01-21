@@ -113,7 +113,7 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
   return (
     <Card
       className={cn(
-        'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        'border-border/50 bg-background shadow-md',
         className
       )}
     >
@@ -175,7 +175,7 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
                   {grouped[scope].map((memory) => (
                     <li
                       key={memory.id}
-                      className="rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
+                      className="rounded-lg border border-border/50 bg-muted p-4 shadow-md"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="flex-1 space-y-2">

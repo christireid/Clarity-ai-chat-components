@@ -143,7 +143,7 @@ export function ExportDialog({
                   className={cn(
                     'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
                     format === fmt.value
-                      ? 'border-primary bg-primary/5 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]'
+                      ? 'border-primary bg-primary/5 shadow-md'
                       : 'border-border/50 hover:border-primary/50'
                   )}
                 >
@@ -308,7 +308,7 @@ export function ExportDialog({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.normal, delay: 0.7 }}
-            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
           >
             <p className="text-xs text-muted-foreground">
               💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting

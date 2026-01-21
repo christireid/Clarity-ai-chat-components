@@ -298,6 +298,27 @@ export function ThemeProvider({
     return () => highContrastQuery.removeEventListener('change', updateContrastMode)
   }, [])
 
+  // Listen to forced colors mode (Windows High Contrast)
+  React.useEffect(() => {
+    const forcedColorsQuery = window.matchMedia('(forced-colors: active)')
+
+    const updateForcedColorsMode = () => {
+      if (forcedColorsQuery.matches) {
+        document.documentElement.classList.add('forced-colors')
+        // In forced colors mode, let the OS control all colors
+        // Remove custom colors to allow system colors
+      } else {
+        document.documentElement.classList.remove('forced-colors')
+      }
+    }
+
+    updateForcedColorsMode()
+
+    // Listen for changes
+    forcedColorsQuery.addEventListener('change', updateForcedColorsMode)
+    return () => forcedColorsQuery.removeEventListener('change', updateForcedColorsMode)
+  }, [])
+
   // Helper to get theme by preset name
   const getThemeByPreset = React.useCallback(
     (preset: ThemePresetName): CompleteThemeConfig => {

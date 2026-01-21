@@ -109,7 +109,7 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   return (
     <Card
       className={cn(
-        'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        'border-border/50 bg-background shadow-md',
         className
       )}
     >
@@ -134,7 +134,7 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
           {attachments.map((attachment) => (
             <li
               key={attachment.id}
-              className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
+              className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted p-4 shadow-md"
             >
               <div className="flex flex-wrap items-start gap-4">
                 {renderThumbnail(attachment)}

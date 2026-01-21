@@ -41,7 +41,7 @@ export function WorkflowSuggestionList({
   subtitle = defaultSubtitle,
 }: WorkflowSuggestionListProps) {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_48px_rgba(15,23,42,0.32)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-2xl', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -59,7 +59,7 @@ export function WorkflowSuggestionList({
           {workflows.map((workflow) => (
             <li
               key={workflow.id}
-              className="space-y-3 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
+              className="space-y-3 rounded-lg border border-border/50 bg-muted p-4 shadow-md"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">

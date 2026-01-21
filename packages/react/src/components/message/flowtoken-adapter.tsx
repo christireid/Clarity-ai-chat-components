@@ -131,7 +131,7 @@ function FallbackMarkdown({
 }: Pick<FlowTokenMarkdownProps, 'content' | 'isStreaming' | 'className'>) {
   return (
     <div
-      className={cn('prose prose-sm dark:prose-invert max-w-none', className)}
+      className={cn('prose prose-sm dark:prose-invert max-w-3xl mx-auto', className)}
     >
       <div className="whitespace-pre-wrap">
         {content}

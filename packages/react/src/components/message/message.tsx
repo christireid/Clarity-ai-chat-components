@@ -445,7 +445,7 @@ export function Message({
             </h4>
             {showTimestamp && (
               <>
-                <span className="text-muted-foreground/50" aria-hidden="true">·</span>
+                <span className="text-muted-foreground/70" aria-hidden="true">·</span>
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isHovered ? 1 : 0.7 }}
@@ -473,7 +473,7 @@ export function Message({
           className={cn(
             // Base streaming stability classes for assistant messages
             !isUser && 'clarity-streaming-container',
-            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+            !isUser && 'prose prose-sm dark:prose-invert max-w-3xl mx-auto',
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
             isUser &&

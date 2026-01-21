@@ -404,7 +404,7 @@ export function PerformanceDashboard({
         {metrics.map((metric) => (
           <div
             key={metric.name}
-            className="p-3 rounded-lg border border-border/50 bg-muted/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all duration-150 ease-out"
+            className="p-3 rounded-lg border border-border/50 bg-muted/30 hover:shadow-md transition-all duration-150 ease-out"
             role="listitem"
             aria-label={`${metric.name}: ${metric.value}${metric.unit || ''}, status ${metric.status}`}
           >
@@ -493,7 +493,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
 
   return (
     <div
-      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] ${
+      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border/50 shadow-xs transition-all duration-150 ease-out hover:shadow-md ${
         status === 'good'
           ? 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20'
           : status === 'warning'
