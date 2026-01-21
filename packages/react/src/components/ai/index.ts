@@ -15,7 +15,8 @@ export {
 } from './collaborative-editing'
 export { EnhancedCodeBlock } from './enhanced-code-block'
 export { EnhancedMarkdownRenderer } from './enhanced-markdown-renderer'
-export { MarkdownRendererEnhanced } from './markdown-renderer-enhanced'
+// DEPRECATED: MarkdownRendererEnhanced removed - use EnhancedMarkdownRenderer instead
+// export { MarkdownRendererEnhanced } from './markdown-renderer-enhanced'
 export { KnowledgeBaseViewer } from './knowledge-base-viewer'
 export { ModelSelector } from './model-selector'
 export { PersonaPanel } from './persona-panel'

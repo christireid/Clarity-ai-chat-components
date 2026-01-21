@@ -4,8 +4,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Textarea, Button, cn } from '@clarity-chat/primitives'
-import { glassVariants } from '@clarity-chat/primitives/glass-variants'
+import { Textarea, Button, cn, glassVariants } from '@clarity-chat/primitives'
 import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,

@@ -430,6 +430,22 @@ export const referenceNavigation: NavItem[] = [
         title: 'createMemoryStore',
         href: '/reference/utilities/create-memory-store',
       },
+      {
+        title: 'Performance Monitoring',
+        href: '/reference/utilities/performance-monitoring',
+      },
+      {
+        title: 'Accessibility Testing',
+        href: '/reference/utilities/accessibility-testing',
+      },
+      {
+        title: 'Security Utilities',
+        href: '/reference/utilities/security',
+      },
+      {
+        title: 'Analytics & Tracking',
+        href: '/reference/utilities/analytics',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },

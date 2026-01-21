@@ -7,9 +7,9 @@ import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
 export const metadata: Metadata = {
-  title: 'MarkdownRendererEnhanced',
+  title: 'EnhancedMarkdownRenderer',
   description:
-    'Render markdown with GitHub-flavored syntax, syntax highlighting, and LaTeX math support.',
+    'Render rich markdown with KaTeX math, syntax highlighting, Mermaid diagrams, error boundaries, and performance monitoring.',
 }
 
 const props = [
@@ -17,83 +17,58 @@ const props = [
     name: 'content',
     type: 'string',
     required: true,
-    description: 'Markdown source string.',
+    description: 'Markdown source string to render.',
   },
   {
-    name: 'enableMath',
-    type: 'boolean',
-    default: 'true',
-    description: 'Enable LaTeX/KaTeX rendering for inline and block math.',
+    name: 'config',
+    type: 'EnhancedMarkdownConfig',
+    description: 'Configuration object for rendering features.',
   },
   {
-    name: 'enableHighlight',
-    type: 'boolean',
-    default: 'true',
-    description: 'Syntax highlighting for code blocks via highlight.js.',
-  },
-  {
-    name: 'enableGFM',
-    type: 'boolean',
-    default: 'true',
-    description:
-      'Enable GitHub Flavored Markdown extensions (tables, strikethrough, task lists).',
-  },
-  {
-    name: 'allowHtml',
+    name: 'isStreaming',
     type: 'boolean',
     default: 'false',
-    description:
-      'Allow raw HTML in markdown (sanitise externally before enabling).',
+    description: 'Indicates if content is currently streaming (affects performance optimizations).',
+  },
+]
+
+const configProps = [
+  {
+    name: 'enableKaTeX',
+    type: 'boolean',
+    default: 'false',
+    description: 'Enable LaTeX/KaTeX rendering for mathematical formulas.',
   },
   {
-    name: 'components',
-    type: 'Record<string, React.ComponentType>',
-    description: 'Override rendered elements (e.g., links, headings).',
+    name: 'enableMermaid',
+    type: 'boolean',
+    default: 'false',
+    description: 'Enable Mermaid diagram rendering.',
+  },
+  {
+    name: 'enableSyntaxHighlight',
+    type: 'boolean',
+    default: 'true',
+    description: 'Enable syntax highlighting for code blocks.',
   },
   {
     name: 'className',
     type: 'string',
-    description: 'Custom class for the wrapper element.',
+    description: 'Custom CSS class for the markdown content.',
   },
   {
-    name: 'showLineNumbers',
-    type: 'boolean',
-    default: 'false',
-    description: 'Display line numbers beside code blocks.',
-  },
-  {
-    name: 'enableCodeCopy',
-    type: 'boolean',
-    default: 'true',
-    description: 'Show copy-to-clipboard button on code blocks.',
-  },
-  {
-    name: 'onMathError',
-    type: '(error: Error, latex: string) => void',
-    description: 'Callback invoked if KaTeX fails to render a math expression.',
+    name: 'codeTheme',
+    type: "'light' | 'dark'",
+    default: "'light'",
+    description: 'Theme for code syntax highlighting.',
   },
 ]
 
-const utilityRows = [
+const hookRows = [
   {
-    name: 'validateLatex(latex)',
-    type: '{ valid: boolean; error?: string }',
-    description: 'Detect unmatched braces/dollar signs before rendering.',
-  },
-  {
-    name: 'extractMathExpressions(content)',
-    type: '{ inline: string[]; block: string[] }',
-    description: 'Pull inline and block math expressions from markdown.',
-  },
-  {
-    name: 'previewLatex(latex)',
-    type: 'string',
-    description: 'Generate short preview string (placeholder implementation).',
-  },
-  {
-    name: 'MATH_EXAMPLES',
-    type: '{ inline: string; block: string; complex: string }',
-    description: 'Starter snippets for demos and testing.',
+    name: 'useMarkdownFeatures(content)',
+    type: '{ hasMath: boolean; hasMermaid: boolean; hasCodeBlocks: boolean; needsEnhancedRendering: boolean }',
+    description: 'Detect what features are present in markdown content.',
   },
 ]
 
@@ -102,91 +77,172 @@ export default function MarkdownRendererEnhancedPage() {
     <>
       <Breadcrumbs />
 
-      <h1>MarkdownRendererEnhanced</h1>
+      <h1>EnhancedMarkdownRenderer</h1>
       <p className="lead">
-        Render rich markdown with KaTeX math, syntax highlighting,
-        GitHub-flavored features, copy buttons, and custom component
-        overrides—ideal for technical chat responses and RAG outputs.
+        A comprehensive markdown renderer with built-in error boundaries,
+        performance monitoring, analytics tracking, and support for LaTeX math,
+        Mermaid diagrams, and syntax highlighting—perfect for AI chat interfaces
+        and technical documentation.
       </p>
+
+      <Callout type="info">
+        <p>
+          This component includes automatic error boundaries, performance monitoring,
+          and analytics tracking out of the box for production-ready reliability.
+        </p>
+      </Callout>
 
       <Callout type="tip">
         <p>
-          Import <code>'katex/dist/katex.min.css'</code> and your highlight.js
-          theme at app start (already handled when you import the component from{' '}
-          <code>@clarity-chat/react</code>).
+          Import <code>'katex/dist/katex.min.css'</code> for math rendering support
+          (automatically handled when importing from <code>@clarity-chat/react</code>).
         </p>
       </Callout>
 
       <h2 id="import">Import</h2>
       <CodeBlock
         language="tsx"
-        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
-import 'katex/dist/katex.min.css'`}
+        code={`import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
+import 'katex/dist/katex.min.css' // For math rendering`}
       />
 
-      <h2 id="usage">Usage</h2>
+      <h2 id="usage">Basic Usage</h2>
       <CodeBlock
         language="tsx"
-        title="Render AI response"
-        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
+        title="Render markdown content"
+        code={`import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
 const content = \`
-# Technical Analysis
+# Welcome to AI Chat
 
-The quadratic formula is:
-\$\$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\$\$
+This is **bold** and *italic* text.
 
-\`\`
+## Math Support
 
-export function Response() {
+The quadratic formula: \$\$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\$\$
+
+## Code Highlighting
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`
+}
+\`\`\`
+
+## Mermaid Diagrams
+
+\`\`\`mermaid
+graph TD
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Action 1]
+    B -->|No| D[Action 2]
+\`\`\`
+\`
+
+export function ChatMessage() {
   return (
-    <MarkdownRendererEnhanced
+    <EnhancedMarkdownRenderer
       content={content}
-      enableMath
-      enableHighlight
-      showLineNumbers
+      config={{
+        enableKaTeX: true,
+        enableMermaid: true,
+        enableSyntaxHighlight: true,
+        codeTheme: 'light'
+      }}
     />
   )
 }`}
       />
 
-      <h2 id="custom-components">Custom Components</h2>
-      <CodeBlock
-        language="tsx"
-        code={`<MarkdownRendererEnhanced
-  content={content}
-  components={{
-    a: (props) => (
-      <a {...props} className="text-brand-500 hover:underline" target="_blank" rel="noreferrer" />
-    ),
-    h2: (props) => <h2 {...props} className="mt-8 text-2xl font-semibold" />,
-  }}
-/>`}
-      />
-
-      <h2 id="copy-button">Copy Button &amp; Line Numbers</h2>
+      <h2 id="streaming">Streaming Content</h2>
       <p>
-        Enable both features to create docs-style code snippets with header
-        badges. Copy buttons respect clipboard permissions and show success
-        feedback for two seconds.
+        The component optimizes for streaming content with performance monitoring
+        and smooth rendering updates.
       </p>
-
-      <h2 id="math-error-handling">Math Error Handling</h2>
       <CodeBlock
         language="tsx"
-        code={`<MarkdownRendererEnhanced
+        code={`<EnhancedMarkdownRenderer
+  content={streamingContent}
+  config={{
+    enableKaTeX: true,
+    enableSyntaxHighlight: true,
+  }}
+  isStreaming={true}
+/>`}
+      />
+
+      <h2 id="features">Feature Configuration</h2>
+      <p>
+        Configure individual features through the <code>config</code> prop:
+      </p>
+      <CodeBlock
+        language="tsx"
+        code={`<EnhancedMarkdownRenderer
   content={content}
-  onMathError={(error, latex) => {
-    console.warn('LaTeX failed to render', { error, latex })
+  config={{
+    enableKaTeX: true,        // LaTeX math rendering
+    enableMermaid: true,      // Mermaid diagrams
+    enableSyntaxHighlight: true, // Code syntax highlighting
+    codeTheme: 'dark',        // Code theme
+    className: 'custom-markdown' // Custom CSS class
   }}
 />`}
       />
 
-      <h2 id="utilities">Utilities</h2>
-      <ApiTable data={utilityRows} />
+      <h2 id="error-handling">Built-in Error Handling</h2>
+      <p>
+        The component includes automatic error boundaries and graceful fallbacks:
+      </p>
+      <CodeBlock
+        language="tsx"
+        code={`// Errors are automatically caught and displayed with retry options
+<EnhancedMarkdownRenderer
+  content={potentiallyUnsafeContent}
+  config={{ enableKaTeX: true }}
+/>
+
+// The component will show an error message if rendering fails
+// and provide options to retry or report the issue`}
+      />
+
+      <h2 id="performance">Performance Monitoring</h2>
+      <p>
+        Automatic performance tracking for render times and memory usage:
+      </p>
+      <CodeBlock
+        language="tsx"
+        code={`// Performance metrics are automatically collected
+// Use the PerformanceDashboard to view analytics
+import { PerformanceDashboard } from '@clarity-chat/react'
+
+<PerformanceDashboard />
+`}
+      />
+
+      <h2 id="analytics">Analytics Integration</h2>
+      <p>
+        Component usage and interaction analytics are automatically tracked:
+      </p>
+      <CodeBlock
+        language="tsx"
+        code={`// Analytics are enabled by default
+// Wrap your app with AnalyticsProvider for custom configuration
+import { AnalyticsProvider } from '@clarity-chat/react'
+
+<AnalyticsProvider config={{ enabled: true, sampleRate: 1.0 }}>
+  <EnhancedMarkdownRenderer content={content} />
+</AnalyticsProvider>
+`}
+      />
+
+      <h2 id="hooks">Related Hooks</h2>
+      <ApiTable data={hookRows} />
 
       <h2 id="props">Props</h2>
       <ApiTable data={props} />
+
+      <h2 id="config">Configuration Options</h2>
+      <ApiTable data={configProps} />
 
       <Pagination
         prev={{

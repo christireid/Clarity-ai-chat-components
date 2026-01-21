@@ -142,6 +142,10 @@ export default function QuickStartPage() {
               nextStepHref="#basic-usage"
               nextStepTitle="Basic Usage"
             >
+              <Callout type="warning" className="mb-4">
+                <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+              </Callout>
+
               <p className="text-text-secondary mb-4">
                 Install Clarity Chat UI using your preferred package manager:
               </p>

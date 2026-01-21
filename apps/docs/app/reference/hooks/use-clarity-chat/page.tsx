@@ -14,13 +14,13 @@ export default function UseClarityChatPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useClarityChat</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Primary React hook for building chat interfaces with message
-          management, streaming responses, memory integration, and AI model
-          integration.
+          Enterprise-ready React hook for building chat interfaces with cross-device sync,
+          rate limiting, message management, streaming responses, and comprehensive AI model integration.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
-          <strong>Domain:</strong> Chat State
+          <strong>Domain:</strong> Enterprise Chat State •{' '}
+          <strong>Features:</strong> Sync, Rate Limiting, Memory
         </p>
       </div>
 
@@ -46,6 +46,12 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
           </span>
           <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
             Multi-model
+          </span>
+          <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded">
+            Rate Limiting
+          </span>
+          <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded">
+            Cross-device Sync
           </span>
         </div>
       </section>

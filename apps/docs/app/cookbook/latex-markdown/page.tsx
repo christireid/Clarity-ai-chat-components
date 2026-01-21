@@ -35,9 +35,8 @@ export default function LatexMarkdownCookbook() {
         <h2>2. Import Component & Styles</h2>
         <CodeBlock
           language="tsx"
-          code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
-import 'katex/dist/katex.min.css'
-import 'highlight.js/styles/github-dark.css'`}
+          code={`import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
+import 'katex/dist/katex.min.css'`}
         />
       </section>
 
@@ -62,11 +61,13 @@ def quadratic(a, b, c, x):
 \`\`\`
 \`
 
-<MarkdownRendererEnhanced
+<EnhancedMarkdownRenderer
   content={mathHeavyReply}
-  enableMath
-  enableHighlight
-  showLineNumbers
+  config={{
+    enableKaTeX: true,
+    enableSyntaxHighlight: true,
+    codeTheme: 'dark'
+  }}
 />`}
         />
       </section>
@@ -75,19 +76,31 @@ def quadratic(a, b, c, x):
         <h2>4. Custom Elements</h2>
         <CodeBlock
           language="tsx"
-          code={`<MarkdownRendererEnhanced
+          code={`<EnhancedMarkdownRenderer
   content={answer}
-  components={{
-    a: (props) => (
-      <a {...props} className="text-brand-500 hover:underline" target="_blank" rel="noreferrer" />
-    ),
-    table: (props) => (
-      <div className="overflow-x-auto my-4">
-        <table {...props} className="min-w-full border-collapse border border-border/60" />
-      </div>
-    ),
+  config={{
+    enableKaTeX: true,
+    enableSyntaxHighlight: true,
+    // Custom styling via className
+    className: 'my-markdown-content'
   }}
-/>`}
+/>
+
+// For custom link styling, wrap the component:
+<div className="markdown-wrapper">
+  <EnhancedMarkdownRenderer
+    content={answer}
+    config={{ enableKaTeX: true }}
+  />
+  <style jsx>{\`
+    .markdown-wrapper :global(a) {
+      @apply text-brand-500 hover:underline;
+    }
+    .markdown-wrapper :global(table) {
+      @apply overflow-x-auto my-4 min-w-full border-collapse border border-border/60;
+    }
+  \`}</style>
+</div>`}
         />
       </section>
 

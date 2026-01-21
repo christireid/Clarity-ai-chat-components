@@ -37,10 +37,67 @@ import {
   useClarityChat,
   type UseClarityChatOptions,
 } from '../../hooks/chat/use-clarity-chat'
+import { useRateLimitedChat } from '../../hooks/ai/use-rate-limited-chat'
 import { ChatWindow } from './chat-window'
+import { RequestQueueStatus } from '../ai/request-queue-status'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useToast } from '../ui/toast'
+
+// Grouped props interfaces for cleaner API
+export interface ClarityChatHeaderProps {
+  /** Show header with session info */
+  show?: boolean
+  /** Session title */
+  title?: string
+  /** Session subtitle */
+  subtitle?: string
+  /** Header actions */
+  actions?: React.ReactNode
+  /** Show message count badge */
+  showMessageCount?: boolean
+}
+
+export interface ClarityChatMessageActionsProps {
+  /** Callback when a message is copied */
+  onCopy?: (id: string, content: string) => void
+  /** Callback when message feedback is provided */
+  onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+  /** Callback when a message is edited */
+  onEdit?: (messageId: string) => void
+  /** Callback when a message is regenerated */
+  onRegenerate?: (messageId: string) => void
+  /** Callback when a message is deleted */
+  onDelete?: (messageId: string) => void
+}
+
+export interface ClarityChatPromptsProps {
+  /** Starter prompts to show when chat is empty */
+  starterPrompts?: Array<{ text: string; category?: string }>
+  /** Enable prompt suggestions */
+  enableSuggestions?: boolean
+  /** Maximum number of suggestions to show */
+  maxSuggestions?: number
+}
+
+export interface ClarityChatRateLimitingProps {
+  /** Enable rate limiting and request queuing */
+  enable?: boolean
+  /** Maximum concurrent requests */
+  maxConcurrentRequests?: number
+  /** Maximum queue size */
+  maxQueueSize?: number
+  /** Show request queue status */
+  showQueueStatus?: boolean
+  /** Compact queue status display */
+  compactQueueStatus?: boolean
+  /** Callback when request is queued */
+  onRequestQueued?: (position: number, estimatedWaitMs: number) => void
+  /** Callback when rate limit is hit */
+  onRateLimited?: (resetAt: number) => void
+  /** Callback when queue is full */
+  onQueueFull?: () => void
+}
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
@@ -51,6 +108,18 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   className?: string
   /** Custom empty state */
   emptyState?: React.ReactNode
+
+  // 🎯 NEW: Grouped Props API (recommended)
+  /** Header configuration */
+  header?: ClarityChatHeaderProps
+  /** Message action callbacks */
+  messageActions?: ClarityChatMessageActionsProps
+  /** Prompt configuration */
+  prompts?: ClarityChatPromptsProps
+  /** Rate limiting configuration */
+  rateLimiting?: ClarityChatRateLimitingProps
+
+  // 🔄 LEGACY: Individual Props API (still supported for backward compatibility)
   /** Show header with session info */
   showHeader?: boolean
   /** Session title */
@@ -93,6 +162,24 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   memoryStrategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Error handler with error info */
   onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
+
+  // Rate limiting options (legacy - use rateLimiting prop instead)
+  /** Enable rate limiting and request queuing */
+  enableRateLimiting?: boolean
+  /** Maximum concurrent requests */
+  maxConcurrentRequests?: number
+  /** Maximum queue size */
+  maxQueueSize?: number
+  /** Show request queue status */
+  showQueueStatus?: boolean
+  /** Compact queue status display */
+  compactQueueStatus?: boolean
+  /** Callback when request is queued */
+  onRequestQueued?: (position: number, estimatedWaitMs: number) => void
+  /** Callback when rate limit is hit */
+  onRateLimited?: (resetAt: number) => void
+  /** Callback when queue is full */
+  onQueueFull?: () => void
 }
 
 /**
@@ -136,28 +223,115 @@ export function ClarityChat({
   api,
   className,
   emptyState,
-  showHeader,
-  sessionTitle,
-  sessionSubtitle,
-  headerActions,
-  showMessageCount,
+
+  // 🎯 NEW: Grouped Props API
+  header,
+  messageActions,
+  prompts,
+  rateLimiting,
+
+  // 🔄 LEGACY: Individual Props API (for backward compatibility)
+  showHeader: legacyShowHeader,
+  sessionTitle: legacySessionTitle,
+  sessionSubtitle: legacySessionSubtitle,
+  headerActions: legacyHeaderActions,
+  showMessageCount: legacyShowMessageCount,
   onExport,
   onClear,
-  onMessageCopy,
-  onMessageFeedback,
-  onEditMessage,
-  onRegenerateMessage,
-  onDeleteMessage,
+  onMessageCopy: legacyOnMessageCopy,
+  onMessageFeedback: legacyOnMessageFeedback,
+  onEditMessage: legacyOnEditMessage,
+  onRegenerateMessage: legacyOnRegenerateMessage,
+  onDeleteMessage: legacyOnDeleteMessage,
+  autoScroll,
+  theme,
+  showTokenCounter,
+  showNetworkStatus,
+  enableMessageOperations,
+  memoryStrategy,
+  onError,
+
+  // Rate limiting (legacy API)
+  enableRateLimiting: legacyEnableRateLimiting,
+  maxConcurrentRequests: legacyMaxConcurrentRequests,
+  maxQueueSize: legacyMaxQueueSize,
+  showQueueStatus: legacyShowQueueStatus,
+  compactQueueStatus: legacyCompactQueueStatus,
+  onRequestQueued: legacyOnRequestQueued,
+  onRateLimited: legacyOnRateLimited,
+  onQueueFull: legacyOnQueueFull,
+
   ...hookOptions
 }: ClarityChatProps) {
+  // 🎯 Process grouped props with fallback to legacy individual props
+  const processedProps = React.useMemo(() => {
+    return {
+      // Header configuration - grouped takes precedence
+      showHeader: header?.show ?? legacyShowHeader ?? false,
+      sessionTitle: header?.title ?? legacySessionTitle ?? '',
+      sessionSubtitle: header?.subtitle ?? legacySessionSubtitle ?? '',
+      headerActions: header?.actions ?? legacyHeaderActions,
+      showMessageCount: header?.showMessageCount ?? legacyShowMessageCount ?? false,
+
+      // Message actions - grouped takes precedence
+      onMessageCopy: messageActions?.onCopy ?? legacyOnMessageCopy,
+      onMessageFeedback: messageActions?.onFeedback ?? legacyOnMessageFeedback,
+      onEditMessage: messageActions?.onEdit ?? legacyOnEditMessage,
+      onRegenerateMessage: messageActions?.onRegenerate ?? legacyOnRegenerateMessage,
+      onDeleteMessage: messageActions?.onDelete ?? legacyOnDeleteMessage,
+
+      // Rate limiting - grouped takes precedence
+      enableRateLimiting: rateLimiting?.enable ?? legacyEnableRateLimiting ?? false,
+      maxConcurrentRequests: rateLimiting?.maxConcurrentRequests ?? legacyMaxConcurrentRequests ?? 3,
+      maxQueueSize: rateLimiting?.maxQueueSize ?? legacyMaxQueueSize ?? 10,
+      showQueueStatus: rateLimiting?.showQueueStatus ?? legacyShowQueueStatus ?? false,
+      compactQueueStatus: rateLimiting?.compactQueueStatus ?? legacyCompactQueueStatus ?? false,
+      onRequestQueued: rateLimiting?.onRequestQueued ?? legacyOnRequestQueued,
+      onRateLimited: rateLimiting?.onRateLimited ?? legacyOnRateLimited,
+      onQueueFull: rateLimiting?.onQueueFull ?? legacyOnQueueFull,
+
+      // Other props (no grouping needed yet)
+      onExport,
+      onClear,
+      autoScroll,
+      theme,
+      showTokenCounter,
+      showNetworkStatus,
+      enableMessageOperations,
+      memoryStrategy,
+      onError,
+
+      // Prompts (grouped)
+      prompts,
+    }
+  }, [
+    header, messageActions, prompts, rateLimiting,
+    legacyShowHeader, legacySessionTitle, legacySessionSubtitle, legacyHeaderActions, legacyShowMessageCount,
+    legacyOnMessageCopy, legacyOnMessageFeedback, legacyOnEditMessage, legacyOnRegenerateMessage, legacyOnDeleteMessage,
+    legacyEnableRateLimiting, legacyMaxConcurrentRequests, legacyMaxQueueSize, legacyShowQueueStatus, legacyCompactQueueStatus,
+    legacyOnRequestQueued, legacyOnRateLimited, legacyOnQueueFull,
+    onExport, onClear, autoScroll, theme, showTokenCounter, showNetworkStatus, enableMessageOperations, memoryStrategy, onError
+  ])
   // Note: API validation is handled by useClarityChat hook via validateApiEndpoint()
   // which provides a ComponentError with helpful messaging and security checks
   const toast = useToast()
 
-  const chat = useClarityChat({
-    api,
-    ...hookOptions,
-  })
+  // Use rate-limited chat if enabled
+  const chat = processedProps.enableRateLimiting
+    ? useRateLimitedChat({
+        api,
+        enableRateLimiting: true,
+        maxConcurrent: processedProps.maxConcurrentRequests,
+        maxQueueSize: processedProps.maxQueueSize,
+        onRequestQueued: processedProps.onRequestQueued,
+        onRateLimited: processedProps.onRateLimited,
+        onQueueFull: processedProps.onQueueFull,
+        ...hookOptions,
+      })
+    : useClarityChat({
+        api,
+        ...hookOptions,
+      })
 
   // Track which message is currently being edited
   const [editingMessageId, setEditingMessageId] = React.useState<string | null>(
@@ -400,29 +574,47 @@ export function ClarityChat({
   )
 
   return (
-    <ChatWindow
-      messages={messages}
-      isLoading={chat.isLoading || isRegenerating}
-      onSendMessage={handleSendMessage}
-      onStopGeneration={handleStopGeneration}
-      onMessageCopy={onMessageCopy}
-      onMessageFeedback={onMessageFeedback}
-      onEditMessage={handleEditMessage}
-      onRegenerateMessage={handleRegenerateMessage}
-      onDeleteMessage={handleDeleteMessage}
-      editingMessageId={editingMessageId}
-      onSaveEdit={handleSaveEdit}
-      onCancelEdit={handleCancelEdit}
-      className={className}
-      emptyState={emptyState}
-      showHeader={showHeader}
-      sessionTitle={sessionTitle}
-      sessionSubtitle={sessionSubtitle}
-      headerActions={headerActions}
-      showMessageCount={showMessageCount}
-      onExport={onExport}
-      onClear={onClear ? handleClear : undefined}
-    />
+    <div className="clarity-chat-container">
+      {/* Request Queue Status */}
+      {processedProps.enableRateLimiting && processedProps.showQueueStatus && 'queueStatus' in chat && (
+        <RequestQueueStatus
+          queueStatus={chat.queueStatus}
+          isRateLimited={chat.isRateLimited}
+          rateLimitResetAt={chat.rateLimitResetAt}
+          compact={processedProps.compactQueueStatus}
+          onClearQueue={chat.clearQueue}
+        />
+      )}
+
+      <ChatWindow
+        messages={messages}
+        isLoading={chat.isLoading || isRegenerating}
+        onSendMessage={handleSendMessage}
+        onStopGeneration={handleStopGeneration}
+        onMessageCopy={processedProps.onMessageCopy}
+        onMessageFeedback={processedProps.onMessageFeedback}
+        onEditMessage={processedProps.onEditMessage ? handleEditMessage : undefined}
+        onRegenerateMessage={processedProps.onRegenerateMessage ? handleRegenerateMessage : undefined}
+        onDeleteMessage={processedProps.onDeleteMessage ? handleDeleteMessage : undefined}
+        editingMessageId={editingMessageId}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleCancelEdit}
+        className={className}
+        emptyState={emptyState}
+        showHeader={processedProps.showHeader}
+        sessionTitle={processedProps.sessionTitle}
+        sessionSubtitle={processedProps.sessionSubtitle}
+        headerActions={processedProps.headerActions}
+        showMessageCount={processedProps.showMessageCount}
+        onExport={processedProps.onExport}
+        onClear={processedProps.onClear ? handleClear : undefined}
+        autoScroll={processedProps.autoScroll}
+        theme={processedProps.theme}
+        showTokenCounter={processedProps.showTokenCounter}
+        showNetworkStatus={processedProps.showNetworkStatus}
+        enableMessageOperations={processedProps.enableMessageOperations}
+      />
+    </div>
   )
 }
 

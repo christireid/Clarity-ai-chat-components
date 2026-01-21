@@ -2,75 +2,101 @@
 
 import * as React from 'react'
 import { cn } from '../../utils/cn'
+import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 
 /**
- * InlineCode Component Props
- */
-export interface InlineCodeProps extends React.HTMLAttributes<HTMLElement> {
-  /** The code content */
-  children: React.ReactNode
-  /** Additional CSS class */
-  className?: string
-  /** Variant style */
-  variant?: 'default' | 'subtle' | 'highlighted'
-  /** Ref to the code element (React 19 ref-as-prop) */
-  ref?: React.Ref<HTMLElement>
-}
-
-/**
- * InlineCode Component
- *
- * Styled inline code span for displaying code within text.
- * Designed to blend seamlessly with surrounding text while
- * clearly indicating code content.
+ * InlineCode component for inline code snippets
  *
  * Features:
- * - Three style variants
- * - Monospace font
- * - Proper vertical alignment
- * - Accessible
- *
- * @example
- * ```tsx
- * <p>
- *   Use the <InlineCode>useState</InlineCode> hook for state management.
- * </p>
- * ```
+ * - Night Owl theming (consistent with CodeBlock)
+ * - Keyboard accessible
+ * - Copy functionality on click
+ * - Accessible feedback
  */
-export function InlineCode({
+export interface InlineCodeProps {
+  /** The code content to display */
+  children: string
+  /** Additional CSS class */
+  className?: string
+  /** Enable copy functionality */
+  enableCopy?: boolean
+  /** Callback when code is copied */
+  onCopy?: () => void
+}
+
+export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
   children,
   className,
-  variant = 'default',
-  ref,
-  ...props
-}: InlineCodeProps) {
-  const variantStyles = {
-    default: cn('bg-muted/80 text-foreground', 'border border-border/50'),
-    subtle: cn('bg-muted/50 text-foreground/90'),
-    highlighted: cn('bg-primary/10 text-primary', 'border border-primary/20'),
-  }
+  enableCopy = false,
+  onCopy,
+}) {
+  const [copied, setCopied] = React.useState(false)
+  const { trackInteraction } = useAnalytics('InlineCode')
+  const { trackClick } = useInteractionTracking('InlineCode')
+
+  const codeText = React.useMemo(() => {
+    return typeof children === 'string' ? children.trim() : String(children).trim()
+  }, [children])
+
+  const handleClick = React.useCallback(async () => {
+    if (!enableCopy) return
+
+    try {
+      await navigator.clipboard.writeText(codeText)
+      setCopied(true)
+      onCopy?.()
+      trackInteraction('copy', { content: codeText })
+
+      // Reset copied state after 2 seconds
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy inline code:', error)
+    }
+  }, [enableCopy, codeText, onCopy, trackInteraction])
+
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleClick()
+    }
+  }, [handleClick])
 
   return (
     <code
-      ref={ref}
       className={cn(
-        // Base styles
-        'inline-block px-1.5 py-0.5 rounded-md',
-        // Typography
-        'font-mono text-[0.875em] leading-none',
-        // Alignment
-        'align-middle',
-        // Variant styles
-        variantStyles[variant],
+        // Night Owl background and foreground
+        'bg-[#011627] text-[#d6deeb]',
+        // Border and padding
+        'rounded border border-white/[0.08] px-1.5 py-0.5',
+        // Font styling
+        'font-mono text-sm font-medium',
+        // Interactive states (only when copy is enabled)
+        enableCopy && [
+          'cursor-pointer transition-colors duration-200',
+          'hover:bg-[#011627]/80 hover:border-white/[0.12]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
+        ],
         className
       )}
-      {...props}
+      onClick={enableCopy ? handleClick : undefined}
+      onKeyDown={enableCopy ? handleKeyDown : undefined}
+      tabIndex={enableCopy ? 0 : undefined}
+      role={enableCopy ? 'button' : undefined}
+      aria-label={enableCopy ? `Copy code: ${codeText}` : undefined}
+      title={enableCopy ? 'Click to copy code' : undefined}
     >
-      {children}
+      {codeText}
+      {enableCopy && copied && (
+        <span
+          className="ml-2 text-green-400"
+          aria-live="polite"
+          aria-label="Code copied to clipboard"
+        >
+          ✓
+        </span>
+      )}
     </code>
   )
-}
+})
 
 InlineCode.displayName = 'InlineCode'
-
-export default InlineCode

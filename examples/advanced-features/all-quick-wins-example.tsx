@@ -170,9 +170,9 @@ export function AdvancedChatApplication() {
           <ChatWindow
             messages={messages}
             isLoading={isLoading}
-            error={error}
-            enableAnimations={!recommendations.disableAnimations}
-            updateInterval={recommendations.updateInterval}
+            errorHandling={{
+              error: error,
+            }}
           />
         </div>
 

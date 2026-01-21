@@ -22,7 +22,7 @@ describe('useClarityChat', () => {
   })
 
   it('should initialize with empty messages', () => {
-    const { result } = renderHook(() => useClarityChat())
+    const { result } = renderHook(() => useClarityChat({ api: '/api/chat' }))
 
     expect(result.current.messages).toEqual([])
     expect(result.current.isLoading).toBe(false)
@@ -194,9 +194,9 @@ describe('useClarityChat', () => {
       })
     )
 
-    // Memory should be disabled if provider is not available
+    // Memory should be disabled if provider is not available, but show configured strategy
     expect(result.current.memoryInfo.enabled).toBe(false)
-    expect(result.current.memoryInfo.strategy).toBe('semantic-chunks')
+    expect(result.current.memoryInfo.strategy).toBe('semantic-chunks') // Configured strategy should be shown even when disabled
   })
 })
 
@@ -207,7 +207,7 @@ describe('useClarityChat with MemoryProvider', () => {
   }
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <MemoryProvider config={mockConfig} autoStart={false}>
+    <MemoryProvider config={mockConfig} autoStart={true}>
       {children}
     </MemoryProvider>
   )
@@ -237,6 +237,23 @@ describe('useClarityChat with MemoryProvider', () => {
     ]
 
     strategies.forEach((strategy) => {
+      // Mock memory context with initialized service
+      vi.spyOn(React, 'useContext').mockReturnValue({
+        service: {
+          getStats: () => ({ totalMemories: 0 }),
+        },
+        getStats: () => ({ totalMemories: 0 }),
+        isInitialized: true,
+        addMemory: vi.fn(),
+        query: vi.fn(),
+        updateMemory: vi.fn(),
+        deleteMemory: vi.fn(),
+        promoteMemory: vi.fn(),
+        compressMemory: vi.fn(),
+        getContext: vi.fn(),
+        subscribe: vi.fn(),
+      } as any)
+
       const { result } = renderHook(
         () =>
           useClarityChat({
@@ -246,19 +263,36 @@ describe('useClarityChat with MemoryProvider', () => {
         { wrapper: Wrapper }
       )
 
-      expect(result.current.memoryEnabled).toBeDefined()
+      expect(result.current.memoryInfo.enabled).toBe(true)
+      expect(result.current.memoryInfo.strategy).toBe(strategy)
+
+      vi.restoreAllMocks()
     })
   })
 
   it('should query memory before appending user messages', async () => {
-    const mockQuery = vi.fn().mockResolvedValue([])
+    const mockQuery = vi.fn().mockResolvedValue([
+      { memory: { content: 'Previous context about testing' }, score: 0.9 }
+    ])
     const mockAddMemory = vi.fn().mockResolvedValue({ id: '1' })
 
     // Mock memory context
     vi.spyOn(React, 'useContext').mockReturnValue({
-      service: { query: mockQuery },
+      service: {
+        query: mockQuery,
+        addMemory: mockAddMemory,
+        getStats: () => ({ totalMemories: 5 }),
+      },
       addMemory: mockAddMemory,
+      query: mockQuery,
+      getStats: () => ({ totalMemories: 5 }),
       getContext: () => ({}),
+      isInitialized: true,
+      updateMemory: vi.fn(),
+      deleteMemory: vi.fn(),
+      promoteMemory: vi.fn(),
+      compressMemory: vi.fn(),
+      subscribe: vi.fn(),
     } as any)
 
     const { result } = renderHook(
@@ -290,8 +324,15 @@ describe('useClarityChat with MemoryProvider', () => {
     })
 
     // Memory should be queried for user messages
-    // Note: This depends on the actual implementation
-    expect(result.current.messages.length).toBeGreaterThan(0)
+    expect(mockQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: 'Test query',
+        scopes: ['thread'],
+      })
+    )
+
+    // Memory should be added after message completion
+    expect(mockAddMemory).toHaveBeenCalled()
   })
 
   it('should handle memory query errors gracefully', async () => {
@@ -336,26 +377,39 @@ describe('useClarityChat with MemoryProvider', () => {
     ).resolves.not.toThrow()
   })
 
-  it('should provide contextSummary when memory is enabled', () => {
-    const mockGetContext = vi.fn().mockReturnValue({
-      items: [{ id: '1' }, { id: '2' }],
-    })
-
+  it('should provide memory stats when memory is enabled', async () => {
     vi.spyOn(React, 'useContext').mockReturnValue({
-      service: {},
-      getContext: mockGetContext,
+      service: {
+        getStats: () => ({ totalMemories: 3 }),
+      },
+      getStats: () => ({ totalMemories: 3 }),
+      isInitialized: true,
+      addMemory: vi.fn(),
+      query: vi.fn(),
+      updateMemory: vi.fn(),
+      deleteMemory: vi.fn(),
+      promoteMemory: vi.fn(),
+      compressMemory: vi.fn(),
+      getContext: vi.fn(),
+      subscribe: vi.fn(),
     } as any)
 
     const { result } = renderHook(
       () =>
         useClarityChat({
           api: '/api/chat',
-          memory: { enabled: true },
+          memory: { enabled: true, strategy: 'vector-store' },
         }),
       { wrapper: Wrapper }
     )
 
-    // contextSummary should be available when memory is enabled
-    expect(result.current.contextSummary).toBeDefined()
+    // Memory info should show enabled state and stats
+    expect(result.current.memoryInfo.enabled).toBe(true)
+    expect(result.current.memoryInfo.strategy).toBe('vector-store')
+
+    // Wait for memory stats to be updated
+    await waitFor(() => {
+      expect(result.current.memoryInfo.memoryCount).toBe(3)
+    })
   })
 })

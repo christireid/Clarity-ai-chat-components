@@ -414,7 +414,8 @@ export { ConversationList } from './components/conversation/conversation-list'
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 
 // Markdown & Rendering
-export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
+// DEPRECATED: MarkdownRendererEnhanced removed - use EnhancedMarkdownRenderer instead
+// export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
 
 // Dashboard Components
 export * from './components/dashboards'
