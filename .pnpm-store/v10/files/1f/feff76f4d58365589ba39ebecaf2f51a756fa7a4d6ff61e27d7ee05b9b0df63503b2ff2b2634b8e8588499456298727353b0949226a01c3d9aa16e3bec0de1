@@ -1,0 +1,9 @@
+declare const DARK_MODE_EVENT_NAME = "DARK_MODE";
+declare const UPDATE_DARK_MODE_EVENT_NAME = "UPDATE_DARK_MODE";
+
+/**
+ * Returns the current state of storybook's dark-mode
+ */
+declare function useDarkMode(): boolean;
+
+export { DARK_MODE_EVENT_NAME, UPDATE_DARK_MODE_EVENT_NAME, useDarkMode };

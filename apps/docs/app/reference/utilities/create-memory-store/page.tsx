@@ -196,7 +196,7 @@ const sharedMemory = createMemoryStore({
 function App() {
   return (
     <MemoryProvider service={sharedMemory.service}>
-      <ChatInterface />
+      <ChatWindow messages={[]} isLoading={false} onSendMessage={() => {}} />
       <MemoryDebugPanel />
     </MemoryProvider>
   )

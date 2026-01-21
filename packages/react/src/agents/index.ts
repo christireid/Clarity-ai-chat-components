@@ -60,7 +60,6 @@ import type {
   Tool,
   ToolArguments,
   ToolParameters,
-  ToolParameterProperty,
 } from './types'
 import { ReactAgent } from './react-agent'
 

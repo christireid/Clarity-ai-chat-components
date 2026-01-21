@@ -1,22 +1,12 @@
+#!/usr/bin/env node
+
 /**
  * Clarity Chat Codemods
- * Automated code transformations for version migrations
+ *
+ * Automated migration tools for API changes in Clarity Chat components.
+ * These codemods help migrate from deprecated APIs to the latest versions.
  */
 
-export { runTransform } from './runner.js'
-export { availableTransforms } from './transforms/index.js'
-
-export interface TransformOptions {
-  dry?: boolean
-  print?: boolean
-  verbose?: boolean
-  parser?: 'babel' | 'tsx' | 'ts'
-}
-
-export interface TransformResult {
-  ok: number
-  nochange: number
-  skip: number
-  error: number
-  timeElapsed: string
-}
+export { migrateToast } from './migrate-toast'
+export { migrateMarkdownRenderers } from './migrate-markdown-renderers'
+export { migrateReducedMotion } from './migrate-reduced-motion'

@@ -527,7 +527,7 @@ function ChatWithTools() {
     }
   })
 
-  return <ChatInterface chat={chat} />
+  return <ChatWindow messages={chat.messages} isLoading={chat.isLoading} onSendMessage={chat.append} />
 }`}
           language="tsx"
           showLineNumbers

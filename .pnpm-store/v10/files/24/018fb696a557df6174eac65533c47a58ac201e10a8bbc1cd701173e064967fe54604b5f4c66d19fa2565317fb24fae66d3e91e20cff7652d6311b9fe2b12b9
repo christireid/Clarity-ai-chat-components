@@ -1,0 +1,1 @@
+var e="STORYBOOK_ADDON_DESIGNS",t=e+"/panel",n="design";var p=o=>o;export{n as PARAM_KEY,t as PanelName,p as config};
