@@ -8,7 +8,6 @@
 
 import type { Variants, Transition, TargetAndTransition } from 'framer-motion'
 import {
-  ANIMATION_DURATION,
   DURATION_SECONDS as durations,
   EASING_FRAMER,
 } from './constants'

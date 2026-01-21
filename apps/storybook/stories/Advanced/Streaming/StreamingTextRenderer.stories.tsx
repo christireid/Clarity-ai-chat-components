@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState, useEffect } from 'react'
-import { StreamingTextRenderer } from '@clarity-chat/react/internal'
+import { StreamingTextRenderer } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 
 const meta: Meta<typeof StreamingTextRenderer> = {

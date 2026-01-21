@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   useTokenTracker,
   type MessageWithTokens,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {

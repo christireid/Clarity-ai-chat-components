@@ -1,0 +1,16 @@
+export declare const animations: {
+    fadeIn: string;
+    slideUp: string;
+    wave: string;
+    elastic: string;
+    bounceIn: string;
+    rotateIn: string;
+    colorTransition: string;
+    fadeAndScale: string;
+    slideInFromLeft: string;
+    blurIn: string;
+    typewriter: string;
+    highlight: string;
+    blurAndSharpen: string;
+    dropIn: string;
+};

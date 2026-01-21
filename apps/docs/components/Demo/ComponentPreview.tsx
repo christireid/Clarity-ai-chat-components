@@ -4,7 +4,7 @@ import { useState, ReactNode } from 'react'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Eye, Code } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 
 interface ComponentPreviewProps {
   children: ReactNode
@@ -32,8 +32,29 @@ export function ComponentPreview({
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       whileHover={{ y: -4, scale: 1.005 }}
-      className={clsx('my-6 border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow', className)}
+      className={cn(
+        'group/preview relative my-6 rounded-xl overflow-hidden',
+        // Multi-layer shadow system
+        'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)]',
+        'dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.15)]',
+        'hover:shadow-[0_4px_12px_rgba(99,102,241,0.1),0_8px_24px_rgba(99,102,241,0.08)]',
+        'dark:hover:shadow-[0_4px_12px_rgba(129,140,248,0.15),0_8px_24px_rgba(129,140,248,0.1)]',
+        'transition-shadow duration-300',
+        className
+      )}
     >
+      {/* Gradient border */}
+      <div
+        className="absolute inset-0 rounded-xl opacity-50 group-hover/preview:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+        style={{
+          padding: '1px',
+          background: 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.2) 50%, rgba(244,114,182,0.25) 100%)',
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+        aria-hidden="true"
+      />
       {/* Header */}
       <div className="bg-bg-secondary border-b border-border">
         <motion.div
@@ -81,7 +102,7 @@ export function ComponentPreview({
             onClick={() => setActiveTab('preview')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={clsx(
+            className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
               activeTab === 'preview'
                 ? 'border-brand-500 text-brand-600 dark:text-brand-400'
@@ -102,7 +123,7 @@ export function ComponentPreview({
             onClick={() => setActiveTab('code')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={clsx(
+            className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
               activeTab === 'code'
                 ? 'border-brand-500 text-brand-600 dark:text-brand-400'

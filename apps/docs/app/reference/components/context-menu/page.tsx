@@ -1064,7 +1064,7 @@ render(<ChatMessageContextMenu />)`}
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { ContextMenu, MenuItem } from '@clarity-chat/react/internal'
+          <code>{`import { ContextMenu, MenuItem } from '@clarity-chat/react'
 
 interface MenuItem {
   id: string

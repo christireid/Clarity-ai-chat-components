@@ -1,0 +1,958 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useTieredCache" />
+
+# useTieredCache
+
+Multi-level intelligent caching for LLM responses. Combines memory, disk, and provider-native caching with 3-tier lookup strategy for maximum hit rate and cost savings.
+
+## Overview
+
+`useTieredCache` provides a React interface to a sophisticated 3-tier caching system that dramatically reduces API costs and latency. It orchestrates exact, smart, and semantic caching layers to maximize cache hits while maintaining response quality.
+
+**When to use:**
+- High-volume LLM applications with repeated queries
+- Chat applications with common questions
+- Applications where sub-50ms response time matters
+- Cost-sensitive applications (90%+ cost reduction possible)
+- Systems with parameterized queries (e.g., "weather in `{city}`")
+- Multi-user applications with overlapping queries
+
+**When not to use:**
+- Completely unique queries every time
+- Applications requiring real-time data
+- If you only need simple memoization → use `useMemo`
+- If you need budget tracking → use `useTokenBudgetMonitor`
+- If response freshness is critical (use shorter TTL)
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function ChatComponent() {
+  const [prompt, setPrompt] = useState('')
+  const [response, setResponse] = useState('')
+
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },      // 1hr
+    smart: { maxSize: 500, ttl: 3600000 },       // 1hr
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: true,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleSubmit = async () => {
+    // Check cache first
+    const cached = await cache.get(prompt)
+
+    if (cached.hit) {
+      setResponse(cached.data!)
+      console.log(`Cache hit from ${cached.tier} tier in ${cached.latency}ms`)
+      return
+    }
+
+    // Fetch from API
+    const apiResponse = await callLLM(prompt)
+
+    // Cache for future requests
+    await cache.set(prompt, apiResponse)
+    setResponse(apiResponse)
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Enter your prompt..."
+      />
+      <button onClick={handleSubmit}>Submit</button>
+      {response && <div>{response}</div>}
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Parameters
+
+```tsx
+useTieredCache(
+  config: UseTieredCacheConfig
+): UseTieredCacheReturn
+```
+
+#### `config: UseTieredCacheConfig`
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `exact` | `ExactCacheConfig` | Yes | Tier 1: O(1) hash lookup for identical queries |
+| `smart` | `SmartCacheConfig` | Yes | Tier 2: Pattern matching for parameterized queries |
+| `semantic` | `SemanticCacheConfig` | Yes | Tier 3: Embedding similarity for paraphrased queries |
+| `trackStats` | `boolean` | No | Enable reactive stats tracking (triggers re-renders) |
+
+#### `exact: ExactCacheConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxSize` | `number` | Required | Maximum number of cached entries |
+| `ttl` | `number` | Required | Time-to-live in milliseconds |
+
+#### `smart: SmartCacheConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxSize` | `number` | Required | Maximum number of patterns to store |
+| `ttl` | `number` | Required | Time-to-live in milliseconds |
+
+#### `semantic: SemanticCacheConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxSize` | `number` | Required | Maximum number of cached entries |
+| `maxAge` | `number` | Required | Maximum age in milliseconds |
+| `similarityThreshold` | `number` | Required | Minimum similarity score (0.7-0.95 recommended) |
+| `enableEmbeddingCache` | `boolean` | Required | Cache embeddings for faster lookups |
+| `enableContextAwareness` | `boolean` | Required | Use context for better matching |
+| `enablePredictiveCaching` | `boolean` | Required | Preload likely-needed entries |
+| `embeddingModel` | `string` | Optional | Model for generating embeddings |
+| `compressionThreshold` | `number` | Required | Compress entries larger than this size (bytes) |
+
+### Return Value
+
+```tsx
+{
+  // Core cache operations
+  get: (prompt: string, context?: CacheContext) => Promise<TieredCacheResult>
+  set: (prompt: string, response: string, metadata?: Record<string, unknown>) => Promise<void>
+  invalidate: (prompt: string) => Promise<void>
+  prefetch: (items: PrefetchItem[]) => Promise<void>
+  clear: () => void
+
+  // Statistics
+  getStats: () => CacheStats
+  stats: CacheStats | null              // Only available when trackStats=true
+
+  // Status
+  isReady: boolean
+
+  // React 19 features
+  isPending: boolean                     // Transition in progress
+  optimisticEntries: OptimisticEntry[]   // Pending cache entries
+  optimisticSet: (prompt: string, response: string, metadata?: Record<string, unknown>) => void
+}
+```
+
+#### `TieredCacheResult`
+
+```tsx
+{
+  hit: boolean                  // Whether any tier had a cache hit
+  tier?: 'exact' | 'smart' | 'semantic'  // Which tier provided the hit
+  data?: string                 // The cached response data
+  similarity?: number           // Similarity score (for semantic hits, 0-1)
+  latency?: number             // Lookup latency in milliseconds
+}
+```
+
+#### `CacheStats`
+
+```tsx
+{
+  hitRate: number              // Overall cache hit rate (0-1)
+  totalHits: number            // Total hits across all tiers
+  totalMisses: number          // Total misses (no hit in any tier)
+  exactSize: number            // Current size of exact cache
+  smartSize: number            // Current size of smart cache
+  semanticSize: number         // Current size of semantic cache
+  tierStats: {
+    exact: { hits: number, misses: number, size: number }
+    smart: { hits: number, misses: number, size: number }
+    semantic: { hits: number, misses: number, size: number }
+  }
+}
+```
+
+## Examples
+
+### With Statistics Dashboard
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function CachedChatWithStats() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: true,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+    trackStats: true,  // Enable reactive stats
+  })
+
+  const stats = cache.stats
+
+  return (
+    <div>
+      <div className="cache-stats">
+        <h3>Cache Performance</h3>
+        <p>Hit Rate: {((stats?.hitRate ?? 0) * 100).toFixed(1)}%</p>
+        <p>Total Hits: {stats?.totalHits ?? 0}</p>
+        <p>Total Misses: {stats?.totalMisses ?? 0}</p>
+
+        <h4>Tier Breakdown</h4>
+        <ul>
+          <li>Exact: {stats?.tierStats.exact.hits ?? 0} hits, {stats?.exactSize ?? 0} entries</li>
+          <li>Smart: {stats?.tierStats.smart.hits ?? 0} hits, {stats?.smartSize ?? 0} entries</li>
+          <li>Semantic: {stats?.tierStats.semantic.hits ?? 0} hits, {stats?.semanticSize ?? 0} entries</li>
+        </ul>
+      </div>
+
+      <ChatInterface cache={cache} />
+    </div>
+  )
+}
+```
+
+### With Prefetching
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function ChatWithPrefetch() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  useEffect(() => {
+    // Prefetch common queries on mount
+    cache.prefetch([
+      {
+        key: 'What is the weather in Paris?',
+        value: 'Sunny, 22°C',
+        metadata: { domain: 'weather', location: 'Paris' },
+      },
+      {
+        key: 'What time is it in Tokyo?',
+        value: '15:30 JST',
+        metadata: { domain: 'time', location: 'Tokyo' },
+      },
+      {
+        key: 'Convert 100 USD to EUR',
+        value: '92.50 EUR',
+        metadata: { domain: 'currency' },
+      },
+    ])
+  }, [])
+
+  return <ChatInterface cache={cache} />
+}
+```
+
+### With Context-Aware Caching
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function ContextualChat() {
+  const [userId, setUserId] = useState('user-123')
+  const [sessionId] = useState(() => crypto.randomUUID())
+
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: true,  // Enable context awareness
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleQuery = async (prompt: string) => {
+    // Provide context for better semantic matching
+    const context = {
+      userContext: userId,
+      sessionContext: sessionId,
+      domain: 'customer-support',
+    }
+
+    const cached = await cache.get(prompt, context)
+
+    if (cached.hit) {
+      return cached.data
+    }
+
+    const response = await callLLM(prompt)
+    await cache.set(prompt, response, context)
+    return response
+  }
+
+  return <ChatInterface onSubmit={handleQuery} />
+}
+```
+
+### With Cache Invalidation
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function ChatWithInvalidation() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleDataUpdate = async (prompt: string) => {
+    // Invalidate cached response when underlying data changes
+    await cache.invalidate(prompt)
+    console.log('Cache invalidated for:', prompt)
+  }
+
+  const handleClearAll = () => {
+    // Clear entire cache
+    cache.clear()
+    console.log('All cache tiers cleared')
+  }
+
+  return (
+    <div>
+      <button onClick={handleClearAll}>Clear Cache</button>
+      <button onClick={() => handleDataUpdate('What is the weather?')}>
+        Invalidate Weather Cache
+      </button>
+      <ChatInterface cache={cache} />
+    </div>
+  )
+}
+```
+
+### With React 19 Optimistic Updates
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function OptimisticChat() {
+  const [messages, setMessages] = useState([])
+
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleSubmit = async (prompt: string, response: string) => {
+    // Optimistically update UI immediately
+    cache.optimisticSet(prompt, response, {
+      timestamp: Date.now()
+    })
+
+    // Show optimistic entry with status indicator
+    setMessages((prev) => [...prev, {
+      prompt,
+      response,
+      status: 'pending'
+    }])
+  }
+
+  return (
+    <div>
+      <MessageList messages={messages} />
+
+      {cache.isPending && (
+        <div className="loading">Caching in progress...</div>
+      )}
+
+      {cache.optimisticEntries.map((entry) => (
+        <div key={entry.prompt} className={`optimistic ${entry.status}`}>
+          {entry.status === 'pending' && '⏳ Caching...'}
+          {entry.status === 'confirmed' && '✓ Cached'}
+          {entry.status === 'failed' && '✗ Failed'}
+        </div>
+      ))}
+
+      <ChatInput onSubmit={handleSubmit} />
+    </div>
+  )
+}
+```
+
+### With Performance Monitoring
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function MonitoredChat() {
+  const [performance, setPerformance] = useState({
+    avgLatency: 0,
+    cacheHits: 0,
+    apiCalls: 0,
+  })
+
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+    trackStats: true,
+  })
+
+  const handleQuery = async (prompt: string) => {
+    const startTime = performance.now()
+    const cached = await cache.get(prompt)
+
+    if (cached.hit) {
+      setPerformance((prev) => ({
+        avgLatency: (prev.avgLatency + (cached.latency ?? 0)) / 2,
+        cacheHits: prev.cacheHits + 1,
+        apiCalls: prev.apiCalls,
+      }))
+
+      console.log(`Cache ${cached.tier} hit in ${cached.latency}ms`)
+      return cached.data
+    }
+
+    // API call
+    const response = await callLLM(prompt)
+    const apiLatency = performance.now() - startTime
+
+    await cache.set(prompt, response)
+
+    setPerformance((prev) => ({
+      avgLatency: (prev.avgLatency + apiLatency) / 2,
+      cacheHits: prev.cacheHits,
+      apiCalls: prev.apiCalls + 1,
+    }))
+
+    return response
+  }
+
+  const stats = cache.getStats()
+  const costSavings = (stats.hitRate * 0.9 * 100).toFixed(1) // 90% cost reduction per hit
+
+  return (
+    <div>
+      <div className="performance-metrics">
+        <h3>Performance Metrics</h3>
+        <p>Avg Latency: {performance.avgLatency.toFixed(2)}ms</p>
+        <p>Cache Hits: {performance.cacheHits}</p>
+        <p>API Calls: {performance.apiCalls}</p>
+        <p>Hit Rate: {(stats.hitRate * 100).toFixed(1)}%</p>
+        <p>Estimated Cost Savings: {costSavings}%</p>
+      </div>
+
+      <ChatInterface onQuery={handleQuery} />
+    </div>
+  )
+}
+```
+
+### With Provider-Native Caching
+
+```tsx
+import { useTieredCache } from '@clarity-chat/token-optimization/react'
+
+function ProviderCachedChat() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const callWithProviderCache = async (prompt: string) => {
+    // Check local cache first (fastest)
+    const cached = await cache.get(prompt)
+    if (cached.hit) {
+      return {
+        response: cached.data,
+        source: 'local-cache',
+        tier: cached.tier,
+        latency: cached.latency,
+      }
+    }
+
+    // Call LLM with provider-native caching headers
+    // Anthropic, OpenAI, and Gemini support this
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+        // Provider caching (reduces cost by 50-90% on repeated content)
+        cache_control: { type: 'ephemeral' },
+      }),
+    })
+
+    const data = await response.json()
+    const result = data.choices[0].message.content
+
+    // Store in local cache for even faster subsequent access
+    await cache.set(prompt, result, {
+      provider: 'openai',
+      cacheType: 'provider-native',
+    })
+
+    return {
+      response: result,
+      source: 'api',
+      cacheUsed: data.usage?.cache_read_tokens > 0,
+    }
+  }
+
+  return <ChatInterface onQuery={callWithProviderCache} />
+}
+```
+
+## Performance
+
+### Cache Tier Latencies
+
+The 3-tier architecture provides optimal performance:
+
+| Tier | Latency | Use Case | Hit Rate |
+|------|---------|----------|----------|
+| Exact | < 1ms | Identical queries | 30-50% |
+| Smart | < 5ms | Parameterized queries | 20-30% |
+| Semantic | < 50ms | Paraphrased queries | 10-20% |
+
+**Combined hit rate: 60-100%** depending on query patterns
+
+### Memory Usage
+
+```
+Exact Cache:    ~500 bytes per entry × maxSize
+Smart Cache:    ~800 bytes per pattern × maxSize
+Semantic Cache: ~2KB per entry × maxSize (includes embeddings)
+
+Total for default config (1000/500/200):
+= (1000 × 500) + (500 × 800) + (200 × 2000)
+≈ 1.3 MB
+```
+
+### LRU Eviction
+
+All tiers use LRU (Least Recently Used) eviction:
+
+- ✅ Least accessed entries are evicted first
+- ✅ Access updates entry position
+- ✅ Automatic cleanup when maxSize reached
+- ✅ No manual management needed
+
+### Cost Savings
+
+Typical cost reduction:
+
+```
+Without cache:  1000 requests × $0.0001 = $0.10
+With 80% hit:   200 requests × $0.0001  = $0.02
+
+Savings: 80% cost reduction
+```
+
+With provider-native caching combined:
+
+```
+20 API calls with 90% provider cache = 90% further reduction
+Total savings: 98% cost reduction
+```
+
+## Comparison with Other Hooks
+
+| Feature | useTieredCache | useTokenOptimization | useTokenCount |
+|---------|----------------|----------------------|---------------|
+| Multi-tier caching | ✅ 3 tiers | ✅ Single tier | ❌ |
+| Exact matching | ✅ < 1ms | ✅ | ❌ |
+| Pattern matching | ✅ < 5ms | ❌ | ❌ |
+| Semantic matching | ✅ < 50ms | ✅ | ❌ |
+| LRU eviction | ✅ | ✅ | ❌ |
+| Statistics | ✅ Per-tier | ✅ Overall | ❌ |
+| Prefetching | ✅ | ✅ | ❌ |
+| Context awareness | ✅ | ✅ | ❌ |
+| React 19 optimistic | ✅ | ✅ | ✅ |
+| Compression | ✅ | ✅ | ❌ |
+| Provider caching | Compatible | Compatible | ❌ |
+| Complexity | Advanced | Moderate | Simple |
+| Best for | High-volume apps | General optimization | Token counting |
+
+## How the Tiers Work
+
+### Tier 1: Exact Cache
+
+Fast O(1) hash-based lookup for identical queries:
+
+```tsx
+// Stores: Hash(prompt) → response
+await cache.set('What is 2+2?', '4')
+
+// Exact match = instant hit (< 1ms)
+await cache.get('What is 2+2?')
+// { hit: true, tier: 'exact', data: '4', latency: 0.3 }
+```
+
+### Tier 2: Smart Cache
+
+Pattern extraction for parameterized queries:
+
+```tsx
+// Stores pattern: "What is the weather in `{location}`?"
+await cache.set('What is the weather in Paris?', 'Sunny, 22°C')
+
+// Different parameter = smart hit (< 5ms)
+await cache.get('What is the weather in London?')
+// { hit: true, tier: 'smart', data: 'Sunny, 22°C', latency: 2.1 }
+```
+
+Recognizes entities:
+- Locations: Paris, London, Tokyo, etc.
+- Dates: tomorrow, next week, 2024-01-15
+- Numbers: 100, 1.5, $50
+- Names: John, Alice, etc.
+
+### Tier 3: Semantic Cache
+
+Embedding similarity for paraphrased queries:
+
+```tsx
+await cache.set('What is the capital of France?', 'Paris')
+
+// Paraphrased = semantic hit (< 50ms)
+await cache.get('Tell me France\'s capital city')
+// { hit: true, tier: 'semantic', data: 'Paris', similarity: 0.94, latency: 23.5 }
+```
+
+Uses cosine similarity on embeddings:
+- Threshold: 0.92 (configurable 0.7-0.95)
+- Higher = more strict matching
+- Lower = more false positives
+
+## TypeScript
+
+Full TypeScript support with detailed types:
+
+```tsx
+import type {
+  UseTieredCacheConfig,
+  UseTieredCacheReturn,
+  TieredCacheResult,
+  CacheStats,
+  TierStats,
+  PrefetchItem,
+  OptimisticEntry,
+  CacheContext,
+} from '@clarity-chat/token-optimization/react'
+
+// Configuration
+const config: UseTieredCacheConfig = {
+  exact: { maxSize: 1000, ttl: 3600000 },
+  smart: { maxSize: 500, ttl: 3600000 },
+  semantic: {
+    maxSize: 200,
+    maxAge: 3600000,
+    similarityThreshold: 0.92,
+    enableEmbeddingCache: true,
+    enableContextAwareness: true,
+    enablePredictiveCaching: false,
+    compressionThreshold: 1000,
+  },
+  trackStats: true,
+}
+
+// Hook usage
+const cache: UseTieredCacheReturn = useTieredCache(config)
+
+// Cache result
+const result: TieredCacheResult = await cache.get('prompt')
+
+// Statistics
+const stats: CacheStats = cache.getStats()
+
+// Context
+const context: CacheContext = {
+  userContext: 'user-123',
+  sessionContext: 'session-456',
+  domain: 'support',
+}
+```
+
+## Common Patterns
+
+### Hybrid Cache + API Strategy
+
+```tsx
+function HybridChat() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 3600000 },
+    smart: { maxSize: 500, ttl: 3600000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 3600000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleQuery = async (prompt: string) => {
+    // 1. Try all cache tiers
+    const cached = await cache.get(prompt)
+    if (cached.hit) return cached.data
+
+    // 2. Call API
+    const response = await callLLM(prompt)
+
+    // 3. Cache for future
+    await cache.set(prompt, response)
+
+    return response
+  }
+
+  return <ChatInterface onQuery={handleQuery} />
+}
+```
+
+### Per-User Isolated Caching
+
+```tsx
+function UserIsolatedCache({ userId }: { userId: string }) {
+  const cache = useTieredCache({
+    exact: { maxSize: 500, ttl: 1800000 },
+    smart: { maxSize: 250, ttl: 1800000 },
+    semantic: {
+      maxSize: 100,
+      maxAge: 1800000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: true,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  const handleQuery = async (prompt: string) => {
+    // Include userId in context for isolation
+    const result = await cache.get(prompt, {
+      userContext: userId
+    })
+
+    if (result.hit) return result.data
+
+    const response = await callLLM(prompt)
+    await cache.set(prompt, response, { userId })
+
+    return response
+  }
+
+  return <ChatInterface onQuery={handleQuery} />
+}
+```
+
+### Time-Based Cache Invalidation
+
+```tsx
+function TimeBasedCache() {
+  const cache = useTieredCache({
+    exact: { maxSize: 1000, ttl: 300000 },    // 5 min TTL
+    smart: { maxSize: 500, ttl: 300000 },
+    semantic: {
+      maxSize: 200,
+      maxAge: 300000,
+      similarityThreshold: 0.92,
+      enableEmbeddingCache: true,
+      enableContextAwareness: false,
+      enablePredictiveCaching: false,
+      compressionThreshold: 1000,
+    },
+  })
+
+  useEffect(() => {
+    // Clear cache every hour for fresh data
+    const interval = setInterval(() => {
+      cache.clear()
+      console.log('Cache cleared for freshness')
+    }, 3600000)
+
+    return () => clearInterval(interval)
+  }, [cache])
+
+  return <ChatInterface cache={cache} />
+}
+```
+
+## Troubleshooting
+
+### Low hit rate
+
+Check your cache sizes and TTL:
+
+```tsx
+// ❌ Too small
+exact: { maxSize: 10, ttl: 1000 }
+
+// ✅ Appropriate sizing
+exact: { maxSize: 1000, ttl: 3600000 }
+```
+
+Check your similarity threshold:
+
+```tsx
+// ❌ Too strict (fewer semantic hits)
+similarityThreshold: 0.98
+
+// ✅ Balanced (good hit rate)
+similarityThreshold: 0.92
+
+// ⚠️ Too loose (false positives)
+similarityThreshold: 0.75
+```
+
+### Memory issues
+
+Reduce cache sizes:
+
+```tsx
+// For memory-constrained environments
+{
+  exact: { maxSize: 100, ttl: 1800000 },
+  smart: { maxSize: 50, ttl: 1800000 },
+  semantic: {
+    maxSize: 20,  // Embeddings use most memory
+    maxAge: 1800000,
+    similarityThreshold: 0.92,
+    enableEmbeddingCache: false,  // Disable embedding cache
+    enableContextAwareness: false,
+    enablePredictiveCaching: false,
+    compressionThreshold: 500,
+  },
+}
+```
+
+### Stale data
+
+Use shorter TTL and cache invalidation:
+
+```tsx
+const cache = useTieredCache({
+  exact: { maxSize: 1000, ttl: 300000 },  // 5 min instead of 1 hour
+  // ...
+})
+
+// Invalidate when data updates
+useEffect(() => {
+  cache.invalidate('specific-prompt')
+}, [dataChanged])
+```
+
+### TypeScript errors
+
+Ensure all required fields are provided:
+
+```tsx
+// ❌ Missing required fields
+semantic: { maxSize: 200 }
+
+// ✅ All required fields
+semantic: {
+  maxSize: 200,
+  maxAge: 3600000,
+  similarityThreshold: 0.92,
+  enableEmbeddingCache: true,
+  enableContextAwareness: true,
+  enablePredictiveCaching: false,
+  compressionThreshold: 1000,
+}
+```
+
+### Cache not working
+
+Verify hook is outside conditional:
+
+```tsx
+// ❌ Wrong - hook in conditional
+if (enabled) {
+  const cache = useTieredCache(config)
+}
+
+// ✅ Correct - hook at top level
+const cache = useTieredCache(config)
+if (enabled) {
+  // use cache
+}
+```
+
+## See Also
+
+- **[useTokenOptimization](/docs/hooks-usetokenoptimization--docs)** - Full token optimization with compression
+- **[useTokenCount](/docs/hooks-usetokencount--docs)** - Simple token counting
+- **[useModelRouter](/docs/hooks-usemodelrouter--docs)** - Intelligent model selection
+- **[CacheMonitor](/docs/components-cachemonitor--docs)** - Visual cache statistics component

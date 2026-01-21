@@ -39,7 +39,7 @@ export default function CustomToolIntegrationPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChatWithTools, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useClarityChatWithTools, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithTools() {
   const { messages, append, toolInvocations } = useClarityChatWithTools({
@@ -229,7 +229,7 @@ const tools: Tool[] = [
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function AssistantWithTools() {
   const { messages, append, toolInvocations } = useAssistant({
@@ -263,7 +263,7 @@ function AssistantWithTools() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function AssistantWithApproval() {
   const { messages, append, toolInvocations } = useAssistant({

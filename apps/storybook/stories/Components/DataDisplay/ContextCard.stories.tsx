@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ContextCard } from '@clarity-chat/react/internal'
+import { ContextCard } from '@clarity-chat/react'
 
 /**
  * **ContextCard Component**

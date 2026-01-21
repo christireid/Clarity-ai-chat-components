@@ -127,7 +127,7 @@ const questions: Question[] = [
             why: 'Reduces re-renders for complex dashboards',
           },
           {
-            hook: 'useTokenOptimizationEnhanced',
+            hook: 'useTokenOptimization',
             href: '/reference/hooks/use-token-optimization-enhanced',
             description: 'Advanced token management',
             why: 'Context compression and budget management',

@@ -44,7 +44,7 @@ export default function PromptTestingPage() {
         <h2>Test Dataset Creation</h2>
         <p>Create test datasets:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 const testDataset = [
   {
@@ -68,7 +68,7 @@ function TestSetup() {
       dataset={testDataset}
       prompt="You are a helpful assistant."
       onTestComplete={(results) => {
-        logger.debug('Test results:', results)
+        console.log('Test results:', results)
       }}
     />
   )
@@ -80,7 +80,7 @@ function TestSetup() {
         <h2>Running Tests</h2>
         <p>Run prompt tests:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 function RunTests() {
   const [results, setResults] = useState([])
@@ -108,7 +108,7 @@ function RunTests() {
         <h2>Evaluating Results</h2>
         <p>Evaluate test results:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
 function EvaluateResults({ results }: { results: TestResult[] }) {
   const metrics = {
@@ -136,7 +136,7 @@ function EvaluateResults({ results }: { results: TestResult[] }) {
         <h2>A/B Testing Prompts</h2>
         <p>Compare prompt versions:</p>
         <CodePlayground
-          initialCode={`import { PromptTestHarness } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
 function ABTestPrompts() {
   const promptA = "You are a helpful assistant."
@@ -149,7 +149,7 @@ function ABTestPrompts() {
         prompt={promptA}
         variant="A"
         onTestComplete={(resultsA) => {
-          logger.debug('Variant A results:', resultsA)
+          console.log('Variant A results:', resultsA)
         }}
       />
       <PromptTestHarness
@@ -157,7 +157,7 @@ function ABTestPrompts() {
         prompt={promptB}
         variant="B"
         onTestComplete={(resultsB) => {
-          logger.debug('Variant B results:', resultsB)
+          console.log('Variant B results:', resultsB)
         }}
       />
     </div>

@@ -64,7 +64,7 @@ export default function MultiModalPreviewPage() {
   return (
     <MultiModalPreview
       attachments={attachments}
-      onOpen={(a) => logger.debug('Open:', a.title)}
+      onOpen={(a) => console.log('Open:', a.title)}
     />
   )
 }

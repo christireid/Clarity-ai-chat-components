@@ -55,7 +55,7 @@ export default function UseChatPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useChat } from '@clarity-chat/react/internal'
+            <code>{`import { useChat } from '@clarity-chat/react'
 
 function ChatComponent() {
   const {

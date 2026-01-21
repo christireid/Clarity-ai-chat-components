@@ -75,7 +75,7 @@ const item = {
     y: 0,
     scale: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 200,
       damping: 20,
     },
@@ -84,8 +84,18 @@ const item = {
 
 export function Testimonials() {
   return (
-    <section className="py-24">
-      <div className="container-docs">
+    <section className="py-24 relative overflow-hidden">
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] opacity-25 dark:opacity-15 pointer-events-none"
+        aria-hidden="true"
+      />
+      {/* Radial gradient accent */}
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.06)_0%,transparent_70%)] pointer-events-none"
+        aria-hidden="true"
+      />
+      <div className="container-docs relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -127,13 +137,25 @@ export function Testimonials() {
               key={index}
               variants={item}
               whileHover={{
-                scale: 1.03,
-                y: -8,
+                scale: 1.02,
+                y: -4,
                 transition: { duration: durations.normal, ease: 'easeOut' },
               }}
               whileTap={{ scale: 0.98 }}
-              className="relative p-6 rounded-xl border border-border bg-bg-primary hover:border-brand-500/50 transition-all hover:shadow-xl overflow-hidden"
+              className="group/card relative p-6 rounded-xl border border-border/50 bg-bg-primary transition-all overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_0_40px_rgba(99,102,241,0.08)] dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_0_40px_rgba(129,140,248,0.12)]"
             >
+              {/* Gradient border on hover */}
+              <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  padding: '1px',
+                  background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.3) 50%, rgba(244,114,182,0.4) 100%)',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                }}
+                aria-hidden="true"
+              />
               {/* MessageSquare Icon */}
               <motion.div
                 initial={{ rotate: 0 }}

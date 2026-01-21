@@ -13,9 +13,23 @@ export {
   type ModelPricing as TokenUsageMeterPricing,
   type TokenUsageMeterProps,
 } from './token-usage-meter'
-export { TokenOptimizationPanel } from './token-optimization-panel'
-export { TokenOptimizationBadge } from './token-optimization-badge'
-export { TokenOptimizationDashboard } from './token-optimization-dashboard'
+export {
+  TokenOptimizationPanel,
+  type TokenOptimizationPanelProps,
+} from './TokenOptimizationPanel'
+export {
+  TokenOptimizationBadge,
+  type TokenOptimizationBadgeProps,
+} from './TokenOptimizationBadge'
+export {
+  TokenOptimizationDashboard,
+  type TokenOptimizationDashboardProps,
+  type OptimizationMetrics,
+} from './TokenOptimizationDashboard'
+export {
+  type TokenOptimizationStats,
+  createEmptyStats,
+} from '../../hooks/clarity-tokens/use-token-optimization-stats'
 export { TokenBudgetBar } from './token-budget-bar'
 export {
   TokenCostPreview,

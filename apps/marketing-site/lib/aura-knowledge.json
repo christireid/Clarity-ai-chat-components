@@ -1034,8 +1034,8 @@
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
-      "title": "@clarity-chat/react > useTokenOptimizationEnhanced",
-      "content": "### useTokenOptimizationEnhanced\n\n```typescript\n(options: EnhancedTokenOptimizationOptions = {}) => { optimizeData: (data: any) => Promise<EnhancedOptimizationResult>; optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>; prepareMessages: (messages: CoreMessage[]) => { role: string; content: string; cache_control?: { type: \"ephemeral\"; } | undefined; }[]; parseResponse: (response: string) => any; countTokens: (text: string) => Promise<TokenCount>; calculateCost: (params: { inputTokens: number; outputTokens: number; }) => CostCalculation; optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]; canMakeRequest: () => boolean; recordRequest: () => void; routeQuery: (query: string) => string; createDataReference: (data: string | object) => { type: \"reference\"; id: string; originalSize: number; } | { type: \"data\"; data: string | object; }; limitOutput: (output: string) => string; batchRequest: <T>(request: () => Promise<T>) => Promise<T>; getPrefill: (format: \"code\" | \"json\" | \"markdown\" | \"xml\") => string; restructurePrompt: (prompt: string, context?: string | undefined) => { restructured: string; wasRestructured: boolean; questionPosition?: \"end\" | \"middle\" | \"start\" | undefined; }; stats: EnhancedOptimizationStats; resetStats: () => void; }\n```",
+      "title": "@clarity-chat/react > useTokenOptimization",
+      "content": "### useTokenOptimization\n\n```typescript\n(options: EnhancedTokenOptimizationOptions = {}) => { optimizeData: (data: any) => Promise<EnhancedOptimizationResult>; optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>; prepareMessages: (messages: CoreMessage[]) => { role: string; content: string; cache_control?: { type: \"ephemeral\"; } | undefined; }[]; parseResponse: (response: string) => any; countTokens: (text: string) => Promise<TokenCount>; calculateCost: (params: { inputTokens: number; outputTokens: number; }) => CostCalculation; optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]; canMakeRequest: () => boolean; recordRequest: () => void; routeQuery: (query: string) => string; createDataReference: (data: string | object) => { type: \"reference\"; id: string; originalSize: number; } | { type: \"data\"; data: string | object; }; limitOutput: (output: string) => string; batchRequest: <T>(request: () => Promise<T>) => Promise<T>; getPrefill: (format: \"code\" | \"json\" | \"markdown\" | \"xml\") => string; restructurePrompt: (prompt: string, context?: string | undefined) => { restructured: string; wasRestructured: boolean; questionPosition?: \"end\" | \"middle\" | \"start\" | undefined; }; stats: EnhancedOptimizationStats; resetStats: () => void; }\n```",
       "sourcePath": "apps/docs/content/api/react/index.mdx"
     },
     {
@@ -20684,34 +20684,34 @@
       "sourcePath": "apps/docs/content/hooks/use-token-budget.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > useTokenOptimizationEnhanced",
-      "content": "# useTokenOptimizationEnhanced\n\nuseTokenOptimizationEnhanced hook from Clarity Chat",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "title": "useTokenOptimization > useTokenOptimization",
+      "content": "# useTokenOptimization\n\nuseTokenOptimization hook from Clarity Chat",
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > Import",
-      "content": "## Import\n\n```typescript\nimport { useTokenOptimizationEnhanced } from '@clarity-chat/react'\n```",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "title": "useTokenOptimization > Import",
+      "content": "## Import\n\n```typescript\nimport { useTokenOptimization } from '@clarity-chat/react'\n```",
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > Signature",
+      "title": "useTokenOptimization > Signature",
       "content": "## Signature\n\n```typescript\n(options: EnhancedTokenOptimizationOptions = {}) => { optimizeData: (data: any) => Promise<EnhancedOptimizationResult>; optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>; prepareMessages: (messages: CoreMessage[]) => { role: string; content: string; cache_control?: { type: \"ephemeral\"; } | undefined; }[]; parseResponse: (response: string) => any; countTokens: (text: string) => Promise<TokenCount>; calculateCost: (params: { inputTokens: number; outputTokens: number; }) => CostCalculation; optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]; canMakeRequest: () => boolean; recordRequest: () => void; routeQuery: (query: string) => string; createDataReference: (data: string | object) => { type: \"reference\"; id: string; originalSize: number; } | { type: \"data\"; data: string | object; }; limitOutput: (output: string) => string; batchRequest: <T>(request: () => Promise<T>) => Promise<T>; getPrefill: (format: \"code\" | \"json\" | \"markdown\" | \"xml\") => string; restructurePrompt: (prompt: string, context?: string | undefined) => { restructured: string; wasRestructured: boolean; questionPosition?: \"end\" | \"middle\" | \"start\" | undefined; }; stats: EnhancedOptimizationStats; resetStats: () => void; }\n```",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > Parameters",
+      "title": "useTokenOptimization > Parameters",
       "content": "## Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| \\`options\\` | \\`EnhancedTokenOptimizationOptions\\` | Yes |  |",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > Returns",
+      "title": "useTokenOptimization > Returns",
       "content": "## Returns\n\n```typescript\n{ optimizeData: (data: any) => Promise<EnhancedOptimizationResult>; optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>; prepareMessages: (messages: CoreMessage[]) => { role: string; content: string; cache_control?: { type: \"ephemeral\"; } | undefined; }[]; parseResponse: (response: string) => any; countTokens: (text: string) => Promise<TokenCount>; calculateCost: (params: { inputTokens: number; outputTokens: number; }) => CostCalculation; optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]; canMakeRequest: () => boolean; recordRequest: () => void; routeQuery: (query: string) => string; createDataReference: (data: string | object) => { type: \"reference\"; id: string; originalSize: number; } | { type: \"data\"; data: string | object; }; limitOutput: (output: string) => string; batchRequest: <T>(request: () => Promise<T>) => Promise<T>; getPrefill: (format: \"code\" | \"json\" | \"markdown\" | \"xml\") => string; restructurePrompt: (prompt: string, context?: string | undefined) => { restructured: string; wasRestructured: boolean; questionPosition?: \"end\" | \"middle\" | \"start\" | undefined; }; stats: EnhancedOptimizationStats; resetStats: () => void; }\n```",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
-      "title": "useTokenOptimizationEnhanced > Return Properties",
+      "title": "useTokenOptimization > Return Properties",
       "content": "### Return Properties\n\n| Property | Type | Description |\n| --- | --- | --- |\n| \\`optimizeData\\` | \\`(data: any) =&gt; Promise&lt;EnhancedOptimizationResult&gt;\\` | Optimize structured data (auto TOON/JSON) |\n| \\`optimizePrompt\\` | \\`(prompt: string) =&gt; Promise&lt;EnhancedOptimizationResult&gt;\\` | Optimize text prompt |\n| \\`prepareMessages\\` | \\`(messages: CoreMessage[]) =&gt; { role: string; content: string; cache_control?: { type: \"ephemeral\"; } \\\\| undefined; }[]\\` | Prepare messages with caching |\n| \\`parseResponse\\` | \\`(response: string) =&gt; any\\` | Parse response (handles TOON/JSON) |\n| \\`countTokens\\` | \\`(text: string) =&gt; Promise&lt;TokenCount&gt;\\` | Count tokens accurately |\n| \\`calculateCost\\` | \\`(params: { inputTokens: number; outputTokens: number; }) =&gt; CostCalculation\\` | Calculate cost |\n| \\`optimizeHistory\\` | \\`(messages: CoreMessage[]) =&gt; CoreMessage[]\\` | Limit conversation history |\n| \\`canMakeRequest\\` | \\`() =&gt; boolean\\` | Check if request can be made (throttling) |\n| \\`recordRequest\\` | \\`() =&gt; void\\` | Record a request (for throttling) |\n| \\`routeQuery\\` | \\`(query: string) =&gt; string\\` | Route query to appropriate model |\n| \\`createDataReference\\` | \\`(data: string \\\\| object) =&gt; { type: \"reference\"; id: string; originalSize: number; } \\\\| { type: \"data\"; data: string \\\\| object; }\\` | Create reference for large data |\n| \\`limitOutput\\` | \\`(output: string) =&gt; string\\` | Enforce output limits |\n| \\`batchRequest\\` | \\`&lt;T&gt;(request: () =&gt; Promise&lt;T&gt;) =&gt; Promise&lt;T&gt;\\` | Add request to batch |\n| \\`getPrefill\\` | \\`(format: \"code\" \\\\| \"json\" \\\\| \"markdown\" \\\\| \"xml\") =&gt; string\\` | Get prefill string for response format |\n| \\`restructurePrompt\\` | \\`(prompt: string, context?: string \\\\| undefined) =&gt; { restructured: string; wasRestructured: boolean; questionPosition?: \"end\" \\\\| \"middle\" \\\\| \"start\" \\\\| undefined; }\\` | Restructure prompt for optimal attention (question at end) |\n| \\`stats\\` | \\`EnhancedOptimizationStats\\` | Get statistics |\n| \\`resetStats\\` | \\`() =&gt; void\\` | Reset statistics |",
-      "sourcePath": "apps/docs/content/hooks/use-token-optimization-enhanced.mdx"
+      "sourcePath": "apps/docs/content/hooks/use-token-optimization.mdx"
     },
     {
       "title": "useTokenOptimization > useTokenOptimization",

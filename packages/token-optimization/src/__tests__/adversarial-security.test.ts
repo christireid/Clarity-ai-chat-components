@@ -128,7 +128,7 @@ describe('Adversarial Security Testing', () => {
         const result = tokenSecurityManager.sanitizeInput(maliciousInput)
 
         expect(result.sanitized).toContain(
-          '[INJECTION_ATTEMPT:roleplay_injection]'
+          '[INJECTION_ATTEMPT:jailbreak_roleplay]'
         )
       })
     })

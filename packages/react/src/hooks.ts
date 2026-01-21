@@ -131,22 +131,9 @@ export * from './hooks/streaming'
 export * from './hooks/resilience'
 
 /** Token hooks - budget monitoring, tracking, optimization */
-// Note: Explicitly export to avoid conflict with clarity-tokens exports
+// Note: useTokenOptimization moved to ./hooks/clarity-tokens
+// Legacy hooks removed - use clarity-tokens for modern token optimization
 export {
-  useTokenOptimization,
-  type UseTokenOptimizationOptions,
-  type UseTokenOptimizationReturn,
-  type TokenOptimizationStats,
-  useTokenOptimizationEnhanced,
-  type EnhancedTokenOptimizationOptions,
-  type EnhancedOptimizationStats,
-  type EnhancedOptimizationResult,
-  useTokenTracker,
-  MODEL_PRICING,
-  MODEL_LIMITS,
-  type MessageWithTokens,
-  type UseTokenTrackerOptions,
-  type UseTokenTrackerReturn,
   useTokenBudgetMonitor,
   getStatusColor,
   formatTokenUsage,
@@ -158,14 +145,8 @@ export {
   type TrimResult,
   type BudgetMessage,
   type BudgetMonitorModel,
-  // From useTokenCounter - prefixed to avoid conflict with clarity-tokens version
-  useTokenCounter as useBasicTokenCounter,
-  getEncodingForModel,
-  preloadEncoding,
-  type TokenEncoding as BasicTokenEncoding,
-  type UseTokenCounterOptions as UseBasicTokenCounterOptions,
-  type UseTokenCounterReturn as UseBasicTokenCounterReturn,
 } from './hooks/token'
+export * from './hooks/token/use-token-tracker'
 
 /** UI hooks - clipboard, scroll, animations, etc. */
 export * from './hooks/ui'

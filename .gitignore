@@ -141,6 +141,11 @@ packages/*/__tests__/**/*.d.ts
 packages/*/__tests__/**/*.js.map
 packages/*/__tests__/**/*.d.ts.map
 
+# Package source build artifacts (compiled .ts files)
+packages/*/src/**/*.js
+packages/*/src/**/*.js.map
+packages/*/src/**/*.d.ts.map
+
 # CLI template build artifacts (keep source .ts/.tsx only)
 packages/cli/templates/**/*.js
 packages/cli/templates/**/*.d.ts

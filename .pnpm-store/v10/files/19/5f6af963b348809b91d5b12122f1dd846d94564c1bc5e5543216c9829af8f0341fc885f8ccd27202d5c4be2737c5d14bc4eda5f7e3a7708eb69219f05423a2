@@ -1,0 +1,14 @@
+import React from 'react';
+interface AnimatedImageProps {
+    src: string;
+    alt: string;
+    animation: string;
+    animationDuration: string;
+    animationTimingFunction: string;
+    animationIterationCount: number;
+    height?: string;
+    width?: string;
+    objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+}
+declare const AnimatedImage: React.FC<AnimatedImageProps>;
+export default AnimatedImage;

@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatLayout, ChatWindow } from '@clarity-chat/react/internal'
+import { ChatLayout, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'

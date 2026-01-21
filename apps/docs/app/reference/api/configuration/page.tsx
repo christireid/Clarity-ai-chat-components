@@ -30,7 +30,7 @@ export default function ConfigurationPage() {
 
         <CodeBlock
           language="tsx"
-          code={`import { ClarityChatProvider } from '@clarity-chat/react/internal'
+          code={`import { ClarityChatProvider } from '@clarity-chat/react'
 
 function App({ children }) {
   return (
@@ -124,10 +124,10 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}
   placeholder="Ask me anything..."
 
   // Callbacks
-  onMessage={(msg) => logger.debug('New message:', msg)}
+  onMessage={(msg) => console.log('New message:', msg)}
   onError={(err) => console.error('Error:', err)}
-  onStreamStart={() => logger.debug('Stream started')}
-  onStreamEnd={() => logger.debug('Stream ended')}
+  onStreamStart={() => console.log('Stream started')}
+  onStreamEnd={() => console.log('Stream ended')}
 />`}
         />
 

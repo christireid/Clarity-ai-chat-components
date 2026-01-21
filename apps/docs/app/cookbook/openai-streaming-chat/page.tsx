@@ -39,6 +39,10 @@ export default function OpenAIStreamingChatPage() {
       </section>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Prerequisites</h2>
         <CodeBlock
           language="bash"
@@ -352,10 +356,10 @@ await db.messages.create({
         <h3>3. Add Token Counting</h3>
         <CodeBlock
           language="typescript"
-          code={`import { encoding_for_model } from 'tiktoken'
+          code={`import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
-const encoding = encoding_for_model('gpt-4')
-const tokens = encoding.encode(content).length
+const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+const tokens = counter.count(content)
 
 // Show to user
 <TokenCounter current={tokens} limit={4096} />`}

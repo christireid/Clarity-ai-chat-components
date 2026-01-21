@@ -1,7 +1,7 @@
 /**
  * Token Optimization Hook (Legacy)
  *
- * @deprecated Use `useTokenOptimizationEnhanced` instead. This hook is maintained
+ * @deprecated Use `useTokenOptimization` instead. This hook is maintained
  * for backward compatibility only. The enhanced hook includes all features from
  * this hook plus TOON encoding, accurate tokenization, prompt caching, and more.
  *
@@ -12,14 +12,14 @@
  * const { optimizePrompt } = useTokenOptimization({ enablePromptShortening: true })
  *
  * // After (recommended)
- * import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
- * const { optimizePrompt } = useTokenOptimizationEnhanced({
+ * import { useTokenOptimization } from '@clarity-chat/react'
+ * const { optimizePrompt } = useTokenOptimization({
  *   preset: 'balanced',  // or customize individual options
  *   enablePromptCompression: true,
  * })
  * ```
  *
- * @see useTokenOptimizationEnhanced for the unified hook with all features
+ * @see useTokenOptimization for the unified hook with all features
  */
 'use client';
 import * as React from 'react';
@@ -27,7 +27,7 @@ import { shortenPrompt, calculateTokenSavings, limitHistory, createCache, genera
 /**
  * Hook for token optimization
  *
- * @deprecated Use `useTokenOptimizationEnhanced` instead for all new development.
+ * @deprecated Use `useTokenOptimization` instead for all new development.
  *
  * @example
  * ```tsx
@@ -66,7 +66,7 @@ export function useTokenOptimization(options = {}) {
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'development') {
             console.warn('[useTokenOptimization] DEPRECATED: useTokenOptimization is deprecated. ' +
-                'Please migrate to useTokenOptimizationEnhanced for additional features including ' +
+                'Please migrate to useTokenOptimization for additional features including ' +
                 'TOON encoding, accurate tokenization, prompt caching, presets, and more. ' +
                 'See documentation for migration guide.');
         }

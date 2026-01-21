@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
-import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
+import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 import { ToolUIRegistry } from '../ToolUIRegistry'
 import { durations } from '@/lib/animations'
 
@@ -93,13 +93,13 @@ export function HeroChatMessage({
                 ) : (
                   // Assistant messages: render with markdown
                   <div className="text-sm prose-sm dark:prose-invert max-w-none">
-                    <MarkdownRendererEnhanced
+                    <EnhancedMarkdownRenderer
                       content={message.content}
-                      enableMath={true}
-                      enableGFM={true}
-                      enableHighlight={true}
-                      enableCodeCopy={true}
-                      className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                      config={{
+                        enableKaTeX: true,
+                        enableSyntaxHighlight: true,
+                        className: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                      }}
                     />
                   </div>
                 )

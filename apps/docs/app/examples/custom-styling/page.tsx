@@ -87,7 +87,7 @@ export default function CustomStylingExamplePage() {
     >
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         placeholder="Message with custom theme..."
       />
     </div>
@@ -158,7 +158,7 @@ render(<CSSVariablesExample />)`}
     <div className="h-[500px]">
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl shadow-2xl"
         messageClassName="backdrop-blur-sm"
         ownMessageClassName="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
@@ -264,7 +264,7 @@ function CustomCSSExample() {
       
       <ChatWindow
         messages={messages}
-        onSendMessage={(text) => logger.debug(text)}
+        onSendMessage={(text) => console.log(text)}
         className="custom-chat"
         messageClassName="custom-message"
         ownMessageClassName="custom-own-message"
@@ -409,7 +409,7 @@ function BrandThemesExample() {
       <div style={themes[selectedTheme].colors} className="h-[500px]">
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           placeholder={\`Message in \${themes[selectedTheme].name} style...\`}
         />
       </div>
@@ -503,7 +503,7 @@ function DarkModeExample() {
       >
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           placeholder="Message in any theme..."
         />
       </div>
@@ -601,7 +601,7 @@ render(<DarkModeExample />)`}
       <div className="gradient-chat h-full p-6">
         <ChatWindow
           messages={messages}
-          onSendMessage={(text) => logger.debug(text)}
+          onSendMessage={(text) => console.log(text)}
           className="h-full"
           messageClassName="text-white"
           ownMessageClassName="own-glass-message"
@@ -793,7 +793,7 @@ const theme = generateTheme('#3b82f6')
         <p>Use styled-components for type-safe, scoped styling:</p>
         <pre>
           <code>{`import styled from 'styled-components'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 const StyledChatWindow = styled(ChatWindow)\`
   background: \${props => props.theme.background};

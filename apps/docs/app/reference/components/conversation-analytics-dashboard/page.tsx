@@ -89,7 +89,7 @@ export default function ConversationAnalyticsDashboardPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
+          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function AnalyticsView({ messages }: { messages: Message[] }) {
@@ -99,7 +99,7 @@ function AnalyticsView({ messages }: { messages: Message[] }) {
       autoGenerate
       updateInterval={30000}
       onAnalyticsGenerated={(analytics) => {
-        logger.debug('Analytics:', analytics)
+        console.log('Analytics:', analytics)
       }}
     />
   )
@@ -113,7 +113,7 @@ function AnalyticsView({ messages }: { messages: Message[] }) {
           Experiment with ConversationAnalyticsDashboard:
         </p>
         <CodePlayground
-          initialCode={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react'
 
 function Example() {
   const messages = [
@@ -140,7 +140,7 @@ function Example() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
+          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react'
 import type { Message, ConversationAnalytics } from '@clarity-chat/types'
 
 function AIAnalyticsView({ messages }: { messages: Message[] }) {
@@ -178,7 +178,7 @@ function AIAnalyticsView({ messages }: { messages: Message[] }) {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
+          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react'
 import type { ConversationAnalytics } from '@clarity-chat/types'
 
 function PrecomputedAnalytics({ 
@@ -203,8 +203,8 @@ function PrecomputedAnalytics({
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react/internal'
-import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ConversationAnalyticsDashboard } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
 
 function RealTimeAnalytics() {
   const { messages } = useClarityChat({ api: '/api/chat' })

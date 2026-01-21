@@ -1,0 +1,348 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Introduction/Getting Started" />
+
+# Getting Started with Token Optimization
+
+Welcome to the Token Optimization package! This guide will help you understand and implement powerful token counting, cost optimization, and LLM efficiency features.
+
+## 🎯 What is Token Optimization?
+
+Token Optimization is a comprehensive toolkit for:
+
+- **Counting tokens accurately** across GPT-4, Claude, Gemini models
+- **Reducing LLM costs by up to 90%** using provider-native caching and compression
+- **Monitoring usage** with real-time budget tracking
+- **Smart model routing** to use simpler models when possible
+- **Advanced optimization** with compression and caching pipelines
+
+## 📦 Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+# or
+pnpm add @clarity-chat/token-optimization
+# or
+yarn add @clarity-chat/token-optimization
+```
+
+## 🚀 Quick Start
+
+### 1. Simple Token Counting
+
+The easiest way to start is with `useTokenCount`:
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function MyComponent() {
+  const { count, estimate, isLoading } = useTokenCount({
+    text: 'Hello, world!',
+    model: 'gpt-4',
+  })
+
+  return (
+    <div>
+      <p>Tokens: {count}</p>
+      <p>Cost: ${estimate.cost.toFixed(4)}</p>
+    </div>
+  )
+}
+```
+
+### 2. Unified Optimization (Recommended)
+
+For comprehensive token optimization with caching, compression, and routing:
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function ChatComponent() {
+  const {
+    optimize,
+    stats,
+    isOptimizing
+  } = useTokenOptimization({
+    preset: 'balanced',
+    caching: {
+      enabled: true,
+      maxSize: 100,
+    },
+  })
+
+  const handleSend = async (message: string) => {
+    const result = await optimize(message)
+
+    console.log('Original tokens:', result.original.tokens)
+    console.log('Optimized tokens:', result.optimized.tokens)
+    console.log('Savings:', result.savings.percentage + '%')
+
+    // Send result.optimized.text to your LLM
+  }
+
+  return (
+    <div>
+      <p>Total saved: {stats.totalSavings.tokens} tokens</p>
+      <p>Cost reduction: ${stats.totalSavings.cost.toFixed(4)}</p>
+    </div>
+  )
+}
+```
+
+### 3. Budget Monitoring
+
+Track and limit token usage:
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function ChatWithBudget() {
+  const monitor = useTokenBudgetMonitor({
+    budget: 10000, // 10k tokens
+    model: 'gpt-4',
+    onLimitReached: () => {
+      alert('Budget limit reached!')
+    },
+  })
+
+  const handleMessage = async (text: string) => {
+    // Check if within budget
+    const status = monitor.getStatus()
+    if (status.isOverBudget) {
+      return // Don't send
+    }
+
+    // Track usage
+    monitor.addMessage({ role: 'user', content: text })
+
+    // Send to LLM...
+    const response = await sendToLLM(text)
+
+    monitor.addMessage({ role: 'assistant', content: response })
+  }
+
+  return (
+    <div>
+      <p>Usage: {monitor.currentUsage} / {monitor.budget}</p>
+      <p>Status: {monitor.getStatus().status}</p>
+    </div>
+  )
+}
+```
+
+## 🎨 Visual Components
+
+All token components support our premium glassmorphism design system:
+
+```tsx
+import { TokenOptimizationBadge } from '@clarity-chat/token-optimization/react'
+
+<TokenOptimizationBadge
+  stats={{
+    tokensSaved: 1250,
+    percentageSaved: 32.5,
+    costSavings: 0.045,
+  }}
+  showCost
+/>
+```
+
+```tsx
+import { TokenCostPreview } from '@clarity-chat/token-optimization/react'
+
+<TokenCostPreview
+  text="Your prompt text"
+  model="gpt-4"
+  variant="card"
+  showBreakdown
+/>
+```
+
+## 📊 Available Hooks
+
+### Core Hooks
+
+| Hook | Purpose | Best For |
+|------|---------|----------|
+| `useTokenCount` | Simple token counting | Basic token counting needs |
+| `useTokenOptimization` | Unified optimization | Most use cases (recommended) |
+| `useTokenBudgetMonitor` | Budget tracking | Usage limits and monitoring |
+
+### Advanced Hooks
+
+| Hook | Purpose | Best For |
+|------|---------|----------|
+| `useModelRouter` | Smart model selection | Cost optimization |
+| `useOptimizationPipeline` | Custom pipelines | Advanced optimization |
+| `useTieredCache` | Multi-level caching | High-performance apps |
+
+## 🎯 Optimization Strategies
+
+### Preset Configurations
+
+The `useTokenOptimization` hook supports presets:
+
+- **`aggressive`**: Maximum savings, may affect quality slightly
+- **`balanced`**: Good savings with minimal quality impact (recommended)
+- **`conservative`**: Minimal optimization, preserves quality
+
+```tsx
+const { optimize } = useTokenOptimization({ preset: 'balanced' })
+```
+
+### Provider-Native Caching
+
+Enable caching for repeated content:
+
+```tsx
+const { optimize } = useTokenOptimization({
+  caching: {
+    enabled: true,
+    provider: 'anthropic', // or 'openai', 'gemini'
+    maxSize: 100,
+    ttl: 3600000, // 1 hour
+  },
+})
+```
+
+### Compression
+
+Reduce token count with commercial-grade compression:
+
+```tsx
+const { optimize } = useTokenOptimization({
+  compression: {
+    enabled: true,
+    level: 'medium', // 'low' | 'medium' | 'high'
+    preserveFormatting: true,
+  },
+})
+```
+
+## 💡 Best Practices
+
+### 1. Start Simple
+
+Begin with `useTokenCount` to understand your token usage, then add optimization as needed.
+
+### 2. Use Presets
+
+The `balanced` preset works well for most use cases. Only use `aggressive` if cost is critical.
+
+### 3. Enable Caching
+
+Provider-native caching can save 90% on repeated content with zero quality loss.
+
+### 4. Monitor Budgets
+
+Use `useTokenBudgetMonitor` in production to prevent unexpected costs.
+
+### 5. Test Optimizations
+
+Always test optimized output quality before deploying to production.
+
+## 🔍 Real-World Example
+
+Here's a complete example combining multiple features:
+
+```tsx
+import {
+  useTokenOptimization,
+  useTokenBudgetMonitor,
+  TokenOptimizationPanel
+} from '@clarity-chat/token-optimization/react'
+
+function ProductionChat() {
+  // Budget monitoring
+  const monitor = useTokenBudgetMonitor({
+    budget: 50000, // 50k tokens per session
+    model: 'gpt-4',
+    warningThreshold: 0.8,
+  })
+
+  // Optimization with caching
+  const { optimize, stats } = useTokenOptimization({
+    preset: 'balanced',
+    caching: {
+      enabled: true,
+      provider: 'anthropic',
+      maxSize: 100,
+    },
+    compression: {
+      enabled: true,
+      level: 'medium',
+    },
+  })
+
+  const sendMessage = async (text: string) => {
+    // Check budget
+    const status = monitor.getStatus()
+    if (status.isOverBudget) {
+      throw new Error('Budget exceeded')
+    }
+
+    // Optimize
+    const result = await optimize(text)
+
+    // Track usage
+    monitor.addMessage({
+      role: 'user',
+      content: result.optimized.text
+    })
+
+    // Send to LLM
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        message: result.optimized.text,
+        model: result.routing?.selectedModel || 'gpt-4',
+      }),
+    })
+
+    const data = await response.json()
+    monitor.addMessage({ role: 'assistant', content: data.text })
+
+    return data
+  }
+
+  return (
+    <div>
+      <TokenOptimizationPanel stats={stats} />
+
+      <div>
+        Budget: {monitor.currentUsage} / {monitor.budget} tokens
+        ({(monitor.currentUsage / monitor.budget * 100).toFixed(1)}%)
+      </div>
+
+      {/* Your chat UI */}
+    </div>
+  )
+}
+```
+
+## 📚 Next Steps
+
+- Explore individual hook documentation for detailed API references
+- Check out component stories for visual examples
+- Read about advanced optimization strategies
+- Learn about provider-specific features
+
+## 🆘 Need Help?
+
+- Review the hook documentation pages
+- Check component stories for live examples
+- Read the API reference
+- File an issue on GitHub
+
+## 🎨 Design System
+
+All components use our premium glassmorphism design with:
+
+- **OKLCH color space** for perceptually uniform gradients
+- **Subtle pastel backgrounds** (40-80% opacity variants)
+- **Backdrop blur** and saturation effects
+- **Animated gradients** and glow effects
+- **Full dark mode support**
+- **WCAG AA accessibility compliance**
+
+Components automatically adapt to your app's theme and respect user preferences (reduced motion, high contrast).

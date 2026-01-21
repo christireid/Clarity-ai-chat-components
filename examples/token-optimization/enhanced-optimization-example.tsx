@@ -12,8 +12,8 @@
 import React from 'react'
 // 📚 IMPORT PATTERN:
 // All @clarity-chat/react exports come from the main package entry point.
-// The hook useTokenOptimizationEnhanced is exported directly from @clarity-chat/react
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+// The hook useTokenOptimization is exported directly from @clarity-chat/react
+import { useTokenOptimization } from '@clarity-chat/react'
 
 // 💡 Type definitions for the optimization results
 // These interfaces document the shape of different optimization result types
@@ -96,7 +96,7 @@ export function EnhancedOptimizationExample() {
     calculateCost,
     stats,
     resetStats,
-  } = useTokenOptimizationEnhanced({
+  } = useTokenOptimization({
     model: 'claude-3-5-sonnet',
     enableToon: true,
     enablePromptCaching: true,
