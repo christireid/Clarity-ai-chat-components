@@ -15,7 +15,7 @@ import {
   useSyncManager,
   SyncResult,
 } from '../../utils/sync-manager'
-import type { Message, CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import type { Message } from '../../hooks/chat/use-chat-enhanced'
 
 // Convert messages to syncable format
 function messagesToSyncable(messages: Message[], conversationId: string): SyncableData {
