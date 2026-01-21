@@ -349,7 +349,6 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
       { title: 'useAssistant', href: '/reference/hooks/use-assistant' },
       { title: 'useCompletion', href: '/reference/hooks/use-completion' },
-      { title: 'useChat', href: '/reference/hooks/use-chat' },
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
       {
