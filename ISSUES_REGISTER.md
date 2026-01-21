@@ -301,57 +301,58 @@ of ongoing development.
 
 ### ISSUE-015: TypeScript Errors from Main Branch Merge
 
-**Severity:** HIGH - Build blocker
+**Severity:** HIGH - Build blocker **Progress:** ~99 errors remaining (down from ~200)
 
-**Description:** After merging main branch, several TypeScript errors remain:
+**Description:** After merging main branch, TypeScript errors were introduced.
 
-**Missing Icon Exports:**
+**FIXED Items:**
 
-- QueueListIcon, ExclamationTriangleIcon, XMarkIcon, SyncIcon
-- WifiIcon, WifiSlashIcon, ArrowPathIcon, EyeIcon, EyeSlashIcon
+- ✅ Missing icon exports (SortIcon, StarIcon, ShareIcon, UploadIcon, PlusIcon, etc.) - Added to
+  icons.tsx
+- ✅ Missing UI components (Switch, Label, Separator) - Created re-exports from primitives
+- ✅ `setMessages` missing from RateLimitedChatReturn - Added to interface and return
+- ✅ `onDeleteMessage`, `onEditMessage`, `onRegenerateMessage` undefined - Fixed to use
+  processedProps
+- ✅ monaco-editor types - Created type declaration file
+- ✅ clarity-chat.tsx callback mismatches - Fixed callback references
+- ✅ React UMD global errors - Added imports to utility files
+- ✅ toast.tsx type exports - Recreated from JS with proper TypeScript
+- ✅ use-chat-unified types - Recreated from JS with proper TypeScript
+- ✅ utils/cn import path issues - Fixed to use @clarity-chat/primitives
+- ✅ Animation duration constants - Added `durations` to affected files
+- ✅ Duplicate exports in public-api.ts and internal.ts - Removed or consolidated
+- ✅ Security exports - Updated to match actual exports from security.tsx
+- ✅ Button 'outline' variant - Added to Button component
+- ✅ Override modifiers - Added to error-boundary.tsx class methods
 
-**Missing UI Components:**
+**Remaining Issues (~99 errors):**
 
-- Switch, Label components (`../ui/switch`, `../ui/label`)
-- AvatarImage, AvatarFallback, Select, SelectContent from primitives
-
-**API Mismatches:**
-
-- `setMessages` missing from UseClarityChatReturn/RateLimitedChatReturn
-- `onDeleteMessage`, `onEditMessage`, `onRegenerateMessage` undefined
-
-**Other:**
-
-- monaco-editor types missing
-- virtualized-message-list scrollToOffset method
-- clarity-chat.tsx callback mismatches
-
-**Partial Fix Applied:** Fixed utility files (sync-manager.ts, security.tsx, quick-start.tsx,
-setup-wizard.tsx, testing-helpers.tsx, visual-regression.ts, performance-monitoring.tsx)
-
-**Remaining Work:** Requires investigation of component/hook interface changes in main branch.
+- Type mismatches in prompt-library.tsx (actions, comments)
+- CoreMessage property issues (timestamp, metadata)
+- Various overload and generic type mismatches
+- Some duplicate export warnings in internal.ts
 
 ---
 
 ## Resolution Progress
 
-| Issue ID  | Status     | Assigned | Fixed In                                        |
-| --------- | ---------- | -------- | ----------------------------------------------- |
-| ISSUE-001 | FIXED      | Audit    | Built @clarity-chat/token-optimization          |
-| ISSUE-002 | FIXED      | Audit    | packages/react/src/hooks.ts - explicit exports  |
-| ISSUE-003 | FIXED      | Audit    | packages/react/src/types/gpt-tokenizer.d.ts     |
-| ISSUE-004 | FIXED      | Audit    | packages/react/src/types/prismjs.d.ts           |
-| ISSUE-005 | FIXED      | Audit    | Deleted 81 orphaned hook documentation files    |
-| ISSUE-006 | FIXED      | Audit    | apps/docs/content/hooks/use-chat.mdx rewritten  |
-| ISSUE-007 | FIXED      | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx    |
-| ISSUE-008 | FIXED      | Audit    | Added deprecation notice to use-chat.mdx        |
-| ISSUE-009 | FIXED      | Audit    | Fixed type in use-streaming.mdx                 |
-| ISSUE-010 | FIXED      | Audit    | Verified internal exports, removed orphan docs  |
-| ISSUE-011 | DOCUMENTED | Audit    | Good coverage (181 tests), gaps tracked         |
-| ISSUE-012 | FIXED      | Audit    | Updated imports to @clarity-chat/react/internal |
-| ISSUE-013 | VERIFIED   | Audit    | Comprehensive a11y system already in place      |
-| ISSUE-014 | VERIFIED   | Audit    | Comprehensive perf system already in place      |
-| ISSUE-015 | PARTIAL    | Audit    | Utility files fixed, component issues remain    |
+| Issue ID  | Status     | Assigned | Fixed In                                           |
+| --------- | ---------- | -------- | -------------------------------------------------- |
+| ISSUE-001 | FIXED      | Audit    | Built @clarity-chat/token-optimization             |
+| ISSUE-002 | FIXED      | Audit    | packages/react/src/hooks.ts - explicit exports     |
+| ISSUE-003 | FIXED      | Audit    | packages/react/src/types/gpt-tokenizer.d.ts        |
+| ISSUE-004 | FIXED      | Audit    | packages/react/src/types/prismjs.d.ts              |
+| ISSUE-005 | FIXED      | Audit    | Deleted 81 orphaned hook documentation files       |
+| ISSUE-006 | FIXED      | Audit    | apps/docs/content/hooks/use-chat.mdx rewritten     |
+| ISSUE-007 | FIXED      | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx       |
+| ISSUE-008 | FIXED      | Audit    | Added deprecation notice to use-chat.mdx           |
+| ISSUE-009 | FIXED      | Audit    | Fixed type in use-streaming.mdx                    |
+| ISSUE-010 | FIXED      | Audit    | Verified internal exports, removed orphan docs     |
+| ISSUE-011 | DOCUMENTED | Audit    | Good coverage (181 tests), gaps tracked            |
+| ISSUE-012 | FIXED      | Audit    | Updated imports to @clarity-chat/react/internal    |
+| ISSUE-013 | VERIFIED   | Audit    | Comprehensive a11y system already in place         |
+| ISSUE-014 | VERIFIED   | Audit    | Comprehensive perf system already in place         |
+| ISSUE-015 | PROGRESS   | Audit    | Major fixes applied, ~99 errors remain (50% fixed) |
 
 ---
 
