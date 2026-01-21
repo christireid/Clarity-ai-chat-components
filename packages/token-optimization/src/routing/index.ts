@@ -12,10 +12,28 @@ export type {
 } from './simple-router'
 
 export { IntelligentRoutingSystem } from './intelligent-routing'
-export type { 
+export type {
   IntelligentRoutingConfig,
   ModelProfile,
   RoutingDecision as IntelligentRoutingDecision,
   RoutingRequest as IntelligentRoutingRequest,
   RoutingContext
 } from './intelligent-routing'
+
+// Cascading Router with Quality Assessment
+export {
+  CascadingRouter,
+  HeuristicQualityAssessor,
+  createOpenAICascadingRouter,
+  createAnthropicCascadingRouter,
+} from './cascading-router'
+export type {
+  QualityAssessment,
+  LLMQualityAssessor,
+  HeuristicQualityConfig,
+  ModelTier,
+  CascadingRouterConfig,
+  CascadeAttempt,
+  CascadingResult,
+  CascadeStats,
+} from './cascading-router'
