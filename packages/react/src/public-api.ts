@@ -487,6 +487,16 @@ export {
   LazyLoadPerformanceMonitor,
 } from './utils/lazy-loading.tsx'
 
+// Migration Helpers - Smooth API transitions
+export {
+  migrateToV1,
+  createMigrationWrapper,
+  MigrationPresets,
+  applyMigration,
+  validateMigration,
+  MigrationUtils,
+} from './utils/migration-helpers.tsx'
+
 // IntelliSense Helpers - Enhanced TypeScript DX
 export type {
   ChatApiConfig,
@@ -579,6 +589,19 @@ export {
   vi,
   Mock,
 } from './utils/testing-helpers'
+
+// Migration Helpers - Easy migration from other libraries
+export {
+  VercelAdapter,
+  OpenAIAdapter,
+  ChatbotKitAdapter,
+  CustomAdapter,
+  MigrationTracker,
+  MigrationAnalyzer,
+  MigrationPresets,
+  generateMigrationReport,
+  migrateQuick,
+} from './utils/migration-helpers'
 
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
