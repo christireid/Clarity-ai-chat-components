@@ -70,3 +70,69 @@ export type {
   TokenCostEstimate,
   ModelName, // Backward compatibility alias
 } from './use-token-budget-monitor'
+
+// ============================================================================
+// Enhanced Hooks (Week 3) - Production-ready optimization hooks
+// ============================================================================
+
+// Context window management with conversation memory strategies
+export {
+  useContextWindow,
+  useContextWindowStatus,
+} from './use-context-window'
+export type {
+  UseContextWindowConfig,
+  UseContextWindowReturn,
+  ContextWindowStrategy,
+  ContextWindowStatus,
+} from './use-context-window'
+
+// Quality-based routing with cascading model selection
+export {
+  useQualityRouter,
+  useQualityRouterMetrics,
+} from './use-quality-router'
+export type {
+  UseQualityRouterConfig,
+  UseQualityRouterReturn,
+  GenerateFunction,
+  RouterProvider,
+  QualityRouterMetrics,
+  UseOptimizedChatConfig,
+  UseOptimizedChatReturn,
+  ConversationMessage,
+} from './use-quality-router'
+
+// Real-time cache performance monitoring
+export {
+  useCacheStats,
+  useCacheComparison,
+  getPerformanceColor,
+} from './use-cache-stats'
+export type {
+  UseCacheStatsConfig,
+  UseCacheStatsReturn,
+  CacheStatistics,
+  CachePerformanceMetrics,
+  CacheComparison,
+} from './use-cache-stats'
+
+// Cost estimation, tracking, and budget monitoring
+export {
+  useEstimateCost,
+  useCumulativeCost,
+  useBudgetAlerts,
+  MODEL_PRICING_PRESETS,
+} from './use-estimate-cost'
+export type {
+  UseEstimateCostConfig,
+  UseEstimateCostReturn,
+  ModelPricing,
+  CostEstimate,
+  CostBreakdown,
+  CostHistoryEntry,
+  UseCumulativeCostReturn,
+  BudgetAlert,
+  UseBudgetAlertsConfig,
+  UseBudgetAlertsReturn,
+} from './use-estimate-cost'
