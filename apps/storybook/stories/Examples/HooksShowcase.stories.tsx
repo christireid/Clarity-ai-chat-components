@@ -10,7 +10,7 @@ import {
   usePrevious,
   useClipboard,
   useMounted,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {

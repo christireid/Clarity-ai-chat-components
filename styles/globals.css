@@ -38,6 +38,28 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.03);
     --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.04);
     --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
+
+    /* Glass effect variables */
+    --glass-bg-opacity: 0.6;
+    --glass-blur: 12px;
+    --glass-saturate: 150%;
+    --glass-border-opacity: 0.2;
+
+    /* Animated gradient properties */
+    --gradient-angle: 135deg;
+    --gradient-animation-speed: 8s;
+
+    /* Pastel gradient colors (OKLCH format) */
+    --pastel-blue-start: oklch(95% 0.02 240);
+    --pastel-blue-end: oklch(97% 0.015 260);
+    --pastel-purple-start: oklch(95% 0.025 280);
+    --pastel-purple-end: oklch(97% 0.02 300);
+    --pastel-pink-start: oklch(96% 0.03 350);
+    --pastel-pink-end: oklch(98% 0.02 340);
+    --pastel-green-start: oklch(95% 0.03 160);
+    --pastel-green-end: oklch(97% 0.02 140);
+    --pastel-amber-start: oklch(96% 0.04 80);
+    --pastel-amber-end: oklch(98% 0.025 70);
   }
 
   .dark {
@@ -74,6 +96,24 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
     --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
+
+    /* Dark mode glass effect variables */
+    --glass-bg-opacity: 0.6;
+    --glass-blur: 16px;
+    --glass-saturate: 150%;
+    --glass-border-opacity: 0.2;
+
+    /* Dark mode pastel gradient colors (OKLCH format) */
+    --pastel-blue-start: oklch(18% 0.04 240);
+    --pastel-blue-end: oklch(20% 0.035 260);
+    --pastel-purple-start: oklch(18% 0.045 280);
+    --pastel-purple-end: oklch(20% 0.04 300);
+    --pastel-pink-start: oklch(19% 0.05 350);
+    --pastel-pink-end: oklch(21% 0.04 340);
+    --pastel-green-start: oklch(18% 0.05 160);
+    --pastel-green-end: oklch(20% 0.04 140);
+    --pastel-amber-start: oklch(19% 0.06 80);
+    --pastel-amber-end: oklch(21% 0.045 70);
   }
 }
 
@@ -87,6 +127,61 @@
     font-smooth: always;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* =========================================================================
+   GLASSMORPHISM UTILITIES
+   Premium glass effects with animated gradients
+   ========================================================================= */
+
+@layer utilities {
+  .glass-panel {
+    background: linear-gradient(
+      var(--gradient-angle),
+      oklch(from var(--background) l c h / var(--glass-bg-opacity)) 0%,
+      oklch(from var(--card) l c h / calc(var(--glass-bg-opacity) - 0.1)) 100%
+    );
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid oklch(from var(--border) l c h / var(--glass-border-opacity));
+    background-size: 200% 200%;
+  }
+
+  .glass-animated {
+    animation: gradient-shift var(--gradient-animation-speed) ease infinite;
+  }
+
+  .glass-glow {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  .glass-subtle {
+    --glass-bg-opacity: 0.4;
+    --glass-blur: 8px;
+  }
+
+  .glass-strong {
+    --glass-bg-opacity: 0.8;
+    --glass-blur: 20px;
+  }
+}
+
+/* Accessibility - High contrast mode */
+@media (prefers-contrast: high) {
+  .glass-panel {
+    backdrop-filter: none;
+    background: var(--card) !important;
+    border: 2px solid var(--border) !important;
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .glass-panel,
+  .glass-animated,
+  .glass-glow {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

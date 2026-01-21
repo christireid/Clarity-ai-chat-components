@@ -13,7 +13,7 @@
  *
  * @example
  * ```typescript
- * import { HTMLOptimizer, htmlToText, htmlToMarkdown } from '@clarity-ai/token-optimization'
+ * import { HTMLOptimizer, htmlToText, htmlToMarkdown } from '@clarity-chat/token-optimization'
  *
  * // Quick usage with convenience functions
  * const plainText = htmlToText('<h1>Hello</h1><p>World</p>')
@@ -533,7 +533,7 @@ export class HTMLOptimizer {
  *
  * @example
  * ```typescript
- * import { htmlToText } from '@clarity-ai/token-optimization'
+ * import { htmlToText } from '@clarity-chat/token-optimization'
  *
  * const text = htmlToText('<h1>Hello</h1><p>World</p>')
  * // Result: 'Hello\n\nWorld'
@@ -564,7 +564,7 @@ export function htmlToText(html: string): string {
  *
  * @example
  * ```typescript
- * import { htmlToMarkdown } from '@clarity-ai/token-optimization'
+ * import { htmlToMarkdown } from '@clarity-chat/token-optimization'
  *
  * const markdown = htmlToMarkdown('<h1>Hello</h1><p><strong>World</strong></p>')
  * // Result: '# Hello\n\n**World**'

@@ -2168,7 +2168,7 @@ export const searchData: SearchItem[] = [
     category: 'reference',
   },
   {
-    title: 'useTokenOptimizationEnhanced',
+    title: 'useTokenOptimization',
     type: 'hook',
     href: '/reference/hooks/use-token-optimization-enhanced',
     description: '',

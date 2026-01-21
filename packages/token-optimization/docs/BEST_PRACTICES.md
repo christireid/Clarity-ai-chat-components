@@ -132,7 +132,7 @@ const counter = new AccurateTokenCounter({
 ### 4. Use Presets for Common Scenarios
 
 ```typescript
-import { createOptimizer, PRESETS } from '@clarity-chat/token-optimization'
+import { createOptimizer } from '@clarity-chat/token-optimization'
 
 // Development: Fast, minimal resources
 const dev = createOptimizer({ preset: 'minimal' })

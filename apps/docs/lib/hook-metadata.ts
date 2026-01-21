@@ -125,7 +125,7 @@ export const hookMetadata: HookMetadata[] = [
     tags: ['chat', 'performance', 'optimization', 'enterprise'],
     importStatement: "import { useChatOptimized } from '@clarity-chat/react'",
     useCases: ['High-performance chat', 'Complex dashboards', 'Enterprise apps'],
-    relatedHooks: ['useClarityChat', 'useTokenOptimizationEnhanced'],
+    relatedHooks: ['useClarityChat', 'useTokenOptimization'],
   },
 
   // Memory Hooks
@@ -336,16 +336,16 @@ export const hookMetadata: HookMetadata[] = [
     tags: ['tokens', 'analytics', 'monitoring', 'costs'],
     importStatement: "import { useTokenTracker } from '@clarity-chat/react'",
     useCases: ['Cost monitoring', 'Context window tracking'],
-    relatedHooks: ['useTokenOptimizationEnhanced'],
+    relatedHooks: ['useTokenOptimization'],
   },
   {
-    name: 'useTokenOptimizationEnhanced',
+    name: 'useTokenOptimization',
     href: '/reference/hooks/use-token-optimization-enhanced',
     description: 'Advanced token management and compression',
     signature: '(options) => TokenOptimizationReturn',
     category: 'performance',
     tags: ['tokens', 'optimization', 'compression', 'enterprise'],
-    importStatement: "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
+    importStatement: "import { useTokenOptimization } from '@clarity-chat/react'",
     useCases: ['Context compression', 'Budget management'],
     relatedHooks: ['useTokenTracker', 'useChatOptimized'],
   },

@@ -6,11 +6,9 @@
  */
 
 import * as React from 'react'
-import {
-  useTokenOptimization,
-  type TokenOptimizationStats,
-} from '../../hooks/token/use-token-optimization'
+import type { TokenOptimizationStats } from '../../hooks/clarity-tokens/use-token-optimization-stats'
 import { cn } from '@clarity-chat/primitives'
+import { glassVariants, getSemanticGradient } from '@clarity-chat/primitives/glass-variants'
 
 export interface TokenOptimizationPanelProps {
   /** Statistics to display */
@@ -85,13 +83,19 @@ export function TokenOptimizationPanel({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border/60 bg-card p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        glassVariants({
+          intensity: 'strong',
+          gradient: getSemanticGradient('premium'),
+          border: 'medium',
+          animated: 'gradient',
+        }),
+        'rounded-xl p-6',
         sizeClasses[size],
         className
       )}
     >
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-semibold">Token Optimization</h3>
+        <h3 className="font-semibold text-lg">Token Optimization</h3>
         <div className="flex items-center gap-2">
           <span className="text-success font-medium">
             {formatNumber(stats.tokensSaved)} tokens saved
@@ -104,9 +108,20 @@ export function TokenOptimizationPanel({
         </div>
       </div>
 
-      {/* Main stats */}
+      {/* Main stats with individual glass cards */}
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
+        {/* Tokens Saved - Green gradient for success */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('success'),
+              border: 'light',
+              hover: 'glow',
+            }),
+            'rounded-lg p-4'
+          )}
+        >
           <div className="text-muted-foreground text-xs">Tokens Saved</div>
           <div className="text-lg font-semibold text-success">
             {formatNumber(stats.tokensSaved)}
@@ -116,8 +131,19 @@ export function TokenOptimizationPanel({
           </div>
         </div>
 
+        {/* Cache Stats - Amber gradient for cache/warning */}
         {showCacheStats && (
-          <div>
+          <div
+            className={cn(
+              glassVariants({
+                intensity: 'medium',
+                gradient: getSemanticGradient('warning'),
+                border: 'light',
+                hover: 'glow',
+              }),
+              'rounded-lg p-4'
+            )}
+          >
             <div className="text-muted-foreground text-xs">Cache Hit Rate</div>
             <div className="text-lg font-semibold">
               {cacheHitRate.toFixed(1)}%

@@ -1,20 +1,45 @@
 import * as React from 'react'
 
 import { cn } from '../../lib/cn'
+import { glassVariants, type GlassVariants } from '../../lib/glass-variants'
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      'rounded-lg border bg-card text-card-foreground shadow-sm',
-      className
-    )}
-    {...props}
-  />
-))
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    Partial<GlassVariants> {
+  /**
+   * Enable glassmorphism effect
+   * When true, applies frosted glass appearance with backdrop blur
+   * @default false
+   */
+  glass?: boolean
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  (
+    {
+      className,
+      glass = false,
+      intensity,
+      gradient,
+      border,
+      animated,
+      hover,
+      ...props
+    },
+    ref
+  ) => (
+    <div
+      ref={ref}
+      className={cn(
+        glass
+          ? glassVariants({ intensity, gradient, border, animated, hover })
+          : 'rounded-lg border bg-card text-card-foreground shadow-sm',
+        className
+      )}
+      {...props}
+    />
+  )
+)
 Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<

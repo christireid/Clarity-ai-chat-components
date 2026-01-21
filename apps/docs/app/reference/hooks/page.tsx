@@ -301,10 +301,10 @@ export default function HooksPage() {
             </div>
           </div>
 
-          {/* useTokenOptimizationEnhanced */}
+          {/* useTokenOptimization */}
           <div>
             <h3 className="text-2xl font-semibold mb-4">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </h3>
             <p className="text-text-secondary mb-6">
               Comprehensive token optimization with TOON, prompt caching,

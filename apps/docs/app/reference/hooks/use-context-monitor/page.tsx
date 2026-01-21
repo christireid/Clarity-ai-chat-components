@@ -305,7 +305,7 @@ function Breakdown({ messages }: { messages: Message[] }) {
           </li>
           <li>
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             - Token optimization
           </li>

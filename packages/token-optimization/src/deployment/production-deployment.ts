@@ -138,6 +138,7 @@ export interface AlertConfig {
  */
 export class ProductionDeploymentManager {
   private config: ProductionConfig
+  private logger: Logger
   private metricsCollector: MetricsCollector
   private alertManager: AlertManager
   private healthChecker: HealthChecker
@@ -145,6 +146,12 @@ export class ProductionDeploymentManager {
 
   constructor(config: ProductionConfig) {
     this.config = config
+    this.logger = new Logger({
+      logLevel: config.monitoring.logLevel,
+      structuredLogging: true,
+      metricsEnabled: config.monitoring.enablePrometheus,
+      tracingEnabled: config.monitoring.enableJaeger,
+    })
     this.metricsCollector = new MetricsCollector(config.monitoring)
     this.alertManager = new AlertManager(config.alerting)
     this.healthChecker = new HealthChecker(config.monitoring)
@@ -156,7 +163,7 @@ export class ProductionDeploymentManager {
    */
   async deploy(): Promise<DeploymentResult> {
     try {
-      console.log('🚀 Starting production deployment...')
+      this.logger.info('Starting production deployment')
 
       // Pre-deployment checks
       await this.runPreDeploymentChecks()
@@ -173,7 +180,7 @@ export class ProductionDeploymentManager {
       // Start monitoring
       await this.startMonitoring()
 
-      console.log('✅ Production deployment completed successfully')
+      this.logger.info('Production deployment completed successfully')
 
       return {
         success: true,
@@ -182,7 +189,7 @@ export class ProductionDeploymentManager {
         metrics: await this.getDeploymentMetrics(),
       }
     } catch (error) {
-      console.error('❌ Production deployment failed:', error)
+      this.logger.error('Production deployment failed', { error })
 
       // Rollback on failure
       await this.rollback()
@@ -200,7 +207,7 @@ export class ProductionDeploymentManager {
    * Run pre-deployment checks
    */
   private async runPreDeploymentChecks(): Promise<void> {
-    console.log('🔍 Running pre-deployment checks...')
+    this.logger.info('🔍 Running pre-deployment checks...')
 
     // Check resource availability
     await this.checkResourceAvailability()
@@ -211,14 +218,14 @@ export class ProductionDeploymentManager {
     // Check dependencies
     await this.checkDependencies()
 
-    console.log('✅ Pre-deployment checks passed')
+    this.logger.info('✅ Pre-deployment checks passed')
   }
 
   /**
    * Deploy infrastructure components
    */
   private async deployInfrastructure(): Promise<void> {
-    console.log('🏗️ Deploying infrastructure...')
+    this.logger.info('🏗️ Deploying infrastructure...')
 
     // Deploy Kubernetes cluster
     await this.deployKubernetesCluster()
@@ -232,14 +239,14 @@ export class ProductionDeploymentManager {
     // Deploy monitoring infrastructure
     await this.deployMonitoringInfrastructure()
 
-    console.log('✅ Infrastructure deployed')
+    this.logger.info('✅ Infrastructure deployed')
   }
 
   /**
    * Deploy application components
    */
   private async deployApplication(): Promise<void> {
-    console.log('📦 Deploying application...')
+    this.logger.info('📦 Deploying application...')
 
     // Build and push Docker images
     await this.buildAndPushImages()
@@ -253,14 +260,14 @@ export class ProductionDeploymentManager {
     // Setup SSL/TLS
     await this.setupSSL()
 
-    console.log('✅ Application deployed')
+    this.logger.info('✅ Application deployed')
   }
 
   /**
    * Run post-deployment validation
    */
   private async runPostDeploymentValidation(): Promise<void> {
-    console.log('🧪 Running post-deployment validation...')
+    this.logger.info('🧪 Running post-deployment validation...')
 
     // Health checks
     await this.healthChecker.runHealthChecks()
@@ -274,14 +281,14 @@ export class ProductionDeploymentManager {
     // Integration tests
     await this.runIntegrationTests()
 
-    console.log('✅ Post-deployment validation passed')
+    this.logger.info('✅ Post-deployment validation passed')
   }
 
   /**
    * Start monitoring and alerting
    */
   private async startMonitoring(): Promise<void> {
-    console.log('📊 Starting monitoring and alerting...')
+    this.logger.info('📊 Starting monitoring and alerting...')
 
     // Start metrics collection
     this.metricsCollector.start()
@@ -292,14 +299,14 @@ export class ProductionDeploymentManager {
     // Start performance monitoring
     this.performanceMonitor.start()
 
-    console.log('✅ Monitoring and alerting started')
+    this.logger.info('✅ Monitoring and alerting started')
   }
 
   /**
    * Rollback deployment on failure
    */
   private async rollback(): Promise<void> {
-    console.log('🔄 Rolling back deployment...')
+    this.logger.info('🔄 Rolling back deployment...')
 
     try {
       // Stop new instances
@@ -311,9 +318,9 @@ export class ProductionDeploymentManager {
       // Verify rollback
       await this.verifyRollback()
 
-      console.log('✅ Rollback completed')
+      this.logger.info('✅ Rollback completed')
     } catch (rollbackError) {
-      console.error('❌ Rollback failed:', rollbackError)
+      this.logger.error('❌ Rollback failed:', rollbackError)
       throw rollbackError
     }
   }
@@ -353,7 +360,7 @@ export class ProductionDeploymentManager {
   // Helper methods for deployment steps
   private async checkResourceAvailability(): Promise<void> {
     // Implementation would check cluster resources
-    console.log('Checking resource availability...')
+    this.logger.info('Checking resource availability...')
   }
 
   private validateConfiguration(): void {
@@ -378,76 +385,76 @@ export class ProductionDeploymentManager {
 
   private async checkDependencies(): Promise<void> {
     // Check external dependencies
-    console.log('Checking dependencies...')
+    this.logger.info('Checking dependencies...')
   }
 
   private async deployKubernetesCluster(): Promise<void> {
-    console.log('Deploying Kubernetes cluster...')
+    this.logger.info('Deploying Kubernetes cluster...')
     // Implementation would deploy K8s cluster
   }
 
   private async deployLoadBalancers(): Promise<void> {
-    console.log('Deploying load balancers...')
+    this.logger.info('Deploying load balancers...')
     // Implementation would deploy load balancers
   }
 
   private async deployDatabases(): Promise<void> {
-    console.log('Deploying databases...')
+    this.logger.info('Deploying databases...')
     // Implementation would deploy databases
   }
 
   private async deployMonitoringInfrastructure(): Promise<void> {
-    console.log('Deploying monitoring infrastructure...')
+    this.logger.info('Deploying monitoring infrastructure...')
     // Implementation would deploy Prometheus, Grafana, etc.
   }
 
   private async buildAndPushImages(): Promise<void> {
-    console.log('Building and pushing Docker images...')
+    this.logger.info('Building and pushing Docker images...')
     // Implementation would build and push images
   }
 
   private async deployToKubernetes(): Promise<void> {
-    console.log('Deploying to Kubernetes...')
+    this.logger.info('Deploying to Kubernetes...')
     // Implementation would deploy K8s manifests
   }
 
   private async configureIngress(): Promise<void> {
-    console.log('Configuring ingress...')
+    this.logger.info('Configuring ingress...')
     // Implementation would configure ingress
   }
 
   private async setupSSL(): Promise<void> {
-    console.log('Setting up SSL/TLS...')
+    this.logger.info('Setting up SSL/TLS...')
     // Implementation would setup SSL certificates
   }
 
   private async runPerformanceTests(): Promise<void> {
-    console.log('Running performance tests...')
+    this.logger.info('Running performance tests...')
     // Implementation would run performance tests
   }
 
   private async runSecurityTests(): Promise<void> {
-    console.log('Running security tests...')
+    this.logger.info('Running security tests...')
     // Implementation would run security tests
   }
 
   private async runIntegrationTests(): Promise<void> {
-    console.log('Running integration tests...')
+    this.logger.info('Running integration tests...')
     // Implementation would run integration tests
   }
 
   private async stopNewInstances(): Promise<void> {
-    console.log('Stopping new instances...')
+    this.logger.info('Stopping new instances...')
     // Implementation would stop new instances
   }
 
   private async restorePreviousVersion(): Promise<void> {
-    console.log('Restoring previous version...')
+    this.logger.info('Restoring previous version...')
     // Implementation would restore previous version
   }
 
   private async verifyRollback(): Promise<void> {
-    console.log('Verifying rollback...')
+    this.logger.info('Verifying rollback...')
     // Implementation would verify rollback
   }
 }
@@ -459,7 +466,7 @@ class MetricsCollector {
   private metrics: MonitoringMetrics
   private collectionInterval: NodeJS.Timeout | null = null
 
-  constructor(private config: any) {
+  constructor(private config: ProductionConfig) {
     this.metrics = this.initializeMetrics()
   }
 
@@ -593,7 +600,7 @@ class MetricsCollector {
 class AlertManager {
   private alerts: AlertConfig[] = []
 
-  constructor(private config: any) {}
+  constructor(private config: ProductionConfig) {}
 
   async configureAlerts(): Promise<void> {
     // Configure alerting rules
@@ -635,7 +642,7 @@ class AlertManager {
   }
 
   sendAlert(alert: AlertConfig, _metrics: MonitoringMetrics): void {
-    console.log(`[ALERT] ${alert.name}: Threshold exceeded`)
+    this.logger.info(`[ALERT] ${alert.name}: Threshold exceeded`)
     // Implementation would send alerts through configured channels
   }
 }
@@ -644,10 +651,10 @@ class AlertManager {
  * Health checker for health monitoring
  */
 class HealthChecker {
-  constructor(private config: any) {}
+  constructor(private config: ProductionConfig) {}
 
   async runHealthChecks(): Promise<void> {
-    console.log('Running health checks...')
+    this.logger.info('Running health checks...')
 
     // Check application health
     await this.checkApplicationHealth()
@@ -658,22 +665,22 @@ class HealthChecker {
     // Check external dependencies
     await this.checkExternalDependencies()
 
-    console.log('Health checks completed')
+    this.logger.info('Health checks completed')
   }
 
   private async checkApplicationHealth(): Promise<void> {
     // Check if application is responding
-    console.log('Checking application health...')
+    this.logger.info('Checking application health...')
   }
 
   private async checkDatabaseHealth(): Promise<void> {
     // Check database connectivity
-    console.log('Checking database health...')
+    this.logger.info('Checking database health...')
   }
 
   private async checkExternalDependencies(): Promise<void> {
     // Check external service dependencies
-    console.log('Checking external dependencies...')
+    this.logger.info('Checking external dependencies...')
   }
 }
 
@@ -681,10 +688,10 @@ class HealthChecker {
  * Performance monitor for performance tracking
  */
 class PerformanceMonitor {
-  constructor(private config: any) {}
+  constructor(private config: ProductionConfig) {}
 
   start(): void {
-    console.log('Starting performance monitoring...')
+    this.logger.info('Starting performance monitoring...')
     // Implementation would start performance monitoring
   }
 }

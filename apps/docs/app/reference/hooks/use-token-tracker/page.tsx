@@ -740,7 +740,7 @@ function CompleteTrackerExample() {
         <ul>
           <li>
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             - Comprehensive token optimization
           </li>

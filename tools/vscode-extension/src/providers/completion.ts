@@ -291,7 +291,7 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
         kind: vscode.CompletionItemKind.Function,
       },
       {
-        name: 'useTokenOptimizationEnhanced',
+        name: 'useTokenOptimization',
         kind: vscode.CompletionItemKind.Function,
       },
       { name: 'useTokenCounter', kind: vscode.CompletionItemKind.Function },

@@ -131,17 +131,9 @@ export * from './hooks/streaming'
 export * from './hooks/resilience'
 
 /** Token hooks - budget monitoring, tracking, optimization */
-// Using explicit exports to avoid name collisions with ./hooks/clarity-tokens
-// which exports the same names (useTokenCounter, UseTokenCounterReturn, TokenEncoding)
+// Note: useTokenOptimization moved to ./hooks/clarity-tokens
+// Legacy hooks removed - use clarity-tokens for modern token optimization
 export {
-  useTokenOptimization,
-  type UseTokenOptimizationOptions,
-  type UseTokenOptimizationReturn,
-  type TokenOptimizationStats,
-  useTokenOptimizationEnhanced,
-  type EnhancedTokenOptimizationOptions,
-  type EnhancedOptimizationStats,
-  type EnhancedOptimizationResult,
   useTokenBudgetMonitor,
   getStatusColor,
   formatTokenUsage,

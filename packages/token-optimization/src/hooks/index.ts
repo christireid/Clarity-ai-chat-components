@@ -49,3 +49,24 @@ export type {
   UseTokenOptimizationReturn,
   TokenOptimizationPreset,
 } from './use-token-optimization'
+
+// Token budget monitoring (advanced usage tracking)
+export {
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  isValidBudgetMonitorModel,
+  estimateTokenCost,
+} from './use-token-budget-monitor'
+export type {
+  TokenUsageStatus,
+  TokenUsage,
+  TrimResult,
+  BudgetMessage,
+  TokenBudgetConfig,
+  TokenBudgetMonitorReturn,
+  BudgetMonitorModel,
+  TokenCostEstimate,
+  ModelName, // Backward compatibility alias
+} from './use-token-budget-monitor'

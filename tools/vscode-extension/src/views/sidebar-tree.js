@@ -251,7 +251,7 @@ const TREE_DATA = [
                         description: 'Track usage',
                     },
                     {
-                        label: 'useTokenOptimizationEnhanced',
+                        label: 'useTokenOptimization',
                         type: 'hook',
                         icon: 'symbol-method',
                         description: 'Optimize tokens',

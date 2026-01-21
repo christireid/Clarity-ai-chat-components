@@ -4,7 +4,7 @@
  * High-performance token counting using gpt-tokenizer with caching and monitoring.
  *
  * gpt-tokenizer is a pure JavaScript implementation that is:
- * - 20x smaller than tiktoken WASM (~200KB vs ~4MB)
+ * - 5-6x smaller than tiktoken (972KB vs 5.3MB for js-tiktoken)
  * - The fastest JS tokenizer available
  * - Supports all OpenAI models including o-series (o1, o3, o4), GPT-4o, GPT-4.1
  * - Used by Microsoft Teams AI, CodeRabbit, Elastic Kibana

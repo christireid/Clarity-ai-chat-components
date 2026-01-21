@@ -138,14 +138,14 @@ function ChatApp() {
         <CodePlayground
           initialCode={`import {
   useClarityChat,
-  useTokenOptimizationEnhanced,
+  useTokenOptimization,
   useBatteryAware,
   useOfflineChat,
 } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const chat = useClarityChat({ api: '/api/chat' })
-  const { optimizedMessages } = useTokenOptimizationEnhanced({
+  const { optimizedMessages } = useTokenOptimization({
     enableToon: true,
     enablePromptCaching: true,
   })

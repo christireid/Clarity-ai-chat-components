@@ -19,7 +19,7 @@ export default function UseTokenOptimizationPage() {
               href="/reference/hooks/use-token-optimization-enhanced"
               className="text-primary underline"
             >
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             instead.
           </p>
@@ -30,7 +30,7 @@ export default function UseTokenOptimizationPage() {
             <strong>Deprecated:</strong> This hook is deprecated and maintained
             for backward compatibility only. Please migrate to{' '}
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             which includes all features from this hook plus additional
             optimizations like TOON format, prompt caching, semantic caching,
@@ -42,7 +42,7 @@ export default function UseTokenOptimizationPage() {
           <h2 className="text-2xl font-semibold mb-3">Migration Guide</h2>
           <p className="mb-4">
             To migrate from <code>useTokenOptimization</code> to{' '}
-            <code>useTokenOptimizationEnhanced</code>:
+            <code>useTokenOptimization</code>:
           </p>
           <EnhancedCodeBlock
             code={`// Old (deprecated)
@@ -53,10 +53,10 @@ const { optimizePrompt } = useTokenOptimization({
 })
 
 // New (recommended)
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
-const { optimizePrompt } = useTokenOptimizationEnhanced({
-  preset: 'balanced', // or customize individual options
+const { optimizePrompt } = useTokenOptimization({
+  preset: 'standard', // Valid presets: minimal, standard, production, enterprise
   enablePromptCompression: true,
 })`}
             language="tsx"
@@ -86,7 +86,7 @@ const { optimizePrompt } = useTokenOptimizationEnhanced({
                 href="/reference/hooks/use-token-optimization-enhanced"
                 className="text-primary underline"
               >
-                useTokenOptimizationEnhanced
+                useTokenOptimization
               </a>{' '}
               – Recommended replacement with all features plus TOON, caching,
               compression, routing, and more
@@ -118,7 +118,7 @@ const { optimizePrompt } = useTokenOptimizationEnhanced({
             href: '/reference/hooks/use-token-tracker',
           }}
           next={{
-            title: 'useTokenOptimizationEnhanced',
+            title: 'useTokenOptimization',
             href: '/reference/hooks/use-token-optimization-enhanced',
           }}
         />

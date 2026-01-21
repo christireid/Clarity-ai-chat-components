@@ -623,7 +623,7 @@ export {
   PIIRedactor,
 
   // React hooks
-  useTokenCounter,
+  useTokenCount,
   useTokenBudget,
   useCostEstimator,
   useSemanticCache,
@@ -650,7 +650,7 @@ export {
 // Specific imports for tree-shaking
 import { TokenCounter } from '@clarity/token-optimization/tokenizers'
 import { SemanticCache } from '@clarity/token-optimization/caching'
-import { useTokenCounter } from '@clarity/token-optimization/react'
+import { useTokenCount } from '@clarity/token-optimization/react'
 import { SecurityManager } from '@clarity/token-optimization/security'
 ```
 

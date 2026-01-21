@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useErrorRecovery } from '@clarity-chat/react/internal'
+import { useErrorRecovery } from '@clarity-chat/react'
 
 const meta = {
   title: 'Hooks/Utilities/UseErrorRecovery',

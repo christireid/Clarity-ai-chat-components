@@ -47,6 +47,18 @@ export interface CompressionEstimate {
 }
 
 /**
+ * Content analysis result
+ */
+export interface ContentAnalysis {
+  contentType: ContentType
+  complexity: number
+  structureScore: number
+  length: number
+  sentenceCount: number
+  paragraphCount: number
+}
+
+/**
  * Adaptive compression configuration
  */
 export interface CompressionConfig {
@@ -68,14 +80,7 @@ class ContentAnalyzer {
     this.counter = new AdvancedTokenCounter()
   }
 
-  analyze(text: string): {
-    contentType: ContentType
-    complexity: number
-    structureScore: number
-    length: number
-    sentenceCount: number
-    paragraphCount: number
-  } {
+  analyze(text: string): ContentAnalysis {
     const contentType = this.detectContentType(text)
     const length = text.length
     const sentenceCount = text.split(/[.!?]+/).length
@@ -583,7 +588,7 @@ export class AdaptiveStrategy implements CompressionStrategy {
   }
 
   private selectStrategy(
-    analysis: any,
+    analysis: ContentAnalysis,
     targetRatio: number
   ): CompressionStrategy {
     const { contentType, complexity, structureScore, length } = analysis

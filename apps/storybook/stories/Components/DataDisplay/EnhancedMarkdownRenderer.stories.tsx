@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EnhancedMarkdownRenderer } from '@clarity-chat/react/internal'
+import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
 /**
  * **EnhancedMarkdownRenderer Component**

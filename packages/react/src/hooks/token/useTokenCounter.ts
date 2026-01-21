@@ -1,16 +1,29 @@
 /**
- * useTokenCounter - Lazy-loaded, model-aware token counting
+ * useTokenCounter - Model-aware token counting
+ *
+ * @deprecated This hook is deprecated in favor of useTokenCounter from clarity-tokens.
+ * It now uses @clarity-chat/token-optimization internally for better accuracy.
+ *
+ * Migration path:
+ * ```typescript
+ * // Old
+ * import { useTokenCounter } from '@clarity-chat/react/hooks/token'
+ *
+ * // New (recommended)
+ * import { useTokenCounter } from '@clarity-chat/react/hooks/clarity-tokens'
+ * ```
  *
  * Features:
- * - CDN-loaded encodings (zero bundle impact)
+ * - Accurate token counting using @clarity-chat/token-optimization
+ * - Model-aware encoding
  * - Cached encoder instances
- * - Sync fallback during loading
- * - Multiple encoding support
+ * - Backward compatible API
  */
 
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 // Types
 export type TokenEncoding = 'cl100k_base' | 'o200k_base'
@@ -37,13 +50,13 @@ export interface UseTokenCounterReturn {
   error: Error | null
 }
 
-// CDN URLs for encodings
-const ENCODING_CDN: Record<TokenEncoding, string> = {
-  cl100k_base: 'https://tiktoken.pages.dev/js/cl100k_base.json',
-  o200k_base: 'https://tiktoken.pages.dev/js/o200k_base.json',
+// Encoding to model mapping for token-optimization
+const ENCODING_TO_MODEL: Record<TokenEncoding, string> = {
+  cl100k_base: 'gpt-4',
+  o200k_base: 'gpt-4o',
 }
 
-// Model to encoding mapping
+// Model to encoding mapping (for backward compatibility)
 const MODEL_ENCODINGS: Record<string, TokenEncoding> = {
   'gpt-4o': 'o200k_base',
   'gpt-4o-mini': 'o200k_base',
@@ -57,36 +70,10 @@ const MODEL_ENCODINGS: Record<string, TokenEncoding> = {
 // Per-message overhead tokens
 const MESSAGE_OVERHEAD = 4
 
-// Encoder cache
-interface TiktokenEncoder {
-  encode: (text: string) => number[]
-  decode: (tokens: number[]) => string
-}
-
-const encoderCache = new Map<TokenEncoding, Promise<TiktokenEncoder>>()
-
-async function loadEncoder(encoding: TokenEncoding): Promise<TiktokenEncoder> {
-  const cached = encoderCache.get(encoding)
-  if (cached) return cached
-
-  const loadPromise = (async () => {
-    const { Tiktoken } = await import('js-tiktoken/lite')
-    const response = await fetch(ENCODING_CDN[encoding])
-
-    if (!response.ok) {
-      throw new Error(`Failed to load encoding: ${response.statusText}`)
-    }
-
-    const encodingData = await response.json()
-    return new Tiktoken(encodingData) as TiktokenEncoder
-  })()
-
-  encoderCache.set(encoding, loadPromise)
-  return loadPromise
-}
-
 /**
- * useTokenCounter - Lazy-loaded token counting with CDN-based encodings
+ * useTokenCounter - Token counting using @clarity-chat/token-optimization
+ *
+ * @deprecated Use useTokenCounter from clarity-tokens for better features
  */
 export function useTokenCounter(
   options: UseTokenCounterOptions = {}
@@ -97,43 +84,51 @@ export function useTokenCounter(
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const encoderRef = useRef<TiktokenEncoder | null>(null)
+  const counterRef = useRef<AccurateTokenCounter | null>(null)
 
-  // Load encoder on mount if preload is true
+  // Initialize encoder using token-optimization package
   useEffect(() => {
-    if (!preload) return
+    if (!preload) {
+      setIsReady(true) // Ready immediately if not preloading
+      return
+    }
 
     let cancelled = false
     setIsLoading(true)
     setError(null)
 
-    loadEncoder(encoding)
-      .then((encoder) => {
-        if (!cancelled) {
-          encoderRef.current = encoder
-          setIsReady(true)
-        }
+    try {
+      // Create AccurateTokenCounter with appropriate model
+      const model = ENCODING_TO_MODEL[encoding]
+      counterRef.current = new AccurateTokenCounter({
+        model,
+        enableCaching: true,
+        cacheSize: 1000,
       })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err : new Error(String(err)))
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      })
+
+      if (!cancelled) {
+        setIsReady(true)
+        setIsLoading(false)
+      }
+    } catch (err) {
+      if (!cancelled) {
+        setError(err instanceof Error ? err : new Error(String(err)))
+        setIsLoading(false)
+      }
+    }
 
     return () => {
       cancelled = true
+      if (counterRef.current) {
+        counterRef.current.destroy()
+      }
     }
   }, [encoding, preload])
 
-  // Count tokens in text
+  // Count tokens in text using token-optimization
   const countTokens = useCallback((text: string): number => {
-    if (encoderRef.current) {
-      return encoderRef.current.encode(text).length
+    if (counterRef.current) {
+      return counterRef.current.count(text)
     }
     // Fallback: rough estimate (4 chars per token average)
     return Math.ceil(text.length / 4)
@@ -142,6 +137,17 @@ export function useTokenCounter(
   // Count tokens in messages
   const countMessagesTokens = useCallback(
     (messages: Array<{ role: string; content: string }>): number => {
+      if (counterRef.current) {
+        // Use the built-in countChat method if available
+        return counterRef.current.countChat(
+          messages.map((msg) => ({
+            role: msg.role as 'user' | 'assistant' | 'system',
+            content: msg.content,
+          }))
+        )
+      }
+
+      // Fallback implementation
       const contentTokens = messages.reduce((sum, msg) => {
         return sum + countTokens(msg.content)
       }, 0)
@@ -181,7 +187,9 @@ export function getEncodingForModel(model: string): TokenEncoding {
 
 /**
  * Preload an encoding without using the hook
+ * @deprecated This function is no longer needed with AccurateTokenCounter
  */
 export function preloadEncoding(encoding: TokenEncoding): Promise<void> {
-  return loadEncoder(encoding).then(() => undefined)
+  // No-op: AccurateTokenCounter handles loading internally
+  return Promise.resolve()
 }

@@ -302,6 +302,16 @@ export type { UseMagneticOptions } from './hooks/use-magnetic'
 // Core utility - cn function for Tailwind class merging
 export { cn } from './lib/cn'
 
+// Glassmorphism variant system
+export {
+  glassVariants,
+  glassButtonVariants,
+  GRADIENT_SEMANTIC_MAP,
+  getSemanticGradient,
+  type GlassVariants,
+  type GlassButtonVariants,
+} from './lib/glass-variants'
+
 // Full utils module commented out due to Node.js type issues
 // export * from './lib/utils'
 

@@ -9,7 +9,7 @@ import {
   ContextMenu,
   ThemeSwitcher,
   useKeyboardShortcuts,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // ============================================================================
 // Command Palette Stories

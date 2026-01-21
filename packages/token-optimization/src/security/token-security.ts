@@ -8,6 +8,8 @@
  * @version 2.0.0
  */
 
+import { Logger } from '../observability/index.js'
+
 /**
  * Security Pattern Version Constant
  *
@@ -546,12 +548,18 @@ export const detectMixedScripts = (text: string): boolean => {
 
 export class TokenSecurityManager {
   private auditLog: SecurityEvent[] = []
+  private logger: Logger
 
   /** Interval ID for audit cleanup timer */
   private auditCleanupInterval: ReturnType<typeof setInterval> | null = null
 
   constructor(private config: SecurityConfig) {
-    // console.log("I AM ALIVE: TokenSecurityManager constructor")
+    this.logger = new Logger({
+      logLevel: 'info',
+      structuredLogging: true,
+      metricsEnabled: false,
+      tracingEnabled: false,
+    })
     this.setupAuditCleanup()
   }
 
@@ -581,7 +589,7 @@ export class TokenSecurityManager {
     try {
       return this.performSanitization(text)
     } catch (error: unknown) {
-      console.error('[SANITIZATION ERROR]:', error)
+      this.logger.error('Sanitization error occurred', { error })
 
       // Fail-safe: return original text with no threats detected
       return {
@@ -838,8 +846,8 @@ export class TokenSecurityManager {
       sessionId: event.sessionId,
     }
 
-    // In production, this would go to a secure audit system
-    console.log('[SECURITY AUDIT]', auditEntry)
+    // Security audit logged to observability system
+    this.logger.info('Security audit event', auditEntry)
   }
 
   /**
@@ -945,8 +953,8 @@ export class TokenSecurityManager {
   }
 
   private sendSecurityAlert(event: SecurityEvent): void {
-    // In production, this would send alerts to security team
-    console.warn('[SECURITY ALERT]', {
+    // Send alerts to security team via observability system
+    this.logger.warn('Security alert triggered', {
       type: event.type,
       riskLevel: event.riskLevel,
       timestamp: event.timestamp.toISOString(),

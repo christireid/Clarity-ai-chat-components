@@ -1,72 +1,11 @@
 /**
- * React Entry Point for Token Optimization
+ * React Components and Hooks for Token Optimization
  *
- * Import from '@clarity-chat/token-optimization/react' for React-specific features.
- * This keeps bundle size smaller for non-React users.
+ * This module exports React-specific functionality from the token-optimization package.
+ * All exports are tree-shakeable and optimized for client-side use.
  *
  * @module react
  */
 
-// React Hooks
-export {
-  // Simple hooks (recommended starting point)
-  useTokenCount,
-  // Full-featured hooks
-  useTieredCache,
-  useModelRouter,
-  useOptimizationPipeline,
-} from './hooks'
-
-export type {
-  // Simple hook types
-  UseTokenCountOptions,
-  UseTokenCountReturn,
-  // Full-featured hook types
-  UseTieredCacheConfig,
-  UseTieredCacheReturn,
-  UseModelRouterConfig,
-  UseModelRouterReturn,
-  OptimizationPipelineConfig,
-  PipelineResult,
-  PipelineStats,
-  UseOptimizationPipelineReturn,
-} from './hooks'
-
-// React Components
-export { TokenBudgetBar, useTokenBudget } from './components'
-
-export type {
-  BudgetStatus as TokenBudgetStatus,
-  TokenBudgetTheme,
-  TokenBudgetBarProps,
-  UseTokenBudgetConfig,
-  UseTokenBudgetReturn,
-} from './components'
-
-// Accessibility Hooks (React-specific)
-export {
-  useTokenAnnouncer,
-  useTokenKeyboardShortcuts,
-  usePrefersReducedMotion,
-  usePrefersHighContrast,
-  AccessibleTokenDisplay,
-  MemoizedAccessibleTokenDisplay,
-  useTokenDisplayState,
-} from './accessibility'
-
-export type {
-  TokenAnnouncerOptions,
-  UseTokenAnnouncerReturn,
-  KeyboardShortcutOptions,
-  ReducedMotionOptions,
-  AccessibleTokenDisplayProps,
-  TokenDisplayState,
-} from './accessibility'
-
-// Unified hook for simple usage
-export { useTokenOptimization } from './hooks/use-token-optimization'
-export type {
-  UseTokenOptimizationConfig,
-  UseTokenOptimizationReturn,
-  TokenOptimizationPreset,
-} from './hooks/use-token-optimization'
+// Re-export all React components and hooks
+export * from './react/index'

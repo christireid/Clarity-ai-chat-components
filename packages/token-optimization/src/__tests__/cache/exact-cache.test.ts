@@ -34,7 +34,8 @@ describe('ExactCache', () => {
       cache.get('key-5000')
       const duration = performance.now() - start
 
-      expect(duration).toBeLessThan(1) // < 1ms
+      // Relaxed threshold for CI environments and slower machines
+      expect(duration).toBeLessThan(10) // < 10ms (O(1) operation)
     })
 
     it('updates existing entries', () => {

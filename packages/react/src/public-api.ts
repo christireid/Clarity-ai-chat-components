@@ -559,3 +559,214 @@ export {
   type ChatEmptyStateProps,
   type ChatLoadingIndicatorProps,
 } from './primitives/chat'
+
+// ============================================================================
+// UNIFIED APP API (Modern, feature-complete)
+// ============================================================================
+
+export {
+  ClarityChatApp,
+  useClarityChatApp,
+  type ClarityChatAppProps,
+  type UseClarityChatAppReturn,
+} from './app-api'
+
+// ============================================================================
+// TOKEN OPTIMIZATION COMPONENTS (Advanced Analytics)
+// ============================================================================
+
+export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
+export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
+export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  // Note: TokenEstimate type intentionally omitted to avoid conflict with app-api/token-engine.ts
+  // Import directly from '@clarity-chat/token-optimization/react' if needed
+} from './components/token/TokenCostPreview'
+export {
+  TokenUsageMeter,
+  MODEL_PRICING_PRESETS,
+  type TokenUsage,
+  type ModelPricing,
+  type TokenUsageMeterProps,
+} from './components/token/token-usage-meter'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token/token-budget-bar'
+
+// ============================================================================
+// DASHBOARD & ANALYTICS COMPONENTS
+// ============================================================================
+
+export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
+export { PerformanceDashboard } from './components/dashboards/performance-dashboard'
+export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
+export { UsageDashboard } from './components/dashboards/usage-dashboard'
+export { ABTestingDashboard } from './components/dashboards/ab-testing-dashboard'
+
+// ============================================================================
+// MESSAGE COMPONENTS (Advanced Features)
+// ============================================================================
+
+export { Message } from './components/message/message'
+export { MessageMetadata } from './components/message/message-metadata'
+export { StreamBlock } from './components/message/stream-block'
+export { StreamCancellation } from './components/message/stream-cancellation'
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+export { VirtualizedMessageList } from './components/chat/virtualized-message-list'
+export { MessageList as MessageListComponent } from './components/message/message-list'
+
+// ============================================================================
+// CONTEXT & MEMORY COMPONENTS
+// ============================================================================
+
+export { ContextManager } from './components/context/context-manager'
+export { ContextCard } from './components/context/context-card'
+export { ContextVisualizer } from './components/context/context-visualizer'
+export { MemoryInspector } from './components/context/memory-inspector'
+export { ProjectSidebar } from './components/context/project-sidebar'
+export { SettingsPanel } from './components/context/settings-panel'
+
+// ============================================================================
+// ADVANCED AI COMPONENTS
+// ============================================================================
+
+export { PersonaPanel } from './components/ai/persona-panel'
+export { AgentRunFeed } from './components/ai/agent-run-feed'
+export { SessionSummaryCard } from './components/ai/session-summary-card'
+export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
+export { SafetyStatusCard } from './components/ai/safety-status-card'
+export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
+export { AuditLogViewer } from './components/ai/audit-log-viewer'
+export { PromptLibrary } from './components/prompt/prompt-library'
+
+// ============================================================================
+// ADVANCED INPUT COMPONENTS
+// ============================================================================
+
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+export { FileUpload } from './components/input/file-upload'
+export { InlineVoiceInput } from './components/input/voice-input'
+
+// ============================================================================
+// CONVERSATION & NAVIGATION
+// ============================================================================
+
+export { ConversationList } from './components/conversation/conversation-list'
+export { ConversationTimeline } from './components/conversation/conversation-timeline'
+export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+export { ContextMenu } from './components/navigation'
+
+// ============================================================================
+// MEDIA & DOCUMENTS
+// ============================================================================
+
+export { DocumentViewer } from './components/media/document-viewer'
+export { MultiModalPreview } from './components/media/multi-modal-preview'
+export { BatchExportDialog } from './components/media/batch-export-dialog'
+
+// ============================================================================
+// FEEDBACK & RETRY COMPONENTS
+// ============================================================================
+
+export { RetryButton } from './components/feedback/retry-button'
+export {
+  ConsoleAlertHandler,
+  useConsoleAlerts,
+  type ConsoleAlert,
+  type ConsoleAlertHandlerProps,
+} from './components/feedback/console-alert-handler'
+
+// ============================================================================
+// UI PRIMITIVES (Tabs and Layout)
+// ============================================================================
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+export { Progress } from './components/ui/progress'
+export { Draggable } from './components/ui/draggable'
+
+// ============================================================================
+// ADVANCED HOOKS (Additional commonly-used hooks)
+// ============================================================================
+
+// Chat hooks (advanced)
+export { useAssistant } from './hooks/chat/use-assistant'
+export { useCompletion } from './hooks/chat/use-completion'
+export {
+  useChat,
+  useChat as useChatEnhanced,
+} from './hooks/chat/use-chat-enhanced'
+
+// Streaming hooks
+export { useStreamingSSE } from './hooks/streaming/use-streaming-sse'
+export { useStreamableUI } from './hooks/streaming/use-streamable-ui'
+
+// Utility hooks
+export { useDebounce } from './hooks/ui/use-debounce'
+export { useWindowSize } from './hooks/ui/use-window-size'
+export { usePrevious } from './hooks/ui/use-previous'
+// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
+// export { useAnimatedValue, AnimatedNumber } from './hooks/ui/use-animated-value'
+
+// Message operations
+export { useMessageOperations } from './hooks/message/use-message-operations'
+
+// Token hooks
+export { useTokenBudgetMonitor } from './hooks/token/use-token-budget-monitor'
+
+// ============================================================================
+// ANIMATION COMPONENTS (UI Feedback & Presence)
+// ============================================================================
+
+// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
+// Feedback Animations - Visual feedback components for user actions
+// export {
+//   FeedbackAnimation,
+//   SuccessCheckmark,
+//   ErrorShake,
+//   PulseAttention,
+//   RippleEffect,
+//   ConfettiEffect,
+//   GlowEffect,
+//   BounceIn,
+//   SlideNotification,
+// } from './components/ui/feedback-animation'
+
+// Animated Lists & Presence - List animations and mount/unmount transitions
+// export {
+//   AnimatedList,
+//   AnimatedListItem,
+//   FadePresence,
+//   SlidePresence,
+//   ScalePresence,
+//   StaggerContainer,
+//   AnimatedGrid,
+// } from './components/ui/animated-list'
+
+// ============================================================================
+// AI OPERATIONS COMPONENTS (Prompt Testing & Safety)
+// ============================================================================
+
+// AI Operations - Prompt testing and safety review tools
+export {
+  PromptTestHarness,
+  EvaluationDashboard,
+  SafetyReviewConsole,
+} from './components/ai-ops'
+
+// ============================================================================
+// THEME COMPONENTS (Theme Preview & Testing)
+// ============================================================================
+
+// Theme Components - Visual theme preview and contrast testing tools
+// TEMPORARILY COMMENTED OUT TO FIX STORYBOOK BUILD
+// export { ThemeContrastChecker } from './components/theme-components/theme-contrast-checker'
+// export { ThemePreview } from './components/theme-components/theme-preview'
+// export {
+//   ThemePreviewGrid,
+//   ThemePreviewThumbnail,
+// } from './components/theme-components/theme-preview-thumbnail'

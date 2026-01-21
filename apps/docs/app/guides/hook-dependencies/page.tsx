@@ -38,7 +38,7 @@ export default function HookDependenciesPage() {
         <CodePlayground
           initialCode={`import {
   useClarityChat,
-  useTokenOptimizationEnhanced,
+  useTokenOptimization,
   useStreaming,
 } from '@clarity-chat/react'
 
@@ -49,7 +49,7 @@ function ChatWithHooks() {
   })
 
   // 2. Token optimization (depends on messages)
-  const optimized = useTokenOptimizationEnhanced({
+  const optimized = useTokenOptimization({
     messages: chat.messages,
     enableToon: true,
   })
@@ -85,7 +85,7 @@ function CorrectHookOrder() {
   const chat = useClarityChat({ api: '/api/chat' })
 
   // Hooks that depend on chat
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages,
   })
 
@@ -100,7 +100,7 @@ function CorrectHookOrder() {
 // Incorrect order (will cause issues)
 function IncorrectHookOrder() {
   // ❌ Using chat before it's defined
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages, // Error: chat is not defined
   })
 
@@ -121,7 +121,7 @@ function CircularDependency() {
     },
   })
 
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages, // Uses chat
   })
 }
@@ -130,7 +130,7 @@ function CircularDependency() {
 function NoCircularDependency() {
   const chat = useClarityChat({ api: '/api/chat' })
 
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages,
   })
 
@@ -154,7 +154,7 @@ function ConditionalHooks({ enableOptimization }: { enableOptimization: boolean 
 
   // Always call hooks in the same order
   const optimization = enableOptimization
-    ? useTokenOptimizationEnhanced({ messages: chat.messages })
+    ? useTokenOptimization({ messages: chat.messages })
     : { messages: chat.messages } // Return same shape
 
   return <ChatWindow messages={optimization.messages} />
@@ -163,7 +163,7 @@ function ConditionalHooks({ enableOptimization }: { enableOptimization: boolean 
 // ❌ Conditional hook calls (wrong)
 function WrongConditionalHooks({ enableOptimization }: { enableOptimization: boolean }) {
   if (enableOptimization) {
-    const optimization = useTokenOptimizationEnhanced({ messages: [] })
+    const optimization = useTokenOptimization({ messages: [] })
     // Error: Hooks must be called unconditionally
   }
 
@@ -180,12 +180,12 @@ function WrongConditionalHooks({ enableOptimization }: { enableOptimization: boo
             <strong>useClarityChat</strong>: No dependencies (base hook)
           </li>
           <li>
-            <strong>useTokenOptimizationEnhanced</strong>: Depends on messages
+            <strong>useTokenOptimization</strong>: Depends on messages
             (from useClarityChat)
           </li>
           <li>
             <strong>useTokenBudgetMonitor</strong>: Depends on messages (from
-            useClarityChat or useTokenOptimizationEnhanced)
+            useClarityChat or useTokenOptimization)
           </li>
           <li>
             <strong>useStreaming</strong>: Depends on useClarityChat

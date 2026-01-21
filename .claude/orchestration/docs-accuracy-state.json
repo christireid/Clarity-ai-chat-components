@@ -93,7 +93,7 @@
       "ReactAgent from /agents - doesn't exist",
       "useKeyboardNavigation - doesn't exist",
       "ChatInterface - doesn't exist",
-      "useTokenOptimizationEnhanced - use useTokenBudget instead"
+      "useTokenOptimization - use useTokenBudget instead"
     ]
   },
 

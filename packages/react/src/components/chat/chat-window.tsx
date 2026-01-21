@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
+import { glassVariants, getSemanticGradient } from '@clarity-chat/primitives/glass-variants'
 import {
   duration,
   DURATION_SECONDS as durations,
@@ -538,11 +539,13 @@ export function ChatWindow({
   return (
     <Card
       className={cn(
+        glassVariants({
+          intensity: 'medium',
+          gradient: 'none', // Neutral for chat background
+          border: 'light',
+          animated: 'none',
+        }),
         'flex h-full flex-col overflow-hidden',
-        'bg-gradient-to-b from-card via-card to-background/50',
-        'border-border/30',
-        'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
-        'backdrop-blur-sm',
         'relative', // For skip link positioning
         className
       )}

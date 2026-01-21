@@ -24,7 +24,7 @@
  *   HTMLOptimizer,
  *   htmlToText,
  *   htmlToMarkdown
- * } from '@clarity-ai/token-optimization'
+ * } from '@clarity-chat/token-optimization'
  *
  * // Optimize JSON data with TOON (30-60% savings)
  * const toon = encodeToon({ users: [{ id: 1, name: 'Alice' }] })

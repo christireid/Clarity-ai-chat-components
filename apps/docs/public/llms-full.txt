@@ -316,7 +316,7 @@ This document contains the complete documentation for Clarity Chat in a single f
 300. [use-throttle | Clarity Chat](#reference-hooks-use-throttle)
 301. [use-toggle | Clarity Chat](#reference-hooks-use-toggle)
 302. [useTokenBudgetMonitor | Clarity Chat](#reference-hooks-use-token-budget-monitor)
-303. [useTokenOptimizationEnhanced Hook | Clarity Chat](#reference-hooks-use-token-optimization-enhanced)
+303. [useTokenOptimization Hook | Clarity Chat](#reference-hooks-use-token-optimization-enhanced)
 304. [useTokenOptimization](#reference-hooks-use-token-optimization)
 305. [useTokenTracker](#reference-hooks-use-token-tracker)
 306. [use-undo-redo | Clarity Chat](#reference-hooks-use-undo-redo)
@@ -4630,8 +4630,8 @@ Understand hook dependencies, when hooks depend on each other, and how to manage
 
 ## Related
 
-Understand hook dependencies, when hooks depend on each other, and how to manage hook composition effectively. Hook Composition Compose hooks in the correct order: , }) return ( ) }`} /> Dependency Order Order hooks by dependency: } // Incorrect order (will cause issues) function IncorrectHookOrder() ) const chat = useClarityChat() }`} /> Avoiding Dependency Cycles Avoid circular dependencies: , }) const optimization = useTokenOptimizationEnhanced() } // ✅ No circular dependency function NoCircularDependency() ) const optimization = useTokenOptimizationEnhanced() // Use optimization results separately useEffect(() => }, [optimization.messages]) }`} /> Conditional Hooks Handle conditional hook usage: } // ❌ Conditional hook calls (wrong) function WrongConditionalHooks(: ) ) // Error: Hooks must be called unconditionally } const chat = useClarityChat() }`} /> Hook Dependencies Map Common hook dependencies:
-- **useClarityChat**: No dependencies (base hook) **useTokenOptimizationEnhanced**: Depends on messages (from useClarityChat) **useTokenBudgetMonitor**: Depends on messages (from useClarityChat or useTokenOptimizationEnhanced) **useStreaming**: Depends on useClarityChat **useContextMonitor**: Depends on messages **useBatteryAware**: No dependencies (independent) **useMobileKeyboard**: No dependencies (independent) Best Practices Call hooks in the same order every render Order hooks by dependency (independent first) Avoid circular dependencies Use conditional logic inside hooks, not around them Document hook dependencies in your code Related [Composition Patterns](/guides/composition-patterns) - Hook composition [Data Flow](/guides/data-flow) - Data flow documentation
+Understand hook dependencies, when hooks depend on each other, and how to manage hook composition effectively. Hook Composition Compose hooks in the correct order: , }) return ( ) }`} /> Dependency Order Order hooks by dependency: } // Incorrect order (will cause issues) function IncorrectHookOrder() ) const chat = useClarityChat() }`} /> Avoiding Dependency Cycles Avoid circular dependencies: , }) const optimization = useTokenOptimization() } // ✅ No circular dependency function NoCircularDependency() ) const optimization = useTokenOptimization() // Use optimization results separately useEffect(() => }, [optimization.messages]) }`} /> Conditional Hooks Handle conditional hook usage: } // ❌ Conditional hook calls (wrong) function WrongConditionalHooks(: ) ) // Error: Hooks must be called unconditionally } const chat = useClarityChat() }`} /> Hook Dependencies Map Common hook dependencies:
+- **useClarityChat**: No dependencies (base hook) **useTokenOptimization**: Depends on messages (from useClarityChat) **useTokenBudgetMonitor**: Depends on messages (from useClarityChat or useTokenOptimization) **useStreaming**: Depends on useClarityChat **useContextMonitor**: Depends on messages **useBatteryAware**: No dependencies (independent) **useMobileKeyboard**: No dependencies (independent) Best Practices Call hooks in the same order every render Order hooks by dependency (independent first) Avoid circular dependencies Use conditional logic inside hooks, not around them Document hook dependencies in your code Related [Composition Patterns](/guides/composition-patterns) - Hook composition [Data Flow](/guides/data-flow) - Data flow documentation
 
 </doc>
 
@@ -4656,7 +4656,7 @@ Learn how to optimize hook performance, including dependency management, memoiza
 
 ## Related
 
-Learn how to optimize hook performance, including dependency management, memoization, avoiding unnecessary computations, and hook composition. Dependency Optimization Optimize hook dependencies: (), []) // Hook uses memoized options const optimization = useTokenOptimizationEnhanced() // Memoize callback const handleSend = useCallback((content: string) => ]) }, []) return ( ) } // ❌ Bad: Creating new object on every render function BadExample() , // New object every render! }) }`} /> Memoizing Hook Results Memoize expensive hook computations: }, [optimization.totalTokens, optimization.savedTokens]) return ( ) } // Memoize filtered/transformed data function FilteredMessages() ) const visibleMessages = useMemo(() => , [chat.messages]) return }`} /> Avoiding Unnecessary Hook Calls Avoid calling hooks unnecessarily: } // ❌ Bad: Conditional hook call function BadConditional(: ) ) // Error: Hooks must be called unconditionally } } // ✅ Good: Use hook options for conditional behavior function SmartOptimization() ) return ( setEnabled(!enabled)}> Toggle Optimization ) }`} /> Hook Composition Compose hooks efficiently: ) } // Custom hook to encapsulate composition function useOptimizedChat() ) const optimization = useTokenOptimizationEnhanced() const budget = useTokenBudgetMonitor() return } // Use composed hook function ChatWithOptimization() `} /> Performance Measurement Measure hook performance:
+Learn how to optimize hook performance, including dependency management, memoization, avoiding unnecessary computations, and hook composition. Dependency Optimization Optimize hook dependencies: (), []) // Hook uses memoized options const optimization = useTokenOptimization() // Memoize callback const handleSend = useCallback((content: string) => ]) }, []) return ( ) } // ❌ Bad: Creating new object on every render function BadExample() , // New object every render! }) }`} /> Memoizing Hook Results Memoize expensive hook computations: }, [optimization.totalTokens, optimization.savedTokens]) return ( ) } // Memoize filtered/transformed data function FilteredMessages() ) const visibleMessages = useMemo(() => , [chat.messages]) return }`} /> Avoiding Unnecessary Hook Calls Avoid calling hooks unnecessarily: } // ❌ Bad: Conditional hook call function BadConditional(: ) ) // Error: Hooks must be called unconditionally } } // ✅ Good: Use hook options for conditional behavior function SmartOptimization() ) return ( setEnabled(!enabled)}> Toggle Optimization ) }`} /> Hook Composition Compose hooks efficiently: ) } // Custom hook to encapsulate composition function useOptimizedChat() ) const optimization = useTokenOptimization() const budget = useTokenBudgetMonitor() return } // Use composed hook function ChatWithOptimization() `} /> Performance Measurement Measure hook performance:
 - Memoize hook options and dependencies Use useMemo for expensive hook computations Compose hooks in the correct order Avoid conditional hook calls Measure hook performance Create custom hooks for common compositions Related [Hook Dependencies](/guides/hook-dependencies) - Dependency management [ Performance Optimization Patterns ](/guides/performance-optimization-patterns) - General optimization
 
 </doc>
@@ -6938,7 +6938,7 @@ Guide for theming in Clarity Chat
 ### 7. Route Models Intelligently
 
 Comprehensive guide to reducing token usage and costs through TOON format, prompt caching, compression, semantic caching, history limiting, and model routing. Overview Token optimization is crucial for reducing costs and staying within model context limits. Clarity Chat provides multiple optimization strategies that can reduce token usage by 20-90% depending on your use case. ❌ Without Optimization • High token costs • Context window overflow • Slow responses • Repeated context sent • Inefficient model usage ✅ With Optimization • 20-90% cost reduction • Stay within context limits • Faster responses • Cached context reused • Smart model routing **The Impact:** Proper token optimization can reduce API costs by 50-80% while improving response times and staying within model context limits. The strategies work together for maximum savings. Optimization Strategies Clarity Chat provides multiple optimization strategies, each targeting different aspects of token usage: Strategy Savings Use Case Complexity **TOON Format** 30-60% Structured data (JSON) Low **Prompt Caching** 50-90% Repeated prompts Medium **Prompt Compression** 20-35% Long prompts Low **Semantic Caching** 30-70% Similar queries High **History Limiting** Variable Long conversations Low **Model Routing** 40-60% Mixed complexity queries Medium 1. TOON Format (30-60% Savings) TOON (Token-Oriented Object Notation) is a compact format for structured data that reduces token usage by 30-60% compared to JSON. It's perfect for sending arrays of objects to LLMs. How TOON Works TOON converts JSON arrays into a tabular format that's more token-efficient: Using TOON = 20% }) const handleOptimize = async () => , , ] const result = await optimizeData(data) console.log('Format:', result.format) // 'toon' or 'json' console.log('Content:', result.content) console.log('Savings:', result.optimizations.toon?.savingsPercent) } return Optimize with TOON }`} language="tsx" showLineNumbers /> **When to Use TOON:** Use TOON for structured data like arrays of objects, tables, or lists. It's automatically selected when savings exceed your threshold (default 20%). 2. Prompt Caching (50-90% Savings) Prompt caching allows you to cache system prompts and context that doesn't change between requests, dramatically reducing token usage for repeated content. How Prompt Caching Works With prompt caching, the first request sends the full prompt, and subsequent requests reference the cached version. This is especially effective for system prompts that remain constant. , // Cached on first use , ] // System message is cached, only user message sent const prepared = await prepareMessages(messages) // Subsequent requests reuse cached system prompt } return Prepare with Caching }`} language="tsx" showLineNumbers /> **Provider Support:** Prompt caching is supported by Anthropic (Claude) and OpenAI (GPT-4). The provider is auto-detected from your model, or you can specify it manually. 3. Prompt Compression (20-35% Savings) Prompt compression reduces token usage by removing redundancy, shortening verbose text, and preserving essential information. Three compression levels are available. Compression Levels **Conservative:** Minimal changes, preserves most detail (20-25% savings) **Balanced:** Good balance of compression and quality (25-30% savings) **Aggressive:** Maximum compression, some detail loss (30-35% savings) return Compress Prompt }`} language="tsx" showLineNumbers /> 4. Semantic Caching (30-70% Savings) Semantic caching stores and retrieves responses based on semantic similarity, allowing you to reuse responses for similar queries without calling the LLM again. return Query with Semantic Cache }`} language="tsx" showLineNumbers /> **Similarity Threshold:** Set a higher threshold (0.9+) for exact matches, or lower (0.7-0.8) for more flexible matching. Balance between cache hits and response quality. 5. History Limiting History limiting automatically trims old messages to stay within token budgets, keeping the most relevant context while removing older, less important messages. , , // ... many more messages ] // Oldest messages trimmed to stay within budget const optimized = await optimizeHistory(messages) } return Optimize History }`} language="tsx" showLineNumbers /> 6. Model Routing (40-60% Savings) Model routing automatically selects the most cost-effective model based on query complexity, using cheaper models for simple queries and more powerful models for complex ones. return Route Query }`} language="tsx" showLineNumbers /> Using Presets For quick setup, use presets that configure multiple optimizations at once: Choose your preset }`} language="tsx" showLineNumbers /> Preset Optimizations Best For **aggressive** All optimizations Maximum savings **balanced** TOON, caching, compression, history limiting Most use cases **conservative** TOON, compression Safe optimizations **realtime** TOON, semantic cache, conservative compression Low latency Cost Tracking Track real-time costs and savings from optimizations: Total Cost: \$ Input Cost: \$ Output Cost: \$ Savings: \$ Total Tokens Saved: Average Savings: % ) }`} language="tsx" showLineNumbers /> Best Practices 1. Start with Presets Use `preset: 'balanced'` for most use cases Customize individual options only if needed Monitor statistics to understand impact 2. Enable Cost Tracking Set `enableCostTracking: true` to monitor savings Review `stats.costs` regularly Use savings data to justify optimizations 3. Use TOON for Structured Data Enable `enableToon` for JSON/object data Set `toonMinSavings` threshold (default 20%) TOON is automatically selected when beneficial 4. Cache Repeated Prompts Enable `enablePromptCaching` for system prompts Use with Anthropic or OpenAI models Provides 50-90% savings on repeated context 5. Compress Long Prompts Use `enablePromptCompression` for verbose prompts Start with `compressionLevel: 'balanced'` Use aggressive compression only if quality is acceptable 6. Limit History Appropriately Enable `enableHistoryLimiting` for long conversations Set `maxTokens` based on your model's context window Always keep system messages (`keepSystem: true`) 7. Route Models Intelligently Use `enableModelRouting` to save costs on simple queries Set appropriate `complexityThreshold` Monitor routing decisions to optimize thresholds Complete Example Here's a complete example using multiple optimization strategies: ] const optimizedData = await optimizeData(data) // Prepare messages with caching const prepared = await prepareMessages(messages) // Optimize history to stay within budget const optimizedHistory = await optimizeHistory(messages) // Route query to appropriate model const model = await routeQuery('What is 2+2?') console.log('Total savings:', stats.overall.totalCostSaved) } return ( Optimize Tokens saved: Cost saved: \$ Savings: %
-- • High token costs • Context window overflow • Slow responses • Repeated context sent • Inefficient model usage ✅ With Optimization • 20-90% cost reduction • Stay within context limits • Faster responses • Cached context reused • Smart model routing **The Impact:** Proper token optimization can reduce API costs by 50-80% while improving response times and staying within model context limits. The strategies work together for maximum savings. Optimization Strategies Clarity Chat provides multiple optimization strategies, each targeting different aspects of token usage: Strategy Savings Use Case Complexity **TOON Format** 30-60% Structured data (JSON) Low **Prompt Caching** 50-90% Repeated prompts Medium **Prompt Compression** 20-35% Long prompts Low **Semantic Caching** 30-70% Similar queries High **History Limiting** Variable Long conversations Low **Model Routing** 40-60% Mixed complexity queries Medium 1. TOON Format (30-60% Savings) TOON (Token-Oriented Object Notation) is a compact format for structured data that reduces token usage by 30-60% compared to JSON. It's perfect for sending arrays of objects to LLMs. How TOON Works TOON converts JSON arrays into a tabular format that's more token-efficient: Using TOON = 20% }) const handleOptimize = async () => , , ] const result = await optimizeData(data) console.log('Format:', result.format) // 'toon' or 'json' console.log('Content:', result.content) console.log('Savings:', result.optimizations.toon?.savingsPercent) } return Optimize with TOON }`} language="tsx" showLineNumbers /> **When to Use TOON:** Use TOON for structured data like arrays of objects, tables, or lists. It's automatically selected when savings exceed your threshold (default 20%). 2. Prompt Caching (50-90% Savings) Prompt caching allows you to cache system prompts and context that doesn't change between requests, dramatically reducing token usage for repeated content. How Prompt Caching Works With prompt caching, the first request sends the full prompt, and subsequent requests reference the cached version. This is especially effective for system prompts that remain constant. , // Cached on first use , ] // System message is cached, only user message sent const prepared = await prepareMessages(messages) // Subsequent requests reuse cached system prompt } return Prepare with Caching }`} language="tsx" showLineNumbers /> **Provider Support:** Prompt caching is supported by Anthropic (Claude) and OpenAI (GPT-4). The provider is auto-detected from your model, or you can specify it manually. 3. Prompt Compression (20-35% Savings) Prompt compression reduces token usage by removing redundancy, shortening verbose text, and preserving essential information. Three compression levels are available. Compression Levels **Conservative:** Minimal changes, preserves most detail (20-25% savings) **Balanced:** Good balance of compression and quality (25-30% savings) **Aggressive:** Maximum compression, some detail loss (30-35% savings) return Compress Prompt }`} language="tsx" showLineNumbers /> 4. Semantic Caching (30-70% Savings) Semantic caching stores and retrieves responses based on semantic similarity, allowing you to reuse responses for similar queries without calling the LLM again. return Query with Semantic Cache }`} language="tsx" showLineNumbers /> **Similarity Threshold:** Set a higher threshold (0.9+) for exact matches, or lower (0.7-0.8) for more flexible matching. Balance between cache hits and response quality. 5. History Limiting History limiting automatically trims old messages to stay within token budgets, keeping the most relevant context while removing older, less important messages. , , // ... many more messages ] // Oldest messages trimmed to stay within budget const optimized = await optimizeHistory(messages) } return Optimize History }`} language="tsx" showLineNumbers /> 6. Model Routing (40-60% Savings) Model routing automatically selects the most cost-effective model based on query complexity, using cheaper models for simple queries and more powerful models for complex ones. return Route Query }`} language="tsx" showLineNumbers /> Using Presets For quick setup, use presets that configure multiple optimizations at once: Choose your preset }`} language="tsx" showLineNumbers /> Preset Optimizations Best For **aggressive** All optimizations Maximum savings **balanced** TOON, caching, compression, history limiting Most use cases **conservative** TOON, compression Safe optimizations **realtime** TOON, semantic cache, conservative compression Low latency Cost Tracking Track real-time costs and savings from optimizations: Total Cost: \$ Input Cost: \$ Output Cost: \$ Savings: \$ Total Tokens Saved: Average Savings: % ) }`} language="tsx" showLineNumbers /> Best Practices 1. Start with Presets Use `preset: 'balanced'` for most use cases Customize individual options only if needed Monitor statistics to understand impact 2. Enable Cost Tracking Set `enableCostTracking: true` to monitor savings Review `stats.costs` regularly Use savings data to justify optimizations 3. Use TOON for Structured Data Enable `enableToon` for JSON/object data Set `toonMinSavings` threshold (default 20%) TOON is automatically selected when beneficial 4. Cache Repeated Prompts Enable `enablePromptCaching` for system prompts Use with Anthropic or OpenAI models Provides 50-90% savings on repeated context 5. Compress Long Prompts Use `enablePromptCompression` for verbose prompts Start with `compressionLevel: 'balanced'` Use aggressive compression only if quality is acceptable 6. Limit History Appropriately Enable `enableHistoryLimiting` for long conversations Set `maxTokens` based on your model's context window Always keep system messages (`keepSystem: true`) 7. Route Models Intelligently Use `enableModelRouting` to save costs on simple queries Set appropriate `complexityThreshold` Monitor routing decisions to optimize thresholds Complete Example Here's a complete example using multiple optimization strategies: ] const optimizedData = await optimizeData(data) // Prepare messages with caching const prepared = await prepareMessages(messages) // Optimize history to stay within budget const optimizedHistory = await optimizeHistory(messages) // Route query to appropriate model const model = await routeQuery('What is 2+2?') console.log('Total savings:', stats.overall.totalCostSaved) } return ( Optimize Tokens saved: Cost saved: \$ Savings: % ) }`} language="tsx" showLineNumbers /> Related [ useTokenOptimizationEnhanced Hook ](/reference/hooks/use-token-optimization-enhanced) – Comprehensive token optimization hook [ useTokenBudgetMonitor Hook ](/reference/hooks/use-token-budget-monitor) – Real-time token budget monitoring [ useTokenTracker Hook ](/reference/hooks/use-token-tracker) – Token usage and cost tracking [ Memory System Guide ](/guides/memory) – Memory strategies for context management
+- • High token costs • Context window overflow • Slow responses • Repeated context sent • Inefficient model usage ✅ With Optimization • 20-90% cost reduction • Stay within context limits • Faster responses • Cached context reused • Smart model routing **The Impact:** Proper token optimization can reduce API costs by 50-80% while improving response times and staying within model context limits. The strategies work together for maximum savings. Optimization Strategies Clarity Chat provides multiple optimization strategies, each targeting different aspects of token usage: Strategy Savings Use Case Complexity **TOON Format** 30-60% Structured data (JSON) Low **Prompt Caching** 50-90% Repeated prompts Medium **Prompt Compression** 20-35% Long prompts Low **Semantic Caching** 30-70% Similar queries High **History Limiting** Variable Long conversations Low **Model Routing** 40-60% Mixed complexity queries Medium 1. TOON Format (30-60% Savings) TOON (Token-Oriented Object Notation) is a compact format for structured data that reduces token usage by 30-60% compared to JSON. It's perfect for sending arrays of objects to LLMs. How TOON Works TOON converts JSON arrays into a tabular format that's more token-efficient: Using TOON = 20% }) const handleOptimize = async () => , , ] const result = await optimizeData(data) console.log('Format:', result.format) // 'toon' or 'json' console.log('Content:', result.content) console.log('Savings:', result.optimizations.toon?.savingsPercent) } return Optimize with TOON }`} language="tsx" showLineNumbers /> **When to Use TOON:** Use TOON for structured data like arrays of objects, tables, or lists. It's automatically selected when savings exceed your threshold (default 20%). 2. Prompt Caching (50-90% Savings) Prompt caching allows you to cache system prompts and context that doesn't change between requests, dramatically reducing token usage for repeated content. How Prompt Caching Works With prompt caching, the first request sends the full prompt, and subsequent requests reference the cached version. This is especially effective for system prompts that remain constant. , // Cached on first use , ] // System message is cached, only user message sent const prepared = await prepareMessages(messages) // Subsequent requests reuse cached system prompt } return Prepare with Caching }`} language="tsx" showLineNumbers /> **Provider Support:** Prompt caching is supported by Anthropic (Claude) and OpenAI (GPT-4). The provider is auto-detected from your model, or you can specify it manually. 3. Prompt Compression (20-35% Savings) Prompt compression reduces token usage by removing redundancy, shortening verbose text, and preserving essential information. Three compression levels are available. Compression Levels **Conservative:** Minimal changes, preserves most detail (20-25% savings) **Balanced:** Good balance of compression and quality (25-30% savings) **Aggressive:** Maximum compression, some detail loss (30-35% savings) return Compress Prompt }`} language="tsx" showLineNumbers /> 4. Semantic Caching (30-70% Savings) Semantic caching stores and retrieves responses based on semantic similarity, allowing you to reuse responses for similar queries without calling the LLM again. return Query with Semantic Cache }`} language="tsx" showLineNumbers /> **Similarity Threshold:** Set a higher threshold (0.9+) for exact matches, or lower (0.7-0.8) for more flexible matching. Balance between cache hits and response quality. 5. History Limiting History limiting automatically trims old messages to stay within token budgets, keeping the most relevant context while removing older, less important messages. , , // ... many more messages ] // Oldest messages trimmed to stay within budget const optimized = await optimizeHistory(messages) } return Optimize History }`} language="tsx" showLineNumbers /> 6. Model Routing (40-60% Savings) Model routing automatically selects the most cost-effective model based on query complexity, using cheaper models for simple queries and more powerful models for complex ones. return Route Query }`} language="tsx" showLineNumbers /> Using Presets For quick setup, use presets that configure multiple optimizations at once: Choose your preset }`} language="tsx" showLineNumbers /> Preset Optimizations Best For **aggressive** All optimizations Maximum savings **balanced** TOON, caching, compression, history limiting Most use cases **conservative** TOON, compression Safe optimizations **realtime** TOON, semantic cache, conservative compression Low latency Cost Tracking Track real-time costs and savings from optimizations: Total Cost: \$ Input Cost: \$ Output Cost: \$ Savings: \$ Total Tokens Saved: Average Savings: % ) }`} language="tsx" showLineNumbers /> Best Practices 1. Start with Presets Use `preset: 'balanced'` for most use cases Customize individual options only if needed Monitor statistics to understand impact 2. Enable Cost Tracking Set `enableCostTracking: true` to monitor savings Review `stats.costs` regularly Use savings data to justify optimizations 3. Use TOON for Structured Data Enable `enableToon` for JSON/object data Set `toonMinSavings` threshold (default 20%) TOON is automatically selected when beneficial 4. Cache Repeated Prompts Enable `enablePromptCaching` for system prompts Use with Anthropic or OpenAI models Provides 50-90% savings on repeated context 5. Compress Long Prompts Use `enablePromptCompression` for verbose prompts Start with `compressionLevel: 'balanced'` Use aggressive compression only if quality is acceptable 6. Limit History Appropriately Enable `enableHistoryLimiting` for long conversations Set `maxTokens` based on your model's context window Always keep system messages (`keepSystem: true`) 7. Route Models Intelligently Use `enableModelRouting` to save costs on simple queries Set appropriate `complexityThreshold` Monitor routing decisions to optimize thresholds Complete Example Here's a complete example using multiple optimization strategies: ] const optimizedData = await optimizeData(data) // Prepare messages with caching const prepared = await prepareMessages(messages) // Optimize history to stay within budget const optimizedHistory = await optimizeHistory(messages) // Route query to appropriate model const model = await routeQuery('What is 2+2?') console.log('Total savings:', stats.overall.totalCostSaved) } return ( Optimize Tokens saved: Cost saved: \$ Savings: % ) }`} language="tsx" showLineNumbers /> Related [ useTokenOptimization Hook ](/reference/hooks/use-token-optimization-enhanced) – Comprehensive token optimization hook [ useTokenBudgetMonitor Hook ](/reference/hooks/use-token-budget-monitor) – Real-time token budget monitoring [ useTokenTracker Hook ](/reference/hooks/use-token-tracker) – Token usage and cost tracking [ Memory System Guide ](/guides/memory) – Memory strategies for context management
 
 > **Info**: **The Impact:** Proper token optimization can reduce API costs by 50-80% while improving response times and staying within model context limits. The strategies work together for maximum savings. Optimization Strategies Clarity Chat provides multiple optimization strategies, each targeting different aspects of token usage: Strategy Savings Use Case Complexity **TOON Format** 30-60% Structured data (JSON) Low **Prompt Caching** 50-90% Repeated prompts Medium **Prompt Compression** 20-35% Long prompts Low **Semantic Caching** 30-70% Similar queries High **History Limiting** Variable Long conversations Low **Model Routing** 40-60% Mixed complexity queries Medium 1. TOON Format (30-60% Savings) TOON (Token-Oriented Object Notation) is a compact format for structured data that reduces token usage by 30-60% compared to JSON. It's perfect for sending arrays of objects to LLMs. How TOON Works TOON converts JSON arrays into a tabular format that's more token-efficient: Using TOON = 20% }) const handleOptimize = async () => , , ] const result = await optimizeData(data) console.log('Format:', result.format) // 'toon' or 'json' console.log('Content:', result.content) console.log('Savings:', result.optimizations.toon?.savingsPercent) } return Optimize with TOON }`} language="tsx" showLineNumbers /> **When to Use TOON:** Use TOON for structured data like arrays of objects, tables, or lists. It's automatically selected when savings exceed your threshold (default 20%). 2. Prompt Caching (50-90% Savings) Prompt caching allows you to cache system prompts and context that doesn't change between requests, dramatically reducing token usage for repeated content. How Prompt Caching Works With prompt caching, the first request sends the full prompt, and subsequent requests reference the cached version. This is especially effective for system prompts that remain constant. , // Cached on first use , ] // System message is cached, only user message sent const prepared = await prepareMessages(messages) // Subsequent requests reuse cached system prompt } return Prepare with Caching }`} language="tsx" showLineNumbers /> **Provider Support:** Prompt caching is supported by Anthropic (Claude) and OpenAI (GPT-4). The provider is auto-detected from your model, or you can specify it manually. 3. Prompt Compression (20-35% Savings) Prompt compression reduces token usage by removing redundancy, shortening verbose text, and preserving essential information. Three compression levels are available. Compression Levels **Conservative:** Minimal changes, preserves most detail (20-25% savings) **Balanced:** Good balance of compression and quality (25-30% savings) **Aggressive:** Maximum compression, some detail loss (30-35% savings) return Compress Prompt }`} language="tsx" showLineNumbers /> 4. Semantic Caching (30-70% Savings) Semantic caching stores and retrieves responses based on semantic similarity, allowing you to reuse responses for similar queries without calling the LLM again. return Query with Semantic Cache }`} language="tsx" showLineNumbers /> **Similarity Threshold:** Set a higher threshold (0.9+) for exact matches, or lower (0.7-0.8) for more flexible matching. Balance between cache hits and response quality.
 
@@ -6973,10 +6973,10 @@ Bob, 25, San Francisco
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function ToonExample() {
-  const { optimizeData } = useTokenOptimizationEnhanced({
+  const { optimizeData } = useTokenOptimization({
     enableToon: true,
     toonMinSavings: 20, // Only use TOON if savings >= 20%
   })
@@ -6998,10 +6998,10 @@ function ToonExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function PromptCachingExample() {
-  const { prepareMessages } = useTokenOptimizationEnhanced({
+  const { prepareMessages } = useTokenOptimization({
     enablePromptCaching: true,
     cachingProvider: 'anthropic', // or 'openai' or 'auto'
   })
@@ -7022,10 +7022,10 @@ function PromptCachingExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function CompressionExample() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
+  const { optimizePrompt } = useTokenOptimization({
     enablePromptCompression: true,
     compressionLevel: 'balanced', // 'conservative' | 'balanced' | 'aggressive'
   })
@@ -7046,10 +7046,10 @@ function CompressionExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function SemanticCacheExample() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
+  const { optimizePrompt } = useTokenOptimization({
     enableSemanticCaching: true,
     similarityThreshold: 0.85, // 85% similarity required
   })
@@ -7068,10 +7068,10 @@ function SemanticCacheExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function HistoryLimitingExample() {
-  const { optimizeHistory } = useTokenOptimizationEnhanced({
+  const { optimizeHistory } = useTokenOptimization({
     enableHistoryLimiting: true,
     historyLimiting: {
       maxTokens: 8000,
@@ -7097,10 +7097,10 @@ function HistoryLimitingExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function ModelRoutingExample() {
-  const { routeQuery } = useTokenOptimizationEnhanced({
+  const { routeQuery } = useTokenOptimization({
     enableModelRouting: true,
     modelRouting: {
       simpleModel: 'gpt-3.5-turbo', // $0.0005/$0.0015 per 1K tokens
@@ -7122,26 +7122,26 @@ function ModelRoutingExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function PresetExample() {
   // Aggressive: All optimizations enabled, maximum savings
-  const aggressive = useTokenOptimizationEnhanced({
+  const aggressive = useTokenOptimization({
     preset: 'aggressive',
   })
 
   // Balanced: Key optimizations, good UX
-  const balanced = useTokenOptimizationEnhanced({
+  const balanced = useTokenOptimization({
     preset: 'balanced',
   })
 
   // Conservative: Safe optimizations only
-  const conservative = useTokenOptimizationEnhanced({
+  const conservative = useTokenOptimization({
     preset: 'conservative',
   })
 
   // Realtime: Optimized for low latency
-  const realtime = useTokenOptimizationEnhanced({
+  const realtime = useTokenOptimization({
     preset: 'realtime',
   })
 
@@ -7150,10 +7150,10 @@ function PresetExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function CostTrackingExample() {
-  const { stats } = useTokenOptimizationEnhanced({
+  const { stats } = useTokenOptimization({
     model: 'gpt-4',
     enableCostTracking: true,
     preset: 'balanced',
@@ -7173,7 +7173,7 @@ function CostTrackingExample() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function CompleteOptimizationExample() {
@@ -7186,7 +7186,7 @@ function CompleteOptimizationExample() {
     optimizeHistory,
     routeQuery,
     stats,
-  } = useTokenOptimizationEnhanced({
+  } = useTokenOptimization({
     model: 'gpt-4',
     preset: 'balanced',
     enableCostTracking: true,
@@ -16926,7 +16926,7 @@ Signature ` ` ))} )} ) ))} )} View full documentation → ) } export default fun
 
 ### useClarityChat
 
-### useTokenOptimizationEnhanced
+### useTokenOptimization
 
 ### useMessageOperations
 
@@ -16944,9 +16944,9 @@ Signature ` ` ))} )} ) ))} )} View full documentation → ) } export default fun
 
 #### useErrorRecovery
 
-Complete API reference for all React hooks available in Clarity Chat. Hooks provide a clean, composable API for building chat interfaces. 🧭 Not sure which hook to use? Try our interactive Hook Selector wizard to find the right hook for your use case. **Note:** All hooks are client-side only and must be used within components marked with ` 'use client' ` . Architecture Overview Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities: Top-Level Drop-in Ready useClarityChat useClarityObject Mid-Level Composable Building Blocks useChatEnhanced useClarityChatWithTools useMemoryContext useStreamingSSE Low-Level Utilities & Primitives useDebounce useLocalStorage useIndexedDB useDesignTokens **Tip:** Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control. Core Hooks useClarityChat Primary hook for chat functionality with memory integration, streaming, and AI interactions. ** Recommended for all new projects. ** View Documentation → useTokenOptimizationEnhanced Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs. View Documentation → useMessageOperations Manage message operations like edit, regenerate, delete, and undo/redo. ([]) const = useMessageOperations(messages, setMessages) return ( ) }`} language="tsx" filename="ChatComponent.tsx" showLineNumbers showCopyButton /> Returns Name Type Description `editMessage` ` (id: string, content: string) void ` Edit a message by ID ` regenerateMessage ` ` (id: string) void ` Regenerate a message `deleteMessage` ` (id: string) void ` Delete a message `undo` ` () void ` Undo last operation `redo` ` () void ` Redo last undone operation `canUndo` ` boolean ` Whether undo is available `canRedo` ` boolean ` Whether redo is available useStreamingChat Handle streaming chat responses with real-time updates. , }) return ( ) }`} language="tsx" filename="StreamingChat.tsx" showLineNumbers showCopyButton /> useTokenTracker Track token usage and estimate costs for AI API calls. ([]) const tokenStats = useTokenTracker(messages, ) return ( ) }`} language="tsx" filename="ChatWithTracking.tsx" showLineNumbers showCopyButton /> Utility Hooks useLocalStorage Persist state to localStorage with automatic serialization. useIndexedDB Store large data in IndexedDB for offline support. useAutoScroll Automatically scroll to bottom when new messages arrive. useErrorRecovery Handle errors with automatic retry and recovery. **Learn more:** Check out the [ Hooks Concept Guide ](/learn/concepts/hooks) for detailed explanations and composition patterns.
+Complete API reference for all React hooks available in Clarity Chat. Hooks provide a clean, composable API for building chat interfaces. 🧭 Not sure which hook to use? Try our interactive Hook Selector wizard to find the right hook for your use case. **Note:** All hooks are client-side only and must be used within components marked with ` 'use client' ` . Architecture Overview Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities: Top-Level Drop-in Ready useClarityChat useClarityObject Mid-Level Composable Building Blocks useChatEnhanced useClarityChatWithTools useMemoryContext useStreamingSSE Low-Level Utilities & Primitives useDebounce useLocalStorage useIndexedDB useDesignTokens **Tip:** Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control. Core Hooks useClarityChat Primary hook for chat functionality with memory integration, streaming, and AI interactions. ** Recommended for all new projects. ** View Documentation → useTokenOptimization Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs. View Documentation → useMessageOperations Manage message operations like edit, regenerate, delete, and undo/redo. ([]) const = useMessageOperations(messages, setMessages) return ( ) }`} language="tsx" filename="ChatComponent.tsx" showLineNumbers showCopyButton /> Returns Name Type Description `editMessage` ` (id: string, content: string) void ` Edit a message by ID ` regenerateMessage ` ` (id: string) void ` Regenerate a message `deleteMessage` ` (id: string) void ` Delete a message `undo` ` () void ` Undo last operation `redo` ` () void ` Redo last undone operation `canUndo` ` boolean ` Whether undo is available `canRedo` ` boolean ` Whether redo is available useStreamingChat Handle streaming chat responses with real-time updates. , }) return ( ) }`} language="tsx" filename="StreamingChat.tsx" showLineNumbers showCopyButton /> useTokenTracker Track token usage and estimate costs for AI API calls. ([]) const tokenStats = useTokenTracker(messages, ) return ( ) }`} language="tsx" filename="ChatWithTracking.tsx" showLineNumbers showCopyButton /> Utility Hooks useLocalStorage Persist state to localStorage with automatic serialization. useIndexedDB Store large data in IndexedDB for offline support. useAutoScroll Automatically scroll to bottom when new messages arrive. useErrorRecovery Handle errors with automatic retry and recovery. **Learn more:** Check out the [ Hooks Concept Guide ](/learn/concepts/hooks) for detailed explanations and composition patterns.
 
-> **Info**: **Note:** All hooks are client-side only and must be used within components marked with ` 'use client' ` . Architecture Overview Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities: Top-Level Drop-in Ready useClarityChat useClarityObject Mid-Level Composable Building Blocks useChatEnhanced useClarityChatWithTools useMemoryContext useStreamingSSE Low-Level Utilities & Primitives useDebounce useLocalStorage useIndexedDB useDesignTokens **Tip:** Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control. Core Hooks useClarityChat Primary hook for chat functionality with memory integration, streaming, and AI interactions. ** Recommended for all new projects. ** View Documentation → useTokenOptimizationEnhanced Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs. View Documentation → useMessageOperations Manage message operations like edit, regenerate, delete, and undo/redo. ([]) const = useMessageOperations(messages, setMessages) return ( ) }`} language="tsx" filename="ChatComponent.tsx" showLineNumbers showCopyButton /> Returns Name Type Description `editMessage` ` (id: string, content: string) void ` Edit a message by ID ` regenerateMessage ` ` (id: string) void ` Regenerate a message `deleteMessage` ` (id: string) void ` Delete a message `undo` ` () void ` Undo last operation `redo` ` () void ` Redo last undone operation `canUndo` ` boolean ` Whether undo is available `canRedo` ` boolean ` Whether redo is available useStreamingChat Handle streaming chat responses with real-time updates. , }) return ( ) }`} language="tsx" filename="StreamingChat.tsx" showLineNumbers showCopyButton /> useTokenTracker Track token usage and estimate costs for AI API calls. ([]) const tokenStats = useTokenTracker(messages, ) return ( ) }`} language="tsx" filename="ChatWithTracking.tsx" showLineNumbers showCopyButton /> Utility Hooks useLocalStorage Persist state to localStorage with automatic serialization. useIndexedDB Store large data in IndexedDB for offline support. useAutoScroll Automatically scroll to bottom when new messages arrive. useErrorRecovery Handle errors with automatic retry and recovery. **Learn more:** Check out the [ Hooks Concept Guide ](/learn/concepts/hooks) for detailed explanations and composition patterns.
+> **Info**: **Note:** All hooks are client-side only and must be used within components marked with ` 'use client' ` . Architecture Overview Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities: Top-Level Drop-in Ready useClarityChat useClarityObject Mid-Level Composable Building Blocks useChatEnhanced useClarityChatWithTools useMemoryContext useStreamingSSE Low-Level Utilities & Primitives useDebounce useLocalStorage useIndexedDB useDesignTokens **Tip:** Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control. Core Hooks useClarityChat Primary hook for chat functionality with memory integration, streaming, and AI interactions. ** Recommended for all new projects. ** View Documentation → useTokenOptimization Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs. View Documentation → useMessageOperations Manage message operations like edit, regenerate, delete, and undo/redo. ([]) const = useMessageOperations(messages, setMessages) return ( ) }`} language="tsx" filename="ChatComponent.tsx" showLineNumbers showCopyButton /> Returns Name Type Description `editMessage` ` (id: string, content: string) void ` Edit a message by ID ` regenerateMessage ` ` (id: string) void ` Regenerate a message `deleteMessage` ` (id: string) void ` Delete a message `undo` ` () void ` Undo last operation `redo` ` () void ` Redo last undone operation `canUndo` ` boolean ` Whether undo is available `canRedo` ` boolean ` Whether redo is available useStreamingChat Handle streaming chat responses with real-time updates. , }) return ( ) }`} language="tsx" filename="StreamingChat.tsx" showLineNumbers showCopyButton /> useTokenTracker Track token usage and estimate costs for AI API calls. ([]) const tokenStats = useTokenTracker(messages, ) return ( ) }`} language="tsx" filename="ChatWithTracking.tsx" showLineNumbers showCopyButton /> Utility Hooks useLocalStorage Persist state to localStorage with automatic serialization. useIndexedDB Store large data in IndexedDB for offline support. useAutoScroll Automatically scroll to bottom when new messages arrive. useErrorRecovery Handle errors with automatic retry and recovery. **Learn more:** Check out the [ Hooks Concept Guide ](/learn/concepts/hooks) for detailed explanations and composition patterns.
 
 | Name Type Description |
 | --- |
@@ -19461,7 +19461,7 @@ Monitor context utilization, efficiency, and get optimization recommendations.
 ## Related
 
 Monitor context utilization, efficiency metrics, and get intelligent optimization recommendations. Basic Usage Monitor context utilization: Total: / Utilization: % System: History: Context: ) }`} /> Efficiency Metrics Track information density, recency, and relevance: Information Density: % Recency Score: % Relevance Score: % ) }`} /> Optimization Recommendations Get intelligent recommendations for context optimization: \`) console.log(\`Estimated savings: \$ tokens\`) console.log(\`Action: \$\`) }, }) return ( Savings: tokens Action: ))} ) }`} /> Context Warnings Handle context warnings with callbacks: else if (warning.level === 'warning') console.log('Recommendation:', warning.recommendation) }, }) return ( ))} ) }`} /> Context Breakdown Analyze token usage by category:
-- `utilization`: Full context utilization metrics with breakdown and efficiency `warnings`: Array of context warnings with recommendations `recommendations`: Array of optimization recommendations Warning Types **utilization**: Context window utilization too high **efficiency**: Low information density or relevance **staleness**: Context is outdated **density**: Too much filler content Recommendation Actions **compress**: Compress existing context **summarize**: Summarize old messages **archive**: Archive old conversation **prune**: Remove low-priority content **switch-model**: Use a model with larger context window Best Practices Enable `enableEfficiencyMetrics` to track context quality Use `enableRecommendations` for actionable optimization suggestions Handle warnings with user-friendly notifications Monitor breakdown to identify token-heavy categories Use recommendations to optimize context before hitting limits Related [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) - Budget monitoring [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) - Token optimization [TokenCounter](/reference/components/token-counter) - Token usage display
+- `utilization`: Full context utilization metrics with breakdown and efficiency `warnings`: Array of context warnings with recommendations `recommendations`: Array of optimization recommendations Warning Types **utilization**: Context window utilization too high **efficiency**: Low information density or relevance **staleness**: Context is outdated **density**: Too much filler content Recommendation Actions **compress**: Compress existing context **summarize**: Summarize old messages **archive**: Archive old conversation **prune**: Remove low-priority content **switch-model**: Use a model with larger context window Best Practices Enable `enableEfficiencyMetrics` to track context quality Use `enableRecommendations` for actionable optimization suggestions Handle warnings with user-friendly notifications Monitor breakdown to identify token-heavy categories Use recommendations to optimize context before hitting limits Related [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) - Budget monitoring [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) - Token optimization [TokenCounter](/reference/components/token-counter) - Token usage display
 
 </doc>
 
@@ -22543,12 +22543,12 @@ Real-time token budget monitoring with threshold-based warnings, automatic trimm
 
 </doc>
 
-<doc url="/reference/hooks/use-token-optimization-enhanced" title="useTokenOptimizationEnhanced Hook | Clarity Chat">
-# useTokenOptimizationEnhanced Hook | Clarity Chat
+<doc url="/reference/hooks/use-token-optimization-enhanced" title="useTokenOptimization Hook | Clarity Chat">
+# useTokenOptimization Hook | Clarity Chat
 
 Comprehensive token optimization with TOON, accurate tokenization, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs.
 
-# useTokenOptimizationEnhanced
+# useTokenOptimization
 
 ## Basic Usage
 
@@ -22610,10 +22610,10 @@ Comprehensive token optimization hook with TOON support, accurate tokenization, 
 | stats EnhancedOptimizationStats Comprehensive statistics including TOON, compression, caching, cost tracking, and overall savings. |
 
 ```tsx
-import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+import { useTokenOptimization, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
-  const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
+  const { optimizeData, calculateCost, stats } = useTokenOptimization({
     model: 'gpt-4',
     enableToon: true,
     enablePromptCaching: true,
@@ -22663,38 +22663,38 @@ function OptimizedChat() {
 ```
 
 ```typescript
-const { optimizeData } = useTokenOptimizationEnhanced({
+const { optimizeData } = useTokenOptimization({
   preset: 'aggressive', // All optimizations, max savings
   model: 'gpt-4',
 })
 ```
 
 ```typescript
-const { optimizeData } = useTokenOptimizationEnhanced({
+const { optimizeData } = useTokenOptimization({
   preset: 'balanced', // Key optimizations, good UX
   model: 'gpt-4',
 })
 ```
 
 ```typescript
-const { optimizeData } = useTokenOptimizationEnhanced({
+const { optimizeData } = useTokenOptimization({
   preset: 'conservative', // Safe optimizations only
   model: 'gpt-4',
 })
 ```
 
 ```typescript
-const { optimizeData } = useTokenOptimizationEnhanced({
+const { optimizeData } = useTokenOptimization({
   preset: 'realtime', // Optimized for low latency
   model: 'gpt-4',
 })
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+import { useTokenOptimization, ChatWindow } from '@clarity-chat/react'
 
 function ToonOptimized() {
-  const { optimizeData } = useTokenOptimizationEnhanced({
+  const { optimizeData } = useTokenOptimization({
     enableToon: true,
     toonMinSavings: 30, // Only use TOON if savings >= 30% (value is percentage: 0-100)
     model: 'gpt-4',
@@ -22725,10 +22725,10 @@ function ToonOptimized() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+import { useTokenOptimization, ChatWindow } from '@clarity-chat/react'
 
 function CachedChat() {
-  const { optimizeData } = useTokenOptimizationEnhanced({
+  const { optimizeData } = useTokenOptimization({
     enablePromptCaching: true,
     cachingProvider: 'auto', // Auto-detect based on model
     model: 'gpt-4',
@@ -22754,10 +22754,10 @@ function CachedChat() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+import { useTokenOptimization, ChatWindow } from '@clarity-chat/react'
 
 function SemanticCachedChat() {
-  const { optimizeData, stats } = useTokenOptimizationEnhanced({
+  const { optimizeData, stats } = useTokenOptimization({
     enableSemanticCaching: true,
     similarityThreshold: 0.85, // 85% similarity required for cache hit
     model: 'gpt-4',
@@ -22782,10 +22782,10 @@ function SemanticCachedChat() {
 ```
 
 ```tsx
-import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+import { useTokenOptimization, ChatWindow } from '@clarity-chat/react'
 
 function CostTrackedChat() {
-  const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
+  const { optimizeData, calculateCost, stats } = useTokenOptimization({
     enableCostTracking: true,
     model: 'gpt-4',
   })
@@ -22848,10 +22848,10 @@ function CostTrackedChat() {
 
 ## Related Hooks
 
-Legacy token optimization hook. **Deprecated** - use [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) instead. **Deprecated:** This hook is deprecated and maintained for backward compatibility only. Please migrate to [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) which includes all features from this hook plus additional optimizations like TOON format, prompt caching, semantic caching, response prefilling, and more. Migration Guide To migrate from `useTokenOptimization` to `useTokenOptimizationEnhanced`: What It Does This legacy hook provided basic prompt optimization features. The enhanced version includes all of these features plus many more optimizations.
-- Basic prompt shortening and optimization Token counting and estimation Simple statistics tracking Related Hooks [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) – Recommended replacement with all features plus TOON, caching, compression, routing, and more [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) – Real-time token budget monitoring with auto-trimming [ useTokenTracker ](/reference/hooks/use-token-tracker) – Token usage and cost tracking
+Legacy token optimization hook. **Deprecated** - use [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) instead. **Deprecated:** This hook is deprecated and maintained for backward compatibility only. Please migrate to [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) which includes all features from this hook plus additional optimizations like TOON format, prompt caching, semantic caching, response prefilling, and more. Migration Guide To migrate from `useTokenOptimization` to `useTokenOptimization`: What It Does This legacy hook provided basic prompt optimization features. The enhanced version includes all of these features plus many more optimizations.
+- Basic prompt shortening and optimization Token counting and estimation Simple statistics tracking Related Hooks [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) – Recommended replacement with all features plus TOON, caching, compression, routing, and more [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) – Real-time token budget monitoring with auto-trimming [ useTokenTracker ](/reference/hooks/use-token-tracker) – Token usage and cost tracking
 
-> **Warning**: **Deprecated:** This hook is deprecated and maintained for backward compatibility only. Please migrate to [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) which includes all features from this hook plus additional optimizations like TOON format, prompt caching, semantic caching, response prefilling, and more.
+> **Warning**: **Deprecated:** This hook is deprecated and maintained for backward compatibility only. Please migrate to [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) which includes all features from this hook plus additional optimizations like TOON format, prompt caching, semantic caching, response prefilling, and more.
 
 ```tsx
 // Old (deprecated)
@@ -22862,9 +22862,9 @@ const { optimizePrompt } = useTokenOptimization({
 })
 
 // New (recommended)
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
-const { optimizePrompt } = useTokenOptimizationEnhanced({
+const { optimizePrompt } = useTokenOptimization({
   preset: 'balanced', // or customize individual options
   enablePromptCompression: true,
 })
@@ -22908,7 +22908,7 @@ const { optimizePrompt } = useTokenOptimizationEnhanced({
 Cost Estimate $
 
 A production-ready hook for tracking token usage, estimating costs, and managing context window limits in AI conversations. Provides real-time token counting, automatic model pricing lookup, and threshold-based alerts. Interactive Playground Track token usage and costs! Add messages and see real-time updates. Tokens: Cost: \$ addMessage()}> Add Message ) } render()`} /> Import Basic Usage Track token usage and costs for a conversation: addMessage(newMessage) setMessages(prev => [...prev, newMessage]) } return ( Tokens: (%) Cost: \$ ) }`} > Check Before Sending Check if a message would exceed the token limit: ) } else } return handleSend('Hello')}>Send }`} language="tsx" showLineNumbers /> Cost Tracking Track costs for different models: GPT-4: \$ GPT-3.5: \$ Claude: \$ ) }`} language="tsx" showLineNumbers /> Custom Pricing Override automatic pricing with custom costs: Tokens: Cost: \$ ) }`} language="tsx" showLineNumbers /> Threshold Alerts Get alerts when approaching token limits: , onCritical: () => , }) return ( Tokens: ) }`} language="tsx" showLineNumbers /> Options Return Values MessageWithTokens Type The `MessageWithTokens` type structure: Supported Models Automatic pricing and limits are available for: **GPT-4:** 8192 tokens, $0.00003/$0.00006 per token **GPT-4 Turbo:** 128000 tokens, $0.00001/$0.00003 per token **GPT-3.5 Turbo:** 16385 tokens, $0.0000005/$0.0000015 per token **Claude 3 Opus:** 200000 tokens, $0.000015/$0.000075 per token **Claude 3 Sonnet:** 200000 tokens, $0.000003/$0.000015 per token **Claude 3 Haiku:** 200000 tokens, $0.00000025/$0.00000125 per token Complete Example ([]) const = useTokenTracker(, onCritical: () => , }) const handleAddMessage = useCallback((content: string) => addMessage(newMessage) setMessages(prev => [...prev, newMessage]) } else }, [addMessage, canSend, estimateTokens]) const handleRemoveMessage = useCallback((index: number) => , [removeMessage]) return ( Token Usage % Total: tokens Input: tokens Output: tokens Estimated Cost: \$ handleAddMessage('New message')} disabled= className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50" > Add Message className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Remove Last )} } className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Clear All
-- **GPT-4:** 8192 tokens, $0.00003/$0.00006 per token **GPT-4 Turbo:** 128000 tokens, $0.00001/$0.00003 per token **GPT-3.5 Turbo:** 16385 tokens, $0.0000005/$0.0000015 per token **Claude 3 Opus:** 200000 tokens, $0.000015/$0.000075 per token **Claude 3 Sonnet:** 200000 tokens, $0.000003/$0.000015 per token **Claude 3 Haiku:** 200000 tokens, $0.00000025/$0.00000125 per token Complete Example ([]) const = useTokenTracker(, onCritical: () => , }) const handleAddMessage = useCallback((content: string) => addMessage(newMessage) setMessages(prev => [...prev, newMessage]) } else }, [addMessage, canSend, estimateTokens]) const handleRemoveMessage = useCallback((index: number) => , [removeMessage]) return ( Token Usage % Total: tokens Input: tokens Output: tokens Estimated Cost: \$ handleAddMessage('New message')} disabled= className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50" > Add Message className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Remove Last )} } className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Clear All handleRemoveMessage(i)} className="text-xs text-muted-foreground mt-1" > Remove ))} ) }`} language="tsx" showLineNumbers /> Best Practices **Use model name:** Provide `modelName` for automatic pricing and limits **Check before sending:** Use `canSend` to prevent exceeding limits **Monitor thresholds:** Set `warningThreshold` and `criticalThreshold` for alerts **Track costs:** Use `estimatedCost` to show users API costs **Suggest pruning:** Check `suggestPruning` to prompt users to trim history **Pre-compute tokens:** Provide `tokens` in messages for better performance Related [ useTokenOptimizationEnhanced ](/reference/hooks/use-token-optimization-enhanced) - Comprehensive token optimization [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) - Real-time budget monitoring with auto-trimming [Token Optimization Guide](/guides/token-optimization) - Token management strategies
+- **GPT-4:** 8192 tokens, $0.00003/$0.00006 per token **GPT-4 Turbo:** 128000 tokens, $0.00001/$0.00003 per token **GPT-3.5 Turbo:** 16385 tokens, $0.0000005/$0.0000015 per token **Claude 3 Opus:** 200000 tokens, $0.000015/$0.000075 per token **Claude 3 Sonnet:** 200000 tokens, $0.000003/$0.000015 per token **Claude 3 Haiku:** 200000 tokens, $0.00000025/$0.00000125 per token Complete Example ([]) const = useTokenTracker(, onCritical: () => , }) const handleAddMessage = useCallback((content: string) => addMessage(newMessage) setMessages(prev => [...prev, newMessage]) } else }, [addMessage, canSend, estimateTokens]) const handleRemoveMessage = useCallback((index: number) => , [removeMessage]) return ( Token Usage % Total: tokens Input: tokens Output: tokens Estimated Cost: \$ handleAddMessage('New message')} disabled= className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50" > Add Message className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Remove Last )} } className="px-4 py-2 bg-secondary text-secondary-foreground rounded" > Clear All handleRemoveMessage(i)} className="text-xs text-muted-foreground mt-1" > Remove ))} ) }`} language="tsx" showLineNumbers /> Best Practices **Use model name:** Provide `modelName` for automatic pricing and limits **Check before sending:** Use `canSend` to prevent exceeding limits **Monitor thresholds:** Set `warningThreshold` and `criticalThreshold` for alerts **Track costs:** Use `estimatedCost` to show users API costs **Suggest pruning:** Check `suggestPruning` to prompt users to trim history **Pre-compute tokens:** Provide `tokens` in messages for better performance Related [ useTokenOptimization ](/reference/hooks/use-token-optimization-enhanced) - Comprehensive token optimization [ useTokenBudgetMonitor ](/reference/hooks/use-token-budget-monitor) - Real-time budget monitoring with auto-trimming [Token Optimization Guide](/guides/token-optimization) - Token management strategies
 
 ```tsx
 import { useTokenTracker } from '@clarity-chat/react'

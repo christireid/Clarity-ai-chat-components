@@ -25,8 +25,11 @@ export default function TokenOptimizationGuidePage() {
           <p className="mb-4">
             Token optimization is crucial for reducing costs and staying within
             model context limits. Clarity Chat provides multiple optimization
-            strategies that can reduce token usage by 20-90% depending on your
+            strategies that can reduce token usage by 20-90%* depending on your
             use case.
+          </p>
+          <p className="text-sm text-muted-foreground italic mb-4">
+            *Cost savings based on provider prompt caching specifications. Compression rates vary by content type and configuration. Actual savings may vary.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
@@ -48,7 +51,7 @@ export default function TokenOptimizationGuidePage() {
                 ✅ With Optimization
               </div>
               <ul className="text-sm space-y-1 text-muted-foreground">
-                <li>• 20-90% cost reduction</li>
+                <li>• 20-90% cost reduction*</li>
                 <li>• Stay within context limits</li>
                 <li>• Faster responses</li>
                 <li>• Cached context reused</li>
@@ -60,9 +63,9 @@ export default function TokenOptimizationGuidePage() {
           <Callout type="info">
             <p>
               <strong>The Impact:</strong> Proper token optimization can reduce
-              API costs by 50-80% while improving response times and staying
+              API costs by 50-80%* while improving response times and staying
               within model context limits. The strategies work together for
-              maximum savings.
+              maximum savings. *Based on provider prompt caching specifications. Actual savings may vary.
             </p>
           </Callout>
         </section>
@@ -99,7 +102,7 @@ export default function TokenOptimizationGuidePage() {
                   <td className="border border-border p-2">
                     <strong>TOON Format</strong>
                   </td>
-                  <td className="border border-border p-2">30-60%</td>
+                  <td className="border border-border p-2">30-60%*</td>
                   <td className="border border-border p-2">
                     Structured data (JSON)
                   </td>
@@ -109,7 +112,7 @@ export default function TokenOptimizationGuidePage() {
                   <td className="border border-border p-2">
                     <strong>Prompt Caching</strong>
                   </td>
-                  <td className="border border-border p-2">50-90%</td>
+                  <td className="border border-border p-2">50-90%**</td>
                   <td className="border border-border p-2">Repeated prompts</td>
                   <td className="border border-border p-2">Medium</td>
                 </tr>
@@ -152,12 +155,19 @@ export default function TokenOptimizationGuidePage() {
               </tbody>
             </table>
           </div>
+          <p className="text-xs text-muted-foreground italic mt-2">
+            *Compression rates vary by content type and configuration.<br />
+            **Based on provider prompt caching specifications (Anthropic, OpenAI, Google). Leverages provider-native caching when available.
+          </p>
         </section>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">
-            1. TOON Format (30-60% Savings)
+            1. TOON Format (30-60% Savings)*
           </h2>
+          <p className="text-sm text-muted-foreground italic mb-2">
+            *Compression rates vary by content type and configuration.
+          </p>
           <p className="mb-4">
             TOON (Token-Oriented Object Notation) is a compact format for
             structured data that reduces token usage by 30-60% compared to JSON.
@@ -189,10 +199,10 @@ Bob, 25, San Francisco
 
           <h3 className="text-2xl font-semibold mb-3 mt-8">Using TOON</h3>
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function ToonExample() {
-  const { optimizeData } = useTokenOptimizationEnhanced({
+  const { optimizeData } = useTokenOptimization({
     enableToon: true,
     toonMinSavings: 20, // Only use TOON if savings >= 20%
   })
@@ -226,8 +236,11 @@ function ToonExample() {
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">
-            2. Prompt Caching (50-90% Savings)
+            2. Prompt Caching (50-90% Savings)*
           </h2>
+          <p className="text-sm text-muted-foreground italic mb-2">
+            *Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on provider specifications. Actual savings may vary.
+          </p>
           <p className="mb-4">
             Prompt caching allows you to cache system prompts and context that
             doesn't change between requests, dramatically reducing token usage
@@ -244,10 +257,10 @@ function ToonExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function PromptCachingExample() {
-  const { prepareMessages } = useTokenOptimizationEnhanced({
+  const { prepareMessages } = useTokenOptimization({
     enablePromptCaching: true,
     cachingProvider: 'anthropic', // or 'openai' or 'auto'
   })
@@ -305,10 +318,10 @@ function PromptCachingExample() {
           </ul>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function CompressionExample() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
+  const { optimizePrompt } = useTokenOptimization({
     enablePromptCompression: true,
     compressionLevel: 'balanced', // 'conservative' | 'balanced' | 'aggressive'
   })
@@ -342,10 +355,10 @@ function CompressionExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function SemanticCacheExample() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
+  const { optimizePrompt } = useTokenOptimization({
     enableSemanticCaching: true,
     similarityThreshold: 0.85, // 85% similarity required
   })
@@ -383,10 +396,10 @@ function SemanticCacheExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function HistoryLimitingExample() {
-  const { optimizeHistory } = useTokenOptimizationEnhanced({
+  const { optimizeHistory } = useTokenOptimization({
     enableHistoryLimiting: true,
     historyLimiting: {
       maxTokens: 8000,
@@ -425,10 +438,10 @@ function HistoryLimitingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function ModelRoutingExample() {
-  const { routeQuery } = useTokenOptimizationEnhanced({
+  const { routeQuery } = useTokenOptimization({
     enableModelRouting: true,
     modelRouting: {
       simpleModel: 'gpt-3.5-turbo', // $0.0005/$0.0015 per 1K tokens
@@ -460,26 +473,26 @@ function ModelRoutingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function PresetExample() {
   // Aggressive: All optimizations enabled, maximum savings
-  const aggressive = useTokenOptimizationEnhanced({
+  const aggressive = useTokenOptimization({
     preset: 'aggressive',
   })
 
   // Balanced: Key optimizations, good UX
-  const balanced = useTokenOptimizationEnhanced({
+  const balanced = useTokenOptimization({
     preset: 'balanced',
   })
 
   // Conservative: Safe optimizations only
-  const conservative = useTokenOptimizationEnhanced({
+  const conservative = useTokenOptimization({
     preset: 'conservative',
   })
 
   // Realtime: Optimized for low latency
-  const realtime = useTokenOptimizationEnhanced({
+  const realtime = useTokenOptimization({
     preset: 'realtime',
   })
 
@@ -553,10 +566,10 @@ function PresetExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 
 function CostTrackingExample() {
-  const { stats } = useTokenOptimizationEnhanced({
+  const { stats } = useTokenOptimization({
     model: 'gpt-4',
     enableCostTracking: true,
     preset: 'balanced',
@@ -624,7 +637,7 @@ function CostTrackingExample() {
               Enable <code>enablePromptCaching</code> for system prompts
             </li>
             <li>Use with Anthropic or OpenAI models</li>
-            <li>Provides 50-90% savings on repeated context</li>
+            <li>Provides 50-90% savings on repeated context* (Based on provider-native caching specifications)</li>
           </ul>
 
           <h3 className="text-2xl font-semibold mb-3 mt-8">
@@ -677,7 +690,7 @@ function CostTrackingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+            code={`import { useTokenOptimization } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function CompleteOptimizationExample() {
@@ -690,7 +703,7 @@ function CompleteOptimizationExample() {
     optimizeHistory,
     routeQuery,
     stats,
-  } = useTokenOptimizationEnhanced({
+  } = useTokenOptimization({
     model: 'gpt-4',
     preset: 'balanced',
     enableCostTracking: true,
@@ -738,7 +751,7 @@ function CompleteOptimizationExample() {
                 href="/reference/hooks/use-token-optimization-enhanced"
                 className="text-primary underline"
               >
-                useTokenOptimizationEnhanced Hook
+                useTokenOptimization Hook
               </a>{' '}
               – Comprehensive token optimization hook
             </li>

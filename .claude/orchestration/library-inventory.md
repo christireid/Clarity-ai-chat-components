@@ -408,11 +408,9 @@
 
 | Export Name | Source File | Return Type | Public |
 |-------------|-------------|-------------|--------|
-| `useTokenTracker` | `hooks/token/use-token-tracker.ts` | - | Yes |
+| `useTokenCount` | `hooks/token/use-token-tracker.ts` | - | Yes |
 | `useTokenOptimization` | `hooks/token/use-token-optimization.ts` | `UseTokenOptimizationReturn` | Yes |
-| `useTokenOptimizationEnhanced` | `hooks/token/use-token-optimization-enhanced.ts` | `EnhancedOptimizationResult` | Yes |
 | `useTokenBudgetMonitor` | `hooks/token/use-token-budget-monitor.ts` | `TokenBudgetMonitorReturn` | Yes |
-| `useTokenCounter` | `hooks/token/useTokenCounter.ts` | `UseTokenCounterReturn` | Yes |
 | `useTokenEstimate` | `components/token/TokenCostPreview.tsx` | `TokenEstimate` | Yes |
 
 ### Storage Hooks

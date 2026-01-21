@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PromptLibrary } from '@clarity-chat/react/internal'
+import { PromptLibrary } from '@clarity-chat/react'
 
 const meta: Meta<typeof PromptLibrary> = {
   title: 'Advanced/AI/PromptLibrary',

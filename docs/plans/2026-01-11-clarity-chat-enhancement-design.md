@@ -58,7 +58,7 @@ export default defineConfig({
 
   // ENABLE OPTIMIZATIONS
   treeshake: {
-    preset: 'recommended',
+    preset: 'safest', // Use 'safest' or true for tree-shaking
     moduleSideEffects: false,
   },
   splitting: true,

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FileUpload } from '@clarity-chat/react/internal'
+import { FileUpload } from '@clarity-chat/react'
 import { expect, within } from 'storybook/test'
 
 /**

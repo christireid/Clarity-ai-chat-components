@@ -234,7 +234,7 @@ const tokenBudgetConfigProps: Prop[] = [
     type: 'boolean',
     default: 'false',
     description:
-      'Use accurate tokenization (slower but precise). Requires js-tiktoken.',
+      'Use accurate tokenization (slower but precise). Uses @clarity-chat/token-optimization.',
   },
 ]
 
@@ -475,7 +475,7 @@ function BasicMonitor() {
         <ul>
           <li>
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             - Comprehensive token optimization
           </li>
@@ -491,7 +491,7 @@ function BasicMonitor() {
 
         <Pagination
           previous={{
-            title: 'useTokenOptimizationEnhanced',
+            title: 'useTokenOptimization',
             href: '/reference/hooks/use-token-optimization-enhanced',
           }}
           next={{

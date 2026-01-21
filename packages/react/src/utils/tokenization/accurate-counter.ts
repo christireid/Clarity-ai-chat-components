@@ -340,44 +340,9 @@ export async function countTokens(
   }
 }
 
-/**
- * Count tokens accurately using tiktoken
- * Note: This requires js-tiktoken to be installed
- */
-async function countTokensAccurate(
-  text: string,
-  encoding: string
-): Promise<number> {
-  try {
-    // Dynamic import to avoid errors if package not installed
-    // @ts-expect-error - js-tiktoken is an optional peer dependency
-    const { encoding_for_model, get_encoding } = await import('js-tiktoken')
-
-    // Try to get encoding by model name first, then by encoding name
-    let encoder: any
-    try {
-      encoder = encoding_for_model(encoding as any)
-    } catch {
-      encoder = get_encoding(encoding as any)
-    }
-
-    const tokens = encoder.encode(text)
-    encoder.free?.() // Clean up if free method exists
-
-    return tokens.length
-  } catch (error) {
-    throw new Error(
-      `js-tiktoken not available or encoding not found: ${encoding}`
-    )
-  }
-}
-
-/**
- * Estimate token count (fallback when tiktoken not available)
- */
-function estimateTokenCount(text: string, charsPerToken: number): number {
-  return Math.ceil(text.length / charsPerToken)
-}
+// Legacy functions removed - now using @clarity-chat/token-optimization
+// The TokenCounter class from token-optimization provides accurate counting
+// without needing direct tiktoken imports
 
 /**
  * Count tokens in a conversation

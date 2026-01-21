@@ -143,10 +143,15 @@ export default function ROICalculatorPage() {
 
       <Callout type="info">
         <p>
-          These estimates are based on typical usage patterns and may vary
+          <strong>Important Disclaimers:</strong> These estimates are based on typical usage patterns and may vary
           depending on your specific use case. Actual savings depend on data
           structure, prompt similarity, and conversation patterns.
         </p>
+        <ul className="mt-2 ml-4 space-y-1 text-sm">
+          <li>• Cost savings based on provider prompt caching specifications (Anthropic, OpenAI, Google)</li>
+          <li>• Compression rates vary by content type and configuration</li>
+          <li>• Leverages provider-native caching when available</li>
+        </ul>
       </Callout>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 my-12">
@@ -265,7 +270,10 @@ export default function ROICalculatorPage() {
                   <span className="font-medium">TOON Format</span>
                   <p className="text-sm text-muted-foreground">
                     30-60% token savings on structured data (arrays, tables,
-                    lists)
+                    lists)*
+                  </p>
+                  <p className="text-xs text-muted-foreground italic">
+                    *Compression rates vary by content type
                   </p>
                 </div>
               </label>
@@ -282,7 +290,10 @@ export default function ROICalculatorPage() {
                 <div>
                   <span className="font-medium">Prompt Caching</span>
                   <p className="text-sm text-muted-foreground">
-                    50-90% savings on repeated system prompts and context
+                    50-90% savings on repeated system prompts and context*
+                  </p>
+                  <p className="text-xs text-muted-foreground italic">
+                    *Based on provider specifications. Leverages provider-native caching (Anthropic, OpenAI, Google)
                   </p>
                 </div>
               </label>
@@ -442,9 +453,10 @@ export default function ROICalculatorPage() {
             </p>
             <div className="text-sm">
               <p className="font-medium text-green-600 dark:text-green-400">
-                30-60% savings
+                30-60% savings*
               </p>
               <p className="text-muted-foreground">on structured data</p>
+              <p className="text-xs italic text-muted-foreground">*Rates vary by content type</p>
             </div>
             <Link
               href="/reference/utilities/toon-format"
@@ -463,9 +475,10 @@ export default function ROICalculatorPage() {
             </p>
             <div className="text-sm">
               <p className="font-medium text-green-600 dark:text-green-400">
-                50-90% savings
+                50-90% savings*
               </p>
               <p className="text-muted-foreground">on cached tokens</p>
+              <p className="text-xs italic text-muted-foreground">*Provider-native caching (Anthropic, OpenAI, Google)</p>
             </div>
             <Link
               href="/guides/prompt-caching"

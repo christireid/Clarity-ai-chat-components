@@ -293,3 +293,9 @@ export type {
   ModelInfo,
   TokenOptimizationResult,
 } from './use-token-optimization'
+
+// Token optimization statistics (for display components)
+export {
+  type TokenOptimizationStats,
+  createEmptyStats,
+} from './use-token-optimization-stats'

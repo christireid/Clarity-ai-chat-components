@@ -12,9 +12,28 @@
 
 import {
   TokenSecurityManager,
-  ValidationError,
-  SecurityViolationError,
-} from '../src/index'
+  countTokens,
+} from '@clarity-chat/token-optimization'
+
+/**
+ * Custom error classes for this example
+ */
+class ValidationError extends Error {
+  context?: Record<string, any>
+
+  constructor(message: string, context?: Record<string, any>) {
+    super(message)
+    this.name = 'ValidationError'
+    this.context = context
+  }
+}
+
+class SecurityViolationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'SecurityViolationError'
+  }
+}
 
 /**
  * Example 1: Basic Security Protection
@@ -114,7 +133,6 @@ async function example3_inputValidation() {
     }
 
     // Token count validation
-    const { countTokens } = require('../src/index')
     const tokens = countTokens(text)
 
     if (tokens > 8000) {

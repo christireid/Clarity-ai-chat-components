@@ -204,8 +204,9 @@ export interface ProviderCachingResult {
 
   /**
    * Modified messages with cache control
+   * Returns provider-specific format (Anthropic, OpenAI, or Google)
    */
-  messages: any[]
+  messages: CacheableMessage[] | AnthropicMessage[]
 
   /**
    * Cache metadata

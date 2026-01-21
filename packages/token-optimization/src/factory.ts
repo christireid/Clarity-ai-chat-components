@@ -27,7 +27,10 @@ import type { CompressionResult as MarkdownCompressionResult } from './compressi
 import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 import type { SemanticCacheConfig } from './caching/advanced-semantic-cache'
 import { ProviderCachingManager } from './providers/prompt-caching'
-import type { ProviderCachingConfig, CacheableMessage } from './providers/types'
+import type {
+  ProviderCachingConfig,
+  CacheableMessage,
+} from './providers/types'
 
 /**
  * Preset configuration levels
@@ -391,7 +394,17 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
 
     optimize: async (prompt: string) => {
       const originalTokens = counter.count(prompt)
-      let providerCacheMetadata: any = undefined
+      let providerCacheMetadata:
+        | {
+            provider: string
+            cachedTokens: number
+            savingsPercentage: number
+            estimatedSavings: {
+              tokens: number
+              costReduction: number
+            }
+          }
+        | undefined = undefined
       let providerCacheApplied = false
 
       // Step 1: Check local cache

@@ -6,7 +6,7 @@ import {
   ThemePreviewGrid,
   createTheme,
   type ModernThemePresetName,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof ThemePreviewThumbnail> = {
   title: 'Foundation/Theme Preview Thumbnail',

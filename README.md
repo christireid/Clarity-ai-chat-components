@@ -64,7 +64,8 @@ export default function App() {
 // Add memory - conversations persist and context is injected automatically
 <ClarityChatApp api="/api/chat" features={{ memory: true }} />
 
-// Add token optimization - reduce AI costs by 60-90%
+// Add token optimization - reduce AI costs by 60-90%*
+// *Based on provider prompt caching specifications. Actual savings may vary.
 <ClarityChatApp api="/api/chat" features={{ tokenOptimization: true }} />
 
 // Use a preset for common configurations
@@ -106,7 +107,9 @@ export default function App() {
 - 📦 **1** tree-shakeable package
 - ✨ WCAG AAA built-in
 - 🛡️ Battle-tested recovery
-- 💸 Automatic optimization (60-90% savings)
+- 💸 Automatic optimization (60-90% savings)*
+
+<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
 - 📈 7 analytics providers included
 
 </td>
@@ -230,7 +233,9 @@ _"I need everything"_
 
 ## 🔧 Key Features
 
-### **💰 Token Optimization** → _Save 60-90% on AI costs_
+### **💰 Token Optimization** → _Save 60-90% on AI costs*_
+
+<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
 
 ```tsx
 // Enabled with one flag - no setup required
@@ -430,7 +435,7 @@ Battery-aware streaming, performance optimization, analytics
 <tr><td>Setup Time</td><td><strong>3 minutes</strong></td><td>~15 min</td><td>~30 min</td><td>~10 min</td></tr>
 <tr><td>Components</td><td><strong>155+</strong></td><td>~20</td><td>~50</td><td>~40</td></tr>
 <tr><td>React Hooks</td><td><strong>70+</strong></td><td>~5</td><td>~10</td><td>~8</td></tr>
-<tr><td>Token Optimization</td><td><strong>✅ 60-90% savings</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Token Optimization</td><td><strong>✅ 60-90% savings*</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>Memory/Context</td><td><strong>Built-in</strong></td><td>Manual</td><td>Manual</td><td>Manual</td></tr>
 <tr><td>RAG Pipeline</td><td><strong>✅</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
 <tr><td>Preset System</td><td><strong>6 presets</strong></td><td>❌</td><td>❌</td><td>❌</td></tr>
@@ -439,6 +444,8 @@ Battery-aware streaming, performance optimization, analytics
 <tr><td>License</td><td><strong>MIT</strong></td><td>MIT</td><td>Commercial</td><td>Commercial</td></tr>
 </tbody>
 </table>
+
+<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
 
 <br />
 

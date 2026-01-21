@@ -3,7 +3,7 @@ import {
   PromptTestHarness,
   EvaluationDashboard,
   SafetyReviewConsole,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 /**
  * AI Operations components for testing, monitoring, and improving AI systems.

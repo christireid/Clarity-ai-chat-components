@@ -19,6 +19,7 @@
  */
 
 import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability/index.js'
 
 export interface DynamicCompressionConfig {
   targetQuality: number // Target quality score (0.8-0.99)
@@ -87,8 +88,26 @@ export class DynamicCompressionEngine {
   private contentAnalyzer: ContentAnalyzer
   private adaptiveController: AdaptiveController
   private feedbackLoop: FeedbackLoop
+  private logger: Logger
 
   constructor(private config: DynamicCompressionConfig) {
+    this.logger = new Logger({
+      logLevel: 'info',
+      structuredLogging: true,
+      metricsEnabled: false,
+      tracingEnabled: false,
+    })
+
+    // Deprecation warning
+    this.logger.warn(
+      '⚠️ DynamicCompressionEngine is deprecated and will be removed in v2.0.0',
+      {
+        migration: 'Use LLMLinguaCompressor for real compression (2-20x)',
+        alternative: 'Or use AdaptiveCompressor for automatic strategy selection',
+        docs: 'https://github.com/clarity-chat/token-optimization/blob/main/MIGRATION.md',
+      }
+    )
+
     this.strategies = new Map()
     this.qualityMonitor = new QualityMonitor()
     this.performanceTracker = new PerformanceTracker()
@@ -442,7 +461,9 @@ export class DynamicCompressionEngine {
     content: string,
     error: Error
   ): Promise<CompressionResult> {
-    console.error('Compression failed, applying emergency fallback:', error)
+    this.logger.error('Compression failed, applying emergency fallback', {
+      error,
+    })
 
     const minimalCompressed = await this.applyMinimalCompression(content)
     const qualityScore = await this.qualityMonitor.quickQualityCheck(

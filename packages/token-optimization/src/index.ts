@@ -67,6 +67,54 @@ export {
 } from './defaults'
 export type { PresetName } from './defaults'
 
+// ============================================================================
+// Model Registry & Pricing (Single Source of Truth)
+// ============================================================================
+
+export {
+  MODEL_REGISTRY,
+  getAllModelIds,
+  getModelsByProvider,
+  getModelsWithCapability,
+  getModelsWithMinContextWindow,
+  isValidModelId,
+  getModelConfig,
+  tryGetModelConfig,
+} from './models/model-registry'
+export type {
+  ModelId,
+  ModelProvider,
+  TokenizerEncoding,
+  TokenModelConfig,
+} from './models/model-registry'
+
+export {
+  MODEL_PRICING,
+  calculateCost,
+  calculateCacheSavings,
+  estimateConversationCost,
+  compareModelCosts,
+  recommendModel,
+  getModelPricing,
+  modelSupportsCaching,
+  getModelsWithCaching,
+} from './models/model-pricing'
+export type {
+  PricingProvider,
+  ModelPricing,
+  CostCalculation,
+} from './models/model-pricing'
+
+// Token Estimation Utilities
+export {
+  estimateTokens,
+  countConversationTokens,
+  estimateMessagesTokens,
+  getCharsPerToken,
+  shouldUseAsyncEstimation,
+  estimateTokensDebug,
+} from './utils/token-estimation'
+
 // Security exports (Node.js only - uses events module via security-dashboard)
 // export { EnhancedSecurityManager } from './security/enhanced-security'
 // export type {
@@ -132,6 +180,21 @@ export type {
   BudgetStatus,
   ResourceRequirements,
 } from './cost/cost-aware-optimizer'
+
+// Analytics exports - Real-time cost tracking and savings calculation
+export {
+  calculateCost as calculateRequestCost,
+  getSavingsPercentage,
+  CostTracker,
+  compareModelCosts as compareModelCostsDetailed,
+  estimatePotentialSavings,
+} from './analytics/cost-calculator'
+export type {
+  TokenUsage as AnalyticsTokenUsage,
+  CostBreakdown,
+  CostTracking,
+  SavingsReport,
+} from './analytics/cost-calculator'
 
 // Caching exports
 export { AdvancedSemanticCache } from './caching/advanced-semantic-cache'
@@ -210,17 +273,11 @@ export type {
   MemoryAdaptiveOptions,
   MemoryTruncateResult,
   MemoryNoCompressionResult,
-} from './compression'
-
-// Legacy compression exports (deprecated - use new strategies above)
-export { DynamicCompressionEngine } from './compression/dynamic-compression'
-export type {
+  // Legacy compression types (deprecated - for backward compatibility)
   DynamicCompressionConfig,
-  CompressionStrategy,
-  CompressionResult,
+  QualityMetrics,
   CompressionContext,
-  QualityMetrics as CompressionQualityMetrics,
-} from './compression/dynamic-compression'
+} from './compression'
 
 // Token counting exports (legacy compatibility)
 export {
@@ -248,7 +305,7 @@ export type {
   MemoryBudgetContext,
 } from './budget/memory-budget'
 
-// Tokenizers - using gpt-tokenizer (20x smaller than tiktoken WASM)
+// Tokenizers - using gpt-tokenizer (5-6x smaller than tiktoken)
 export { AccurateTokenCounter } from './tokenizers/accurate-counter'
 export type {
   TokenizerConfig,
@@ -259,6 +316,16 @@ export type {
 } from './tokenizers/accurate-counter'
 
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
+
+// Provider-Native Token Counting - 100% accurate counting using provider APIs
+export {
+  ProviderNativeCounter,
+  providerNativeCount,
+} from './tokenizers/provider-native-counter'
+export type {
+  ProviderNativeCounterConfig,
+  TokenCountResult,
+} from './tokenizers/provider-native-counter'
 
 // Provider-Native Caching (Anthropic, OpenAI, Google) - 90% savings on cached tokens
 export {
@@ -405,6 +472,13 @@ export {
   useTieredCache,
   useModelRouter,
   useOptimizationPipeline,
+  // Token budget monitoring
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  isValidBudgetMonitorModel,
+  estimateTokenCost,
 } from './hooks'
 export type {
   // Simple hook types
@@ -419,6 +493,16 @@ export type {
   PipelineResult,
   PipelineStats,
   UseOptimizationPipelineReturn,
+  // Token budget monitoring types
+  TokenUsageStatus,
+  TokenUsage,
+  TrimResult,
+  BudgetMessage,
+  TokenBudgetConfig,
+  TokenBudgetMonitorReturn,
+  BudgetMonitorModel,
+  TokenCostEstimate,
+  ModelName, // Backward compatibility
 } from './hooks'
 
 // React Components
@@ -430,6 +514,44 @@ export type {
   UseTokenBudgetConfig,
   UseTokenBudgetReturn,
 } from './components'
+
+// Token Cost Preview (React)
+export { TokenCostPreview, useTokenEstimate } from './react'
+export type {
+  TokenCostPreviewProps,
+  UseTokenEstimateOptions,
+  TokenEstimate,
+} from './react'
+
+// Token Usage Meter (React) - Animated + Static versions
+export {
+  TokenUsageMeter,
+  TokenUsageMeterStatic,
+  MODEL_PRICING_PRESETS,
+} from './react'
+export type {
+  TokenUsage as TokenMeterUsage,
+  ModelPricing as TokenMeterPricing,
+  TokenUsageMeterProps,
+  TokenUsageStatic as TokenMeterUsageStatic,
+  ModelPricingStatic as TokenMeterPricingStatic,
+  TokenUsageMeterStaticProps,
+} from './react'
+
+// Token Optimization Components (React) - Badge, Panel, Dashboard
+export {
+  TokenOptimizationBadge,
+  TokenOptimizationPanel,
+  TokenOptimizationDashboard,
+  createEmptyStats,
+} from './react'
+export type {
+  TokenOptimizationBadgeProps,
+  TokenOptimizationPanelProps,
+  TokenOptimizationDashboardProps,
+  OptimizationMetrics,
+  TokenOptimizationStats,
+} from './react'
 
 // Accessibility - WCAG 2.1 AA compliant utilities
 export {

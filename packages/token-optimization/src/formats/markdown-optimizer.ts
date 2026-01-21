@@ -15,7 +15,7 @@
  *
  * @example
  * ```typescript
- * import { MarkdownOptimizer, stripMarkdown, compressMarkdown } from '@clarity-ai/token-optimization'
+ * import { MarkdownOptimizer, stripMarkdown, compressMarkdown } from '@clarity-chat/token-optimization'
  *
  * // Quick usage with convenience functions
  * const plainText = stripMarkdown('# Hello **World**')
@@ -647,7 +647,7 @@ export class MarkdownOptimizer {
  *
  * @example
  * ```typescript
- * import { stripMarkdown } from '@clarity-ai/token-optimization'
+ * import { stripMarkdown } from '@clarity-chat/token-optimization'
  *
  * const plain = stripMarkdown('# Hello **World**')
  * // Result: 'Hello World'
@@ -679,7 +679,7 @@ export function stripMarkdown(text: string): string {
  *
  * @example
  * ```typescript
- * import { compressMarkdown } from '@clarity-ai/token-optimization'
+ * import { compressMarkdown } from '@clarity-chat/token-optimization'
  *
  * // Default compression (preserves headers and code blocks)
  * const compressed = compressMarkdown('# Hello\n\n\n\n**World**')

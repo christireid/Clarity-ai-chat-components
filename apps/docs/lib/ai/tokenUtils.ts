@@ -1,35 +1,30 @@
 /**
  * Token Counting Utilities
  *
- * Provides token estimation and validation for prompts.
- * Uses a character-based approximation calibrated for English text and code.
+ * Uses @clarity-chat/token-optimization for accurate token counting.
+ * Provides backward-compatible API for docs site.
  *
- * For production accuracy, consider using tiktoken:
- * https://github.com/openai/tiktoken
- *
- * @version 1.0.0
- * @lastUpdated December 2025
+ * @version 2.0.0
+ * @lastUpdated January 2026
+ * @migrated Now using unified token-optimization package
  */
 
+import { SimpleTokenCounter } from '@clarity-chat/token-optimization'
+
+// Create singleton instance
+const tokenCounter = new SimpleTokenCounter()
+
 /**
- * Average characters per token for different content types.
- * Based on OpenAI's tokenizer behavior:
- * - English prose: ~4 chars/token
- * - Code: ~3 chars/token (more special chars, shorter words)
- * - Mixed content: ~3.5 chars/token
+ * Content type for estimation
+ * Maintained for backward compatibility
  */
-const CHARS_PER_TOKEN = {
-  prose: 4,
-  code: 3,
-  mixed: 3.5,
-} as const
-
-type ContentType = keyof typeof CHARS_PER_TOKEN
+type ContentType = 'prose' | 'code' | 'mixed'
 
 /**
- * Estimate token count for a string using character-based heuristics.
+ * Estimate token count for a string.
  *
- * This is an approximation. For exact counts, use tiktoken.
+ * Now uses SimpleTokenCounter from @clarity-chat/token-optimization
+ * for more accurate estimation.
  *
  * @param text - The text to estimate tokens for
  * @param contentType - Type of content (prose, code, or mixed)
@@ -41,38 +36,9 @@ export function estimateTokens(
 ): number {
   if (!text) return 0
 
-  const charsPerToken = CHARS_PER_TOKEN[contentType]
-  const baseEstimate = Math.ceil(text.length / charsPerToken)
-
-  // Adjust for special patterns that affect tokenization
-  const adjustments = calculateTokenAdjustments(text)
-
-  return Math.max(1, baseEstimate + adjustments)
-}
-
-/**
- * Calculate adjustments for patterns that affect tokenization.
- */
-function calculateTokenAdjustments(text: string): number {
-  let adjustment = 0
-
-  // Code blocks tend to have more tokens than character count suggests
-  const codeBlockCount = (text.match(/```[\s\S]*?```/g) || []).length
-  adjustment += codeBlockCount * 5 // Each code block adds overhead
-
-  // URLs are tokenized inefficiently
-  const urlCount = (text.match(/https?:\/\/\S+/g) || []).length
-  adjustment += urlCount * 3
-
-  // Special XML-style tags add tokens
-  const tagCount = (text.match(/<\/?[a-z_][a-z0-9_]*>/gi) || []).length
-  adjustment += Math.ceil(tagCount * 0.5)
-
-  // Markdown headers, lists, etc. add some overhead
-  const markdownElements = (text.match(/^[#\-*>]/gm) || []).length
-  adjustment += Math.ceil(markdownElements * 0.2)
-
-  return adjustment
+  // Use SimpleTokenCounter which provides accurate estimation
+  // The contentType parameter is kept for API compatibility
+  return tokenCounter.estimate(text, contentType)
 }
 
 /**
@@ -107,6 +73,8 @@ export function validateTokenEstimate(
 
 /**
  * Analyze a prompt and return detailed token information.
+ *
+ * Uses @clarity-chat/token-optimization for accurate estimates.
  */
 export function analyzePromptTokens(prompt: string): {
   estimatedTokens: number
