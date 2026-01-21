@@ -502,6 +502,84 @@ export type {
   ErrorHandlingConfigHelper as ErrorConfigHelper,
 } from './types/intellisense-helpers'
 
+// Component Composition - Easy component building
+export {
+  composeComponents,
+  withProps,
+  conditional,
+  Compositions,
+  createGridLayout,
+  FlexLayouts,
+  composeHooks,
+  transformProps,
+  withDefaults,
+  withVariants,
+  createContextProvider,
+} from './utils/component-composition'
+
+// Theme Helpers - Easy theming and customization
+export {
+  ThemePresets,
+  createThemeFromPalette,
+  createThemeFromCSSVariables,
+  mergeThemes,
+  createThemeVariant,
+  createThemeClasses,
+  applyThemeToCSS,
+  useTheme,
+  useResponsiveTheme,
+  usePersistentTheme,
+  ThemeProvider,
+  ThemeToggle,
+  ThemeSelector,
+} from './utils/theme-helpers'
+
+// Accessibility Helpers - Enhanced A11y support
+export {
+  createAccessibleButtonProps,
+  createAccessibleDialogProps,
+  createAccessibleListboxProps,
+  useKeyboardListNavigation,
+  useChatInputKeyboard,
+  announceToScreenReader,
+  useScreenReaderAnnouncements,
+  LiveRegion,
+  useFocusManagement,
+  isKeyboardAccessible,
+  getFocusableElements,
+  validateChatAccessibility,
+  useMotionPreferences,
+  createAccessibleMotionProps,
+  useHighContrastMode,
+  applyHighContrastAdjustments,
+  SkipLink,
+  ScreenReaderOnly,
+} from './utils/accessibility-helpers'
+
+// Testing Helpers - Comprehensive testing toolkit
+export {
+  mockChatAPI,
+  MockWebSocket,
+  MockLocalStorage,
+  createMockFetch,
+  renderChatWithDefaults,
+  createTestMessages,
+  createMockChatState,
+  createMockClarityChatHook,
+  asyncTestUtils,
+  domTestUtils,
+  a11yTestUtils,
+  performanceTestUtils,
+  e2eTestUtils,
+  testConfigs,
+  TestWrapper,
+  createTestComponent,
+  testDataFactories,
+  chatAssertions,
+  vi,
+  Mock,
+} from './utils/testing-helpers'
+
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
 // Note: useCommandPaletteCommands has a broken import path and is excluded
