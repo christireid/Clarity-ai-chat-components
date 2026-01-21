@@ -8,7 +8,8 @@
  */
 
 import * as React from 'react'
-import { vi, Mock } from 'vitest'
+import { vi } from 'vitest'
+import type { Mock } from 'vitest'
 
 // =============================================================================
 // MOCKS AND STUBS
@@ -696,5 +697,5 @@ export const chatAssertions = {
 export {
   // Re-export vitest utilities for convenience
   vi,
-  Mock,
 }
+export type { Mock }

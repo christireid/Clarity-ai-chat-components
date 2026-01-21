@@ -315,7 +315,7 @@ export function getPerformanceSummary(): {
 /**
  * Higher-order component for performance tracking
  */
-export function withPerformanceTracking<P extends object>(
+export function withComponentPerformanceTracking<P extends object>(
   Component: React.ComponentType<P>,
   componentName: string
 ) {
@@ -325,7 +325,7 @@ export function withPerformanceTracking<P extends object>(
     return <Component {...props} />
   }
 
-  WrappedComponent.displayName = `withPerformanceTracking(${componentName})`
+  WrappedComponent.displayName = `withComponentPerformanceTracking(${componentName})`
 
   return WrappedComponent
 }

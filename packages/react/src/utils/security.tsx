@@ -9,6 +9,7 @@
  * - Input validation and sanitization
  */
 
+import * as React from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 
 // ============================================================================
