@@ -6,6 +6,8 @@
  */
 
 import type { RateLimitInfo } from '../utils/api/rate-limit-headers'
+import type { RetryConfig } from './retry'
+import type { CircuitBreakerConfig } from './circuit-breaker'
 
 /**
  * Why generation stopped
@@ -54,6 +56,10 @@ export interface ModelConfig {
     /** Callback for citations */
     onCitation?: (citation: Citation) => void
   }
+  /** Retry configuration for automatic retry on failures */
+  retry?: RetryConfig | false
+  /** Enable circuit breaker protection (default: true) */
+  circuitBreaker?: boolean | CircuitBreakerConfig
 }
 
 export interface ChatMessage {

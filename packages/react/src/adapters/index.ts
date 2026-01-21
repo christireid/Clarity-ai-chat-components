@@ -26,6 +26,54 @@ export type {
   AdapterRegistry,
 } from './types'
 
+// Error types and classes
+export {
+  AdapterErrorCode,
+  AdapterError,
+  AuthenticationError,
+  APIKeyMissingError,
+  RateLimitError,
+  InvalidRequestError,
+  ServerError,
+  NetworkError,
+  TimeoutError,
+  ContentFilterError,
+  parseHttpError,
+  parseNetworkError,
+  isAdapterError,
+  isRetryableError,
+  getErrorRetryDelay,
+} from './errors'
+
+// Retry types and utilities
+export type {
+  RetryConfig,
+  RetryContext,
+  RetryStats,
+} from './retry'
+
+export {
+  DEFAULT_RETRY_CONFIG,
+  calculateRetryDelay,
+  withRetry,
+  withRetryWrapper,
+  RetryTracker,
+} from './retry'
+
+// Circuit breaker types and utilities
+export {
+  CircuitState,
+  CircuitBreakerError,
+  CircuitBreaker,
+  CircuitBreakerRegistry,
+  globalCircuitBreakerRegistry,
+} from './circuit-breaker'
+
+export type {
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+} from './circuit-breaker'
+
 // Runtime functions and type guards
 export {
   createAdapterRegistry,
