@@ -84,6 +84,10 @@ export default function MigrateFromVercelAISDKPage() {
       </section>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Migration Steps</h2>
 
         <h3>1. Install Clarity Chat</h3>

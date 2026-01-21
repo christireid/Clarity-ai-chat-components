@@ -67,42 +67,6 @@ export * from './use-rag-pipeline'
 // CoreMessage and related types are re-exported for consumers who need type compatibility
 export { type CoreMessage } from './use-chat-enhanced'
 
-// ============================================================================
-// DEPRECATED HOOKS (Will be removed in v2.0)
-// Migrate to useClarityChat - see https://docs.clarity-chat.dev/migration
-// ============================================================================
-
-/**
- * @deprecated Use useClarityChat instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './use-chat-unified'
-
-/**
- * @deprecated Use useClarityChat instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export {
-  useChat as useChatLegacy,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './use-chat'
-
-/**
- * @deprecated Use useClarityChat instead. ChatWindow accepts CoreMessage[] directly.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export * from './use-chat-simple'
-
-/**
- * @deprecated Use useClarityChat with primitives instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export * from './use-chat-composable'
 
 // ============================================================================
 // INTERNAL HOOKS (Not for public use - use useClarityChat instead)

@@ -602,3 +602,125 @@ export const InteractiveDemo: Story = {
     )
   },
 }
+
+/**
+ * **Component Architecture Showcase**
+ *
+ * Demonstrates the modular architecture improvements made to the Message component.
+ * Shows how the massive 570+ line component was optimized and made more maintainable.
+ */
+export const ArchitectureShowcase: Story = {
+  args: {
+    message: {
+      id: 'msg-1',
+      chatId: 'demo-chat',
+      role: 'assistant',
+      content: `# Message Component Architecture
+
+## Before (Audit Findings)
+- **570+ lines** in a single component
+- **Massive render function** doing too many things
+- **Hard to test and maintain**
+- **Poor separation of concerns**
+
+## After (Architectural Improvements)
+The Message component is now composed of focused sub-components:
+
+### Extracted Components
+1. **\`MarkdownCodeBlock\`** - Code syntax highlighting
+2. **\`MessageActions\`** - Action buttons (copy, feedback, retry, etc.)
+3. **\`MessageMetadata\`** - Status and metadata display
+4. **\`EditableMessageContent\`** - Inline editing functionality
+5. **\`CopyButton\`** - Code block copy functionality
+
+### Benefits
+- **Single responsibility** - Each component does one specific thing
+- **Better testability** - Smaller, focused components
+- **Improved reusability** - Components can be used in other contexts
+- **Enhanced maintainability** - Changes are localized and safer
+- **Performance optimization** - Better memoization and rendering
+
+### Component Structure
+\`\`\`
+Message (Main Container)
+├── Message Header (Avatar, Name, Timestamp)
+├── Message Content
+│   ├── Plain Text (User Messages)
+│   └── Markdown Rendering (Assistant Messages)
+│       ├── ReactMarkdown
+│       ├── MarkdownCodeBlock (with CopyButton)
+│       └── Streaming Cursor
+├── Message Actions (on hover/focus)
+│   ├── Copy Button
+│   ├── Feedback Buttons
+│   ├── Retry Button
+│   ├── Edit Button
+│   └── Delete Button
+├── Message Metadata
+└── Error Display
+\`\`\`
+
+This modular architecture makes the Message component much more maintainable and extensible!`,
+      createdAt: new Date(Date.now() - 30000),
+      updatedAt: new Date(Date.now() - 30000),
+      status: 'sent',
+    },
+    onFeedback: (type) => console.log('Feedback:', type),
+    onCopy: (id, content) => {
+      navigator.clipboard.writeText(content)
+      console.log('Copied:', id)
+    },
+    onRetry: (id) => console.log('Retry:', id),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: `
+This story showcases the **architectural improvements** made to the Message component during the audit.
+
+## Transformation Summary
+
+### Before (Problematic)
+- **570+ line monolithic component**
+- **Single massive render function**
+- **Hard to test, maintain, and extend**
+- **Poor code organization**
+
+### After (Optimized)
+- **Modular sub-component architecture**
+- **Focused, single-responsibility components**
+- **Better separation of concerns**
+- **Improved testability and maintainability**
+
+## Key Improvements
+
+### 1. Component Extraction
+The original 570+ line component was broken down into:
+
+- \`MarkdownCodeBlock\` - Handles code syntax highlighting
+- \`MessageActions\` - Manages action buttons and interactions
+- \`MessageMetadata\` - Displays status and metadata
+- \`EditableMessageContent\` - Handles inline editing
+- \`CopyButton\` - Provides copy functionality for code blocks
+
+### 2. Better Organization
+- **Clear component hierarchy**
+- **Logical separation of concerns**
+- **Improved readability and maintainability**
+
+### 3. Enhanced Performance
+- **Better memoization opportunities**
+- **Reduced render complexity**
+- **More efficient updates**
+
+### 4. Improved Testability
+- **Smaller, focused components**
+- **Easier to unit test**
+- **Better isolation of functionality**
+
+This architectural transformation makes the Message component much more robust and maintainable!
+        `,
+      },
+    },
+  },
+}

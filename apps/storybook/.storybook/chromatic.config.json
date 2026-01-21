@@ -1,0 +1,17 @@
+{
+  "$schema": "https://www.chromatic.com/chromatic.schema.json",
+  "projectToken": "CHROMATIC_PROJECT_TOKEN",
+  "buildScriptName": "build:chromatic",
+  "externals": [
+    "**/node_modules/**"
+  ],
+  "skip": [
+    "dependabot/**",
+    "renovate/**"
+  ],
+  "onlyChanged": true,
+  "autoAcceptChanges": "main",
+  "exitZeroOnChanges": false,
+  "storybookBaseDir": ".",
+  "zip": true
+}
