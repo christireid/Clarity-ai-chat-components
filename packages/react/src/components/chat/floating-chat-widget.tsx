@@ -111,6 +111,7 @@ export function FloatingChatWidget({
       previousFocusRef.current.focus()
       previousFocusRef.current = null
     }
+    return undefined
   }, [isOpen])
 
   // Track new messages for live region announcements
