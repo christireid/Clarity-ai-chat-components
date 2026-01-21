@@ -20,16 +20,20 @@ export interface UseStreamingErrorOptions extends UseEnhancedErrorHandlerOptions
   retryDelay?: number
   /** Jitter factor (0-1) for randomizing delays to prevent thundering herd */
   jitterFactor?: number
-  /** Called when retrying */
-  onRetry?: (attempt: number) => void
+  /** ERROR-2: Called when retrying (now includes partial state for resumption) */
+  onRetry?: (attempt: number, partialState?: ResumePayload) => void
   /** Called when max retries exceeded */
   onMaxRetriesExceeded?: (error: StreamingError) => void
   /** Circuit breaker: failures before opening circuit */
   circuitBreakerThreshold?: number
   /** Circuit breaker: time before attempting recovery (ms) */
   circuitBreakerResetTime?: number
+  /** ERROR-1: Circuit breaker: consecutive successes required to close circuit (default: 3) */
+  circuitBreakerSuccessThreshold?: number
   /** Called when circuit breaker opens */
   onCircuitOpen?: () => void
+  /** ERROR-1: Called when circuit breaker closes after recovery */
+  onCircuitClose?: () => void
 }
 
 export interface UseStreamingErrorReturn {
@@ -60,6 +64,8 @@ export interface UseStreamingErrorReturn {
   retryAfterMs: number | null
   /** Circuit breaker state */
   circuitState: CircuitState
+  /** ERROR-1: Number of consecutive successes (used for circuit breaker recovery) */
+  successCount: number
   /** Whether stream can be resumed from partial content */
   canResume: boolean
 }
@@ -147,7 +153,9 @@ export function useStreamingError(
     onMaxRetriesExceeded,
     circuitBreakerThreshold = 5,
     circuitBreakerResetTime = 30000,
+    circuitBreakerSuccessThreshold = 3, // ERROR-1: Consecutive successes to close circuit
     onCircuitOpen,
+    onCircuitClose, // ERROR-1: Callback when circuit closes
     ...errorOptions
   } = options
 
@@ -162,7 +170,9 @@ export function useStreamingError(
   const [retryAfterMs, setRetryAfterMs] = React.useState<number | null>(null)
   const [circuitState, setCircuitState] = React.useState<CircuitState>('closed')
   const [failureCount, setFailureCount] = React.useState(0)
+  const [successCount, setSuccessCount] = React.useState(0) // ERROR-1: Track consecutive successes
   const [lastEventId, setLastEventId] = React.useState<string | undefined>()
+  const [partialContent, setPartialContent] = React.useState<string | undefined>() // ERROR-2: Store partial content for retry
 
   const retryCallbackRef = React.useRef<
     ((resumePayload?: ResumePayload) => void | Promise<void>) | null
@@ -214,6 +224,9 @@ export function useStreamingError(
       rawError: unknown,
       opts?: { partialContent?: string; lastEventId?: string }
     ) => {
+      // ERROR-1: Reset success count on any error
+      setSuccessCount(0)
+
       // Track failure for circuit breaker (cap at threshold + 1 to prevent overflow)
       const newFailureCount = Math.min(
         failureCount + 1,
@@ -234,9 +247,12 @@ export function useStreamingError(
         openCircuit()
       }
 
-      // Store last event ID for resumption
+      // ERROR-2: Store partial state for resumption
       if (opts?.lastEventId) {
         setLastEventId(opts.lastEventId)
+      }
+      if (opts?.partialContent) {
+        setPartialContent(opts.partialContent)
       }
 
       const streamError =
@@ -336,13 +352,25 @@ export function useStreamingError(
       setRetryAfterMs(null)
 
       try {
-        onRetry?.(nextAttempt)
-        await retryCallbackRef.current?.()
+        // ERROR-2: Build partial state for retry
+        const partialState: ResumePayload | undefined =
+          partialContent || lastEventId
+            ? { partialContent, lastEventId }
+            : undefined
 
-        // Success - if circuit was half-open, close it
-        if (circuitState === 'half-open') {
+        onRetry?.(nextAttempt, partialState)
+        await retryCallbackRef.current?.(partialState)
+
+        // ERROR-1: Success - increment success count and check if circuit should close
+        const newSuccessCount = successCount + 1
+        setSuccessCount(newSuccessCount)
+
+        // If circuit was half-open and we have enough successes, close it
+        if (circuitState === 'half-open' && newSuccessCount >= circuitBreakerSuccessThreshold) {
           setCircuitState('closed')
           setFailureCount(0)
+          setSuccessCount(0) // Reset after closing circuit
+          onCircuitClose?.()
         }
       } catch {
         // Error will be handled by handleStreamError
@@ -350,7 +378,7 @@ export function useStreamingError(
         setIsRetrying(false)
       }
     }, delay)
-  }, [canRetry, retryCount, retryDelay, jitterFactor, onRetry, circuitState])
+  }, [canRetry, retryCount, retryDelay, jitterFactor, onRetry, circuitState, successCount, circuitBreakerSuccessThreshold, onCircuitClose, partialContent, lastEventId])
 
   const resumeStream = React.useCallback(
     async (customPayload?: ResumePayload) => {
@@ -378,10 +406,16 @@ export function useStreamingError(
       try {
         await retryCallbackRef.current(resumePayload)
 
-        // Success - reset circuit breaker if needed
-        if (circuitState === 'half-open') {
+        // ERROR-1: Success - increment success count and check if circuit should close
+        const newSuccessCount = successCount + 1
+        setSuccessCount(newSuccessCount)
+
+        // If circuit was half-open and we have enough successes, close it
+        if (circuitState === 'half-open' && newSuccessCount >= circuitBreakerSuccessThreshold) {
           setCircuitState('closed')
           setFailureCount(0)
+          setSuccessCount(0) // Reset after closing circuit
+          onCircuitClose?.()
         }
       } catch {
         // Error will be handled by handleStreamError
@@ -389,7 +423,7 @@ export function useStreamingError(
         setIsRetrying(false)
       }
     },
-    [error, lastEventId, circuitState]
+    [error, lastEventId, circuitState, successCount, circuitBreakerSuccessThreshold, onCircuitClose]
   )
 
   const clearError = React.useCallback(() => {
@@ -398,6 +432,7 @@ export function useStreamingError(
     setIsRetrying(false)
     setRetryAfterMs(null)
     setLastEventId(undefined)
+    setPartialContent(undefined) // ERROR-2: Clear partial content
 
     if (retryTimerRef.current) {
       clearTimeout(retryTimerRef.current)
@@ -421,6 +456,7 @@ export function useStreamingError(
     canRetry,
     retryAfterMs,
     circuitState,
+    successCount, // ERROR-1: Expose success count
     canResume,
   }
 }
