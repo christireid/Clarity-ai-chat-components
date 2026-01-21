@@ -120,9 +120,19 @@ export function AdvancedChatInput({
   const [cursorPosition, setCursorPosition] = useState(0)
   const internalRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // React Concurrent Features - useTransition for non-blocking suggestion updates
   const [isPending, startTransition] = useTransition()
+
+  // Cleanup focus timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (focusTimeoutRef.current) {
+        clearTimeout(focusTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // React 19: Merge internal and external refs using useMergedRef utility
   const mergedTextareaRef = useMergedRef(internalRef, ref)
@@ -236,8 +246,8 @@ export function AdvancedChatInput({
       setShowSuggestions(false)
       setTriggerChar(null)
 
-      // Focus back to textarea
-      setTimeout(() => {
+      // Focus back to textarea (store timeout ID for cleanup)
+      focusTimeoutRef.current = setTimeout(() => {
         textareaRef.current?.focus()
       }, 0)
     },

@@ -186,6 +186,16 @@ export function ChatInput({
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const buttonStateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  React.useEffect(() => {
+    return () => {
+      if (buttonStateTimeoutRef.current) {
+        clearTimeout(buttonStateTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Request deduplication to prevent double-submit on rapid clicks
   const { execute: dedupeExecute, isPending } = useRequestDeduplication({
@@ -256,8 +266,8 @@ export function ChatInput({
         await onSubmit(trimmedValue)
       })
       setButtonState('success')
-      // Auto-reset after showing success
-      setTimeout(() => setButtonState('idle'), 1000)
+      // Auto-reset after showing success (store ref for cleanup)
+      buttonStateTimeoutRef.current = setTimeout(() => setButtonState('idle'), 1000)
     } catch (error) {
       // Ignore debounced/deduplicated requests
       if (isDebouncedError(error)) {
@@ -266,8 +276,8 @@ export function ChatInput({
       }
       setButtonState('error')
       console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
-      setTimeout(() => setButtonState('idle'), 2000)
+      // Auto-reset after showing error (store ref for cleanup)
+      buttonStateTimeoutRef.current = setTimeout(() => setButtonState('idle'), 2000)
     }
   }
 
