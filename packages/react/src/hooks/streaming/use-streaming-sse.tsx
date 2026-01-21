@@ -67,6 +67,9 @@ export interface UseStreamingSSEOptions {
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
 
+  /** RECONNECT-2: Consecutive successes required to reset backoff (default: 3) */
+  reconnectSuccessThreshold?: number
+
   /** Heartbeat interval in ms (default: 30000) */
   heartbeatInterval?: number
 
@@ -260,6 +263,7 @@ export function useStreamingSSE(
     maxReconnectAttempts = 5,
     reconnectDelay: initialReconnectDelay = 1000,
     maxReconnectDelay = 30000,
+    reconnectSuccessThreshold = 3, // RECONNECT-2: Consecutive successes to reset backoff
     heartbeatInterval = 30000,
     connectionTimeout = 15000,
     maxEventBufferSize: rawMaxEventBufferSize = 1000,
@@ -285,6 +289,7 @@ export function useStreamingSSE(
   const [error, setError] = React.useState<Error | undefined>(undefined)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
+  const [reconnectSuccessCount, setReconnectSuccessCount] = React.useState(0) // RECONNECT-2: Track consecutive successes
 
   // Refs
   const abortControllerRef = React.useRef<AbortController | null>(null)
@@ -450,8 +455,19 @@ export function useStreamingSSE(
       setStatus('connected')
       setReconnectAttempt(0)
       setIsReconnecting(false)
-      // SSE-6: Use server-suggested retry if available, otherwise use initial delay
-      reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
+
+      // RECONNECT-2: Only reset backoff after sustained success
+      setReconnectSuccessCount((prev) => {
+        const newCount = prev + 1
+        // Reset delay only after reaching threshold
+        if (newCount >= reconnectSuccessThreshold) {
+          // SSE-6: Use server-suggested retry if available, otherwise use initial delay
+          reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
+          return 0 // Reset success count after backoff reset
+        }
+        return newCount
+      })
+
       onOpen?.()
 
       // Start heartbeat monitoring
@@ -548,6 +564,7 @@ export function useStreamingSSE(
       logger.error('[useStreamingSSE] Connection error:', error)
       setError(error)
       setStatus('error')
+      setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on error
       onError?.(error)
 
       // Attempt reconnection
@@ -656,6 +673,7 @@ export function useStreamingSSE(
     setError(undefined)
     setReconnectAttempt(0)
     setIsReconnecting(false)
+    setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on manual reset
     lastEventIdRef.current = ''
     serverSuggestedRetryRef.current = null // SSE-6: Clear server-suggested retry on reset
     reconnectDelayRef.current = initialReconnectDelay

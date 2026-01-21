@@ -55,6 +55,9 @@ export interface UseStreamingWebSocketOptions {
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
 
+  /** RECONNECT-2: Consecutive successes required to reset backoff (default: 3) */
+  reconnectSuccessThreshold?: number
+
   /** Connection timeout in ms (default: 15000) */
   connectionTimeout?: number
 
@@ -239,6 +242,7 @@ export function useStreamingWebSocket(
     maxReconnectAttempts = 5,
     reconnectDelay: initialReconnectDelay = 1000,
     maxReconnectDelay = 30000,
+    reconnectSuccessThreshold = 3, // RECONNECT-2: Consecutive successes to reset backoff
     connectionTimeout = 15000,
     enableHeartbeat = true,
     heartbeatInterval = 30000,
@@ -273,6 +277,7 @@ export function useStreamingWebSocket(
   const [readyState, setReadyState] = React.useState<number>(WebSocket.CLOSED)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
+  const [reconnectSuccessCount, setReconnectSuccessCount] = React.useState(0) // RECONNECT-2: Track consecutive successes
 
   // Refs
   const wsRef = React.useRef<WebSocket | null>(null)
@@ -409,8 +414,18 @@ export function useStreamingWebSocket(
         setReadyState(ws.readyState)
         setReconnectAttempt(0)
         setIsReconnecting(false)
-        reconnectDelayRef.current = initialReconnectDelay
         lastPongRef.current = Date.now()
+
+        // RECONNECT-2: Only reset backoff after sustained success
+        setReconnectSuccessCount((prev) => {
+          const newCount = prev + 1
+          // Reset delay only after reaching threshold
+          if (newCount >= reconnectSuccessThreshold) {
+            reconnectDelayRef.current = initialReconnectDelay
+            return 0 // Reset success count after backoff reset
+          }
+          return newCount
+        })
 
         // Start heartbeat
         startHeartbeat()
@@ -475,6 +490,7 @@ export function useStreamingWebSocket(
         setError(event)
         setStatus('error')
         setReadyState(ws.readyState)
+        setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on error
 
         onError?.(event)
       })
@@ -488,6 +504,7 @@ export function useStreamingWebSocket(
         )
         setStatus('closed')
         setReadyState(ws.readyState)
+        setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on close
 
         // Stop heartbeat
         stopHeartbeat()
@@ -578,6 +595,7 @@ export function useStreamingWebSocket(
 
       setStatus('closed')
       setIsReconnecting(false)
+      setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on disconnect
       setReadyState(WebSocket.CLOSED)
     },
     [stopHeartbeat]
