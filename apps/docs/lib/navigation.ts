@@ -466,6 +466,10 @@ export const referenceNavigation: NavItem[] = [
         title: 'IntelliSense Helpers',
         href: '/reference/utilities/intellisense-helpers',
       },
+      {
+        title: 'Testing Helpers',
+        href: '/reference/utilities/testing-helpers',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },
