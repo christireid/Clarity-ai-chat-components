@@ -214,8 +214,11 @@ export function useStreamingError(
       rawError: unknown,
       opts?: { partialContent?: string; lastEventId?: string }
     ) => {
-      // Track failure for circuit breaker
-      const newFailureCount = failureCount + 1
+      // Track failure for circuit breaker (cap at threshold + 1 to prevent overflow)
+      const newFailureCount = Math.min(
+        failureCount + 1,
+        circuitBreakerThreshold + 1
+      )
       setFailureCount(newFailureCount)
 
       // Check if we should open the circuit

@@ -43,6 +43,9 @@ export interface UseStreamingWebSocketOptions {
   /** Enable automatic reconnection (default: true) */
   autoReconnect?: boolean
 
+  /** Reconnect on clean server close (default: true). Enable for server restarts/deploys. */
+  reconnectOnCleanClose?: boolean
+
   /** Maximum reconnection attempts (default: 5) */
   maxReconnectAttempts?: number
 
@@ -51,6 +54,9 @@ export interface UseStreamingWebSocketOptions {
 
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
+
+  /** Connection timeout in ms (default: 15000) */
+  connectionTimeout?: number
 
   /** Enable heartbeat/ping-pong (default: true) */
   enableHeartbeat?: boolean
@@ -198,13 +204,30 @@ export function useStreamingWebSocket(
     )
   }
 
+  // Validate WebSocket protocol
+  const url = options.url.trim()
+  if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+    throw new Error(
+      `useStreamingWebSocket: Invalid WebSocket URL "${url}".\n` +
+        'WebSocket URLs must use ws:// (insecure) or wss:// (secure) protocol.\n\n' +
+        'Example:\n' +
+        '  ✓ wss://api.example.com/ws (secure, recommended)\n' +
+        '  ✓ ws://localhost:8080/ws (local development)\n' +
+        '  ✗ https://api.example.com/ws (HTTP protocol not supported)\n' +
+        '  ✗ api.example.com/ws (missing protocol)\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/streaming'
+    )
+  }
+
   const {
     url,
     protocols,
     autoReconnect = true,
+    reconnectOnCleanClose = true,
     maxReconnectAttempts = 5,
     reconnectDelay: initialReconnectDelay = 1000,
     maxReconnectDelay = 30000,
+    connectionTimeout = 15000,
     enableHeartbeat = true,
     heartbeatInterval = 30000,
     heartbeatTimeout = 5000,
@@ -243,6 +266,7 @@ export function useStreamingWebSocket(
   const reconnectDelayRef = React.useRef(initialReconnectDelay)
   const shouldReconnectRef = React.useRef(false)
   const lastPongRef = React.useRef<number>(Date.now())
+  const reconnectFnRef = React.useRef<(() => void) | null>(null)
 
   /**
    * Parse message data
@@ -292,7 +316,7 @@ export function useStreamingWebSocket(
 
             // Trigger reconnection
             if (autoReconnect && shouldReconnectRef.current) {
-              reconnect()
+              reconnectFnRef.current?.()
             }
           }
         }, heartbeatTimeout)
@@ -346,8 +370,24 @@ export function useStreamingWebSocket(
       // Update ready state
       setReadyState(ws.readyState)
 
+      // Set connection timeout
+      const timeoutId = setTimeout(() => {
+        if (ws.readyState === WebSocket.CONNECTING) {
+          logger.error(
+            `[useStreamingWebSocket] Connection timeout after ${connectionTimeout}ms`
+          )
+          ws.close()
+          const timeoutError = new Event('timeout')
+          setError(timeoutError)
+          setStatus('error')
+          onError?.(timeoutError)
+        }
+      }, connectionTimeout)
+
       // Handle connection open
       ws.addEventListener('open', (event) => {
+        // Clear connection timeout
+        clearTimeout(timeoutId)
         logger.debug('[useStreamingWebSocket] Connected')
         setStatus('connected')
         setReadyState(ws.readyState)
@@ -420,12 +460,13 @@ export function useStreamingWebSocket(
 
         onClose?.(event)
 
-        // Attempt reconnection if not a clean close
+        // Attempt reconnection (on unclean close or clean close if configured)
+        const shouldReconnectOnClose = !event.wasClean || reconnectOnCleanClose
         if (
           autoReconnect &&
           shouldReconnectRef.current &&
           reconnectAttempt < maxReconnectAttempts &&
-          !event.wasClean
+          shouldReconnectOnClose
         ) {
           const nextAttempt = reconnectAttempt + 1
           const delay = Math.min(
@@ -528,6 +569,10 @@ export function useStreamingWebSocket(
             : data
 
         wsRef.current.send(payload as string | ArrayBuffer | Blob)
+
+        // Update last pong time on send (any activity counts as keepalive)
+        lastPongRef.current = Date.now()
+
         return true
       } catch (err) {
         logger.error('[useStreamingWebSocket] Send error:', err)
@@ -566,6 +611,11 @@ export function useStreamingWebSocket(
     setIsReconnecting(false)
     reconnectDelayRef.current = initialReconnectDelay
   }, [initialReconnectDelay])
+
+  // Update reconnect ref to avoid circular dependency in heartbeat
+  React.useEffect(() => {
+    reconnectFnRef.current = reconnect
+  }, [reconnect])
 
   // Connect on mount if specified
   React.useEffect(() => {
