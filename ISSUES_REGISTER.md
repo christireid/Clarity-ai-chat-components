@@ -299,6 +299,40 @@ of ongoing development.
 
 ---
 
+### ISSUE-015: TypeScript Errors from Main Branch Merge
+
+**Severity:** HIGH - Build blocker
+
+**Description:** After merging main branch, several TypeScript errors remain:
+
+**Missing Icon Exports:**
+
+- QueueListIcon, ExclamationTriangleIcon, XMarkIcon, SyncIcon
+- WifiIcon, WifiSlashIcon, ArrowPathIcon, EyeIcon, EyeSlashIcon
+
+**Missing UI Components:**
+
+- Switch, Label components (`../ui/switch`, `../ui/label`)
+- AvatarImage, AvatarFallback, Select, SelectContent from primitives
+
+**API Mismatches:**
+
+- `setMessages` missing from UseClarityChatReturn/RateLimitedChatReturn
+- `onDeleteMessage`, `onEditMessage`, `onRegenerateMessage` undefined
+
+**Other:**
+
+- monaco-editor types missing
+- virtualized-message-list scrollToOffset method
+- clarity-chat.tsx callback mismatches
+
+**Partial Fix Applied:** Fixed utility files (sync-manager.ts, security.tsx, quick-start.tsx,
+setup-wizard.tsx, testing-helpers.tsx, visual-regression.ts, performance-monitoring.tsx)
+
+**Remaining Work:** Requires investigation of component/hook interface changes in main branch.
+
+---
+
 ## Resolution Progress
 
 | Issue ID  | Status     | Assigned | Fixed In                                        |
@@ -317,6 +351,7 @@ of ongoing development.
 | ISSUE-012 | FIXED      | Audit    | Updated imports to @clarity-chat/react/internal |
 | ISSUE-013 | VERIFIED   | Audit    | Comprehensive a11y system already in place      |
 | ISSUE-014 | VERIFIED   | Audit    | Comprehensive perf system already in place      |
+| ISSUE-015 | PARTIAL    | Audit    | Utility files fixed, component issues remain    |
 
 ---
 
