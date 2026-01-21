@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ToastProvider, useStreamingSSE } from '@clarity-chat/react/internal'
+import { ToastProvider, useStreamingSSE } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -19,7 +19,7 @@ function BasicSSEDemo() {
     url: '/api/stream',
     method: 'POST',
     body: { message: 'Hello' },
-    onMessage: (event: MessageEvent) => {
+    onMessage: (event) => {
       console.log('Received event:', event)
     },
     onError: (err: Error) => {
@@ -286,7 +286,7 @@ export default function UseStreamingSSEPage() {
   const { status, data, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
-      logger.debug('Event:', event)
+      console.log('Event:', event)
     },
   })
 
@@ -311,7 +311,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -323,7 +323,7 @@ import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@c
         <ComponentPreview
           title="Simple SSE Connection"
           description="Basic SSE connection with manual connect/disconnect"
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function SimpleSSE() {
@@ -336,7 +336,7 @@ function SimpleSSE() {
   } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
-      logger.debug('Received:', event.data)
+      console.log('Received:', event.data)
     },
   })
 
@@ -362,7 +362,7 @@ function SimpleSSE() {
         <p>Send data with POST request:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEWithPost() {
   const {
@@ -403,7 +403,7 @@ function SSEWithPost() {
         <p>Add authentication token or use cookie-based auth:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEWithAuth() {
   const userToken = 'your-auth-token'
@@ -440,7 +440,7 @@ function SSEWithAuth() {
         <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEWithReconnect() {
   const {
@@ -455,7 +455,7 @@ function SSEWithReconnect() {
     reconnectDelay: 1000, // Start with 1 second
     maxReconnectDelay: 30000, // Max 30 seconds
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
       console.error('Max reconnection attempts reached')
@@ -488,8 +488,8 @@ function SSEWithReconnect() {
         <p>Handle different event types:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
-import type { SSEEvent } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
+import type { SSEEvent } from '@clarity-chat/react'
 
 function SSEWithEventHandling() {
   const {
@@ -501,16 +501,16 @@ function SSEWithEventHandling() {
     onMessage: (event: SSEEvent) => {
       switch (event.type) {
         case 'message':
-          logger.debug('Message:', event.data)
+          console.log('Message:', event.data)
           break
         case 'error':
           console.error('Error event:', event.data)
           break
         case 'done':
-          logger.debug('Stream complete')
+          console.log('Stream complete')
           break
         default:
-          logger.debug('Unknown event type:', event.type)
+          console.log('Unknown event type:', event.type)
       }
     },
   })
@@ -536,7 +536,7 @@ function SSEWithEventHandling() {
         <p>Resume streaming from the last event ID after reconnection:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { useStreamingSSE } from '@clarity-chat/react'
 
 function SSEWithResume() {
   const {
@@ -547,7 +547,7 @@ function SSEWithResume() {
     resumeFromLastEventId: true, // Automatically resume from last event
     onMessage: (event) => {
       // Server should include Last-Event-ID header on reconnect
-      logger.debug('Event ID:', event.id)
+      console.log('Event ID:', event.id)
     },
   })
 
@@ -597,8 +597,8 @@ function SSEWithResume() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { useStreamingSSE } from '@clarity-chat/react/internal'
-import type { SSEEvent } from '@clarity-chat/react/internal'
+import { useStreamingSSE } from '@clarity-chat/react'
+import type { SSEEvent } from '@clarity-chat/react'
 
 function CompleteSSEExample() {
   const [messages, setMessages] = useState<string[]>([])
@@ -634,7 +634,7 @@ function CompleteSSEExample() {
       console.error('SSE Error:', err)
     },
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+      console.log(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
     },
   })
 

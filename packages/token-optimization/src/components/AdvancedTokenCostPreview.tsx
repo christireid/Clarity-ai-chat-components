@@ -5,7 +5,15 @@
  * model comparison, and optimization recommendations
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useTransition,
+  useDeferredValue,
+  useId,
+} from 'react'
 import {
   AdvancedTokenCounter,
   countTokensWithConfidence,
@@ -123,6 +131,15 @@ export const AdvancedTokenCostPreview: React.FC<
   className,
   style,
 }) => {
+  // React 19: Stable unique ID for accessibility
+  const componentId = useId()
+
+  // React 19: useTransition for non-blocking model selection updates
+  const [isPending, startTransition] = useTransition()
+
+  // React 19: useDeferredValue prevents UI jank during expensive cost calculations
+  const deferredText = useDeferredValue(text)
+
   const [selectedModel, setSelectedModel] = useState<ModelFamily>(models[0])
   const [isCalculating, setIsCalculating] = useState(false)
   const [lastCalculation, setLastCalculation] = useState<number>(0)
@@ -131,6 +148,9 @@ export const AdvancedTokenCostPreview: React.FC<
   const [optimizationSuggestions, setOptimizationSuggestions] = useState<
     OptimizationSuggestion[]
   >([])
+
+  // Track stale state for visual feedback
+  const isStale = text !== deferredText || isPending
 
   const _tokenCounter = useMemo(() => new AdvancedTokenCounter(), [])
 
@@ -276,6 +296,7 @@ export const AdvancedTokenCostPreview: React.FC<
 
   /**
    * Effect for token counting
+   * Uses deferredText (React 19) for smoother UI during rapid text changes
    */
   useEffect(() => {
     let cancelled = false
@@ -298,7 +319,7 @@ export const AdvancedTokenCostPreview: React.FC<
     return () => {
       cancelled = true
     }
-  }, [text, countTokensOptimized, enableRealTime, lastCalculation])
+  }, [deferredText, countTokensOptimized, enableRealTime, lastCalculation])
 
   /**
    * Effect for cost calculation
@@ -346,21 +367,32 @@ export const AdvancedTokenCostPreview: React.FC<
   return (
     <div
       className={`advanced-token-cost-preview ${className || ''}`}
-      style={style}
+      style={{ ...style, opacity: isStale ? 0.8 : 1 }}
+      aria-labelledby={`${componentId}-title`}
+      aria-busy={isCalculating || isStale}
     >
       <div className="cost-preview-header">
-        <h3>Token Cost Analysis</h3>
-        {isCalculating && (
-          <span className="calculating-indicator">Calculating...</span>
+        <h3 id={`${componentId}-title`}>Token Cost Analysis</h3>
+        {(isCalculating || isStale) && (
+          <span className="calculating-indicator" aria-live="polite">
+            {isCalculating ? 'Calculating...' : 'Updating...'}
+          </span>
         )}
       </div>
 
       <div className="model-selector">
-        <label>Model:</label>
+        <label htmlFor={`${componentId}-model-select`}>Model:</label>
         <select
+          id={`${componentId}-model-select`}
           value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value as ModelFamily)}
+          onChange={(e) => {
+            // React 19: Use transition for non-blocking model changes
+            startTransition(() => {
+              setSelectedModel(e.target.value as ModelFamily)
+            })
+          }}
           disabled={isCalculating}
+          aria-busy={isPending}
         >
           {models.map((model) => (
             <option key={model} value={model}>
@@ -368,6 +400,7 @@ export const AdvancedTokenCostPreview: React.FC<
             </option>
           ))}
         </select>
+        {isPending && <span className="transition-indicator">Updating...</span>}
       </div>
 
       {tokenInfo && (

@@ -113,7 +113,7 @@ render(<BasicSafety />)`}
       checks={checks}
       lastReviewedAt={new Date()}
       onAcknowledge={(check) => {
-        logger.debug('Acknowledged:', check.label)
+        console.log('Acknowledged:', check.label)
       }}
     />
   )
@@ -132,7 +132,7 @@ render(<SafetyIssues />)`}
         <h2>Integration Example</h2>
         <pre>
           <code>{`// Using OpenAI Moderation API
-import { SafetyStatusCard } from '@clarity-chat/react/internal'
+import { SafetyStatusCard } from '@clarity-chat/react'
 import OpenAI from 'openai'
 
 const openai = new OpenAI()

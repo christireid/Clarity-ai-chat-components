@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { NetworkStatus } from '@clarity-chat/react/internal'
+import { NetworkStatus } from '@clarity-chat/react'
 import { expect, within } from 'storybook/test'
 
 /**

@@ -36,7 +36,7 @@ export default function ProviderPatternPage() {
         <h2>MemoryProvider</h2>
         <p>Use MemoryProvider for conversation memory:</p>
         <CodePlayground
-          initialCode={`import { MemoryProvider, useMemoryContext } from '@clarity-chat/react/internal'
+          initialCode={`import { MemoryProvider, useMemoryContext } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   return (
@@ -68,7 +68,7 @@ function ChatApp() {
         <h2>ThemeProvider</h2>
         <p>Use ThemeProvider for theming:</p>
         <CodePlayground
-          initialCode={`import { ThemeProvider } from '@clarity-chat/react/internal'
+          initialCode={`import { ThemeProvider } from '@clarity-chat/react'
 
 function ThemedChat() {
   return (
@@ -172,7 +172,7 @@ function ChatComponent() {
   MemoryProvider,
   ThemeProvider,
   ChatConfigProvider,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function AppWithProviders() {
   return (

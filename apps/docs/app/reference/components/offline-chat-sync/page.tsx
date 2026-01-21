@@ -78,7 +78,7 @@ export default function OfflineChatSyncPage() {
         <h2>Basic Usage</h2>
         <p>Enable offline chat with default configuration:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function OfflineChat({ messages }: { messages: Message[] }) {
@@ -86,10 +86,10 @@ function OfflineChat({ messages }: { messages: Message[] }) {
     <OfflineChatSync
       messages={messages}
       onStatusChange={(status) => {
-        logger.debug('Sync status:', status)
+        console.log('Sync status:', status)
       }}
       onSyncComplete={(synced) => {
-        logger.debug(\`Synced \${synced} messages\`)
+        console.log(\`Synced \${synced} messages\`)
       }}
       onSyncError={(error) => {
         console.error('Sync error:', error)
@@ -104,7 +104,7 @@ function OfflineChat({ messages }: { messages: Message[] }) {
         <h2>Custom Configuration</h2>
         <p>Configure storage and sync behavior:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 
 function ConfiguredOfflineChat({ messages }: { messages: Message[] }) {
   return (
@@ -128,7 +128,7 @@ function ConfiguredOfflineChat({ messages }: { messages: Message[] }) {
         <h2>Sync Status Monitoring</h2>
         <p>Monitor sync status and show UI feedback:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 
 function WithStatusIndicator({ messages }: { messages: Message[] }) {
   const [status, setStatus] = React.useState('online')
@@ -164,7 +164,7 @@ function WithStatusIndicator({ messages }: { messages: Message[] }) {
         <h2>Pending Operations</h2>
         <p>Track and display pending operations:</p>
         <CodePlayground
-          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react/internal'
+          initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 
 function WithPendingOps({ messages }: { messages: Message[] }) {
   const { pendingOperations } = useOfflineChat()

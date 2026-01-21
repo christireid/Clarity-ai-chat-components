@@ -49,13 +49,9 @@ interface SpeechRecognitionConstructor {
   new(): SpeechRecognitionInstance
 }
 
-// Extend Window for browser speech recognition APIs
-declare global {
-  interface Window {
-    SpeechRecognition?: SpeechRecognitionConstructor
-    webkitSpeechRecognition?: SpeechRecognitionConstructor
-  }
-}
+// Use type alias to avoid global declaration conflicts
+// The window.SpeechRecognition types are extended via interface merging
+type SpeechRecognitionAPI = SpeechRecognitionConstructor
 
 /**
  * Voice recognition state
@@ -104,14 +100,16 @@ export interface UseVoiceInputOptions {
 /**
  * Get browser speech recognition API
  */
-function getSpeechRecognition(): SpeechRecognitionConstructor | null {
+function getSpeechRecognition(): SpeechRecognitionAPI | null {
   if (typeof window === 'undefined') return null
 
-  return (
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition ||
-    null
-  )
+  // Access via indexing to avoid type conflicts with DOM declarations
+  const win = window as unknown as {
+    SpeechRecognition?: SpeechRecognitionAPI
+    webkitSpeechRecognition?: SpeechRecognitionAPI
+  }
+
+  return win.SpeechRecognition || win.webkitSpeechRecognition || null
 }
 
 /**

@@ -93,7 +93,7 @@ app.post('/api/chat', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  logger.debug('Server running on http://localhost:3000')
+  console.log('Server running on http://localhost:3000')
 })`}
         />
       </section>
@@ -397,7 +397,7 @@ app.post('/api/chat', async (req, res) => {
   const startTime = Date.now()
   const requestId = generateId()
 
-  logger.info('Chat request started', {
+  console.info('Chat request started', {
     requestId,
     userId: req.user?.id,
     messageCount: req.body.messages?.length,
@@ -407,14 +407,14 @@ app.post('/api/chat', async (req, res) => {
     // ... streaming logic
 
     const duration = Date.now() - startTime
-    logger.info('Chat request completed', {
+    console.info('Chat request completed', {
       requestId,
       duration,
       success: true,
     })
   } catch (error) {
     const duration = Date.now() - startTime
-    logger.error('Chat request failed', {
+    console.error('Chat request failed', {
       requestId,
       duration,
       error: error.message,

@@ -1,0 +1,74 @@
+{
+  "name": "estimo",
+  "version": "3.0.5",
+  "description": "Evaluates how long the browser will execute your javascript code",
+  "types": "./index.d.ts",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "estimo": "./scripts/cli.js"
+  },
+  "scripts": {
+    "test": "ava --timeout=4m --exit",
+    "clean": "rimraf ./temp/*.{html,json} && node ./scripts/clean-chrome-config.js"
+  },
+  "dependencies": {
+    "@sitespeed.io/tracium": "0.3.3",
+    "commander": "12.0.0",
+    "find-chrome-bin": "2.0.4",
+    "nanoid": "5.1.5",
+    "puppeteer-core": "24.22.0"
+  },
+  "devDependencies": {
+    "ava": "6.4.1",
+    "prettier": "3.6.2",
+    "rimraf": "6.0.1",
+    "typescript": "5.9.2"
+  },
+  "ava": {
+    "concurrency": 1,
+    "files": [
+      "tests/**/*.js",
+      "!tests/__mock__/**"
+    ]
+  },
+  "files": [
+    "scripts/**",
+    "temp/chrome/.gitkeep",
+    "CHANGELOG.md",
+    "chrome.json",
+    "index.d.ts",
+    "index.js",
+    "README.md",
+    "src/**"
+  ],
+  "prettier": {
+    "arrowParens": "avoid",
+    "quoteProps": "as-needed",
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "none"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbalabash/estimo.git"
+  },
+  "homepage": "https://github.com/mbalabash/estimo#readme",
+  "bugs": {
+    "url": "https://github.com/mbalabash/estimo/issues"
+  },
+  "preferGlobal": true,
+  "keywords": [
+    "chrome",
+    "tracium",
+    "puppeteer",
+    "devtools",
+    "size-limit",
+    "performance"
+  ],
+  "license": "MIT",
+  "author": "mbalabash <maksim.balabash@gmail.com>"
+}

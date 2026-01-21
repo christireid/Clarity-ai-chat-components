@@ -5,6 +5,9 @@
  * Provides 30-40% cost reduction with performance optimization
  */
 
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability'
+
 export interface IntelligentRoutingConfig {
   enableCostOptimization: boolean
   enablePerformanceOptimization: boolean
@@ -115,7 +118,12 @@ export class IntelligentRoutingSystem {
       const availableModels = this.getAvailableModels(requestAnalysis)
 
       if (availableModels.length === 0) {
-        throw new Error('No models available for routing')
+        throw new TokenOptimizationError(
+          'No models available for routing',
+          TokenErrorCode.MODEL_NOT_SUPPORTED,
+          false,
+          { requestType: request.type, constraints: request.constraints }
+        )
       }
 
       // Apply routing strategies
@@ -307,7 +315,12 @@ export class IntelligentRoutingSystem {
     context?: RoutingContext
   ): Promise<ModelEvaluation> {
     if (evaluations.length === 0) {
-      throw new Error('No suitable models available')
+      throw new TokenOptimizationError(
+        'No suitable models available after filtering',
+        TokenErrorCode.MODEL_NOT_SUPPORTED,
+        false,
+        { evaluationCount: 0 }
+      )
     }
 
     // Apply multi-criteria decision making

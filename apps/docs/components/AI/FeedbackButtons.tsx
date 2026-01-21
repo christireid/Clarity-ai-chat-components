@@ -56,38 +56,44 @@ export function FeedbackButtons({ messageId, onFeedback, className }: FeedbackBu
       <div className="flex items-center gap-1">
         <span className="text-xs text-muted-foreground mr-2">Was this helpful?</span>
 
-        {/* Thumbs Up */}
+        {/* Thumbs Up - min 44x44px touch target for WCAG AA */}
         <button
           onClick={() => handleFeedback('positive')}
           disabled={isSubmitting}
           className={cn(
-            'p-1.5 rounded-md transition-all duration-200',
+            'min-w-[44px] min-h-[44px] p-2.5 rounded-md transition-all duration-200',
+            'flex items-center justify-center',
             'hover:bg-accent hover:text-accent-foreground',
+            'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             feedback === 'positive'
-              ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+              ? 'bg-success-subtle text-success dark:bg-green-900/30 dark:text-green-400'
               : 'text-muted-foreground'
           )}
-          aria-label="Helpful"
+          aria-label="Mark as helpful"
+          aria-pressed={feedback === 'positive'}
         >
-          <ThumbsUp className="w-4 h-4" />
+          <ThumbsUp className="w-5 h-5" aria-hidden="true" />
         </button>
 
-        {/* Thumbs Down */}
+        {/* Thumbs Down - min 44x44px touch target for WCAG AA */}
         <button
           onClick={() => handleFeedback('negative')}
           disabled={isSubmitting}
           className={cn(
-            'p-1.5 rounded-md transition-all duration-200',
+            'min-w-[44px] min-h-[44px] p-2.5 rounded-md transition-all duration-200',
+            'flex items-center justify-center',
             'hover:bg-accent hover:text-accent-foreground',
+            'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             feedback === 'negative'
-              ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+              ? 'bg-error-subtle text-error dark:bg-red-900/30 dark:text-red-400'
               : 'text-muted-foreground'
           )}
-          aria-label="Not helpful"
+          aria-label="Mark as not helpful"
+          aria-pressed={feedback === 'negative'}
         >
-          <ThumbsDown className="w-4 h-4" />
+          <ThumbsDown className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {/* Thank you message */}
@@ -114,30 +120,40 @@ export function FeedbackButtons({ messageId, onFeedback, className }: FeedbackBu
             exit={{ opacity: 0, height: 0 }}
             className="space-y-2"
           >
+            <label htmlFor={`feedback-comment-${messageId}`} className="sr-only">
+              Feedback comment
+            </label>
             <textarea
+              id={`feedback-comment-${messageId}`}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="What could be improved? (optional)"
               className={cn(
                 'w-full px-3 py-2 text-sm rounded-md',
                 'border border-input bg-background',
-                'placeholder:text-muted-foreground',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+                'placeholder:text-neutral-500',
+                'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
                 'resize-none'
               )}
               rows={3}
+              aria-describedby={`feedback-hint-${messageId}`}
             />
+            <p id={`feedback-hint-${messageId}`} className="sr-only">
+              Optional: Provide additional context about why this response was not helpful
+            </p>
             <div className="flex gap-2">
               <button
                 onClick={handleSubmitComment}
                 disabled={isSubmitting}
                 className={cn(
-                  'px-3 py-1.5 text-xs font-medium rounded-md',
+                  'min-h-[44px] px-4 py-2 text-sm font-medium rounded-md',
                   'bg-primary text-primary-foreground',
                   'hover:bg-primary/90',
+                  'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
                   'transition-colors'
                 )}
+                aria-label={isSubmitting ? 'Submitting feedback' : 'Submit feedback'}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
@@ -149,12 +165,14 @@ export function FeedbackButtons({ messageId, onFeedback, className }: FeedbackBu
                 }}
                 disabled={isSubmitting}
                 className={cn(
-                  'px-3 py-1.5 text-xs font-medium rounded-md',
+                  'min-h-[44px] px-4 py-2 text-sm font-medium rounded-md',
                   'bg-secondary text-secondary-foreground',
                   'hover:bg-secondary/80',
+                  'focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
                   'transition-colors'
                 )}
+                aria-label="Cancel feedback"
               >
                 Cancel
               </button>

@@ -1,0 +1,13 @@
+import React from 'react';
+interface MarkdownAnimateTextProps {
+    content: string;
+    sep?: string;
+    animation?: string | null;
+    animationDuration?: string;
+    animationTimingFunction?: string;
+    codeStyle?: any;
+    customComponents?: Record<string, any>;
+    imgHeight?: string;
+}
+declare const _default: React.NamedExoticComponent<MarkdownAnimateTextProps>;
+export default _default;

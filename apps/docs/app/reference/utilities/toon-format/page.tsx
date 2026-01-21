@@ -181,7 +181,7 @@ export default function ToonFormatPage() {
         <p>Convert a user array to TOON format:</p>
 
         <EnhancedCodeBlock
-          code={`import { jsonToToon, toonToJson } from '@clarity-chat/react/internal'
+          code={`import { jsonToToon, toonToJson } from '@clarity-chat/react'
 
 // JSON data
 const users = [
@@ -242,7 +242,7 @@ Carol, 35, Seattle`}
         </p>
 
         <EnhancedCodeBlock
-          code={`import { autoOptimize } from '@clarity-chat/react/internal'
+          code={`import { autoOptimize } from '@clarity-chat/react'
 
 const products = [
   { id: 1, name: "Widget", price: 9.99, inStock: true },
@@ -281,7 +281,7 @@ Which products are in stock?
         <p>Integrate TOON optimization into your chat workflow:</p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityChat, autoOptimize, TOON_INSTRUCTIONS } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, autoOptimize, TOON_INSTRUCTIONS } from '@clarity-chat/react'
 
 function ChatWithData({ searchResults }) {
   const { sendMessage, messages } = useClarityChat({
@@ -321,7 +321,7 @@ Answer the following question: \${query}
         </p>
 
         <EnhancedCodeBlock
-          code={`import { TOON_INSTRUCTIONS, jsonToToon } from '@clarity-chat/react/internal'
+          code={`import { TOON_INSTRUCTIONS, jsonToToon } from '@clarity-chat/react'
 
 // Brief instruction (minimal tokens)
 const prompt1 = \`
@@ -387,7 +387,7 @@ const prompt3 = \`
         </p>
 
         <EnhancedCodeBlock
-          code={`import { createToonConversationWrapper, jsonToToon } from '@clarity-chat/react/internal'
+          code={`import { createToonConversationWrapper, jsonToToon } from '@clarity-chat/react'
 
 // Create wrapper at conversation start
 const wrapper = createToonConversationWrapper({
@@ -418,7 +418,7 @@ console.log(wrapper.instructionsSent) // false after reset`}
         <p>Check potential savings before optimizing:</p>
 
         <EnhancedCodeBlock
-          code={`import { estimateToonSavings, isSuitableForToon } from '@clarity-chat/react/internal'
+          code={`import { estimateToonSavings, isSuitableForToon } from '@clarity-chat/react'
 
 const data = getSearchResults()
 
@@ -449,7 +449,7 @@ if (isSuitableForToon(data)) {
         <p>Optimize multiple data items at once:</p>
 
         <EnhancedCodeBlock
-          code={`import { batchOptimize, formatForLLM } from '@clarity-chat/react/internal'
+          code={`import { batchOptimize, formatForLLM } from '@clarity-chat/react'
 
 // Optimize multiple datasets
 const { results, totalSavings, totalSavingsPercent } = batchOptimize([
@@ -476,7 +476,7 @@ console.log(\`Format: \${metadata.format}, saved \${metadata.tokensSaved} tokens
         <p>Parse responses that might be in JSON or TOON format:</p>
 
         <EnhancedCodeBlock
-          code={`import { parseFlexible } from '@clarity-chat/react/internal'
+          code={`import { parseFlexible } from '@clarity-chat/react'
 
 // Works with JSON
 const json = parseFlexible('{"name": "Alice", "age": 30}')
@@ -504,7 +504,7 @@ const raw = parseFlexible('Hello, world!')
         <p>TOON uses YAML-style indentation for nested structures:</p>
 
         <EnhancedCodeBlock
-          code={`import { jsonToToon } from '@clarity-chat/react/internal'
+          code={`import { jsonToToon } from '@clarity-chat/react'
 
 const config = {
   app: "MyApp",

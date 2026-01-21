@@ -14,13 +14,13 @@ export default function UseClarityChatPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useClarityChat</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Primary React hook for building chat interfaces with message
-          management, streaming responses, memory integration, and AI model
-          integration.
+          Enterprise-ready React hook for building chat interfaces with cross-device sync,
+          rate limiting, message management, streaming responses, and comprehensive AI model integration.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
-          <strong>Domain:</strong> Chat State
+          <strong>Domain:</strong> Enterprise Chat State •{' '}
+          <strong>Features:</strong> Sync, Rate Limiting, Memory
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export default function UseClarityChatPage() {
       <section className="mb-12 p-6 bg-muted rounded-xl">
         <h2 className="text-xl font-bold mb-4">Quick Start</h2>
         <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm mb-4">
-          <code>{`import { useClarityChat } from '@clarity-chat/react/internal'
+          <code>{`import { useClarityChat } from '@clarity-chat/react'
 
 const { messages, append, isLoading } = useClarityChat({
   api: '/api/chat'
@@ -46,6 +46,12 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
           </span>
           <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
             Multi-model
+          </span>
+          <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded">
+            Rate Limiting
+          </span>
+          <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded">
+            Cross-device Sync
           </span>
         </div>
       </section>
@@ -134,7 +140,7 @@ await append({ role: 'user', content: 'Hello!' })`}</code>
         <div className="space-y-6">
           <CollapsibleSection title="Simple Chat" defaultOpen={true}>
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function ChatComponent() {
@@ -166,7 +172,7 @@ function ChatComponent() {
   useClarityChat,
   useChatHandlers,
   ChatWindow
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function ChatComponent() {
   const chat = useClarityChat({
@@ -195,7 +201,7 @@ function ChatComponent() {
         <div className="space-y-4">
           <CollapsibleSection title="With Memory Integration" badge="Pro">
             <CodePlayground
-              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   const chat = useClarityChat({
@@ -239,7 +245,7 @@ function App() {
             badge="Cost Saving"
           >
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const chat = useClarityChat({
@@ -274,7 +280,7 @@ function OptimizedChat() {
 
           <CollapsibleSection title="With WebSocket Transport">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function WebSocketChat() {
   const chat = useClarityChat({
@@ -300,7 +306,7 @@ function WebSocketChat() {
 
           <CollapsibleSection title="Error Handling">
             <CodePlayground
-              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+              code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithErrorHandling() {
   const chat = useClarityChat({
@@ -351,8 +357,10 @@ function ChatWithErrorHandling() {
                     <td className="p-3 font-mono text-sm">api</td>
                     <td className="p-3 font-mono text-sm">string</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> API endpoint URL for chat
-                      requests.
+                      API endpoint URL for chat requests. Default:{' '}
+                      <code className="bg-background px-1 rounded">
+                        '/api/chat'
+                      </code>
                     </td>
                   </tr>
                   <tr>
@@ -382,6 +390,17 @@ function ChatWithErrorHandling() {
                     </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Token budget management configuration.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">websocket</td>
+                    <td className="p-3 font-mono text-sm">
+                      ClarityWebSocketOptions
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      WebSocket configuration when transport is 'websocket'.
+                      Includes autoReconnect, maxReconnectAttempts,
+                      enableHeartbeat, and protocols.
                     </td>
                   </tr>
                   <tr>
@@ -434,7 +453,7 @@ function ChatWithErrorHandling() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">error</td>
-                    <td className="p-3 font-mono text-sm">Error | null</td>
+                    <td className="p-3 font-mono text-sm">Error | undefined</td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Last error, if any.
                     </td>
@@ -451,10 +470,11 @@ function ChatWithErrorHandling() {
                   <tr>
                     <td className="p-3 font-mono text-sm">tokenStats</td>
                     <td className="p-3 font-mono text-sm">
-                      TokenStats | undefined
+                      ClarityChatTokenStats | undefined
                     </td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Token usage statistics.
+                      Token usage statistics including inputTokens,
+                      remainingBudget, and utilization.
                     </td>
                   </tr>
                   <tr>
@@ -471,6 +491,126 @@ function ChatWithErrorHandling() {
                     <td className="p-3 font-mono text-sm">() =&gt; void</td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Stop current streaming response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">memoryErrorInfo</td>
+                    <td className="p-3 font-mono text-sm">
+                      ClarityChatErrorInfo
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Memory operation error details, if any.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">reload</td>
+                    <td className="p-3 font-mono text-sm">
+                      (options?) =&gt; Promise&lt;string | null&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Regenerate the last assistant response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">input</td>
+                    <td className="p-3 font-mono text-sm">string</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Current input value for controlled input fields.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">setInput</td>
+                    <td className="p-3 font-mono text-sm">
+                      (input: string) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Set the input value for controlled input fields.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">handleSubmit</td>
+                    <td className="p-3 font-mono text-sm">
+                      (event?, options?) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Form submit handler for use with HTML forms.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection title="Advanced Options (Inherited)">
+            <p className="mb-4 text-sm text-muted-foreground">
+              These options are inherited from the underlying chat implementation
+              and provide fine-grained control for advanced use cases.
+            </p>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 font-semibold">Property</th>
+                    <th className="text-left p-3 font-semibold">Type</th>
+                    <th className="text-left p-3 font-semibold">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="p-3 font-mono text-sm">initialMessages</td>
+                    <td className="p-3 font-mono text-sm">CoreMessage[]</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Pre-populate the chat with initial messages.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">body</td>
+                    <td className="p-3 font-mono text-sm">
+                      Record&lt;string, any&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Additional body data to send with each request.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">headers</td>
+                    <td className="p-3 font-mono text-sm">
+                      Record&lt;string, string&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Custom headers for authentication or other purposes.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">credentials</td>
+                    <td className="p-3 font-mono text-sm">RequestCredentials</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Fetch credentials mode (omit, same-origin, include).
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">onFinish</td>
+                    <td className="p-3 font-mono text-sm">
+                      (message) =&gt; void | Promise
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Callback when assistant message completes.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">onResponse</td>
+                    <td className="p-3 font-mono text-sm">
+                      (response) =&gt; void | Promise
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Callback when response is received.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono text-sm">maxSteps</td>
+                    <td className="p-3 font-mono text-sm">number</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Maximum number of steps for agentic workflows.
                     </td>
                   </tr>
                 </tbody>

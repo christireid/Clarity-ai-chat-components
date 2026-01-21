@@ -16,7 +16,7 @@ const baseConfig: RecursivePartial<IOptions> = {
         enable: true,
         mode: 'push' as const,
       },
-      resize: true,
+      resize: { enable: true },
     },
   },
   particles: {
@@ -80,16 +80,16 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
     number: {
       density: {
         enable: true,
-        area: 800,
+        width: 800,
+        height: 800,
       },
       value: 50,
     },
     opacity: {
-      value: 0.6,
+      value: { min: 0.3, max: 0.6 },
       animation: {
         enable: true,
         speed: 0.5,
-        minimumValue: 0.3,
         sync: false,
       },
     },
@@ -98,7 +98,6 @@ export const darkParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 2,
-        minimumValue: 0.5,
         sync: false,
       },
     },
@@ -151,16 +150,16 @@ export const lightParticlesConfig: RecursivePartial<IOptions> = {
     number: {
       density: {
         enable: true,
-        area: 1000,
+        width: 1000,
+        height: 1000,
       },
       value: 40,
     },
     opacity: {
-      value: 0.4,
+      value: { min: 0.2, max: 0.4 },
       animation: {
         enable: true,
         speed: 0.3,
-        minimumValue: 0.2,
         sync: false,
       },
     },
@@ -169,7 +168,6 @@ export const lightParticlesConfig: RecursivePartial<IOptions> = {
       animation: {
         enable: true,
         speed: 1,
-        minimumValue: 0.3,
         sync: false,
       },
     },

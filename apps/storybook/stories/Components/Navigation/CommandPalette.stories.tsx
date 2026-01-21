@@ -3,7 +3,7 @@ import {
   CommandPalette,
   type CommandItem,
   useCommandPalette,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 

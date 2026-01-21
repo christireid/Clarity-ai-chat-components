@@ -39,7 +39,7 @@ export default function MemoryIntegrationPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -124,7 +124,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, append, memoryInfo } = useClarityChat({
@@ -137,8 +137,8 @@ function Chat() {
   })
 
   // Access memory information
-  logger.debug('Memory tokens used:', memoryInfo?.tokensUsed)
-  logger.debug('Memory messages:', memoryInfo?.messageCount)
+  console.log('Memory tokens used:', memoryInfo?.tokensUsed)
+  console.log('Memory messages:', memoryInfo?.messageCount)
 
   return (
     <ChatWindow
@@ -163,7 +163,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function Chat() {
@@ -204,7 +204,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Backend Persistence</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function Chat() {
@@ -254,7 +254,7 @@ function Chat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, memoryInfo, memoryErrorInfo } = useClarityChat({

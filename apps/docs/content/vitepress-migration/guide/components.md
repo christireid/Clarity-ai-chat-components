@@ -2,30 +2,76 @@
 
 Clarity Chat ships a comprehensive suite of UI primitives for building production-grade chat experiences. Components are designed to be composable, themeable, and accessible by default.
 
+## 🆕 Recent Improvements (v1.0+)
+
+**Major architectural enhancements** completed in the comprehensive audit:
+- ✅ **Grouped Props API**: 73% reduction in prop complexity (30+ → 8 grouped props)
+- ✅ **Modular Architecture**: Components split into focused sub-components
+- ✅ **Race-Condition-Free**: Memory integration with stable async handling
+- ✅ **Enterprise-Ready**: Production-grade error handling and performance
+
 ## Core Layout
 
-- `ChatWindow` orchestrates the full messaging surface, including header, conversation timeline, and composer.
-- `ConversationPane` renders chronological message threads with virtualization support for long histories.
-- `Composer` provides multiline authoring with attachments, slash commands, and keyboard shortcuts.
+- `ChatWindow` orchestrates the full messaging surface with a new **grouped props API**
+- `MessageList` renders chronological message threads with virtualization support
+- `ChatInput` provides enhanced authoring with animations and validation
+
+### ✨ New Grouped Props API (Recommended)
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
+import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
 
-const messages: Message[] = [
-  {
-    id: '1',
-    chatId: 'demo',
-    role: 'assistant',
-    content: 'How can I help you today?',
-    createdAt: new Date(),
-    status: 'sent',
-  },
-]
+export function ModernChat() {
+  return (
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={handleSendMessage}
 
-export function BasicChat() {
-  return <ChatWindow messages={messages} onSendMessage={() => {}} />
+        // 🎯 New grouped props API - much cleaner!
+        header={{
+          show: true,
+          title: 'AI Assistant',
+          subtitle: 'Powered by Clarity Chat',
+          showMessageCount: true
+        }}
+
+        messageActions={{
+          onCopy: handleCopy,
+          onFeedback: handleFeedback,
+          onRetry: handleRetry
+        }}
+
+        editActions={{
+          editingMessageId: editingId,
+          onSaveEdit: handleSaveEdit,
+          onCancelEdit: handleCancelEdit
+        }}
+
+        prompts={{
+          starterPrompts: starterPrompts,
+          followUpSuggestions: followUpSuggestions
+        }}
+      />
+    </MemoryProvider>
+  )
 }
+```
+
+### 📚 Legacy API (Still Supported)
+
+```tsx
+// Old API still works for backward compatibility
+<ChatWindow
+  messages={messages}
+  onSendMessage={handleSendMessage}
+  onMessageCopy={handleCopy}           // 30+ individual props
+  onMessageFeedback={handleFeedback}
+  showHeader={true}
+  sessionTitle="AI Assistant"
+  // ... 25+ more props
+/>
 ```
 
 ## Message Presentation

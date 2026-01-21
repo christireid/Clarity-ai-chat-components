@@ -450,6 +450,9 @@ export function useAssistant(
   const cacheRef = React.useRef<AssistantCache | null>(null)
   const toolCacheRef = React.useRef<ToolCache | null>(null)
   const onStatusChangeRef = React.useRef(onStatusChange)
+  // Refs for streaming accumulation to avoid race conditions
+  const accumulatedContentRef = React.useRef<string>('')
+  const currentToolInvocationsRef = React.useRef<ToolInvocation[]>([])
 
   // Initialize caches if enabled
   if (enableCache && !cacheRef.current) {
@@ -734,8 +737,9 @@ export function useAssistant(
         // Streaming response using shared utilities
         updateStatus('streaming')
 
-        let accumulatedContent = ''
-        let currentToolInvocations: ToolInvocation[] = []
+        // Reset refs for new stream
+        accumulatedContentRef.current = ''
+        currentToolInvocationsRef.current = []
 
         await processStream(response.body, {
           format: streamFormat,
@@ -745,18 +749,28 @@ export function useAssistant(
             if (parsed?.toolInvocation) {
               const toolCall: ToolInvocation =
                 parsed.toolInvocation as ToolInvocation
-              currentToolInvocations = [...currentToolInvocations, toolCall]
+              currentToolInvocationsRef.current = [
+                ...currentToolInvocationsRef.current,
+                toolCall,
+              ]
               onToolCall?.(toolCall)
-              setToolInvocations(currentToolInvocations)
+              setToolInvocations([...currentToolInvocationsRef.current])
             }
           },
           onChunk: (chunk) => {
-            accumulatedContent += chunk
+            // Update ref first (synchronous, no race condition)
+            accumulatedContentRef.current += chunk
+
+            // Then update state with current ref values
+            // Use startTransition for non-urgent UI updates to prevent blocking
+            const currentContent = accumulatedContentRef.current
+            const currentTools = currentToolInvocationsRef.current
+
             const currentMessage: CoreMessage = {
               id: assistantMessageId,
               role: 'assistant',
-              content: accumulatedContent,
-              toolInvocations: currentToolInvocations.map((tool) => ({
+              content: currentContent,
+              toolInvocations: currentTools.map((tool) => ({
                 toolCallId: tool.toolCallId,
                 toolName: tool.toolName,
                 args: tool.args,
@@ -767,23 +781,27 @@ export function useAssistant(
                 result: tool.result,
               })),
             }
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId ? currentMessage : msg
+
+            // Batch state updates to prevent excessive re-renders
+            React.startTransition(() => {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMessageId ? currentMessage : msg
+                )
               )
-            )
-            setData(currentMessage)
+              setData(currentMessage)
+            })
           },
           onProgress,
           onError,
         })
 
-        // Finalize message
+        // Finalize message using ref values
         const finalMessage: CoreMessage = {
           id: assistantMessageId,
           role: 'assistant',
-          content: accumulatedContent,
-          toolInvocations: currentToolInvocations.map((tool) => ({
+          content: accumulatedContentRef.current,
+          toolInvocations: currentToolInvocationsRef.current.map((tool) => ({
             toolCallId: tool.toolCallId,
             toolName: tool.toolName,
             args: tool.args,
@@ -796,8 +814,10 @@ export function useAssistant(
         }
 
         // Execute tools if present
-        if (currentToolInvocations.length > 0) {
-          const executedTools = await executeToolCalls(currentToolInvocations)
+        if (currentToolInvocationsRef.current.length > 0) {
+          const executedTools = await executeToolCalls(
+            currentToolInvocationsRef.current
+          )
           finalMessage.toolInvocations = executedTools.map((tool) => ({
             toolCallId: tool.toolCallId,
             toolName: tool.toolName,
@@ -838,6 +858,10 @@ export function useAssistant(
             requestBody
           )
         }
+
+        // Clean up refs
+        accumulatedContentRef.current = ''
+        currentToolInvocationsRef.current = []
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
           updateStatus('idle')

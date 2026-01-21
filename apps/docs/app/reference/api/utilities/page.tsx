@@ -35,7 +35,7 @@ const result = await withModelFallback(
       { provider: 'openai', model: 'gpt-4o-mini', priority: 1 },
       { provider: 'anthropic', model: 'claude-3-sonnet', priority: 2 },
     ],
-    onFallback: (from, to) => logger.debug(\`Falling back from \${from.model} to \${to.model}\`),
+    onFallback: (from, to) => console.log(\`Falling back from \${from.model} to \${to.model}\`),
   }
 )`}
         />

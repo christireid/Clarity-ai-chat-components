@@ -157,7 +157,7 @@ export default function CustomizationPlaygroundDemo() {
     const accentColor = getConfigValue('accentColor')
     if (accentColor !== '#3b82f6') props.push(`accentColor="${accentColor}"`)
 
-    return `import { ClarityChat } from '@clarity-chat/react/internal'
+    return `import { ClarityChat } from '@clarity-chat/react'
 
 export default function Chat() {
   return (

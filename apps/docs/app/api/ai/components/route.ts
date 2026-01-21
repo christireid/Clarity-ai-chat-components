@@ -18,6 +18,10 @@ import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('ai-components-api')
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * AI-Optimized Components API
  *
@@ -1398,13 +1402,21 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Components API] Error:', error)
+    // Log error for debugging
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    console.error('[AI Components API] Error:', errorMessage)
+    if (errorStack) {
+      console.error('[AI Components API] Stack:', errorStack)
+    }
 
+    // Return proper JSON error response
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',
       'An unexpected error occurred while fetching components',
       '/api/ai/components',
-      error instanceof Error ? error.message : undefined
+      process.env.NODE_ENV === 'development' ? errorMessage : undefined
     )
 
     return NextResponse.json(errorResponse, {

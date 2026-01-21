@@ -14,7 +14,14 @@ import {
   Terminal,
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
-import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
+import { FloatingAccents } from '@/components/hero/FloatingAccents'
+import dynamic from 'next/dynamic'
+
+// Lazy load the geometric mesh to avoid SSR issues with canvas
+const GeometricMesh = dynamic(
+  () => import('@/components/hero/GeometricMesh').then((mod) => mod.GeometricMesh),
+  { ssr: false }
+)
 import { CardSkeleton } from './Skeletons'
 
 interface HeroSectionProps {
@@ -348,12 +355,11 @@ export function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden min-h-[90vh] flex flex-col justify-center">
-      {/* 3D Particle Animation Background */}
-      <HeroParticlesLazy
-        interactionMode="hybrid"
-        interactionStrength={0.6}
-        bloomIntensity={1.8}
-      />
+      {/* Interactive Geometric Mesh Animation - Premium stunning effect */}
+      <GeometricMesh className="-z-10 opacity-60 dark:opacity-80" />
+
+      {/* Floating Geometric Accents - Adds depth and sophistication */}
+      <FloatingAccents />
 
       {/* Animated Background Gradient (subtle overlay) - consistent brand colors */}
       <motion.div
@@ -385,16 +391,19 @@ export function HeroSection({
         aria-hidden="true"
       />
 
+      {/* Grain texture overlay - premium feel */}
+      <div className="hero-grain" aria-hidden="true" />
+
       {/* Content */}
-      <div className="container-docs relative z-10 py-16 sm:py-20 md:py-28">
-        <div className="max-w-4xl mx-auto text-center">
+      <div className="container-docs relative z-10 py-12 sm:py-16 md:py-20">
+        <div className="max-w-3xl mx-auto text-center">
           {/* Badge + GitHub Stars */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: durations.slow, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm font-medium shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300 text-xs font-medium"
             >
               <motion.div
                 animate={{
@@ -407,19 +416,19 @@ export function HeroSection({
                   repeatDelay: 3,
                 }}
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-3.5 h-3.5" />
               </motion.div>
               <span>155+ Components · 70+ Hooks · 15 Themes</span>
             </motion.div>
             {showGitHubStars && <GitHubStarsBadge />}
           </div>
 
-          {/* Title */}
+          {/* Title - Premium gradient text effect */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.2 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-balance leading-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance leading-tight bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent"
           >
             {title}
           </motion.h1>
@@ -429,7 +438,7 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.3 }}
-            className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 text-balance max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+            className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 text-balance max-w-2xl mx-auto leading-relaxed px-2 sm:px-0"
           >
             {description}
           </motion.p>
@@ -442,21 +451,17 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href={primaryCta.href}
-                className="group relative inline-flex items-center gap-2 px-8 py-4 min-h-[48px] bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl overflow-hidden focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary focus-visible:outline-none"
+                className="group relative inline-flex items-center gap-2 px-5 py-2.5 min-h-[40px] bg-gradient-to-r from-brand-500 via-purple-500 to-brand-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white text-sm rounded-lg font-medium transition-all duration-500 shadow-md hover:shadow-[0_8px_30px_rgba(99,102,241,0.35)] overflow-hidden focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary focus-visible:outline-none"
               >
-                <motion.div
-                  className="absolute inset-0 bg-white/20"
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileHover={{ scale: 2, opacity: 0 }}
-                  transition={{ duration: durations.slower }}
-                />
+                {/* Shimmer effect overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:200%_100%] animate-[shimmer_2s_infinite] pointer-events-none" />
                 <span className="relative z-10">{primaryCta.text}</span>
-                <ArrowRight className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
 
@@ -467,7 +472,7 @@ export function HeroSection({
               >
                 <Link
                   href={secondaryCta.href}
-                  className="inline-flex items-center gap-2 px-8 py-4 min-h-[48px] bg-bg-secondary hover:bg-bg-tertiary text-text-primary rounded-lg font-semibold transition-all border border-border hover:border-brand-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 min-h-[40px] bg-bg-secondary hover:bg-bg-tertiary text-text-primary text-sm rounded-lg font-medium transition-all border border-border hover:border-brand-300 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   {secondaryCta.text}
                 </Link>
@@ -480,7 +485,7 @@ export function HeroSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: durations.slow, delay: 0.5 }}
-            className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 max-w-3xl mx-auto px-2 sm:px-0"
+            className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto px-2 sm:px-0"
           >
             {[
               { value: 155, label: 'Components', suffix: '+' },
@@ -496,25 +501,38 @@ export function HeroSection({
                   duration: durations.slow,
                   delay: 0.6 + index * 0.1,
                 }}
-                whileHover={{ scale: 1.05, y: -3 }}
-                className="group relative p-4 sm:p-5 rounded-xl bg-gradient-to-br from-bg-secondary to-bg-tertiary border border-border hover:border-brand-400/70 transition-all duration-300 hover:shadow-[0_8px_24px_-4px_rgba(59,130,246,0.12),0_0_0_1px_rgba(59,130,246,0.1)] dark:hover:shadow-[0_8px_24px_-4px_rgba(96,165,250,0.15),0_0_0_1px_rgba(96,165,250,0.15)]"
+                whileHover={{ scale: 1.03, y: -2 }}
+                className="group relative p-3 rounded-lg bg-bg-secondary/50 border border-transparent transition-all duration-300 overflow-hidden"
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
-                  initial={false}
+                {/* Gradient border overlay - appears on hover */}
+                <div
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    padding: '1px',
+                    background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.3) 50%, rgba(244,114,182,0.4) 100%)',
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                  }}
+                  aria-hidden="true"
+                />
+                {/* Subtle glow on hover */}
+                <div
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gradient-to-br from-brand-500/5 to-purple-500/5"
+                  aria-hidden="true"
                 />
                 <div className="relative z-10">
                   <motion.div
-                    className="text-2xl sm:text-3xl font-extrabold text-brand-500 mb-1 tracking-tight"
+                    className="text-xl sm:text-2xl font-bold text-brand-500 tracking-tight tabular-nums"
                     initial={{ scale: 1 }}
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.05 }}
                   >
                     <AnimatedCounter value={stat.value} duration={1.5} />
                     {stat.suffix && (
-                      <span className="text-lg">{stat.suffix}</span>
+                      <span className="text-sm">{stat.suffix}</span>
                     )}
                   </motion.div>
-                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  <div className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">
                     {stat.label}
                   </div>
                 </div>

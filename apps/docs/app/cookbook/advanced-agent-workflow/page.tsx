@@ -63,7 +63,7 @@ export default function AdvancedAgentWorkflowCookbook() {
     tools,
     maxIterations: 10,
     onToolCall: (tool, args) => {
-      logger.debug(\`Calling \${tool}:\`, args)
+      console.log(\`Calling \${tool}:\`, args)
     }
   })
 

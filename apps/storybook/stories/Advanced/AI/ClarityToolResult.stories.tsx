@@ -3,7 +3,7 @@ import {
   ClarityToolResult,
   createToolUIRegistry,
   type CoreMessage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import {
   Card,
   CardHeader,

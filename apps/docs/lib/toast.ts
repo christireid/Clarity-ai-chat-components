@@ -44,6 +44,11 @@ export interface ToastOptions {
   type?: ToastType
 
   /**
+   * Additional description text below the main message
+   */
+  description?: string
+
+  /**
    * Duration in milliseconds before auto-dismiss
    * @default 3000
    */

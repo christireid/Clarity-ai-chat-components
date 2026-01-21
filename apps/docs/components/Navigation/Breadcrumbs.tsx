@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ChevronRight, Home } from 'lucide-react'
 import { Fragment } from 'react'
 import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 export function Breadcrumbs() {
   const pathname = usePathname()
@@ -30,7 +31,12 @@ export function Breadcrumbs() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       aria-label="Breadcrumb"
-      className="flex items-center gap-1 text-sm text-text-secondary mb-8 flex-wrap"
+      className={cn(
+        'flex items-center gap-1 text-sm text-text-secondary mb-8 flex-wrap',
+        'px-3 py-2 -mx-3 rounded-lg',
+        'bg-transparent hover:bg-gray-50/50 dark:hover:bg-gray-900/30',
+        'transition-colors duration-300'
+      )}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
@@ -41,7 +47,13 @@ export function Breadcrumbs() {
       >
         <Link
           href="/"
-          className="hover:text-brand-500 transition-colors inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg hover:bg-bg-secondary"
+          className={cn(
+            'inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg',
+            'transition-all duration-300',
+            'hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20',
+            'hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]',
+            'dark:hover:shadow-[0_0_12px_rgba(129,140,248,0.2)]'
+          )}
           aria-label="Home"
         >
           <Home className="w-4 h-4" />
@@ -80,11 +92,17 @@ export function Breadcrumbs() {
               >
                 <Link
                   href={crumb.href}
-                  className="group relative hover:text-brand-500 transition-colors px-2 py-2 min-h-[44px] inline-flex items-center rounded-lg hover:bg-bg-secondary"
+                  className={cn(
+                    'group relative px-2 py-2 min-h-[44px] inline-flex items-center rounded-lg',
+                    'transition-all duration-300',
+                    'hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20',
+                    'hover:shadow-[0_0_8px_rgba(99,102,241,0.1)]',
+                    'dark:hover:shadow-[0_0_8px_rgba(129,140,248,0.15)]'
+                  )}
                 >
                   {crumb.label}
                   <motion.span
-                    className="absolute bottom-1 left-2 right-2 h-px bg-brand-500"
+                    className="absolute bottom-1 left-2 right-2 h-px bg-gradient-to-r from-brand-400 to-purple-400"
                     initial={{ width: 0 }}
                     whileHover={{ width: 'calc(100% - 16px)' }}
                     transition={{ duration: 0.2 }}

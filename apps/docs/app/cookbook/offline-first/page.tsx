@@ -39,7 +39,7 @@ export default function OfflineFirstPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { OfflineChatSync, ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { OfflineChatSync, ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function OfflineChat() {
@@ -63,7 +63,7 @@ function OfflineChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat } from '@clarity-chat/react'
 import { useEffect, useState } from 'react'
 
 function OfflineChat() {
@@ -166,7 +166,7 @@ function OfflineChat() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useIndexedDB } from '@clarity-chat/react/internal'
+          code={`import { useIndexedDB } from '@clarity-chat/react'
 
 function OfflineChat() {
   const { get, set } = useIndexedDB('chat-db', 'messages')
@@ -311,7 +311,7 @@ chat.setMessages(resolved)`}
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { NetworkStatus } from '@clarity-chat/react/internal'
+          code={`import { NetworkStatus } from '@clarity-chat/react'
 
 function Chat() {
   return (
