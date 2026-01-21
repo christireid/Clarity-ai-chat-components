@@ -11,10 +11,31 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter } from './types'
+import type { ModelAdapter, FinishReason } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import { validateApiKey, DEFAULT_TIMEOUTS } from './shared'
+
+/**
+ * Map Google finish reasons to unified finish reasons
+ */
+function normalizeFinishReason(
+  reason: string | null | undefined
+): FinishReason {
+  if (!reason) return 'unknown'
+  switch (reason) {
+    case 'STOP':
+      return 'stop'
+    case 'MAX_TOKENS':
+      return 'length'
+    case 'SAFETY':
+    case 'RECITATION':
+      return 'content-filter'
+    case 'OTHER':
+    default:
+      return 'unknown'
+  }
+}
 
 export const googleAdapter: ModelAdapter = {
   name: 'google',
@@ -35,14 +56,20 @@ export const googleAdapter: ModelAdapter = {
         body: JSON.stringify({
           contents: messages.map((m) => ({
             role: m.role === 'user' ? 'user' : 'model',
-            parts: [
-              {
-                text:
-                  typeof m.content === 'string'
-                    ? m.content
-                    : m.content.find((p) => p.type === 'text')?.text || '',
-              },
-            ],
+            parts:
+              typeof m.content === 'string'
+                ? [{ text: m.content }]
+                : m.content.map((p) => {
+                    if (p.type === 'text') return { text: p.text }
+                    if (p.type === 'image')
+                      return {
+                        inlineData: {
+                          mimeType: 'image/jpeg',
+                          data: p.imageUrl || '',
+                        },
+                      }
+                    return { text: p.text || '' }
+                  }),
           })),
           generationConfig: {
             temperature: config.temperature,
@@ -74,6 +101,7 @@ export const googleAdapter: ModelAdapter = {
     return {
       role: 'assistant',
       content: data.candidates[0]?.content?.parts[0]?.text || '',
+      finishReason: normalizeFinishReason(data.candidates[0]?.finishReason),
     }
   },
 
@@ -93,14 +121,20 @@ export const googleAdapter: ModelAdapter = {
         body: JSON.stringify({
           contents: messages.map((m) => ({
             role: m.role === 'user' ? 'user' : 'model',
-            parts: [
-              {
-                text:
-                  typeof m.content === 'string'
-                    ? m.content
-                    : m.content.find((p) => p.type === 'text')?.text || '',
-              },
-            ],
+            parts:
+              typeof m.content === 'string'
+                ? [{ text: m.content }]
+                : m.content.map((p) => {
+                    if (p.type === 'text') return { text: p.text }
+                    if (p.type === 'image')
+                      return {
+                        inlineData: {
+                          mimeType: 'image/jpeg',
+                          data: p.imageUrl || '',
+                        },
+                      }
+                    return { text: p.text || '' }
+                  }),
           })),
           generationConfig: {
             temperature: config.temperature,
@@ -175,10 +209,13 @@ export const googleAdapter: ModelAdapter = {
               }
             }
 
-            if (json.usageMetadata) {
+            // Check for finish reason or usage metadata
+            const finishReason = candidate?.finishReason
+
+            if (json.usageMetadata || finishReason) {
               yield {
                 type: 'done',
-                usage: {
+                usage: json.usageMetadata ? {
                   promptTokens: json.usageMetadata.promptTokenCount || 0,
                   completionTokens:
                     json.usageMetadata.candidatesTokenCount || 0,
@@ -192,7 +229,8 @@ export const googleAdapter: ModelAdapter = {
                     },
                     config.model
                   ),
-                },
+                } : undefined,
+                finishReason: finishReason ? normalizeFinishReason(finishReason) : undefined,
               }
             }
           } catch (e) {

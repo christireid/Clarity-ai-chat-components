@@ -8,7 +8,7 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter, ToolCall } from './types'
+import type { ModelAdapter, ToolCall, FinishReason } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
@@ -17,6 +17,28 @@ import {
   DEFAULT_TIMEOUTS,
   type OpenAIToolCall,
 } from './shared'
+
+/**
+ * Map OpenAI finish reasons to unified finish reasons
+ */
+function normalizeFinishReason(
+  reason: string | null | undefined
+): FinishReason {
+  if (!reason) return 'unknown'
+  switch (reason) {
+    case 'stop':
+      return 'stop'
+    case 'length':
+      return 'length'
+    case 'tool_calls':
+    case 'function_call':
+      return 'tool-calls'
+    case 'content_filter':
+      return 'content-filter'
+    default:
+      return 'unknown'
+  }
+}
 
 export const openAIAdapter: ModelAdapter = {
   name: 'openai',
@@ -92,6 +114,7 @@ export const openAIAdapter: ModelAdapter = {
           },
         })
       ),
+      finishReason: normalizeFinishReason(data.choices[0].finish_reason),
     }
   },
 
@@ -112,7 +135,18 @@ export const openAIAdapter: ModelAdapter = {
           model: config.model,
           messages: messages.map((m) => ({
             role: m.role,
-            content: typeof m.content === 'string' ? m.content : m.content,
+            content:
+              typeof m.content === 'string'
+                ? m.content
+                : m.content.map((p) => {
+                    if (p.type === 'text') return { type: 'text', text: p.text }
+                    if (p.type === 'image')
+                      return {
+                        type: 'image_url',
+                        image_url: { url: p.imageUrl },
+                      }
+                    return p
+                  }),
           })),
           temperature: config.temperature,
           max_tokens: config.maxTokens,
@@ -194,10 +228,13 @@ export const openAIAdapter: ModelAdapter = {
               }
             }
 
-            if (json.usage) {
+            // Check for finish_reason
+            const finishReason = json.choices[0]?.finish_reason
+
+            if (json.usage || finishReason) {
               yield {
                 type: 'done',
-                usage: {
+                usage: json.usage ? {
                   promptTokens: json.usage.prompt_tokens,
                   completionTokens: json.usage.completion_tokens,
                   totalTokens: json.usage.total_tokens,
@@ -209,7 +246,8 @@ export const openAIAdapter: ModelAdapter = {
                     },
                     config.model
                   ),
-                },
+                } : undefined,
+                finishReason: finishReason ? normalizeFinishReason(finishReason) : undefined,
               }
             }
           } catch (e) {

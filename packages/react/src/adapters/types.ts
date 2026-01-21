@@ -7,6 +7,17 @@
 
 import type { RateLimitInfo } from '../utils/api/rate-limit-headers'
 
+/**
+ * Why generation stopped
+ */
+export type FinishReason =
+  | 'stop' // Natural end of response
+  | 'length' // Hit max tokens
+  | 'tool-calls' // Model wants to call a tool
+  | 'content-filter' // Content was filtered
+  | 'error' // An error occurred
+  | 'unknown' // Unknown reason
+
 export interface ModelConfig {
   /** Provider name */
   provider: 'openai' | 'anthropic' | 'google' | 'custom'
@@ -56,6 +67,8 @@ export interface ChatMessage {
   citations?: Citation[]
   /** Message name (for function results) */
   name?: string
+  /** Why generation stopped (for assistant messages) */
+  finishReason?: FinishReason
 }
 
 export interface ContentPart {
@@ -113,6 +126,8 @@ export interface StreamChunk {
   citation?: Citation
   /** Token usage stats */
   usage?: TokenUsage
+  /** Why generation stopped (on done) */
+  finishReason?: FinishReason
   /** Error message */
   error?: string
   /** Rate limit info (on error) */
@@ -219,17 +234,6 @@ export interface AdapterCapabilities {
   /** List of supported model IDs */
   supportedModels?: string[]
 }
-
-/**
- * Why generation stopped
- */
-export type FinishReason =
-  | 'stop' // Natural end of response
-  | 'length' // Hit max tokens
-  | 'tool-calls' // Model wants to call a tool
-  | 'content-filter' // Content was filtered
-  | 'error' // An error occurred
-  | 'unknown' // Unknown reason
 
 /**
  * Typed streaming chunk events

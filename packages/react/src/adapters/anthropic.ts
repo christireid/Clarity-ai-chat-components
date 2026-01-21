@@ -8,7 +8,7 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter } from './types'
+import type { ModelAdapter, FinishReason } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
@@ -17,6 +17,26 @@ import {
   filterConversationMessages,
   DEFAULT_TIMEOUTS,
 } from './shared'
+
+/**
+ * Map Anthropic stop reasons to unified finish reasons
+ */
+function normalizeFinishReason(
+  reason: string | null | undefined
+): FinishReason {
+  if (!reason) return 'unknown'
+  switch (reason) {
+    case 'end_turn':
+    case 'stop_sequence':
+      return 'stop'
+    case 'max_tokens':
+      return 'length'
+    case 'tool_use':
+      return 'tool-calls'
+    default:
+      return 'unknown'
+  }
+}
 
 export const anthropicAdapter: ModelAdapter = {
   name: 'anthropic',
@@ -74,6 +94,7 @@ export const anthropicAdapter: ModelAdapter = {
     return {
       role: 'assistant',
       content: data.content[0]?.text || '',
+      finishReason: normalizeFinishReason(data.stop_reason),
     }
   },
 
@@ -161,10 +182,10 @@ export const anthropicAdapter: ModelAdapter = {
               config.streamOptions?.onToken?.(json.delta.text)
             }
 
-            if (json.type === 'message_delta' && json.usage) {
+            if (json.type === 'message_delta') {
               yield {
                 type: 'done',
-                usage: {
+                usage: json.usage ? {
                   promptTokens: json.usage.input_tokens || 0,
                   completionTokens: json.usage.output_tokens || 0,
                   totalTokens:
@@ -180,7 +201,10 @@ export const anthropicAdapter: ModelAdapter = {
                     },
                     config.model
                   ),
-                },
+                } : undefined,
+                finishReason: json.delta?.stop_reason
+                  ? normalizeFinishReason(json.delta.stop_reason)
+                  : undefined,
               }
             }
           } catch (e) {
