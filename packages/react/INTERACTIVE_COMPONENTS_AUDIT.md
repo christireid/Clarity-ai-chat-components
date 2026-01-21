@@ -68,6 +68,13 @@ Several areas were identified for improvement, primarily around:
 | ThemeSelectorDropdown    | `theme-components/theme-selector.tsx` | Dropdown selection  | ⭐⭐⭐⭐⭐ Excellent |
 | OutputPreferenceSelector | `ai/output-preference-selector.tsx`   | Radio group         | ⭐⭐⭐⭐⭐ Excellent |
 
+### Category 6: Additional Input & List Components (Comprehensive Recheck)
+
+| Component        | File                                 | Primary Interaction     | Quality Rating       |
+| ---------------- | ------------------------------------ | ----------------------- | -------------------- |
+| MentionInput     | `input/mention-system.tsx`           | Autocomplete, selection | ⭐⭐⭐⭐⭐ Excellent |
+| ConversationList | `conversation/conversation-list.tsx` | List selection, toggle  | ⭐⭐⭐⭐⭐ Excellent |
+
 ---
 
 ## Detailed Findings
@@ -174,6 +181,27 @@ Several areas were identified for improvement, primarily around:
 - `aria-checked` on radio options
 - Arrow key navigation with roving tabindex
 - Reduced motion support
+
+#### 10. MentionInput (`input/mention-system.tsx`)
+
+**Strengths:**
+
+- Full ARIA combobox pattern (`role="combobox"`, `aria-expanded`, `aria-controls`,
+  `aria-activedescendant`, `aria-autocomplete`)
+- Proper listbox with option roles (`role="listbox"`, `role="option"`, `aria-selected`)
+- Keyboard navigation (Arrow keys, Enter, Escape)
+- Reduced motion support with `useReducedMotion`
+- Mouse hover updates focused index for seamless interaction
+
+#### 11. ConversationList (`conversation/conversation-list.tsx`)
+
+**Strengths:**
+
+- Keyboard activation (Enter/Space) for conversation items
+- `aria-pressed` attribute for toggle button states
+- Reduced motion support with `useReducedMotion`
+- Focus-visible ring styles for keyboard navigation
+- Filter buttons with `role="group"` and `aria-pressed`
 
 ---
 
@@ -344,7 +372,21 @@ The hooks demonstrate mature patterns:
 - [x] Fix FloatingChatWidget missing durations import
 - [x] Verify all selector component fixes with syntax check
 
-### Phase 3: Testing & Documentation
+### Phase 3: Additional Components (Comprehensive Recheck)
+
+- [x] Add MentionInput ARIA combobox pattern (role="combobox", aria-expanded, aria-controls,
+      aria-activedescendant, aria-autocomplete)
+- [x] Add MentionInput listbox with proper option roles
+- [x] Add MentionInput reduced motion support
+- [x] Add ConversationList keyboard activation (Enter/Space)
+- [x] Add ConversationList aria-pressed for toggle states
+- [x] Add ConversationList focus-visible styles
+- [x] Add ConversationList reduced motion support
+- [x] Create comprehensive accessibility guide documentation
+- [x] Delete old auto-generated accessibility config documentation
+- [x] Verify all component fixes with syntax check
+
+### Phase 4: Testing & Documentation
 
 - [ ] Run accessibility linter (manual testing recommended)
 - [ ] Add accessibility tests for modified components
