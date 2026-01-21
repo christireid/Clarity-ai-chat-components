@@ -92,7 +92,7 @@ Streaming state and controls
 | --- | --- | --- |
 | \`content\` | \`string\` | Accumulated stream content (data) |
 | \`isStreaming\` | \`boolean\` | Whether currently streaming (state) |
-| \`startStreaming\` | \`(stream: ReadableStream&lt;Uint8Array&lt;ArrayBufferLike&gt;&gt;, options?: { signal?: AbortSignal \\| undefined; } \\| undefined) =&gt; Promise&lt;void&gt;\` | Start streaming from a ReadableStream (action) |
+| \`startStreaming\` | \`(stream: ReadableStream<Uint8Array>, options?: { signal?: AbortSignal }) => Promise<void>\` | Start streaming from a ReadableStream (action) |
 | \`stopStreaming\` | \`() =&gt; void\` | Stop streaming (action) |
 | \`reset\` | \`() =&gt; void\` | Reset content and state (action) |
 

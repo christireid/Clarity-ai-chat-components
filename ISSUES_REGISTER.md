@@ -258,22 +258,22 @@ API:
 
 ## Resolution Progress
 
-| Issue ID  | Status      | Assigned | Fixed In                                       |
-| --------- | ----------- | -------- | ---------------------------------------------- |
-| ISSUE-001 | FIXED       | Audit    | Built @clarity-chat/token-optimization         |
-| ISSUE-002 | FIXED       | Audit    | packages/react/src/hooks.ts - explicit exports |
-| ISSUE-003 | FIXED       | Audit    | packages/react/src/types/gpt-tokenizer.d.ts    |
-| ISSUE-004 | FIXED       | Audit    | packages/react/src/types/prismjs.d.ts          |
-| ISSUE-005 | In Progress | -        | Cleaning up orphaned docs                      |
-| ISSUE-006 | Pending     | -        | -                                              |
-| ISSUE-007 | FIXED       | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx   |
-| ISSUE-008 | Pending     | -        | -                                              |
-| ISSUE-009 | Pending     | -        | -                                              |
-| ISSUE-010 | Pending     | -        | -                                              |
-| ISSUE-011 | Pending     | -        | -                                              |
-| ISSUE-012 | Pending     | -        | -                                              |
-| ISSUE-013 | Pending     | -        | -                                              |
-| ISSUE-014 | Pending     | -        | -                                              |
+| Issue ID  | Status  | Assigned | Fixed In                                       |
+| --------- | ------- | -------- | ---------------------------------------------- |
+| ISSUE-001 | FIXED   | Audit    | Built @clarity-chat/token-optimization         |
+| ISSUE-002 | FIXED   | Audit    | packages/react/src/hooks.ts - explicit exports |
+| ISSUE-003 | FIXED   | Audit    | packages/react/src/types/gpt-tokenizer.d.ts    |
+| ISSUE-004 | FIXED   | Audit    | packages/react/src/types/prismjs.d.ts          |
+| ISSUE-005 | FIXED   | Audit    | Deleted 81 orphaned hook documentation files   |
+| ISSUE-006 | FIXED   | Audit    | apps/docs/content/hooks/use-chat.mdx rewritten |
+| ISSUE-007 | FIXED   | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx   |
+| ISSUE-008 | FIXED   | Audit    | Added deprecation notice to use-chat.mdx       |
+| ISSUE-009 | FIXED   | Audit    | Fixed type in use-streaming.mdx                |
+| ISSUE-010 | Pending | -        | -                                              |
+| ISSUE-011 | Pending | -        | -                                              |
+| ISSUE-012 | Pending | -        | -                                              |
+| ISSUE-013 | Pending | -        | -                                              |
+| ISSUE-014 | Pending | -        | -                                              |
 
 ---
 
