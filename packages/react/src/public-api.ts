@@ -473,7 +473,7 @@ export {
   SetupWizard,
   QuickSetup,
   interactiveSetup,
-} from './utils/setup-wizard'
+} from './utils/setup-wizard.tsx'
 
 // Lazy Loading - Performance optimizations
 export {
