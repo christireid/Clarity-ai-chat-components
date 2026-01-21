@@ -1,0 +1,8 @@
+import React from 'react';
+interface CustomRendererProps {
+    rows: any[];
+    stylesheet: any;
+    useInlineStyles: boolean;
+}
+declare const customCodeRenderer: ({ animation, animationDuration, animationTimingFunction }: any) => ({ rows, stylesheet, useInlineStyles }: CustomRendererProps) => React.JSX.Element[];
+export default customCodeRenderer;

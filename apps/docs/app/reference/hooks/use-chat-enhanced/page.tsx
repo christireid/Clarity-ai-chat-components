@@ -233,66 +233,6 @@ console.log(sync.status)            // Sync status`}
     </div>
   )
 }
-  {
-    name: 'maxSteps',
-    type: 'number',
-    description: 'Maximum number of steps for agentic workflows.',
-  },
-  {
-    name: 'streamProtocol',
-    type: '"sse" | "data"',
-    default: '"sse"',
-    description: 'Streaming protocol. SSE is Vercel-compatible.',
-  },
-  {
-    name: 'id',
-    type: '() => string',
-    description: 'Custom function to generate unique message IDs.',
-  },
-  {
-    name: 'onResponse',
-    type: '(response: Response) => void | Promise<void>',
-    description: 'Callback when HTTP response is received.',
-  },
-  {
-    name: 'onFinish',
-    type: '(message: CoreMessage) => void | Promise<void>',
-    description: 'Callback when a message stream finishes.',
-  },
-  {
-    name: 'onError',
-    type: '(error: Error) => void',
-    description: 'Callback when an error occurs.',
-  },
-  {
-    name: 'onMessageAppend',
-    type: '(message: CoreMessage) => void',
-    description: 'Callback when a message is appended to the conversation.',
-  },
-  {
-    name: 'transform',
-    type: '(messages: CoreMessage[]) => CoreMessage[]',
-    description: 'Transform messages before sending to API.',
-  },
-  {
-    name: 'stream',
-    type: 'boolean',
-    default: 'true',
-    description: 'Enable streaming responses.',
-  },
-  {
-    name: 'keepLastMessageOnError',
-    type: 'boolean',
-    default: 'false',
-    description: 'Keep the last message when an error occurs.',
-  },
-  {
-    name: 'sendExtraMessageFields',
-    type: 'boolean',
-    default: 'false',
-    description: 'Send additional message fields to the API.',
-  },
-]
 
 const useChatEnhancedReturn: Prop[] = [
   {

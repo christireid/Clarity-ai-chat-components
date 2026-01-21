@@ -43,7 +43,6 @@ export default function RateLimitingRecipePage() {
 
       <section className="docs-section">
         <h2>1. Basic Rate Limiting with ClarityChat</h2>
-        />
         <p className="mt-4 text-sm text-muted-foreground">
           Enable rate limiting with just one prop. ClarityChat automatically handles queuing,
           retries, and user feedback. Perfect for production applications.
@@ -320,9 +319,6 @@ function MonitoredChat() {
             </p>
           </Link>
         </div>
-      </section>
-          another shared backend in distributed environments.
-        </Callout>
       </section>
 
       <section className="docs-section">

@@ -84,8 +84,6 @@ export {
 export { ContextVisualizer } from './components/context/context-visualizer'
 export { ConversationList } from './components/conversation/conversation-list'
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
-// DEPRECATED: MarkdownRendererEnhanced removed - use EnhancedMarkdownRenderer instead
-// export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
 export { VirtualizedMessageList } from './components/chat/virtualized-message-list'
 export { MessageList } from './components/message/message-list'

@@ -7,9 +7,9 @@ import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
 export const metadata: Metadata = {
-  title: 'EnhancedMarkdownRenderer',
+  title: 'EnhancedMarkdownRenderer (formerly MarkdownRendererEnhanced)',
   description:
-    'Render rich markdown with KaTeX math, syntax highlighting, Mermaid diagrams, error boundaries, and performance monitoring.',
+    'Render rich markdown with KaTeX math, syntax highlighting, Mermaid diagrams, error boundaries, and performance monitoring. This component has been renamed from MarkdownRendererEnhanced.',
 }
 
 const props = [
@@ -78,6 +78,15 @@ export default function MarkdownRendererEnhancedPage() {
       <Breadcrumbs />
 
       <h1>EnhancedMarkdownRenderer</h1>
+
+      <Callout type="warning">
+        <p>
+          <strong>Component Renamed:</strong> This component was previously named
+          <code>MarkdownRendererEnhanced</code> but has been renamed to
+          <code>EnhancedMarkdownRenderer</code> for consistency. The old name is deprecated.
+        </p>
+      </Callout>
+
       <p className="lead">
         A comprehensive markdown renderer with built-in error boundaries,
         performance monitoring, analytics tracking, and support for LaTeX math,

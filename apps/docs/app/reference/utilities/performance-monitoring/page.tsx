@@ -180,10 +180,10 @@ function PerformanceAnalyzedApp() {
         <Callout type="tip" title="Performance Thresholds">
           <p>Consider these performance targets for optimal user experience:</p>
           <ul className="list-disc list-inside mt-2">
-            <li><strong>First Contentful Paint:</strong> < 1.5 seconds</li>
-            <li><strong>Largest Contentful Paint:</strong> < 2.5 seconds</li>
-            <li><strong>Component Render Time:</strong> < 50ms</li>
-            <li><strong>Interaction Latency:</strong> < 100ms</li>
+            <li><strong>First Contentful Paint:</strong> &lt; 1.5 seconds</li>
+            <li><strong>Largest Contentful Paint:</strong> &lt; 2.5 seconds</li>
+            <li><strong>Component Render Time:</strong> &lt; 50ms</li>
+            <li><strong>Interaction Latency:</strong> &lt; 100ms</li>
           </ul>
         </Callout>
       </section>
@@ -351,10 +351,10 @@ function ProductionChatApp() {
           <Callout type="info" title="Performance Budgets">
             <p>Set performance budgets and monitor against them:</p>
             <ul className="list-disc list-inside mt-2">
-              <li>Bundle size: < 500KB gzipped</li>
-              <li>First paint: < 1.5 seconds</li>
-              <li>Interaction latency: < 100ms</li>
-              <li>Memory usage: < 100MB</li>
+              <li>Bundle size: &lt; 500KB gzipped</li>
+              <li>First paint: &lt; 1.5 seconds</li>
+              <li>Interaction latency: &lt; 100ms</li>
+              <li>Memory usage: &lt; 100MB</li>
             </ul>
           </Callout>
 

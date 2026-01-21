@@ -447,6 +447,61 @@ export {
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
 
+// Quick Start Helpers - Ultra-simple APIs
+export {
+  chat,
+  chatWithMemory,
+  enterpriseChat,
+  streamingChat,
+  ChatBuilder,
+  ChatPresets,
+} from './utils/quick-start.tsx'
+
+// Development Helpers - DX utilities
+export {
+  validateSetup,
+  ConfigPresets,
+  createConfig,
+  devLog,
+  QuickStartTemplates,
+  showQuickStart,
+  DevPerformanceMonitor,
+} from './utils/dev-helpers'
+
+// Setup Wizard - Interactive configuration
+export {
+  SetupWizard,
+  QuickSetup,
+  interactiveSetup,
+} from './utils/setup-wizard'
+
+// Lazy Loading - Performance optimizations
+export {
+  createLazyComponent,
+  createLazyComponentWithBoundary,
+  preloadComponent,
+  loadWhen,
+  FeatureFlags,
+  loadFeature,
+  LazyComponents,
+  LazyLoadPerformanceMonitor,
+} from './utils/lazy-loading.tsx'
+
+// IntelliSense Helpers - Enhanced TypeScript DX
+export type {
+  ChatApiConfig,
+  ChatPreset,
+  MemoryConfigHelper,
+  StreamingConfigHelper,
+  RateLimitConfigHelper,
+  HeaderConfigHelper,
+  MessageActionsConfigHelper,
+  PromptsConfigHelper,
+  ErrorHandlingConfigHelper,
+  ChatErrorType,
+  ErrorHandlingConfigHelper as ErrorConfigHelper,
+} from './types/intellisense-helpers'
+
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
 // Note: useCommandPaletteCommands has a broken import path and is excluded
@@ -705,9 +760,7 @@ export { Draggable, DropZone } from './components/ui/draggable'
 // Chat hooks (advanced)
 export { useAssistant } from './hooks/chat/use-assistant'
 export { useCompletion } from './hooks/chat/use-completion'
-// DEPRECATED: useChat variants removed - use useClarityChat instead
-// useChat and useChatEnhanced removed from exports
-// export { useTyping } from './hooks/chat/use-typing' // File does not exist
+// Note: useTyping hook was removed - use useRealisticTyping instead
 export { useRealisticTyping } from './hooks/input/use-realistic-typing'
 
 // Streaming hooks

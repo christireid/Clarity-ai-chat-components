@@ -28,6 +28,16 @@
  *   memory={{ enabled: true, strategy: 'vector-store' }}
  * />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Ultra-simple with presets
+ * import { chat } from '@clarity-chat/react'
+ *
+ * function App() {
+ *   return chat('/api/chat') // Returns JSX.Element!
+ * }
+ * ```
  */
 
 'use client'

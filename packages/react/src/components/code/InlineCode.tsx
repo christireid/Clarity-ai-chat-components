@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { cn } from '../../utils/cn'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
+import { NIGHT_OWL_COLORS } from './themes/night-owl'
 
 /**
  * InlineCode component for inline code snippets
@@ -64,16 +65,15 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
   return (
     <code
       className={cn(
-        // Night Owl background and foreground
-        'bg-[#011627] text-[#d6deeb]',
-        // Border and padding
-        'rounded border border-white/[0.08] px-1.5 py-0.5',
-        // Font styling
+        // Night Owl theming using centralized colors
         'font-mono text-sm font-medium',
+        'rounded border px-1.5 py-0.5',
+        // Use CSS custom properties for Night Owl colors
+        '[background-color:var(--night-owl-bg)] [color:var(--night-owl-fg)] [border-color:var(--night-owl-border)]',
         // Interactive states (only when copy is enabled)
         enableCopy && [
           'cursor-pointer transition-colors duration-200',
-          'hover:bg-[#011627]/80 hover:border-white/[0.12]',
+          'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
         ],
         className

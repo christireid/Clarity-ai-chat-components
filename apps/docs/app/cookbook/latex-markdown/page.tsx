@@ -115,11 +115,12 @@ def quadratic(a, b, c, x):
         </Callout>
         <CodeBlock
           language="tsx"
-          code={`<MarkdownRendererEnhanced
+          code={`<EnhancedMarkdownRenderer
   content={content}
-  onMathError={(error, latex) => {
-    toast.error('Math failed to render')
-    console.warn('Invalid LaTeX', { error, latex })
+  config={{
+    enableKaTeX: true,
+    // Math errors are automatically handled with error boundaries
+    // and logged via analytics
   }}
 />`}
         />

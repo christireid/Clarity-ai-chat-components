@@ -446,6 +446,26 @@ export const referenceNavigation: NavItem[] = [
         title: 'Analytics & Tracking',
         href: '/reference/utilities/analytics',
       },
+      {
+        title: 'Quick Start Helpers',
+        href: '/reference/utilities/quick-start-helpers',
+      },
+      {
+        title: 'Development Helpers',
+        href: '/reference/utilities/dev-helpers',
+      },
+      {
+        title: 'Setup Wizard',
+        href: '/reference/utilities/setup-wizard',
+      },
+      {
+        title: 'Lazy Loading',
+        href: '/reference/utilities/lazy-loading',
+      },
+      {
+        title: 'IntelliSense Helpers',
+        href: '/reference/utilities/intellisense-helpers',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },

@@ -10,7 +10,7 @@
 
 import * as React from 'react'
 import {
-  useChatEnhanced,
+  useClarityChat,
   PromptSuggestionsEnhanced,
   ConversationSummarizer,
   BatteryIndicator,
@@ -72,11 +72,8 @@ export function AdvancedChatApplication() {
   })
 
   // Chat state
-  const { messages, sendMessage, isLoading, error } = useChatEnhanced({
+  const { messages, append, isLoading, error } = useClarityChat({
     api: '/api/chat',
-    // Apply battery optimizations
-    streamingEnabled: !recommendations.reduceStreaming,
-    updateInterval: recommendations.updateInterval,
   })
 
   // Custom summarization with your LLM API
@@ -180,7 +177,7 @@ export function AdvancedChatApplication() {
         <div className="border-t p-4 bg-background">
           <PromptSuggestionsEnhanced
             messages={messages}
-            onSelect={(suggestion) => sendMessage(suggestion.text)}
+            onSelect={(suggestion) => append({ role: 'user', content: suggestion.text })}
             config={{
               rankingModel: { type: 'hybrid' },
               features: {
@@ -274,10 +271,8 @@ export function MobileAdvancedChat() {
     autoOptimize: true,
   })
 
-  const { messages, sendMessage, isLoading } = useChatEnhanced({
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
-    streamingEnabled: !recommendations.reduceStreaming,
-    updateInterval: recommendations.updateInterval,
   })
 
   const [showSummary, setShowSummary] = React.useState(false)
@@ -329,7 +324,7 @@ export function MobileAdvancedChat() {
       <div className="border-t p-3 bg-background sticky bottom-0">
         <PromptSuggestionsEnhanced
           messages={messages}
-          onSelect={(s) => sendMessage(s.text)}
+          onSelect={(s) => append({ role: 'user', content: s.text })}
           config={{
             rankingModel: { type: 'hybrid' },
             features: {
@@ -412,7 +407,7 @@ export function DeveloperDashboard() {
     autoOptimize: true,
   })
 
-  const { messages, sendMessage, isLoading } = useChatEnhanced({
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
 
@@ -476,7 +471,7 @@ export function DeveloperDashboard() {
               <div className="border-t p-4 space-y-4">
                 <PromptSuggestionsEnhanced
                   messages={messages}
-                  onSelect={(s) => sendMessage(s.text)}
+                  onSelect={(s) => append({ role: 'user', content: s.text })}
                   config={{
                     rankingModel: { type: 'hybrid' },
                     features: {
