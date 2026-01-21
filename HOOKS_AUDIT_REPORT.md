@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This report documents a comprehensive audit of all 177 custom React hooks across the Clarity Chat Components codebase. The audit examined each hook for Rules of Hooks compliance, dependency array correctness, effect cleanup, state management patterns, performance characteristics, type safety, composition patterns, and test coverage.
+This report documents a comprehensive audit of all 173 custom React hooks across the Clarity Chat Components codebase (4 deprecated hooks have been removed). The audit examined each hook for Rules of Hooks compliance, dependency array correctness, effect cleanup, state management patterns, performance characteristics, type safety, composition patterns, and test coverage.
 
 ### Overall Assessment: **GOOD** with Minor Improvements Recommended
 
@@ -20,7 +20,7 @@ The hooks system is well-architected with clear layering (low-level primitives �
 
 | Package | Hook Count | Test Coverage |
 |---------|------------|---------------|
-| packages/react | 108 | 45 test files |
+| packages/react | 104 | 45 test files |
 | packages/error-handling | 11 | Partial |
 | packages/dev-tools | 10 | Partial |
 | packages/memory | 1 | Yes |
@@ -183,7 +183,7 @@ if (!cacheRef.current) {
 id: generateCompletionId = () => generateId(),
 ```
 
-**Status:** Will fix in this PR.
+**Status:** ✅ FIXED - Unused variable removed and replaced with comment noting it's reserved for future use.
 
 ### Issue 3: Module-Level Globals in useKeyboardShortcuts (Minor)
 
@@ -197,7 +197,7 @@ let globalListenerAttached = false
 
 **Analysis:** Module-level state can cause issues with HMR and testing isolation. However, this is intentional for managing global shortcut priorities and is a valid pattern for this use case.
 
-**Recommendation:** Document this pattern and ensure proper cleanup in tests.
+**Status:** ✅ FIXED - Added comprehensive JSDoc documentation explaining the intentional pattern and HMR behavior.
 
 ### Issue 4: Inconsistent useEffect vs useLayoutEffect (Minor)
 
@@ -206,7 +206,7 @@ let globalListenerAttached = false
 
 Uses `useEffect` for callback ref update while `useDebouncedCallback` uses `useLayoutEffect`. Should be consistent.
 
-**Status:** Will fix in this PR.
+**Status:** ✅ FIXED - Updated to use `useLayoutEffect` consistently with `useDebouncedCallback`.
 
 ---
 
@@ -277,13 +277,15 @@ Most hooks have comprehensive JSDoc documentation including:
 
 ## Recommendations
 
-### Short-Term (This PR)
+### Short-Term (This PR) - ALL COMPLETED ✅
 1. ✅ Remove unused `generateCompletionId` from `useCompletion`
 2. ✅ Fix `useLayoutEffect` consistency in debounce hooks
 3. ✅ Add documentation for module-level globals pattern
+4. ✅ Remove deprecated hooks (`useChat`, `useChatSimple`, `useChatComposable`, `useMounted`)
+5. ✅ Fix TODO in `use-security.ts` - Added `rateLimitRemaining` field to `SecurityResult`
 
 ### Medium-Term
-1. Consider adding `useSyncExternalStore` for global state hooks
+1. ✅ `useSyncExternalStore` already used in license package for global state (no action needed)
 2. Add performance benchmarks for critical hooks
 3. Create Storybook examples for hook usage patterns
 
@@ -291,6 +293,7 @@ Most hooks have comprehensive JSDoc documentation including:
 1. Evaluate React 19 `use` hook integration opportunities
 2. Consider React Server Components compatibility for applicable hooks
 3. Add automated dependency array linting in CI
+4. Update @testing-library/react for React 19 streaming test compatibility
 
 ---
 
@@ -305,10 +308,9 @@ The minor issues identified are low-severity and have been addressed in this PR.
 ## Appendix: Complete Hook List by Package
 
 <details>
-<summary>packages/react/src/hooks (108 hooks)</summary>
+<summary>packages/react/src/hooks (104 hooks)</summary>
 
 ### Chat Hooks
-- `useChat` (deprecated)
 - `useAgent`
 - `useAssistant`
 - `useCompletion`
@@ -316,11 +318,9 @@ The minor issues identified are low-severity and have been addressed in this PR.
 - `useClarityChatWithTools`
 - `useClarityObject`
 - `useRAGPipeline`
-- `useChatComposable`
 - `useChatWithFeatures`
 - `useChatHandlers`
 - `useChatHistory`
-- `useChatSimple`
 - `useChatEnhanced`
 
 ### Token Hooks
@@ -349,7 +349,6 @@ The minor issues identified are low-severity and have been addressed in this PR.
 - `useThrottle`
 - `useThrottledCallback`
 - `useToggle`
-- `useMounted`
 - `useIsMounted`
 - `useAutoScroll`
 - `useClipboard`
