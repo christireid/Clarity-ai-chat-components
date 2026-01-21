@@ -1,0 +1,199 @@
+import { addons, useParameter } from 'storybook/manager-api';
+import { Addon_TypesEnum } from 'storybook/internal/types';
+import { themes } from 'storybook/theming';
+import * as React from 'react';
+import { IconButton } from 'storybook/internal/components';
+import { SunIcon, MoonIcon } from '@storybook/icons';
+import { STORY_CHANGED, SET_STORIES, DOCS_RENDERED } from 'storybook/internal/core-events';
+import { global } from '@storybook/global';
+import { isEqual } from 'lodash-es';
+
+// src/preset/manager.tsx
+
+// src/constants.ts
+var DARK_MODE_EVENT_NAME = "DARK_MODE";
+var UPDATE_DARK_MODE_EVENT_NAME = "UPDATE_DARK_MODE";
+var { document, window } = global;
+var STORAGE_KEY = "sb-addon-themes-3";
+var prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)");
+var defaultParams = {
+  classTarget: "body",
+  dark: themes.dark,
+  darkClass: ["dark"],
+  light: themes.light,
+  lightClass: ["light"],
+  stylePreview: false,
+  userHasExplicitlySetTheTheme: false
+};
+var updateStore = (newStore) => {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newStore));
+};
+var arrayify = (classes) => {
+  const arr = [];
+  return arr.concat(classes).map((item) => item);
+};
+var toggleDarkClass = (el, {
+  current,
+  darkClass = defaultParams.darkClass,
+  lightClass = defaultParams.lightClass
+}) => {
+  if (current === "dark") {
+    el.classList.remove(...arrayify(lightClass));
+    el.classList.add(...arrayify(darkClass));
+  } else {
+    el.classList.remove(...arrayify(darkClass));
+    el.classList.add(...arrayify(lightClass));
+  }
+};
+var updatePreview = (store2) => {
+  const iframe = document.getElementById("storybook-preview-iframe");
+  if (!iframe) {
+    return;
+  }
+  const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+  const target = iframeDocument?.querySelector(store2.classTarget);
+  if (!target) {
+    return;
+  }
+  toggleDarkClass(target, store2);
+};
+var updateManager = (store2) => {
+  const manager = document.querySelector(store2.classTarget);
+  if (!manager) {
+    return;
+  }
+  toggleDarkClass(manager, store2);
+};
+var store = (userTheme = {}) => {
+  const storedItem = window.localStorage.getItem(STORAGE_KEY);
+  if (typeof storedItem === "string") {
+    const stored = JSON.parse(storedItem);
+    if (userTheme) {
+      if (userTheme.dark && !isEqual(stored.dark, userTheme.dark)) {
+        stored.dark = userTheme.dark;
+        updateStore(stored);
+      }
+      if (userTheme.light && !isEqual(stored.light, userTheme.light)) {
+        stored.light = userTheme.light;
+        updateStore(stored);
+      }
+    }
+    return stored;
+  }
+  return { ...defaultParams, ...userTheme };
+};
+updateManager(store());
+
+// src/Tool.tsx
+function DarkMode({ api }) {
+  const [isDark, setDark] = React.useState(prefersDark.matches);
+  const darkModeParams = useParameter("darkMode", {});
+  const { current: defaultMode, stylePreview, ...params } = darkModeParams;
+  const channel = api.getChannel();
+  const userHasExplicitlySetTheTheme = React.useMemo(
+    () => store(params).userHasExplicitlySetTheTheme,
+    [params]
+  );
+  const setMode = React.useCallback(
+    (mode) => {
+      const currentStore2 = store();
+      api.setOptions({ theme: currentStore2[mode] });
+      setDark(mode === "dark");
+      api.getChannel().emit(DARK_MODE_EVENT_NAME, mode === "dark");
+      updateManager(currentStore2);
+      if (stylePreview) {
+        updatePreview(currentStore2);
+      }
+    },
+    [api, stylePreview]
+  );
+  const updateMode = React.useCallback(
+    (mode) => {
+      const currentStore2 = store();
+      const current = mode || (currentStore2.current === "dark" ? "light" : "dark");
+      updateStore({ ...currentStore2, current });
+      setMode(current);
+    },
+    [setMode]
+  );
+  function prefersDarkUpdate(event) {
+    if (userHasExplicitlySetTheTheme || defaultMode) {
+      return;
+    }
+    updateMode(event.matches ? "dark" : "light");
+  }
+  const renderTheme = React.useCallback(() => {
+    const { current = "light" } = store();
+    setMode(current);
+  }, [setMode]);
+  const handleIconClick = () => {
+    updateMode();
+    const currentStore2 = store();
+    updateStore({ ...currentStore2, userHasExplicitlySetTheTheme: true });
+  };
+  React.useEffect(() => {
+    const currentStore2 = store();
+    updateStore({
+      ...currentStore2,
+      ...darkModeParams,
+      current: currentStore2.current || darkModeParams.current
+    });
+    renderTheme();
+  }, [darkModeParams, renderTheme]);
+  React.useEffect(() => {
+    channel.on(STORY_CHANGED, renderTheme);
+    channel.on(SET_STORIES, renderTheme);
+    channel.on(DOCS_RENDERED, renderTheme);
+    prefersDark.addListener(prefersDarkUpdate);
+    return () => {
+      channel.removeListener(STORY_CHANGED, renderTheme);
+      channel.removeListener(SET_STORIES, renderTheme);
+      channel.removeListener(DOCS_RENDERED, renderTheme);
+      prefersDark.removeListener(prefersDarkUpdate);
+    };
+  });
+  React.useEffect(() => {
+    channel.on(UPDATE_DARK_MODE_EVENT_NAME, updateMode);
+    return () => {
+      channel.removeListener(UPDATE_DARK_MODE_EVENT_NAME, updateMode);
+    };
+  });
+  React.useEffect(() => {
+    if (userHasExplicitlySetTheTheme) {
+      return;
+    }
+    if (defaultMode) {
+      updateMode(defaultMode);
+    } else if (prefersDark.matches) {
+      updateMode("dark");
+    }
+  }, [defaultMode, updateMode, userHasExplicitlySetTheTheme]);
+  return /* @__PURE__ */ React.createElement(
+    IconButton,
+    {
+      key: "dark-mode",
+      title: isDark ? "Change theme to light mode" : "Change theme to dark mode",
+      onClick: handleIconClick
+    },
+    isDark ? /* @__PURE__ */ React.createElement(SunIcon, { "aria-hidden": "true" }) : /* @__PURE__ */ React.createElement(MoonIcon, { "aria-hidden": "true" })
+  );
+}
+var Tool_default = DarkMode;
+
+// src/preset/manager.tsx
+var currentStore = store();
+var currentTheme = currentStore.current || prefersDark.matches && "dark" || "light";
+addons.setConfig({
+  theme: {
+    ...themes[currentTheme],
+    ...currentStore[currentTheme]
+  }
+});
+addons.register("@vueless/storybook-dark-mode", (api) => {
+  addons.add("@vueless/storybook-dark-mode", {
+    title: "dark mode",
+    type: Addon_TypesEnum.TOOL,
+    match: ({ viewMode }) => viewMode === "story" || viewMode === "docs",
+    render: () => /* @__PURE__ */ React.createElement(Tool_default, { api })
+  });
+});

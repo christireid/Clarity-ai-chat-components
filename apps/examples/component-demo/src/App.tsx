@@ -320,7 +320,7 @@ import {
 
   // AI Components
   Citation,
-  MarkdownRendererEnhanced,
+  EnhancedMarkdownRenderer,
   EnhancedMarkdownRenderer,
   CodeBlock,
   StreamingCodeBlock,
@@ -1615,11 +1615,11 @@ console.log(fibonacci(10)); // 55`
         />
       </Card>
 
-      {/* MarkdownRendererEnhanced */}
+      {/* EnhancedMarkdownRenderer */}
       <Card className="p-6">
-        <h3 className="font-semibold mb-4">MarkdownRendererEnhanced</h3>
+        <h3 className="font-semibold mb-4">EnhancedMarkdownRenderer</h3>
         <div className="prose prose-sm max-w-none dark:prose-invert">
-          <MarkdownRendererEnhanced content={sampleMarkdown} />
+          <EnhancedMarkdownRenderer content={sampleMarkdown} />
         </div>
       </Card>
 

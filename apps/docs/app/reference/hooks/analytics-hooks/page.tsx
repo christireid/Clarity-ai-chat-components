@@ -775,7 +775,7 @@ function ChatWindow() {
     source: 'floating_button',
   })
 
-  return <ChatInterface />
+  return <ChatWindow messages={[]} isLoading={false} onSendMessage={() => {}} />
 }
 
 // Event tracked on unmount:

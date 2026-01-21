@@ -176,8 +176,9 @@ export function VirtualizedMessageList({
   const [, forceRender] = React.useReducer((x: number) => x + 1, 0)
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
+  const [scrollOffset, setScrollOffset] = React.useState(0)
 
-  // Track if user is near bottom
+  // Track if user is near bottom and preserve scroll position
   // React 19: Keep useCallback for stable ref (required by react-window)
   const handleScroll = React.useCallback(
     ({
@@ -187,6 +188,9 @@ export function VirtualizedMessageList({
       scrollOffset: number
       scrollUpdateWasRequested: boolean
     }) => {
+      // Store scroll offset for preservation during data updates
+      setScrollOffset(scrollOffset)
+
       if (!scrollUpdateWasRequested && listRef.current) {
         const list = listRef.current
         const scrollHeight = messages.reduce(
@@ -208,18 +212,31 @@ export function VirtualizedMessageList({
     [messages, onScroll]
   )
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages or preserve scroll position
   React.useEffect(() => {
-    if (
-      autoScrollToBottom &&
-      messages.length > previousMessagesLength.current &&
-      isNearBottomRef.current &&
-      listRef.current
-    ) {
-      listRef.current.scrollToItem(messages.length - 1, 'end')
+    const hasNewMessages = messages.length > previousMessagesLength.current
+
+    if (listRef.current) {
+      if (
+        autoScrollToBottom &&
+        hasNewMessages &&
+        isNearBottomRef.current
+      ) {
+        // Auto-scroll to bottom when user is near bottom
+        listRef.current.scrollToItem(messages.length - 1, 'end')
+      } else if (hasNewMessages && !isNearBottomRef.current) {
+        // Preserve scroll position when user is not at bottom
+        // Small delay to ensure DOM has updated with new messages
+        setTimeout(() => {
+          if (listRef.current) {
+            listRef.current.scrollToOffset(scrollOffset)
+          }
+        }, 0)
+      }
     }
+
     previousMessagesLength.current = messages.length
-  }, [messages.length, autoScrollToBottom])
+  }, [messages.length, autoScrollToBottom, scrollOffset])
 
   // Get item height from cache
   // React 19: Keep useCallback - passed to react-window, needs stable ref

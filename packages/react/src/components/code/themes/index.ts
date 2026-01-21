@@ -9,6 +9,15 @@
 
 import type { BundledTheme } from 'shiki'
 
+// Night Owl theme definitions (single source of truth)
+export {
+  NIGHT_OWL_COLORS,
+  NIGHT_OWL_TOKENS,
+  NIGHT_OWL_MONACO_THEME,
+  NIGHT_OWL_CSS_VARS,
+  NIGHT_OWL_TAILWIND,
+} from './night-owl'
+
 /**
  * Theme metadata with display information
  */

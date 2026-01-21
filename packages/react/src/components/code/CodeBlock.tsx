@@ -5,6 +5,7 @@ import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
 import { cn } from '../../utils/cn'
+import { usePerformanceTracking } from '../../utils/performance-monitoring'
 import {
   parseLineRanges,
   escapeHtml,
@@ -19,6 +20,8 @@ import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
+import { ContentErrorBoundary } from '../ui/error-boundary'
+import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 
 /**
  * Font family options
@@ -120,7 +123,7 @@ function getShikiTheme(theme: CodeThemeName | BundledTheme): BundledTheme {
  * </CodeBlock>
  * ```
  */
-export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
+const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
   children,
   language: rawLanguage,
   theme = DEFAULT_DARK_THEME,
@@ -144,6 +147,26 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
   enableKeyboardShortcuts = false,
   filename,
 }) {
+  // Performance monitoring
+  usePerformanceTracking({
+    componentName: 'CodeBlock',
+    trackMemory: true,
+    metadata: {
+      contentLength: children.length,
+      language: rawLanguage,
+      showLineNumbers,
+      showCopyButton,
+      maxHeight,
+      wordWrap,
+      theme,
+      fontFamily,
+    },
+  })
+
+  // Analytics tracking
+  const { trackInteraction } = useAnalytics('CodeBlock')
+  const { trackClick } = useInteractionTracking('CodeBlock')
+
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [highlightedHtml, setHighlightedHtml] = React.useState<string>('')
   const [isLoading, setIsLoading] = React.useState(true)
@@ -484,6 +507,20 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
     </div>
   )
 })
+
+CodeBlockComponent.displayName = 'CodeBlock'
+
+/**
+ * CodeBlock with error boundary
+ */
+export const CodeBlock = (props: CodeBlockProps) => (
+  <ContentErrorBoundary
+    componentName="CodeBlock"
+    showErrorDetails={process.env.NODE_ENV === 'development'}
+  >
+    <CodeBlockComponent {...props} />
+  </ContentErrorBoundary>
+)
 
 CodeBlock.displayName = 'CodeBlock'
 

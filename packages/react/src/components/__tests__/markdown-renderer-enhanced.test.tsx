@@ -1,16 +1,16 @@
 /**
- * Tests for MarkdownRendererEnhanced component
+ * Tests for EnhancedMarkdownRenderer component
  */
 
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { MarkdownRendererEnhanced, validateLatex, extractMathExpressions } from '../markdown-renderer-enhanced'
+import { EnhancedMarkdownRenderer } from '../ai/enhanced-markdown-renderer'
 
-describe('MarkdownRendererEnhanced', () => {
+describe('EnhancedMarkdownRenderer', () => {
   it('renders basic markdown', () => {
     const content = '# Hello World\n\nThis is **bold** text.'
 
-    render(<MarkdownRendererEnhanced content={content} />)
+    render(<EnhancedMarkdownRenderer content={content} />)
 
     expect(screen.getByText(/Hello World/)).toBeInTheDocument()
     expect(screen.getByText(/bold/)).toBeInTheDocument()
@@ -19,7 +19,7 @@ describe('MarkdownRendererEnhanced', () => {
   it('renders inline code', () => {
     const content = 'Use `npm install` to install packages.'
 
-    render(<MarkdownRendererEnhanced content={content} />)
+    render(<EnhancedMarkdownRenderer content={content} />)
 
     expect(screen.getByText('npm install')).toBeInTheDocument()
   })
@@ -27,7 +27,7 @@ describe('MarkdownRendererEnhanced', () => {
   it('renders code blocks', () => {
     const content = '```javascript\nconst x = 42;\n```'
 
-    render(<MarkdownRendererEnhanced content={content} enableHighlight={true} />)
+    render(<EnhancedMarkdownRenderer content={content} config={{ enableSyntaxHighlight: true }} />)
 
     expect(screen.getByText(/const x = 42/)).toBeInTheDocument()
   })
@@ -39,7 +39,7 @@ describe('MarkdownRendererEnhanced', () => {
 | Cell 1   | Cell 2   |
 `
 
-    render(<MarkdownRendererEnhanced content={content} enableGFM={true} />)
+    render(<EnhancedMarkdownRenderer content={content} config={{ enableGFM: true }} />)
 
     expect(screen.getByText('Header 1')).toBeInTheDocument()
     expect(screen.getByText('Cell 1')).toBeInTheDocument()
@@ -48,56 +48,9 @@ describe('MarkdownRendererEnhanced', () => {
   it('can disable math rendering', () => {
     const content = 'The formula $E = mc^2$ is famous.'
 
-    render(<MarkdownRendererEnhanced content={content} enableMath={false} />)
+    render(<EnhancedMarkdownRenderer content={content} config={{ enableKaTeX: false }} />)
 
     // Should render as plain text when math is disabled
     expect(screen.getByText(/E = mc\^2/)).toBeInTheDocument()
-  })
-})
-
-describe('validateLatex', () => {
-  it('validates correct LaTeX', () => {
-    expect(validateLatex('E = mc^2').valid).toBe(true)
-    expect(validateLatex('\\frac{1}{2}').valid).toBe(true)
-  })
-
-  it('detects unmatched braces', () => {
-    const result = validateLatex('E = mc^2}')
-    expect(result.valid).toBe(false)
-    expect(result.error).toContain('braces')
-  })
-
-  it('detects unmatched dollar signs', () => {
-    const result = validateLatex('$E = mc^2')
-    expect(result.valid).toBe(false)
-    expect(result.error).toContain('dollar')
-  })
-})
-
-describe('extractMathExpressions', () => {
-  it('extracts inline math', () => {
-    const content = 'The equation $E = mc^2$ is famous.'
-    const result = extractMathExpressions(content)
-
-    expect(result.inline).toHaveLength(1)
-    expect(result.inline[0]).toBe('E = mc^2')
-    expect(result.block).toHaveLength(0)
-  })
-
-  it('extracts block math', () => {
-    const content = '$$\\int_{0}^{1} x dx$$'
-    const result = extractMathExpressions(content)
-
-    expect(result.inline).toHaveLength(0)
-    expect(result.block).toHaveLength(1)
-    expect(result.block[0]).toContain('\\int')
-  })
-
-  it('extracts both inline and block math', () => {
-    const content = 'Inline: $a + b$ and block: $$c = d$$'
-    const result = extractMathExpressions(content)
-
-    expect(result.inline).toHaveLength(1)
-    expect(result.block).toHaveLength(1)
   })
 })

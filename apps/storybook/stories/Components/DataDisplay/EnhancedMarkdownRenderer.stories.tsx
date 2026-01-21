@@ -1,79 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import * as React from 'react'
 import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
-/**
- * **EnhancedMarkdownRenderer Component**
- *
- * Enhanced markdown renderer with LaTeX math support,
- * Mermaid diagrams, syntax highlighting, and more.
- *
- * **Key Features:**
- * - Standard markdown rendering
- * - LaTeX math support (inline and block)
- * - Mermaid diagram rendering
- * - Syntax highlighting for code blocks
- * - Table support
- * - Link handling
- * - Customizable styling
- *
- * **Use Cases:**
- * - AI chat responses with markdown
- * - Documentation rendering
- * - Technical content display
- * - Educational content
- */
 const meta: Meta<typeof EnhancedMarkdownRenderer> = {
   title: 'Components/DataDisplay/EnhancedMarkdownRenderer',
   component: EnhancedMarkdownRenderer,
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     docs: {
       description: {
-        component: `
-Enhanced markdown renderer with LaTeX math support,
-Mermaid diagrams, syntax highlighting, and more.
-
-## Features
-
-- ✅ Standard markdown rendering
-- ✅ LaTeX math support (inline and block)
-- ✅ Mermaid diagram rendering
-- ✅ Syntax highlighting for code blocks
-- ✅ Table support
-- ✅ Link handling
-- ✅ Customizable styling
-- ✅ Dark mode support
-
-## Basic Usage
-
-\`\`\`tsx
-<EnhancedMarkdownRenderer
-  content={markdownContent}
-  enableMath={true}
-  enableMermaid={true}
-/>
-\`\`\`
-        `,
+        component:
+          'Extended markdown renderer with KaTeX, syntax highlighting, Mermaid diagrams, copy-to-clipboard, and rich error handling. Use when you need LaTeX, code previews, or richer markdown features than the base renderer.',
       },
-    },
-  },
-  tags: ['autodocs'],
-  argTypes: {
-    content: {
-      description: 'Markdown content to render',
-      control: 'text',
-    },
-    enableMath: {
-      description: 'Enable LaTeX math rendering',
-      control: 'boolean',
-    },
-    enableMermaid: {
-      description: 'Enable Mermaid diagram rendering',
-      control: 'boolean',
-    },
-    className: {
-      description: 'Additional CSS classes',
-      control: 'text',
     },
   },
 }
@@ -81,141 +20,160 @@ Mermaid diagrams, syntax highlighting, and more.
 export default meta
 type Story = StoryObj<typeof EnhancedMarkdownRenderer>
 
-const basicMarkdown = `# Hello World
+const advancedMarkdown = `# Advanced Markdown Showcase
 
-This is a **markdown** example with *formatting*.
+Clarity supports **GitHub-flavoured markdown**, tables, task lists, callouts, and embedded diagrams.
 
-## Code Block
+> _EnhancedMarkdownRenderer_ unlocks KaTeX, Mermaid, and syntax-highlighted code blocks.
 
-\`\`\`typescript
-function greet(name: string) {
-  return \`Hello, \${name}!\`
-}
-\`\`\`
+## ✅ Features
 
-## Lists
+- KaTeX math support
+- Syntax highlighting (powered by \`highlight.js\`)
+- Mermaid diagrams
+- GitHub-flavoured markdown (GFM)
+- Copy-to-clipboard buttons
 
-- Item 1
-- Item 2
-- Item 3
+## 🧮 Math
 
-## Table
+Inline: $\\nabla \\cdot \\vec{E} = \\frac{\\rho}{\\varepsilon_0}$
 
-| Column 1 | Column 2 |
-|----------|----------|
-| Data 1   | Data 2   |
-| Data 3   | Data 4   |
-`
-
-const markdownWithMath = `# Mathematical Formulas
-
-Inline math: $E = mc^2$
-
-Block math:
+Display:
 
 $$
-\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}
+e^{i\\pi} + 1 = 0
 $$
 
-$$
-\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}
-$$
-`
-
-const markdownWithMermaid = `# Flowchart Example
+## 📊 Mermaid Diagram
 
 \`\`\`mermaid
 graph TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action 1]
-    B -->|No| D[Action 2]
-    C --> E[End]
-    D --> E
+  User -->|writes| Markdown
+  Markdown -->|rendered by| Renderer[EnhancedMarkdownRenderer]
+  Renderer -->|uses| KaTeX
+  Renderer -->|uses| HighlightJS
+  Renderer -->|uses| Mermaid
 \`\`\`
 
-## Sequence Diagram
-
-\`\`\`mermaid
-sequenceDiagram
-    participant User
-    participant API
-    participant Database
-    
-    User->>API: Request Data
-    API->>Database: Query
-    Database-->>API: Results
-    API-->>User: Response
-\`\`\`
-`
-
-const streamingMarkdown = `# Streaming Content
-
-This content is being streamed character by character...
+## 💻 Code Blocks
 
 \`\`\`typescript
-// Code is also streaming
-const example = 'Hello'
-\`\`\`
+import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
+export function MarkdownPreview({ content }: { content: string }) {
+  return (
+    <EnhancedMarkdownRenderer
+      content={content}
+      enableMath
+      enableHighlight
+      enableGFM
+      showLineNumbers
+      enableCodeCopy
+    />
+  )
+}
+\`\`\`
 `
 
-export const Default: Story = {
-  args: {
-    content: basicMarkdown,
-    config: {
-      enableSyntaxHighlight: true,
-    },
-  },
-}
+const latexWithError = `# Error Handling Demo
 
-export const WithSyntaxHighlighting: Story = {
-  args: {
-    content: basicMarkdown,
-    config: {
-      enableSyntaxHighlight: true,
-      codeTheme: 'dark',
-    },
-  },
-}
+The following expression has an intentional syntax issue:
 
-export const WithKaTeX: Story = {
-  args: {
-    content: markdownWithMath,
-    config: {
-      enableKaTeX: true,
-      enableSyntaxHighlight: true,
-    },
-  },
-}
+$$
+\\frac{\\sqrt{2}}{3  // missing closing brace
+$$
 
-export const WithMermaid: Story = {
-  args: {
-    content: markdownWithMermaid,
-    config: {
-      enableMermaid: true,
-      enableSyntaxHighlight: true,
-    },
-  },
-}
-
-export const StreamingContent: Story = {
-  args: {
-    content: streamingMarkdown,
-    isStreaming: true,
-    config: {
-      enableSyntaxHighlight: true,
-    },
-  },
-}
+When \`onMathError\` is provided, the renderer shows an accessible fallback block and reports the error upstream.
+`
 
 export const AllFeatures: Story = {
   args: {
-    content: `${basicMarkdown}\n\n${markdownWithMath}\n\n${markdownWithMermaid}`,
-    config: {
-      enableKaTeX: true,
-      enableMermaid: true,
-      enableSyntaxHighlight: true,
-      codeTheme: 'dark',
+    content: advancedMarkdown,
+    enableMath: true,
+    enableHighlight: true,
+    enableGFM: true,
+    allowHtml: false,
+    showLineNumbers: true,
+    enableCodeCopy: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Full experience with KaTeX, Mermaid, syntax highlighting, copy buttons, and line numbers. Ideal for technical documentation or AI explanations.',
+      },
+    },
+  },
+}
+
+export const WithCustomComponents: Story = {
+  render: (args) => (
+    <EnhancedMarkdownRenderer
+      {...args}
+      components={{
+        blockquote: ({ children }) => (
+          <blockquote className="border-l-4 border-primary bg-primary/5 px-4 py-3 italic text-primary">
+            {children}
+          </blockquote>
+        ),
+        code: ({ inline, className, children, ...rest }: any) =>
+          inline ? (
+            <code className="rounded bg-muted px-1.5 py-0.5 text-xs" {...rest}>
+              {children}
+            </code>
+          ) : (
+            <code className={className} {...rest}>
+              {children}
+            </code>
+          ),
+      }}
+    />
+  ),
+  args: {
+    content: advancedMarkdown,
+    enableMath: true,
+    enableHighlight: true,
+    enableGFM: true,
+    showLineNumbers: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Swap in your own component overrides (e.g., stylised block quotes, custom code blocks). Helpful when theming markdown content to match your brand.',
+      },
+    },
+  },
+}
+
+export const WithMathErrorHandling: Story = {
+  render: () => {
+    const [errorLog, setErrorLog] = React.useState<string | null>(null)
+    return (
+      <div className="space-y-4">
+        <EnhancedMarkdownRenderer
+          content={latexWithError}
+          enableMath
+          enableHighlight={false}
+          enableGFM
+          onMathError={(error, latex) => {
+            setErrorLog(`Error: ${error.message} | LaTeX snippet: ${latex}`)
+          }}
+        />
+
+        <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+          <div className="font-semibold mb-1">Error log</div>
+          <div>{errorLog ?? 'No math errors reported yet.'}</div>
+        </div>
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates graceful degradation when LaTeX rendering fails. Use the `onMathError` callback to log issues or alert downstream monitoring systems.',
+      },
     },
   },
 }
