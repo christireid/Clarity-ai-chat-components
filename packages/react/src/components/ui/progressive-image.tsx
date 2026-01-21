@@ -4,10 +4,12 @@ import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 
 export interface ProgressiveImageProps
-  extends React.ImgHTMLAttributes<HTMLImageElement> {
+  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet'> {
   src: string
   alt: string
   lowQualitySrc?: string
+  srcSet?: string
+  sizes?: string
   placeholderClassName?: string
   onLoad?: () => void
   onError?: () => void
@@ -19,20 +21,45 @@ export interface ProgressiveImageProps
  * Features:
  * - Native lazy loading with loading="lazy"
  * - Optional low-quality placeholder for blur-up effect
+ * - Responsive images with srcSet and sizes support
  * - Skeleton placeholder while loading
  * - Error state handling
  * - Smooth fade-in transition
  *
  * Performance benefits:
  * - Defers offscreen image loading
+ * - Serves appropriate image sizes for device
  * - Reduces initial page load
  * - Improves LCP (Largest Contentful Paint)
  * - Better perceived performance
+ *
+ * @example
+ * // Basic usage
+ * <ProgressiveImage src="/image.jpg" alt="Description" />
+ *
+ * @example
+ * // With responsive images
+ * <ProgressiveImage
+ *   src="/image.jpg"
+ *   srcSet="/image-320w.jpg 320w, /image-640w.jpg 640w, /image-1280w.jpg 1280w"
+ *   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+ *   alt="Description"
+ * />
+ *
+ * @example
+ * // With blur-up effect
+ * <ProgressiveImage
+ *   src="/image.jpg"
+ *   lowQualitySrc="/image-thumb.jpg"
+ *   alt="Description"
+ * />
  */
 export const ProgressiveImage = React.memo(function ProgressiveImage({
   src,
   alt,
   lowQualitySrc,
+  srcSet,
+  sizes,
   className,
   placeholderClassName,
   onLoad,
@@ -115,6 +142,8 @@ export const ProgressiveImage = React.memo(function ProgressiveImage({
       {/* Actual image */}
       <img
         src={currentSrc}
+        srcSet={srcSet}
+        sizes={sizes}
         alt={alt}
         loading="lazy"
         onLoad={handleLoad}

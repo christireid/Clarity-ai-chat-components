@@ -77,8 +77,10 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
               style={{
                 transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
               }}
+              aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
+              aria-expanded={isExpanded}
             >
-              ▶
+              <span aria-hidden="true">▶</span>
             </button>
 
             <div className="flex-1 min-w-0">
