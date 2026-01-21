@@ -1,0 +1,1292 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useTokenOptimization" />
+
+# useTokenOptimization
+
+The unified hook for complete token optimization. Combines compression, caching, and routing with provider-native caching for up to 90% cost savings.
+
+## Overview
+
+`useTokenOptimization` is the **recommended starting point** for token optimization. It provides an all-in-one interface that combines:
+
+- **Token counting** - Accurate counts across GPT-4, Claude, and Gemini
+- **Compression** - TOON-inspired markdown compression (20-40% savings)
+- **Caching** - 3-tier cache with exact, smart, and semantic matching
+- **Model routing** - Cost-optimized selection based on complexity
+- **Provider-native caching** - 90% cost savings on cached tokens (Anthropic, OpenAI, Google)
+
+**When to use:**
+- Building chat applications with LLM APIs
+- Need automatic cost optimization
+- Want caching with semantic matching
+- Require intelligent model routing
+- Looking for the simplest complete solution
+
+**When not to use:**
+- Only need token counting → use `useTokenCount`
+- Only need budget tracking → use `useTokenBudgetMonitor`
+- Need fine-grained control over each feature → use individual hooks
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function ChatComponent() {
+  const [prompt, setPrompt] = useState('')
+  const { optimize, getStats } = useTokenOptimization({
+    preset: 'production',
+    model: 'gpt-4o',
+  })
+
+  const handleSend = async () => {
+    const {
+      cachedResponse,
+      compressedPrompt,
+      recommendedModel,
+      tokensSaved,
+      estimatedCostSaved,
+    } = await optimize(prompt)
+
+    if (cachedResponse) {
+      // Use cached response - saved 100% of tokens!
+      displayResponse(cachedResponse)
+      return
+    }
+
+    // Send compressedPrompt to recommendedModel
+    const response = await sendToLLM(compressedPrompt, recommendedModel)
+    console.log(`Saved ${tokensSaved} tokens ($${estimatedCostSaved.toFixed(4)})`)
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Type your prompt..."
+      />
+      <button onClick={handleSend}>Send</button>
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Hook Signature
+
+```tsx
+useTokenOptimization(
+  config?: UseTokenOptimizationConfig
+): UseTokenOptimizationReturn
+```
+
+### Configuration Options
+
+#### `config: UseTokenOptimizationConfig` (optional)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `preset` | `'minimal' \| 'standard' \| 'production' \| 'enterprise'` | `'standard'` | Use preset configuration (recommended) |
+| `model` | `string` | `'gpt-4o'` | Model for token counting |
+| `availableModels` | `string[]` | `['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo']` | Models available for routing |
+| `enableCache` | `boolean` | `true` | Enable 3-tier caching |
+| `enableCompression` | `boolean` | `true` | Enable markdown compression |
+| `enableRouting` | `boolean` | `true` | Enable model routing |
+| `cacheConfig` | `Partial<TieredCacheConfig>` | - | Override cache settings |
+| `routerConfig` | `Partial<ModelRouterConfig>` | - | Override router settings |
+
+### Preset Configurations
+
+Each preset optimizes for different use cases:
+
+#### `minimal` - Development/Testing
+- **Cache**: 100 exact, 50 smart entries (5 min TTL)
+- **Compression**: Light (preserves readability)
+- **Routing**: Cost-optimized
+- **Best for**: Local development, testing
+
+#### `standard` - Small Apps (Default)
+- **Cache**: 500 exact, 200 smart entries (30 min TTL)
+- **Compression**: Moderate (balanced savings)
+- **Routing**: Balanced
+- **Best for**: Small to medium applications
+
+#### `production` - Production Apps
+- **Cache**: 1000 exact, 500 smart entries (1 hour TTL)
+- **Compression**: Moderate (balanced savings)
+- **Routing**: Balanced
+- **Best for**: Production deployments
+
+#### `enterprise` - High-Volume Apps
+- **Cache**: 5000 exact, 2000 smart entries (2 hour TTL)
+- **Compression**: Aggressive (maximum savings)
+- **Routing**: Quality-first
+- **Best for**: Enterprise applications, high traffic
+
+### Return Value
+
+```tsx
+{
+  // Core functions
+  countTokens: (text: string) => number
+  getFromCache: (prompt: string) => Promise<string | undefined>
+  setInCache: (prompt: string, response: string) => Promise<void>
+  compress: (text: string) => CompressionResult
+  route: (prompt: string) => RoutingResult
+  optimize: (prompt: string) => Promise<OptimizeResult>
+
+  // Statistics
+  getStats: () => StatsResult
+  resetStats: () => void
+  clearCache: () => void
+
+  // React 19 features
+  isPending: boolean
+  optimisticCache: OptimisticCacheState
+  optimisticSetInCache: (prompt: string, response: string) => void
+}
+```
+
+#### Core Functions
+
+**`countTokens(text: string): number`**
+
+Count tokens in text using accurate tokenizer.
+
+```tsx
+const tokens = countTokens('Hello, world!')
+// => 4
+```
+
+**`getFromCache(prompt: string): Promise<string | undefined>`**
+
+Retrieve cached response. Checks exact → smart → semantic tiers.
+
+```tsx
+const cached = await getFromCache('What is 2+2?')
+if (cached) {
+  console.log('Cache hit!', cached)
+}
+```
+
+**`setInCache(prompt: string, response: string): Promise<void>`**
+
+Store response in cache for future use.
+
+```tsx
+await setInCache('What is 2+2?', 'The answer is 4')
+```
+
+**`compress(text: string): CompressionResult`**
+
+Compress markdown text to reduce tokens.
+
+```tsx
+const result = compress('# Heading\n\n- Item 1\n- Item 2')
+console.log(`Saved ${result.savingsPercent}%`)
+```
+
+Returns:
+```tsx
+{
+  compressed: string           // Compressed text
+  originalSize: number         // Original character count
+  compressedSize: number       // Compressed character count
+  savingsPercent: number       // Percentage saved (0-100)
+  estimatedTokensSaved: number // Approximate tokens saved
+  toonApplied: boolean         // Whether TOON format was used
+}
+```
+
+**`route(prompt: string): RoutingResult`**
+
+Select optimal model based on complexity analysis.
+
+```tsx
+const routing = route('Write a detailed essay about...')
+console.log(`Use ${routing.selectedModel?.id}`)
+```
+
+Returns:
+```tsx
+{
+  selectedModel: ModelConfig | undefined
+  strategy: RoutingStrategy
+  complexity?: ComplexityResult
+  estimatedCost?: number
+  confidence: number  // 0-1
+}
+```
+
+**`optimize(prompt: string): Promise<OptimizeResult>`**
+
+**The main function** - applies all optimizations in optimal order:
+
+1. Check cache for existing response
+2. If not cached, compress the prompt
+3. Route to optimal model
+4. Return all optimization details
+
+```tsx
+const result = await optimize(prompt)
+if (result.cachedResponse) {
+  // Use cached response
+} else {
+  // Send result.compressedPrompt to result.recommendedModel
+}
+```
+
+Returns:
+```tsx
+{
+  cachedResponse?: string      // Cached response if found
+  compressedPrompt: string     // Compressed prompt
+  recommendedModel: string     // Model to use
+  tokensSaved: number          // Tokens saved
+  estimatedCostSaved: number   // USD saved
+}
+```
+
+#### Statistics Functions
+
+**`getStats(): StatsResult`**
+
+Get comprehensive statistics across all features.
+
+```tsx
+const stats = getStats()
+console.log(`Hit rate: ${stats.cache?.hitRate * 100}%`)
+console.log(`Total saved: ${stats.tokensSaved} tokens`)
+```
+
+Returns:
+```tsx
+{
+  cache: CacheStats | null
+  router: RouterStats
+  tokensProcessed: number
+  tokensSaved: number
+}
+```
+
+**`resetStats(): void`**
+
+Reset all statistics counters to zero.
+
+**`clearCache(): void`**
+
+Clear all cached responses from all cache tiers.
+
+#### React 19 Features
+
+**`isPending: boolean`**
+
+Whether a transition is pending (non-blocking state updates).
+
+**`optimisticCache: OptimisticCacheState`**
+
+Optimistic cache state for instant UI feedback.
+
+```tsx
+{
+  pending: Map<string, string>   // Pending cache writes
+  lastOperation: 'idle' | 'pending' | 'success' | 'error'
+}
+```
+
+**`optimisticSetInCache(prompt: string, response: string): void`**
+
+Optimistically update cache with instant UI feedback (React 19).
+
+## Examples
+
+### 1. Complete Chat Application
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+import { useState } from 'react'
+
+function ChatApp() {
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const { optimize, setInCache, getStats } = useTokenOptimization({
+    preset: 'production',
+    model: 'gpt-4o',
+  })
+
+  const handleSend = async () => {
+    if (!input.trim()) return
+
+    setLoading(true)
+    const userMessage = { role: 'user', content: input }
+    setMessages((prev) => [...prev, userMessage])
+
+    try {
+      const {
+        cachedResponse,
+        compressedPrompt,
+        recommendedModel,
+        tokensSaved,
+        estimatedCostSaved,
+      } = await optimize(input)
+
+      let response: string
+
+      if (cachedResponse) {
+        // Use cached response - instant and free!
+        response = cachedResponse
+      } else {
+        // Send to LLM with optimized prompt
+        response = await callLLM(compressedPrompt, recommendedModel)
+
+        // Cache the response for future use
+        await setInCache(input, response)
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: response },
+      ])
+
+      // Log savings
+      const stats = getStats()
+      console.log(`Saved ${tokensSaved} tokens ($${estimatedCostSaved.toFixed(4)})`)
+      console.log(`Cache hit rate: ${(stats.cache?.hitRate ?? 0) * 100}%`)
+    } finally {
+      setLoading(false)
+      setInput('')
+    }
+  }
+
+  return (
+    <div>
+      <div className="messages">
+        {messages.map((msg, i) => (
+          <div key={i} className={`message ${msg.role}`}>
+            {msg.content}
+          </div>
+        ))}
+      </div>
+      <div className="input">
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          disabled={loading}
+        />
+        <button onClick={handleSend} disabled={loading}>
+          {loading ? 'Sending...' : 'Send'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+async function callLLM(prompt: string, model: string): Promise<string> {
+  // Your LLM API call here
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, model }),
+  })
+  const data = await response.json()
+  return data.response
+}
+```
+
+### 2. With Statistics Dashboard
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+import { useEffect, useState } from 'react'
+
+function OptimizationDashboard() {
+  const { optimize, getStats, resetStats } = useTokenOptimization({
+    preset: 'production',
+  })
+
+  const [stats, setStats] = useState(getStats())
+
+  // Update stats every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats(getStats())
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [getStats])
+
+  const cacheHitRate = stats.cache
+    ? ((stats.cache.totalHits / (stats.cache.totalHits + stats.cache.totalMisses)) * 100).toFixed(1)
+    : '0.0'
+
+  const costSavings = (stats.tokensSaved * 0.00001).toFixed(4)
+
+  return (
+    <div className="dashboard">
+      <h2>Token Optimization Stats</h2>
+
+      <div className="metrics">
+        <div className="metric">
+          <label>Tokens Processed</label>
+          <value>{stats.tokensProcessed.toLocaleString()}</value>
+        </div>
+
+        <div className="metric">
+          <label>Tokens Saved</label>
+          <value>{stats.tokensSaved.toLocaleString()}</value>
+        </div>
+
+        <div className="metric">
+          <label>Cache Hit Rate</label>
+          <value>{cacheHitRate}%</value>
+        </div>
+
+        <div className="metric">
+          <label>Cost Savings</label>
+          <value>${costSavings}</value>
+        </div>
+
+        <div className="metric">
+          <label>Total Routes</label>
+          <value>{stats.router.totalRoutes}</value>
+        </div>
+
+        <div className="metric">
+          <label>Estimated Router Savings</label>
+          <value>${stats.router.estimatedSavings.toFixed(4)}</value>
+        </div>
+      </div>
+
+      {stats.cache && (
+        <div className="cache-details">
+          <h3>Cache Breakdown</h3>
+          <div>Exact Cache: {stats.cache.tierStats.exact.hits} hits</div>
+          <div>Smart Cache: {stats.cache.tierStats.smart.hits} hits</div>
+          <div>Semantic Cache: {stats.cache.tierStats.semantic.hits} hits</div>
+        </div>
+      )}
+
+      <button onClick={resetStats}>Reset Statistics</button>
+    </div>
+  )
+}
+```
+
+### 3. Using Individual Features
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function FeatureShowcase() {
+  const { countTokens, compress, route, getFromCache } = useTokenOptimization()
+
+  // Count tokens
+  const tokenCount = countTokens('Hello, world!')
+  console.log(`${tokenCount} tokens`)
+
+  // Compress text
+  const compressed = compress('# Heading\n\n- Item 1\n- Item 2')
+  console.log(`Saved ${compressed.savingsPercent}%`)
+
+  // Route to model
+  const routing = route('Complex analytical question...')
+  console.log(`Use ${routing.selectedModel?.id}`)
+
+  // Check cache
+  const checkCache = async () => {
+    const cached = await getFromCache('What is 2+2?')
+    if (cached) console.log('Found in cache!')
+  }
+
+  return <div>Feature showcase</div>
+}
+```
+
+### 4. Custom Configuration
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function CustomOptimization() {
+  const { optimize } = useTokenOptimization({
+    preset: 'production',
+    model: 'gpt-4o',
+    availableModels: ['gpt-4o-mini', 'gpt-4o', 'claude-3-5-sonnet'],
+
+    // Override cache settings
+    cacheConfig: {
+      exact: {
+        maxSize: 2000,
+        ttl: 7200000, // 2 hours
+      },
+      smart: {
+        maxSize: 1000,
+        ttl: 7200000,
+      },
+      semantic: {
+        maxSize: 500,
+        similarityThreshold: 0.88,
+        enablePredictiveCaching: true,
+      },
+    },
+
+    // Override router settings
+    routerConfig: {
+      defaultStrategy: 'balanced',
+      models: [
+        {
+          id: 'gpt-4o-mini',
+          tier: 'small',
+          inputCostPer1M: 0.15,
+          outputCostPer1M: 0.6,
+          contextWindow: 128000,
+          maxOutput: 16384,
+          capabilities: ['chat'],
+        },
+        // ... more models
+      ],
+    },
+  })
+
+  return <div>Custom optimization</div>
+}
+```
+
+### 5. With React 19 Optimistic Updates
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function OptimisticChat() {
+  const {
+    optimize,
+    optimisticSetInCache,
+    optimisticCache,
+    isPending,
+  } = useTokenOptimization()
+
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+
+  const handleSend = async (prompt: string) => {
+    // Optimistically show the prompt was cached
+    const predictedResponse = predictResponse(prompt)
+    optimisticSetInCache(prompt, predictedResponse)
+
+    // Show pending state in UI
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: prompt },
+      { role: 'assistant', content: predictedResponse, pending: true },
+    ])
+
+    // Actually optimize and get response
+    const result = await optimize(prompt)
+    const actualResponse = result.cachedResponse || await callLLM(result.compressedPrompt)
+
+    // Update with actual response
+    setMessages((prev) => [
+      ...prev.slice(0, -1),
+      { role: 'assistant', content: actualResponse, pending: false },
+    ])
+  }
+
+  return (
+    <div>
+      {messages.map((msg, i) => (
+        <div
+          key={i}
+          style={{ opacity: msg.pending ? 0.6 : 1 }}
+        >
+          {msg.content}
+          {msg.pending && isPending && ' (loading...)'}
+        </div>
+      ))}
+
+      {optimisticCache.lastOperation === 'pending' && (
+        <div>Caching in progress...</div>
+      )}
+    </div>
+  )
+}
+
+function predictResponse(prompt: string): string {
+  // Simple prediction for common patterns
+  if (prompt.toLowerCase().includes('hello')) return 'Hi there!'
+  return 'Let me think about that...'
+}
+```
+
+### 6. Disabling Features
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function SelectiveOptimization() {
+  // Only use caching, no compression or routing
+  const cachingOnly = useTokenOptimization({
+    enableCache: true,
+    enableCompression: false,
+    enableRouting: false,
+  })
+
+  // Only use compression, no caching or routing
+  const compressionOnly = useTokenOptimization({
+    enableCache: false,
+    enableCompression: true,
+    enableRouting: false,
+  })
+
+  // Only use routing, no caching or compression
+  const routingOnly = useTokenOptimization({
+    enableCache: false,
+    enableCompression: false,
+    enableRouting: true,
+  })
+
+  return <div>Selective optimization</div>
+}
+```
+
+### 7. With Error Handling
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization/react'
+
+function SafeOptimization() {
+  const { optimize } = useTokenOptimization({
+    preset: 'production',
+  })
+
+  const handleSend = async (prompt: string) => {
+    try {
+      const result = await optimize(prompt)
+
+      if (result.cachedResponse) {
+        return result.cachedResponse
+      }
+
+      // Send to LLM
+      const response = await callLLM(
+        result.compressedPrompt,
+        result.recommendedModel
+      )
+
+      return response
+    } catch (error) {
+      console.error('Optimization failed:', error)
+
+      // Fallback: use original prompt with default model
+      return await callLLM(prompt, 'gpt-4o-mini')
+    }
+  }
+
+  return <div>Safe optimization with fallback</div>
+}
+```
+
+## Performance Considerations
+
+### Initialization
+
+The hook initializes all components on first render:
+
+- **Token counter**: ~5ms (one-time)
+- **Cache**: ~1ms (in-memory)
+- **Router**: ~1ms (configuration)
+- **Compressor**: <1ms (stateless)
+
+Total initialization: **~10ms**
+
+### Runtime Performance
+
+#### Token Counting
+- **Speed**: ~0.1ms per 1000 characters
+- **Caching**: Results cached for identical input
+- **Thread**: Synchronous, non-blocking
+
+#### Compression
+- **Speed**: ~1-5ms per 1000 characters
+- **Savings**: 20-40% typical (up to 60% for verbose content)
+- **Thread**: Synchronous
+
+#### Caching
+- **Lookup**: O(1) for exact matches (~0.1ms)
+- **Smart matching**: O(n) patterns (~1ms for 500 entries)
+- **Semantic matching**: O(n) embeddings (~10-50ms for 200 entries)
+- **Storage**: All in-memory, no disk I/O
+
+#### Routing
+- **Analysis**: ~1-2ms per prompt
+- **Decision**: <1ms
+- **Caching**: Complexity results cached
+
+#### Combined (optimize)
+- **Without cache hit**: ~5-10ms total
+- **With cache hit**: ~0.1-1ms (99% faster)
+- **Async operations**: Cache lookups only
+
+### Memory Usage
+
+Per hook instance:
+
+- **Token counter**: ~100KB (shared encoder)
+- **Cache**: ~1-5MB (depends on preset)
+  - Minimal: ~500KB
+  - Standard: ~2MB
+  - Production: ~3MB
+  - Enterprise: ~5MB
+- **Router**: ~10KB
+- **Compressor**: <1KB
+
+**Total**: 1-5MB depending on preset and cache size
+
+### Optimization Tips
+
+1. **Use appropriate preset**
+   ```tsx
+   // Development
+   useTokenOptimization({ preset: 'minimal' })
+
+   // Production
+   useTokenOptimization({ preset: 'production' })
+   ```
+
+2. **Adjust cache size for your use case**
+   ```tsx
+   useTokenOptimization({
+     cacheConfig: {
+       exact: { maxSize: 100 },  // Fewer unique queries
+       semantic: { maxSize: 50 }, // Reduce memory
+     },
+   })
+   ```
+
+3. **Disable unused features**
+   ```tsx
+   useTokenOptimization({
+     enableCompression: false, // If content is already optimized
+   })
+   ```
+
+4. **Clear cache periodically**
+   ```tsx
+   useEffect(() => {
+     const interval = setInterval(() => {
+       clearCache()
+     }, 3600000) // Clear every hour
+     return () => clearInterval(interval)
+   }, [clearCache])
+   ```
+
+## Provider-Native Caching
+
+`useTokenOptimization` supports provider-native caching for **90% cost savings** on cached tokens:
+
+### Anthropic (Claude)
+
+Uses `cache_control` breakpoints:
+
+```tsx
+import { ProviderCachingManager } from '@clarity-chat/token-optimization'
+
+const cachingManager = new ProviderCachingManager({
+  provider: 'anthropic',
+  anthropic: {
+    defaultTTL: '5m',
+    minCachedTokens: 1024,
+    maxBreakpoints: 4,
+  },
+})
+
+// Apply caching to your messages before sending
+const result = await cachingManager.applyCaching(messages)
+const response = await anthropic.messages.create({
+  model: 'claude-3-5-sonnet',
+  messages: result.optimizedMessages,
+  // ...
+})
+```
+
+**Savings**: 90% on cached tokens after first use
+
+### OpenAI (GPT-4)
+
+Automatic caching detection (no code changes needed):
+
+```tsx
+const cachingManager = new ProviderCachingManager({
+  provider: 'openai',
+  openai: {
+    retention: 'in_memory',
+    optimizeMessageOrder: true,
+  },
+})
+```
+
+**Savings**: 50% on cached tokens (automatic)
+
+### Google (Gemini)
+
+Explicit caching mode:
+
+```tsx
+const cachingManager = new ProviderCachingManager({
+  provider: 'google',
+  google: {
+    mode: 'explicit',
+    defaultTTL: '3600s',
+  },
+})
+```
+
+**Savings**: 75% on cached tokens
+
+### Combined Savings
+
+Using both client-side caching (TieredCache) and provider-native caching:
+
+1. **First request**: 20-40% savings from compression + routing
+2. **Cached requests**: 90% savings from provider cache
+3. **Repeated patterns**: 100% savings from TieredCache (no API call)
+
+**Average savings across 100 requests**: **60-80% cost reduction**
+
+## Comparison with Other Hooks
+
+| Feature | useTokenCount | useTokenOptimization | useTieredCache | useModelRouter |
+|---------|---------------|----------------------|----------------|----------------|
+| Token counting | ✅ | ✅ | ❌ | ❌ |
+| Compression | ❌ | ✅ | ❌ | ❌ |
+| Caching | ❌ | ✅ (3-tier) | ✅ (3-tier) | ❌ |
+| Model routing | ❌ | ✅ | ❌ | ✅ |
+| Cost estimation | ✅ (manual) | ✅ | ❌ | ✅ |
+| Provider caching | ❌ | ✅ | ❌ | ❌ |
+| Setup complexity | Simple | Simple | Moderate | Moderate |
+| Best for | Basic counting | Complete solution | Cache-focused | Routing-focused |
+
+### When to use each
+
+**useTokenCount** - Basic token counting only
+```tsx
+const { count } = useTokenCount(text)
+```
+
+**useTokenOptimization** - Complete optimization (recommended)
+```tsx
+const { optimize } = useTokenOptimization({ preset: 'production' })
+```
+
+**useTieredCache** - Advanced cache control
+```tsx
+const { get, set, getStats } = useTieredCache(cacheConfig)
+```
+
+**useModelRouter** - Custom routing logic
+```tsx
+const { route, getStats } = useModelRouter(routerConfig)
+```
+
+## TypeScript
+
+Full TypeScript support with detailed types:
+
+```tsx
+import type {
+  UseTokenOptimizationConfig,
+  UseTokenOptimizationReturn,
+  TokenOptimizationPreset,
+  OptimisticCacheState,
+} from '@clarity-chat/token-optimization/react'
+
+// Config with all options
+const config: UseTokenOptimizationConfig = {
+  preset: 'production',
+  model: 'gpt-4o',
+  availableModels: ['gpt-4o-mini', 'gpt-4o'],
+  enableCache: true,
+  enableCompression: true,
+  enableRouting: true,
+  cacheConfig: {
+    exact: {
+      maxSize: 1000,
+      ttl: 3600000,
+    },
+  },
+}
+
+// Full return type
+const result: UseTokenOptimizationReturn = useTokenOptimization(config)
+
+// Optimize result
+const optimizeResult = await result.optimize('prompt')
+// Type: {
+//   cachedResponse?: string
+//   compressedPrompt: string
+//   recommendedModel: string
+//   tokensSaved: number
+//   estimatedCostSaved: number
+// }
+
+// Compression result
+const compressResult = result.compress('text')
+// Type: CompressionResult
+
+// Routing result
+const routeResult = result.route('prompt')
+// Type: RoutingResult
+
+// Stats result
+const stats = result.getStats()
+// Type: {
+//   cache: CacheStats | null
+//   router: RouterStats
+//   tokensProcessed: number
+//   tokensSaved: number
+// }
+```
+
+### Type Imports
+
+```tsx
+// Config types
+import type {
+  UseTokenOptimizationConfig,
+  TokenOptimizationPreset,
+  TieredCacheConfig,
+  ModelRouterConfig,
+} from '@clarity-chat/token-optimization/react'
+
+// Return types
+import type {
+  UseTokenOptimizationReturn,
+  CompressionResult,
+  RoutingResult,
+  CacheStats,
+  RouterStats,
+  OptimisticCacheState,
+} from '@clarity-chat/token-optimization/react'
+
+// Model types
+import type {
+  ModelConfig,
+  ModelTier,
+  RoutingStrategy,
+  ComplexityLevel,
+} from '@clarity-chat/token-optimization'
+```
+
+## Common Patterns
+
+### Progressive Enhancement
+
+Start simple, add features as needed:
+
+```tsx
+// Stage 1: Basic optimization
+const { optimize } = useTokenOptimization()
+
+// Stage 2: Add custom models
+const { optimize } = useTokenOptimization({
+  availableModels: ['gpt-4o-mini', 'gpt-4o', 'claude-3-5-sonnet'],
+})
+
+// Stage 3: Production config
+const { optimize } = useTokenOptimization({
+  preset: 'production',
+  availableModels: ['gpt-4o-mini', 'gpt-4o', 'claude-3-5-sonnet'],
+  cacheConfig: {
+    semantic: {
+      enablePredictiveCaching: true,
+    },
+  },
+})
+```
+
+### Monitoring and Alerts
+
+```tsx
+function MonitoredOptimization() {
+  const { optimize, getStats } = useTokenOptimization({
+    preset: 'production',
+  })
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const stats = getStats()
+
+      // Alert on low cache hit rate
+      if (stats.cache && stats.cache.hitRate < 0.3) {
+        console.warn('Low cache hit rate:', stats.cache.hitRate)
+      }
+
+      // Alert on high token usage
+      if (stats.tokensProcessed > 1000000) {
+        console.warn('High token usage:', stats.tokensProcessed)
+      }
+
+      // Log savings
+      console.log(`Total savings: ${stats.tokensSaved} tokens`)
+    }, 60000) // Check every minute
+
+    return () => clearInterval(interval)
+  }, [getStats])
+
+  return <div>Monitored application</div>
+}
+```
+
+### A/B Testing Presets
+
+```tsx
+function ABTestOptimization() {
+  const variant = Math.random() > 0.5 ? 'production' : 'enterprise'
+
+  const { optimize, getStats } = useTokenOptimization({
+    preset: variant,
+  })
+
+  useEffect(() => {
+    // Log which variant was used
+    const stats = getStats()
+    analytics.track('optimization_variant', {
+      variant,
+      hitRate: stats.cache?.hitRate,
+      tokensSaved: stats.tokensSaved,
+    })
+  }, [variant, getStats])
+
+  return <div>A/B test optimization</div>
+}
+```
+
+### Batch Processing
+
+```tsx
+function BatchProcessor() {
+  const { optimize } = useTokenOptimization({
+    preset: 'production',
+  })
+
+  const processBatch = async (prompts: string[]) => {
+    const results = await Promise.all(
+      prompts.map(async (prompt) => {
+        const result = await optimize(prompt)
+
+        if (result.cachedResponse) {
+          return { prompt, response: result.cachedResponse, cached: true }
+        }
+
+        const response = await callLLM(
+          result.compressedPrompt,
+          result.recommendedModel
+        )
+        return { prompt, response, cached: false }
+      })
+    )
+
+    const cacheHits = results.filter((r) => r.cached).length
+    console.log(`Cache hit rate: ${(cacheHits / results.length) * 100}%`)
+
+    return results
+  }
+
+  return <div>Batch processor</div>
+}
+```
+
+## Troubleshooting
+
+### Cache not hitting
+
+**Problem**: Cache always returns `undefined`
+
+**Solutions**:
+1. Verify caching is enabled:
+   ```tsx
+   useTokenOptimization({ enableCache: true })
+   ```
+
+2. Check if prompts are identical:
+   ```tsx
+   // These are different (whitespace matters)
+   await setInCache('hello', 'hi')
+   await getFromCache('hello ') // undefined
+   ```
+
+3. Verify TTL hasn't expired:
+   ```tsx
+   useTokenOptimization({
+     cacheConfig: {
+       exact: { ttl: 1800000 }, // 30 minutes
+     },
+   })
+   ```
+
+4. Use semantic cache for similar prompts:
+   ```tsx
+   useTokenOptimization({
+     cacheConfig: {
+       semantic: {
+         similarityThreshold: 0.85, // Lower = more lenient
+       },
+     },
+   })
+   ```
+
+### Routing always selects same model
+
+**Problem**: Router picks the same model regardless of complexity
+
+**Solutions**:
+1. Verify multiple models are configured:
+   ```tsx
+   useTokenOptimization({
+     availableModels: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo'],
+   })
+   ```
+
+2. Check routing strategy:
+   ```tsx
+   useTokenOptimization({
+     routerConfig: {
+       defaultStrategy: RoutingStrategy.Balanced, // Not always cost-optimized
+     },
+   })
+   ```
+
+3. Verify model configs have different tiers:
+   ```tsx
+   const models = [
+     { id: 'gpt-4o-mini', tier: 'small', ... },
+     { id: 'gpt-4o', tier: 'medium', ... },
+     { id: 'gpt-4-turbo', tier: 'large', ... },
+   ]
+   ```
+
+### High memory usage
+
+**Problem**: Hook consuming too much memory
+
+**Solutions**:
+1. Use smaller preset:
+   ```tsx
+   useTokenOptimization({ preset: 'minimal' }) // vs 'enterprise'
+   ```
+
+2. Reduce cache size:
+   ```tsx
+   useTokenOptimization({
+     cacheConfig: {
+       exact: { maxSize: 100 },
+       smart: { maxSize: 50 },
+       semantic: { maxSize: 25 },
+     },
+   })
+   ```
+
+3. Clear cache periodically:
+   ```tsx
+   useEffect(() => {
+     const interval = setInterval(clearCache, 3600000)
+     return () => clearInterval(interval)
+   }, [clearCache])
+   ```
+
+### Compression not saving tokens
+
+**Problem**: `compress()` returns 0% savings
+
+**Solutions**:
+1. Verify compression is enabled:
+   ```tsx
+   useTokenOptimization({ enableCompression: true })
+   ```
+
+2. Use content with compressible formatting:
+   ```tsx
+   // Compressible (markdown)
+   compress('# Heading\n\n- Item 1\n- Item 2')
+
+   // Not compressible (plain text)
+   compress('Plain text without formatting')
+   ```
+
+3. Use higher compression level:
+   ```tsx
+   useTokenOptimization({ preset: 'enterprise' }) // Uses aggressive compression
+   ```
+
+### TypeError: Cannot read property 'count'
+
+**Problem**: `countTokens()` throws error
+
+**Solutions**:
+1. Wait for hook initialization:
+   ```tsx
+   const { countTokens } = useTokenOptimization()
+
+   useEffect(() => {
+     // Safe after mount
+     const count = countTokens(text)
+   }, [text, countTokens])
+   ```
+
+2. Pass valid string:
+   ```tsx
+   // ❌ Wrong
+   countTokens(undefined)
+
+   // ✅ Correct
+   countTokens(text || '')
+   ```
+
+### React 19 features not working
+
+**Problem**: `isPending` or `optimisticCache` not functioning
+
+**Solutions**:
+1. Verify React version:
+   ```bash
+   npm ls react
+   # Should be 19.x
+   ```
+
+2. Enable concurrent features:
+   ```tsx
+   // In your root component
+   import { createRoot } from 'react-dom/client'
+
+   const root = createRoot(document.getElementById('root'))
+   root.render(<App />)
+   ```
+
+3. Use in component, not effects:
+   ```tsx
+   // ❌ Wrong
+   useEffect(() => {
+     optimisticSetInCache(prompt, response)
+   }, [])
+
+   // ✅ Correct (in event handler)
+   const handleClick = () => {
+     optimisticSetInCache(prompt, response)
+   }
+   ```
+
+## See Also
+
+- **[useTokenCount](/docs/hooks-usetokencount--docs)** - Simple token counting only
+- **[useTieredCache](/docs/hooks-usetieredcache--docs)** - Advanced 3-tier caching
+- **[useModelRouter](/docs/hooks-usemodelrouter--docs)** - Intelligent model routing
+- **[ProviderCaching](/docs/utilities-providercaching--docs)** - Provider-native caching (90% savings)
+- **[MarkdownCompressor](/docs/utilities-markdowncompressor--docs)** - Compression engine
