@@ -12,7 +12,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ): T {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const callbackRef = useRef(callback)
 
   // Keep callback ref up to date

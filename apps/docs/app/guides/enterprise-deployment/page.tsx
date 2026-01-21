@@ -139,7 +139,7 @@ const limiter = rateLimit({
         <p>Set up monitoring:</p>
         <CodePlayground
           initialCode={`// Monitoring setup
-import { PerformanceAnalyticsDashboard } from '@clarity-chat/react/internal'
+import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
 function MonitoringDashboard() {
   return (

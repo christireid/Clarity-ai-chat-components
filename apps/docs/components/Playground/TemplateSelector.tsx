@@ -94,8 +94,20 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+      className="group/selector relative bg-white dark:bg-gray-900/80 rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2)]"
     >
+      {/* Gradient border */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{
+          padding: '1px',
+          background: 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.2) 50%, rgba(244,114,182,0.25) 100%)',
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+        aria-hidden="true"
+      />
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2 mb-3">
@@ -150,11 +162,11 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
               transition={{ delay: index * 0.05 }}
               onClick={() => setSelectedCategory(category)}
               className={cn(
-                "px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+                "px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300",
                 "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
                 selectedCategory === category
-                  ? 'bg-brand-500 text-white shadow-md scale-105'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105'
+                  ? 'bg-gradient-to-r from-brand-500 to-purple-500 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] scale-105'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-105 hover:shadow-sm'
               )}
               role="tab"
               aria-selected={selectedCategory === category}
@@ -216,11 +228,11 @@ export function TemplateSelector({ templates, selectedId, onSelect }: TemplateSe
                     onMouseEnter={() => setFocusedIndex(index)}
                     onMouseLeave={() => setFocusedIndex(-1)}
                     className={cn(
-                      "w-full text-left p-4 transition-all relative",
+                      "w-full text-left p-4 transition-all duration-300 relative",
                       "focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500",
-                      isSelected && 'bg-brand-50 dark:bg-brand-900/20 border-l-4 border-brand-500',
-                      !isSelected && isFocused && 'bg-gray-50 dark:bg-gray-700/50',
-                      !isSelected && !isFocused && 'hover:bg-gray-50 dark:hover:bg-gray-700/30'
+                      isSelected && 'bg-gradient-to-r from-brand-50 to-purple-50/50 dark:from-brand-900/30 dark:to-purple-900/20 border-l-4 border-brand-500 shadow-[inset_0_0_20px_rgba(99,102,241,0.05)]',
+                      !isSelected && isFocused && 'bg-gray-50 dark:bg-gray-800/50',
+                      !isSelected && !isFocused && 'hover:bg-gray-50 dark:hover:bg-gray-800/30'
                     )}
                     aria-selected={isSelected}
                     aria-label={`Select ${template.name} template`}

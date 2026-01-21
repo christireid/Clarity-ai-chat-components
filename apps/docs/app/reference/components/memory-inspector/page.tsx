@@ -183,7 +183,7 @@ function ManageableMemory() {
   }
 
   const handleRefresh = () => {
-    logger.debug('Refreshing memories from AI...')
+    console.log('Refreshing memories from AI...')
     // In real app: fetch updated memories from backend
   }
 
@@ -261,7 +261,7 @@ render(<ManageableMemory />)`}
   type MemoryInspectorProps,
   type MemoryItem,
   type MemoryScope
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 interface MemoryItem {
   id: string

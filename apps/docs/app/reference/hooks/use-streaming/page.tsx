@@ -33,7 +33,7 @@ export default function UseStreamingPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useStreaming } from '@clarity-chat/react/internal'
+            <code>{`import { useStreaming } from '@clarity-chat/react'
 
 function StreamingChat() {
   const {
@@ -45,7 +45,7 @@ function StreamingChat() {
   } = useStreaming({
     endpoint: '/api/stream',
     protocol: 'sse',
-    onComplete: (fullText) => logger.debug('Done:', fullText)
+    onComplete: (fullText) => console.log('Done:', fullText)
   })
 
   return (

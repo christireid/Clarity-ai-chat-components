@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KnowledgeBaseViewer } from '@clarity-chat/react/internal'
+import { KnowledgeBaseViewer } from '@clarity-chat/react'
 import type { KnowledgeBase, KnowledgeBaseSection } from '@clarity-chat/types'
 
 const meta = {

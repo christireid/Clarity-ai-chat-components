@@ -346,6 +346,11 @@ InteractiveButton.displayName = 'InteractiveButton'
 
 /**
  * Interactive list item
+ *
+ * Accessible list item with:
+ * - Keyboard activation (Enter/Space)
+ * - Reduced motion support
+ * - ARIA attributes for selection state
  */
 export interface InteractiveListItemProps {
   /** Whether item is selected */
@@ -376,13 +381,29 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
   onClick,
   className,
 }) => {
+  const prefersReducedMotion = useReducedMotion()
+
+  // Handle keyboard activation (Enter and Space)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onClick?.()
+    }
+  }
+
   return (
     <motion.div
       whileHover={
-        !disabled ? { x: 4, backgroundColor: 'hsl(var(--accent) / 0.5)' } : {}
+        !disabled && !prefersReducedMotion
+          ? { x: 4, backgroundColor: 'hsl(var(--accent) / 0.5)' }
+          : !disabled
+            ? { backgroundColor: 'hsl(var(--accent) / 0.5)' }
+            : {}
       }
-      whileTap={!disabled ? { scale: 0.98 } : {}}
+      whileTap={!disabled && !prefersReducedMotion ? { scale: 0.98 } : {}}
       onClick={!disabled ? onClick : undefined}
+      onKeyDown={handleKeyDown}
       className={cn(
         'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 ease-out',
         'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
@@ -397,7 +418,9 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       aria-disabled={disabled}
     >
       {icon && (
-        <div className="flex-shrink-0 text-muted-foreground">{icon}</div>
+        <div className="flex-shrink-0 text-muted-foreground" aria-hidden="true">
+          {icon}
+        </div>
       )}
 
       <div className="flex-1 min-w-0">
@@ -414,9 +437,10 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
 
       {selected && (
         <motion.div
-          initial={{ scale: 0 }}
+          initial={prefersReducedMotion ? { scale: 1 } : { scale: 0 }}
           animate={{ scale: 1 }}
           className="flex-shrink-0 w-2 h-2 rounded-full bg-primary"
+          aria-hidden="true"
         />
       )}
     </motion.div>

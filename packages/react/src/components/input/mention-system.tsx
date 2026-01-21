@@ -2,7 +2,13 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  Badge,
+  cn,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
@@ -136,6 +142,14 @@ export function MentionInput({
 
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const suggestionsRef = React.useRef<HTMLDivElement>(null)
+  const listboxId = React.useId()
+  const prefersReducedMotion = useReducedMotion()
+
+  // Get aria-activedescendant value
+  const activeDescendant =
+    showSuggestions && selectedIndex >= 0 && suggestions[selectedIndex]
+      ? `${listboxId}-option-${suggestions[selectedIndex].id}`
+      : undefined
 
   /**
    * Extract mentions from text
@@ -300,6 +314,19 @@ export function MentionInput({
     }
   }, [selectedIndex])
 
+  // Animation variants respecting reduced motion
+  const dropdownVariants = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0, y: -10, scale: 0.95 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: -10, scale: 0.95 },
+      }
+
   return (
     <div className={cn('relative', className)}>
       <textarea
@@ -311,6 +338,12 @@ export function MentionInput({
         disabled={disabled}
         className="w-full min-h-[80px] px-4 py-3 border rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent"
         rows={3}
+        role="combobox"
+        aria-expanded={showSuggestions}
+        aria-controls={listboxId}
+        aria-activedescendant={activeDescendant}
+        aria-autocomplete="list"
+        aria-label="Message input with mention support"
       />
 
       {/* Mention suggestions dropdown */}
@@ -318,52 +351,77 @@ export function MentionInput({
         {showSuggestions && (
           <motion.div
             ref={suggestionsRef}
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: durations.fast }}
+            id={listboxId}
+            role="listbox"
+            aria-label="User suggestions"
+            {...dropdownVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: durations.fast }
+            }
             className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
           >
-            {suggestions.map((user, index) => (
-              <button
-                key={user.id}
-                onClick={() => insertMention(user)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-4 py-2 hover:bg-accent transition-colors text-left',
-                  index === selectedIndex && 'bg-accent'
-                )}
-              >
-                {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
-                  {user.name[0].toUpperCase()}
-                </div>
+            {suggestions.map((user, index) => {
+              const optionId = `${listboxId}-option-${user.id}`
+              const isSelected = index === selectedIndex
 
-                {/* User info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{user.name}</span>
-                    {user.isOnline && (
-                      <span
-                        className="w-2 h-2 rounded-full bg-green-500"
-                        title="Online"
-                      />
-                    )}
+              return (
+                <button
+                  key={user.id}
+                  id={optionId}
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => insertMention(user)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-4 py-2 hover:bg-accent transition-colors text-left',
+                    isSelected && 'bg-accent'
+                  )}
+                >
+                  {/* Avatar */}
+                  <div
+                    className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0"
+                    aria-hidden="true"
+                  >
+                    {user.name[0].toUpperCase()}
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    {mentionTrigger}
-                    {user.username}
-                    {user.role && ` • ${user.role}`}
-                  </div>
-                </div>
 
-                {/* Keyboard hint */}
-                {index === selectedIndex && (
-                  <Badge variant="secondary" className="text-xs">
-                    Enter
-                  </Badge>
-                )}
-              </button>
-            ))}
+                  {/* User info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{user.name}</span>
+                      {user.isOnline && (
+                        <span
+                          className="w-2 h-2 rounded-full bg-green-500"
+                          title="Online"
+                          aria-label="Online"
+                        />
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {mentionTrigger}
+                      {user.username}
+                      {user.role && ` • ${user.role}`}
+                    </div>
+                  </div>
+
+                  {/* Keyboard hint */}
+                  {isSelected && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs"
+                      aria-hidden="true"
+                    >
+                      Enter
+                    </Badge>
+                  )}
+                </button>
+              )
+            })}
           </motion.div>
         )}
       </AnimatePresence>

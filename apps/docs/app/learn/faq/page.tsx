@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ToastProvider } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
 
 type FAQItem = {
   question: string
@@ -91,15 +91,15 @@ module.exports = {
     answer: (
       <div className="space-y-4">
         <p>
-          Use the <code>ClarityChat</code> drop-in component with just an API
+          Use the <code>ClarityChatApp</code> drop-in component with just an API
           endpoint:
         </p>
         <EnhancedCodeBlock
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChatApp } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  return <ClarityChat api="/api/chat" />
+  return <ClarityChatApp api="/api/chat" />
 }`}
           language="tsx"
           showCopyButton
@@ -184,7 +184,7 @@ function App() {
         <EnhancedCodeBlock
           code={`'use client'
 
-import { useClarityChat } from '@clarity-chat/react/internal'
+import { useClarityChat } from '@clarity-chat/react'
 
 export function ChatComponent() {
   const { messages } = useClarityChat({ api: '/api/chat' })
@@ -226,7 +226,7 @@ export function ChatComponent() {
           <li>
             <strong>Theme prop:</strong> Use built-in themes
             <EnhancedCodeBlock
-              code={`<ClarityChat theme="modern-dark" />`}
+              code={`<ClarityChatApp theme="modern-dark" />`}
               language="tsx"
               showCopyButton
             />
@@ -252,7 +252,7 @@ export function ChatComponent() {
       <div className="space-y-4">
         <p>
           Use the <code>isLoading</code> prop on <code>ChatWindow</code> or{' '}
-          <code>ClarityChat</code>:
+          <code>ClarityChatApp</code>:
         </p>
         <EnhancedCodeBlock
           code={`<ChatWindow
@@ -281,7 +281,7 @@ export function ChatComponent() {
           component:
         </p>
         <EnhancedCodeBlock
-          code={`import { MarkdownRenderer } from '@clarity-chat/react/internal'
+          code={`import { MarkdownRenderer } from '@clarity-chat/react'
 
 <MarkdownRenderer
   content={message.content}
@@ -318,10 +318,10 @@ export function ChatComponent() {
           HTML element (standard Tailwind approach). You can also force a theme:
         </p>
         <EnhancedCodeBlock
-          code={`import { ThemeProvider } from '@clarity-chat/react/internal'
+          code={`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider defaultTheme="dark">
-  <ClarityChat api="/api/chat" />
+  <ClarityChatApp api="/api/chat" />
 </ThemeProvider>`}
           language="tsx"
           showCopyButton
@@ -402,7 +402,7 @@ export function ChatComponent() {
             <strong>Missing provider:</strong> Wrap your app with necessary
             providers
             <EnhancedCodeBlock
-              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react/internal'
+              code={`import { ToastProvider, ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider>
   <ToastProvider>
@@ -525,7 +525,7 @@ const message: Message = {
       <div className="space-y-4">
         <p>Use the token tracking hooks and components:</p>
         <EnhancedCodeBlock
-          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
 
 function Chat() {
   const { messages } = useClarityChat({ api: '/api/chat' })

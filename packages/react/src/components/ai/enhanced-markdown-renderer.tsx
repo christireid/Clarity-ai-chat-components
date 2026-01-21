@@ -5,6 +5,9 @@ import ReactMarkdown from 'react-markdown'
 // rehypeHighlight is now loaded async (react-markdown v10 feature)
 import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
+import { usePerformanceTracking } from '../../utils/performance-monitoring'
+import { ContentErrorBoundary } from '../ui/error-boundary'
+import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 /** Mermaid theme types */
@@ -87,12 +90,25 @@ export interface EnhancedMarkdownRendererProps {
   isStreaming?: boolean
 }
 
-export const EnhancedMarkdownRenderer = React.memo(
+const EnhancedMarkdownRendererComponent = React.memo(
   function EnhancedMarkdownRenderer({
     content,
     config = {},
     isStreaming = false,
   }: EnhancedMarkdownRendererProps) {
+    // Performance monitoring
+    usePerformanceTracking({
+      componentName: 'EnhancedMarkdownRenderer',
+      trackMemory: true,
+      metadata: {
+        contentLength: content.length,
+        enableKaTeX: config.enableKaTeX,
+        enableMermaid: config.enableMermaid,
+        enableSyntaxHighlight: config.enableSyntaxHighlight,
+        isStreaming,
+      },
+    })
+
     const {
       enableKaTeX = false,
       enableMermaid = false,
@@ -100,6 +116,10 @@ export const EnhancedMarkdownRenderer = React.memo(
       className,
       codeTheme = 'light',
     } = config
+
+    // Analytics tracking
+    const { trackInteraction } = useAnalytics('EnhancedMarkdownRenderer')
+    const { trackClick } = useInteractionTracking('EnhancedMarkdownRenderer')
 
     const containerRef = React.useRef<HTMLDivElement>(null)
     const mermaidInitialized = React.useRef(false)
@@ -300,7 +320,7 @@ export function useMarkdownFeatures(content: string) {
     const hasMath = /(\$\$|\\\(|\\\[|\\begin\{)/.test(content)
     const hasMermaid = /```mermaid|```\s*mermaid/.test(content)
     const hasCodeBlocks = /```/.test(content)
-    
+
     return {
       hasMath,
       hasMermaid,
@@ -309,3 +329,15 @@ export function useMarkdownFeatures(content: string) {
     }
   }, [content])
 }
+
+/**
+ * Enhanced Markdown Renderer with error boundary
+ */
+export const EnhancedMarkdownRenderer = (props: EnhancedMarkdownRendererProps) => (
+  <ContentErrorBoundary
+    componentName="EnhancedMarkdownRenderer"
+    showErrorDetails={process.env.NODE_ENV === 'development'}
+  >
+    <EnhancedMarkdownRendererComponent {...props} />
+  </ContentErrorBoundary>
+)

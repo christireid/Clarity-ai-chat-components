@@ -6,7 +6,7 @@ import {
   TokenOptimizationDashboard,
   type TokenOptimizationStats,
   type OptimizationMetrics,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof TokenOptimizationDashboard> = {
   title: 'Advanced/Analytics/TokenOptimization',

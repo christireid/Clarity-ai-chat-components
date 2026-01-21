@@ -386,7 +386,7 @@ function ChatHistory() {
 
         <h3>Virtualization for Long Lists</h3>
         <pre>
-          <code>{`import { VirtualizedMessageList } from '@clarity-chat/react/internal'
+          <code>{`import { VirtualizedMessageList } from '@clarity-chat/react'
 
 function Chat() {
   return (

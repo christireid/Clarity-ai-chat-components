@@ -80,7 +80,7 @@ export default function SafetyReviewConsolePage() {
         <h2>Basic Usage</h2>
         <p>Review content for safety issues:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function SafetyReview({ content }: { content: string }) {
   const highlights = [
@@ -106,14 +106,14 @@ function SafetyReview({ content }: { content: string }) {
       content={content}
       highlights={highlights}
       onRedact={(highlight) => {
-        logger.debug('Redacting:', highlight)
+        console.log('Redacting:', highlight)
         // Redact content
       }}
       onApprove={() => {
-        logger.debug('Content approved')
+        console.log('Content approved')
       }}
       onReject={() => {
-        logger.debug('Content rejected')
+        console.log('Content rejected')
       }}
     />
   )
@@ -125,7 +125,7 @@ function SafetyReview({ content }: { content: string }) {
         <h2>Severity Levels</h2>
         <p>Handle different severity levels:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function WithSeverity({ content }: { content: string }) {
   const highlights = [
@@ -172,7 +172,7 @@ function WithSeverity({ content }: { content: string }) {
         <h2>Interactive Redaction</h2>
         <p>Allow users to redact highlighted content:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function InteractiveReview({ content }: { content: string }) {
   const [redactedContent, setRedactedContent] = React.useState(content)

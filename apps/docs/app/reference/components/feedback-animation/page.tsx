@@ -33,7 +33,7 @@ export default function FeedbackAnimationPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { FeedbackAnimation } from '@clarity-chat/react/internal'
+            <code>{`import { FeedbackAnimation } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {

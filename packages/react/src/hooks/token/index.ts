@@ -2,21 +2,14 @@
  * Token Hooks
  *
  * Hooks for token optimization, tracking, and budget management.
+ *
+ * Note: Modern token optimization hooks have moved to clarity-tokens.
+ * Import from '@clarity-chat/react/hooks/clarity-tokens' for the latest versions.
  */
 
-export {
-  useTokenOptimization,
-  type UseTokenOptimizationOptions,
-  type UseTokenOptimizationReturn,
-  type TokenOptimizationStats,
-} from './use-token-optimization'
-
-export {
-  useTokenOptimizationEnhanced,
-  type EnhancedTokenOptimizationOptions,
-  type EnhancedOptimizationStats,
-  type EnhancedOptimizationResult,
-} from './use-token-optimization-enhanced'
+// Legacy exports removed - use clarity-tokens instead:
+// - useTokenOptimization -> import from 'hooks/clarity-tokens'
+// - useTokenOptimization -> use useTokenOptimization from 'hooks/clarity-tokens'
 
 export * from './use-token-tracker'
 

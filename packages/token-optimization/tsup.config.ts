@@ -1,23 +1,27 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: {
+    index: 'src/index.ts',
+    react: 'src/react.ts',
+    compression: 'src/compression/index.ts',
+    cache: 'src/cache/index.ts',
+  },
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
   minify: false,
   sourcemap: true,
-  splitting: false,
+  splitting: true,
   treeshake: true,
   external: [
+    'react',
+    'react-dom',
     '@dqbd/tiktoken',
-    'crypto-js',
     '@tensorflow/tfjs',
-    'events'  // Node.js built-in - consumers should polyfill for browser
+    'events', // Node.js built-in - consumers should polyfill for browser
   ],
-  noExternal: [
-    '@clarity-chat/types'
-  ],
+  noExternal: ['@clarity-chat/types'],
   target: 'es2020',
   platform: 'neutral',
   esbuildOptions: (_options) => {
@@ -29,6 +33,6 @@ export default defineConfig({
  * Advanced token counting, compression, and optimization
  * @version ${process.env.npm_package_version || '1.0.0'}
  * @license MIT
- */`
-  }
+ */`,
+  },
 })

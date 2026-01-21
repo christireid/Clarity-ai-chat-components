@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatRelativeTime } from '../../internal/helpers'
 import {
   EASING_FRAMER,
@@ -182,7 +183,7 @@ export interface ConversationListProps {
  * />
  * ```
  */
-export function ConversationList({
+export const ConversationList = memo(function ConversationList({
   conversations,
   folders = [],
   activeId,
@@ -214,6 +215,7 @@ export function ConversationList({
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
   const [showCreateFolder, setShowCreateFolder] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
+  const prefersReducedMotion = useReducedMotion()
 
   /**
    * Group conversations by folder
@@ -353,6 +355,19 @@ export function ConversationList({
       }
     },
     [multiSelect, onSelectionChange, selectedIds, onSelect]
+  )
+
+  /**
+   * Handle keyboard activation for conversation items
+   */
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, id: string) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleSelect(id)
+      }
+    },
+    [handleSelect]
   )
 
   return (
@@ -629,27 +644,33 @@ export function ConversationList({
           )}
 
           {showFilters && (
-            <div className="flex gap-2">
+            <div
+              className="flex gap-2"
+              role="group"
+              aria-label="Filter options"
+            >
               <button
                 onClick={() => setShowPinnedOnly(!showPinnedOnly)}
+                aria-pressed={showPinnedOnly}
                 className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showPinnedOnly
-                    ? 'bg-primary/10 text-primary scale-105'
+                    ? `bg-primary/10 text-primary ${prefersReducedMotion ? '' : 'scale-105'}`
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
-                📌 Pinned
+                <span aria-hidden="true">📌</span> Pinned
               </button>
 
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                aria-pressed={showFavoritesOnly}
                 className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showFavoritesOnly
-                    ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] scale-105'
+                    ? `bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] ${prefersReducedMotion ? '' : 'scale-105'}`
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
-                ⭐ Favorites
+                <span aria-hidden="true">⭐</span> Favorites
               </button>
             </div>
           )}
@@ -697,30 +718,48 @@ export function ConversationList({
                 return (
                   <motion.div
                     key={conversation.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={
+                      prefersReducedMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, y: 20 }
+                    }
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -100, height: 0 }}
-                    transition={{
-                      duration: durations.normal,
-                      delay: index * 0.05, // Stagger: 50ms between items
-                      ease: EASING_FRAMER.default,
-                    }}
-                    whileHover={{
-                      y: -2,
-                      transition: { duration: durations.fast },
-                    }}
-                    layout
+                    exit={
+                      prefersReducedMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, x: -100, height: 0 }
+                    }
+                    transition={
+                      prefersReducedMotion
+                        ? { duration: 0 }
+                        : {
+                            duration: durations.normal,
+                            delay: index * 0.05,
+                            ease: EASING_FRAMER.default,
+                          }
+                    }
+                    whileHover={
+                      prefersReducedMotion
+                        ? undefined
+                        : {
+                            y: -2,
+                            transition: { duration: durations.fast },
+                          }
+                    }
+                    layout={!prefersReducedMotion}
                     onClick={() => handleSelect(conversation.id)}
+                    onKeyDown={(e) => handleKeyDown(e, conversation.id)}
                     className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
                       isActive
                         ? 'bg-primary/10 border-l-4 border-primary'
                         : isSelected
                           ? 'bg-primary/5'
                           : 'hover:bg-muted/50'
-                    }`}
+                    } focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
                     role="button"
                     tabIndex={0}
                     aria-label={`Select conversation: ${conversation.title}`}
+                    aria-pressed={isSelected}
                   >
                     <div className="flex items-start justify-between gap-2">
                       {/* Content */}
@@ -944,6 +983,6 @@ export function ConversationList({
       </div>
     </div>
   )
-}
+})
 
 ConversationList.displayName = 'ConversationList'

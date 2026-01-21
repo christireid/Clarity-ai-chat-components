@@ -41,7 +41,7 @@ export default function Error({
           variants={prefersReducedMotion ? undefined : buttonAnimation}
           whileHover={prefersReducedMotion ? undefined : 'hover'}
           whileTap={prefersReducedMotion ? undefined : 'tap'}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+          className="px-6 py-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700"
         >
           Try again
         </motion.button>

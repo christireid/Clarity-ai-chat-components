@@ -27,15 +27,15 @@ const componentExamples: ComponentExample[] = [
           <span className="text-sm text-text-secondary">AI is thinking</span>
           <div className="flex gap-1">
             <div
-              className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+              className="w-2 h-2 bg-brand-500 rounded-full animate-bounce"
               style={{ animationDelay: '0ms' }}
             />
             <div
-              className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+              className="w-2 h-2 bg-brand-500 rounded-full animate-bounce"
               style={{ animationDelay: '150ms' }}
             />
             <div
-              className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+              className="w-2 h-2 bg-brand-500 rounded-full animate-bounce"
               style={{ animationDelay: '300ms' }}
             />
           </div>
@@ -91,7 +91,7 @@ const componentExamples: ComponentExample[] = [
           <div className="flex-1 px-4 py-3 border border-border rounded-xl bg-bg-primary text-sm text-text-secondary">
             Type a message...
           </div>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-xl text-sm hover:bg-blue-600 transition-colors flex items-center gap-2">
+          <button className="px-4 py-2 bg-brand-500 text-white rounded-xl text-sm hover:bg-brand-600 transition-colors flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>

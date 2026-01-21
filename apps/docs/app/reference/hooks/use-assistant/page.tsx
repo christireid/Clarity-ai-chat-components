@@ -144,7 +144,7 @@ export default function UseAssistantPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function Assistant() {
   const { messages, append, status, toolInvocations } = useAssistant({
@@ -184,13 +184,13 @@ function Assistant() {
           Experiment with useAssistant:
         </p>
         <CodePlayground
-          initialCode={`import { useAssistant } from '@clarity-chat/react/internal'
+          initialCode={`import { useAssistant } from '@clarity-chat/react'
 
 function Example() {
   const { messages, append, status, toolInvocations } = useAssistant({
     api: '/api/assistant',
     onToolCall: async (invocation) => {
-      logger.debug('Tool called:', invocation.toolName, invocation.args)
+      console.log('Tool called:', invocation.toolName, invocation.args)
       // Return tool result
       return { result: 'Tool executed successfully' }
     },
@@ -214,7 +214,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Tool Calling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function Assistant() {
   const { messages, append, toolInvocations } = useAssistant({
@@ -245,7 +245,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Assistant() {
@@ -257,7 +257,7 @@ function Assistant() {
     threadId,
     onFinish: (message) => {
       // Thread ID is automatically managed
-      logger.debug('Assistant finished:', message)
+      console.log('Assistant finished:', message)
     },
   })
 
@@ -279,7 +279,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function Assistant() {
   const { messages, append, status, toolInvocations } = useAssistant({
@@ -309,7 +309,7 @@ function Assistant() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAssistant } from '@clarity-chat/react/internal'
+          code={`import { useAssistant } from '@clarity-chat/react'
 
 function Assistant() {
   const { messages, append, toolInvocations } = useAssistant({

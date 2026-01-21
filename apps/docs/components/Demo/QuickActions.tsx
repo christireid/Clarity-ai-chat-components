@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Copy, Check, ExternalLink, Download, Share2, Zap } from 'lucide-react'
-import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { logger } from '@/lib/logger'
 import { durations } from '@/lib/animations'
@@ -74,7 +74,7 @@ export function QuickActions({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
-      className={clsx('space-y-3', className)}
+      className={cn('space-y-3', className)}
     >
       <motion.div
         initial="hidden"
@@ -99,11 +99,11 @@ export function QuickActions({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           animate={copiedCode ? { scale: [1, 1.1, 1] } : {}}
-          className={clsx(
-            'flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg',
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300',
             copiedCode
-              ? 'bg-green-500 text-white'
-              : 'bg-brand-500 hover:bg-brand-600 text-white'
+              ? 'bg-green-500 text-white shadow-[0_4px_12px_rgba(34,197,94,0.4),0_0_20px_rgba(34,197,94,0.2)]'
+              : 'bg-gradient-to-r from-brand-500 to-purple-500 text-white shadow-[0_4px_12px_rgba(99,102,241,0.3),0_8px_24px_rgba(99,102,241,0.2)] hover:shadow-[0_6px_16px_rgba(99,102,241,0.4),0_12px_32px_rgba(99,102,241,0.25),0_0_40px_rgba(99,102,241,0.15)]'
           )}
         >
           <AnimatePresence mode="wait">
@@ -164,7 +164,7 @@ export function QuickActions({
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-blue-500 hover:bg-blue-600 text-white transition-all shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-brand-500 hover:bg-brand-600 text-white transition-all shadow-md hover:shadow-lg"
           >
             <Zap className="w-4 h-4" />
             Open in StackBlitz
@@ -180,9 +180,26 @@ export function QuickActions({
       >
         <motion.div
           whileHover={{ scale: 1.02 }}
-          className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700"
+          className={cn(
+            'group relative rounded-lg p-3 overflow-hidden transition-all duration-300',
+            'bg-gray-900 dark:bg-black',
+            'shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.15)]',
+            'hover:shadow-[0_4px_12px_rgba(34,197,94,0.15),0_8px_24px_rgba(34,197,94,0.1)]'
+          )}
         >
-          <div className="flex items-center justify-between">
+          {/* Gradient border */}
+          <div
+            className="absolute inset-0 rounded-lg opacity-50 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            style={{
+              padding: '1px',
+              background: 'linear-gradient(135deg, rgba(34,197,94,0.4) 0%, rgba(16,185,129,0.2) 50%, rgba(34,197,94,0.3) 100%)',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
+            aria-hidden="true"
+          />
+          <div className="relative z-10 flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 mb-1">Install command</p>
               <code className="text-sm text-green-400 font-mono">
@@ -226,9 +243,26 @@ export function QuickActions({
         {componentName && (
           <motion.div
             whileHover={{ scale: 1.02 }}
-            className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700"
+            className={cn(
+              'group relative rounded-lg p-3 overflow-hidden transition-all duration-300',
+              'bg-gray-900 dark:bg-black',
+              'shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.15)]',
+              'hover:shadow-[0_4px_12px_rgba(59,130,246,0.15),0_8px_24px_rgba(59,130,246,0.1)]'
+            )}
           >
-            <div className="flex items-center justify-between">
+            {/* Gradient border */}
+            <div
+              className="absolute inset-0 rounded-lg opacity-50 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{
+                padding: '1px',
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.4) 0%, rgba(99,102,241,0.2) 50%, rgba(59,130,246,0.3) 100%)',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+              aria-hidden="true"
+            />
+            <div className="relative z-10 flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 mb-1">Import statement</p>
                 <code className="text-sm text-blue-400 font-mono">

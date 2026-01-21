@@ -1,0 +1,1013 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useTokenBudgetMonitor" />
+
+# useTokenBudgetMonitor
+
+Real-time token budget tracking with threshold-based warnings and automatic trimming. Prevents context overflow and provides immediate cost awareness.
+
+## Overview
+
+`useTokenBudgetMonitor` is your comprehensive solution for managing token budgets in conversational AI applications. It tracks conversations, monitors usage against configurable limits, and provides real-time status updates with automatic content trimming.
+
+**When to use:**
+- Track token usage across multi-turn conversations
+- Prevent exceeding model context windows
+- Implement usage quotas and limits
+- Provide visual feedback (safe, warning, critical, exceeded)
+- Auto-trim conversation history to stay within budget
+- Monitor and control API costs in real-time
+
+**When not to use:**
+- If you only need basic counting → use `useTokenCount`
+- If you need compression or caching → use `useTokenOptimization`
+- If you need model routing → use `useModelRouter`
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function ChatWithBudget() {
+  const [messages, setMessages] = useState([])
+
+  const { usage, isWarning, isCritical, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+    warningThreshold: 0.8,
+    criticalThreshold: 0.95,
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <ConversationHistory messages={messages} />
+      <TokenUsageBar
+        current={usage.current}
+        max={usage.effectiveMax}
+        status={usage.status}
+      />
+      {isWarning && <Alert severity="warning">Approaching token limit</Alert>}
+      {isCritical && <Alert severity="error">Critical: Consider trimming history</Alert>}
+      <p>{usage.utilizationPercent.toFixed(1)}% of budget used</p>
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Parameters
+
+```tsx
+useTokenBudgetMonitor(
+  config: TokenBudgetConfig
+): TokenBudgetMonitorReturn
+```
+
+#### `config: TokenBudgetConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxInputTokens` | `number` | required | Maximum input tokens for the model (e.g., 128000 for GPT-4) |
+| `warningThreshold` | `number` | `0.8` | Warning threshold as decimal (0.8 = 80%) |
+| `criticalThreshold` | `number` | `0.95` | Critical threshold as decimal (0.95 = 95%) |
+| `reservedForOutput` | `number` | `4096` | Tokens reserved for output response |
+| `model` | `ModelName` | `undefined` | Model name for accurate token counting |
+| `onWarning` | `(usage) => void` | `undefined` | Callback when warning threshold is crossed |
+| `onCritical` | `(usage) => void` | `undefined` | Callback when critical threshold is crossed |
+| `onExceeded` | `(usage) => void` | `undefined` | Callback when exceeded (over 100%) |
+| `autoTrim` | `boolean` | `false` | Auto-trigger trimming at critical threshold |
+| `onAutoTrim` | `(result) => void` | `undefined` | Callback after auto-trim occurs |
+| `debounceMs` | `number` | `300` | Debounce delay for token counting in ms |
+| `useAccurateTokenization` | `boolean` | `false` | Use accurate tokenization (slower but precise) |
+
+### Return Value
+
+```tsx
+{
+  usage: TokenUsage           // Current token usage metrics
+  isWarning: boolean          // Whether in warning state
+  isCritical: boolean         // Whether in critical state
+  isExceeded: boolean         // Whether exceeded budget
+  wouldExceed: (n: number) => boolean  // Check if adding N tokens would exceed
+  calculateTokens: (text: string) => Promise<number>  // Calculate tokens for text
+  updateMessages: (messages: BudgetMessage[]) => void  // Update and recalculate
+  trimToCritical: () => TrimResult | null  // Manually trigger trim
+  reset: () => void           // Reset monitor state
+  lastTrimResult: TrimResult | null  // Last trim result if any
+  isCalculating: boolean      // Whether currently calculating
+}
+```
+
+#### `TokenUsage` Object
+
+```tsx
+{
+  current: number             // Current tokens used
+  max: number                 // Maximum tokens allowed
+  available: number           // Available tokens remaining
+  utilizationPercent: number  // Utilization as percentage (0-100)
+  exceededPercent: number     // Percentage over budget (0 if not exceeded)
+  status: 'safe' | 'warning' | 'critical' | 'exceeded'
+  reservedForOutput: number   // Tokens reserved for output
+  effectiveMax: number        // Effective max for input (max - reserved)
+}
+```
+
+#### `BudgetMessage` Format
+
+```tsx
+{
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  tokens?: number             // Pre-computed token count (optional)
+  trimmable?: boolean         // Whether this can be trimmed (default: true)
+  priority?: number           // Priority for trimming (lower = trim first)
+}
+```
+
+## Examples
+
+### Model-Specific Configuration
+
+```tsx
+import { createModelBudgetMonitor, useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function GPT4Chat() {
+  const [messages, setMessages] = useState([])
+
+  // Automatic configuration for GPT-4o
+  const config = createModelBudgetMonitor('gpt-4o', {
+    warningThreshold: 0.8,
+    autoTrim: true,
+  })
+
+  const { usage, updateMessages } = useTokenBudgetMonitor(config)
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <p>Using {usage.current.toLocaleString()} / {usage.effectiveMax.toLocaleString()} tokens</p>
+      <ConversationView messages={messages} />
+    </div>
+  )
+}
+
+// Or use a different model
+function ClaudeChat() {
+  const config = createModelBudgetMonitor('claude-sonnet-4', {
+    criticalThreshold: 0.9,
+  })
+
+  const { usage } = useTokenBudgetMonitor(config)
+  // ...
+}
+```
+
+### With Status-Based UI
+
+```tsx
+import { useTokenBudgetMonitor, getStatusColor } from '@clarity-chat/token-optimization/react'
+
+function ChatWithStatusUI() {
+  const [messages, setMessages] = useState([])
+
+  const { usage, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  const statusColor = getStatusColor(usage.status)
+  const statusEmoji = {
+    safe: '✅',
+    warning: '⚠️',
+    critical: '🔶',
+    exceeded: '🚫',
+  }[usage.status]
+
+  return (
+    <div>
+      <div style={{ borderColor: statusColor }}>
+        {statusEmoji} {usage.status.toUpperCase()}
+      </div>
+
+      <progress
+        value={usage.utilizationPercent}
+        max={100}
+        style={{ accentColor: statusColor }}
+      />
+
+      <p>
+        {usage.current.toLocaleString()} / {usage.effectiveMax.toLocaleString()} tokens
+        ({usage.utilizationPercent.toFixed(1)}%)
+      </p>
+
+      {usage.exceededPercent > 0 && (
+        <p className="error">
+          Over budget by {usage.exceededPercent.toFixed(1)}%
+        </p>
+      )}
+    </div>
+  )
+}
+```
+
+### With Callbacks for Monitoring
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function MonitoredChat() {
+  const [messages, setMessages] = useState([])
+  const [alerts, setAlerts] = useState([])
+
+  const { usage, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+
+    onWarning: (usage) => {
+      console.warn('Token usage warning:', usage.utilizationPercent + '%')
+      setAlerts(prev => [...prev, {
+        type: 'warning',
+        message: `Approaching limit: ${usage.utilizationPercent.toFixed(1)}%`
+      }])
+    },
+
+    onCritical: (usage) => {
+      console.error('Critical token usage:', usage.utilizationPercent + '%')
+      setAlerts(prev => [...prev, {
+        type: 'critical',
+        message: `Critical: ${usage.available} tokens remaining`
+      }])
+    },
+
+    onExceeded: (usage) => {
+      console.error('Budget exceeded by:', usage.exceededPercent + '%')
+      setAlerts(prev => [...prev, {
+        type: 'error',
+        message: `Exceeded budget by ${usage.exceededPercent.toFixed(1)}%`
+      }])
+    },
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <AlertList alerts={alerts} />
+      <ConversationView messages={messages} />
+    </div>
+  )
+}
+```
+
+### With Auto-Trimming
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function AutoTrimChat() {
+  const [messages, setMessages] = useState([])
+  const [trimHistory, setTrimHistory] = useState([])
+
+  const { usage, updateMessages, lastTrimResult } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+    criticalThreshold: 0.95,
+    autoTrim: true, // Automatically trim when critical
+
+    onAutoTrim: (result) => {
+      console.log('Auto-trimmed:', result.tokensRemoved, 'tokens')
+      console.log('Removed messages:', result.removedItems)
+
+      setTrimHistory(prev => [...prev, {
+        timestamp: new Date(),
+        tokensRemoved: result.tokensRemoved,
+        messagesRemoved: result.removedItems.length,
+      }])
+
+      // Update messages with trimmed content
+      const trimmedMessages = result.trimmedContent.map((content, i) => ({
+        role: messages[i].role,
+        content,
+      }))
+      setMessages(trimmedMessages)
+    },
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+
+      {lastTrimResult && (
+        <div className="trim-notification">
+          Auto-trimmed {lastTrimResult.tokensRemoved} tokens
+          ({lastTrimResult.removedItems.length} messages)
+        </div>
+      )}
+
+      {trimHistory.length > 0 && (
+        <details>
+          <summary>Trim History ({trimHistory.length})</summary>
+          <ul>
+            {trimHistory.map((trim, i) => (
+              <li key={i}>
+                {trim.timestamp.toLocaleTimeString()}:
+                Removed {trim.tokensRemoved} tokens ({trim.messagesRemoved} messages)
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </div>
+  )
+}
+```
+
+### With Manual Trimming
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function ManualTrimChat() {
+  const [messages, setMessages] = useState([])
+
+  const {
+    usage,
+    isCritical,
+    updateMessages,
+    trimToCritical
+  } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  const handleTrim = () => {
+    const result = trimToCritical()
+
+    if (result) {
+      console.log('Trimmed:', result.tokensRemoved, 'tokens')
+
+      // Apply trimmed messages
+      const trimmedMessages = result.trimmedContent.map((content, i) => ({
+        role: messages.find(m => m.content === content)?.role || 'user',
+        content,
+      }))
+      setMessages(trimmedMessages)
+    }
+  }
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+
+      {isCritical && (
+        <div className="critical-warning">
+          <p>Token usage critical: {usage.utilizationPercent.toFixed(1)}%</p>
+          <button onClick={handleTrim}>
+            Trim Conversation History
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### With Message Prioritization
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function PrioritizedChat() {
+  const [messages, setMessages] = useState([])
+
+  const { usage, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+    autoTrim: true,
+  })
+
+  const addMessage = (role, content, priority = 0) => {
+    const newMessage = {
+      role,
+      content,
+      priority, // Lower priority = trimmed first
+      trimmable: role !== 'system', // System messages never trimmed
+    }
+
+    setMessages(prev => [...prev, newMessage])
+  }
+
+  // Usage examples
+  const handleSystemMessage = (content) => {
+    addMessage('system', content)  // trimmable: false (protected)
+  }
+
+  const handleUserMessage = (content) => {
+    addMessage('user', content, 5)  // priority: 5 (keep longer)
+  }
+
+  const handleOldMessage = (content) => {
+    addMessage('assistant', content, 1)  // priority: 1 (trim first)
+  }
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+      <p>{usage.current} / {usage.effectiveMax} tokens</p>
+    </div>
+  )
+}
+```
+
+### With Cost Tracking
+
+```tsx
+import {
+  useTokenBudgetMonitor,
+  estimateTokenCost
+} from '@clarity-chat/token-optimization/react'
+
+function ChatWithCostTracking() {
+  const [messages, setMessages] = useState([])
+  const model = 'gpt-4o'
+
+  const { usage, updateMessages } = useTokenBudgetMonitor(
+    createModelBudgetMonitor(model)
+  )
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  const cost = estimateTokenCost(usage, model)
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+
+      <div className="cost-display">
+        <h3>Cost Estimate</h3>
+        {cost ? (
+          <>
+            <p>Input: {cost.formattedCost}</p>
+            <p>Est. Output: ${cost.estimatedOutputCost.toFixed(4)}</p>
+            <p><strong>Total: {cost.formattedCost}</strong></p>
+          </>
+        ) : (
+          <p>Cost data unavailable</p>
+        )}
+      </div>
+
+      <div className="token-display">
+        <p>{usage.current.toLocaleString()} tokens used</p>
+        <p>{usage.available.toLocaleString()} tokens remaining</p>
+      </div>
+    </div>
+  )
+}
+```
+
+### With Pre-Send Validation
+
+```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization/react'
+
+function ValidatedChatInput() {
+  const [messages, setMessages] = useState([])
+  const [draft, setDraft] = useState('')
+
+  const { usage, wouldExceed, calculateTokens, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+  })
+
+  const [draftTokens, setDraftTokens] = useState(0)
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  useEffect(() => {
+    calculateTokens(draft).then(setDraftTokens)
+  }, [draft, calculateTokens])
+
+  const canSend = !wouldExceed(draftTokens)
+
+  const handleSend = () => {
+    if (!canSend) {
+      alert('Message would exceed token budget')
+      return
+    }
+
+    setMessages(prev => [...prev, {
+      role: 'user',
+      content: draft,
+      tokens: draftTokens, // Pre-computed for performance
+    }])
+    setDraft('')
+  }
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+
+      <textarea
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        placeholder="Type your message..."
+      />
+
+      <div className="send-controls">
+        <p>
+          Draft: {draftTokens} tokens
+          {!canSend && (
+            <span className="error"> (would exceed budget)</span>
+          )}
+        </p>
+        <button disabled={!canSend} onClick={handleSend}>
+          Send Message
+        </button>
+      </div>
+
+      <div className="budget-info">
+        <p>
+          {usage.current.toLocaleString()} / {usage.effectiveMax.toLocaleString()} tokens used
+        </p>
+        <p>
+          {usage.available.toLocaleString()} tokens remaining
+        </p>
+      </div>
+    </div>
+  )
+}
+```
+
+### With Advanced Formatting
+
+```tsx
+import {
+  useTokenBudgetMonitor,
+  formatTokenUsage
+} from '@clarity-chat/token-optimization/react'
+
+function FormattedBudgetDisplay() {
+  const [messages, setMessages] = useState([])
+
+  const { usage, updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div>
+      <ConversationView messages={messages} />
+
+      <div className="usage-summary">
+        {/* Built-in formatting */}
+        <p>{formatTokenUsage(usage)}</p>
+
+        {/* Detailed breakdown */}
+        <details>
+          <summary>Token Budget Details</summary>
+          <dl>
+            <dt>Current Usage:</dt>
+            <dd>{usage.current.toLocaleString()} tokens</dd>
+
+            <dt>Maximum Input:</dt>
+            <dd>{usage.max.toLocaleString()} tokens</dd>
+
+            <dt>Reserved for Output:</dt>
+            <dd>{usage.reservedForOutput.toLocaleString()} tokens</dd>
+
+            <dt>Effective Maximum:</dt>
+            <dd>{usage.effectiveMax.toLocaleString()} tokens</dd>
+
+            <dt>Available:</dt>
+            <dd>{usage.available.toLocaleString()} tokens</dd>
+
+            <dt>Utilization:</dt>
+            <dd>{usage.utilizationPercent.toFixed(1)}%</dd>
+
+            {usage.exceededPercent > 0 && (
+              <>
+                <dt>Over Budget:</dt>
+                <dd className="error">{usage.exceededPercent.toFixed(1)}%</dd>
+              </>
+            )}
+
+            <dt>Status:</dt>
+            <dd className={`status-${usage.status}`}>
+              {usage.status}
+            </dd>
+          </dl>
+        </details>
+      </div>
+    </div>
+  )
+}
+```
+
+## Performance Considerations
+
+### Debouncing
+
+The hook automatically debounces token counting (default: 300ms) to prevent excessive calculations:
+
+- Token counting happens 300ms after the last message update
+- Avoids blocking the UI during rapid message additions
+- Configurable via `debounceMs` option
+
+```tsx
+// Longer debounce for heavy conversations
+useTokenBudgetMonitor({
+  maxInputTokens: 128000,
+  debounceMs: 500, // Wait 500ms
+})
+
+// Immediate counting (no debounce)
+useTokenBudgetMonitor({
+  maxInputTokens: 128000,
+  debounceMs: 0, // Count immediately
+})
+```
+
+### Async Operations
+
+The hook uses `AbortController` to cancel in-flight calculations:
+
+- When `updateMessages` is called while calculating, the previous calculation is aborted
+- Prevents race conditions and stale state
+- Ensures the UI always shows the latest calculation
+
+### Accurate vs Fast Tokenization
+
+Choose between speed and accuracy:
+
+```tsx
+// Fast (default): Uses estimation
+useTokenBudgetMonitor({
+  maxInputTokens: 128000,
+  useAccurateTokenization: false, // ~10-50ms per message
+})
+
+// Accurate: Uses real tokenizer
+useTokenBudgetMonitor({
+  maxInputTokens: 128000,
+  useAccurateTokenization: true, // ~50-200ms per message
+  model: 'gpt-4o', // Required for accurate counting
+})
+```
+
+### Pre-Computing Token Counts
+
+For best performance, pre-compute token counts:
+
+```tsx
+const { calculateTokens, updateMessages } = useTokenBudgetMonitor(config)
+
+// Pre-compute when adding message
+const newMessage = {
+  role: 'user',
+  content: userInput,
+  tokens: await calculateTokens(userInput), // Cache token count
+}
+
+setMessages(prev => [...prev, newMessage])
+```
+
+### Memory Usage
+
+The hook maintains minimal state:
+
+- Stores current messages reference (~1KB per conversation)
+- Caches last trim result (~1-2KB)
+- No persistent token count cache (use message.tokens for that)
+- Automatic cleanup on unmount
+
+## Comparison with Other Hooks
+
+| Feature | useTokenCount | useTokenBudgetMonitor | useTokenOptimization |
+|---------|---------------|----------------------|----------------------|
+| Token counting | ✅ Single text | ✅ Conversations | ✅ Single text |
+| Budget tracking | ❌ | ✅ | ❌ |
+| Status levels | ❌ | ✅ (4 levels) | ❌ |
+| Threshold callbacks | ❌ | ✅ | ❌ |
+| Auto-trimming | ❌ | ✅ | ❌ |
+| Message prioritization | ❌ | ✅ | ❌ |
+| Cost estimation | ✅ (manual) | ✅ | ✅ |
+| Compression | ❌ | ❌ | ✅ |
+| Caching | ❌ | ❌ | ✅ |
+| Use case | Simple counting | Budget management | Content optimization |
+| Complexity | Simple | Moderate | Moderate |
+
+**Use together:**
+
+```tsx
+// Track budget while optimizing individual messages
+const budget = useTokenBudgetMonitor(budgetConfig)
+const optimizer = useTokenOptimization(optimizerConfig)
+
+const handleSend = async (message) => {
+  const optimized = await optimizer.optimize(message)
+  const newMessage = { role: 'user', content: optimized.result }
+
+  setMessages(prev => [...prev, newMessage])
+  budget.updateMessages([...messages, newMessage])
+}
+```
+
+## Supported Models
+
+All major LLM models are supported via `createModelBudgetMonitor`:
+
+### OpenAI
+- GPT-4 Family: `gpt-4`, `gpt-4-turbo`, `gpt-4o`, `gpt-4o-mini`
+- GPT-4.1 Family: `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`
+- O-Series: `o1`, `o1-mini`, `o3-mini`
+
+### Anthropic
+- Claude 3 Family: `claude-3-opus`, `claude-3-sonnet`, `claude-3-haiku`, `claude-3-5-sonnet`, `claude-3-5-haiku`
+- Claude 4 Family: `claude-sonnet-4`, `claude-opus-4`
+
+### Google
+- Gemini Family: `gemini-1.5-pro`, `gemini-1.5-flash`, `gemini-2.0-flash`, `gemini-2.0-pro`
+
+### DeepSeek
+- `deepseek-chat`, `deepseek-r1`
+
+### Mistral
+- `mistral-large`, `mistral-small`
+
+Each model has pre-configured context windows and recommended output reserves.
+
+## TypeScript Types
+
+Full TypeScript support with comprehensive types:
+
+```tsx
+import type {
+  TokenBudgetConfig,
+  TokenBudgetMonitorReturn,
+  TokenUsage,
+  TokenUsageStatus,
+  BudgetMessage,
+  TrimResult,
+  BudgetMonitorModel,
+  TokenCostEstimate,
+} from '@clarity-chat/token-optimization/react'
+
+// Configuration
+const config: TokenBudgetConfig = {
+  maxInputTokens: 128000,
+  reservedForOutput: 4096,
+  warningThreshold: 0.8,
+  criticalThreshold: 0.95,
+  model: 'gpt-4o',
+  autoTrim: false,
+  debounceMs: 300,
+  useAccurateTokenization: false,
+  onWarning: (usage: TokenUsage) => console.log('Warning', usage),
+  onCritical: (usage: TokenUsage) => console.log('Critical', usage),
+  onExceeded: (usage: TokenUsage) => console.log('Exceeded', usage),
+  onAutoTrim: (result: TrimResult) => console.log('Trimmed', result),
+}
+
+// Hook usage
+const monitor: TokenBudgetMonitorReturn = useTokenBudgetMonitor(config)
+
+// Message format
+const message: BudgetMessage = {
+  role: 'user',
+  content: 'Hello',
+  tokens: 5,
+  trimmable: true,
+  priority: 0,
+}
+
+// Status type
+const status: TokenUsageStatus = 'warning' // 'safe' | 'warning' | 'critical' | 'exceeded'
+
+// Model validation
+import { isValidBudgetMonitorModel } from '@clarity-chat/token-optimization/react'
+
+if (isValidBudgetMonitorModel(userInput)) {
+  const config = createModelBudgetMonitor(userInput)
+}
+```
+
+## Common Patterns
+
+### Conversation Budget Widget
+
+```tsx
+function BudgetWidget({ messages }: { messages: BudgetMessage[] }) {
+  const { usage, isWarning, isCritical } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    reservedForOutput: 4096,
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages])
+
+  return (
+    <div className={`budget-widget status-${usage.status}`}>
+      <div className="budget-bar">
+        <div
+          className="budget-fill"
+          style={{ width: `${Math.min(usage.utilizationPercent, 100)}%` }}
+        />
+      </div>
+      <div className="budget-text">
+        {formatTokenUsage(usage)}
+      </div>
+      {isWarning && !isCritical && (
+        <p className="warning">Approaching limit</p>
+      )}
+      {isCritical && (
+        <p className="critical">Critical: Consider trimming</p>
+      )}
+    </div>
+  )
+}
+```
+
+### Protected System Messages
+
+```tsx
+function ChatWithSystemPrompt() {
+  const systemPrompt = "You are a helpful assistant..."
+  const [conversation, setConversation] = useState([])
+
+  // Combine system prompt with conversation
+  const allMessages = [
+    { role: 'system', content: systemPrompt, trimmable: false },
+    ...conversation,
+  ]
+
+  const { updateMessages } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    autoTrim: true, // System message is protected by trimmable: false
+  })
+
+  useEffect(() => {
+    updateMessages(allMessages)
+  }, [conversation])
+
+  return <ConversationView messages={conversation} />
+}
+```
+
+### Session Reset
+
+```tsx
+function ChatWithReset() {
+  const [messages, setMessages] = useState([])
+  const { usage, reset } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+  })
+
+  const handleNewSession = () => {
+    setMessages([])
+    reset() // Reset budget monitor
+  }
+
+  return (
+    <div>
+      <button onClick={handleNewSession}>New Session</button>
+      <ConversationView messages={messages} />
+      <p>Budget: {usage.utilizationPercent.toFixed(1)}%</p>
+    </div>
+  )
+}
+```
+
+## Troubleshooting
+
+### Status not updating
+
+Make sure you're calling `updateMessages` when messages change:
+
+```tsx
+// ❌ Wrong - not updating monitor
+setMessages(newMessages)
+
+// ✅ Correct - update monitor too
+useEffect(() => {
+  updateMessages(messages)
+}, [messages])
+```
+
+### Thresholds not triggering
+
+Verify thresholds are between 0 and 1 (decimal, not percentage):
+
+```tsx
+// ❌ Wrong
+warningThreshold: 80  // Should be 0.8
+
+// ✅ Correct
+warningThreshold: 0.8 // 80%
+```
+
+### Auto-trim not working
+
+Enable `autoTrim` and ensure messages are trimmable:
+
+```tsx
+// ❌ Wrong - all messages protected
+{ role: 'user', content: '...', trimmable: false }
+
+// ✅ Correct - allow trimming
+{ role: 'user', content: '...' } // trimmable defaults to true
+```
+
+### Callbacks firing multiple times
+
+Callbacks only fire when crossing thresholds, not on every update:
+
+```tsx
+// Callbacks fire when:
+// - Status changes from 'safe' to 'warning'
+// - Status changes from 'warning' to 'critical'
+// - Status changes to 'exceeded'
+
+// They do NOT fire when:
+// - Status stays the same (e.g., 82% → 85%, both 'warning')
+```
+
+### Wrong token counts
+
+Use the correct model name for accurate counts:
+
+```tsx
+// For accurate tokenization
+useTokenBudgetMonitor({
+  model: 'gpt-4o', // Must match actual model
+  useAccurateTokenization: true,
+})
+
+// Or use the preset
+createModelBudgetMonitor('gpt-4o')
+```
+
+### Performance issues
+
+Increase debounce or use pre-computed token counts:
+
+```tsx
+// Longer debounce
+useTokenBudgetMonitor({
+  debounceMs: 500, // Wait longer before counting
+})
+
+// Pre-compute tokens
+const message = {
+  role: 'user',
+  content: text,
+  tokens: await calculateTokens(text), // Cache count
+}
+```
+
+## See Also
+
+- **[useTokenCount](/docs/hooks-usetokencount--docs)** - Simple token counting
+- **[useTokenOptimization](/docs/hooks-usetokenoptimization--docs)** - Content optimization with caching and compression
+- **[TokenCostPreview](/docs/components-tokencostpreview--docs)** - Visual cost estimation component

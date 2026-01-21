@@ -62,8 +62,12 @@ export function CopyButton({
     <button
       onClick={handleCopy}
       className={cn(
-        'rounded hover:bg-muted-foreground/10 transition-colors',
-        'focus:outline-none focus:ring-2 focus:ring-brand-500',
+        'group/copy relative rounded-lg transition-all duration-300',
+        'hover:bg-muted-foreground/10',
+        // Subtle glow on hover
+        'hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]',
+        'dark:hover:shadow-[0_0_12px_rgba(129,140,248,0.2)]',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
         'min-w-[44px] min-h-[44px] flex items-center justify-center', // WCAG touch target
         sizeClasses,
         className
@@ -72,9 +76,9 @@ export function CopyButton({
       aria-label={copied ? 'Copied!' : label || 'Copy to clipboard'}
     >
       {copied ? (
-        <Check className={cn(iconSize, 'text-success')} />
+        <Check className={cn(iconSize, 'text-success transition-transform duration-300 scale-110')} />
       ) : (
-        <Copy className={cn(iconSize, 'text-muted-foreground')} />
+        <Copy className={cn(iconSize, 'text-muted-foreground transition-all duration-300 group-hover/copy:text-brand-500 dark:group-hover/copy:text-brand-400')} />
       )}
     </button>
   )

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EvaluationDashboard } from '@clarity-chat/react/internal'
+import { EvaluationDashboard } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Enterprise/EvaluationDashboard',

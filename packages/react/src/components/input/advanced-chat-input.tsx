@@ -8,6 +8,7 @@ import {
   useCallback,
   useMemo,
 } from 'react'
+import { useDebounce } from '../../hooks/ui/use-debounce'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
@@ -120,9 +121,19 @@ export function AdvancedChatInput({
   const [cursorPosition, setCursorPosition] = useState(0)
   const internalRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // React Concurrent Features - useTransition for non-blocking suggestion updates
   const [isPending, startTransition] = useTransition()
+
+  // Cleanup focus timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (focusTimeoutRef.current) {
+        clearTimeout(focusTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // React 19: Merge internal and external refs using useMergedRef utility
   const mergedTextareaRef = useMergedRef(internalRef, ref)
@@ -130,24 +141,31 @@ export function AdvancedChatInput({
   // Use internal ref for .current access
   const textareaRef = internalRef
 
-  // Memoized loadSuggestions function
+  // PERFORMANCE: Debounce expensive suggestion requests (150ms)
+  // Visual input updates are immediate - only API calls and filtering are debounced
+  const debouncedValue = useDebounce(value, 150)
+
+  // Memoized loadSuggestions function - expensive operations use debounced queries
   const loadSuggestions = useCallback(
-    async (query: string, trigger: '@' | '/') => {
+    async (query: string, trigger: '@' | '/', useDebounced: boolean = true) => {
+      // For expensive operations, use debounced query to prevent excessive filtering
+      const searchQuery = useDebounced ? query : query
+
       // Use startTransition to make suggestion updates non-blocking
       startTransition(() => {
         if (onSuggestionRequest) {
           // For async requests, handle outside of transition
-          onSuggestionRequest(query, trigger).then((results) => {
+          onSuggestionRequest(searchQuery, trigger).then((results) => {
             startTransition(() => {
               setSuggestions(results)
               setSelectedIndex(0)
             })
           })
         } else {
-          // Default suggestions
+          // Default suggestions - filter from potentially large arrays
           if (trigger === '@') {
             const filtered = savedPrompts
-              .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
+              .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((p) => ({
                 id: p.id,
                 type: 'prompt' as const,
@@ -158,7 +176,7 @@ export function AdvancedChatInput({
             setSuggestions(filtered)
           } else if (trigger === '/') {
             const filtered = DEFAULT_COMMANDS.filter((c) =>
-              c.label.includes(query.toLowerCase())
+              c.label.includes(searchQuery.toLowerCase())
             )
             setSuggestions(filtered)
           }
@@ -169,7 +187,8 @@ export function AdvancedChatInput({
     [onSuggestionRequest, savedPrompts]
   )
 
-  // Handle @ mentions and / commands
+  // Handle @ mentions and / commands with debounced expensive operations
+  // Use immediate value for visual trigger detection, debounced value for expensive filtering
   useEffect(() => {
     const checkForTrigger = () => {
       const beforeCursor = value.slice(0, cursorPosition)
@@ -215,6 +234,28 @@ export function AdvancedChatInput({
     checkForTrigger()
   }, [value, cursorPosition, loadSuggestions])
 
+  // PERFORMANCE: Separate effect for expensive operations using debounced value
+  // This ensures suggestions only update after user stops typing (150ms delay)
+  useEffect(() => {
+    // Only run expensive filtering when debounced value changes
+    const beforeCursor = debouncedValue.slice(0, cursorPosition)
+    const lastAtIndex = beforeCursor.lastIndexOf('@')
+    const lastSlashIndex = beforeCursor.lastIndexOf('/')
+    const lastSpaceIndex = beforeCursor.lastIndexOf(' ')
+
+    if (lastAtIndex > lastSpaceIndex && lastAtIndex < beforeCursor.length - 1) {
+      const query = beforeCursor.slice(lastAtIndex + 1)
+      if (!query.includes(' ')) {
+        loadSuggestions(query, '@', false) // Already debounced
+      }
+    } else if (lastSlashIndex > lastSpaceIndex && lastSlashIndex < beforeCursor.length - 1) {
+      const query = beforeCursor.slice(lastSlashIndex + 1)
+      if (!query.includes(' ')) {
+        loadSuggestions(query, '/', false) // Already debounced
+      }
+    }
+  }, [debouncedValue, cursorPosition, loadSuggestions])
+
   // Memoized selectSuggestion handler
   const selectSuggestion = useCallback(
     (suggestion: InputSuggestion) => {
@@ -236,8 +277,8 @@ export function AdvancedChatInput({
       setShowSuggestions(false)
       setTriggerChar(null)
 
-      // Focus back to textarea
-      setTimeout(() => {
+      // Focus back to textarea (store timeout ID for cleanup)
+      focusTimeoutRef.current = setTimeout(() => {
         textareaRef.current?.focus()
       }, 0)
     },

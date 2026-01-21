@@ -6,7 +6,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ToastProvider } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 
 const entryPointComparison: Prop[] = [
@@ -133,7 +133,7 @@ export default function BundleSizeGuidePage() {
               Best for: Full-featured apps that use most components
             </p>
             <EnhancedCodeBlock
-              code={`import { ClarityChat } from '@clarity-chat/react/internal'
+              code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
               language="tsx"
               showCopyButton
@@ -347,8 +347,16 @@ function ChatWithRAG() {
       <section className="my-12">
         <h2 className="text-3xl font-bold mb-6">Using FeatureLoader</h2>
 
-        <p className="text-text-secondary mb-6">
-          The <code>FeatureLoader</code> class provides a higher-level API for
+        <Callout type="warning" title="Coming Soon">
+          <p>
+            The <code>FeatureLoader</code> class is planned for a future release.
+            The API shown below is a preview of planned functionality. For now, use
+            the dynamic import patterns shown in the previous sections.
+          </p>
+        </Callout>
+
+        <p className="text-text-secondary mb-6 mt-4">
+          The <code>FeatureLoader</code> class will provide a higher-level API for
           managing feature loading with caching, preloading, and error handling.
         </p>
 

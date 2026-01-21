@@ -131,7 +131,22 @@ export * from './hooks/streaming'
 export * from './hooks/resilience'
 
 /** Token hooks - budget monitoring, tracking, optimization */
-export * from './hooks/token'
+// Note: useTokenOptimization moved to ./hooks/clarity-tokens
+// Legacy hooks removed - use clarity-tokens for modern token optimization
+export {
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  type TokenBudgetConfig,
+  type TokenBudgetMonitorReturn,
+  type TokenUsage,
+  type TokenUsageStatus,
+  type TrimResult,
+  type BudgetMessage,
+  type BudgetMonitorModel,
+} from './hooks/token'
+export * from './hooks/token/use-token-tracker'
 
 /** UI hooks - clipboard, scroll, animations, etc. */
 export * from './hooks/ui'

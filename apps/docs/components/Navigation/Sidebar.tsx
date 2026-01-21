@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 
 export interface NavItem {
   title: string
@@ -76,7 +76,7 @@ function NavGroup({
         <Link
           href={item.href}
           onClick={handleLinkClick}
-          className={clsx(
+          className={cn(
             'block px-3 py-2 min-h-[44px] flex items-center rounded-lg text-sm',
             // Smooth 300ms transitions for all properties
             'transition-all duration-300 ease-in-out',
@@ -88,8 +88,8 @@ function NavGroup({
             'truncate',
             // Active state with enhanced visibility
             isActive
-              ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300 shadow-sm font-medium'
-              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50'
+              ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300 font-medium shadow-[0_2px_8px_rgba(99,102,241,0.15)] dark:shadow-[0_2px_8px_rgba(129,140,248,0.2)]'
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50 hover:shadow-sm'
           )}
           style={{ marginLeft: indentPadding }}
           title={item.title} // Show full title on hover for truncated text
@@ -107,7 +107,7 @@ function NavGroup({
         <Link
           href={item.href}
           onClick={handleLinkClick}
-          className={clsx(
+          className={cn(
             'flex items-center justify-between w-full px-3 py-2 min-h-[44px] rounded-lg text-sm',
             // Smooth 300ms transitions
             'transition-all duration-300 ease-in-out',
@@ -115,10 +115,10 @@ function NavGroup({
             level === 0 && 'font-semibold',
             // Active/parent active states
             isActive
-              ? 'text-brand-600 dark:text-brand-400 bg-brand-100 dark:bg-brand-900/30'
+              ? 'text-brand-600 dark:text-brand-400 bg-brand-100 dark:bg-brand-900/30 shadow-[0_2px_8px_rgba(99,102,241,0.12)] dark:shadow-[0_2px_8px_rgba(129,140,248,0.15)]'
               : isParentActive
                 ? 'text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/10'
-                : 'text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50'
+                : 'text-text-primary hover:bg-bg-secondary dark:hover:bg-slate-800/50 hover:shadow-sm'
           )}
           style={{ marginLeft: indentPadding }}
         >
@@ -132,7 +132,7 @@ function NavGroup({
                 e.stopPropagation()
                 setIsOpen(!isOpen)
               }}
-              className={clsx(
+              className={cn(
                 'p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-md shrink-0',
                 'transition-colors duration-300 ease-in-out',
                 'hover:bg-bg-tertiary dark:hover:bg-slate-700/50',
@@ -155,7 +155,7 @@ function NavGroup({
       ) : (
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
-          className={clsx(
+          className={cn(
             'flex items-center justify-between w-full px-3 py-2 min-h-[44px] rounded-lg text-sm text-left',
             // Smooth 300ms transitions
             'transition-all duration-300 ease-in-out',

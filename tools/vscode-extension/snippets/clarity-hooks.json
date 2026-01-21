@@ -175,21 +175,23 @@
     "description": "useTokenBudgetMonitor hook"
   },
 
-  "useTokenOptimizationEnhanced Hook": {
+  "useTokenOptimization Hook": {
     "prefix": ["cc-useoptimization", "use-token-optimization"],
     "body": [
+      "import { useTokenOptimization } from '@clarity-chat/token-optimization'",
+      "",
       "const {",
       "  optimizedMessages,",
       "  compressionRatio,",
       "  applyOptimization,",
       "  strategies,",
-      "} = useTokenOptimizationEnhanced({",
+      "} = useTokenOptimization({",
       "  messages,",
       "  targetTokens: ${1:2000},",
       "  strategies: ['${2|truncate,summarize,prioritize|}'],",
       "})"
     ],
-    "description": "useTokenOptimizationEnhanced hook"
+    "description": "useTokenOptimization hook from @clarity-chat/token-optimization"
   },
 
   "useTokenCounter Hook": {

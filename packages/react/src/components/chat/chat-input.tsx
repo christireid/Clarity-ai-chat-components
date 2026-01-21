@@ -4,7 +4,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Textarea, Button, cn } from '@clarity-chat/primitives'
+import { Textarea, Button, cn, glassVariants } from '@clarity-chat/primitives'
 import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,
@@ -185,6 +185,16 @@ export function ChatInput({
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const buttonStateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  React.useEffect(() => {
+    return () => {
+      if (buttonStateTimeoutRef.current) {
+        clearTimeout(buttonStateTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Request deduplication to prevent double-submit on rapid clicks
   const { execute: dedupeExecute, isPending } = useRequestDeduplication({
@@ -255,8 +265,8 @@ export function ChatInput({
         await onSubmit(trimmedValue)
       })
       setButtonState('success')
-      // Auto-reset after showing success
-      setTimeout(() => setButtonState('idle'), 1000)
+      // Auto-reset after showing success (store ref for cleanup)
+      buttonStateTimeoutRef.current = setTimeout(() => setButtonState('idle'), 1000)
     } catch (error) {
       // Ignore debounced/deduplicated requests
       if (isDebouncedError(error)) {
@@ -265,8 +275,8 @@ export function ChatInput({
       }
       setButtonState('error')
       console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
-      setTimeout(() => setButtonState('idle'), 2000)
+      // Auto-reset after showing error (store ref for cleanup)
+      buttonStateTimeoutRef.current = setTimeout(() => setButtonState('idle'), 2000)
     }
   }
 
@@ -312,11 +322,14 @@ export function ChatInput({
     <motion.div
       id={id}
       className={cn(
+        glassVariants({
+          intensity: 'strong',
+          gradient: 'none',
+          border: 'none', // No border needed as it has border-t
+          animated: 'none',
+        }),
         'relative flex flex-col gap-3 px-5 py-4',
-        'border-t border-border/60',
-        'bg-gradient-to-t from-background via-background to-background/95',
-        'backdrop-blur-lg',
-        'shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.05)]',
+        'border-t border-glass-light dark:border-glass-dark-light',
         className
       )}
       initial="idle"
