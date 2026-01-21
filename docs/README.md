@@ -1,107 +1,175 @@
-# Clarity Chat Components Documentation
+# Clarity Chat Documentation
 
-Welcome to the Clarity Chat Components documentation. This directory contains comprehensive guides
-for getting started, building production applications, and understanding the system architecture.
+**Complete AI Chat Component Library** - Production-ready React components and hooks for building sophisticated AI chat interfaces.
 
-## 📚 Documentation Index
+---
 
-### 🚀 Getting Started
+## 📚 Documentation
 
-- **[Getting Started](./getting-started.md)** ⭐ Start here
-  - Quick start (5 minutes)
-  - Installation and setup
-  - Your first chat interface
-  - Common patterns
+### Getting Started
+- **[Quick Start Guide](./quick-start.md)** - Get up and running in 5 minutes
+- **[Choosing the Right Hook](./guides/choosing-hooks.md)** ⭐ **START HERE** - Decision tree for 95+ hooks
+- **[Choosing the Right Component](./guides/choosing-components.md)** - Component selection guide
 
-- **[Choose Your Path](./choose-your-path.md)** 🎯 Find your starting point
-  - Guided paths for different user types
-  - Learning paths (Beginner → Advanced)
-  - Quick links to relevant docs
+### Core Concepts
+- **[Architecture Overview](./guides/architecture.md)** - System design and patterns
+- **[Token Optimization](./guides/token-optimization.md)** - Save 50-70% on AI costs automatically
+- **[Memory Management](./guides/memory.md)** - Conversation context and history
+- **[Streaming](./guides/streaming.md)** - Real-time AI responses
+- **[Error Handling](./guides/error-handling.md)** - Robust failure recovery
 
-### 📖 Core Guides
+### API Reference
+- **[All Hooks](./api/hooks/README.md)** - Complete reference for 95+ hooks
+- **[All Components](./api/components/README.md)** - Complete reference for 183+ components
+- **[TypeScript Types](./api/types.md)** - Type definitions and interfaces
 
-- **[Best Practices](./best-practices.md)** ✨ Production-ready patterns
-  - Component usage patterns
-  - Performance optimization
-  - Error handling
-  - Security best practices
+### Integration Guides
+- **[Token Optimization Integration](./integration/token-optimization.md)** - Step-by-step setup
+- **[Memory Integration](./integration/memory.md)** - Add conversation memory
+- **[Streaming Setup](./integration/streaming.md)** - SSE and WebSocket configuration
+- **[Accessibility](./integration/accessibility.md)** - WCAG 2.1 AA compliance
+- **[Error Boundaries](./integration/error-boundaries.md)** - Production error handling
 
-- **[Cookbook](./cookbook.md)** 🍳 Common patterns & recipes
-  - Copy-pasteable examples
-  - Real-world patterns
-  - Quick solutions
-  - Production-ready code
+### Advanced
+- **[RAG Pipelines](./advanced/rag.md)** - Retrieval-augmented generation
+- **[Custom Adapters](./advanced/adapters.md)** - Add custom AI providers
+- **[Performance Optimization](./advanced/performance.md)** - Scale to production
+- **[Security](./advanced/security.md)** - Best practices and hardening
 
-- **[Architecture](./architecture.md)** 🏗️ System overview
-  - Component architecture
-  - Data flow
-  - Hook relationships
-  - Extension points
+### Examples & Recipes
+- **[Examples Gallery](./examples/README.md)** - 20+ working examples
+- **[Cookbook](./cookbook/README.md)** - Copy-paste recipes
+- **[Common Patterns](./patterns/README.md)** - Reusable patterns
 
-- **[Troubleshooting](./TROUBLESHOOTING.md)** 🔧 Common issues and solutions
-  - Quick diagnosis
-  - Common errors
-  - Performance issues
-  - Integration problems
+### Reference
+- **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions
+- **[Migration Guide](./migration.md)** - Upgrading from older versions
+- **[FAQ](./faq.md)** - Frequently asked questions
+- **[Changelog](./changelog.md)** - Version history
 
-### 🔄 Migration & Comparisons
-
-- **[Migration Guide (v1 to v2)](./migration/v1-to-v2.md)**
-  - Step-by-step migration
-  - Breaking changes
-  - Common patterns
-
-- **[useChat Deprecation Guide](./migration/use-chat-deprecation.md)** 🆕
-  - Migrating from useChat to useClarityChat
-  - API mapping tables
-  - Code examples and troubleshooting
-
-- **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**
-  - Feature-by-feature comparison
-  - When to choose Clarity vs Vercel
-  - Detailed technical comparisons
-
-- **[Migrating from Vercel](./migrating-from-vercel.md)**
-  - Step-by-step migration guide
-  - API compatibility details
-  - Common patterns and troubleshooting
+---
 
 ## 🚀 Quick Links
 
-- **[Main README](../../README.md)** - Project overview
-- **[React Package README](../../packages/react/README.md)** - Complete API reference
-- **[Clarity vs Vercel Comparison](./clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
-- **[Examples](../../apps/examples/)** - Code examples
-- **[Storybook](../../apps/storybook/)** - Interactive component demos
+**New to Clarity Chat?**
+1. Read the [Quick Start Guide](./quick-start.md) (5 min)
+2. Follow the [Choosing the Right Hook](./guides/choosing-hooks.md) guide
+3. Try an [example](./examples/README.md)
+4. Join our [Discord](https://discord.gg/clarity-chat) for help
 
-## 📖 Documentation Structure
+**Building a Feature?**
+- Need streaming? → [Streaming Guide](./guides/streaming.md)
+- Need to save costs? → [Token Optimization](./guides/token-optimization.md)
+- Need memory? → [Memory Guide](./guides/memory.md)
+- Need error handling? → [Error Handling Guide](./guides/error-handling.md)
+
+**Looking for Something?**
+- Browse [all hooks](./api/hooks/README.md) (95+ hooks)
+- Browse [all components](./api/components/README.md) (183+ components)
+- Search [examples](./examples/README.md)
+
+---
+
+## 💡 Key Features
+
+### 🎯 Smart Defaults
+Token optimization enabled by default - save 50-70% on AI costs automatically.
+
+### 🔄 Production-Ready Streaming
+SSE and WebSocket support with automatic reconnection and error recovery.
+
+### 🧠 Advanced Memory
+Episodic and semantic memory with decay curves and importance scoring.
+
+### ♿ Accessible
+WCAG 2.1 AA compliant with full keyboard navigation and screen reader support.
+
+### 📦 180+ Components
+Pre-built UI components for every use case - from simple chat to advanced dashboards.
+
+### 🎣 95+ Hooks
+Composable hooks for streaming, tokens, memory, caching, and more.
+
+### 🔒 Secure
+Built-in XSS protection, input sanitization, and content moderation.
+
+### 📊 Observable
+Built-in metrics, logging, and performance monitoring.
+
+---
+
+## 🏗️ Architecture
 
 ```
-docs/
-├── README.md (this file)
-├── getting-started.md                # Quick start guide ⭐
-├── choose-your-path.md               # Guided paths
-├── best-practices.md                  # Production patterns
-├── cookbook.md                        # Common patterns & recipes
-├── architecture.md                    # System architecture
-├── TROUBLESHOOTING.md                 # Common issues
-├── migration/
-│   ├── v1-to-v2.md                   # Version migration
-│   └── use-chat-deprecation.md       # useChat → useClarityChat 🆕
-├── clarity-vs-vercel-ai-sdk-ui.md    # Feature comparison
-└── migrating-from-vercel.md          # Migration guide
+┌─────────────────────────────────────────┐
+│     Application Components (Your Code)   │
+└────────────────┬────────────────────────┘
+                 │
+┌────────────────┴────────────────────────┐
+│   High-Level Hooks (useClarityChat)     │ ← Start here
+└────────────────┬────────────────────────┘
+                 │
+┌────────────────┴────────────────────────┐
+│  Feature Hooks (useStreaming, useTokens)│
+└────────────────┬────────────────────────┘
+                 │
+┌────────────────┴────────────────────────┐
+│    Primitive Hooks & Utilities          │
+└────────────────┬────────────────────────┘
+                 │
+┌────────────────┴────────────────────────┐
+│      AI Provider Adapters               │
+│   (OpenAI, Anthropic, Google, Custom)   │
+└─────────────────────────────────────────┘
 ```
 
-## 🎯 Documentation Goals
+---
 
-These docs are designed to be:
+## 📖 Documentation Philosophy
 
-- **Clear**: Easy to understand and follow
-- **Opinionated**: Provide guidance, not just options
-- **Practical**: Working code examples you can copy-paste
-- **Complete**: Cover all common use cases
+### Complete Coverage
+Every hook and component is documented with:
+- Purpose and use cases
+- API reference
+- TypeScript types
+- Working examples
+- Best practices
+- Common pitfalls
 
-## 🤝 Contributing
+### Decision-Driven
+We help you choose the right tool:
+- "Which hook should I use?"
+- "When should I use memory?"
+- "Streaming vs non-streaming?"
 
-Found an issue or want to improve the docs? Contributions are welcome! See the main
-[CONTRIBUTING.md](../../CONTRIBUTING.md) guide.
+### Example-First
+Learn by doing:
+- 20+ working examples
+- Copy-paste recipes
+- Real-world patterns
+
+### Production-Ready
+Enterprise patterns:
+- Error handling
+- Performance optimization
+- Security best practices
+- Accessibility compliance
+
+---
+
+## 🆘 Need Help?
+
+- **Questions?** Check the [FAQ](./faq.md) or [Troubleshooting](./troubleshooting.md)
+- **Bug?** [Open an issue](https://github.com/clarity-chat/clarity/issues)
+- **Feature request?** [Start a discussion](https://github.com/clarity-chat/clarity/discussions)
+- **Chat?** [Join Discord](https://discord.gg/clarity-chat)
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](../LICENSE) for details.
+
+---
+
+**Built with ❤️ by the Clarity team**
