@@ -438,32 +438,32 @@ function OptimizationDashboard() {
       <div className="metrics">
         <div className="metric">
           <label>Tokens Processed</label>
-          <value>{stats.tokensProcessed.toLocaleString()}</value>
+          <div className="value">{stats.tokensProcessed.toLocaleString()}</div>
         </div>
 
         <div className="metric">
           <label>Tokens Saved</label>
-          <value>{stats.tokensSaved.toLocaleString()}</value>
+          <div className="value">{stats.tokensSaved.toLocaleString()}</div>
         </div>
 
         <div className="metric">
           <label>Cache Hit Rate</label>
-          <value>{cacheHitRate}%</value>
+          <div className="value">{cacheHitRate}%</div>
         </div>
 
         <div className="metric">
           <label>Cost Savings</label>
-          <value>${costSavings}</value>
+          <div className="value">${costSavings}</div>
         </div>
 
         <div className="metric">
           <label>Total Routes</label>
-          <value>{stats.router.totalRoutes}</value>
+          <div className="value">{stats.router.totalRoutes}</div>
         </div>
 
         <div className="metric">
           <label>Estimated Router Savings</label>
-          <value>${stats.router.estimatedSavings.toFixed(4)}</value>
+          <div className="value">${stats.router.estimatedSavings.toFixed(4)}</div>
         </div>
       </div>
 
@@ -703,7 +703,7 @@ The hook initializes all components on first render:
 - **Token counter**: ~5ms (one-time)
 - **Cache**: ~1ms (in-memory)
 - **Router**: ~1ms (configuration)
-- **Compressor**: <1ms (stateless)
+- **Compressor**: &lt;1ms (stateless)
 
 Total initialization: **~10ms**
 
@@ -727,7 +727,7 @@ Total initialization: **~10ms**
 
 #### Routing
 - **Analysis**: ~1-2ms per prompt
-- **Decision**: <1ms
+- **Decision**: &lt;1ms
 - **Caching**: Complexity results cached
 
 #### Combined (optimize)
@@ -746,7 +746,7 @@ Per hook instance:
   - Production: ~3MB
   - Enterprise: ~5MB
 - **Router**: ~10KB
-- **Compressor**: <1KB
+- **Compressor**: &lt;1KB
 
 **Total**: 1-5MB depending on preset and cache size
 
