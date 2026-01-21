@@ -145,7 +145,6 @@ export {
   createTokenMonitor,
   createTokenAnalytics,
   // Estimator functions
-  estimateTokensByProvider,
   estimateMessagesTokens,
   countTokens,
   countConversationTokens,

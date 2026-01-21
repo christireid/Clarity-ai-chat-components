@@ -44,7 +44,7 @@ export default function SSOConfigurationPage() {
         <h2>SAML Configuration</h2>
         <p>Configure SAML SSO:</p>
         <CodePlayground
-          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
 function SAMLConfiguration({ tenantId }: { tenantId: string }) {
   return (
@@ -94,7 +94,7 @@ function SAMLConfiguration({ tenantId }: { tenantId: string }) {
         <h2>OIDC Configuration</h2>
         <p>Configure OIDC SSO:</p>
         <CodePlayground
-          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
 function OIDCConfiguration({ tenantId }: { tenantId: string }) {
   return (
@@ -124,7 +124,7 @@ function OIDCConfiguration({ tenantId }: { tenantId: string }) {
         <h2>OAuth Configuration</h2>
         <p>Configure OAuth SSO:</p>
         <CodePlayground
-          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react/internal'
+          initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
 function OAuthConfiguration({ tenantId }: { tenantId: string }) {
   return (
@@ -161,7 +161,7 @@ function OAuthConfiguration({ tenantId }: { tenantId: string }) {
   })
 
   if (response.ok) {
-    logger.debug('SSO test successful')
+    console.log('SSO test successful')
   } else {
     console.error('SSO test failed:', await response.text())
   }

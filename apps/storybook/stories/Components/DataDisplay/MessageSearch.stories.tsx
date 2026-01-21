@@ -3,7 +3,7 @@ import React from 'react'
 import {
   MessageSearch,
   MessageSearchWithSuspense,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 const dataset: Message[] = [

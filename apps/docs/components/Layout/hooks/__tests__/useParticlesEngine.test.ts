@@ -24,7 +24,7 @@ describe('useParticlesEngine', () => {
 
     const { result } = renderHook(() => useParticlesEngine())
 
-    expect(result.current.isLoading).toBe(true)
+    expect(result.current.isInitializing).toBe(true)
     expect(result.current.isInitialized).toBe(false)
 
     await waitFor(() => {
@@ -32,7 +32,7 @@ describe('useParticlesEngine', () => {
     })
 
     expect(result.current.error).toBe(null)
-    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isInitializing).toBe(false)
   })
 
   it('should handle initialization errors', async () => {
@@ -46,7 +46,7 @@ describe('useParticlesEngine', () => {
     })
 
     expect(result.current.isInitialized).toBe(false)
-    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isInitializing).toBe(false)
   })
 
   it('should cleanup on unmount', () => {

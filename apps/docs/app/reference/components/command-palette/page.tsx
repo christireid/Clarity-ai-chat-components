@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { ToastProvider, CommandPalette } from '@clarity-chat/react/internal'
-import type { CommandItem } from '@clarity-chat/react/internal'
+import { ToastProvider, CommandPalette } from '@clarity-chat/react'
+import type { CommandItem } from '@clarity-chat/react'
 import { Badge } from '@clarity-chat/primitives'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -216,7 +216,7 @@ export default function CommandPalettePage() {
             title="Command Palette"
             description="Press Cmd+K or click the button to open."
             code={`import { useState, useEffect } from 'react'
-import { CommandPalette, CommandItem } from '@clarity-chat/react/internal'
+import { CommandPalette, CommandItem } from '@clarity-chat/react'
 import { MessageSquare, Search, Settings } from 'lucide-react'
 
 function Demo() {
@@ -240,7 +240,7 @@ function Demo() {
       label: 'New Chat',
       icon: <MessageSquare className="w-4 h-4" />,
       shortcut: '⌘N',
-      onSelect: () => logger.debug('New Chat'),
+      onSelect: () => console.log('New Chat'),
     },
     // ... more commands
   ]
@@ -264,7 +264,7 @@ function Demo() {
         <ScrollReveal delay={0.4}>
           <h2 id="import">Import</h2>
           <EnhancedCodeBlock
-            code={`import { CommandPalette } from '@clarity-chat/react/internal'
+            code={`import { CommandPalette } from '@clarity-chat/react'
 import type { CommandItem } from '@clarity-chat/react'`}
             language="tsx"
           />

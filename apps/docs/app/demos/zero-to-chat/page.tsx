@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
-import { useAutoScroll, TypingIndicator } from '@clarity-chat/react/internal'
+import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
 import { LIBRARY_STATS } from '@/lib/library-stats'
 import { generateId, copyToClipboard, sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
@@ -28,7 +28,7 @@ import {
 } from '@/lib/demos/analytics'
 import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
-const heroCode = `import { ClarityChat } from '@clarity-chat/react/internal'
+const heroCode = `import { ClarityChat } from '@clarity-chat/react'
 
 export default function App() {
   return (
@@ -39,7 +39,7 @@ export default function App() {
   )
 }`
 
-const expandedCode = `import { ClarityChat } from '@clarity-chat/react/internal'
+const expandedCode = `import { ClarityChat } from '@clarity-chat/react'
 
 export default function App() {
   return (
@@ -49,7 +49,7 @@ export default function App() {
       theme="auto"
       showTimestamps
       enableMarkdown
-      onMessageSent={(msg) => logger.debug('Sent:', msg)}
+      onMessageSent={(msg) => console.log('Sent:', msg)}
     />
   )
 }`
@@ -307,7 +307,7 @@ export default function ZeroToChatDemo() {
                           {'\n      '}
                           <span className="text-cyan-300">onMessageSent</span>=
                           <span className="text-yellow-300">
-                            {'{(msg) => logger.debug(msg)}'}
+                            {'{(msg) => console.log(msg)}'}
                           </span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>

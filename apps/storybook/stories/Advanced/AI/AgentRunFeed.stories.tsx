@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AgentRunFeed } from '@clarity-chat/react/internal'
-import type { AgentRunStep } from '@clarity-chat/react/internal'
+import { AgentRunFeed } from '@clarity-chat/react'
+import type { AgentRunStep } from '@clarity-chat/react'
 
 const meta: Meta<typeof AgentRunFeed> = {
   title: 'Advanced/AI/AgentRunFeed',

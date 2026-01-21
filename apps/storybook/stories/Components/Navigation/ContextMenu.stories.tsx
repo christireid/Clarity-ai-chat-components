@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ContextMenu } from '@clarity-chat/react/internal'
-import type { ContextMenuItem } from '@clarity-chat/react/internal'
+import { ContextMenu } from '@clarity-chat/react'
+import type { ContextMenuItem } from '@clarity-chat/react'
 
 const meta: Meta<typeof ContextMenu> = {
   title: 'Components/Navigation/ContextMenu',

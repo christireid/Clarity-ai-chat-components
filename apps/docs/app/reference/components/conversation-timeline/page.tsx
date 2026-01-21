@@ -236,12 +236,12 @@ function InteractiveTimeline() {
 
   const handleJumpTo = (event) => {
     setSelectedEvent(event.id)
-    logger.debug('Jumped to event:', event.title)
+    console.log('Jumped to event:', event.title)
     // In real app: scroll to message, highlight it, etc.
   }
 
   const handleRetry = (step) => {
-    logger.debug('Retrying step:', step.title)
+    console.log('Retrying step:', step.title)
     // In real app: re-run the failed tool call
     setEvents(prev => prev.map(e =>
       e.id === step.id
@@ -378,7 +378,7 @@ function AgentDebugDashboard() {
         title="Agent Execution Trace"
         subtitle="See every step the AI agent took"
         showStatusIndicators={true}
-        onJumpToEvent={(e) => logger.debug('Jump to:', e.title)}
+        onJumpToEvent={(e) => console.log('Jump to:', e.title)}
       />
     </div>
   )
@@ -448,7 +448,7 @@ render(<AgentDebugDashboard />)`}
   ConversationTimeline, 
   type ConversationTimelineProps,
   type ConversationTimelineEvent 
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // Event structure
 interface ConversationTimelineEvent {

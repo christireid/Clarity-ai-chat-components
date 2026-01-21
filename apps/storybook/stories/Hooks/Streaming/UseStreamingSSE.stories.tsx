@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useStreamingSSE, type SSEEvent } from '@clarity-chat/react/internal'
+import { useStreamingSSE, type SSEEvent } from '@clarity-chat/react'
 
 const meta = {
   title: 'Hooks/Streaming/UseStreamingSSE',

@@ -78,7 +78,7 @@ const analytics = calculateAnalytics(messages)`}
       <CodeBlock
         language="ts"
         code={`const sanitized = sanitizeMessages(messages, { privacyMode: true })
-logger.debug(sanitized[0].content) // Emails/phones redacted`}
+console.log(sanitized[0].content) // Emails/phones redacted`}
       />
 
       <h2 id="custom-template">Custom Templates</h2>

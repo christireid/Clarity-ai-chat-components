@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useTokenOptimizationEnhanced } from '../use-token-optimization-enhanced';
+import { useTokenOptimization } from '../use-token-optimization-enhanced';
 // Mock dependencies
 vi.mock('../../utils/tokenization/model-pricing', () => ({
     calculateCost: vi.fn(() => ({
@@ -43,17 +43,17 @@ vi.mock('../../utils/semantic-cache-persistent', () => ({
         getStats: vi.fn(() => Promise.resolve({ hits: 0, misses: 0 })),
     })),
 }));
-describe('useTokenOptimizationEnhanced', () => {
+describe('useTokenOptimization', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
     it('should initialize with default stats', () => {
-        const { result } = renderHook(() => useTokenOptimizationEnhanced());
+        const { result } = renderHook(() => useTokenOptimization());
         expect(result.current.stats).toBeDefined();
         expect(result.current.stats.costs.totalCost).toBe(0);
     });
     it('should optimize prompt using intelligent compression', async () => {
-        const { result } = renderHook(() => useTokenOptimizationEnhanced({
+        const { result } = renderHook(() => useTokenOptimization({
             enablePromptCompression: true,
             compressionLevel: 'aggressive',
         }));
@@ -66,7 +66,7 @@ describe('useTokenOptimizationEnhanced', () => {
         });
     });
     it('should respect budget limits', () => {
-        const { result } = renderHook(() => useTokenOptimizationEnhanced({
+        const { result } = renderHook(() => useTokenOptimization({
             enableCostTracking: true,
             budget: 0.02, // Very low budget
         }));
@@ -85,7 +85,7 @@ describe('useTokenOptimizationEnhanced', () => {
         });
     });
     it('should redact PII when enabled', async () => {
-        const { result } = renderHook(() => useTokenOptimizationEnhanced({
+        const { result } = renderHook(() => useTokenOptimization({
             enablePIIRedaction: true,
             enablePromptCompression: false,
         }));
@@ -103,7 +103,7 @@ describe('useTokenOptimizationEnhanced', () => {
             content: `Message ${i} content`,
         }));
         it('should use sliding window by default', async () => {
-            const { result } = renderHook(() => useTokenOptimizationEnhanced({
+            const { result } = renderHook(() => useTokenOptimization({
                 enableHistoryLimiting: true,
                 historyLimiting: { maxMessages: 4 },
             }));
@@ -115,7 +115,7 @@ describe('useTokenOptimizationEnhanced', () => {
                 role: 'assistant',
                 content: 'Summary of history',
             });
-            const { result } = renderHook(() => useTokenOptimizationEnhanced({
+            const { result } = renderHook(() => useTokenOptimization({
                 enableHistoryLimiting: true,
                 historyLimiting: { strategy: 'summarize', maxMessages: 4 },
                 summarizeMessage: mockSummarize,
@@ -128,7 +128,7 @@ describe('useTokenOptimizationEnhanced', () => {
         });
         it('should fallback to sliding window if summarizer missing', async () => {
             const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
-            const { result } = renderHook(() => useTokenOptimizationEnhanced({
+            const { result } = renderHook(() => useTokenOptimization({
                 enableHistoryLimiting: true,
                 historyLimiting: { strategy: 'summarize', maxMessages: 4 },
                 // No summarizeMessage provided

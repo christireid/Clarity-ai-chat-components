@@ -52,8 +52,15 @@ export function Footer() {
 
   return (
     <footer className="relative border-t border-border bg-bg-secondary overflow-hidden">
-      {/* Decorative gradient at top */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent" />
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] opacity-20 dark:opacity-10 pointer-events-none"
+        aria-hidden="true"
+      />
+
+      {/* Decorative gradient glow at top */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent" aria-hidden="true" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-24 bg-gradient-to-b from-brand-500/5 to-transparent pointer-events-none" aria-hidden="true" />
 
       <div className="container-docs py-12">
         {/* Main Footer Content */}
@@ -72,7 +79,7 @@ export function Footer() {
               <h3 className="font-semibold text-text-primary mb-4">
                 {section.title}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3" role="list">
                 {section.items.map((item, itemIndex) => (
                   <motion.li
                     key={item.name}
@@ -102,7 +109,7 @@ export function Footer() {
                         />
                       </span>
                       {item.href.startsWith('http') && (
-                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
                       )}
                     </Link>
                   </motion.li>
@@ -131,10 +138,11 @@ export function Footer() {
             <motion.div
               whileHover={{ rotate: 360 }}
               transition={{ duration: durations.slower }}
+              aria-hidden="true"
             >
               <BookOpen className="w-5 h-5 text-brand-500" />
             </motion.div>
-            <span>© {new Date().getFullYear()} Clarity Chat. MIT License.</span>
+            <span>© {new Date().getFullYear()} Clarity Chat. All rights reserved.</span>
           </motion.div>
 
           {/* Social Links */}
@@ -165,7 +173,7 @@ export function Footer() {
                   whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-5 h-5" aria-hidden="true" />
                 </motion.a>
               )
             })}

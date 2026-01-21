@@ -51,7 +51,7 @@ export default function UseEmailIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with email providers:</p>
         <CodePlayground
-          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
 function EmailManager() {
   const {
@@ -85,14 +85,14 @@ function EmailManager() {
         <h2>Connect Email Account</h2>
         <p>Connect email accounts:</p>
         <CodePlayground
-          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
 function AccountConnector() {
   const { connectAccount } = useEmailIntegration()
 
   const handleConnect = async (provider: EmailProvider) => {
     const account = await connectAccount(provider)
-    logger.debug('Account connected:', account.email)
+    console.log('Account connected:', account.email)
   }
 
   return (
@@ -109,7 +109,7 @@ function AccountConnector() {
         <h2>Send Email</h2>
         <p>Send emails from chat:</p>
         <CodePlayground
-          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
 function EmailSender() {
   const { sendEmail } = useEmailIntegration()
@@ -120,7 +120,7 @@ function EmailSender() {
       subject: 'Hello from Chat',
       body: 'This email was sent from the chat interface.',
     })
-    logger.debug('Email sent')
+    console.log('Email sent')
   }
 
   return <button onClick={handleSend}>Send Email</button>
@@ -132,14 +132,14 @@ function EmailSender() {
         <h2>Search Emails</h2>
         <p>Search email threads:</p>
         <CodePlayground
-          initialCode={`import { useEmailIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
 function EmailSearch() {
   const { searchThreads } = useEmailIntegration()
 
   const handleSearch = async (query: string) => {
     const threads = await searchThreads('account-123', query)
-    logger.debug('Search results:', threads)
+    console.log('Search results:', threads)
   }
 
   return (

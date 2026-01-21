@@ -38,7 +38,7 @@ export default function RateLimitingRecipePage() {
           code={`import {
   TokenBucketRateLimiter,
   MemoryRateLimitStorage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const limiter = new TokenBucketRateLimiter({
   maxRequests: 5,
@@ -46,7 +46,7 @@ const limiter = new TokenBucketRateLimiter({
   storage: new MemoryRateLimitStorage(),
   keyGenerator: (tenantId) => \`ratelimit:tenant:\${tenantId}\`,
   onLimitExceeded: (tenantId, retryAfter) => {
-    logger.warn('Rate limit exceeded for', tenantId, 'retry after', retryAfter)
+    console.warn('Rate limit exceeded for', tenantId, 'retry after', retryAfter)
   },
 })
 
@@ -82,7 +82,7 @@ export async function withRateLimit<T>(
           code={`import {
   QuotaManager,
   MemoryQuotaStorage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const quotas = new QuotaManager({
   storage: new MemoryQuotaStorage(),
@@ -92,7 +92,7 @@ const quotas = new QuotaManager({
   },
   resetPeriod: 'monthly',
   onWarning: (quota) => {
-    logger.warn('Tenant near quota', quota)
+    console.warn('Tenant near quota', quota)
   },
   onExceeded: (quota) => {
     // Notify billing, send webhook, etc.

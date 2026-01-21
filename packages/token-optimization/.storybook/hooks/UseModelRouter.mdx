@@ -1,0 +1,1069 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useModelRouter" />
+
+# useModelRouter
+
+Smart model selection that automatically routes prompts to the most cost-effective AI model based on complexity analysis. Save up to 90% on API costs without sacrificing quality.
+
+## Overview
+
+`useModelRouter` analyzes your prompts and intelligently routes them to the optimal model based on complexity. Simple questions go to cheaper models like `gpt-4o-mini`, while complex tasks get routed to powerful models like `gpt-4o` or `claude-3-opus`.
+
+**When to use:**
+- Route prompts dynamically based on complexity
+- Optimize AI costs across multiple models
+- Balance quality vs. cost automatically
+- Track cost savings over time
+- Support multiple AI providers (OpenAI, Anthropic, Google)
+
+**When not to use:**
+- If you always need the same model → use direct API calls
+- If you need token counting only → use `useTokenCount`
+- If you need prompt optimization → use `useTokenOptimization`
+- If you need budget tracking → use `useTokenBudgetMonitor`
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization/react'
+
+function AIChat() {
+  const [prompt, setPrompt] = useState('')
+
+  const router = useModelRouter({
+    models: [
+      {
+        id: 'gpt-4o-mini',
+        tier: 'small',
+        inputCostPer1M: 0.15,
+        outputCostPer1M: 0.6,
+        contextWindow: 128000,
+        maxOutput: 16384,
+        capabilities: ['chat']
+      },
+      {
+        id: 'gpt-4o',
+        tier: 'medium',
+        inputCostPer1M: 2.5,
+        outputCostPer1M: 10,
+        contextWindow: 128000,
+        maxOutput: 16384,
+        capabilities: ['chat', 'vision']
+      }
+    ],
+    defaultStrategy: RoutingStrategy.CostOptimized,
+  })
+
+  const handleSubmit = async () => {
+    const result = router.route(prompt, {
+      estimatedOutputTokens: 500
+    })
+
+    if (!result.selectedModel) {
+      console.error('No suitable model found')
+      return
+    }
+
+    console.log('Using model:', result.selectedModel.id)
+    console.log('Estimated cost:', result.estimatedCost)
+
+    // Make API call with selected model
+    const response = await callAI(result.selectedModel.id, prompt)
+    return response
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Ask me anything..."
+      />
+      <button onClick={handleSubmit}>Send</button>
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Parameters
+
+```tsx
+useModelRouter(
+  config: UseModelRouterConfig
+): UseModelRouterReturn
+```
+
+#### `config: UseModelRouterConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `models` | `ModelConfig[]` | **required** | Array of available models to choose from |
+| `defaultStrategy` | `RoutingStrategy` | `CostOptimized` | Default routing strategy to use |
+| `complexityAnalyzer` | `ComplexityAnalyzer` | `new ComplexityAnalyzer()` | Custom complexity analyzer (advanced) |
+| `trackStats` | `boolean` | `false` | Enable reactive stats tracking (triggers re-render) |
+
+#### `models[]: ModelConfig`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique model identifier (e.g., 'gpt-4o-mini') |
+| `tier` | `'small' \| 'medium' \| 'large' \| 'premium'` | Model tier classification |
+| `inputCostPer1M` | `number` | Cost per 1M input tokens in USD |
+| `outputCostPer1M` | `number` | Cost per 1M output tokens in USD |
+| `contextWindow` | `number` | Maximum context window in tokens |
+| `maxOutput` | `number` | Maximum output tokens |
+| `capabilities` | `string[]` | Model capabilities (e.g., ['chat', 'vision']) |
+
+#### `RoutingStrategy` enum
+
+- `CostOptimized` - Prioritize lowest cost while meeting requirements (default)
+- `QualityFirst` - Prioritize quality over cost
+- `Balanced` - Balance cost and quality (one tier above cost-optimized)
+
+### Return Value
+
+```tsx
+{
+  route: (prompt: string, options?: RoutingOptions) => RoutingResult
+  getStats: () => RouterStats
+  resetStats: () => void
+  stats: RouterStats | null         // Only when trackStats=true
+  models: ModelConfig[]              // Configured models
+  defaultStrategy: RoutingStrategy   // Current strategy
+  isReady: boolean                   // Router initialization status
+}
+```
+
+#### `route()` function
+
+**Parameters:**
+- `prompt: string` - The prompt to route
+- `options?: RoutingOptions` - Optional routing options
+
+**RoutingOptions:**
+| Option | Type | Description |
+|--------|------|-------------|
+| `estimatedTokens` | `number` | Estimated total tokens |
+| `estimatedInputTokens` | `number` | Estimated input tokens (more accurate) |
+| `estimatedOutputTokens` | `number` | Estimated output tokens |
+| `requiredCapabilities` | `string[]` | Required capabilities (e.g., ['vision']) |
+| `strategy` | `RoutingStrategy` | Override default strategy |
+| `allowedModels` | `string[]` | Only consider these models |
+| `excludedModels` | `string[]` | Exclude these models |
+
+**Returns: RoutingResult**
+```tsx
+{
+  selectedModel: ModelConfig | undefined  // Selected model
+  strategy: RoutingStrategy               // Strategy used
+  complexity?: ComplexityResult           // Complexity analysis
+  estimatedCost?: number                  // Total cost in USD
+  inputCost?: number                      // Input cost in USD
+  outputCost?: number                     // Output cost in USD
+  fallbackReason?: string                 // Reason if using fallback
+  confidence: number                      // Confidence score (0-1)
+}
+```
+
+#### `getStats()` function
+
+**Returns: RouterStats**
+```tsx
+{
+  totalRoutes: number                     // Total routing decisions
+  routesByTier: {                         // Routes per tier
+    small: number
+    medium: number
+    large: number
+    premium: number
+  }
+  estimatedSavings: number                // Total saved in USD
+  averageComplexity: number               // Average complexity score
+}
+```
+
+## Examples
+
+### With Builder Pattern (Recommended)
+
+The builder pattern makes configuration easier and more readable:
+
+```tsx
+import { useModelRouter, ModelRouter } from '@clarity-chat/token-optimization/react'
+
+function SmartChat() {
+  // Use the builder to configure models easily
+  const routerConfig = useMemo(() => ({
+    // Use builder in non-hook context, then extract config
+    ...ModelRouter.builder()
+      .useOpenAIModels()    // Adds gpt-4o-mini, gpt-4o, gpt-4-turbo, o1
+      .withStrategy('balanced')
+      .build()
+  }), [])
+
+  const router = useModelRouter({
+    models: routerConfig.models,
+    defaultStrategy: routerConfig.defaultStrategy,
+    trackStats: true
+  })
+
+  const handleMessage = async (message: string) => {
+    const result = router.route(message)
+
+    // Use selected model for API call
+    return await fetch(`/api/chat`, {
+      method: 'POST',
+      body: JSON.stringify({
+        model: result.selectedModel?.id,
+        prompt: message
+      })
+    })
+  }
+
+  return (
+    <div>
+      <ChatInterface onMessage={handleMessage} />
+      {router.stats && (
+        <div>
+          Total routes: {router.stats.totalRoutes}
+          <br />
+          Estimated savings: ${router.stats.estimatedSavings.toFixed(4)}
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### Multiple Provider Support
+
+Support OpenAI, Anthropic, and Google models simultaneously:
+
+```tsx
+import { useModelRouter, ModelRouter } from '@clarity-chat/token-optimization/react'
+
+function MultiProviderChat() {
+  const router = useModelRouter({
+    models: [
+      // OpenAI models
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat', 'vision'] },
+
+      // Anthropic models
+      { id: 'claude-3-haiku', tier: 'small', inputCostPer1M: 0.25, outputCostPer1M: 1.25, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat'] },
+      { id: 'claude-3-5-sonnet', tier: 'large', inputCostPer1M: 3, outputCostPer1M: 15, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat', 'vision', 'computer_use'] },
+
+      // Google models
+      { id: 'gemini-2.0-flash-lite', tier: 'small', inputCostPer1M: 0.075, outputCostPer1M: 0.3, contextWindow: 200000, maxOutput: 65536, capabilities: ['chat'] },
+      { id: 'gemini-2.0-pro', tier: 'large', inputCostPer1M: 2.5, outputCostPer1M: 15, contextWindow: 1000000, maxOutput: 65536, capabilities: ['chat', 'vision'] },
+    ],
+    defaultStrategy: RoutingStrategy.CostOptimized
+  })
+
+  const handleChat = async (prompt: string) => {
+    const result = router.route(prompt, {
+      estimatedInputTokens: 1000,
+      estimatedOutputTokens: 500
+    })
+
+    console.log('Selected:', result.selectedModel?.id)
+    console.log('Provider:', getProvider(result.selectedModel?.id))
+    console.log('Cost:', result.estimatedCost)
+
+    // Route to appropriate API based on provider
+    const provider = getProvider(result.selectedModel?.id)
+    return await callProvider(provider, result.selectedModel?.id, prompt)
+  }
+
+  return <ChatUI onSubmit={handleChat} />
+}
+
+function getProvider(modelId?: string): string {
+  if (modelId?.startsWith('gpt-')) return 'openai'
+  if (modelId?.startsWith('claude-')) return 'anthropic'
+  if (modelId?.startsWith('gemini-')) return 'google'
+  return 'unknown'
+}
+```
+
+### With Different Routing Strategies
+
+Compare cost-optimized vs. quality-first vs. balanced:
+
+```tsx
+import { useModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization/react'
+
+function StrategyComparison() {
+  const [prompt, setPrompt] = useState('Explain quantum computing')
+
+  const costRouter = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4-turbo', tier: 'large', inputCostPer1M: 10, outputCostPer1M: 30, contextWindow: 128000, maxOutput: 4096, capabilities: ['chat', 'vision'] },
+    ],
+    defaultStrategy: RoutingStrategy.CostOptimized
+  })
+
+  const qualityRouter = useModelRouter({
+    models: costRouter.models,
+    defaultStrategy: RoutingStrategy.QualityFirst
+  })
+
+  const balancedRouter = useModelRouter({
+    models: costRouter.models,
+    defaultStrategy: RoutingStrategy.Balanced
+  })
+
+  const costResult = costRouter.route(prompt)
+  const qualityResult = qualityRouter.route(prompt)
+  const balancedResult = balancedRouter.route(prompt)
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Enter your prompt..."
+      />
+
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Model</th>
+            <th>Cost</th>
+            <th>Complexity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cost Optimized</td>
+            <td>{costResult.selectedModel?.id}</td>
+            <td>${costResult.estimatedCost?.toFixed(6)}</td>
+            <td>{costResult.complexity?.level}</td>
+          </tr>
+          <tr>
+            <td>Quality First</td>
+            <td>{qualityResult.selectedModel?.id}</td>
+            <td>${qualityResult.estimatedCost?.toFixed(6)}</td>
+            <td>{qualityResult.complexity?.level}</td>
+          </tr>
+          <tr>
+            <td>Balanced</td>
+            <td>{balancedResult.selectedModel?.id}</td>
+            <td>${balancedResult.estimatedCost?.toFixed(6)}</td>
+            <td>{balancedResult.complexity?.level}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+```
+
+### With Capability Requirements
+
+Route based on required capabilities like vision:
+
+```tsx
+import { useModelRouter } from '@clarity-chat/token-optimization/react'
+
+function VisionChat() {
+  const [prompt, setPrompt] = useState('')
+  const [hasImage, setHasImage] = useState(false)
+
+  const router = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat', 'vision'] },
+      { id: 'claude-3-5-sonnet', tier: 'large', inputCostPer1M: 3, outputCostPer1M: 15, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat', 'vision', 'computer_use'] },
+    ]
+  })
+
+  const handleSubmit = async () => {
+    const result = router.route(prompt, {
+      requiredCapabilities: hasImage ? ['vision'] : undefined,
+      estimatedOutputTokens: 1000
+    })
+
+    if (!result.selectedModel) {
+      alert('No model available with required capabilities')
+      return
+    }
+
+    console.log('Using:', result.selectedModel.id)
+    console.log('Has vision:', result.selectedModel.capabilities.includes('vision'))
+
+    // Make API call
+    return await callAI(result.selectedModel.id, prompt, hasImage)
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+      />
+      <label>
+        <input
+          type="checkbox"
+          checked={hasImage}
+          onChange={(e) => setHasImage(e.target.checked)}
+        />
+        Includes image
+      </label>
+      <button onClick={handleSubmit}>Send</button>
+    </div>
+  )
+}
+```
+
+### With Stats Tracking
+
+Track routing decisions and cost savings in real-time:
+
+```tsx
+import { useModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization/react'
+
+function ChatWithStats() {
+  const [messages, setMessages] = useState<string[]>([])
+
+  const router = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'claude-3-opus', tier: 'premium', inputCostPer1M: 15, outputCostPer1M: 75, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat', 'vision'] },
+    ],
+    defaultStrategy: RoutingStrategy.CostOptimized,
+    trackStats: true  // Enable reactive stats
+  })
+
+  const handleMessage = async (message: string) => {
+    const result = router.route(message, {
+      estimatedOutputTokens: 500
+    })
+
+    if (result.selectedModel) {
+      setMessages(prev => [...prev, message])
+      // Make API call...
+    }
+  }
+
+  const handleReset = () => {
+    router.resetStats()
+    setMessages([])
+  }
+
+  return (
+    <div>
+      <ChatInterface onMessage={handleMessage} />
+
+      {router.stats && (
+        <div className="stats-panel">
+          <h3>Routing Statistics</h3>
+          <p>Total routes: {router.stats.totalRoutes}</p>
+          <p>
+            Routes by tier:
+            <ul>
+              <li>Small: {router.stats.routesByTier.small}</li>
+              <li>Medium: {router.stats.routesByTier.medium}</li>
+              <li>Large: {router.stats.routesByTier.large}</li>
+              <li>Premium: {router.stats.routesByTier.premium}</li>
+            </ul>
+          </p>
+          <p>Average complexity: {router.stats.averageComplexity.toFixed(2)}</p>
+          <p className="savings">
+            Estimated savings: ${router.stats.estimatedSavings.toFixed(4)}
+          </p>
+          <button onClick={handleReset}>Reset Stats</button>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### With Model Filtering
+
+Filter models based on allow/exclude lists:
+
+```tsx
+import { useModelRouter } from '@clarity-chat/token-optimization/react'
+
+function FilteredRouter() {
+  const [allowOpenAI, setAllowOpenAI] = useState(true)
+  const [allowClaude, setAllowClaude] = useState(true)
+  const [prompt, setPrompt] = useState('')
+
+  const router = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'claude-3-haiku', tier: 'small', inputCostPer1M: 0.25, outputCostPer1M: 1.25, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat'] },
+      { id: 'claude-3-5-sonnet', tier: 'large', inputCostPer1M: 3, outputCostPer1M: 15, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat'] },
+    ]
+  })
+
+  const handleSubmit = () => {
+    const excludedModels: string[] = []
+
+    if (!allowOpenAI) {
+      excludedModels.push('gpt-4o-mini', 'gpt-4o')
+    }
+
+    if (!allowClaude) {
+      excludedModels.push('claude-3-haiku', 'claude-3-5-sonnet')
+    }
+
+    const result = router.route(prompt, {
+      excludedModels: excludedModels.length > 0 ? excludedModels : undefined,
+      estimatedOutputTokens: 500
+    })
+
+    if (!result.selectedModel) {
+      alert('No models available with current filters')
+      return
+    }
+
+    console.log('Selected:', result.selectedModel.id)
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+      />
+
+      <div className="filters">
+        <label>
+          <input
+            type="checkbox"
+            checked={allowOpenAI}
+            onChange={(e) => setAllowOpenAI(e.target.checked)}
+          />
+          Allow OpenAI models
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={allowClaude}
+            onChange={(e) => setAllowClaude(e.target.checked)}
+          />
+          Allow Claude models
+        </label>
+      </div>
+
+      <button onClick={handleSubmit}>Send</button>
+    </div>
+  )
+}
+```
+
+### With Context Window Constraints
+
+Automatically filter models based on context window size:
+
+```tsx
+import { useModelRouter } from '@clarity-chat/token-optimization/react'
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function LongContextChat() {
+  const [prompt, setPrompt] = useState('')
+  const { count: tokenCount } = useTokenCount(prompt)
+
+  const router = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'claude-3-5-sonnet', tier: 'large', inputCostPer1M: 3, outputCostPer1M: 15, contextWindow: 200000, maxOutput: 64000, capabilities: ['chat'] },
+      { id: 'gemini-2.0-pro', tier: 'large', inputCostPer1M: 2.5, outputCostPer1M: 15, contextWindow: 1000000, maxOutput: 65536, capabilities: ['chat'] },
+    ]
+  })
+
+  const handleSubmit = async () => {
+    const result = router.route(prompt, {
+      estimatedInputTokens: tokenCount,
+      estimatedOutputTokens: 2000
+    })
+
+    if (!result.selectedModel) {
+      alert('Prompt too long for available models!')
+      return
+    }
+
+    console.log('Model:', result.selectedModel.id)
+    console.log('Context window:', result.selectedModel.contextWindow)
+    console.log('Input tokens:', tokenCount)
+
+    // Models with insufficient context window are automatically filtered
+    return await callAI(result.selectedModel.id, prompt)
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Enter a very long prompt..."
+      />
+      <p>
+        Tokens: {tokenCount}
+        {tokenCount > 128000 && ' (requires large context)'}
+      </p>
+      <button onClick={handleSubmit}>Send</button>
+    </div>
+  )
+}
+```
+
+### With Custom Complexity Thresholds
+
+Override complexity analysis for specific use cases:
+
+```tsx
+import { useModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization/react'
+
+function CustomComplexityRouter() {
+  const [prompt, setPrompt] = useState('')
+  const [forceStrategy, setForceStrategy] = useState<RoutingStrategy | 'auto'>('auto')
+
+  const router = useModelRouter({
+    models: [
+      { id: 'gpt-4o-mini', tier: 'small', inputCostPer1M: 0.15, outputCostPer1M: 0.6, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat'] },
+      { id: 'gpt-4-turbo', tier: 'large', inputCostPer1M: 10, outputCostPer1M: 30, contextWindow: 128000, maxOutput: 4096, capabilities: ['chat', 'vision'] },
+    ],
+    defaultStrategy: RoutingStrategy.CostOptimized
+  })
+
+  const handleSubmit = () => {
+    const result = router.route(prompt, {
+      strategy: forceStrategy === 'auto' ? undefined : forceStrategy,
+      estimatedOutputTokens: 500
+    })
+
+    console.log('Strategy used:', result.strategy)
+    console.log('Model:', result.selectedModel?.id)
+    console.log('Complexity:', result.complexity?.level)
+    console.log('Confidence:', result.confidence)
+
+    if (result.fallbackReason) {
+      console.warn('Fallback:', result.fallbackReason)
+    }
+  }
+
+  return (
+    <div>
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+      />
+
+      <select
+        value={forceStrategy}
+        onChange={(e) => setForceStrategy(e.target.value as any)}
+      >
+        <option value="auto">Auto (use default)</option>
+        <option value={RoutingStrategy.CostOptimized}>Cost Optimized</option>
+        <option value={RoutingStrategy.Balanced}>Balanced</option>
+        <option value={RoutingStrategy.QualityFirst}>Quality First</option>
+      </select>
+
+      <button onClick={handleSubmit}>Route Prompt</button>
+    </div>
+  )
+}
+```
+
+## Performance
+
+### Router Initialization
+
+The router is initialized once and persists across renders:
+
+- First render creates the router instance
+- Subsequent renders reuse the same instance
+- No re-initialization on props changes (intentional design)
+- Minimal memory footprint (~2-3KB per instance)
+
+### Complexity Analysis
+
+Complexity analysis is fast and synchronous:
+
+- Average analysis time: ~1-2ms
+- No network calls or async operations
+- Cached results for identical prompts
+- Minimal CPU impact
+
+### Stats Tracking
+
+When `trackStats=true`:
+
+- Stats update on every route call
+- Triggers re-render when stats change
+- Use only when displaying stats in UI
+- Set to `false` for better performance if not needed
+
+```tsx
+// Better performance (no reactive stats)
+const router = useModelRouter({ models, trackStats: false })
+const stats = router.getStats() // Call manually when needed
+
+// Reactive stats (triggers re-renders)
+const router = useModelRouter({ models, trackStats: true })
+// router.stats updates automatically
+```
+
+### Memory Usage
+
+The hook is memory-efficient:
+
+- ~2-3KB per instance
+- Stats tracking adds ~1KB
+- Shared complexity analyzer across instances
+- Automatic cleanup on unmount
+
+## Comparison with Other Hooks
+
+| Feature | useModelRouter | useTokenCount | useTokenOptimization | useTokenBudgetMonitor |
+|---------|---------------|---------------|----------------------|----------------------|
+| Model selection | ✅ | ❌ | ❌ | ❌ |
+| Cost optimization | ✅ | ❌ | ✅ | ❌ |
+| Complexity analysis | ✅ | ❌ | ✅ | ❌ |
+| Multi-provider | ✅ | ✅ | ❌ | ❌ |
+| Token counting | ❌ | ✅ | ✅ | ✅ |
+| Compression | ❌ | ❌ | ✅ | ❌ |
+| Budget tracking | ❌ | ❌ | ❌ | ✅ |
+| Complexity | Moderate | Simple | Complex | Moderate |
+| Best for | Smart routing | Basic counting | Full optimization | Usage limits |
+
+## Routing Strategies Explained
+
+### Cost Optimized (Default)
+
+Selects the **cheapest model** that meets complexity requirements.
+
+- Simple prompts → small tier (e.g., gpt-4o-mini)
+- Medium complexity → medium tier (e.g., gpt-4o)
+- High complexity → large tier (e.g., gpt-4-turbo)
+- Critical tasks → premium tier (e.g., claude-3-opus)
+
+**Best for:** Production applications prioritizing cost savings
+
+### Quality First
+
+Always selects the **best available model** regardless of cost.
+
+- Prefers premium tier → large tier → medium tier → small tier
+- Ignores complexity analysis for model selection
+- Guarantees highest quality responses
+
+**Best for:** Applications where quality is paramount (legal, medical, research)
+
+### Balanced
+
+Uses **one tier above** what cost-optimized would choose.
+
+- Simple prompts → medium tier (instead of small)
+- Medium complexity → large tier (instead of medium)
+- High complexity → premium tier (instead of large)
+
+**Best for:** Applications balancing quality and cost
+
+## Complexity Levels
+
+The router analyzes prompt complexity automatically:
+
+| Level | Score Range | Typical Queries | Recommended Tier |
+|-------|-------------|----------------|------------------|
+| **Low** | 0.0 - 0.3 | Simple questions, basic math, greetings | small |
+| **Medium** | 0.3 - 0.6 | Code generation, explanations, summaries | medium |
+| **High** | 0.6 - 0.8 | Complex reasoning, analysis, creative writing | large |
+| **Critical** | 0.8 - 1.0 | Research, legal analysis, system design | premium |
+
+Factors analyzed:
+- Prompt length
+- Technical terminology
+- Question complexity
+- Required reasoning depth
+- Code patterns
+- Multi-step requirements
+
+## TypeScript
+
+Full TypeScript support with comprehensive types:
+
+```tsx
+import type {
+  UseModelRouterConfig,
+  UseModelRouterReturn,
+  ModelConfig,
+  ModelTier,
+  RoutingOptions,
+  RoutingResult,
+  RouterStats,
+  RoutingStrategy,
+} from '@clarity-chat/token-optimization/react'
+
+// Configuration
+const config: UseModelRouterConfig = {
+  models: [
+    {
+      id: 'gpt-4o-mini',
+      tier: 'small',
+      inputCostPer1M: 0.15,
+      outputCostPer1M: 0.6,
+      contextWindow: 128000,
+      maxOutput: 16384,
+      capabilities: ['chat']
+    }
+  ],
+  defaultStrategy: RoutingStrategy.CostOptimized,
+  trackStats: true
+}
+
+// Hook return type
+const router: UseModelRouterReturn = useModelRouter(config)
+
+// Routing options
+const options: RoutingOptions = {
+  estimatedInputTokens: 1000,
+  estimatedOutputTokens: 500,
+  requiredCapabilities: ['vision'],
+  strategy: RoutingStrategy.Balanced
+}
+
+// Routing result
+const result: RoutingResult = router.route('prompt', options)
+
+// Stats
+const stats: RouterStats = router.getStats()
+```
+
+## Common Patterns
+
+### Display Model Badge
+
+```tsx
+function ModelBadge({ prompt }: { prompt: string }) {
+  const router = useModelRouter({ models })
+  const result = router.route(prompt)
+
+  return (
+    <span className={`badge tier-${result.selectedModel?.tier}`}>
+      {result.selectedModel?.id || 'No model'}
+    </span>
+  )
+}
+```
+
+### Cost Estimator
+
+```tsx
+function CostEstimator({ prompt }: { prompt: string }) {
+  const router = useModelRouter({ models, trackStats: true })
+  const result = router.route(prompt, { estimatedOutputTokens: 500 })
+
+  return (
+    <div className="cost-info">
+      <p>Model: {result.selectedModel?.id}</p>
+      <p>Estimated cost: ${result.estimatedCost?.toFixed(6)}</p>
+      <p>Input: ${result.inputCost?.toFixed(6)}</p>
+      <p>Output: ${result.outputCost?.toFixed(6)}</p>
+      {router.stats && (
+        <p>Total saved: ${router.stats.estimatedSavings.toFixed(4)}</p>
+      )}
+    </div>
+  )
+}
+```
+
+### Complexity Indicator
+
+```tsx
+function ComplexityIndicator({ prompt }: { prompt: string }) {
+  const router = useModelRouter({ models })
+  const result = router.route(prompt)
+
+  const getColor = (level?: string) => {
+    switch (level) {
+      case 'Low': return 'green'
+      case 'Medium': return 'yellow'
+      case 'High': return 'orange'
+      case 'Critical': return 'red'
+      default: return 'gray'
+    }
+  }
+
+  return (
+    <div style={{ color: getColor(result.complexity?.level) }}>
+      Complexity: {result.complexity?.level}
+      <br />
+      Score: {result.complexity?.score.toFixed(2)}
+      <br />
+      Confidence: {(result.confidence * 100).toFixed(0)}%
+    </div>
+  )
+}
+```
+
+### Savings Dashboard
+
+```tsx
+function SavingsDashboard() {
+  const router = useModelRouter({
+    models,
+    defaultStrategy: RoutingStrategy.CostOptimized,
+    trackStats: true
+  })
+
+  const savingsPercentage = router.stats
+    ? (router.stats.estimatedSavings / (router.stats.estimatedSavings + 0.01)) * 100
+    : 0
+
+  return (
+    <div className="dashboard">
+      <h2>Cost Savings</h2>
+
+      <div className="stat-card">
+        <h3>${router.stats?.estimatedSavings.toFixed(4)}</h3>
+        <p>Total Saved</p>
+      </div>
+
+      <div className="stat-card">
+        <h3>{router.stats?.totalRoutes}</h3>
+        <p>Total Routes</p>
+      </div>
+
+      <div className="stat-card">
+        <h3>{savingsPercentage.toFixed(1)}%</h3>
+        <p>Cost Reduction</p>
+      </div>
+
+      <div className="tier-breakdown">
+        <h3>Routes by Tier</h3>
+        <ul>
+          <li>Small: {router.stats?.routesByTier.small}</li>
+          <li>Medium: {router.stats?.routesByTier.medium}</li>
+          <li>Large: {router.stats?.routesByTier.large}</li>
+          <li>Premium: {router.stats?.routesByTier.premium}</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+```
+
+## Troubleshooting
+
+### No model selected
+
+Make sure you have models configured:
+
+```tsx
+// Wrong - no models
+useModelRouter({ models: [] })
+
+// Correct
+useModelRouter({
+  models: [
+    { id: 'gpt-4o-mini', tier: 'small', ... }
+  ]
+})
+```
+
+### Model always undefined
+
+Check capability requirements match available models:
+
+```tsx
+// Wrong - no models have 'vision' capability
+router.route(prompt, {
+  requiredCapabilities: ['vision']
+})
+
+// Correct - add models with vision
+{
+  id: 'gpt-4o',
+  tier: 'medium',
+  capabilities: ['chat', 'vision']
+}
+```
+
+### Stats not updating
+
+Enable `trackStats` for reactive updates:
+
+```tsx
+// Wrong - stats won't trigger re-renders
+useModelRouter({ models, trackStats: false })
+
+// Correct
+useModelRouter({ models, trackStats: true })
+```
+
+### Wrong model tier selected
+
+Check your routing strategy:
+
+```tsx
+// Cost optimized might pick smaller models
+router.route(prompt, {
+  strategy: RoutingStrategy.CostOptimized
+})
+
+// Force higher quality
+router.route(prompt, {
+  strategy: RoutingStrategy.QualityFirst
+})
+```
+
+### Context window exceeded
+
+Provide accurate token estimates:
+
+```tsx
+// Wrong - no token estimate
+router.route(veryLongPrompt)
+
+// Correct
+const { count } = useTokenCount(veryLongPrompt)
+router.route(veryLongPrompt, {
+  estimatedInputTokens: count
+})
+```
+
+### Router not persisting
+
+Make sure configuration is stable:
+
+```tsx
+// Wrong - new config object every render
+useModelRouter({
+  models: [{ id: 'gpt-4o-mini', ... }]
+})
+
+// Correct - memoize config
+const config = useMemo(() => ({
+  models: [{ id: 'gpt-4o-mini', ... }]
+}), [])
+useModelRouter(config)
+```
+
+## See Also
+
+- **[useTokenCount](/docs/hooks-usetokencount--docs)** - Count tokens before routing
+- **[useTokenOptimization](/docs/hooks-usetokenoptimization--docs)** - Full optimization with compression
+- **[useTokenBudgetMonitor](/docs/hooks-usetokenbudgetmonitor--docs)** - Track usage limits
+- **[ModelRouter](/docs/core-modelrouter--docs)** - Core routing class (non-React)

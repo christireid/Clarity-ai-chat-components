@@ -1,34 +1,14 @@
 # Clarity Chat
 
-> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 155+ production-ready components, 70+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 190+ production-ready components, 95+ custom hooks, 15 themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.
-
-## Entry Points
-
-Three main bundle options for different needs:
-
-- `@clarity-chat/react` (~120KB gzipped): Full library with all 155+ components
-- `@clarity-chat/react/core` (~60KB gzipped): Core chat components without dashboards/analytics
-- `@clarity-chat/react/core-minimal` (~30KB gzipped): Minimal bundle with lazy loading for features
-
-### Specialized Entry Points
-
-- `@clarity-chat/react/memory`: Memory management (MemoryProvider, createMemoryStore)
-- `@clarity-chat/react/animations`: Animation utilities and Framer Motion presets
-- `@clarity-chat/react/utils`: Utility functions (formatters, validators, helpers)
-- `@clarity-chat/react/prompt`: Prompt engineering utilities (PromptCacheManager, templates)
-- `@clarity-chat/react/analytics`: Analytics providers and tracking utilities
-- `@clarity-chat/react/adapters`: Model adapters (OpenAI, Anthropic, custom providers)
-- `@clarity-chat/react/test-utils`: Testing utilities (not for production builds)
-- `@clarity-chat/react/styles.css`: Default CSS styles (required for styling)
 
 ## Quick Start
 
 - [Installation](https://clarity-chat.dev/learn/installation): Install via npm: `npm install @clarity-chat/react`
 - [Quick Start Guide](https://clarity-chat.dev/learn/quick-start): Build your first chat interface in 5 minutes
 - [Interactive Playground](https://clarity-chat.dev/playground): Try components live in the browser
-- [Why Clarity?](https://clarity-chat.dev/learn/why-clarity): Feature comparison and benefits vs alternatives
 
 ## Core Concepts
 
@@ -41,7 +21,6 @@ Three main bundle options for different needs:
 ## Main Components
 
 - [ClarityChat](https://clarity-chat.dev/reference/components/clarity-chat): All-in-one chat component with built-in features
-- [ClarityChatPresets](https://clarity-chat.dev/reference/components/clarity-chat-presets): Pre-configured presets for Simple, WithMemory, Enterprise, and Streaming chat
 - [ChatWindow](https://clarity-chat.dev/reference/components/chat-window): Container component for chat interfaces
 - [MessageList](https://clarity-chat.dev/reference/components/message-list): Display messages with virtualization support
 - [ChatInput](https://clarity-chat.dev/reference/components/chat-input): User input with attachments and voice support
@@ -58,6 +37,17 @@ Three main bundle options for different needs:
 - [useTokenOptimization](https://clarity-chat.dev/reference/hooks/use-token-optimization): Optimize context window usage
 - [useVoiceInput](https://clarity-chat.dev/reference/hooks/use-voice-input): Voice-to-text input
 - [useChatHandlers](https://clarity-chat.dev/reference/hooks/use-chat-handlers): Pre-configured handlers for ChatWindow
+
+## AI Components
+
+- [ChainOfThought](https://clarity-chat.dev/reference/components/chain-of-thought): Step-by-step reasoning visualization with collapsible sections
+- [ThinkingBar](https://clarity-chat.dev/reference/components/thinking-bar): Processing status indicator with progress tracking
+- [ToolExecutionCard](https://clarity-chat.dev/reference/components/tool-execution-card): Display tool/function call execution status
+- [StreamingProgress](https://clarity-chat.dev/reference/components/streaming-progress): Real-time streaming progress with token tracking
+- [TextShimmer](https://clarity-chat.dev/reference/components/text-shimmer): Animated text loading placeholder
+- [SourceCitation](https://clarity-chat.dev/reference/components/source-citation): Display AI response sources with favicons and confidence scores
+- [PromptContainer](https://clarity-chat.dev/reference/components/prompt-container): Comprehensive prompt input wrapper with suggestions and attachments
+- [SuggestionCards](https://clarity-chat.dev/reference/components/suggestion-cards): Interactive suggestion grid with filtering and search
 
 ## UI Components
 
@@ -81,8 +71,6 @@ Three main bundle options for different needs:
 ## Token Optimization
 
 - [Token Optimization Guide](https://clarity-chat.dev/guides/token-optimization): Reduce API costs by up to 70%
-- [Prompt Caching Guide](https://clarity-chat.dev/guides/prompt-caching): Save 50-90% on repeated prompts with provider caching
-- [TOON Format Utilities](https://clarity-chat.dev/reference/utilities/toon-format): Token-Oriented Object Notation for 30-60% token savings on structured data (jsonToToon, toonToJson, autoOptimize)
 - [TokenOptimizationDashboard](https://clarity-chat.dev/reference/components/token-optimization-dashboard): Visual optimization controls
 - [ContextVisualizer](https://clarity-chat.dev/reference/components/context-visualizer): See what's in your context window
 
@@ -91,13 +79,10 @@ Three main bundle options for different needs:
 - [Streaming](https://clarity-chat.dev/guides/streaming): Implement real-time streaming responses
 - [State Management](https://clarity-chat.dev/guides/state-management): Manage chat state effectively
 - [Performance](https://clarity-chat.dev/learn/guides/performance): Optimize for large conversations
-- [Bundle Size Optimization](https://clarity-chat.dev/learn/guides/bundle-size): Reduce bundle size with core-minimal entry point and lazy loading
 - [Accessibility](https://clarity-chat.dev/learn/guides/accessibility): WCAG AAA compliance
 - [Styling](https://clarity-chat.dev/learn/guides/styling): Customizing component styles
 - [TypeScript](https://clarity-chat.dev/learn/guides/typescript): TypeScript best practices
-- [Testing](https://clarity-chat.dev/learn/guides/testing): Test utilities and component testing patterns
-- [Common Patterns](https://clarity-chat.dev/learn/guides/common-patterns): Provider composition, hook patterns, error boundaries, streaming
-- [FAQ](https://clarity-chat.dev/learn/faq): Frequently asked questions and troubleshooting
+- [Testing](https://clarity-chat.dev/learn/guides/testing): Testing your chat components
 
 ## Examples
 
@@ -132,32 +117,7 @@ Three main bundle options for different needs:
 - [Components API](https://clarity-chat.dev/reference/components): All component props and types
 - [Hooks API](https://clarity-chat.dev/reference/hooks): Hook signatures and return types
 - [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
-- [createMemoryStore](https://clarity-chat.dev/reference/utilities/create-memory-store): Factory for memory stores (non-React contexts)
-- [TOON Format](https://clarity-chat.dev/reference/utilities/toon-format): JSON ↔ TOON conversion utilities for token optimization
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
-
-## Enterprise
-
-Enterprise features for production applications with compliance requirements:
-
-### Authentication & Access Control
-- [RBAC Guide](https://clarity-chat.dev/guides/rbac): Role-based access control with RBACManager and RBACProvider
-- [SSO Configuration](https://clarity-chat.dev/guides/sso-configuration): SAML/OIDC single sign-on setup
-- [SSOConfigWizard](https://clarity-chat.dev/reference/components/sso-config-wizard): Step-by-step SSO configuration wizard
-
-### Multi-Tenancy
-- [Multi-Tenancy Guide](https://clarity-chat.dev/guides/multi-tenancy): Tenant isolation with TenantManager
-- [AuthTenantDashboard](https://clarity-chat.dev/reference/components/auth-tenant-dashboard): Tenant management dashboard
-- [Usage Quotas](https://clarity-chat.dev/guides/multi-tenancy#quotas): Per-tenant token and request limits
-
-### Compliance & Auditing
-- [Audit Logging Guide](https://clarity-chat.dev/guides/audit-logging): Compliance logging with AuditLogger
-- [AuditLogViewer](https://clarity-chat.dev/reference/components/audit-log-viewer): Interactive audit log viewer with export
-
-### Enterprise Hooks
-- `useRBAC`: Permission and role checking within RBACProvider
-- `useTenant`: Access current tenant context and quotas
-- `useAuditLog`: Log audit events with automatic context capture
 
 ## Optional
 
@@ -168,9 +128,7 @@ Enterprise features for production applications with compliance requirements:
 - [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker and docker-compose
 - [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
 - [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
-- [Dev Tools](https://clarity-chat.dev/tools/dev-tools): API inspector, mock providers, performance profiler
 - [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
-- [ROI Calculator](https://clarity-chat.dev/tools/roi-calculator): Estimate cost savings from TOON format, prompt caching, and token optimization
 
 ## AI-Optimized APIs
 
@@ -186,7 +144,6 @@ Programmatic access to Clarity Chat documentation for AI systems and RAG applica
 
 Model Context Protocol server for Claude Code and other AI tools:
 
-**Option 1: API-based (Recommended for external use)**
 ```json
 {
   "mcpServers": {
@@ -197,17 +154,5 @@ Model Context Protocol server for Claude Code and other AI tools:
   }
 }
 ```
-Tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
 
-**Option 2: Enhanced Local Server (28+ tools, for development)**
-```json
-{
-  "mcpServers": {
-    "clarity-chat-enhanced": {
-      "command": "npx",
-      "args": ["tsx", "tools/mcp-server/src/index.ts"]
-    }
-  }
-}
-```
-Tools: 28+ tools including `component_lookup`, `hook_lookup`, `project_init`, `generate_chat_interface`, `estimate_token_cost`, `accessibility_audit`, and more. Includes prompts and resources.
+Available MCP tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`

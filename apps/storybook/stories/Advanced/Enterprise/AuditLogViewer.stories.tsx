@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AuditLogViewer } from '@clarity-chat/react/internal'
+import { AuditLogViewer } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Enterprise/AuditLogViewer',

@@ -21,7 +21,9 @@ export default function TokenOptimizationBadgePage() {
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <CodePlayground
-          initialCode={`function Example() {
+          initialCode={`import { TokenOptimizationBadge } from '@clarity-chat/react'
+
+function Example() {
   return (
     <div className="p-6">
       <TokenOptimizationBadge savingsPercent={37} />

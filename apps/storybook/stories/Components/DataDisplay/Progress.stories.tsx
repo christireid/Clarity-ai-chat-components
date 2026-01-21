@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Progress } from '@clarity-chat/react/internal'
+import { Progress } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 

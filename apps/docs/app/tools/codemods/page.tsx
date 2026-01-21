@@ -78,18 +78,18 @@ clarity-codemod migrate 1 3 ./src`}
         <CodeBlock
           language="tsx"
           code={`// Before (v1)
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
-  onMessage={(msg) => logger.debug(msg)}
+  onMessage={(msg) => console.log(msg)}
   config={{ apiKey: process.env.CLARITY_KEY }}
 />
 
 // After (v2)
-import { ChatInterface } from '@clarity-chat/react/internal'
+import { ChatInterface } from '@clarity-chat/react'
 
 <ChatInterface
-  onSend={(msg) => logger.debug(msg)}
+  onSend={(msg) => console.log(msg)}
   config={{ credentials: { apiKey: process.env.CLARITY_KEY } }}
 />
 `}

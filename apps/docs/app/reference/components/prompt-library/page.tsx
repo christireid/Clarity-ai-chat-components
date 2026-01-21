@@ -28,7 +28,7 @@ export default function PromptLibraryPage() {
   ]
   return (
     <div className="p-4">
-      <PromptLibrary items={items} onApply={(id) => logger.debug(id)} />
+      <PromptLibrary items={items} onApply={(id) => console.log(id)} />
     </div>
   )
 }

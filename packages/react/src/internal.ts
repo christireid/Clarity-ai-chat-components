@@ -60,13 +60,27 @@ export type {
   ConsoleAlert,
   ConsoleAlertHandlerProps,
 } from './components/feedback/console-alert-handler'
-export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
-export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
+export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
+export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,
 } from './components/token/token-budget-bar'
-export { TokenOptimizationDashboard } from './components/token/token-optimization-dashboard'
+export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  type TokenEstimate,
+} from './components/token/TokenCostPreview'
+export {
+  TokenUsageMeter,
+  MODEL_PRICING_PRESETS,
+  type TokenUsage,
+  type ModelPricing,
+  type TokenUsageMeterProps,
+} from './components/token/token-usage-meter'
 export { ContextVisualizer } from './components/context/context-visualizer'
 export { ConversationList } from './components/conversation/conversation-list'
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'

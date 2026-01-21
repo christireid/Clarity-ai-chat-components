@@ -68,7 +68,7 @@ npm run dev`}
         <h2>Implementation Snippet</h2>
         <CodeBlock
           language="tsx"
-          code={`import { useStreamingChat } from '@clarity-chat/react/internal'
+          code={`import { useStreamingChat } from '@clarity-chat/react'
 
 const { messages, streamMessage } = useStreamingChat({ chatId: 'streaming-demo' })
 

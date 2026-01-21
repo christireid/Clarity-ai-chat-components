@@ -111,7 +111,7 @@ export default function RAGGuidePage() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 function RAGExample() {
   const rag = useRAGPipeline({
@@ -127,7 +127,7 @@ function RAGExample() {
   const handleQuery = async () => {
     // Retrieve relevant documents
     const results = await rag.retrieve('What is React?', 5)
-    logger.debug('Retrieved documents:', results)
+    console.log('Retrieved documents:', results)
   }
 
   return (
@@ -225,7 +225,7 @@ function RAGExample() {
 
           <h3 className="text-2xl font-semibold mb-3">Using Vector Stores</h3>
           <EnhancedCodeBlock
-            code={`import { useVectorStore } from '@clarity-chat/react/internal'
+            code={`import { useVectorStore } from '@clarity-chat/react'
 
 function VectorStoreExample() {
   const {
@@ -257,7 +257,7 @@ function VectorStoreExample() {
 
   const handleSearch = async () => {
     const results = await search('What is React?', { topK: 5 })
-    logger.debug('Search results:', results)
+    console.log('Search results:', results)
   }
 
   return (
@@ -296,7 +296,7 @@ function VectorStoreExample() {
           </ul>
 
           <EnhancedCodeBlock
-            code={`import { useEmbeddings } from '@clarity-chat/react/internal'
+            code={`import { useEmbeddings } from '@clarity-chat/react'
 
 function EmbeddingsExample() {
   const { generate, provider } = useEmbeddings({
@@ -308,7 +308,7 @@ function EmbeddingsExample() {
   const handleEmbed = async () => {
     // Single text
     const embedding = await generate('What is React?')
-    logger.debug('Embedding:', embedding)
+    console.log('Embedding:', embedding)
 
     // Multiple texts (batch)
     const embeddings = await generate([
@@ -316,7 +316,7 @@ function EmbeddingsExample() {
       'What is Vue?',
       'What is Angular?',
     ])
-    logger.debug('Embeddings:', embeddings)
+    console.log('Embeddings:', embeddings)
   }
 
   return (
@@ -410,7 +410,7 @@ const chunks = chunkSemantic(documentText, 1000)`}
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useVectorStore, useEmbeddings } from '@clarity-chat/react/internal'
+            code={`import { useVectorStore, useEmbeddings } from '@clarity-chat/react'
 
 async function indexDocument(documentText: string, metadata: Record<string, any>) {
   // 1. Chunk the document
@@ -464,7 +464,7 @@ async function indexDocument(documentText: string, metadata: Record<string, any>
 
           <h3 className="text-2xl font-semibold mb-3">Basic Retrieval</h3>
           <EnhancedCodeBlock
-            code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 function RetrievalExample() {
   const rag = useRAGPipeline({
@@ -497,7 +497,7 @@ function RetrievalExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useRAGPipeline } from '@clarity-chat/react/internal'
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
 
 function RerankingExample() {
   const rag = useRAGPipeline({
@@ -529,7 +529,7 @@ function RerankingExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useClarityChat, useRAGPipeline } from '@clarity-chat/react/internal'
+            code={`import { useClarityChat, useRAGPipeline } from '@clarity-chat/react'
 import { useState, useCallback } from 'react'
 
 function ChatWithRAG() {
@@ -602,7 +602,7 @@ function ChatWithRAG() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { useVectorStore } from '@clarity-chat/react/internal'
+            code={`import { useVectorStore } from '@clarity-chat/react'
 
 function MetadataFilterExample() {
   const { search } = useVectorStore({
@@ -642,7 +642,7 @@ function MetadataFilterExample() {
 
           <EnhancedCodeBlock
             code={`import { useState, useCallback } from 'react'
-import { useClarityChat, useRAGPipeline, useVectorStore, useEmbeddings } from '@clarity-chat/react/internal'
+import { useClarityChat, useRAGPipeline, useVectorStore, useEmbeddings } from '@clarity-chat/react'
 
 function CompleteRAGExample() {
   const [documents, setDocuments] = useState([])

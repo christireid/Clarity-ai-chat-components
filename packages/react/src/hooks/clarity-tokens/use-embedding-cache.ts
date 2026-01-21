@@ -9,6 +9,11 @@ import type {
 
 /**
  * Simple LRU cache for embeddings
+ *
+ * This is a standalone cache implementation optimized for embedding vectors.
+ * Note: The @clarity-chat/token-optimization package focuses on token counting,
+ * caching LLM responses, and compression - it does not include embedding utilities.
+ * This hook provides a complete embedding solution with LRU caching.
  */
 class EmbeddingCache {
   private cache: Map<string, { embedding: Float32Array; timestamp: number }>
@@ -63,6 +68,15 @@ class EmbeddingCache {
 
 /**
  * Cosine similarity between two vectors
+ *
+ * Computes the cosine similarity between two Float32Array vectors.
+ * Returns a value between -1 and 1, where 1 means identical direction,
+ * 0 means orthogonal, and -1 means opposite direction.
+ *
+ * @param a - First vector
+ * @param b - Second vector (must have same length as a)
+ * @returns Cosine similarity score
+ * @throws Error if vectors have different lengths
  */
 function cosineSimilarityFn(a: Float32Array, b: Float32Array): number {
   if (a.length !== b.length) {
@@ -86,9 +100,25 @@ function cosineSimilarityFn(a: Float32Array, b: Float32Array): number {
 /**
  * useEmbeddingCache - Cached embedding generation with model management
  *
- * Provides LRU caching for embeddings with deduplication.
- * Note: This is a simplified implementation. For production use with
- * Transformers.js models, consider using the full @xenova/transformers pipeline.
+ * Provides LRU caching for embeddings with deduplication and lazy model loading.
+ * Supports Transformers.js models for client-side embedding generation.
+ *
+ * **Note on token-optimization integration:**
+ * This hook is standalone and does not use @clarity-chat/token-optimization.
+ * The token-optimization package focuses on:
+ * - Token counting (AccurateTokenCounter)
+ * - Response caching (ExactCache, TieredCache)
+ * - Prompt compression (LLMLingua, Extractive, Adaptive)
+ *
+ * Embedding generation requires different infrastructure (ML models, WASM/WebGPU)
+ * and is handled separately by this hook using @xenova/transformers.
+ *
+ * **Features:**
+ * - Lazy model loading (only loads when needed)
+ * - LRU caching for deduplication
+ * - Batch embedding support
+ * - Similarity search utilities
+ * - Fallback to hash-based pseudo-embeddings when Transformers.js is unavailable
  *
  * @param config - Configuration options
  * @returns Embedding utilities and cache statistics

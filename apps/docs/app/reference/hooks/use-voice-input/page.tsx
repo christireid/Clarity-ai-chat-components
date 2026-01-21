@@ -32,7 +32,7 @@ export default function UseVoiceInputPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { useVoiceInput } from '@clarity-chat/react/internal'
+            <code>{`import { useVoiceInput } from '@clarity-chat/react'
 
 function VoiceInput() {
   const {
@@ -45,7 +45,7 @@ function VoiceInput() {
   } = useVoiceInput({
     language: 'en-US',
     continuous: false,
-    onResult: (text) => logger.debug('Transcribed:', text)
+    onResult: (text) => console.log('Transcribed:', text)
   })
 
   if (!isSupported) {

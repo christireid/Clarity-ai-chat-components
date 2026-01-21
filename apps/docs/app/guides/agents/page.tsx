@@ -99,8 +99,8 @@ export default function AgentsGuidePage() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
-import type { Tool } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
+import type { Tool } from '@clarity-chat/react'
 
 // Define tools
 const weatherTool: Tool = {
@@ -167,7 +167,7 @@ const agent = createAgent({
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function AgentExample() {
@@ -181,10 +181,10 @@ function AgentExample() {
     maxIterations: 10,
   }, {
     onThought: (thought) => {
-      logger.debug('Agent thinking:', thought)
+      console.log('Agent thinking:', thought)
     },
     onAction: (tool, args) => {
-      logger.debug('Agent using tool:', tool, args)
+      console.log('Agent using tool:', tool, args)
       setSteps(prev => [...prev, {
         id: Date.now().toString(),
         title: \`Using \${tool}\`,
@@ -195,7 +195,7 @@ function AgentExample() {
       }])
     },
     onObservation: (result) => {
-      logger.debug('Tool result:', result)
+      console.log('Tool result:', result)
       setSteps(prev => prev.map(step =>
         step.status === 'running'
           ? { ...step, status: 'succeeded', completedAt: new Date(), outputPreview: JSON.stringify(result).slice(0, 100) }
@@ -203,7 +203,7 @@ function AgentExample() {
       ))
     },
     onAnswer: (answer) => {
-      logger.debug('Final answer:', answer)
+      console.log('Final answer:', answer)
     },
   })
 
@@ -238,7 +238,7 @@ function AgentExample() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { AgentRunFeed } from '@clarity-chat/react/internal'
+            code={`import { AgentRunFeed } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 
 function AgentRunFeedExample() {
@@ -284,11 +284,11 @@ function AgentRunFeedExample() {
         steps={steps}
         onRetry={(step) => {
           // Retry failed step
-          logger.debug('Retrying:', step)
+          console.log('Retrying:', step)
         }}
         onOpenLogs={(step) => {
           // Show detailed logs
-          logger.debug('Logs for:', step)
+          console.log('Logs for:', step)
         }}
       />
     </div>
@@ -373,7 +373,7 @@ interface AgentExecution {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { createAgent } from '@clarity-chat/react/internal'
+            code={`import { createAgent } from '@clarity-chat/react'
 
 const agent = createAgent({
   name: 'EmailAgent',
@@ -532,8 +532,8 @@ const execution = await Promise.race([
 
           <EnhancedCodeBlock
             code={`import { useState } from 'react'
-import { createAgent, AgentRunFeed } from '@clarity-chat/react/internal'
-import type { Tool, AgentRunStep } from '@clarity-chat/react/internal'
+import { createAgent, AgentRunFeed } from '@clarity-chat/react'
+import type { Tool, AgentRunStep } from '@clarity-chat/react'
 
 function CompleteAgentExample() {
   const [steps, setSteps] = useState<AgentRunStep[]>([])
@@ -589,7 +589,7 @@ function CompleteAgentExample() {
     maxIterations: 10,
   }, {
     onThought: (thought) => {
-      logger.debug('Thinking:', thought)
+      console.log('Thinking:', thought)
     },
     onAction: (tool, args) => {
       setSteps(prev => [...prev, {
@@ -614,7 +614,7 @@ function CompleteAgentExample() {
       ))
     },
     onAnswer: (answer) => {
-      logger.debug('Answer:', answer)
+      console.log('Answer:', answer)
     },
     onError: (error) => {
       console.error('Agent error:', error)
@@ -673,10 +673,10 @@ function CompleteAgentExample() {
       <AgentRunFeed
         steps={steps}
         onRetry={(step) => {
-          logger.debug('Retrying step:', step)
+          console.log('Retrying step:', step)
         }}
         onOpenLogs={(step) => {
-          logger.debug('Logs for step:', step)
+          console.log('Logs for step:', step)
         }}
       />
 

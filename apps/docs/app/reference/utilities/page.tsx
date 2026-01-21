@@ -68,7 +68,7 @@ export default function UtilitiesPage() {
 
 const text = 'Hello, how are you?'
 const tokens = countTokens(text, 'gpt-4')
-logger.debug(\`Tokens: \${tokens}\`) // Tokens: 6
+console.log(\`Tokens: \${tokens}\`) // Tokens: 6
 
 // With messages
 const messages = [
@@ -76,7 +76,7 @@ const messages = [
   { role: 'user', content: 'Hello!' }
 ]
 const total = countTokens(messages, 'gpt-4')
-logger.debug(\`Total tokens: \${total}\`)`}</code></pre>
+console.log(\`Total tokens: \${total}\`)`}</code></pre>
 
         <h3>estimateCost</h3>
         <p>Estimate API costs:</p>
@@ -87,7 +87,7 @@ const cost = estimateCost({
   inputTokens: 1000,
   outputTokens: 500
 })
-logger.debug(\`Cost: $\${cost}\`) // Cost: $0.045`}</code></pre>
+console.log(\`Cost: $\${cost}\`) // Cost: $0.045`}</code></pre>
 
         <h3>formatTokens</h3>
         <p>Human-readable token formatting:</p>
@@ -113,7 +113,7 @@ const chunks = splitIntoChunks(text, {
 })
 
 chunks.forEach((chunk, i) => {
-  logger.debug(\`Chunk \${i}: \${chunk.length} chars\`)
+  console.log(\`Chunk \${i}: \${chunk.length} chars\`)
 })`}</code></pre>
 
         <h3>semanticChunker</h3>
@@ -137,7 +137,7 @@ Here's some code:
 
 \\\`\\\`\\\`typescript
 function hello() {
-  logger.debug('Hello')
+  console.log('Hello')
 }
 \\\`\\\`\\\`
 \`\`\`
@@ -182,7 +182,7 @@ const reranked = await rerankDocuments(query, docs, {
         <pre><code>{`import { vectorSimilarity } from '@clarity-chat/react/utils'
 
 const similarity = vectorSimilarity(embedding1, embedding2, 'cosine')
-logger.debug(\`Similarity: \${similarity}\`) // 0.0 to 1.0`}</code></pre>
+console.log(\`Similarity: \${similarity}\`) // 0.0 to 1.0`}</code></pre>
       </section>
 
       <section className="docs-section">
@@ -251,7 +251,7 @@ const { result, latency } = await measureLatency(async () => {
   return await openai.chat.completions.create(...)
 })
 
-logger.debug(\`Request took \${latency}ms\`)`}</code></pre>
+console.log(\`Request took \${latency}ms\`)`}</code></pre>
 
         <h3>optimizePrompt</h3>
         <p>Optimize prompts for token efficiency:</p>
@@ -263,7 +263,7 @@ const optimized = await optimizePrompt(prompt, {
   preserveStructure: true
 })
 
-logger.debug(\`Reduced from \${prompt.length} to \${optimized.length}\`)`}</code></pre>
+console.log(\`Reduced from \${prompt.length} to \${optimized.length}\`)`}</code></pre>
 
         <h3>compressContext</h3>
         <p>Compress conversation context:</p>
@@ -310,7 +310,7 @@ const sanitized = sanitizeInput(userInput, {
 
 const pii = detectPII(text)
 if (pii.length > 0) {
-  logger.warn('PII detected:', pii)
+  console.warn('PII detected:', pii)
   // pii: [{ type: 'email', value: 'user@example.com', offset: 45 }]
 }`}</code></pre>
       </section>
@@ -330,7 +330,7 @@ const result = await retryWithBackoff(
     maxDelayMs: 10000,
     factor: 2,
     onRetry: (error, attempt) => {
-      logger.debug(\`Retry \${attempt}: \${error.message}\`)
+      console.log(\`Retry \${attempt}: \${error.message}\`)
     }
   }
 )`}</code></pre>

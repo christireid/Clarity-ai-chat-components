@@ -8,7 +8,7 @@ import {
   Key,
   ExternalLink,
   ChevronRight,
-  CirclePlay,
+  Play,
   Settings,
   Sparkles,
 } from 'lucide-react'
@@ -109,32 +109,45 @@ export function SetupRequired({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          'flex items-center justify-between gap-4 px-4 py-3 rounded-lg',
-          'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800',
+          'relative flex items-center justify-between gap-4 px-4 py-3 rounded-lg overflow-hidden',
+          'bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30',
+          'shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.15)]',
           className
         )}
       >
-        <div className="flex items-center gap-3">
+        {/* Gradient border */}
+        <div
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          style={{
+            padding: '1px',
+            background: 'linear-gradient(135deg, rgba(245,158,11,0.5) 0%, rgba(251,146,60,0.3) 50%, rgba(234,88,12,0.4) 100%)',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }}
+          aria-hidden="true"
+        />
+        <div className="flex items-center gap-3 relative z-10">
           <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
           <span className="text-sm text-amber-800 dark:text-amber-200">
             {message || `API key required for live ${feature}`}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative z-10">
           <Link
             href={docsLink || config.docsUrl}
             target={docsLink?.startsWith('/') ? undefined : '_blank'}
             rel={docsLink?.startsWith('/') ? undefined : 'noopener noreferrer'}
-            className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline"
+            className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
           >
             Setup Guide
           </Link>
           {allowDemoMode && onDemoMode && (
             <>
-              <span className="text-amber-400">|</span>
+              <span className="text-amber-400/60">|</span>
               <button
                 onClick={onDemoMode}
-                className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline"
+                className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
               >
                 Use Demo Mode
               </button>
@@ -151,22 +164,38 @@ export function SetupRequired({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.02 }}
         className={cn(
-          'inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm',
+          'group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm overflow-hidden',
           config.bgColor,
           config.color,
+          'shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.15)]',
+          'transition-shadow duration-300',
+          'hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.25)]',
           className
         )}
       >
-        <Key className="w-3.5 h-3.5" />
-        <span>
+        {/* Subtle gradient border */}
+        <div
+          className="absolute inset-0 rounded-full opacity-60 pointer-events-none"
+          style={{
+            padding: '1px',
+            background: 'linear-gradient(135deg, currentColor, transparent)',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }}
+          aria-hidden="true"
+        />
+        <Key className="w-3.5 h-3.5 relative z-10" />
+        <span className="relative z-10">
           {config.displayName} key required for live {feature}
         </span>
         <Link
           href={docsLink || config.docsUrl}
           target={docsLink?.startsWith('/') ? undefined : '_blank'}
           rel={docsLink?.startsWith('/') ? undefined : 'noopener noreferrer'}
-          className="font-medium hover:underline flex items-center gap-0.5"
+          className="relative z-10 font-medium hover:underline flex items-center gap-0.5 transition-colors"
         >
           Setup
           <ExternalLink className="w-3 h-3" />
@@ -181,13 +210,29 @@ export function SetupRequired({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'rounded-2xl border-2 border-dashed overflow-hidden',
-        'border-amber-300 dark:border-amber-700',
+        'group/card relative rounded-2xl overflow-hidden',
         'bg-gradient-to-br from-amber-50 to-orange-50',
         'dark:from-amber-950/30 dark:to-orange-950/30',
+        'shadow-[0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.04)]',
+        'dark:shadow-[0_2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15)]',
+        'transition-shadow duration-300',
+        'hover:shadow-[0_4px_8px_rgba(245,158,11,0.1),0_8px_16px_rgba(245,158,11,0.08),0_0_40px_rgba(245,158,11,0.1)]',
+        'dark:hover:shadow-[0_4px_8px_rgba(245,158,11,0.15),0_8px_16px_rgba(245,158,11,0.1),0_0_40px_rgba(245,158,11,0.12)]',
         className
       )}
     >
+      {/* Gradient border */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{
+          padding: '2px',
+          background: 'linear-gradient(135deg, rgba(245,158,11,0.6) 0%, rgba(251,146,60,0.4) 50%, rgba(234,88,12,0.5) 100%)',
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+        aria-hidden="true"
+      />
       {/* Header */}
       <div className="px-6 py-4 bg-amber-100/50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
         <div className="flex items-center gap-3">
@@ -214,12 +259,29 @@ export function SetupRequired({
         {/* Provider Info */}
         <div
           className={cn(
-            'flex items-center gap-3 p-4 rounded-xl',
-            'bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700'
+            'relative flex items-center gap-3 p-4 rounded-xl overflow-hidden',
+            'bg-white dark:bg-gray-900/80',
+            'shadow-[0_1px_3px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.05)]',
+            'dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_2px_6px_rgba(0,0,0,0.15)]',
+            'transition-all duration-300',
+            'hover:shadow-[0_2px_6px_rgba(245,158,11,0.1),0_4px_12px_rgba(245,158,11,0.08)]',
+            'dark:hover:shadow-[0_2px_6px_rgba(245,158,11,0.15),0_4px_12px_rgba(245,158,11,0.1)]'
           )}
         >
-          <span className="text-3xl">{config.logo}</span>
-          <div className="flex-1">
+          {/* Subtle gradient border */}
+          <div
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            style={{
+              padding: '1px',
+              background: 'linear-gradient(135deg, rgba(245,158,11,0.4) 0%, rgba(251,146,60,0.2) 50%, rgba(234,88,12,0.3) 100%)',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
+            aria-hidden="true"
+          />
+          <span className="text-3xl relative z-10">{config.logo}</span>
+          <div className="flex-1 relative z-10">
             <div className="font-medium text-gray-900 dark:text-white">
               {config.displayName}
             </div>
@@ -232,8 +294,10 @@ export function SetupRequired({
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              'bg-amber-500 hover:bg-amber-600 text-white'
+              'relative z-10 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300',
+              'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 bg-[length:200%_100%]',
+              'hover:bg-[position:100%_0] text-white',
+              'shadow-md hover:shadow-[0_4px_16px_rgba(245,158,11,0.35)]'
             )}
           >
             Get API Key
@@ -291,7 +355,7 @@ export function SetupRequired({
               </span>
               <div>
                 Add your key:
-                <pre className="mt-2 p-3 bg-gray-900 text-gray-100 rounded-lg font-mono text-xs overflow-x-auto">
+                <pre className="mt-2 p-3 bg-[#011627] text-[#d6deeb] rounded-lg font-mono text-xs overflow-x-auto border border-white/[0.08] shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25)] transition-shadow duration-300 hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_0_20px_rgba(245,158,11,0.1)]">
                   {config.envVar}=your_api_key_here
                 </pre>
               </div>
@@ -306,16 +370,19 @@ export function SetupRequired({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3 pt-2">
+        <div className="flex flex-wrap gap-3 pt-2 relative z-10">
           <Link
             href={docsLink || '/learn/quick-start'}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              'bg-gray-900 dark:bg-white text-white dark:text-gray-900',
-              'hover:bg-gray-800 dark:hover:bg-gray-100'
+              'group flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300',
+              'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white',
+              'bg-[length:200%_100%] hover:bg-[position:100%_0]',
+              'text-white dark:text-gray-900',
+              'shadow-md hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)]',
+              'dark:hover:shadow-[0_4px_16px_rgba(255,255,255,0.15)]'
             )}
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-4 h-4 transition-transform group-hover:rotate-90 duration-300" />
             Full Setup Guide
           </Link>
 
@@ -323,23 +390,48 @@ export function SetupRequired({
             <button
               onClick={onDemoMode}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-                'border border-gray-300 dark:border-gray-600',
-                'hover:bg-gray-50 dark:hover:bg-gray-700'
+                'group relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300',
+                'bg-white dark:bg-gray-800/80 text-gray-700 dark:text-gray-300',
+                'shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]',
+                'hover:shadow-[0_2px_8px_rgba(99,102,241,0.15)] dark:hover:shadow-[0_2px_8px_rgba(129,140,248,0.2)]',
+                'overflow-hidden'
               )}
             >
-              <CirclePlay className="w-4 h-4" />
-              Continue with Demo Mode
+              {/* Gradient border on hover */}
+              <div
+                className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  padding: '1px',
+                  background: 'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(139,92,246,0.3) 50%, rgba(244,114,182,0.4) 100%)',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                }}
+                aria-hidden="true"
+              />
+              <Play className="w-4 h-4 relative z-10 transition-transform group-hover:scale-110 duration-300" />
+              <span className="relative z-10">Continue with Demo Mode</span>
             </button>
           )}
         </div>
 
         {/* Demo Mode Explanation */}
         {allowDemoMode && (
-          <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-800 dark:text-blue-200">
-            <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <span>
+          <div className="relative flex items-start gap-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg text-sm text-blue-800 dark:text-blue-200 overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+            {/* Subtle border */}
+            <div
+              className="absolute inset-0 rounded-lg pointer-events-none"
+              style={{
+                padding: '1px',
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(79,70,229,0.1) 100%)',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+              aria-hidden="true"
+            />
+            <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0 text-indigo-500 relative z-10" />
+            <span className="relative z-10">
               <strong>Demo Mode:</strong> Experience all features with simulated
               responses. Perfect for exploring the interface before setting up
               your API keys.

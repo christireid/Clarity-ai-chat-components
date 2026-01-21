@@ -132,7 +132,7 @@ export default function PromptSuggestionsEnhancedPage() {
         <h2>Basic Usage</h2>
         <p>Use the component with the enhanced hook for ML-based ranking:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithSuggestions() {
@@ -183,12 +183,12 @@ render(<ChatWithSuggestions />)`}
         <h2>ML-Based Ranking</h2>
         <p>Configure ML-based ranking for intelligent suggestion ordering:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function MLRankedSuggestions({ messages }: { messages: Message[] }) {
   const handleSelect = (suggestion: { id: string; text: string; type: string }) => {
-    logger.debug('Selected:', suggestion.text)
+    console.log('Selected:', suggestion.text)
     // Handle suggestion selection
   }
 
@@ -220,7 +220,7 @@ function MLRankedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Personalization</h2>
         <p>Enable personalization features to learn from user behavior:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
   return (
@@ -249,7 +249,7 @@ function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
         <h2>A/B Testing</h2>
         <p>Enable A/B testing to compare suggestion strategies:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 function ABTestedSuggestions({ messages }: { messages: Message[] }) {
   const { abVariant, stats } = usePromptSuggestionsEnhanced(messages, {
@@ -274,7 +274,7 @@ function ABTestedSuggestions({ messages }: { messages: Message[] }) {
       }}
         onSelect={(suggestion) => {
           // Track which variant performs better
-          logger.debug('Variant:', abVariant, 'CTR:', stats.clickThroughRate)
+          console.log('Variant:', abVariant, 'CTR:', stats.clickThroughRate)
         }}
       />
     </>
@@ -287,7 +287,7 @@ function ABTestedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Effectiveness Tracking</h2>
         <p>Track suggestion effectiveness metrics:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 function TrackedSuggestions({ messages }: { messages: Message[] }) {
   const { suggestions, trackInteraction, stats } = usePromptSuggestionsEnhanced(messages, {
@@ -295,7 +295,7 @@ function TrackedSuggestions({ messages }: { messages: Message[] }) {
   })
 
   React.useEffect(() => {
-    logger.debug('Stats:', {
+    console.log('Stats:', {
       clickThroughRate: stats.clickThroughRate,
       totalInteractions: stats.totalInteractions,
       averageConfidence: stats.averageConfidence,
@@ -319,7 +319,7 @@ function TrackedSuggestions({ messages }: { messages: Message[] }) {
         <h2>Fallback Strategies</h2>
         <p>Configure fallback behavior when ML is unavailable:</p>
         <CodePlayground
-          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 function FallbackSuggestions({ messages }: { messages: Message[] }) {
   return (
@@ -332,7 +332,7 @@ function FallbackSuggestions({ messages }: { messages: Message[] }) {
       }}
       onSelect={(suggestion) => {
         // Gracefully degrades to rule-based ranking if ML fails
-        logger.debug('Selected:', suggestion.text)
+        console.log('Selected:', suggestion.text)
       }}
     />
   )

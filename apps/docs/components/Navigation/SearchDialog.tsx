@@ -21,6 +21,14 @@ import {
   Search,
   X,
   Loader2,
+  GraduationCap,
+  Library,
+  Play,
+  Map as MapIcon,
+  ChefHat,
+  GitCompare,
+  Zap,
+  ArrowRight,
 } from 'lucide-react'
 import { searchData, type SearchItem } from '@/lib/search-data'
 import { fuzzySearch } from '@/lib/fuzzy-search'
@@ -33,8 +41,21 @@ import {
   staggerItem,
   springs,
   durations,
+  easings,
 } from '@/lib/animations'
 import { toast } from '@/lib/toast'
+
+// Quick navigation sections for the site
+const quickNavigation = [
+  { name: 'Token Optimization', href: '/guides/token-optimization', icon: Zap, highlight: true, description: 'Reduce costs by 90%' },
+  { name: 'Quick Start', href: '/learn/quick-start', icon: GraduationCap, description: 'Get up and running' },
+  { name: 'Components', href: '/reference/components', icon: Library, description: 'UI component reference' },
+  { name: 'Demos', href: '/demos', icon: Play, description: 'Interactive examples' },
+  { name: 'Examples', href: '/examples', icon: Code2, description: 'Code snippets' },
+  { name: 'Guides', href: '/guides', icon: MapIcon, description: 'In-depth tutorials' },
+  { name: 'Cookbook', href: '/cookbook', icon: ChefHat, description: 'Recipes & patterns' },
+  { name: 'Compare', href: '/compare', icon: GitCompare, description: 'vs other libraries' },
+]
 
 interface SearchDialogProps {
   open: boolean
@@ -253,12 +274,12 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{
               duration: durations.normal,
-              ease: springs.smooth.ease,
+              ease: easings.easeOut,
             }}
             className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4 z-50"
             onKeyDown={handleKeyDown}
           >
-            <div className="bg-bg-primary border border-border rounded-xl shadow-2xl overflow-hidden">
+            <div className="bg-bg-primary border border-white/[0.08] rounded-xl overflow-hidden shadow-[0_4px_8px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1),0_16px_32px_rgba(0,0,0,0.15),0_0_60px_rgba(99,102,241,0.1)] dark:shadow-[0_4px_8px_rgba(0,0,0,0.3),0_8px_16px_rgba(0,0,0,0.25),0_16px_32px_rgba(0,0,0,0.2),0_0_60px_rgba(99,102,241,0.15)]">
               {/* Search Input */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
                 {isSearching ? (
@@ -314,7 +335,73 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 aria-label="Search results"
                 className="max-h-[60vh] overflow-y-auto p-2"
               >
-                {flatResults.length === 0 ? (
+                {/* Quick Navigation - show when no query */}
+                {!deferredQuery.trim() && (
+                  <motion.div
+                    className="mb-4"
+                    variants={staggerContainer()}
+                    initial="initial"
+                    animate="animate"
+                  >
+                    <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider flex items-center gap-2">
+                      <ArrowRight className="w-3 h-3" />
+                      Quick Navigation
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5 mt-1">
+                      {quickNavigation.map((item, index) => {
+                        const Icon = item.icon
+                        return (
+                          <motion.button
+                            key={item.href}
+                            variants={staggerItem}
+                            custom={index * 0.03}
+                            onClick={() => {
+                              toast.success('Navigating...', {
+                                description: item.name,
+                                duration: 2000,
+                              })
+                              router.push(item.href)
+                              onClose()
+                            }}
+                            className={cn(
+                              'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all group',
+                              item.highlight
+                                ? 'bg-gradient-to-r from-emerald-500/10 to-brand-500/10 border border-emerald-500/20 hover:border-emerald-500/40'
+                                : 'hover:bg-bg-secondary'
+                            )}
+                          >
+                            <Icon className={cn(
+                              'w-4 h-4 flex-shrink-0 transition-colors',
+                              item.highlight ? 'text-emerald-500' : 'text-text-tertiary group-hover:text-brand-500'
+                            )} />
+                            <div className="flex-1 min-w-0">
+                              <div className={cn(
+                                'text-sm font-medium truncate',
+                                item.highlight ? 'text-emerald-600 dark:text-emerald-400' : ''
+                              )}>
+                                {item.name}
+                              </div>
+                              <div className="text-xs text-text-tertiary truncate">
+                                {item.description}
+                              </div>
+                            </div>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+
+                    {/* Divider */}
+                    <div className="my-4 px-3">
+                      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                    </div>
+
+                    <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                      Popular
+                    </div>
+                  </motion.div>
+                )}
+
+                {flatResults.length === 0 && deferredQuery.trim() ? (
                   <div className="py-12 text-center">
                     <Search className="w-12 h-12 mx-auto text-text-tertiary mb-3 opacity-40" />
                     <p className="text-text-secondary text-sm">
@@ -327,7 +414,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 ) : (
                   <motion.div
                     className="space-y-4"
-                    variants={staggerContainer}
+                    variants={staggerContainer()}
                     initial="initial"
                     animate="animate"
                   >
@@ -340,9 +427,11 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                           variants={staggerItem}
                           custom={groupIndex * 0.05}
                         >
-                          <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                            {category}
-                          </div>
+                          {deferredQuery.trim() && (
+                            <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                              {category}
+                            </div>
+                          )}
                           <div className="space-y-0.5">
                             {items.map((item) => {
                               const index = itemIndexMap.get(item.href) ?? 0
@@ -360,7 +449,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                                   className={cn(
                                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all',
                                     isSelected
-                                      ? 'bg-brand-500 text-white shadow-md'
+                                      ? 'bg-gradient-to-r from-brand-500 via-purple-500 to-brand-600 text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)]'
                                       : 'hover:bg-bg-secondary'
                                   )}
                                 >

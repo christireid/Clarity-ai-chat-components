@@ -162,7 +162,7 @@ Next request includes updated memory`}
           initialCode={`// Token optimization flow
 messages: Message[]
   ↓ passed to
-useTokenOptimizationEnhanced
+useTokenOptimization
   ↓ optimizes
 TOON conversion
 Prompt caching

@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   ConversationList,
   type Conversation,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof ConversationList> = {
   title: 'Components/Layout/ConversationList',

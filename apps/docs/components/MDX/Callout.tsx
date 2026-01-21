@@ -32,6 +32,9 @@ const calloutConfig = {
     borderColor: 'border-blue-200/60 dark:border-blue-800/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
     titleColor: 'text-blue-900 dark:text-blue-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(59,130,246,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(59,130,246,0.12)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(59,130,246,0.12)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(59,130,246,0.18)]',
+    glowColor: 'rgba(59,130,246,0.4)',
   },
   warning: {
     icon: AlertTriangle,
@@ -39,6 +42,9 @@ const calloutConfig = {
     borderColor: 'border-amber-200/60 dark:border-amber-800/60',
     iconColor: 'text-amber-600 dark:text-amber-400',
     titleColor: 'text-amber-900 dark:text-amber-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(245,158,11,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(245,158,11,0.12)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(245,158,11,0.12)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(245,158,11,0.18)]',
+    glowColor: 'rgba(245,158,11,0.4)',
   },
   error: {
     icon: AlertCircle,
@@ -46,6 +52,9 @@ const calloutConfig = {
     borderColor: 'border-red-200/60 dark:border-red-800/60',
     iconColor: 'text-red-600 dark:text-red-400',
     titleColor: 'text-red-900 dark:text-red-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(239,68,68,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(239,68,68,0.12)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(239,68,68,0.12)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(239,68,68,0.18)]',
+    glowColor: 'rgba(239,68,68,0.4)',
   },
   success: {
     icon: CheckCircle,
@@ -53,6 +62,9 @@ const calloutConfig = {
     borderColor: 'border-emerald-200/60 dark:border-emerald-800/60',
     iconColor: 'text-emerald-600 dark:text-emerald-400',
     titleColor: 'text-emerald-900 dark:text-emerald-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(16,185,129,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(16,185,129,0.12)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(16,185,129,0.12)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(16,185,129,0.18)]',
+    glowColor: 'rgba(16,185,129,0.4)',
   },
   tip: {
     icon: Lightbulb,
@@ -60,6 +72,9 @@ const calloutConfig = {
     borderColor: 'border-violet-200/60 dark:border-violet-800/60',
     iconColor: 'text-violet-600 dark:text-violet-400',
     titleColor: 'text-violet-900 dark:text-violet-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(139,92,246,0.08)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(139,92,246,0.12)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(139,92,246,0.12)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(139,92,246,0.18)]',
+    glowColor: 'rgba(139,92,246,0.4)',
   },
   quote: {
     icon: MessageSquare,
@@ -67,6 +82,9 @@ const calloutConfig = {
     borderColor: 'border-slate-200/60 dark:border-slate-700/60',
     iconColor: 'text-slate-600 dark:text-slate-400',
     titleColor: 'text-slate-900 dark:text-slate-100',
+    shadowClass: 'shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(100,116,139,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(100,116,139,0.1)]',
+    hoverShadow: 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_8px_24px_rgba(100,116,139,0.08)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(100,116,139,0.15)]',
+    glowColor: 'rgba(100,116,139,0.4)',
   },
 }
 
@@ -100,16 +118,29 @@ export function Callout({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'not-prose my-6 p-5 rounded-xl border transition-all duration-300',
-        'shadow-sm hover:shadow-md',
+        'group/callout not-prose my-6 p-5 rounded-xl border transition-all duration-300 relative overflow-hidden',
         config.bgColor,
         config.borderColor,
+        config.shadowClass,
+        config.hoverShadow,
         className
       )}
       role="note"
       aria-label={`${type} callout`}
     >
-      <div className="flex gap-3">
+      {/* Gradient border on hover */}
+      <div
+        className="absolute inset-0 rounded-xl opacity-0 group-hover/callout:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          padding: '1px',
+          background: `linear-gradient(135deg, ${config.glowColor} 0%, transparent 50%, ${config.glowColor} 100%)`,
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+        aria-hidden="true"
+      />
+      <div className="flex gap-3 relative z-10">
         {/* Icon */}
         <motion.div
           initial={{ scale: 0, rotate: -180 }}

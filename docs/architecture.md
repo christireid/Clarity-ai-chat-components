@@ -73,7 +73,7 @@ graph TD
 
     UCE --> USSE[useStreamingSSE]
     UCE --> UER[useErrorRecovery]
-    UCE --> UTT[useTokenTracker]
+    UCE --> UTT[useTokenCount]
 
     UM --> USCM[useSlidingContextManager]
     UM --> UVSA[useVectorStoreAdapter]
@@ -88,7 +88,7 @@ graph TD
 - `useClarityChat` - Main chat hook with memory integration
 - `useStreamingSSE` - Server-Sent Events streaming support
 - `useMemory` - Memory management with multiple strategies
-- `useTokenTracker` - Real-time token usage and cost tracking
+- `useTokenCount` - Real-time token usage and cost tracking
 
 ---
 
@@ -225,7 +225,7 @@ graph LR
     subgraph Enhanced["useChatEnhanced"]
         SSE[useStreamingSSE<br/>SSE Connection]
         Error[useErrorRecovery<br/>Retry Logic]
-        Token[useTokenTracker<br/>Usage Tracking]
+        Token[useTokenCount<br/>Usage Tracking]
     end
 
     subgraph MemoryHooks["useMemory"]

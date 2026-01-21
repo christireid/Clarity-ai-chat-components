@@ -5,7 +5,7 @@ import {
   SuccessCheckmark,
   ErrorShake,
   PulseAttention,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta = {
   title: 'Components/Feedback/FeedbackAnimation',

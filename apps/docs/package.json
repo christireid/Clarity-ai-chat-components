@@ -30,7 +30,7 @@
     "@clarity-chat/utils": "workspace:*",
     "@google/generative-ai": "^0.24.1",
     "@mdx-js/react": "^3.1.1",
-    "@monaco-editor/react": "^4.6.0",
+    "@monaco-editor/react": "^4.7.0",
     "@next/mdx": "^16.0.7",
     "@pinecone-database/pinecone": "^4.0.0",
     "@react-three/drei": "9.121.0",

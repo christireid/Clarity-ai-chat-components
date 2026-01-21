@@ -120,7 +120,7 @@ export default function MarkdownRendererEnhancedPage() {
       <h2 id="import">Import</h2>
       <CodeBlock
         language="tsx"
-        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
+        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
 import 'katex/dist/katex.min.css'`}
       />
 
@@ -128,7 +128,7 @@ import 'katex/dist/katex.min.css'`}
       <CodeBlock
         language="tsx"
         title="Render AI response"
-        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
+        code={`import { MarkdownRendererEnhanced } from '@clarity-chat/react'
 
 const content = \`
 # Technical Analysis
@@ -177,7 +177,7 @@ export function Response() {
         code={`<MarkdownRendererEnhanced
   content={content}
   onMathError={(error, latex) => {
-    logger.warn('LaTeX failed to render', { error, latex })
+    console.warn('LaTeX failed to render', { error, latex })
   }}
 />`}
       />
