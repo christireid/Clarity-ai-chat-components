@@ -1860,13 +1860,6 @@ export const searchData: SearchItem[] = [
     category: 'reference',
   },
   {
-    title: 'useChat Hook',
-    type: 'hook',
-    href: '/reference/hooks/use-chat',
-    description: '',
-    category: 'reference',
-  },
-  {
     title: 'useChatEnhanced',
     type: 'hook',
     href: '/reference/hooks/use-chat-enhanced',
