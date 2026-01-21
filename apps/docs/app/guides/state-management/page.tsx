@@ -31,9 +31,9 @@ export default function StateManagementGuidePage() {
         </p>
         <ul>
           <li>
-            <strong>State container</strong>: <code>useChat</code> or{' '}
-            <code>useChatEnhanced</code> manages messages, input state, and API
-            calls.
+            <strong>State container</strong>: <code>useClarityChat</code>{' '}
+            (recommended) or <code>useChat</code> manages messages, input state,
+            and API calls.
           </li>
           <li>
             <strong>Streaming</strong>: <code>useStreamingSSE</code> /
@@ -59,36 +59,35 @@ export default function StateManagementGuidePage() {
 
       <section className="docs-section">
         <h2>
-          Quick Start with <code>useChat</code>
+          Quick Start with <code>useClarityChat</code>
         </h2>
+        <Callout type="info">
+          <code>useClarityChat</code> is the recommended hook for new projects.
+          It includes memory integration, token optimization, and enhanced
+          features. For legacy compatibility, <code>useChat</code> is still
+          available.
+        </Callout>
         <CodeBlock
           language="tsx"
-          code={`import { useChat, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 export function SupportAssistant() {
   const {
     messages,
-    input,
-    handleInputChange,
-    handleSubmit,
+    append,
     isLoading,
-    stopStreaming,
-  } = useChat({
+    error,
+  } = useClarityChat({
     api: '/api/chat/support',
-    id: 'support-thread',
-    initialMessages: [
-      { id: 'system', role: 'system', content: 'You are a helpful support agent.' },
-    ],
+    memory: { enabled: true },
+    tokenOptimization: { enabled: true },
   })
 
   return (
     <ChatWindow
       messages={messages}
       isLoading={isLoading}
-      onSendMessage={handleSubmit}
-      inputValue={input}
-      onInputChange={handleInputChange}
-      onStop={stopStreaming}
+      onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
 }`}

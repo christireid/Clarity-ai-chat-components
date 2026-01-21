@@ -40,15 +40,21 @@ const steps: Step[] = [
     title: 'Import & Use',
     description: 'Import components and build your chat UI in minutes.',
     icon: <Code className="w-5 h-5" />,
-    code: `import { ChatWindow, useChat } from '@clarity-chat/react'
+    code: `import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const chat = useChat({
-    apiEndpoint: '/api/chat'
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat'
   })
 
-  return <ChatWindow {...chat} />
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={(content) => append({ role: 'user', content })}
+      isLoading={isLoading}
+    />
+  )
 }`,
     language: 'tsx',
   },
