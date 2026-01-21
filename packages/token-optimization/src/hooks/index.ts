@@ -136,3 +136,18 @@ export type {
   UseBudgetAlertsConfig,
   UseBudgetAlertsReturn,
 } from './use-estimate-cost'
+
+// ============================================================================
+// Streaming Hooks (Week 5) - Real-time optimization for streaming responses
+// ============================================================================
+
+// Comprehensive streaming optimization
+export {
+  useStreamingOptimization,
+  useStreamingTokens,
+  useStreamingCost,
+} from './use-streaming-optimization'
+export type {
+  UseStreamingOptimizationConfig,
+  StreamingState,
+} from './use-streaming-optimization'
