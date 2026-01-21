@@ -1,15 +1,21 @@
 /**
  * Collapsible Section Component
- * 
+ *
  * Animated expand/collapse section with smooth height transitions.
  * Perfect for accordions, FAQ sections, and expandable list items.
+ *
+ * Accessibility features:
+ * - aria-expanded on trigger
+ * - aria-controls linking trigger to content
+ * - Unique IDs for ARIA relationships
+ * - Reduced motion support
  */
 
 'use client'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 
 export interface CollapsibleSectionProps {
   /** Whether the section is open */
@@ -32,6 +38,8 @@ export interface CollapsibleSectionProps {
   duration?: number
   /** Disabled state */
   disabled?: boolean
+  /** Unique ID for accessibility linking (auto-generated if not provided) */
+  id?: string
 }
 
 /**
@@ -48,9 +56,20 @@ export function CollapsibleSection({
   contentClassName,
   duration = 0.3,
   disabled = false,
+  id,
 }: CollapsibleSectionProps) {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const prefersReducedMotion = useReducedMotion()
+
+  // Generate unique IDs for ARIA linking
+  const generatedId = React.useId()
+  const baseId = id || `collapsible-${generatedId}`
+  const triggerId = `${baseId}-trigger`
+  const contentId = `${baseId}-content`
+
+  // Use instant animations when reduced motion is preferred
+  const animationDuration = prefersReducedMotion ? 0 : duration
 
   const toggle = () => {
     if (disabled) return
@@ -62,9 +81,12 @@ export function CollapsibleSection({
   }
 
   return (
-    <div className={cn('border border-border/40 rounded-lg shadow-sm', className)}>
+    <div
+      className={cn('border border-border/40 rounded-lg shadow-sm', className)}
+    >
       {/* Trigger */}
       <motion.button
+        id={triggerId}
         type="button"
         onClick={toggle}
         disabled={disabled}
@@ -77,17 +99,20 @@ export function CollapsibleSection({
           triggerClassName
         )}
         aria-expanded={isOpen}
+        aria-controls={contentId}
+        aria-disabled={disabled}
       >
         {trigger}
-        
+
         {/* Chevron icon */}
         <motion.svg
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: animationDuration, ease: [0.4, 0, 0.2, 1] }}
           className="w-5 h-5 flex-shrink-0 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -102,13 +127,25 @@ export function CollapsibleSection({
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            id={contentId}
+            role="region"
+            aria-labelledby={triggerId}
+            initial={
+              prefersReducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }
+            }
             animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
+            exit={
+              prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }
+            }
+            transition={{ duration: animationDuration, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className={cn('p-4 pt-0 border-t border-border/40', contentClassName)}>
+            <div
+              className={cn(
+                'p-4 pt-0 border-t border-border/40',
+                contentClassName
+              )}
+            >
               {children}
             </div>
           </motion.div>
@@ -158,7 +195,8 @@ export function Accordion({
     new Set(defaultOpenId ? [defaultOpenId] : [])
   )
 
-  const openId = controlledOpenId !== undefined ? controlledOpenId : internalOpenId
+  const openId =
+    controlledOpenId !== undefined ? controlledOpenId : internalOpenId
 
   const handleToggle = (id: string) => {
     if (allowMultiple) {
@@ -190,6 +228,7 @@ export function Accordion({
         return (
           <CollapsibleSection
             key={item.id}
+            id={`accordion-${item.id}`}
             open={isOpen}
             onOpenChange={() => handleToggle(item.id)}
             trigger={item.trigger}

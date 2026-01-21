@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { Button, Badge, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../../hooks/input/use-voice-input'
 import {
   EASING_FRAMER,
@@ -141,6 +141,7 @@ export function VoiceInput({
 }: VoiceInputProps) {
   const [showTranscript, setShowTranscript] = React.useState(false)
   const lastFinalTranscriptRef = React.useRef('')
+  const prefersReducedMotion = useReducedMotion()
 
   // React 19: Config object with callbacks - compiler intelligently handles
   // Note: In production, consider keeping useMemo if this causes re-initialization issues
@@ -226,6 +227,18 @@ export function VoiceInput({
 
   return (
     <div className="relative">
+      {/* ARIA live region for transcript announcements - always present but visually hidden */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {voice.isListening && !voice.transcript && 'Listening...'}
+        {voice.transcript && `Recognized: ${voice.transcript}`}
+        {voice.error && `Error: ${voice.error}`}
+      </div>
+
       {/* Voice button */}
       <div className="relative">
         <Button
@@ -244,9 +257,9 @@ export function VoiceInput({
             voice.isListening && [
               'bg-destructive text-destructive-foreground',
               'shadow-[0_0_20px_-4px_hsl(var(--destructive)/0.5)]',
-              'scale-105',
+              prefersReducedMotion ? '' : 'scale-105',
             ],
-            !voice.isListening && 'hover:scale-105',
+            !voice.isListening && !prefersReducedMotion && 'hover:scale-105',
             className
           )}
           aria-label={
@@ -254,10 +267,11 @@ export function VoiceInput({
               ? 'Stop recording'
               : tooltipText || 'Start voice input'
           }
+          aria-pressed={voice.isListening}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
-          {/* Enhanced pulse animation when listening */}
-          {voice.isListening && (
+          {/* Enhanced pulse animation when listening - skip when reduced motion */}
+          {voice.isListening && !prefersReducedMotion && (
             <>
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
@@ -268,6 +282,7 @@ export function VoiceInput({
                   repeat: Infinity,
                   ease: EASING_FRAMER.sharp,
                 }}
+                aria-hidden="true"
               />
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
@@ -279,6 +294,7 @@ export function VoiceInput({
                   ease: EASING_FRAMER.sharp,
                   delay: 0.5,
                 }}
+                aria-hidden="true"
               />
             </>
           )}
@@ -372,22 +388,38 @@ export function VoiceInput({
 
             {/* Waveform visualization when listening */}
             {voice.isListening && (
-              <div className="mb-3 flex items-center justify-center gap-1.5 h-12">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1 bg-destructive rounded-full"
-                    animate={{
-                      height: ['12px', '32px', '12px'],
-                    }}
-                    transition={{
-                      duration: durations.slower,
-                      repeat: Infinity,
-                      ease: EASING_FRAMER.sharp,
-                      delay: i * 0.1,
-                    }}
-                  />
-                ))}
+              <div
+                className="mb-3 flex items-center justify-center gap-1.5 h-12"
+                aria-hidden="true"
+              >
+                {prefersReducedMotion ? (
+                  // Static indicator for reduced motion users
+                  <div className="flex items-center gap-1.5">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 h-6 bg-destructive rounded-full"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  // Animated waveform
+                  [...Array(5)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1 bg-destructive rounded-full"
+                      animate={{
+                        height: ['12px', '32px', '12px'],
+                      }}
+                      transition={{
+                        duration: durations.slower,
+                        repeat: Infinity,
+                        ease: EASING_FRAMER.sharp,
+                        delay: i * 0.1,
+                      }}
+                    />
+                  ))
+                )}
               </div>
             )}
 

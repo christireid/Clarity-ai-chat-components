@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
@@ -26,6 +26,8 @@ export interface DraggableProps {
   showGhost?: boolean
   className?: string
   ref?: React.Ref<HTMLDivElement>
+  /** Accessible label for the draggable item */
+  'aria-label'?: string
 }
 
 export function Draggable({
@@ -39,8 +41,10 @@ export function Draggable({
   showGhost = true,
   className,
   ref,
+  'aria-label': ariaLabel,
 }: DraggableProps) {
   const [isDragging, setIsDragging] = React.useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const handleDragStart = () => {
     if (disabled) return
@@ -65,30 +69,47 @@ export function Draggable({
     return undefined
   }, [axis])
 
+  // Accessibility: Use minimal animations when reduced motion is preferred
+  const whileDragAnimation = prefersReducedMotion
+    ? {
+        opacity: showGhost ? 0.7 : 1,
+        zIndex: 50,
+        cursor: 'grabbing',
+      }
+    : {
+        scale: 1.05,
+        opacity: showGhost ? 0.7 : 1,
+        zIndex: 50,
+        cursor: 'grabbing',
+      }
+
+  const animateValue = prefersReducedMotion
+    ? { opacity: isDragging ? 0.8 : 1 }
+    : {
+        scale: isDragging ? 1.05 : 1,
+        rotate: isDragging ? 2 : 0,
+      }
+
+  const transitionConfig = prefersReducedMotion
+    ? { duration: 0 }
+    : {
+        type: 'spring' as const,
+        stiffness: 300,
+        damping: 20,
+      }
+
   return (
     <motion.div
       ref={ref}
       drag={!disabled}
       dragConstraints={dragConstraints}
-      dragElastic={0.1}
+      dragElastic={prefersReducedMotion ? 0 : 0.1}
       dragMomentum={false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      whileDrag={{
-        scale: 1.05,
-        opacity: showGhost ? 0.7 : 1,
-        zIndex: 50,
-        cursor: 'grabbing',
-      }}
-      animate={{
-        scale: isDragging ? 1.05 : 1,
-        rotate: isDragging ? 2 : 0,
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-      }}
+      whileDrag={whileDragAnimation}
+      animate={animateValue}
+      transition={transitionConfig}
       className={cn(
         'touch-none',
         !disabled && 'cursor-grab active:cursor-grabbing',
@@ -96,6 +117,9 @@ export function Draggable({
         className
       )}
       data-drag-id={dragId}
+      aria-label={ariaLabel}
+      aria-grabbed={isDragging}
+      aria-disabled={disabled}
     >
       {children}
     </motion.div>
@@ -124,6 +148,7 @@ export function DropZone({
   ref,
 }: DropZoneProps) {
   const [isHovered, setIsHovered] = React.useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault()
@@ -147,6 +172,14 @@ export function DropZone({
     onDrop?.(dragId || null)
   }
 
+  // Accessibility: Use minimal animations when reduced motion is preferred
+  const animateValue = prefersReducedMotion
+    ? { borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent' }
+    : {
+        scale: isHovered ? 1.02 : 1,
+        borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
+      }
+
   return (
     <motion.div
       ref={ref}
@@ -155,12 +188,9 @@ export function DropZone({
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      animate={{
-        scale: isHovered ? 1.02 : 1,
-        borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
-      }}
+      animate={animateValue}
       transition={{
-        duration: ANIMATION_DURATION.fast / 1000,
+        duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.fast / 1000,
         ease: EASING_FRAMER.out,
       }}
       className={cn(
@@ -168,27 +198,33 @@ export function DropZone({
         isHovered && (activeClassName || 'border-primary bg-primary/5'),
         className
       )}
+      aria-dropeffect="move"
     >
-      {/* Drop Indicator */}
+      {/* Drop Indicator - Skip pulsing animation when reduced motion is preferred */}
       {isHovered && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
         >
-          <motion.div
-            animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.5, 0.8, 0.5],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: durations.slower,
-              ease: 'easeInOut',
-            }}
-            className="absolute inset-0 rounded-lg bg-primary/10"
-          />
+          {prefersReducedMotion ? (
+            <div className="absolute inset-0 rounded-lg bg-primary/20" />
+          ) : (
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: durations.slower,
+                ease: 'easeInOut',
+              }}
+              className="absolute inset-0 rounded-lg bg-primary/10"
+            />
+          )}
         </motion.div>
       )}
 
