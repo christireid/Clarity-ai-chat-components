@@ -31,6 +31,10 @@ export default function QuickStart3LinesPage() {
       </Callout>
 
       <section className="my-12">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2 className="text-2xl font-bold mb-4">Installation</h2>
         <EnhancedCodeBlock
           language="bash"
@@ -43,18 +47,52 @@ yarn add @clarity-chat/react`}
       </section>
 
       <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">3 Lines of Code</h2>
-        <EnhancedCodeBlock
-          language="tsx"
-          code={`import { ClarityChat } from '@clarity-chat/react'
+        <h2 className="text-2xl font-bold mb-4">1 Line of Code (Even Simpler!)</h2>
+
+        <div className="space-y-4">
+          <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+            <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">🚀 Ultra-Simple API (New!)</h4>
+            <EnhancedCodeBlock
+              language="tsx"
+              code={`import { chat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-function App() {
-  return <ClarityChat api="/api/chat" />
+export default function App() {
+  return chat('/api/chat') // 1 line!
 }`}
-        />
+            />
+          </div>
 
-        <Callout type="info" title="That's it!">
+          <div className="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">🎯 Named Presets</h4>
+            <EnhancedCodeBlock
+              language="tsx"
+              code={`import { ChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return ChatPresets.Enterprise('/api/chat') // 1 line with enterprise features!
+}`}
+            />
+          </div>
+
+          <div className="border rounded-lg p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+            <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">🏗️ Builder Pattern</h4>
+            <EnhancedCodeBlock
+              language="tsx"
+              code={`import { ChatBuilder } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function App() {
+  return ChatBuilder.create('/api/chat')
+    .withMemory('vector-store')
+    .build() // 3 lines with custom config
+}`}
+            />
+          </div>
+        </div>
+
+        <Callout type="success" title="That's it!">
           <p>You now have a fully functional AI chat interface with:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>✨ Beautiful UI with animations</li>
@@ -63,6 +101,9 @@ function App() {
             <li>⚡ Optimized performance</li>
             <li>♿ WCAG AAA accessible</li>
             <li>🔒 Production-ready security</li>
+            <li>🔄 Streaming responses</li>
+            <li>🛡️ Error recovery</li>
+            <li>💾 Automatic state management</li>
           </ul>
         </Callout>
       </section>

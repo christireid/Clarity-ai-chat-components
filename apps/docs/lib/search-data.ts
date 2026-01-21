@@ -1237,7 +1237,7 @@ export const searchData: SearchItem[] = [
     category: 'reference',
   },
   {
-    title: 'MarkdownRendererEnhanced',
+    title: 'EnhancedMarkdownRenderer',
     type: 'component',
     href: '/reference/components/markdown-renderer-enhanced',
     description: '',

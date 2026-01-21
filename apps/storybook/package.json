@@ -1,36 +1,38 @@
 {
   "name": "@clarity-chat/storybook",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Storybook for Clarity Chat components - Visual testing and component development",
   "private": true,
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
-    "clean": "rm -rf storybook-static"
+    "build:chromatic": "storybook build --test",
+    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --build-script-name=build:chromatic",
+    "test:visual": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes",
+    "test:visual:ci": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
+    "preview": "serve storybook-static"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.4",
+    "@storybook/addon-a11y": "^10.1.2",
+    "@storybook/addon-docs": "^10.1.2",
+    "@storybook/addon-links": "^10.1.2",
+    "@storybook/builder-vite": "^10.1.4",
+    "@storybook/react": "^10.1.4",
+    "@storybook/react-vite": "^10.1.4",
+    "@storybook/test": "^10.1.2",
+    "@vueless/storybook-dark-mode": "^1.0.4",
+    "chromatic": "^11.25.2",
+    "serve": "^14.2.4"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.23.25",
-    "lucide-react": "^0.556.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
-  },
-  "devDependencies": {
-    "@storybook/addon-a11y": "^10.1.10",
-    "@storybook/addon-docs": "^10.1.10",
-    "@storybook/addon-links": "^10.1.10",
-    "@storybook/react": "^10.1.10",
-    "@storybook/react-vite": "^10.1.10",
-    "@tailwindcss/postcss": "^4.1.17",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "autoprefixer": "^10.4.22",
-    "eslint-plugin-storybook": "^10.1.10",
-    "postcss": "^8.5.6",
-    "storybook": "^10.1.10",
-    "@vueless/storybook-dark-mode": "^10.0.4",
-    "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/license": "workspace:*",
+    "@clarity-chat/memory": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
+    "@clarity-chat/error-handling": "workspace:*",
+    "@clarity-chat/token-optimization": "workspace:*"
   }
 }

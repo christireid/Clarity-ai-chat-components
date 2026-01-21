@@ -25,6 +25,12 @@ const clarityChatProps: Prop[] = [
       'Optional chat ID for conversation persistence across sessions.',
   },
   {
+    name: 'conversationId',
+    type: 'string',
+    description:
+      'Unique identifier for cross-device conversation synchronization.',
+  },
+  {
     name: 'className',
     type: 'string',
     description: 'Optional CSS class name for the chat container.',
@@ -127,6 +133,51 @@ const clarityChatProps: Prop[] = [
     description: 'Enable message operations like edit, delete, and branch.',
   },
   {
+    name: 'enableRateLimiting',
+    type: 'boolean',
+    default: 'false',
+    description: 'Enable advanced rate limiting with request queuing and automatic retry.',
+  },
+  {
+    name: 'maxConcurrentRequests',
+    type: 'number',
+    default: '3',
+    description: 'Maximum number of concurrent API requests when rate limiting is enabled.',
+  },
+  {
+    name: 'maxQueueSize',
+    type: 'number',
+    default: '10',
+    description: 'Maximum size of the request queue when rate limiting is enabled.',
+  },
+  {
+    name: 'showQueueStatus',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show real-time queue status and rate limiting indicators.',
+  },
+  {
+    name: 'onRateLimited',
+    type: '(resetTime?: number) => void',
+    description: 'Callback when rate limit is exceeded. Provides estimated reset time.',
+  },
+  {
+    name: 'onRequestQueued',
+    type: '(position: number, estimatedWaitMs: number) => void',
+    description: 'Callback when a request is queued due to rate limiting.',
+  },
+  {
+    name: 'onQueueFull',
+    type: '() => void',
+    description: 'Callback when the request queue reaches maximum capacity.',
+  },
+  {
+    name: 'compactQueueStatus',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show compact version of queue status display.',
+  },
+  {
     name: 'memoryStrategy',
     type: '"sliding-window" | "semantic-chunks" | "vector-store"',
     description: 'Memory strategy for conversation context management.',
@@ -173,12 +224,13 @@ export default function ClarityChatPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">ClarityChat</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          The simplest way to add AI chat to your app. Just provide an API
-          endpoint and you're done. All the complexity is handled internally.
+          Enterprise-ready AI chat component with cross-device sync, rate limiting, and template marketplace.
+          The simplest way to add production-grade AI chat to your app - just provide an API endpoint.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
-          <strong>Domain:</strong> Chat UI
+          <strong>Domain:</strong> Enterprise Chat UI •{' '}
+          <strong>Features:</strong> Sync, Rate Limiting, Templates
         </p>
       </div>
 
@@ -249,15 +301,17 @@ function App() {
   return (
     <ClarityChat
       api="/api/chat"
-      showHeader
-      sessionTitle="AI Assistant"
-      sessionSubtitle="Ask me anything!"
-      showMessageCount
-      headerActions={
-        <button onClick={() => console.log('Settings clicked')}>
-          Settings
-        </button>
-      }
+      header={{
+        show: true,
+        title: 'AI Assistant',
+        subtitle: 'Ask me anything!',
+        showMessageCount: true,
+        actions: (
+          <button onClick={() => console.log('Settings clicked')}>
+            Settings
+          </button>
+        )
+      }}
     />
   )
 }`}
@@ -320,17 +374,113 @@ function App() {
   return (
     <ClarityChat
       api="/api/chat"
-      enableMessageOperations
-      onMessageCopy={(id, content) => {
-        console.log('Message copied:', id)
-      }}
-      onMessageFeedback={(messageId, feedbackType) => {
-        console.log('Feedback:', messageId, feedbackType)
+      messageActions={{
+        onCopy: (id, content) => {
+          console.log('Message copied:', id)
+        },
+        onFeedback: (messageId, feedbackType) => {
+          console.log('Feedback:', messageId, feedbackType)
+        }
       }}
     />
   )
 }`}
         />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Rate Limiting & Queue Management</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      enableRateLimiting={true}
+      maxConcurrentRequests={3}
+      maxQueueSize={10}
+      showQueueStatus={true}
+      onRateLimited={(resetTime) => {
+        console.log('Rate limited, resets at:', new Date(resetTime || 0))
+      }}
+      onRequestQueued={(position, waitMs) => {
+        console.log(\`Queued at position \${position}, ~\${Math.round(waitMs/1000)}s wait\`)
+      }}
+    />
+  )
+}`}
+        />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Automatically handles API rate limits with intelligent queuing, retry logic,
+          and real-time status indicators. Perfect for high-traffic applications.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Cross-Device Synchronization</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      conversationId="user-session-123"
+      enableRateLimiting={true}
+      showQueueStatus={true}
+    />
+  )
+}`}
+        />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Seamlessly sync conversations across devices with automatic conflict resolution.
+          Conversations persist and continue exactly where you left off.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Enterprise Configuration</h2>
+        <CodePlayground
+          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+
+function EnterpriseApp() {
+  return (
+    <MemoryProvider config={{ maxTokens: 50000 }}>
+      <ClarityChat
+        api="/api/chat"
+        conversationId="enterprise-session"
+        enableRateLimiting={true}
+        maxConcurrentRequests={5}
+        maxQueueSize={20}
+        showQueueStatus={true}
+        memory={{
+          enabled: true,
+          strategy: 'vector-store',
+          maxTokens: 40000,
+        }}
+        promptOptimization={{
+          enabled: true,
+          targetTokens: 32000,
+          strategy: 'hybrid',
+        }}
+        onRateLimited={(resetTime) => {
+          // Log to monitoring system
+          analytics.track('rate_limit_exceeded', { resetTime })
+        }}
+        onError={(error) => {
+          // Send to error monitoring
+          errorReporting.captureException(error)
+        }}
+      />
+    </MemoryProvider>
+  )
+}`}
+        />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Complete enterprise configuration with memory, rate limiting, sync,
+          and comprehensive error handling. Production-ready for high-traffic applications.
+        </p>
       </section>
 
       <section className="mb-12">
@@ -340,7 +490,7 @@ function App() {
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Features</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <div className="border rounded-lg p-4">
             <h3 className="font-semibold mb-2">✨ Core Features</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
@@ -359,6 +509,16 @@ function App() {
               <li>Token counter</li>
               <li>Network status indicator</li>
               <li>Message operations (edit, delete, branch)</li>
+            </ul>
+          </div>
+          <div className="border rounded-lg p-4">
+            <h3 className="font-semibold mb-2">🏆 Enterprise Features</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              <li>Cross-device synchronization</li>
+              <li>Advanced rate limiting & queuing</li>
+              <li>Real-time conflict resolution</li>
+              <li>Offline support & queue management</li>
+              <li>Template marketplace integration</li>
             </ul>
           </div>
         </div>
