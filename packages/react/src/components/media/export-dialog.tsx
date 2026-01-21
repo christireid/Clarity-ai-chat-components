@@ -127,7 +127,7 @@ export function ExportDialog({
           {/* Format Selection */}
           <div>
             <h3 className="text-sm font-semibold mb-3">Select Format</h3>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
               {formats.map((fmt, index) => (
                 <motion.button
                   key={fmt.value}
