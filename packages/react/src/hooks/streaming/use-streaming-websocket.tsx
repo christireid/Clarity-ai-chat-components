@@ -82,6 +82,15 @@ export interface UseStreamingWebSocketOptions {
   /** DELIVERY-3: Called when message buffer overflows (oldest messages dropped) */
   onMessageBufferOverflow?: (droppedCount: number, bufferSize: number) => void
 
+  /** DELIVERY-5: Enable automatic message acknowledgment (default: false) */
+  enableAcknowledgment?: boolean
+
+  /** DELIVERY-5: Message type for acknowledgment messages (default: 'ack') */
+  ackMessageType?: string
+
+  /** DELIVERY-5: Called when an acknowledgment is sent */
+  onAcknowledgmentSent?: (messageId: string) => void
+
   /** Event handlers */
   onOpen?: (event: Event) => void
   onMessage?: (message: WebSocketMessage) => void
@@ -239,6 +248,9 @@ export function useStreamingWebSocket(
     connectOnMount = false,
     maxMessageBufferSize: rawMaxMessageBufferSize = 1000,
     onMessageBufferOverflow, // DELIVERY-3: Buffer overflow callback
+    enableAcknowledgment = false, // DELIVERY-5: Acknowledgment support
+    ackMessageType = 'ack', // DELIVERY-5: Ack message type
+    onAcknowledgmentSent, // DELIVERY-5: Ack sent callback
     onOpen,
     onMessage,
     onError,
@@ -438,6 +450,21 @@ export function useStreamingWebSocket(
           return newMessages
         })
         setLastMessage(message)
+
+        // DELIVERY-5: Send acknowledgment if enabled and message has ID
+        if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
+          const messageId = message.data.id as string
+          try {
+            const ackMessage = JSON.stringify({
+              type: ackMessageType,
+              id: messageId,
+            })
+            ws.send(ackMessage)
+            onAcknowledgmentSent?.(messageId)
+          } catch (err) {
+            logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
+          }
+        }
 
         onMessage?.(message)
       })
