@@ -125,6 +125,31 @@ export {
   type MemoryNoCompressionResult,
 } from './memory-adaptive'
 
+// Conversation memory management (context window optimization)
+export {
+  // Strategies
+  SlidingWindowStrategy,
+  ImportanceBasedStrategy,
+  SummarizationStrategy,
+  AdaptiveConversationStrategy,
+  // Factory functions
+  createSlidingWindowStrategy,
+  createImportanceBasedStrategy,
+  createSummarizationStrategy,
+  createAdaptiveStrategy,
+  // Quick helpers
+  optimizeConversation,
+  // Types
+  type ConversationMessage,
+  type MessageRole,
+  type ConversationMemoryResult,
+  type SlidingWindowOptions,
+  type ImportanceBasedOptions,
+  type SummarizationOptions,
+  type ConversationSummarizer,
+  type AdaptiveStrategyOptions,
+} from './conversation-memory'
+
 // Binary compression using fflate (WASM-accelerated)
 export {
   BinaryCompressor,
