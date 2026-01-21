@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import DOMPurify from 'dompurify'
+import { NIGHT_OWL_COLORS } from '@clarity-chat/react'
 
 interface PlaygroundProps {
   initialCode: string
@@ -31,40 +32,40 @@ interface PreviewError {
   line?: number
 }
 
-// Simple syntax highlighting for demonstration
+// Night Owl syntax highlighting for playground
 function highlightCode(code: string): string {
   return (
     code
-      // Keywords
+      // Keywords - Night Owl purple
       .replace(
         /\b(import|export|from|const|let|var|function|return|if|else|for|while|class|extends|new|this|async|await|try|catch|throw|typeof|instanceof)\b/g,
-        '<span class="text-purple-400">$1</span>'
+        `<span style="color: ${NIGHT_OWL_COLORS.keyword}">$1</span>`
       )
-      // React/JSX keywords
+      // React/JSX keywords - Night Owl yellow
       .replace(
         /\b(useState|useEffect|useCallback|useMemo|useRef)\b/g,
-        '<span class="text-yellow-400">$1</span>'
+        `<span style="color: ${NIGHT_OWL_COLORS.accentTertiary}">$1</span>`
       )
-      // Strings
+      // Strings - Night Owl string color
       .replace(
         /(['"`])((?:\\.|[^\\])*?)\1/g,
-        '<span class="text-green-400">$1$2$1</span>'
+        `<span style="color: ${NIGHT_OWL_COLORS.string}">$1$2$1</span>`
       )
-      // JSX tags
-      .replace(/(&lt;\/?)(\w+)/g, '$1<span class="text-blue-400">$2</span>')
-      // Props/attributes
-      .replace(/\s(\w+)=/g, ' <span class="text-cyan-400">$1</span>=')
-      // Comments
+      // JSX tags - Night Owl accent secondary
+      .replace(/(&lt;\/?)(\w+)/g, `$1<span style="color: ${NIGHT_OWL_COLORS.accentSecondary}">$2</span>`)
+      // Props/attributes - Night Owl accent
+      .replace(/\s(\w+)=/g, ` <span style="color: ${NIGHT_OWL_COLORS.accent}">$1</span>=`)
+      // Comments - Night Owl comment color
       .replace(
         /(\/\/.*$|\/\*[\s\S]*?\*\/)/gm,
-        '<span class="text-gray-500">$1</span>'
+        `<span style="color: ${NIGHT_OWL_COLORS.comment}">$1</span>`
       )
-      // Numbers
-      .replace(/\b(\d+)\b/g, '<span class="text-orange-400">$1</span>')
-      // Booleans
+      // Numbers - Night Owl number color
+      .replace(/\b(\d+)\b/g, `<span style="color: ${NIGHT_OWL_COLORS.number}">$1</span>`)
+      // Booleans - Night Owl number color (same as numbers)
       .replace(
         /\b(true|false|null|undefined)\b/g,
-        '<span class="text-orange-400">$1</span>'
+        `<span style="color: ${NIGHT_OWL_COLORS.number}">$1</span>`
       )
   )
 }
@@ -318,12 +319,19 @@ export function InteractivePlayground({
               )}
             >
               {/* Line numbers */}
-              <div className="absolute left-0 top-0 bottom-0 w-10 bg-gray-900 border-r border-gray-700 overflow-hidden pointer-events-none z-10">
+              <div
+                className="absolute left-0 top-0 bottom-0 w-10 border-r overflow-hidden pointer-events-none z-10"
+                style={{
+                  backgroundColor: NIGHT_OWL_COLORS.backgroundSecondary,
+                  borderColor: NIGHT_OWL_COLORS.border
+                }}
+              >
                 <div className="py-4 px-2">
                   {code.split('\n').map((_, i) => (
                     <div
                       key={i}
-                      className="text-xs text-gray-500 text-right leading-6 font-mono"
+                      className="text-xs text-right leading-6 font-mono"
+                      style={{ color: NIGHT_OWL_COLORS.foregroundTertiary }}
                     >
                       {i + 1}
                     </div>
@@ -334,7 +342,8 @@ export function InteractivePlayground({
               {/* Highlighted code layer */}
               <div
                 ref={highlightRef}
-                className="absolute inset-0 pl-12 py-4 pr-4 overflow-auto pointer-events-none bg-gray-950"
+                className="absolute inset-0 pl-12 py-4 pr-4 overflow-auto pointer-events-none"
+                style={{ backgroundColor: NIGHT_OWL_COLORS.background }}
                 aria-hidden="true"
               >
                 <pre className="text-sm font-mono leading-6 whitespace-pre-wrap break-words">
@@ -354,7 +363,11 @@ export function InteractivePlayground({
                 onChange={handleCodeChange}
                 onScroll={handleScroll}
                 onKeyDown={handleKeyDown}
-                className="absolute inset-0 pl-12 py-4 pr-4 w-full h-full resize-none bg-transparent text-transparent caret-white text-sm font-mono leading-6 outline-none whitespace-pre-wrap"
+                className="absolute inset-0 pl-12 py-4 pr-4 w-full h-full resize-none bg-transparent text-transparent text-sm font-mono leading-6 outline-none whitespace-pre-wrap"
+                style={{
+                  caretColor: NIGHT_OWL_COLORS.foreground,
+                  color: NIGHT_OWL_COLORS.foreground
+                }}
                 spellCheck={false}
                 aria-label="Code editor"
               />

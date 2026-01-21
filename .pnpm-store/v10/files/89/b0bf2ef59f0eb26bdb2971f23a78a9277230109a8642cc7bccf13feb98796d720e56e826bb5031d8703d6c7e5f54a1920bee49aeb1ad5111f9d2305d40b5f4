@@ -1,0 +1,82 @@
+import { useState, useEffect } from 'react';
+import { addons } from 'storybook/preview-api';
+import { global } from '@storybook/global';
+import { themes } from 'storybook/theming';
+import { isEqual } from 'lodash-es';
+
+// src/index.tsx
+
+// src/constants.ts
+var DARK_MODE_EVENT_NAME = "DARK_MODE";
+var UPDATE_DARK_MODE_EVENT_NAME = "UPDATE_DARK_MODE";
+var { document, window } = global;
+var STORAGE_KEY = "sb-addon-themes-3";
+window.matchMedia?.("(prefers-color-scheme: dark)");
+var defaultParams = {
+  classTarget: "body",
+  dark: themes.dark,
+  darkClass: ["dark"],
+  light: themes.light,
+  lightClass: ["light"],
+  stylePreview: false,
+  userHasExplicitlySetTheTheme: false
+};
+var updateStore = (newStore) => {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newStore));
+};
+var arrayify = (classes) => {
+  const arr = [];
+  return arr.concat(classes).map((item) => item);
+};
+var toggleDarkClass = (el, {
+  current,
+  darkClass = defaultParams.darkClass,
+  lightClass = defaultParams.lightClass
+}) => {
+  if (current === "dark") {
+    el.classList.remove(...arrayify(lightClass));
+    el.classList.add(...arrayify(darkClass));
+  } else {
+    el.classList.remove(...arrayify(darkClass));
+    el.classList.add(...arrayify(lightClass));
+  }
+};
+var updateManager = (store2) => {
+  const manager = document.querySelector(store2.classTarget);
+  if (!manager) {
+    return;
+  }
+  toggleDarkClass(manager, store2);
+};
+var store = (userTheme = {}) => {
+  const storedItem = window.localStorage.getItem(STORAGE_KEY);
+  if (typeof storedItem === "string") {
+    const stored = JSON.parse(storedItem);
+    if (userTheme) {
+      if (userTheme.dark && !isEqual(stored.dark, userTheme.dark)) {
+        stored.dark = userTheme.dark;
+        updateStore(stored);
+      }
+      if (userTheme.light && !isEqual(stored.light, userTheme.light)) {
+        stored.light = userTheme.light;
+        updateStore(stored);
+      }
+    }
+    return stored;
+  }
+  return { ...defaultParams, ...userTheme };
+};
+updateManager(store());
+
+// src/index.tsx
+function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => store().current === "dark");
+  useEffect(() => {
+    const chan = addons.getChannel();
+    chan.on(DARK_MODE_EVENT_NAME, setIsDark);
+    return () => chan.off(DARK_MODE_EVENT_NAME, setIsDark);
+  }, []);
+  return isDark;
+}
+
+export { DARK_MODE_EVENT_NAME, UPDATE_DARK_MODE_EVENT_NAME, useDarkMode };

@@ -1,0 +1,52 @@
+"use strict";
+'use client';
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importDefault(require("react"));
+const react_syntax_highlighter_1 = require("react-syntax-highlighter");
+const CodeRenderer_1 = __importDefault(require("./CodeRenderer")); // Assuming CodeRenderer is in the same directory or adjust path
+const DefaultCode = (_a) => {
+    var { node, className, children, style, codeStyle, animateText, animation, animationDuration, animationTimingFunction } = _a, props = __rest(_a, ["node", "className", "children", "style", "codeStyle", "animateText", "animation", "animationDuration", "animationTimingFunction"]);
+    const [copied, setCopied] = react_1.default.useState(false);
+    const handleCopy = () => {
+        // Ensure children is a string for navigator.clipboard.writeText
+        const textToCopy = Array.isArray(children) ? children.join('') : String(children);
+        navigator.clipboard.writeText(textToCopy);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+    if (!className || !className.startsWith("language-")) {
+        return react_1.default.createElement("code", Object.assign({}, props), animateText(children));
+    }
+    return react_1.default.createElement("div", Object.assign({}, props, { style: style, className: `relative` }),
+        react_1.default.createElement("button", { onClick: handleCopy, style: {
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                position: 'absolute',
+                top: '0.5rem',
+                right: '0.5rem',
+                zIndex: 10,
+                opacity: 0.7,
+                cursor: 'pointer',
+                borderRadius: '0.5rem',
+                padding: '0.25rem 0.25rem',
+                color: 'white',
+            }, "aria-label": copied ? 'Copied!' : 'Copy code' }, copied ? (react_1.default.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+            react_1.default.createElement("path", { d: "M20 6L9 17l-5-5" }))) : (react_1.default.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" },
+            react_1.default.createElement("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }),
+            react_1.default.createElement("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })))),
+        react_1.default.createElement(react_syntax_highlighter_1.Prism, { style: codeStyle, language: (className === null || className === void 0 ? void 0 : className.substring(9).trim()) || '', renderer: (0, CodeRenderer_1.default)({ animation, animationDuration, animationTimingFunction }) }, String(children) /* Ensure children is string for SyntaxHighlighter */));
+};
+exports.default = DefaultCode;

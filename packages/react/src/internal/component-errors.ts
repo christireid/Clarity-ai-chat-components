@@ -286,12 +286,21 @@ export function throwMissingPropError(
   component: string,
   propName: string
 ): never {
+  const suggestions: Record<string, string> = {
+    'api': 'Provide your API endpoint URL (e.g., "/api/chat" or "https://api.example.com/chat")',
+    'messages': 'Initialize with an empty array: messages={[]} or provide existing messages',
+    'onSendMessage': 'Add a handler: onSendMessage={(content) => append({ role: "user", content })}',
+    'useClarityChat': 'Make sure you\'re using the useClarityChat hook from @clarity-chat/react',
+  }
+
   throw new ComponentError({
     code: 'MISSING_PROP',
     component,
-    message: `Required prop "${propName}" is missing.`,
+    message: `Required prop "${propName}" is missing from ${component}.`,
+    expected: `A valid ${propName} value`,
     example: `<${component} ${propName}={...} />`,
     docsPath: `/components/${component.toLowerCase()}#props`,
+    suggestion: suggestions[propName] || `Add the ${propName} prop to your ${component} component. Check the documentation for the correct format.`,
   })
 }
 

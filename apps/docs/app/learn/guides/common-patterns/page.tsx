@@ -111,7 +111,7 @@ function App() {
           {/* 4. Memory for context management */}
           <MemoryProvider config={{ maxTokens: 8000 }}>
             {/* Your app components */}
-            <ChatInterface />
+            <ChatWindow messages={[]} isLoading={false} onSendMessage={() => {}} />
           </MemoryProvider>
         </ToastProvider>
       </ErrorBoundary>

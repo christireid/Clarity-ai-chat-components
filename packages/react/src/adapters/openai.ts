@@ -13,7 +13,6 @@ import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
   validateApiKey,
-  createRateLimitError,
   DEFAULT_TIMEOUTS,
   type OpenAIToolCall,
 } from './shared'

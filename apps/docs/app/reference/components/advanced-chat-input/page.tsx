@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react'
+import { ClarityToaster, AdvancedChatInput } from '@clarity-chat/react'
 import type {
   MessageAttachment,
   SavedPrompt,
@@ -176,7 +176,7 @@ const advancedChatInputProps: Prop[] = [
 
 export default function AdvancedChatInputPage() {
   return (
-    <ToastProvider>
+    <ClarityToaster />
       <div className="docs-content">
         <Breadcrumbs />
 
@@ -841,6 +841,6 @@ function CompleteAdvancedChat() {
           }}
         />
       </div>
-    </ToastProvider>
+    </>
   )
 }
