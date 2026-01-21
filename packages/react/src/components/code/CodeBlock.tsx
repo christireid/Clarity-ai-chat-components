@@ -5,6 +5,7 @@ import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
 import { cn } from '../../utils/cn'
+import { usePerformanceTracking } from '../../utils/performance-monitoring'
 import {
   parseLineRanges,
   escapeHtml,
@@ -19,6 +20,8 @@ import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
+import { ContentErrorBoundary } from '../ui/error-boundary'
+import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 
 /**
  * Font family options
@@ -120,7 +123,7 @@ function getShikiTheme(theme: CodeThemeName | BundledTheme): BundledTheme {
  * </CodeBlock>
  * ```
  */
-export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
+const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
   children,
   language: rawLanguage,
   theme = DEFAULT_DARK_THEME,
@@ -144,6 +147,26 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
   enableKeyboardShortcuts = false,
   filename,
 }) {
+  // Performance monitoring
+  usePerformanceTracking({
+    componentName: 'CodeBlock',
+    trackMemory: true,
+    metadata: {
+      contentLength: children.length,
+      language: rawLanguage,
+      showLineNumbers,
+      showCopyButton,
+      maxHeight,
+      wordWrap,
+      theme,
+      fontFamily,
+    },
+  })
+
+  // Analytics tracking
+  const { trackInteraction } = useAnalytics('CodeBlock')
+  const { trackClick } = useInteractionTracking('CodeBlock')
+
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [highlightedHtml, setHighlightedHtml] = React.useState<string>('')
   const [isLoading, setIsLoading] = React.useState(true)
@@ -329,8 +352,17 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
     <div
       ref={containerRef}
       className={cn(
-        'code-block group relative rounded-lg border overflow-hidden',
-        'border-border bg-card',
+        'code-block group relative rounded-xl overflow-hidden',
+        'border border-white/[0.08]',
+        'bg-[#011627]', // Night Owl background
+
+        // Multi-layer shadow system for depth (Raycast-inspired)
+        'shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2)]',
+
+        // Premium hover glow effect (indigo accent)
+        'transition-shadow duration-300 ease-out',
+        'hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2),0_0_30px_rgba(129,140,248,0.15),0_0_60px_rgba(129,140,248,0.08)]',
+
         themeType === 'dark' && 'dark',
         className
       )}
@@ -425,7 +457,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
           <div
             className={cn(
               'absolute bottom-0 left-0 right-0 h-16',
-              'bg-gradient-to-t from-card to-transparent',
+              'bg-gradient-to-t from-[#011627] to-transparent',
               'pointer-events-none'
             )}
             aria-hidden="true"
@@ -441,11 +473,11 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
           className={cn(
             'w-full py-2 px-4',
             'flex items-center justify-center gap-1',
-            'text-sm text-muted-foreground',
-            'hover:text-foreground hover:bg-muted/50',
+            'text-sm text-neutral-400',
+            'hover:text-neutral-200 hover:bg-white/[0.04]',
             'transition-colors duration-200',
-            'border-t border-border/50',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
+            'border-t border-white/[0.06]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-inset'
           )}
           aria-expanded={isExpanded}
           aria-controls="code-content"
@@ -475,6 +507,20 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
     </div>
   )
 })
+
+CodeBlockComponent.displayName = 'CodeBlock'
+
+/**
+ * CodeBlock with error boundary
+ */
+export const CodeBlock = (props: CodeBlockProps) => (
+  <ContentErrorBoundary
+    componentName="CodeBlock"
+    showErrorDetails={process.env.NODE_ENV === 'development'}
+  >
+    <CodeBlockComponent {...props} />
+  </ContentErrorBoundary>
+)
 
 CodeBlock.displayName = 'CodeBlock'
 

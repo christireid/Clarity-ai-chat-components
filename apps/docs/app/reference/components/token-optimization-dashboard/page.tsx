@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
+import { TokenOptimizationDashboard } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -13,19 +13,27 @@ import { Callout } from '@/components/MDX/Callout'
 
 function DashboardDemo() {
   // Mock data for the dashboard
-  const mockStats = {
-    totalSavings: 154200,
-    compressionRatio: 0.65,
-    monthlyBudget: 1000000,
-    usedTokens: 450000,
+  const mockMetrics = {
+    totalTokens: 500000,
+    tokensSaved: 154200,
+    costSaved: 15.42,
+    breakdown: {
+      promptCompression: { tokens: 50000, percent: 32 },
+      caching: { hits: 1200, savings: 45000 },
+      modelRouting: { savings: 20000, percent: 13 },
+      responseLimiting: { tokens: 15000, percent: 10 },
+      batching: { requests: 500, savings: 12000 },
+      throttling: { callsSaved: 200 },
+      referencing: { bytesSaved: 120000, percent: 8 },
+    },
+    savingsPercent: 31,
   }
 
   return (
     <div className="w-full border border-border rounded-xl overflow-hidden bg-background shadow-sm">
       <TokenOptimizationDashboard
-        stats={mockStats}
-        period="last-30-days"
-        showCharts={true}
+        metrics={mockMetrics}
+        showBreakdown={true}
       />
     </div>
   )
@@ -84,7 +92,7 @@ export default function TokenOptimizationDashboardPage() {
         <ComponentPreview
           title="Token Dashboard"
           description="Monitoring token usage and savings."
-          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react/internal'
+          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react'
 
 function AnalyticsView() {
   return (
@@ -145,7 +153,7 @@ function AnalyticsView() {
         </p>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react/internal'
+          code={`import { useTokenTracker, TokenOptimizationDashboard } from '@clarity-chat/react'
 
 function LiveDashboard() {
   const { stats } = useTokenTracker()

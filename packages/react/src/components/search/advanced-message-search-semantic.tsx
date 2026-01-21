@@ -34,7 +34,7 @@ import {
   TrendingUp,
   Eye,
   EyeOff,
-  Settings2,
+  Settings,
   Sliders,
   Target,
   Wand2,
@@ -61,7 +61,7 @@ const LightbulbIcon = Lightbulb as React.ComponentType<{ className?: string }>
 const TrendingIcon = TrendingUp as React.ComponentType<{ className?: string }>
 const EyeIcon = Eye as React.ComponentType<{ className?: string }>
 const EyeOffIcon = EyeOff as React.ComponentType<{ className?: string }>
-const SettingsIcon = Settings2 as React.ComponentType<{ className?: string }>
+const SettingsIcon = Settings as React.ComponentType<{ className?: string }>
 const SlidersIcon = Sliders as React.ComponentType<{ className?: string }>
 const TargetIcon = Target as React.ComponentType<{ className?: string }>
 const WandIcon = Wand2 as React.ComponentType<{ className?: string }>

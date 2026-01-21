@@ -18,7 +18,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useCommandPalette } from '@clarity-chat/react/internal'
+import { useCommandPalette } from '@clarity-chat/react'
 
 // Decomposed components
 import {

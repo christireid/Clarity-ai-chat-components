@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ExportDialog } from '@clarity-chat/react/internal'
+import { ExportDialog } from '@clarity-chat/react'
 import type { ExportFormat } from '@clarity-chat/types'
 
 const meta = {

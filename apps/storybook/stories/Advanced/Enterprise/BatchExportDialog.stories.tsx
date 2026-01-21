@@ -4,7 +4,7 @@ import {
   BatchExportDialog,
   type BatchExportResource,
   type BatchExportProgress,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 
 const meta: Meta<typeof BatchExportDialog> = {

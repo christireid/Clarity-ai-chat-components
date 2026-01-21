@@ -73,7 +73,7 @@ Access all hooks organized by category:
 - **Primary:** useClarityChat, useChatEnhanced
 - **Memory:** useMemoryContext, useConversationHistory
 - **Streaming:** useStreamingSSE, useStreamingWebSocket
-- **Token Optimization:** useTokenBudgetMonitor, useTokenOptimizationEnhanced
+- **Token Optimization:** useTokenBudgetMonitor, useTokenOptimization
 - **UI State:** useLoadingState, useErrorHandler, useAutoScroll
 - **Provider:** useProviderConfig, useMultiProvider
 - **Utilities:** useMessageParser, useKeyboardShortcuts, useVoiceInput

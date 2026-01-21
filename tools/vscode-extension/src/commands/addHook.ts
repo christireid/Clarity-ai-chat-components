@@ -181,37 +181,37 @@ const HOOKS: HookItem[] = [
 })`,
   },
   {
-    label: '$(zap) useTokenOptimizationEnhanced',
+    label: '$(zap) useTokenOptimization',
     description: 'Advanced token optimization',
     detail:
       '📊 Token Optimization • Advanced optimization strategies for token efficiency',
-    value: 'useTokenOptimizationEnhanced',
+    value: 'useTokenOptimization',
     category: 'Token Optimization',
     imports:
-      "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
+      "import { useTokenOptimization } from '@clarity-chat/react'",
     code: `const {
   optimizedMessages,
   compressionRatio,
   applyOptimization,
   strategies,
-} = useTokenOptimizationEnhanced({
+} = useTokenOptimization({
   messages,
   targetTokens: \${1:2000},
   strategies: ['\${2|truncate,summarize,prioritize|}'],
 })`,
   },
   {
-    label: '$(symbol-numeric) useTokenCounter',
+    label: '$(symbol-numeric) TokenCounter',
     description: 'Token counting utility',
     detail: '📊 Token Optimization • Count tokens for messages and text',
-    value: 'useTokenCounter',
+    value: 'TokenCounter',
     category: 'Token Optimization',
-    imports: "import { useTokenCounter } from '@clarity-chat/react'",
+    imports: "import { TokenCounter } from '@clarity-chat/react'",
     code: `const {
   countTokens,
   estimateCost,
   tokenize,
-} = useTokenCounter({
+} = TokenCounter({
   model: '\${1|gpt-4-turbo,claude-3-opus,gemini-pro|}',
 })`,
   },

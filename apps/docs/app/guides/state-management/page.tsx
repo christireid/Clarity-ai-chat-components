@@ -63,7 +63,7 @@ export default function StateManagementGuidePage() {
         </h2>
         <CodeBlock
           language="tsx"
-          code={`import { useChat, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useChat, ChatWindow } from '@clarity-chat/react'
 
 export function SupportAssistant() {
   const {
@@ -113,7 +113,7 @@ export function SupportAssistant() {
   useChat,
   useMessageOperations,
   ConversationBranchVisualizer,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function ResearchWorkspace() {
   const chat = useChat({ api: '/api/chat/research', id: 'workspace' })
@@ -170,7 +170,7 @@ export function ResearchWorkspace() {
   ConversationList,
   MemoryQuotaStorage,
   QuotaManager,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const quotas = new QuotaManager({
   storage: new MemoryQuotaStorage(),
@@ -229,7 +229,7 @@ export function Dashboard() {
   useStreamingSSE,
   StreamingMessage,
   useOptimisticMessage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function CustomStreaming({ api }: { api: string }) {
   const [messages, setMessages] = useOptimisticMessage([])

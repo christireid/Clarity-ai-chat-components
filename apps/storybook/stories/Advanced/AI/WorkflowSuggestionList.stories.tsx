@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { WorkflowSuggestionList } from '@clarity-chat/react/internal'
-import type { WorkflowSuggestion } from '@clarity-chat/react/internal'
+import { WorkflowSuggestionList } from '@clarity-chat/react'
+import type { WorkflowSuggestion } from '@clarity-chat/react'
 
 const meta: Meta<typeof WorkflowSuggestionList> = {
   title: 'Advanced/AI/WorkflowSuggestionList',

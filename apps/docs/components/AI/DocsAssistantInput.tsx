@@ -288,18 +288,18 @@ export const DocsAssistantInput = memo(function DocsAssistantInput({
             initial="initial"
             animate="animate"
             exit="exit"
-            className="text-[11px] text-muted-foreground/60 px-1"
+            className="text-xs text-muted-foreground/60 px-1"
           >
             Press{' '}
-            <kbd className="px-1.5 py-0.5 text-[10px] font-semibold border border-border/60 rounded bg-muted/50">
+            <kbd className="px-1.5 py-0.5 text-xs font-semibold border border-border/60 rounded bg-muted/50">
               Enter
             </kbd>{' '}
             to send •{' '}
-            <kbd className="px-1.5 py-0.5 text-[10px] font-semibold border border-border/60 rounded bg-muted/50">
+            <kbd className="px-1.5 py-0.5 text-xs font-semibold border border-border/60 rounded bg-muted/50">
               /
             </kbd>{' '}
             commands •{' '}
-            <kbd className="px-1.5 py-0.5 text-[10px] font-semibold border border-border/60 rounded bg-muted/50">
+            <kbd className="px-1.5 py-0.5 text-xs font-semibold border border-border/60 rounded bg-muted/50">
               @
             </kbd>{' '}
             mention

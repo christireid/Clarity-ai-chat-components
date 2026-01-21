@@ -153,7 +153,7 @@ export default function ThemedChatExample() {
       <p>Wrap your app with ThemeProvider:</p>
 
       <CodeBlock
-        code={`import { ThemeProvider } from '@clarity-chat/react/internal'
+        code={`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider theme={theme}>
   <YourApp />
@@ -176,7 +176,7 @@ export default function ThemedChatExample() {
       <p>Create a custom theme with your brand colors:</p>
 
       <CodeBlock
-        code={`import { createTheme, ThemeProvider } from '@clarity-chat/react/internal'
+        code={`import { createTheme, ThemeProvider } from '@clarity-chat/react'
 
 const customTheme = createTheme({
   colors: {

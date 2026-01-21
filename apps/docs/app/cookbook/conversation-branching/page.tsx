@@ -41,7 +41,7 @@ export default function ConversationBranchingCookbook() {
           code={`import {
   useBranchManagement,
   type ConversationBranch,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const branchState = useBranchManagement({
   conversationId: 'ticket-123',

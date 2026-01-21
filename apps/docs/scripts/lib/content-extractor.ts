@@ -4,8 +4,14 @@
  */
 
 import { readFile } from 'fs/promises'
-import { encode } from 'gpt-tokenizer'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import type { ExtractedPageContent, CodeBlock, PageMetadata } from '../types'
+
+// Create singleton token counter instance for cl100k_base encoding (GPT-4, GPT-3.5-turbo)
+const tokenCounter = new AccurateTokenCounter({
+  model: 'gpt-4',
+  enableCaching: true,
+})
 
 /**
  * Extract metadata from a page.tsx file
@@ -402,13 +408,12 @@ export function contentToMarkdown(extracted: ExtractedPageContent): string {
 }
 
 /**
- * Count tokens using GPT tokenizer for accurate token counting
+ * Count tokens using AccurateTokenCounter from @clarity-chat/token-optimization
  * Uses cl100k_base encoding (used by GPT-4, GPT-3.5-turbo)
  */
 export function estimateTokens(text: string): number {
   try {
-    const tokens = encode(text)
-    return tokens.length
+    return tokenCounter.count(text)
   } catch {
     // Fallback to rough approximation if tokenizer fails
     return Math.ceil(text.length / 4)

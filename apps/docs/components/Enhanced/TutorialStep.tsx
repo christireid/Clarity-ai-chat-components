@@ -34,12 +34,6 @@ export function TutorialStep({
       <div className="flex items-start gap-4 mb-6">
         <motion.div
           animate={{
-            backgroundColor: completed
-              ? 'rgb(var(--color-brand-500))'
-              : 'rgb(var(--color-bg-secondary))',
-            borderColor: completed
-              ? 'rgb(var(--color-brand-500))'
-              : 'rgb(var(--color-border))',
             scale: completed ? [1, 1.1, 1] : 1,
           }}
           transition={{
@@ -48,8 +42,10 @@ export function TutorialStep({
           }}
           whileHover={{ scale: 1.05 }}
           className={clsx(
-            'flex items-center justify-center w-10 h-10 rounded-full border-2 flex-shrink-0',
-            completed ? 'text-white' : 'text-text-secondary'
+            'flex items-center justify-center w-10 h-10 rounded-full border-2 flex-shrink-0 transition-colors duration-300',
+            completed
+              ? 'bg-brand-500 border-brand-500 text-white'
+              : 'bg-bg-secondary border-border text-text-secondary'
           )}
         >
           <AnimatePresence mode="wait">

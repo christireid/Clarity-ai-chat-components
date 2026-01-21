@@ -209,7 +209,7 @@ return (
         }}
         next={{
           href: '/reference/components/markdown-renderer-enhanced',
-          title: 'MarkdownRendererEnhanced',
+          title: 'EnhancedMarkdownRenderer',
         }}
       />
     </>

@@ -9,9 +9,9 @@ import {
   ExternalLink,
   Copy,
   Check,
-  RotateCcw,
+  RefreshCw,
 } from 'lucide-react'
-import { useClipboard } from '@clarity-chat/react/internal'
+import { useClipboard } from '@clarity-chat/react'
 import { openInCodeSandbox } from '@/lib/sandbox-export'
 
 // Dynamic import for code editor to avoid SSR issues
@@ -146,15 +146,22 @@ export function CodePlayground({
       'function $1('
     )
 
-    // If there's a function definition, add a render call at the end
-    if (
-      transformed.includes('function App(') ||
-      transformed.includes('function Home(')
-    ) {
-      const functionName = transformed.includes('function App(')
-        ? 'App'
-        : 'Home'
-      transformed += `\n\nrender(<${functionName} />)`
+    // Detect all function component definitions (PascalCase names indicate React components)
+    // Match patterns like: function ComponentName( or const ComponentName = (
+    const functionComponentMatch = transformed.match(
+      /function\s+([A-Z][a-zA-Z0-9]*)\s*\(/
+    )
+    const arrowComponentMatch = transformed.match(
+      /const\s+([A-Z][a-zA-Z0-9]*)\s*=\s*\(/
+    )
+
+    // Prioritize the first PascalCase function found (likely the main component)
+    const componentName =
+      functionComponentMatch?.[1] || arrowComponentMatch?.[1]
+
+    // If there's a component and no existing render() call, add one
+    if (componentName && !transformed.includes('render(')) {
+      transformed += `\n\nrender(<${componentName} />)`
     }
 
     return transformed.trim()
@@ -180,7 +187,7 @@ export function CodePlayground({
             onClick={() => setLayout('horizontal')}
             className={`px-3 py-1 text-sm rounded transition-colors ${
               layout === 'horizontal'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-brand-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
             aria-label="Side by side layout"
@@ -191,7 +198,7 @@ export function CodePlayground({
             onClick={() => setLayout('vertical')}
             className={`px-3 py-1 text-sm rounded transition-colors ${
               layout === 'vertical'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-brand-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
             aria-label="Stacked layout"
@@ -227,14 +234,14 @@ export function CodePlayground({
             aria-label="Reset code"
             disabled={code === startingCode}
           >
-            <RotateCcw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4" />
             <span className="hidden sm:inline">Reset</span>
           </button>
 
           {/* Open in CodeSandbox */}
           <button
             onClick={handleOpenInSandbox}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-brand-500 text-white hover:bg-brand-600 transition-colors"
             aria-label="Open in CodeSandbox"
           >
             <ExternalLink className="w-4 h-4" />

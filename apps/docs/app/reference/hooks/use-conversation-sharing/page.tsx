@@ -50,7 +50,7 @@ export default function UseConversationSharingPage() {
         <h2>Basic Usage</h2>
         <p>Share conversations:</p>
         <CodePlayground
-          initialCode={`import { useConversationSharing } from '@clarity-chat/react/internal'
+          initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ShareConversation({ messages, conversationId }: { messages: Message[], conversationId: string }) {
@@ -69,7 +69,7 @@ function ShareConversation({ messages, conversationId }: { messages: Message[], 
       allowComments: true,
       allowDownload: true,
     })
-    logger.debug('Share link:', shareLink.url)
+    console.log('Share link:', shareLink.url)
   }
 
   return (
@@ -91,7 +91,7 @@ function ShareConversation({ messages, conversationId }: { messages: Message[], 
         <h2>Password Protection</h2>
         <p>Create password-protected shares:</p>
         <CodePlayground
-          initialCode={`import { useConversationSharing } from '@clarity-chat/react/internal'
+          initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
 function PasswordProtectedShare() {
   const { createShareLink } = useConversationSharing()
@@ -103,7 +103,7 @@ function PasswordProtectedShare() {
       password: 'secure-password',
       expiration: '30days',
     })
-    logger.debug('Protected share link:', shareLink.url)
+    console.log('Protected share link:', shareLink.url)
   }
 
   return <button onClick={handleShare}>Create Protected Share</button>
@@ -115,7 +115,7 @@ function PasswordProtectedShare() {
         <h2>Share Analytics</h2>
         <p>Track share analytics:</p>
         <CodePlayground
-          initialCode={`import { useConversationSharing } from '@clarity-chat/react/internal'
+          initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
 function ShareAnalytics({ shareId }: { shareId: string }) {
   const { getAnalytics } = useConversationSharing()
@@ -140,7 +140,7 @@ function ShareAnalytics({ shareId }: { shareId: string }) {
         <h2>Revoke Shares</h2>
         <p>Revoke share links:</p>
         <CodePlayground
-          initialCode={`import { useConversationSharing } from '@clarity-chat/react/internal'
+          initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
 function ShareManager() {
   const { shareLinks, revokeShare } = useConversationSharing()

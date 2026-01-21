@@ -216,7 +216,7 @@ async function handleHookRequest(
   response.markdown('|------|-------------|\n')
   response.markdown('| `useTokenBudgetMonitor` | Track token usage |\n')
   response.markdown(
-    '| `useTokenOptimizationEnhanced` | Advanced optimization |\n'
+    '| `useTokenOptimization` | Advanced optimization |\n'
   )
   response.markdown('| `useTokenCounter` | Count tokens for text |\n\n')
 
@@ -335,7 +335,7 @@ async function handleOptimizationRequest(
   response.markdown('## 2. Message Optimization\n\n')
   response.markdown('```tsx\n')
   response.markdown(
-    'const { optimizedMessages, compressionRatio } = useTokenOptimizationEnhanced({\n'
+    'const { optimizedMessages, compressionRatio } = useTokenOptimization({\n'
   )
   response.markdown('  messages,\n')
   response.markdown('  targetTokens: 2000,\n')

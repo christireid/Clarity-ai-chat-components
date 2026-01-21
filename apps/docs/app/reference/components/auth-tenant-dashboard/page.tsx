@@ -61,18 +61,18 @@ export default function AuthTenantDashboardPage() {
         <h2>Basic Usage</h2>
         <p>Display tenant authentication dashboard:</p>
         <CodePlayground
-          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
 function TenantAuth({ tenantId }: { tenantId: string }) {
   return (
     <AuthTenantDashboard
       tenantId={tenantId}
       onTenantUpdate={(updates) => {
-        logger.debug('Tenant updated:', updates)
+        console.log('Tenant updated:', updates)
         // Update tenant settings
       }}
       onSSOConfigure={(config) => {
-        logger.debug('SSO configured:', config)
+        console.log('SSO configured:', config)
         // Save SSO configuration
       }}
     />
@@ -85,7 +85,7 @@ function TenantAuth({ tenantId }: { tenantId: string }) {
         <h2>SSO Configuration</h2>
         <p>Configure SSO for tenant:</p>
         <CodePlayground
-          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
 function WithSSO({ tenantId }: { tenantId: string }) {
   return (
@@ -98,7 +98,7 @@ function WithSSO({ tenantId }: { tenantId: string }) {
         })
         
         if (response.ok) {
-          logger.debug('SSO configured successfully')
+          console.log('SSO configured successfully')
         }
       }}
     />
@@ -111,20 +111,20 @@ function WithSSO({ tenantId }: { tenantId: string }) {
         <h2>User Management</h2>
         <p>Manage tenant users:</p>
         <CodePlayground
-          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
 function UserManagement({ tenantId }: { tenantId: string }) {
   return (
     <AuthTenantDashboard
       tenantId={tenantId}
       onUserAdd={(user) => {
-        logger.debug('Adding user:', user.email)
+        console.log('Adding user:', user.email)
       }}
       onUserRemove={(userId) => {
-        logger.debug('Removing user:', userId)
+        console.log('Removing user:', userId)
       }}
       onUserUpdate={(userId, updates) => {
-        logger.debug('Updating user:', userId, updates)
+        console.log('Updating user:', userId, updates)
       }}
     />
   )

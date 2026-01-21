@@ -5,7 +5,7 @@ import { Check, Copy, ChevronDown, ExternalLink } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
-import { useClipboard } from '@clarity-chat/react/internal'
+import { useClipboard } from '@clarity-chat/react'
 import { durations } from '@/lib/animations'
 import { getTypeLink, getTypeDefinition } from '@/lib/type-registry'
 

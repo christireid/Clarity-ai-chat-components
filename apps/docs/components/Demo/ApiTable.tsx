@@ -64,8 +64,20 @@ export function ApiTable({ title = 'Props', data, className }: ApiTableProps) {
         variants={rowVariants}
         whileHover={{ y: -2, scale: 1.005 }}
         transition={{ duration: 0.2 }}
-        className="border-2 border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+        className="group/table relative border border-border/60 rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_12px_rgba(99,102,241,0.08),0_8px_24px_rgba(99,102,241,0.06),0_0_30px_rgba(99,102,241,0.06)] dark:hover:shadow-[0_4px_12px_rgba(129,140,248,0.12),0_8px_24px_rgba(129,140,248,0.08),0_0_30px_rgba(129,140,248,0.1)] transition-all duration-300"
       >
+        {/* Gradient border on hover */}
+        <div
+          className="absolute inset-0 rounded-xl opacity-0 group-hover/table:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+          style={{
+            padding: '1px',
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.3) 50%, rgba(244,114,182,0.4) 100%)',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }}
+          aria-hidden="true"
+        />
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-bg-secondary/50">
@@ -89,9 +101,9 @@ export function ApiTable({ title = 'Props', data, className }: ApiTableProps) {
                 <motion.tr
                   key={prop.name}
                   variants={rowVariants}
-                  whileHover={{ scale: 1.005, backgroundColor: 'rgba(var(--color-bg-secondary), 0.5)' }}
+                  whileHover={{ scale: 1.005 }}
                   transition={{ duration: 0.15 }}
-                  className="group"
+                  className="group hover:bg-bg-secondary/50"
                 >
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">

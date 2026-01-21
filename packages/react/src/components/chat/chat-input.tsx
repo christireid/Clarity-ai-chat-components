@@ -4,7 +4,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Textarea, Button, cn } from '@clarity-chat/primitives'
+import { Textarea, Button, cn, glassVariants } from '@clarity-chat/primitives'
 import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,
@@ -311,12 +311,19 @@ export function ChatInput({
   return (
     <motion.div
       id={id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      viewport={{ once: true }}
       className={cn(
+        glassVariants({
+          intensity: 'strong',
+          gradient: 'none',
+          border: 'none', // No border needed as it has border-t
+          animated: 'none',
+        }),
         'relative flex flex-col gap-3 px-5 py-4',
-        'border-t border-border/60',
-        'bg-gradient-to-t from-background via-background to-background/95',
-        'backdrop-blur-lg',
-        'shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.05)]',
+        'border-t border-glass-light dark:border-glass-dark-light',
         className
       )}
       initial="idle"

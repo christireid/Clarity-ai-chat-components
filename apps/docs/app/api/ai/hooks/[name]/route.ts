@@ -12,6 +12,10 @@ import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('ai-hook-lookup-api')
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * Single Hook Lookup API
  *

@@ -22,6 +22,10 @@ export default function NextJSIntegrationPage() {
       </div>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Quick Start</h2>
         <h3>App Router (Recommended)</h3>
         <p>
@@ -37,7 +41,7 @@ export default function NextJSIntegrationPage() {
           language="tsx"
           code={`'use client'
 
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 

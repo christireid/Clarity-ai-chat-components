@@ -328,7 +328,7 @@ useChat, useMessages, useTokenOptimization, useModelRouter
         <h3>Multiple Components</h3>
         <p>Combine multiple components in your playground:</p>
         <pre>
-          <code>{`import { ChatWindow, MemoryInspector, PerformanceDashboard } from '@clarity-chat/react/internal'
+          <code>{`import { ChatWindow, MemoryInspector, PerformanceDashboard } from '@clarity-chat/react'
 
 export default function App() {
   return (
@@ -524,7 +524,7 @@ function CustomChatWindow() {
         <h3>State Debugging</h3>
         <pre>
           <code>{`// Add debug output
-logger.debug('Current state:', { messages, isLoading })
+console.log('Current state:', { messages, isLoading })
 
 // Render state for visibility
 <div className="debug">

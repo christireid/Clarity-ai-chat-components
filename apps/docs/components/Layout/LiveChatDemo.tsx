@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import {
   Send,
-  Bot,
   User,
   Sparkles,
   Zap,
@@ -12,12 +11,13 @@ import {
   Wand2,
   RefreshCw,
   AlertCircle,
+  MessageCircle,
 } from 'lucide-react'
 import {
   useAutoScroll,
   useStreaming,
   TypingIndicator,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -60,7 +60,7 @@ const MemoizedReactMarkdown = memo(
   ReactMarkdown,
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children &&
-    prevProps.className === nextProps.className
+    (prevProps as { className?: string }).className === (nextProps as { className?: string }).className
 )
 
 export function LiveChatDemo() {
@@ -215,8 +215,12 @@ export function LiveChatDemo() {
 
       // Use the streaming hook to handle the response
       await startStreaming(response.body)
-    } catch (error: any) {
-      if (error.name === 'AbortError') return
+    } catch (error: unknown) {
+      // Clear typing state on abort to prevent stuck UI
+      if (error instanceof Error && error.name === 'AbortError') {
+        setIsTyping(false)
+        return
+      }
 
       console.error('Error getting response:', error)
       setIsError(true)
@@ -266,32 +270,45 @@ export function LiveChatDemo() {
         </span>
       </motion.div>
 
-      {/* Chat Window */}
+      {/* Chat Window - Premium glass effect with multi-layer shadows */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: durations.slow }}
-        className="rounded-2xl border-2 border-brand-500/20 shadow-2xl overflow-hidden bg-bg-primary relative group"
+        className="rounded-2xl overflow-hidden bg-bg-primary relative group
+          border border-white/[0.08] dark:border-white/[0.06]
+
+          /* Multi-layer shadow system */
+          shadow-[0_2px_4px_rgba(0,0,0,0.05),0_4px_8px_rgba(0,0,0,0.05),0_8px_16px_rgba(0,0,0,0.05),0_16px_32px_rgba(0,0,0,0.05)]
+          dark:shadow-[0_2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),0_16px_32px_rgba(0,0,0,0.1)]
+
+          /* Hover glow effect */
+          transition-shadow duration-300 ease-out
+          hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_16px_32px_rgba(99,102,241,0.04),0_0_60px_rgba(99,102,241,0.08)]
+          dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_16px_32px_rgba(129,140,248,0.05),0_0_60px_rgba(129,140,248,0.12)]
+        "
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-brand-500 to-brand-600 px-6 py-4 text-white relative overflow-hidden">
+        {/* Header - Premium indigo to pink gradient */}
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-6 py-4 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] w-[200%] translate-x-[-100%] animate-[shimmer_3s_infinite]" />
 
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner ring-1 ring-white/30">
-                <Bot className="w-6 h-6" />
+              {/* Unique AI icon - replaces generic bot */}
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner ring-1 ring-white/30 relative">
+                <MessageCircle className="w-5 h-5" />
+                <Sparkles className="w-3 h-3 absolute -top-0.5 -right-0.5 text-yellow-300 animate-pulse" />
               </div>
-              <div>
-                <div className="font-semibold flex items-center gap-2">
-                  Clarity Chat Assistant
-                  <span className="flex h-2 w-2 relative">
+              <div className="min-w-0">
+                <div className="font-semibold flex items-center gap-2 truncate">
+                  <span className="truncate">Clarity Chat</span>
+                  <span className="flex h-2 w-2 relative flex-shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                   </span>
                 </div>
-                <div className="text-xs opacity-90 font-medium">
+                <div className="text-xs opacity-90 font-medium truncate">
                   Powered by Claude
                 </div>
               </div>
@@ -302,11 +319,11 @@ export function LiveChatDemo() {
               whileHover={{ rotate: 180, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               viewport={{ once: true }}
-              className="p-2.5 min-w-[44px] min-h-[44px] rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none flex items-center justify-center"
+              className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none flex items-center justify-center flex-shrink-0"
               title="Reset Demo"
               aria-label="Reset chat demo"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-5 h-5" />
             </motion.button>
           </div>
         </div>
@@ -337,24 +354,27 @@ export function LiveChatDemo() {
                   message.sender === 'user' ? 'flex-row-reverse' : ''
                 }`}
               >
-                {/* Avatar */}
+                {/* Avatar - consistent 32x32px with unique AI icon */}
                 <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset ${
+                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset relative ${
                     message.sender === 'bot'
                       ? message.isError
                         ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-500/20'
-                        : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
-                      : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
+                        : 'bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
+                      : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
                   }`}
                 >
                   {message.sender === 'bot' ? (
                     message.isError ? (
-                      <AlertCircle className="w-5 h-5" />
+                      <AlertCircle className="w-4 h-4" />
                     ) : (
-                      <Bot className="w-5 h-5" />
+                      <>
+                        <MessageCircle className="w-4 h-4" />
+                        <Sparkles className="w-2 h-2 absolute -top-0.5 -right-0.5 text-yellow-500" />
+                      </>
                     )
                   ) : (
-                    <User className="w-5 h-5" />
+                    <User className="w-4 h-4" />
                   )}
                 </div>
 
@@ -364,7 +384,7 @@ export function LiveChatDemo() {
                     message.sender === 'bot'
                       ? message.isError
                         ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
-                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-tl-sm border border-gray-200 dark:border-gray-700'
+                        : 'bg-bg-secondary dark:bg-bg-tertiary text-text-primary rounded-tl-sm border border-border'
                       : 'bg-brand-500 text-white rounded-tr-sm'
                   }`}
                 >
@@ -476,10 +496,11 @@ export function LiveChatDemo() {
                 viewport={{ once: true }}
                 className="flex items-center gap-3"
               >
-                <div className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center ring-1 ring-inset ring-brand-500/20">
-                  <Bot className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center ring-1 ring-inset ring-indigo-500/20 relative">
+                  <MessageCircle className="w-4 h-4" />
+                  <Sparkles className="w-2 h-2 absolute -top-0.5 -right-0.5 text-yellow-500 animate-pulse" />
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 border border-border/50 shadow-sm">
+                <div className="bg-bg-secondary dark:bg-bg-tertiary rounded-2xl rounded-tl-sm px-4 py-3 border border-border/50 shadow-sm">
                   <TypingIndicator
                     label="Thinking..."
                     variant="dots"
@@ -585,7 +606,7 @@ export function LiveChatDemo() {
               )}
             </AnimatePresence>
           </form>
-          <div id="chat-demo-status" className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5" role="status" aria-live="polite">
+          <div id="chat-demo-status" className="text-[11px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5" role="status" aria-live="polite">
             <span
               className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`}
               aria-hidden="true"

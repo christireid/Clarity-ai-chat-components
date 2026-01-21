@@ -1,8 +1,18 @@
 'use client'
 
 import * as React from 'react'
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
-import type { ChatMessage } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  LLMLinguaCompressor,
+  ExtractiveCompressor,
+  AdaptiveCompressor,
+} from '@clarity-chat/token-optimization'
+import type {
+  ChatMessage,
+  LLMLinguaOptions,
+  ExtractiveOptions,
+  AdaptiveOptions,
+} from '@clarity-chat/token-optimization'
 import type {
   UseContextWindowConfig,
   UseContextWindowReturn,
@@ -10,6 +20,43 @@ import type {
   ContextStrategy,
   TokenEncoding,
 } from './types'
+
+/**
+ * Compression strategy type for context window
+ */
+export type CompressionStrategyType =
+  | 'llmlingua'
+  | 'extractive'
+  | 'adaptive'
+  | 'none'
+
+/**
+ * Compression options for context window
+ */
+export interface ContextCompressionOptions {
+  /** Compression strategy to use */
+  strategy?: CompressionStrategyType
+  /** Target compression ratio (0.1-1.0) - lower = more aggressive */
+  targetRatio?: number
+  /** Minimum quality threshold */
+  minQuality?: number
+  /** LLMLingua-specific options */
+  llmlinguaOptions?: Partial<LLMLinguaOptions>
+  /** Extractive-specific options */
+  extractiveOptions?: Partial<ExtractiveOptions>
+  /** Adaptive-specific options */
+  adaptiveOptions?: Partial<AdaptiveOptions>
+}
+
+/**
+ * Extended context window config with compression support
+ */
+export interface UseContextWindowConfigWithCompression extends UseContextWindowConfig {
+  /** Enable compression before summarization */
+  enableCompression?: boolean
+  /** Default compression options */
+  compressionOptions?: ContextCompressionOptions
+}
 
 /**
  * Default summarizer that concatenates message content
@@ -27,11 +74,18 @@ const defaultSummarizer = async (messages: ChatMessage[]): Promise<string> => {
 }
 
 /**
- * useContextWindow - Sliding window context management
+ * useContextWindow - Sliding window context management with compression
  *
  * Manages chat history to fit within model context limits.
  * Implements LangChain-style memory patterns: Buffer (full history),
  * BufferWindow (last k messages), SummaryBuffer (recent verbatim + older summarized).
+ *
+ * **Compression Integration (new):**
+ * Optionally compress messages before summarization using strategies from
+ * @clarity-chat/token-optimization:
+ * - **LLMLingua**: Token-level compression using importance scoring (best for prose)
+ * - **Extractive**: Sentence-level compression (best for long documents)
+ * - **Adaptive**: Automatically selects the best strategy based on content
  *
  * @param config - Configuration options
  * @returns Context window management utilities
@@ -43,10 +97,17 @@ const defaultSummarizer = async (messages: ChatMessage[]): Promise<string> => {
  *     state,
  *     addMessage,
  *     getOptimizedContext,
+ *     compressMessages,
  *   } = useContextWindow({
  *     maxTokens: 128000,
  *     strategy: 'summaryBuffer',
  *     reservedTokens: 4000,
+ *     enableCompression: true,
+ *     compressionOptions: {
+ *       strategy: 'adaptive',
+ *       targetRatio: 0.5,
+ *       minQuality: 0.7,
+ *     },
  *   })
  *
  *   const handleSend = async (content: string) => {
@@ -77,8 +138,28 @@ const defaultSummarizer = async (messages: ChatMessage[]): Promise<string> => {
  * ```
  */
 export function useContextWindow(
-  config: UseContextWindowConfig
-): UseContextWindowReturn {
+  config: UseContextWindowConfigWithCompression
+): UseContextWindowReturn & {
+  /** Compress messages using the configured compression strategy */
+  compressMessages: (
+    messages: ChatMessage[],
+    options?: ContextCompressionOptions
+  ) => Promise<{
+    messages: ChatMessage[]
+    compressionRatio: number
+    tokensSaved: number
+  }>
+  /** Compress a single text string */
+  compressText: (
+    text: string,
+    options?: ContextCompressionOptions
+  ) => Promise<{
+    compressed: string
+    compressionRatio: number
+    originalTokens: number
+    compressedTokens: number
+  }>
+} {
   const {
     maxTokens,
     reservedTokens = 1000,
@@ -88,7 +169,48 @@ export function useContextWindow(
     summarizer = defaultSummarizer,
     preserveSystemPrompt = true,
     preserveRecentCount = 4,
+    enableCompression = false,
+    compressionOptions: defaultCompressionOptions = {},
   } = config
+
+  // Compression instances (lazy-loaded)
+  const llmlinguaRef = React.useRef<LLMLinguaCompressor | null>(null)
+  const extractiveRef = React.useRef<ExtractiveCompressor | null>(null)
+  const adaptiveRef = React.useRef<AdaptiveCompressor | null>(null)
+
+  /**
+   * Get or create compressor instance
+   */
+  const getCompressor = React.useCallback(
+    (strategy: CompressionStrategyType) => {
+      switch (strategy) {
+        case 'llmlingua':
+          if (!llmlinguaRef.current) {
+            llmlinguaRef.current = new LLMLinguaCompressor(
+              defaultCompressionOptions.llmlinguaOptions
+            )
+          }
+          return llmlinguaRef.current
+        case 'extractive':
+          if (!extractiveRef.current) {
+            extractiveRef.current = new ExtractiveCompressor(
+              defaultCompressionOptions.extractiveOptions
+            )
+          }
+          return extractiveRef.current
+        case 'adaptive':
+          if (!adaptiveRef.current) {
+            adaptiveRef.current = new AdaptiveCompressor(
+              defaultCompressionOptions.adaptiveOptions
+            )
+          }
+          return adaptiveRef.current
+        default:
+          return null
+      }
+    },
+    [defaultCompressionOptions]
+  )
 
   // Token counter ref
   const counterRef = React.useRef<AccurateTokenCounter | null>(null)
@@ -410,6 +532,145 @@ export function useContextWindow(
     []
   )
 
+  /**
+   * Compress a single text string using the configured compression strategy
+   */
+  const compressText = React.useCallback(
+    async (
+      text: string,
+      options?: ContextCompressionOptions
+    ): Promise<{
+      compressed: string
+      compressionRatio: number
+      originalTokens: number
+      compressedTokens: number
+    }> => {
+      const opts = { ...defaultCompressionOptions, ...options }
+      const strategy = opts.strategy || 'adaptive'
+      const targetRatio = opts.targetRatio || 0.5
+
+      if (strategy === 'none' || !text.trim()) {
+        const tokens = countTokens(text)
+        return {
+          compressed: text,
+          compressionRatio: 1,
+          originalTokens: tokens,
+          compressedTokens: tokens,
+        }
+      }
+
+      const originalTokens = countTokens(text)
+      let compressed: string
+      let compressionRatio: number
+
+      switch (strategy) {
+        case 'llmlingua': {
+          const compressor = getCompressor('llmlingua') as LLMLinguaCompressor
+          const result = await compressor.compress(
+            text,
+            targetRatio,
+            opts.llmlinguaOptions
+          )
+          compressed = result.compressed
+          compressionRatio = result.compressionRatio
+          break
+        }
+        case 'extractive': {
+          const compressor = getCompressor('extractive') as ExtractiveCompressor
+          const result = compressor.compress(
+            text,
+            targetRatio,
+            opts.extractiveOptions
+          )
+          compressed = result.compressed
+          compressionRatio = result.compressionRatio
+          break
+        }
+        case 'adaptive':
+        default: {
+          const compressor = getCompressor('adaptive') as AdaptiveCompressor
+          const result = await compressor.compress(text, {
+            targetRatio,
+            minQuality: opts.minQuality,
+            ...opts.adaptiveOptions,
+          })
+          compressed = result.compressed
+          compressionRatio = result.compressionRatio
+          break
+        }
+      }
+
+      const compressedTokens = countTokens(compressed)
+
+      return {
+        compressed,
+        compressionRatio,
+        originalTokens,
+        compressedTokens,
+      }
+    },
+    [countTokens, defaultCompressionOptions, getCompressor]
+  )
+
+  /**
+   * Compress multiple chat messages
+   */
+  const compressMessages = React.useCallback(
+    async (
+      messagesToCompress: ChatMessage[],
+      options?: ContextCompressionOptions
+    ): Promise<{
+      messages: ChatMessage[]
+      compressionRatio: number
+      tokensSaved: number
+    }> => {
+      const opts = { ...defaultCompressionOptions, ...options }
+      const strategy = opts.strategy || 'adaptive'
+
+      if (strategy === 'none' || messagesToCompress.length === 0) {
+        return {
+          messages: messagesToCompress,
+          compressionRatio: 1,
+          tokensSaved: 0,
+        }
+      }
+
+      let totalOriginalTokens = 0
+      let totalCompressedTokens = 0
+      const compressedMessages: ChatMessage[] = []
+
+      for (const message of messagesToCompress) {
+        // Don't compress system messages or very short messages
+        if (message.role === 'system' || message.content.length < 100) {
+          compressedMessages.push(message)
+          const tokens = countTokens(message.content)
+          totalOriginalTokens += tokens
+          totalCompressedTokens += tokens
+          continue
+        }
+
+        const result = await compressText(message.content, opts)
+        totalOriginalTokens += result.originalTokens
+        totalCompressedTokens += result.compressedTokens
+
+        compressedMessages.push({
+          ...message,
+          content: result.compressed,
+        })
+      }
+
+      return {
+        messages: compressedMessages,
+        compressionRatio:
+          totalOriginalTokens > 0
+            ? totalCompressedTokens / totalOriginalTokens
+            : 1,
+        tokensSaved: totalOriginalTokens - totalCompressedTokens,
+      }
+    },
+    [countTokens, compressText, defaultCompressionOptions]
+  )
+
   return {
     state,
     addMessage,
@@ -422,5 +683,7 @@ export function useContextWindow(
     estimateTokensAfterAdd,
     exportState,
     importState,
+    compressMessages,
+    compressText,
   }
 }

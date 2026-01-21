@@ -60,7 +60,7 @@ export default function FollowUpSuggestionsPage() {
   ]
 
   const handleSelect = (suggestion) => {
-    logger.debug('Selected:', suggestion.title)
+    console.log('Selected:', suggestion.title)
     // In real app: add this as a new message
   }
 
@@ -162,7 +162,7 @@ render(<IconSuggestions />)`}
   return (
     <FollowUpSuggestions
       suggestions={suggestions}
-      onSelect={(s) => logger.debug('Selected:', s)}
+      onSelect={(s) => console.log('Selected:', s)}
       title="You might want to ask"
       subtitle="AI-ranked by relevance to your conversation"
     />
@@ -211,7 +211,7 @@ function LayoutOptions() {
       <FollowUpSuggestions
         suggestions={suggestions}
         layout={layout}
-        onSelect={(s) => logger.debug(s.title)}
+        onSelect={(s) => console.log(s.title)}
       />
     </div>
   )
@@ -426,7 +426,7 @@ useEffect(() => {
   FollowUpSuggestions,
   type FollowUpSuggestionsProps,
   type FollowUpSuggestion 
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // Suggestion structure
 interface FollowUpSuggestion {

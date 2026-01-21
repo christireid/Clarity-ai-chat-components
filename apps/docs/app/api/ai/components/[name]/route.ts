@@ -10,6 +10,10 @@ import {
 } from '@/lib/ai/types'
 import { logApiError } from '@/lib/security/secureLogger'
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * Single Component Lookup API
  *

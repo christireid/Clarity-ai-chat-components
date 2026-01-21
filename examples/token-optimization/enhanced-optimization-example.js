@@ -12,10 +12,10 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 // 📚 IMPORT PATTERN:
 // All @clarity-chat/react exports come from the main package entry point.
-// The hook useTokenOptimizationEnhanced is exported directly from @clarity-chat/react
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react';
+// The hook useTokenOptimization is exported directly from @clarity-chat/react
+import { useTokenOptimization } from '@clarity-chat/react';
 export function EnhancedOptimizationExample() {
-    const { optimizeData, optimizePrompt, prepareMessages, parseResponse, countTokens, calculateCost, stats, resetStats, } = useTokenOptimizationEnhanced({
+    const { optimizeData, optimizePrompt, prepareMessages, parseResponse, countTokens, calculateCost, stats, resetStats, } = useTokenOptimization({
         model: 'claude-3-5-sonnet',
         enableToon: true,
         enablePromptCaching: true,

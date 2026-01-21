@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { PerformanceDashboard } from '@clarity-chat/react/internal'
+import { PerformanceDashboard } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Analytics/PerformanceDashboard',

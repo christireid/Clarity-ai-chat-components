@@ -210,8 +210,18 @@ export function Landmark({
   'aria-label': ariaLabel,
   children,
   className,
-  as: Component = 'div',
+  as = 'div',
 }: LandmarkProps) {
+  // Type assertion for component that accepts children and ARIA props
+  const Component = as as React.ComponentType<{
+    id: string
+    role?: string
+    'aria-label'?: string
+    tabIndex?: number
+    className?: string
+    children?: React.ReactNode
+  }>
+
   return (
     <Component
       id={id}

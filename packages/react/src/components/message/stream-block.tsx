@@ -57,7 +57,14 @@ export function StreamBlock<T = React.ReactNode>({
   showIndicator = true,
   hookOptions,
 }: StreamBlockProps<T>) {
-  const Component = (as ?? 'div') as React.ElementType
+  // Type assertion to ComponentType that accepts children
+  const Component = (as ?? 'div') as React.ComponentType<{
+    className?: string
+    'data-status'?: string
+    'aria-live'?: 'polite' | 'assertive' | 'off'
+    role?: string
+    children?: React.ReactNode
+  }>
 
   const { values, status, error } = useStreamableUI<T>(source ?? null, {
     mode,

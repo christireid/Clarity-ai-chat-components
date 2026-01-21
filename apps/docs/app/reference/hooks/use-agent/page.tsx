@@ -87,7 +87,7 @@ export default function UseAgentPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          code={`import { useAgent } from '@clarity-chat/react'
 
 function AgentChat() {
   const agent = useAgent({
@@ -134,7 +134,7 @@ function AgentChat() {
           Experiment with useAgent:
         </p>
         <CodePlayground
-          initialCode={`import { useAgent } from '@clarity-chat/react/internal'
+          initialCode={`import { useAgent } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -184,7 +184,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Multiple Tools</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          code={`import { useAgent } from '@clarity-chat/react'
 
 function MultiToolAgent() {
   const agent = useAgent({
@@ -254,7 +254,7 @@ function MultiToolAgent() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Error Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          code={`import { useAgent } from '@clarity-chat/react'
 
 function RobustAgent() {
   const agent = useAgent({
@@ -295,7 +295,7 @@ function RobustAgent() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          code={`import { useAgent } from '@clarity-chat/react'
 
 function CustomAPIAgent() {
   const agent = useAgent({
@@ -333,7 +333,7 @@ function CustomAPIAgent() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Context</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useAgent } from '@clarity-chat/react/internal'
+          code={`import { useAgent } from '@clarity-chat/react'
 
 function ContextualAgent() {
   const agent = useAgent({

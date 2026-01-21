@@ -7,10 +7,15 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  SecurityManager,
-  type ValidationResult,
-} from '@clarity-chat/react/internal'
+import { SecurityManager } from '@clarity-chat/react'
+
+// Local type definition matching SecurityManager.validateChatInput return type
+interface SecurityValidationResult {
+  isValid: boolean
+  sanitized?: string
+  error?: string
+  warnings?: string[]
+}
 
 // Pre-loaded attack examples
 const ATTACK_EXAMPLES = [
@@ -75,7 +80,7 @@ const ATTACK_EXAMPLES = [
 
 type TestResult = {
   input: string
-  result: ValidationResult
+  result: SecurityValidationResult
   timestamp: Date
 }
 

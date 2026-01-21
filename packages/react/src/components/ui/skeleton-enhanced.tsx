@@ -20,7 +20,7 @@ const durations = {
 // TYPES AND INTERFACES
 // =============================================================================
 
-export interface SkeletonProps extends Omit<
+export interface EnhancedSkeletonProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children'
 > {
@@ -383,7 +383,7 @@ class LoadingPredictor {
 // ENHANCED BASE SKELETON COMPONENT
 // =============================================================================
 
-export const EnhancedSkeleton: React.FC<SkeletonProps> = ({
+export const EnhancedSkeleton: React.FC<EnhancedSkeletonProps> = ({
   variant = 'shimmer',
   width,
   height,

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { VirtualizedMessageList } from '@clarity-chat/react/internal'
+import { VirtualizedMessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 const generateMessages = (count: number): Message[] =>
