@@ -212,20 +212,23 @@ API:
 
 ---
 
-### ISSUE-012: Storybook Missing Stories
+### ISSUE-012: Storybook Build Failure - AnimationPlayground
 
-**Severity:** MEDIUM - Developer documentation
+**Severity:** MEDIUM - Build blocker for Storybook
 
-**Description:** Multiple internal components have no Storybook stories:
+**Description:** AnimationPlayground.stories.tsx imported animation components from the public API
+(`@clarity-chat/react`) but these components are only available in internal exports.
 
-- ClarityChatSimple
-- ChatRecipes
-- ClarityChatPresets
-- EditableMessageContent
-- MessageActionsSecure
-- And many more
+**Affected File:** `apps/storybook/stories/Foundation/AnimationPlayground.stories.tsx`
 
-**Solution:** Create comprehensive Storybook stories for all components.
+**Components Affected:**
+
+- FeedbackAnimation, SuccessCheckmark, ErrorShake, PulseAttention
+- RippleEffect, ConfettiEffect, GlowEffect, BounceIn
+- SlideNotification, AnimatedList, AnimatedListItem
+- FadePresence, SlidePresence, ScalePresence, StaggerContainer, AnimatedGrid
+
+**Solution:** Updated imports to use `@clarity-chat/react/internal`.
 
 ---
 
@@ -258,22 +261,22 @@ API:
 
 ## Resolution Progress
 
-| Issue ID  | Status  | Assigned | Fixed In                                       |
-| --------- | ------- | -------- | ---------------------------------------------- |
-| ISSUE-001 | FIXED   | Audit    | Built @clarity-chat/token-optimization         |
-| ISSUE-002 | FIXED   | Audit    | packages/react/src/hooks.ts - explicit exports |
-| ISSUE-003 | FIXED   | Audit    | packages/react/src/types/gpt-tokenizer.d.ts    |
-| ISSUE-004 | FIXED   | Audit    | packages/react/src/types/prismjs.d.ts          |
-| ISSUE-005 | FIXED   | Audit    | Deleted 81 orphaned hook documentation files   |
-| ISSUE-006 | FIXED   | Audit    | apps/docs/content/hooks/use-chat.mdx rewritten |
-| ISSUE-007 | FIXED   | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx   |
-| ISSUE-008 | FIXED   | Audit    | Added deprecation notice to use-chat.mdx       |
-| ISSUE-009 | FIXED   | Audit    | Fixed type in use-streaming.mdx                |
-| ISSUE-010 | Pending | -        | -                                              |
-| ISSUE-011 | Pending | -        | -                                              |
-| ISSUE-012 | Pending | -        | -                                              |
-| ISSUE-013 | Pending | -        | -                                              |
-| ISSUE-014 | Pending | -        | -                                              |
+| Issue ID  | Status  | Assigned | Fixed In                                        |
+| --------- | ------- | -------- | ----------------------------------------------- |
+| ISSUE-001 | FIXED   | Audit    | Built @clarity-chat/token-optimization          |
+| ISSUE-002 | FIXED   | Audit    | packages/react/src/hooks.ts - explicit exports  |
+| ISSUE-003 | FIXED   | Audit    | packages/react/src/types/gpt-tokenizer.d.ts     |
+| ISSUE-004 | FIXED   | Audit    | packages/react/src/types/prismjs.d.ts           |
+| ISSUE-005 | FIXED   | Audit    | Deleted 81 orphaned hook documentation files    |
+| ISSUE-006 | FIXED   | Audit    | apps/docs/content/hooks/use-chat.mdx rewritten  |
+| ISSUE-007 | FIXED   | Audit    | apps/docs/content/hooks/use-clarity-chat.mdx    |
+| ISSUE-008 | FIXED   | Audit    | Added deprecation notice to use-chat.mdx        |
+| ISSUE-009 | FIXED   | Audit    | Fixed type in use-streaming.mdx                 |
+| ISSUE-010 | Pending | -        | -                                               |
+| ISSUE-011 | Pending | -        | -                                               |
+| ISSUE-012 | FIXED   | Audit    | Updated imports to @clarity-chat/react/internal |
+| ISSUE-013 | Pending | -        | -                                               |
+| ISSUE-014 | Pending | -        | -                                               |
 
 ---
 
