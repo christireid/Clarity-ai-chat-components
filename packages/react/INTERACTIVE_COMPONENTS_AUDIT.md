@@ -388,9 +388,10 @@ The hooks demonstrate mature patterns:
 
 ### Phase 4: Testing & Documentation
 
-- [ ] Run accessibility linter (manual testing recommended)
-- [ ] Add accessibility tests for modified components
-- [ ] Update Storybook stories with accessibility annotations
+- [x] Run accessibility linter on modified components (ESLint jsx-a11y passes)
+- [x] Add accessibility tests for MentionInput (ARIA combobox pattern, listbox, keyboard nav)
+- [x] Add accessibility tests for ConversationList (button roles, aria-pressed, keyboard nav)
+- [ ] Update Storybook stories with accessibility annotations (future enhancement)
 
 ---
 
