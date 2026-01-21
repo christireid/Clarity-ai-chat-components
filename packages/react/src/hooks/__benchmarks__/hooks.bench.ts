@@ -60,7 +60,7 @@ describe('Hook Performance Benchmarks', () => {
 
   describe('useSafeTimeout', () => {
     bench('set timeout', async () => {
-      const { useSafeTimeout } = await import('../timing/use-safe-timeout')
+      const { useSafeTimeout } = await import('../ui/use-safe-timeout')
       const { result } = renderHook(() => useSafeTimeout())
       act(() => {
         result.current.setSafeTimeout(() => {}, 1000)
@@ -74,6 +74,7 @@ describe('Hook Performance Benchmarks', () => {
         await import('../resilience/use-circuit-breaker')
       renderHook(() =>
         useCircuitBreaker({
+          name: 'bench-circuit',
           failureThreshold: 5,
           resetTimeout: 30000,
         })
@@ -85,6 +86,7 @@ describe('Hook Performance Benchmarks', () => {
         await import('../resilience/use-circuit-breaker')
       const { result } = renderHook(() =>
         useCircuitBreaker({
+          name: 'bench-circuit-exec',
           failureThreshold: 5,
           resetTimeout: 30000,
         })
@@ -114,7 +116,7 @@ describe('Hook Performance Benchmarks', () => {
 
   describe('useAutoScroll', () => {
     bench('auto scroll initialization', async () => {
-      const { useAutoScroll } = await import('../scroll/use-auto-scroll')
+      const { useAutoScroll } = await import('../ui/use-auto-scroll')
       renderHook(() => useAutoScroll({ enabled: true }))
     })
   })
