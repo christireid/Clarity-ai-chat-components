@@ -24,8 +24,9 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
-      className="fixed bottom-6 right-6 z-50 group/container"
+      transition={{ duration: durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
+      className="fixed bottom-6 right-6 z-[55] group/container"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)', paddingRight: 'env(safe-area-inset-right)' }}
     >
       {/* Keyboard Shortcut Tooltip - Desktop only */}
       <AnimatePresence>
@@ -39,8 +40,10 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
               'hidden lg:block',
               'absolute bottom-full right-0 mb-2',
               'px-3 py-1.5 rounded-lg',
-              'bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium',
-              'shadow-lg border border-gray-700',
+              'bg-gray-900/95 dark:bg-gray-800/95 backdrop-blur-sm text-white text-xs font-medium',
+              // Multi-layer shadow with brand accent
+              'shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2),0_0_20px_rgba(99,102,241,0.1)]',
+              'border border-gray-700/50',
               'whitespace-nowrap'
             )}
           >
@@ -63,12 +66,14 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         className={cn(
-          'flex items-center gap-2 px-4 py-3 rounded-full',
-          'bg-gradient-to-r from-brand-500 to-brand-600',
+          'relative flex items-center gap-2 px-4 py-3 rounded-full overflow-hidden',
+          'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500',
           'text-white font-medium text-sm',
-          'shadow-lg hover:shadow-xl',
-          'transition-shadow duration-300 ease-out',
-          'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
+          // Multi-layer shadow system with brand glow
+          'shadow-[0_4px_12px_rgba(99,102,241,0.3),0_8px_24px_rgba(139,92,246,0.2),0_12px_36px_rgba(244,114,182,0.15)]',
+          'hover:shadow-[0_6px_16px_rgba(99,102,241,0.4),0_12px_32px_rgba(139,92,246,0.3),0_16px_48px_rgba(244,114,182,0.2),0_0_60px_rgba(99,102,241,0.25)]',
+          'transition-all duration-300 ease-out',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900',
           'group'
         )}
         aria-label={

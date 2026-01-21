@@ -1,0 +1,120 @@
+{
+  "session_id": "2026-01-19-docs-accuracy-protocol",
+  "current_cycle": 1,
+  "total_cycles": 10,
+  "cycle_status": "inventory_complete",
+
+  "library_inventory": {
+    "components": {
+      "total_exported": 295,
+      "documented": 124,
+      "with_props_table": 57,
+      "with_examples": 107,
+      "complete_docs": 101,
+      "coverage_percent": 42
+    },
+    "hooks": {
+      "total_exported": 116,
+      "documented": 71,
+      "with_api_ref": 46,
+      "with_examples": 51,
+      "complete_docs": 46,
+      "coverage_percent": 61
+    },
+    "types": {
+      "total_exported": "TBD",
+      "documented": "TBD"
+    },
+    "utilities": {
+      "total_exported": "TBD",
+      "documented": "TBD"
+    }
+  },
+
+  "documentation_gaps": {
+    "undocumented_components": 171,
+    "undocumented_hooks": 45,
+    "components_missing_props_table": 67,
+    "components_missing_examples": 17,
+    "hooks_missing_api_ref": 25,
+    "hooks_missing_examples": 20
+  },
+
+  "accuracy_issues": {
+    "verified": true,
+    "wrong_types": [
+      "ChatWindow.onMessageFeedback - docs missing optional comment parameter"
+    ],
+    "missing_props": [
+      "ChatWindow - 10 props missing (editingMessageId, onSaveEdit, onCancelEdit, error, onRetry, onDismissError, starterPrompts, followUpSuggestions, showStarterPrompts, showFollowUpSuggestions)",
+      "MessageList - 13 props missing (onStopGeneration, editingMessageId, onSaveEdit, onCancelEdit, loadingCount, enableGrouping, showTimeSeparators, announceNewMessages, className, id, role, aria-label, aria-live)",
+      "ChatInput - 2 props missing (id, aria-label)",
+      "ClarityChat - 1 prop missing in source interface (autoScroll)"
+    ],
+    "broken_examples": [
+      "chat-window Example 3 - missing messages and handleSend",
+      "chat-window Example 4 - missing useState import",
+      "chat-window Example 5 - missing useState and handleSend",
+      "chat-window Example 6 - missing messages and handleSend",
+      "chat-window Example 9 - missing useState and handleSend",
+      "streaming-setup Example 5 & 6 - wrong prop name streamProtocol should be transport",
+      "use-streaming Example 1 - useStreaming hook may not exist",
+      "quick-start Example 4 - undocumented props enableMarkdown, showTimestamps"
+    ],
+    "broken_links": [],
+    "wrong_defaults": [
+      "ClarityChat - showHeader and transport defaults not specified"
+    ],
+    "invalid_imports": [
+      "enableDebugMode - troubleshooting/page.tsx",
+      "VirtualizedMessageList - should be MessageList",
+      "MessageOptimized - should be Message",
+      "RequestBatcher from @clarity-chat/react/utils - path doesn't exist",
+      "SmartCache from @clarity-chat/react/utils - path doesn't exist",
+      "useMobileKeyboard from @clarity-chat/react/hooks - path doesn't exist",
+      "useTyping - doesn't exist",
+      "FeatureLoader from @clarity-chat/react/core-minimal - doesn't exist",
+      "renderWithTheme from @clarity-chat/react/test-utils - doesn't exist",
+      "MemoryService from @clarity-chat/react/server - doesn't exist",
+      "OpenAIChatHandler from @clarity-chat/react/server - doesn't exist",
+      "useDocumentIntegration - doesn't exist",
+      "SecurityManager - doesn't exist",
+      "CollaborativeEditor - doesn't exist",
+      "SeatInviteDialog - check enterprise module",
+      "ApiTokenManager - check enterprise module",
+      "SSOProvider from /enterprise - doesn't exist",
+      "RBACManager from /enterprise - doesn't exist",
+      "TenantManager from /enterprise - doesn't exist",
+      "SCIMHandler from /enterprise - doesn't exist",
+      "Theme - doesn't exist",
+      "ThemeSwitcher - doesn't exist",
+      "FileUpload - doesn't exist",
+      "Logger from /logging - doesn't exist",
+      "ReactAgent from /agents - doesn't exist",
+      "useKeyboardNavigation - doesn't exist",
+      "ChatInterface - doesn't exist",
+      "useTokenOptimization - use useTokenBudget instead"
+    ]
+  },
+
+  "cycle_metrics": [
+    {
+      "cycle": 1,
+      "phase": "inventory",
+      "completed_at": "2026-01-19T00:00:00Z",
+      "findings": {
+        "components_found": 295,
+        "hooks_found": 116,
+        "docs_pages_found": 195
+      }
+    }
+  ],
+
+  "verification_results": {
+    "typescript_compiles": "pending",
+    "tests_pass": "pending",
+    "build_succeeds": "pending",
+    "all_examples_work": "pending",
+    "all_links_valid": "pending"
+  }
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { CodeBlock } from '@clarity-chat/react/internal'
+import { CodeBlock } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
@@ -10,7 +10,7 @@ import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 function BasicCodeBlockDemo() {
   const code = `function greeting(name: string) {
-  logger.debug(\`Hello, \${name}!\`);
+  console.log(\`Hello, \${name}!\`);
   return true;
 }`
 
@@ -112,7 +112,7 @@ export default function CodeBlockPage() {
   highlightLines="2"
 >
   {\`function greeting(name: string) {
-  logger.debug(\\\`Hello, \\\${name}!\\\`);
+  console.log(\\\`Hello, \\\${name}!\\\`);
   return true;
 }\`}
 </CodeBlock>`}

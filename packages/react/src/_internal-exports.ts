@@ -400,8 +400,9 @@ export { NetworkStatus } from './components/feedback/network-status'
 
 // Token Management Components
 export { TokenCounter } from './components/token/token-counter'
-export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
-export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
+export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
+export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
+export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,

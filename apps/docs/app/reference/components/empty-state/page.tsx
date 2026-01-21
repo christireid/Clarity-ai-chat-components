@@ -55,7 +55,7 @@ export default function EmptyStatePage() {
   EmptyChatState, 
   NoSearchResultsState,
   ErrorState 
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // Empty chat
 <EmptyChatState onStartChat={() => focusInput()} />
@@ -79,7 +79,7 @@ export default function EmptyStatePage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Custom Empty State</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { EmptyState } from '@clarity-chat/react/internal'
+          <code>{`import { EmptyState } from '@clarity-chat/react'
 
 <EmptyState
   icon={<CustomIcon />}

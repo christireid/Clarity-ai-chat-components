@@ -84,9 +84,24 @@ const clarityChatProps: Prop[] = [
   },
   {
     name: 'onMessageFeedback',
-    type: "(messageId: string, type: 'up' | 'down') => void",
+    type: "(messageId: string, type: 'up' | 'down', comment?: string) => void",
     description:
-      'Callback when user provides thumbs up/down feedback on a message.',
+      'Callback when user provides thumbs up/down feedback on a message. Optionally includes a comment.',
+  },
+  {
+    name: 'onEditMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when user initiates editing a message.',
+  },
+  {
+    name: 'onRegenerateMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when user requests regenerating a message response.',
+  },
+  {
+    name: 'onDeleteMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when user deletes a message from the conversation.',
   },
   {
     name: 'theme',
@@ -189,8 +204,9 @@ export default function ClarityChatPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
-import '@clarity-chat/react/styles.css'
+          code={`import { ClarityChat } from '@clarity-chat/react'
+// Note: Import styles in your app's entry point
+// import '@clarity-chat/react/styles.css'
 
 function App() {
   return <ClarityChat api="/api/chat" />
@@ -205,26 +221,19 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Memory Integration</h2>
         <CodePlayground
-          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
 
-function ChatWithMemory() {
-  return (
-    <ClarityChat
-      api="/api/chat"
-      memory={{
-        enabled: true,
-        strategy: 'vector-store', // or 'sliding-window', 'semantic-chunks'
-        maxTokens: 8000,
-      }}
-    />
-  )
-}
-
-// Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ChatWithMemory />
+      <ClarityChat
+        api="/api/chat"
+        memory={{
+          enabled: true,
+          strategy: 'vector-store',
+          maxTokens: 8000,
+        }}
+      />
     </MemoryProvider>
   )
 }`}
@@ -234,9 +243,9 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Custom Header</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function CustomHeaderChat() {
+function App() {
   return (
     <ClarityChat
       api="/api/chat"
@@ -245,7 +254,7 @@ function CustomHeaderChat() {
       sessionSubtitle="Ask me anything!"
       showMessageCount
       headerActions={
-        <button onClick={() => logger.debug('Settings')}>
+        <button onClick={() => console.log('Settings clicked')}>
           Settings
         </button>
       }
@@ -260,9 +269,9 @@ function CustomHeaderChat() {
           With Prompt Optimization
         </h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function OptimizedChat() {
+function App() {
   return (
     <ClarityChat
       api="/api/chat"
@@ -284,9 +293,9 @@ function OptimizedChat() {
           With WebSocket Transport
         </h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function WebSocketChat() {
+function App() {
   return (
     <ClarityChat
       api="/api/chat"
@@ -305,18 +314,18 @@ function WebSocketChat() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Message Operations</h2>
         <CodePlayground
-          code={`import { ClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function AdvancedChat() {
+function App() {
   return (
     <ClarityChat
       api="/api/chat"
       enableMessageOperations
       onMessageCopy={(id, content) => {
-        logger.debug('Message copied:', id)
+        console.log('Message copied:', id)
       }}
       onMessageFeedback={(messageId, feedbackType) => {
-        logger.debug('Feedback:', messageId, feedbackType)
+        console.log('Feedback:', messageId, feedbackType)
       }}
     />
   )

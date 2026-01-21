@@ -1483,7 +1483,7 @@ Eliminates repetitive setState callbacks for boolean values.
 (options: UseTokenOptimizationOptions = {}) => UseTokenOptimizationReturn
 ```
 
-### useTokenOptimizationEnhanced
+### useTokenOptimization
 
 ```typescript
 (options: EnhancedTokenOptimizationOptions = {}) => { optimizeData: (data: any) => Promise<EnhancedOptimizationResult>; optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>; prepareMessages: (messages: CoreMessage[]) => { role: string; content: string; cache_control?: { type: "ephemeral"; } | undefined; }[]; parseResponse: (response: string) => any; countTokens: (text: string) => Promise<TokenCount>; calculateCost: (params: { inputTokens: number; outputTokens: number; }) => CostCalculation; optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]; canMakeRequest: () => boolean; recordRequest: () => void; routeQuery: (query: string) => string; createDataReference: (data: string | object) => { type: "reference"; id: string; originalSize: number; } | { type: "data"; data: string | object; }; limitOutput: (output: string) => string; batchRequest: <T>(request: () => Promise<T>) => Promise<T>; getPrefill: (format: "code" | "json" | "markdown" | "xml") => string; restructurePrompt: (prompt: string, context?: string | undefined) => { restructured: string; wasRestructured: boolean; questionPosition?: "end" | "middle" | "start" | undefined; }; stats: EnhancedOptimizationStats; resetStats: () => void; }

@@ -6,7 +6,7 @@ import {
   TokenOptimizationDashboard,
   ThemeProvider,
   themes,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 // Stub hook implementations for demo purposes

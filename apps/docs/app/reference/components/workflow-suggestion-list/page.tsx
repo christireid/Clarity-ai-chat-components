@@ -68,7 +68,7 @@ export default function WorkflowSuggestionListPage() {
   return (
     <WorkflowSuggestionList
       workflows={workflows}
-      onSelect={(w) => logger.debug('Selected:', w.name)}
+      onSelect={(w) => console.log('Selected:', w.name)}
     />
   )
 }

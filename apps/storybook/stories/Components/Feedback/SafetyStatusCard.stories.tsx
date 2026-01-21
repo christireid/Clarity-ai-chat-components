@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SafetyStatusCard } from '@clarity-chat/react/internal'
-import type { SafetyCheckItem } from '@clarity-chat/react/internal'
+import { SafetyStatusCard } from '@clarity-chat/react'
+import type { SafetyCheckItem } from '@clarity-chat/react'
 
 const meta: Meta<typeof SafetyStatusCard> = {
   title: 'Components/Feedback/SafetyStatusCard',

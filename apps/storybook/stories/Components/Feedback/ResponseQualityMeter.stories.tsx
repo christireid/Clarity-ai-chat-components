@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ResponseQualityMeter } from '@clarity-chat/react/internal'
-import type { ResponseQualityMetric } from '@clarity-chat/react/internal'
+import { ResponseQualityMeter } from '@clarity-chat/react'
+import type { ResponseQualityMetric } from '@clarity-chat/react'
 
 const meta: Meta<typeof ResponseQualityMeter> = {
   title: 'Components/Feedback/ResponseQualityMeter',

@@ -3,7 +3,7 @@ import { ChatWindow } from '@clarity-chat/react'
 import {
   SafetyStatusCard,
   ToolInvocationCard,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import type { Message, ToolInvocation } from '@clarity-chat/types'
 import { useState } from 'react'
 

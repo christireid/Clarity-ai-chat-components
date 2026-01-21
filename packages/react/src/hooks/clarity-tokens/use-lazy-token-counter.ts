@@ -24,6 +24,8 @@ export interface UseLazyTokenCounterConfig {
   autoLoad?: boolean
   /** Fallback estimation ratio (chars per token, default: 4) */
   estimationRatio?: number
+  /** Enable caching in AccurateTokenCounter (default: true) */
+  enableCaching?: boolean
 }
 
 /**
@@ -43,21 +45,33 @@ export interface UseLazyTokenCounterReturn extends Omit<
   isLoading: boolean
 }
 
-// Module-level cache for the loaded tokenizer module
-let tokenizerModule: typeof import('gpt-tokenizer') | null = null
-let tokenizerLoadPromise: Promise<typeof import('gpt-tokenizer')> | null = null
+// Module-level cache for the loaded AccurateTokenCounter instance
+// This ensures we share a single instance across all hook usages
+let sharedTokenCounter:
+  | import('@clarity-chat/token-optimization').AccurateTokenCounter
+  | null = null
+let tokenCounterLoadPromise: Promise<
+  import('@clarity-chat/token-optimization').AccurateTokenCounter
+> | null = null
+let currentModel: string | null = null
 
 /**
  * useLazyTokenCounter - Token counting with lazy-loaded encodings
  *
- * This hook implements the lazy-load pattern from assistant-ui where the
- * tokenizer (gpt-tokenizer, ~200KB) is only loaded when explicitly requested.
- * Until loaded, it uses character-based estimation.
+ * This hook implements the lazy-load pattern where the token counter
+ * (AccurateTokenCounter from @clarity-chat/token-optimization) is only loaded
+ * when explicitly requested. Until loaded, it uses character-based estimation.
  *
  * **Why lazy loading?**
  * Most chat UIs don't need accurate token counting until the user explicitly
  * enables "show tokens" or similar features. Lazy loading reduces the initial
  * bundle size significantly.
+ *
+ * **Integration with token-optimization:**
+ * This hook wraps AccurateTokenCounter internally, providing:
+ * - High-performance token counting using gpt-tokenizer
+ * - Built-in caching for repeated counts
+ * - Support for OpenAI, Anthropic Claude, and Google Gemini models
  *
  * @example
  * ```tsx
@@ -73,7 +87,7 @@ let tokenizerLoadPromise: Promise<typeof import('gpt-tokenizer')> | null = null
  *
  *   const handleEnableTokens = async () => {
  *     setShowTokens(true)
- *     await loadTokenizer() // Load gpt-tokenizer on demand
+ *     await loadTokenizer() // Load AccurateTokenCounter on demand
  *   }
  *
  *   return (
@@ -103,11 +117,14 @@ export function useLazyTokenCounter(
     debounceMs = 150,
     autoLoad = false,
     estimationRatio = 4,
+    enableCaching = true,
   } = config
 
   // State
   const [loadingState, setLoadingState] = React.useState<LazyTokenCounterState>(
-    tokenizerModule ? { status: 'ready' } : { status: 'idle' }
+    sharedTokenCounter && currentModel === model
+      ? { status: 'ready' }
+      : { status: 'idle' }
   )
   const [tokenCount, setTokenCount] = React.useState(0)
   const [streamTokenCount, setStreamTokenCount] = React.useState(0)
@@ -115,24 +132,31 @@ export function useLazyTokenCounter(
     null
   )
 
-  // Cache for token counts (shared across instances)
-  const cacheRef = React.useRef<Map<string, number>>(new Map())
+  // Local estimation cache for pre-load usage
+  const estimationCacheRef = React.useRef<Map<string, number>>(new Map())
 
   /**
-   * Load the tokenizer module on demand
+   * Load the AccurateTokenCounter on demand
    */
   const loadTokenizer = React.useCallback(async (): Promise<void> => {
-    // Already loaded
-    if (tokenizerModule) {
+    // Already loaded with same model
+    if (sharedTokenCounter && currentModel === model) {
       setLoadingState({ status: 'ready' })
       return
     }
 
+    // Model changed - need to reload
+    if (sharedTokenCounter && currentModel !== model) {
+      sharedTokenCounter.destroy()
+      sharedTokenCounter = null
+      tokenCounterLoadPromise = null
+    }
+
     // Already loading - wait for existing promise
-    if (tokenizerLoadPromise) {
+    if (tokenCounterLoadPromise) {
       setLoadingState({ status: 'loading' })
       try {
-        await tokenizerLoadPromise
+        await tokenCounterLoadPromise
         setLoadingState({ status: 'ready' })
       } catch (error) {
         setLoadingState({ status: 'error', error: error as Error })
@@ -144,60 +168,67 @@ export function useLazyTokenCounter(
     setLoadingState({ status: 'loading' })
 
     try {
-      // Dynamic import - this is where the magic happens
-      // Webpack/Turbopack will code-split this into a separate chunk
-      tokenizerLoadPromise = import('gpt-tokenizer')
-      tokenizerModule = await tokenizerLoadPromise
+      // Dynamic import - this enables code-splitting
+      // The AccurateTokenCounter from @clarity-chat/token-optimization
+      // uses gpt-tokenizer internally (pure JS, ~200KB)
+      tokenCounterLoadPromise = (async () => {
+        const { AccurateTokenCounter } =
+          await import('@clarity-chat/token-optimization')
+        const counter = new AccurateTokenCounter({
+          model,
+          enableCaching,
+          cacheSize: 500,
+        })
+        return counter
+      })()
+
+      sharedTokenCounter = await tokenCounterLoadPromise
+      currentModel = model
       setLoadingState({ status: 'ready' })
     } catch (error) {
-      tokenizerLoadPromise = null
+      tokenCounterLoadPromise = null
       setLoadingState({ status: 'error', error: error as Error })
       throw error
     }
-  }, [])
+  }, [model, enableCaching])
 
   // Auto-load if configured
   React.useEffect(() => {
-    if (autoLoad && !tokenizerModule) {
+    if (autoLoad && (!sharedTokenCounter || currentModel !== model)) {
       loadTokenizer()
     }
-  }, [autoLoad, loadTokenizer])
+  }, [autoLoad, loadTokenizer, model])
 
   /**
-   * Count tokens - uses gpt-tokenizer if loaded, otherwise estimates
+   * Count tokens - uses AccurateTokenCounter if loaded, otherwise estimates
    */
   const countTokens = React.useCallback(
     (text: string): number => {
       if (!text) return 0
 
-      // Check cache first
+      // If AccurateTokenCounter is loaded, use it
+      if (sharedTokenCounter && currentModel === model) {
+        return sharedTokenCounter.count(text)
+      }
+
+      // Estimation before tokenizer is loaded
+      // Use local cache to avoid repeated estimation
       const cacheKey = `${model}:${text}`
-      if (cacheRef.current.has(cacheKey)) {
-        return cacheRef.current.get(cacheKey)!
+      if (estimationCacheRef.current.has(cacheKey)) {
+        return estimationCacheRef.current.get(cacheKey)!
       }
 
-      let count: number
-
-      if (tokenizerModule) {
-        // Use accurate tokenizer
-        try {
-          count = tokenizerModule.encode(text, { allowedSpecial: 'all' }).length
-        } catch {
-          // Fallback to estimation
-          count = Math.ceil(text.length / estimationRatio)
-        }
-      } else {
-        // Estimation before tokenizer is loaded
-        count = Math.ceil(text.length / estimationRatio)
-      }
+      const count = Math.ceil(text.length / estimationRatio)
 
       // Cache result (limit cache size to prevent memory issues)
-      if (cacheRef.current.size > 500) {
+      if (estimationCacheRef.current.size > 500) {
         // Clear oldest entries
-        const entries = Array.from(cacheRef.current.entries())
-        entries.slice(0, 100).forEach(([key]) => cacheRef.current.delete(key))
+        const entries = Array.from(estimationCacheRef.current.entries())
+        entries
+          .slice(0, 100)
+          .forEach(([key]) => estimationCacheRef.current.delete(key))
       }
-      cacheRef.current.set(cacheKey, count)
+      estimationCacheRef.current.set(cacheKey, count)
 
       return count
     },
@@ -211,17 +242,14 @@ export function useLazyTokenCounter(
     (messages: Array<{ role: string; content: string }>): number => {
       if (!messages || messages.length === 0) return 0
 
-      if (tokenizerModule) {
-        try {
-          const gptMessages = messages.map((msg) => ({
+      // If AccurateTokenCounter is loaded, use it
+      if (sharedTokenCounter && currentModel === model) {
+        return sharedTokenCounter.countChat(
+          messages.map((msg) => ({
             role: msg.role as 'system' | 'user' | 'assistant',
             content: msg.content,
           }))
-          return tokenizerModule.encodeChat(gptMessages, model as 'gpt-4o')
-            .length
-        } catch {
-          // Fall through to estimation
-        }
+        )
       }
 
       // Estimation: sum content tokens + overhead per message
@@ -240,14 +268,15 @@ export function useLazyTokenCounter(
     (text: string, limit: number): boolean => {
       if (!text) return true
 
-      if (tokenizerModule) {
-        return tokenizerModule.isWithinTokenLimit(text, limit) !== false
+      // If AccurateTokenCounter is loaded, use its optimized method
+      if (sharedTokenCounter && currentModel === model) {
+        return sharedTokenCounter.isWithinLimit(text, limit)
       }
 
       // Estimation-based check
       return Math.ceil(text.length / estimationRatio) <= limit
     },
-    [estimationRatio]
+    [model, estimationRatio]
   )
 
   /**
@@ -319,30 +348,75 @@ export function useLazyTokenCounter(
  * Call this during idle time or on route change to preload
  * the tokenizer before the user needs it.
  *
+ * @param model - Model ID for the tokenizer (default: 'gpt-4o')
+ *
  * @example
  * ```tsx
  * // In a layout component
  * useEffect(() => {
  *   // Prefetch during browser idle time
  *   if ('requestIdleCallback' in window) {
- *     requestIdleCallback(() => preloadTokenizer())
+ *     requestIdleCallback(() => preloadTokenizer('gpt-4o'))
  *   }
  * }, [])
  * ```
  */
-export async function preloadTokenizer(): Promise<void> {
-  if (tokenizerModule) return
+export async function preloadTokenizer(
+  model: string = 'gpt-4o'
+): Promise<void> {
+  if (sharedTokenCounter && currentModel === model) return
 
-  if (!tokenizerLoadPromise) {
-    tokenizerLoadPromise = import('gpt-tokenizer')
+  if (!tokenCounterLoadPromise || currentModel !== model) {
+    // Clean up existing counter if model changed
+    if (sharedTokenCounter && currentModel !== model) {
+      sharedTokenCounter.destroy()
+      sharedTokenCounter = null
+    }
+
+    tokenCounterLoadPromise = (async () => {
+      const { AccurateTokenCounter } =
+        await import('@clarity-chat/token-optimization')
+      const counter = new AccurateTokenCounter({
+        model,
+        enableCaching: true,
+        cacheSize: 500,
+      })
+      return counter
+    })()
   }
 
-  tokenizerModule = await tokenizerLoadPromise
+  sharedTokenCounter = await tokenCounterLoadPromise
+  currentModel = model
 }
 
 /**
  * Check if the tokenizer is already loaded
+ *
+ * @param model - Optional model to check for specific model loading
  */
-export function isTokenizerLoaded(): boolean {
-  return tokenizerModule !== null
+export function isTokenizerLoaded(model?: string): boolean {
+  if (model) {
+    return sharedTokenCounter !== null && currentModel === model
+  }
+  return sharedTokenCounter !== null
+}
+
+/**
+ * Get the currently loaded model name (if any)
+ */
+export function getLoadedModel(): string | null {
+  return currentModel
+}
+
+/**
+ * Destroy the shared token counter and free resources
+ * Useful for cleanup in tests or when switching between apps
+ */
+export function destroySharedTokenCounter(): void {
+  if (sharedTokenCounter) {
+    sharedTokenCounter.destroy()
+    sharedTokenCounter = null
+    tokenCounterLoadPromise = null
+    currentModel = null
+  }
 }

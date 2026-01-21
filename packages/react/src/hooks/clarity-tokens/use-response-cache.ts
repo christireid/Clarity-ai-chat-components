@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { ExactCache } from '@clarity-chat/token-optimization'
+import type { ExactCacheConfig } from '@clarity-chat/token-optimization'
 import type {
   UseResponseCacheConfig,
   UseResponseCacheReturn,
@@ -9,28 +11,45 @@ import type {
 } from './types'
 
 /**
- * Simple in-memory cache manager
+ * Extended cache entry with metadata
+ * Wraps ExactCache from @clarity-chat/token-optimization with additional
+ * tag-based invalidation and metadata tracking
+ */
+interface CacheEntryWithMeta<T> {
+  data: T
+  cachedAt: Date
+  expiresAt: Date
+  tags: string[]
+  hitCount: number
+}
+
+/**
+ * Response cache manager using ExactCache from @clarity-chat/token-optimization
+ *
+ * This wraps the high-performance ExactCache with additional features:
+ * - Tag-based invalidation
+ * - Pattern-based invalidation
+ * - Metadata tracking (cachedAt, hitCount)
+ * - Stale-while-revalidate support
  */
 class ResponseCacheManager<T> {
-  private cache: Map<
-    string,
-    {
-      data: T
-      cachedAt: Date
-      expiresAt: Date
-      tags: string[]
-      hitCount: number
-    }
-  >
+  private exactCache: ExactCache<CacheEntryWithMeta<T>>
+  private tagIndex: Map<string, Set<string>> // tag -> keys mapping
   private maxEntries: number
   private defaultTTLMs: number
   private hits: number = 0
   private misses: number = 0
 
   constructor(maxEntries: number = 1000, defaultTTLMs: number = 3600000) {
-    this.cache = new Map()
     this.maxEntries = maxEntries
     this.defaultTTLMs = defaultTTLMs
+    this.tagIndex = new Map()
+
+    // Initialize ExactCache from token-optimization
+    this.exactCache = new ExactCache<CacheEntryWithMeta<T>>({
+      maxSize: maxEntries,
+      ttl: defaultTTLMs,
+    })
   }
 
   async search(key: string): Promise<{
@@ -45,27 +64,27 @@ class ResponseCacheManager<T> {
       }
     } | null
   }> {
-    const entry = this.cache.get(key)
-    if (entry && entry.expiresAt > new Date()) {
+    const result = this.exactCache.get(key)
+
+    if (result.hit && result.value) {
       this.hits++
-      entry.hitCount++
+      // Update hit count
+      result.value.hitCount++
       return {
         isHit: true,
         entry: {
-          response: entry.data,
+          response: result.value.data,
           metadata: {
-            createdAt: entry.cachedAt,
-            expiresAt: entry.expiresAt,
-            tags: entry.tags,
-            hitCount: entry.hitCount,
+            createdAt: result.value.cachedAt,
+            expiresAt: result.value.expiresAt,
+            tags: result.value.tags,
+            hitCount: result.value.hitCount,
           },
         },
       }
     }
+
     this.misses++
-    if (entry) {
-      this.cache.delete(key) // Remove expired
-    }
     return { isHit: false, entry: null }
   }
 
@@ -74,52 +93,80 @@ class ResponseCacheManager<T> {
     value: T,
     options?: { ttlMs?: number; tags?: string[] }
   ): Promise<void> {
-    if (this.cache.size >= this.maxEntries) {
-      // Remove oldest entry
-      const oldestKey = this.cache.keys().next().value
-      if (oldestKey) {
-        this.cache.delete(oldestKey)
-      }
+    const ttl = options?.ttlMs ?? this.defaultTTLMs
+    const tags = options?.tags ?? []
+    const now = new Date()
+
+    const entry: CacheEntryWithMeta<T> = {
+      data: value,
+      cachedAt: now,
+      expiresAt: new Date(now.getTime() + ttl),
+      tags,
+      hitCount: 0,
     }
 
-    const ttl = options?.ttlMs ?? this.defaultTTLMs
-    this.cache.set(key, {
-      data: value,
-      cachedAt: new Date(),
-      expiresAt: new Date(Date.now() + ttl),
-      tags: options?.tags ?? [],
-      hitCount: 0,
-    })
+    this.exactCache.set(key, entry)
+
+    // Update tag index
+    for (const tag of tags) {
+      if (!this.tagIndex.has(tag)) {
+        this.tagIndex.set(tag, new Set())
+      }
+      this.tagIndex.get(tag)!.add(key)
+    }
   }
 
   async invalidate(key: string): Promise<void> {
-    this.cache.delete(key)
+    // Get entry to clean up tag index
+    const result = this.exactCache.get(key)
+    if (result.hit && result.value) {
+      for (const tag of result.value.tags) {
+        this.tagIndex.get(tag)?.delete(key)
+      }
+    }
+    this.exactCache.delete(key)
   }
 
   async invalidateByTag(tag: string): Promise<number> {
+    const keys = this.tagIndex.get(tag)
+    if (!keys) return 0
+
     let count = 0
-    for (const [key, entry] of this.cache) {
-      if (entry.tags.includes(tag)) {
-        this.cache.delete(key)
-        count++
-      }
+    for (const key of keys) {
+      this.exactCache.delete(key)
+      count++
     }
+
+    this.tagIndex.delete(tag)
     return count
   }
 
   async invalidateByPattern(pattern: RegExp): Promise<number> {
+    // Since ExactCache uses hashing internally, we need to track original keys
+    // For pattern matching, we iterate through the tag index keys
     let count = 0
-    for (const key of this.cache.keys()) {
+
+    // Get all keys from tag index
+    const allKeys = new Set<string>()
+    for (const keys of this.tagIndex.values()) {
+      for (const key of keys) {
+        allKeys.add(key)
+      }
+    }
+
+    for (const key of allKeys) {
       if (pattern.test(key)) {
-        this.cache.delete(key)
+        await this.invalidate(key)
         count++
       }
     }
+
     return count
   }
 
   async clear(): Promise<void> {
-    this.cache.clear()
+    this.exactCache.clear()
+    this.tagIndex.clear()
     this.hits = 0
     this.misses = 0
   }
@@ -139,9 +186,10 @@ class ResponseCacheManager<T> {
   }
 
   async getStats(): Promise<CacheStats> {
+    const exactStats = this.exactCache.getStats()
     const total = this.hits + this.misses
     return {
-      totalEntries: this.cache.size,
+      totalEntries: exactStats.size,
       hitRate: total > 0 ? this.hits / total : 0,
       totalTokensSaved: 0, // Would need token counting
       totalCostSaved: 0, // Would need cost calculation

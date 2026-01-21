@@ -172,7 +172,6 @@
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.21.0",
-    "js-tiktoken": "^1.0.21",
     "jszip": "^3.10.1",
     "katex": "^0.16.25",
     "lucide-react": "^0.556.0",

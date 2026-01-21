@@ -6,7 +6,7 @@ import {
   type DynamicCompressionConfig,
   type CompressionResult as TokenOptCompressionResult,
   type CompressionStrategy as TokenOptCompressionStrategy,
-} from '@clarity-chat/token-optimization'
+} from '@clarity-chat/token-optimization/compression'
 import type { ChatMessage } from '@clarity-chat/token-optimization'
 import type { UsePromptCompressorConfig, UsePromptCompressorReturn, CompressionResult, CompressionStrategy } from './types'
 
@@ -69,31 +69,6 @@ export function usePromptCompressor(
   const [isCompressing, setIsCompressing] = React.useState(false)
   const [isModelLoaded, setIsModelLoaded] = React.useState(false)
 
-  // Map our strategy to token-optimization strategy type
-  const mapStrategy = React.useCallback(
-    (strategy?: CompressionStrategy): TokenOptCompressionStrategy[] => {
-      const baseStrategy: TokenOptCompressionStrategy = {
-        name: strategy ?? 'auto',
-        type: strategy === 'heuristic' ? 'syntactic' :
-              strategy === 'extractive' ? 'semantic' :
-              strategy === 'model' ? 'llmlingua' : 'hybrid',
-        compressionRatio: config.targetRatio ?? 0.5,
-        qualityScore: config.qualityThreshold ?? 0.85,
-        processingTime: 100,
-        contentTypes: ['text', 'code', 'mixed'],
-        complexity: 'medium',
-        resourceRequirements: {
-          memory: 100,
-          cpu: 1,
-          time: 100,
-          cost: 0,
-        },
-      }
-      return [baseStrategy]
-    },
-    [config.targetRatio, config.qualityThreshold]
-  )
-
   // Initialize compressor using DynamicCompressionEngine from token-optimization
   React.useEffect(() => {
     const compressionConfig: DynamicCompressionConfig = {
@@ -102,7 +77,7 @@ export function usePromptCompressor(
       enableAdaptiveCompression: true,
       enableContentAwareCompression: config.preserveStructure ?? true,
       enableQualityMonitoring: true,
-      compressionStrategies: mapStrategy(config.strategy),
+      compressionStrategies: [], // Use engine's default strategies
       qualityThreshold: config.qualityThreshold ?? 0.85,
       fallbackStrategy: 'minimal',
       enableRealTimeFeedback: false,
@@ -116,7 +91,6 @@ export function usePromptCompressor(
     config.preserveStructure,
     config.minTokens,
     config.qualityThreshold,
-    mapStrategy,
   ])
 
   /**
@@ -134,15 +108,16 @@ export function usePromptCompressor(
       setIsCompressing(true)
 
       try {
-        const result: TokenOptCompressionResult = await compressorRef.current.compress(text)
+        const result = await compressorRef.current.compress(text)
 
+        // Map token-optimization result to local CompressionResult type
         return {
-          original: result.originalContent,
-          compressed: result.compressedContent,
-          compressionRatio: result.compressionRatio,
-          tokensSaved: result.tokensSaved,
-          strategy: result.strategyUsed as CompressionStrategy,
-          qualityScore: result.qualityScore,
+          original: result.originalContent || '',
+          compressed: result.compressedContent || '',
+          compressionRatio: result.compressionRatio || 1.0,
+          tokensSaved: result.tokensSaved || 0,
+          strategy: (result.strategyUsed || 'auto') as CompressionStrategy,
+          qualityScore: result.qualityScore || 0,
         }
       } finally {
         setIsCompressing(false)

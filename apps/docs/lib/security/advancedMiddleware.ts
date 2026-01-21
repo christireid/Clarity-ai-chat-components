@@ -312,7 +312,7 @@ export class AdvancedSecurityMiddleware {
   /**
    * Create error response
    */
-  private createErrorResponse(error: any): NextResponse {
+  private createErrorResponse(error: unknown): NextResponse {
     return NextResponse.json(
       {
         error: 'Internal Server Error',

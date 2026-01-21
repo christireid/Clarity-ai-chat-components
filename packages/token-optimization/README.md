@@ -1,602 +1,558 @@
-# Token Optimization System
+# @clarity-chat/token-optimization
 
-## Overview
+Count and optimize LLM tokens in **under 5 lines**:
 
-The Clarity Chat Token Optimization System is a comprehensive solution for reducing AI API costs by
-60-90% through intelligent token counting, compression, and optimization. It implements
-industry-leading techniques including dynamic compression with quality preservation, advanced
-semantic caching, cost-aware optimization, and enterprise-grade security.
+```typescript
+import { useTokenCount } from '@clarity-chat/token-optimization'
 
-## Features
+const { count, isLoading } = useTokenCount(text)
+```
 
-### 🎯 Accurate Token Counting
+That's it. Works with GPT-4o, Claude, Gemini - zero configuration needed.
 
-- **gpt-tokenizer Integration**: 99%+ accuracy, 20x smaller than tiktoken WASM (~200KB vs ~4MB)
-- **Multi-model Support**: GPT-4, GPT-4o, o-series (o1, o3, o4), GPT-3.5, Claude, Gemini
-- **Chat Token Counting**: Accurate overhead calculation for chat conversations
-- **Fast Limit Checking**: `isWithinTokenLimit` stops early without full encoding
-- **Intelligent Caching**: 80%+ hit rates with LRU eviction
-- **Performance Monitoring**: Real-time metrics and analytics
+## Quick Examples
 
-### 📄 Text Chunking
+### React: Show Token Count
 
-- **llm-splitter Integration**: Lightweight chunking (100x smaller than LangChain)
-- **Strategy Presets**: Precise (256 tokens), Balanced (512), Context (1024)
-- **Overlap Support**: Configurable overlap percentage for context preservation
-- **Rich Metadata**: Character positions, token counts, paragraph boundaries
-- **Paragraph-aware**: Respects document structure while chunking
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization'
 
-### 🔒 Enterprise Security
+function TokenCounter({ text }) {
+  const { count, isLoading, info } = useTokenCount(text)
 
-- **OWASP LLM Top 10 Compliance**: Prompt injection prevention
-- **PII Protection**: Automatic detection and redaction
-- **Side-channel Protection**: Compression ratio obfuscation
-- **Audit Logging**: Comprehensive security event tracking
+  return (
+    <div>
+      <span>{isLoading ? '...' : count} tokens</span>
+      <small>
+        {info.words} words • {info.characters} chars
+      </small>
+    </div>
+  )
+}
+```
 
-### 🗜️ Advanced Compression
+### React: Warn at Token Limit
 
-- **DynamicCompressionEngine**: 70-85% compression with quality preservation
-- **Strategy Selection**: Semantic, syntactic, and hybrid compression strategies
-- **Quality Monitoring**: 85%+ minimum quality threshold enforcement
-- **AdvancedSemanticCache**: 90%+ cost reduction with intelligent caching
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization'
 
-### 🧠 Intelligent Optimization
+function PromptEditor({ maxTokens = 4096 }) {
+  const [text, setText] = useState('')
+  const { count } = useTokenCount(text)
+  const isOverLimit = count > maxTokens
 
-- **QualityGate**: Enforces minimum quality preservation thresholds
-- **CostAwareOptimizer**: Budget-based optimization strategy selection
-- **Adaptive Strategy**: Content-aware compression approach selection
-- **Cost Tracking**: Real-time budget monitoring and cost estimation
+  return (
+    <div>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} />
+      <span style={{ color: isOverLimit ? 'red' : 'inherit' }}>
+        {count} / {maxTokens} tokens
+      </span>
+    </div>
+  )
+}
+```
 
-## Quick Start
+### Node.js: Count Tokens
 
-### Installation
+```typescript
+import { countTokens, DEFAULTS } from '@clarity-chat/token-optimization'
+
+// Zero-config: uses gpt-4o by default
+const count = countTokens('Hello, world!')
+console.log(`${count} tokens (using ${DEFAULTS.model})`)
+
+// Or specify a model
+const claudeCount = countTokens('Hello, world!', { model: 'claude-3-5-sonnet' })
+```
+
+### Route to Optimal Model
+
+```typescript
+import { ModelRouter } from '@clarity-chat/token-optimization'
+
+// One line: get a router with all major providers
+const router = ModelRouter.default()
+
+// Or build a custom router
+const router = ModelRouter.builder()
+  .useOpenAIModels()
+  .useClaudeModels()
+  .withStrategy('cost-optimized')
+  .build()
+
+const { model, cost, reason } = router.route(prompt)
+console.log(`Use ${model} - ${reason}`)
+```
+
+### Provider-Native Caching (90% Savings!)*
+
+<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
+
+Leverage built-in caching from Anthropic, OpenAI, and Google:
+
+```typescript
+import { quickCache } from '@clarity-chat/token-optimization'
+
+// Zero-config caching with Anthropic (default)
+const result = await quickCache([
+  {
+    role: 'system',
+    content: 'You are a helpful coding assistant...', // This gets cached!
+  },
+  { role: 'user', content: 'How do I create a React component?' },
+])
+
+// Use result.messages in your API call to Anthropic
+// Subsequent calls with same system prompt = 90% cheaper!* 🎉
+// *Based on provider specifications. Actual savings may vary.
+console.log(`Estimated savings: ${result.estimatedSavings.percentage * 100}%`)
+```
+
+Works with:
+
+- **Anthropic**: Automatic `cache_control` breakpoints
+- **OpenAI**: Auto-caches prompts ≥1024 tokens
+- **Google Gemini**: Implicit and explicit caching modes
+
+[→ Full Provider Caching Guide](./docs/PROVIDER_CACHING.md)
+
+### Track Cost Savings in Real-Time
+
+Monitor actual savings from token optimization with built-in cost analytics:
+
+```typescript
+import { CostTracker, calculateRequestCost, getSavingsPercentage } from '@clarity-chat/token-optimization'
+
+// Create a tracker for your model
+const tracker = new CostTracker('claude-3-5-sonnet')
+
+// Track each request
+const cost = tracker.trackRequest({
+  inputTokens: 10000,
+  outputTokens: 500,
+  cachedInputTokens: 8000 // 80% cache hit rate
+})
+
+console.log(`This request: $${cost.totalCost.toFixed(4)}`)
+console.log(`Savings: ${cost.savingsPercentage.toFixed(1)}%`)
+
+// Get cumulative statistics
+const report = tracker.getReport()
+console.log(`Total saved: $${report.cumulative.totalSavings.toFixed(2)}`)
+console.log(`Average savings: ${report.cumulative.averageSavingsPercentage.toFixed(1)}%`)
+console.log(`Requests tracked: ${report.cumulative.requestCount}`)
+
+// Get savings percentage for cached tokens
+const cacheSavings = getSavingsPercentage('claude-3-5-sonnet')
+console.log(`Cached tokens are ${cacheSavings}% cheaper`) // 90.0%
+
+// Calculate cost for a single request
+const singleCost = calculateRequestCost({
+  model: 'gpt-4o',
+  inputTokens: 5000,
+  outputTokens: 1000,
+  cachedInputTokens: 4000
+})
+```
+
+**Features:**
+- Real-time cost calculations with caching savings
+- Cumulative tracking across multiple requests
+- Personalized recommendations for optimization
+- Compare costs across different models
+- Estimate potential savings before implementation
+
+### Provider-Native Token Counting (100% Accurate!)
+
+Get exact token counts directly from provider APIs:
+
+```typescript
+import { ProviderNativeCounter } from '@clarity-chat/token-optimization'
+
+// Anthropic: Uses /v1/messages/count_tokens API (free, 100% accurate)
+const anthropic = new ProviderNativeCounter({
+  provider: 'anthropic',
+  model: 'claude-3-5-sonnet-20241022',
+  apiKey: process.env.ANTHROPIC_API_KEY, // optional
+})
+
+const result = await anthropic.count('Your message here')
+console.log(`${result.tokens} tokens (${result.method})`)
+// Output: "5 tokens (provider-api)" - 100% accurate!
+
+// Google Gemini: Uses countTokens API (free, 3000 RPM, 100% accurate)
+const gemini = new ProviderNativeCounter({
+  provider: 'google',
+  model: 'gemini-1.5-pro',
+  apiKey: process.env.GOOGLE_API_KEY,
+})
+
+// Falls back to local gpt-tokenizer if no API key provided
+const localCounter = new ProviderNativeCounter({
+  provider: 'openai',
+  model: 'gpt-4o',
+  // No API key? Uses fast local counting (99%+ accurate)
+})
+```
+
+**Why use provider-native counting?**
+
+- **100% accurate** - Exact counts from the source
+- **Free APIs** - Anthropic and Gemini provide free counting endpoints
+- **Auto fallback** - Uses fast local counting when API unavailable
+- **Caching** - Results cached for 1 hour to minimize API calls
+
+### File Optimization (40-60% Savings!)*
+
+<sub>*Compression rates vary by content type and configuration.</sub>
+
+Optimize files for token efficiency with smart chunking and format conversion:
+
+```typescript
+import { FileOptimizer } from '@clarity-chat/token-optimization'
+
+const optimizer = new FileOptimizer({
+  outputFormat: 'toon', // Convert to Token-Optimized Object Notation
+  chunkingStrategy: 'semantic', // Smart chunking at paragraph boundaries
+  targetChunkSize: 1000, // Tokens per chunk
+  removeComments: true, // Strip code comments
+  normalizeWhitespace: true, // Collapse extra whitespace
+})
+
+// Optimize HTML documentation to Markdown
+const htmlDoc = '<html><body><h1>API Guide</h1><p>...</p></body></html>'
+const result = await optimizer.optimize(htmlDoc, 'html')
+
+console.log(`Saved ${result.stats.tokensSaved} tokens (${result.stats.savingsPercent.toFixed(1)}%)`)
+console.log(`Original: ${result.stats.originalTokens} tokens`)
+console.log(`Optimized: ${result.stats.optimizedTokens} tokens`)
+console.log(`Chunks: ${result.chunks?.length || 1}`)
+```
+
+**Supported conversions:**
+
+- HTML → Markdown/TOON (40-60% savings)*
+- JSON → TOON (30-50% savings with single-letter keys)*
+- Code → Markdown (remove comments, normalize whitespace)
+- PDF → Text (extract and optimize)
+
+<sub>*Compression rates vary by content type and configuration.</sub>
+
+**Chunking strategies:**
+
+- `semantic` - Split at natural boundaries (paragraphs, sentences)
+- `fixed-size` - Fixed token counts with overlap
+- `sliding-window` - Overlapping windows for context
+- `hierarchical` - Multi-level semantic chunking
+
+## Installation
 
 ```bash
 npm install @clarity-chat/token-optimization
 ```
 
-### Basic Usage
+## Why This Package?
+
+| Metric               | This Package | Alternatives   |
+| -------------------- | ------------ | -------------- |
+| Bundle size          | ~400KB       | tiktoken: ~4MB |
+| Time to count        | 0.1ms        | 1-10ms         |
+| Zero-config accuracy | 99%+         | Varies         |
+| React hooks          | ✅ Built-in  | ❌ DIY         |
+| Model routing        | ✅ Built-in  | ❌ DIY         |
+
+> **Note on Accuracy**: 99%+ for OpenAI models (gpt-tokenizer). For Claude/Gemini, uses character estimation (~90% accurate). For 100% accuracy across all providers, use the new `ProviderNativeCounter` with API keys.
+
+## Sensible Defaults
+
+Everything works out of the box. Here's what you get:
 
 ```typescript
-import {
-  AccurateTokenCounter,
-  TextChunker,
-  ChunkingStrategy,
-  TokenSecurityManager,
+import { DEFAULTS } from '@clarity-chat/token-optimization'
+
+DEFAULTS.model // 'gpt-4o' - most commonly used
+DEFAULTS.debounceMs // 150 - responsive but efficient
+DEFAULTS.maxCacheSize // 1000 - balances memory vs hit rate
+DEFAULTS.cacheTtlMs // 3600000 - 1 hour cache
+```
+
+Override only what you need:
+
+```typescript
+const { count } = useTokenCount(text, {
+  model: 'claude-3-5-sonnet', // Override model
+  debounceMs: 300, // Slower debounce for heavy typing
+})
+```
+
+## Presets
+
+Start with a preset, customize later:
+
+```typescript
+import { createOptimizer } from '@clarity-chat/token-optimization'
+
+// Development: fast, minimal resources
+const dev = createOptimizer({ preset: 'minimal' })
+
+// Production: balanced performance (recommended)
+const prod = createOptimizer({ preset: 'standard' })
+
+// Enterprise: maximum performance
+const enterprise = createOptimizer({ preset: 'enterprise' })
+```
+
+## Error Messages That Help
+
+Errors tell you **what went wrong**, **why**, and **how to fix it**:
+
+```typescript
+import { UnsupportedModelError } from '@clarity-chat/token-optimization'
+
+// If you use an unknown model, you get:
+// ❌ UnsupportedModelError [TOKEN_UNSUPPORTED_MODEL]
+//    Model "gpt-5-turbo" is not supported.
+//
+// 💡 Suggestion: Use one of: gpt-4o, gpt-4o-mini, claude-3-5-sonnet, ...
+// 📚 Docs: https://clarity-chat.dev/docs/supported-models
+```
+
+## Progressive Complexity
+
+### Level 1: Just Count Tokens
+
+```typescript
+const { count } = useTokenCount(text)
+```
+
+### Level 2: Add Provider Caching (90% savings)*
+
+<sub>*Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on provider specifications. Actual savings may vary.</sub>
+
+```typescript
+import { createProviderCache } from '@clarity-chat/token-optimization'
+
+const cache = createProviderCache({ provider: 'anthropic' })
+const result = await cache(messages)
+```
+
+### Level 3: Add Local Caching
+
+```typescript
+const { count, cacheStats } = useTokenOptimization(text, {
+  preset: 'standard',
+  enableCache: true,
+})
+```
+
+### Level 4: Full Pipeline
+
+```typescript
+const { result, stats } = useOptimizationPipeline(text, {
+  cache: { maxSize: 1000, ttl: 3600000 },
+  compression: { level: 'moderate', preserveCode: true },
+  routing: { strategy: 'cost-optimized' },
+})
+```
+
+## Complete Feature Set
+
+This package provides:
+
+- **Provider-Native Caching**: 90% cost reduction with Anthropic, OpenAI, Google* ⭐ NEW
+  - *Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on provider specifications.
+- **Provider-Native Token Counting**: 100% accurate counting via provider APIs (Anthropic, Gemini) ⭐ NEW
+- **File Optimization**: Smart chunking & format conversion (HTML/PDF→Markdown/TOON) ⭐ NEW
+- **Token Counting**: 99%+ accurate with gpt-tokenizer (5-6x smaller: 972KB vs 5.3MB tiktoken)
+- **Text Chunking**: Smart splitting with overlap support
+- **Compression**: LLMLingua-style compression (2-10x reduction, typically 4-5x)*
+  - *Compression rates vary by content type and configuration.
+- **Caching**: Multi-tier with semantic similarity matching
+- **Model Routing**: Automatic model selection by cost/quality/complexity
+- **TOON Format**: Token-Optimized Object Notation (40-60% savings)
+- **Security**: OWASP LLM Top 10 compliance
+- **Accessibility**: WCAG 2.1 AA compliant components
+- **Production**: Health checks, observability, circuit breakers
+
+**Why so comprehensive?** Token optimization in production requires more than just counting. This package provides integrated infrastructure for security, observability, and resilience because these are essential for production LLM applications. See [PACKAGE_SCOPE.md](./PACKAGE_SCOPE.md) for architecture rationale and scope justification.
+
+## Supported Models
+
+| Provider  | Models                                           |
+| --------- | ------------------------------------------------ |
+| OpenAI    | gpt-4o, gpt-4o-mini, o1, o3, o4-mini             |
+| Anthropic | claude-3-5-sonnet, claude-3-haiku, claude-3-opus |
+| Google    | gemini-2.0-flash, gemini-2.0-pro                 |
+
+## API Reference
+
+### Provider Caching Functions (NEW!)
+
+| Function                 | Purpose                          |
+| ------------------------ | -------------------------------- |
+| `quickCache`             | Zero-config caching              |
+| `anthropicCache`         | Anthropic-specific caching       |
+| `openaiCache`            | OpenAI-specific caching          |
+| `googleCache`            | Google Gemini-specific caching   |
+| `createProviderCache`    | Create reusable cache function   |
+| `estimateCacheSavings`   | Estimate savings before applying |
+| `ProviderCachingManager` | Advanced caching control         |
+
+### Provider-Native Token Counting (NEW!)
+
+| Function/Class           | Purpose                              |
+| ------------------------ | ------------------------------------ |
+| `ProviderNativeCounter`  | 100% accurate counting via APIs      |
+| `providerNativeCount`    | Quick count helper function          |
+
+Supports: Anthropic (free API), Google Gemini (free API), OpenAI (local gpt-tokenizer)
+
+### File Optimization (NEW!)
+
+| Function/Class  | Purpose                                  |
+| --------------- | ---------------------------------------- |
+| `FileOptimizer` | Smart chunking & format conversion       |
+| `optimizeFile`  | Quick optimization helper                |
+
+Formats: HTML→Markdown/TOON, JSON→TOON, Code→Markdown, PDF→Text
+
+### React Hooks
+
+| Hook                      | Purpose                | Complexity |
+| ------------------------- | ---------------------- | ---------- |
+| `useTokenCount`           | Count tokens           | Simple     |
+| `useTokenBudget`          | Track against limit    | Simple     |
+| `useModelRouter`          | Route to optimal model | Medium     |
+| `useTieredCache`          | Cache optimization     | Medium     |
+| `useTokenOptimization`    | All-in-one             | Full       |
+| `useOptimizationPipeline` | Full pipeline control  | Advanced   |
+
+### Classes
+
+| Class                  | Purpose                       |
+| ---------------------- | ----------------------------- |
+| `AccurateTokenCounter` | Precise token counting        |
+| `ModelRouter`          | Route prompts to models       |
+| `ModelRouterBuilder`   | Build custom routers          |
+| `TieredCache`          | Multi-level caching           |
+| `LLMLinguaCompressor`  | Statistical compression       |
+| `QualityGate`          | Quality threshold enforcement |
+
+### Error Types
+
+| Error                      | When                    |
+| -------------------------- | ----------------------- |
+| `UnsupportedModelError`    | Unknown model specified |
+| `TokenBudgetExceededError` | Prompt exceeds limit    |
+| `ValidationError`          | Invalid configuration   |
+| `CacheError`               | Cache operation failed  |
+| `CompressionError`         | Compression failed      |
+| `QualityThresholdError`    | Quality below minimum   |
+| `SecurityViolationError`   | Security rule triggered |
+
+## Documentation
+
+### 📖 Guides
+
+| Guide                                              | What You'll Learn                                                             |
+| -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **[Getting Started](./docs/GETTING_STARTED.md)**   | Install, count your first tokens, and build your first React component        |
+| **[Provider Caching](./docs/PROVIDER_CACHING.md)** | Save 90% on API costs with Anthropic, OpenAI, and Google caching              |
+| **[Best Practices](./docs/BEST_PRACTICES.md)**     | Production patterns, security, performance, monitoring, and cost optimization |
+| **[Troubleshooting](./docs/TROUBLESHOOTING.md)**   | Solutions to common issues with installation, caching, React hooks, and more  |
+
+### 💡 Examples
+
+Ready-to-run examples organized by complexity:
+
+| Example                                                            | Description               | Run It                                    |
+| ------------------------------------------------------------------ | ------------------------- | ----------------------------------------- |
+| **[01-basic-react.tsx](./examples/01-basic-react.tsx)**            | React hooks basics        | Copy into your React app                  |
+| **[02-node-counting.ts](./examples/02-node-counting.ts)**          | Node.js token counting    | `npx tsx examples/02-node-counting.ts`    |
+| **[03-model-routing.ts](./examples/03-model-routing.ts)**          | Automatic model selection | `npx tsx examples/03-model-routing.ts`    |
+| **[04-full-pipeline.tsx](./examples/04-full-pipeline.tsx)**        | Complete optimization     | Copy into your React app                  |
+| **[05-provider-caching.ts](./examples/05-provider-caching.ts)** ⭐ | 90% cost savings!         | `npx tsx examples/05-provider-caching.ts` |
+| **[06-security.ts](./examples/06-security.ts)** 🔒                 | Security features         | `npx tsx examples/06-security.ts`         |
+| **[07-compression.ts](./examples/07-compression.ts)** 📦           | Compression strategies    | `npx tsx examples/07-compression.ts`      |
+
+[→ Full Examples Directory](./examples/README.md) with by-goal and by-use-case navigation
+
+### 🎯 Quick Start Paths
+
+**Just want to count tokens?** → Start with [Getting Started](./docs/GETTING_STARTED.md) →
+[Example 01](./examples/01-basic-react.tsx)
+
+**Want to save 90% on API costs?** ⭐ RECOMMENDED → Read
+[Provider Caching](./docs/PROVIDER_CACHING.md) → [Example 05](./examples/05-provider-caching.ts)
+
+**Building for production?** → Read [Best Practices](./docs/BEST_PRACTICES.md) →
+[Example 04](./examples/04-full-pipeline.tsx)
+
+**Having issues?** → Check [Troubleshooting](./docs/TROUBLESHOOTING.md)
+
+## TypeScript
+
+Full TypeScript support with exported types:
+
+```typescript
+import type {
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+  ModelConfig,
+  RoutingResult,
 } from '@clarity-chat/token-optimization'
-
-// Accurate token counting with gpt-tokenizer (20x smaller than tiktoken)
-const counter = new AccurateTokenCounter({
-  model: 'gpt-4o', // Supports latest o-series models
-  enableCaching: true,
-  enableMonitoring: true,
-})
-
-const text = 'Hello world, this is a test message'
-const tokens = counter.count(text) // Accurate count via pure JS (no WASM)
-
-// Fast limit checking (stops early, doesn't encode full text)
-const isOk = counter.isWithinLimit(text, 1000)
-
-// Chat conversation token counting with message overhead
-const chatTokens = counter.countChat([
-  { role: 'system', content: 'You are a helpful assistant.' },
-  { role: 'user', content: 'Hello!' },
-  { role: 'assistant', content: 'Hi! How can I help you today?' },
-])
-
-// Text chunking with llm-splitter (100x smaller than LangChain)
-const chunker = TextChunker.balanced() // 512 tokens, 15% overlap
-const result = chunker.chunk(longDocument)
-
-for (const chunk of result.chunks) {
-  console.log(`Chunk ${chunk.index}: ${chunk.tokenCount} tokens`)
-  // chunk.text, chunk.startPosition, chunk.endPosition available
-}
-
-// Strategy presets for different use cases
-const preciseChunker = TextChunker.precise() // 256 tokens for retrieval
-const contextChunker = TextChunker.context() // 1024 tokens for context
-
-// Security: PII protection and sanitization
-const security = new TokenSecurityManager({
-  enableSanitization: true,
-  enablePIIRedaction: true,
-})
-const protected = security.protectSensitiveData('Email: john@example.com')
-console.log(protected.protected) // "Email: [EMAIL]"
 ```
 
-### Advanced Usage
+## Bundle Size
+
+Tree-shakeable subpath exports:
 
 ```typescript
-import {
-  AccurateTokenCounter,
-  TokenSecurityManager,
-  DynamicCompressionEngine,
-  AdvancedSemanticCache,
-  QualityGate,
-  CostAwareOptimizer,
-} from '@clarity-chat/token-optimization'
+// Full package (~400KB minified, tree-shakeable)
+import { useTokenCount } from '@clarity-chat/token-optimization'
 
-// Multi-layer optimization with security, compression, and caching
-const counter = new AccurateTokenCounter({ model: 'gpt-4', enableCaching: true })
-const security = new TokenSecurityManager({
-  enableSanitization: true,
-  complianceLevel: 'enterprise',
-})
-const compression = new DynamicCompressionEngine({ targetQuality: 0.9, qualityThreshold: 0.85 })
-const cache = new AdvancedSemanticCache({ maxSize: 100000, similarityThreshold: 0.85 })
-const quality = new QualityGate({ minimumQuality: 0.85 })
-const cost = new CostAwareOptimizer({ budgetLimit: 100.0 })
+// Just React hooks (~50KB)
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
 
-// Optimization pipeline
-async function optimizePrompt(prompt: string) {
-  // Step 1: Security sanitization
-  const sanitized = security.sanitizeInput(prompt)
-  if (sanitized.riskLevel === 'high') {
-    throw new Error('Security threat detected')
-  }
-
-  // Step 2: Check cache
-  const cached = await cache.get(sanitized.sanitized)
-  if (cached) return cached.response
-
-  // Step 3: Compress with quality gate
-  const compressed = await compression.compress(sanitized.sanitized)
-  const qualityCheck = quality.validate(sanitized.sanitized, compressed.compressedContent)
-
-  const finalContent = qualityCheck.passed ? compressed.compressedContent : sanitized.sanitized
-
-  // Step 4: Token accounting
-  const tokens = counter.count(finalContent)
-  console.log(`Optimized: ${compressed.tokensSaved} tokens saved (${compressed.compressionRatio}x)`)
-
-  return { content: finalContent, tokens, quality: compressed.qualityScore }
-}
+// Just compression (~30KB)
+import { compressWithLLMLingua } from '@clarity-chat/token-optimization/compression'
 ```
 
-## Core Components
+## Development & Testing
 
-### 1. AccurateTokenCounter
+### Internal "Simple" Files
 
-High-performance token counting with gpt-tokenizer (20x smaller than tiktoken WASM):
+You may notice files prefixed with `simple-` in the source code:
+- `src/simple-index.ts`
+- `src/simple-unified.ts`
+- `src/security/simple-security.ts`
+- etc.
 
+**These are internal development utilities**, not public APIs. They provide lightweight implementations for testing without external dependencies. **Do NOT import these directly** - they are not included in the package exports.
+
+**For users:** Always import from the main package:
 ```typescript
-const counter = new AccurateTokenCounter({
-  model: 'gpt-4',
-  cacheSize: 10000,
-  enableCaching: true,
-  enableMonitoring: true,
-})
+// ✅ Correct
+import { countTokens } from '@clarity-chat/token-optimization'
 
-// Single text counting
-const tokens = counter.count('Hello world') // 2 tokens (accurate)
-
-// Batch counting
-const total = counter.countBatch(['Text 1', 'Text 2', 'Text 3'])
-
-// Token information
-const info = counter.getTokenInfo('Hello world from token counter')
-console.log(info) // { tokens: 6, characters: 32, words: 6, ratio: 5.33 }
-
-// Text truncation
-const truncated = counter.truncate(longText, maxTokens)
+// ❌ Wrong - internal file
+import { SimpleTokenCounter } from '@clarity-chat/token-optimization/src/simple-index'
 ```
 
-### 2. TokenSecurityManager
-
-Enterprise-grade security with OWASP compliance:
-
-```typescript
-const security = new TokenSecurityManager({
-  enableSanitization: true,
-  enableCompressionObfuscation: true,
-  enableAuditLogging: true,
-  complianceLevel: 'enterprise',
-})
-
-// Input sanitization (OWASP LLM01)
-const sanitized = security.sanitizeInput(userInput)
-if (sanitized.riskLevel === 'high') {
-  // Handle security threat
-}
-
-// PII protection (OWASP LLM02)
-const protected = security.protectSensitiveData(text)
-
-// Compression ratio protection
-const metrics = security.protectCompressionRatio(1000, 600)
-// Adds noise to prevent side-channel attacks
-```
-
-### 3. DynamicCompressionEngine
-
-Adaptive compression with quality preservation (70-85% compression ratio):
-
-```typescript
-import { DynamicCompressionEngine } from '@clarity-chat/token-optimization'
-
-const engine = new DynamicCompressionEngine({
-  targetQuality: 0.9,
-  maxCompressionRatio: 0.8,
-  enableAdaptiveCompression: true,
-  enableContentAwareCompression: true,
-  enableQualityMonitoring: true,
-  compressionStrategies: [], // Uses defaults
-  qualityThreshold: 0.85,
-  fallbackStrategy: 'minimal',
-  enableRealTimeFeedback: true,
-})
-
-const result = await engine.compress(longText)
-console.log(`Compression ratio: ${result.compressionRatio}`)
-console.log(`Quality score: ${result.qualityScore}`)
-console.log(`Tokens saved: ${result.tokensSaved}`)
-```
-
-### 4. AdvancedSemanticCache
-
-Intelligent caching with 90%+ cost reduction potential:
-
-```typescript
-import { AdvancedSemanticCache } from '@clarity-chat/token-optimization'
-
-const cache = new AdvancedSemanticCache({
-  maxSize: 100000,
-  maxAge: 3600000, // 1 hour in milliseconds
-  similarityThreshold: 0.85,
-  enableEmbeddingCache: true,
-  enableContextAwareness: true,
-  enablePredictiveCaching: false,
-  compressionThreshold: 1000,
-})
-
-// Check for cached response with semantic matching
-const result = await cache.get(userQuery, { userId: 'user-123' })
-if (result.found && result.entry) {
-  console.log(`Cache hit (${result.cacheType}): ${result.similarityScore}`)
-  console.log(`Tokens saved: ${result.savings.tokens}`)
-  return result.entry.content // Instant response, no API call
-}
-
-// Cache new response after API call
-await cache.set(userQuery, aiResponse, { userId: 'user-123' })
-```
-
-### 5. QualityGate
-
-Enforce minimum quality preservation during optimization:
-
-```typescript
-import { QualityGate } from '@clarity-chat/token-optimization'
-
-const gate = new QualityGate({
-  minimumQualityScore: 0.85,
-  enableSemanticSimilarity: true,
-  enableInformationRetention: true,
-  enableReadabilityCheck: true,
-  enableCoherenceCheck: true,
-  enableRelevanceCheck: true,
-  fallbackStrategy: 'minimal_compression',
-  qualityWeights: {
-    semanticSimilarity: 0.3,
-    informationRetention: 0.25,
-    readability: 0.15,
-    coherence: 0.15,
-    relevance: 0.15,
-  },
-  enableRealTimeMonitoring: true,
-  enableAdaptiveThresholds: false,
-  qualityHistorySize: 100,
-})
-
-const result = await gate.validateQuality(originalText, compressedText)
-if (result.passed) {
-  console.log(`Quality score: ${result.metrics.overallScore}`)
-  console.log(`Semantic similarity: ${result.metrics.semanticSimilarity}`)
-} else {
-  console.log(`Quality too low: ${result.metrics.overallScore}`)
-  console.log(`Failed checks: ${result.failedChecks.join(', ')}`)
-  console.log(`Recommendations: ${result.recommendations.join(', ')}`)
-}
-```
-
-### 6. CostAwareOptimizer
-
-Budget-aware optimization with cost management:
-
-```typescript
-import { CostAwareOptimizer } from '@clarity-chat/token-optimization'
-
-const optimizer = new CostAwareOptimizer({
-  totalBudget: 100.0, // $100 total budget
-  enableCostPrediction: true,
-  enableBudgetTracking: true,
-  enableCostOptimization: true,
-  costWeights: {
-    tokenCost: 0.5,
-    processingCost: 0.2,
-    storageCost: 0.15,
-    networkCost: 0.15,
-  },
-  budgetAlertThresholds: {
-    warning: 0.8,
-    critical: 0.95,
-    emergency: 1.0,
-  },
-  enableRealTimeCostTracking: true,
-  enableCostForecasting: false,
-  enableAutomaticOptimization: true,
-  optimizationStrategy: 'balanced',
-})
-
-// Select optimal optimization techniques based on budget
-const strategy = await optimizer.selectOptimalTechniques(
-  ['compression', 'caching', 'deduplication'],
-  promptContent
-)
-console.log(`Selected strategy: ${strategy.name}`)
-console.log(`Estimated savings: $${strategy.expectedSavings}`)
-console.log(`Cost effectiveness: ${strategy.costEffectiveness}x`)
-
-// Check budget status
-const budgetStatus = optimizer.getBudgetStatus()
-console.log(`Budget: ${budgetStatus.budgetUtilization * 100}% used`)
-console.log(`Status: ${budgetStatus.budgetStatus}`)
-```
-
-## Configuration Options
-
-### Security Levels
-
-```typescript
-const securityLevels = {
-  basic: {
-    enableSanitization: true,
-    enablePIIRedaction: true,
-    noiseLevel: 0.05,
-  },
-  enterprise: {
-    enableSanitization: true,
-    enableCompressionObfuscation: true,
-    enableAuditLogging: true,
-    noiseLevel: 0.1,
-  },
-  government: {
-    enableSanitization: true,
-    enableCompressionObfuscation: true,
-    enableAuditLogging: true,
-    noiseLevel: 0.2,
-    complianceLevel: 'government',
-  },
-}
-```
-
-### Compression Strategies
-
-```typescript
-const strategies = {
-  conservative: {
-    compressionRatio: 0.8,
-    preserveEntities: true,
-    qualityScore: 0.9,
-  },
-  balanced: {
-    compressionRatio: 0.6,
-    preserveEntities: true,
-    qualityScore: 0.8,
-  },
-  aggressive: {
-    compressionRatio: 0.4,
-    preserveEntities: false,
-    qualityScore: 0.7,
-  },
-}
-```
-
-## Performance Benchmarks
-
-### Token Counting Performance
-
-```
-AccurateTokenCounter vs 4-char approximation:
-- Accuracy: 99%+ vs 75%
-- Speed: 10,000+ tokens/second
-- Memory: Minimal with intelligent caching
-```
-
-### Compression Performance
-
-```
-TOON vs JSON:
-- Token reduction: 30-60%
-- Processing speed: 1000+ ops/second
-- Quality retention: 95%+
-
-LLMLingua vs original:
-- Compression ratio: Up to 20x
-- Quality score: 0.8+
-- Speed: 500+ ops/second
-```
-
-### Caching Performance
-
-```
-SemanticCache:
-- Hit rate: 80%+
-- Speed improvement: 65x
-- Memory efficiency: 90%+
-```
-
-## Security Features
-
-### OWASP LLM Top 10 Compliance
-
-1. **LLM01: Prompt Injection** - Multi-layer input sanitization
-2. **LLM02: Sensitive Data Disclosure** - PII detection and redaction
-3. **LLM03: Supply Chain** - Dependency validation
-4. **LLM04: Data Poisoning** - Input validation and cleaning
-
-### Advanced Security Measures
-
-- **Compression Ratio Obfuscation**: Prevents information leakage
-- **Side-channel Protection**: Timing attack prevention
-- **Audit Logging**: Comprehensive security event tracking
-- **Zero Trust Architecture**: Every request validated
-
-## Best Practices
-
-### 1. Always Use Accurate Token Counting
-
-```typescript
-// ❌ Inaccurate
-const tokens = Math.ceil(text.length / 4) // 75% accuracy
-
-// ✅ Accurate
-const tokens = counter.count(text) // 99%+ accuracy
-```
-
-### 2. Implement Proper Security
-
-```typescript
-// ❌ No security
-const result = optimizer.optimize(text)
-
-// ✅ With security
-const secured = security.sanitizeInput(text)
-if (secured.riskLevel === 'low') {
-  const result = optimizer.optimize(secured.sanitized)
-}
-```
-
-### 3. Use Appropriate Compression Levels
-
-```typescript
-// ❌ Over-compression
-const aggressive = await compressor.compress(text, 0.3)
-
-// ✅ Balanced compression
-const balanced = await compressor.compress(text, 0.6)
-```
-
-### 4. Implement Intelligent Caching
-
-```typescript
-// ❌ No caching
-const response = await generateResponse(query)
-
-// ✅ With caching
-const cached = await cache.getSimilarResponse(query)
-const response = cached || (await generateResponse(query))
-if (!cached) await cache.cacheResponse(query, response)
-```
-
-## Migration Guide
-
-### From Basic Token Counter
-
-```typescript
-// Before
-const tokens = Math.ceil(text.length / 4)
-
-// After
-const counter = new AccurateTokenCounter({ model: 'gpt-4' })
-const tokens = counter.count(text)
-```
-
-### From JSON to TOON
-
-```typescript
-// Before
-const json = JSON.stringify(data)
-
-// After
-const toon = ToonOptimizer.optimizeForLLM(data)
-```
-
-### From Simple Compression
-
-```typescript
-// Before
-const compressed = text.slice(0, maxLength)
-
-// After
-const result = await compressor.compressPrompt(text, maxTokens)
-const compressed = result.compressed
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **High Token Counts**
-   - Check for unnecessary whitespace
-   - Use TOON format for arrays
-   - Implement semantic caching
-
-2. **Security Warnings**
-   - Review input sanitization
-   - Check for prompt injection patterns
-   - Validate compression ratios
-
-3. **Performance Issues**
-   - Enable caching with appropriate size
-   - Use batch operations
-   - Monitor memory usage
-
-### Debug Mode
-
-```typescript
-const optimizer = new UnifiedTokenOptimizer({
-  tokenizer: {
-    enableMonitoring: true,
-    cacheSize: 1000,
-  },
-  security: {
-    enableAuditLogging: true,
-  },
-})
-
-// Monitor performance
-const stats = counter.getMonitoringStats()
-console.log('Performance:', stats)
-
-// Check cache performance
-const cacheStats = cache.getCacheStats()
-console.log('Cache stats:', cacheStats)
-```
-
-## Contributing
-
-### Development Setup
-
-```bash
-git clone https://github.com/christireid/Clarity-ai-chat-components
-cd packages/token-optimization
-npm install
-npm run dev
-```
-
-### Running Tests
-
-```bash
-npm test
-npm run test:coverage
-```
-
-### Code Style
-
-Follow the project's ESLint configuration and TypeScript strict mode.
+### Source Code Organization
+
+- `src/cache/` - Exact match and smart caching
+- `src/caching/` - Advanced semantic caching with embeddings
+- `src/compression/` - Compression strategies (LLMLingua, extractive, adaptive)
+- `src/providers/` - Provider-native caching (Anthropic, OpenAI, Google)
+- `src/routing/` - Model routing and selection
+- `src/security/` - OWASP LLM Top 10 security features
+- `src/tokenizers/` - Token counting engines
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT
 
-## Support
+---
 
-- **Documentation**: [Full API Reference](./API.md)
-- **Issues**: [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- **Discussions**:
-  [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
-- **Discord**: [Join Community](https://discord.gg/clarity-chat)
+**Need help?** Check out the [examples](./examples) directory or open an issue.

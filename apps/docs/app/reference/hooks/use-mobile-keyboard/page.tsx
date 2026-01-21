@@ -65,7 +65,7 @@ export default function UseMobileKeyboardPage() {
         <h2>Basic Usage</h2>
         <p>Detect keyboard visibility and adjust UI:</p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
 function MobileChatInput() {
   const { isKeyboardVisible, keyboardHeight, isMobile } = useMobileKeyboard()
@@ -86,7 +86,7 @@ function MobileChatInput() {
         <h2>Auto-Scroll</h2>
         <p>Automatically scroll focused input into view:</p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
 function AutoScrollInput() {
   const { isKeyboardVisible } = useMobileKeyboard({
@@ -107,16 +107,16 @@ function AutoScrollInput() {
         <h2>Keyboard Events</h2>
         <p>Handle keyboard show/hide events:</p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
 function WithEvents() {
   const { isKeyboardVisible } = useMobileKeyboard({
     onKeyboardShow: (height) => {
-      logger.debug('Keyboard shown, height:', height)
+      console.log('Keyboard shown, height:', height)
       // Adjust UI, show compact header, etc.
     },
     onKeyboardHide: () => {
-      logger.debug('Keyboard hidden')
+      console.log('Keyboard hidden')
       // Restore UI, show full header, etc.
     },
   })
@@ -138,7 +138,7 @@ function WithEvents() {
         <h2>Conditional Rendering</h2>
         <p>Conditionally render based on keyboard state:</p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
 function ConditionalUI() {
   const { isKeyboardVisible, isMobile } = useMobileKeyboard()
@@ -160,7 +160,7 @@ function ConditionalUI() {
         <h2>Chat Input Adjustment</h2>
         <p>Adjust chat input position when keyboard appears:</p>
         <CodePlayground
-          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react/internal'
+          initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
 function ChatInput() {
   const { isKeyboardVisible, keyboardHeight } = useMobileKeyboard({

@@ -6,6 +6,8 @@
  */
 
 import { AdvancedTokenCounter, type ContentType } from './advanced-counter'
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability'
 
 /**
  * Compression strategy interface
@@ -45,6 +47,18 @@ export interface CompressionEstimate {
 }
 
 /**
+ * Content analysis result
+ */
+export interface ContentAnalysis {
+  contentType: ContentType
+  complexity: number
+  structureScore: number
+  length: number
+  sentenceCount: number
+  paragraphCount: number
+}
+
+/**
  * Adaptive compression configuration
  */
 export interface CompressionConfig {
@@ -66,14 +80,7 @@ class ContentAnalyzer {
     this.counter = new AdvancedTokenCounter()
   }
 
-  analyze(text: string): {
-    contentType: ContentType
-    complexity: number
-    structureScore: number
-    length: number
-    sentenceCount: number
-    paragraphCount: number
-  } {
+  analyze(text: string): ContentAnalysis {
     const contentType = this.detectContentType(text)
     const length = text.length
     const sentenceCount = text.split(/[.!?]+/).length
@@ -581,7 +588,7 @@ export class AdaptiveStrategy implements CompressionStrategy {
   }
 
   private selectStrategy(
-    analysis: any,
+    analysis: ContentAnalysis,
     targetRatio: number
   ): CompressionStrategy {
     const { contentType, complexity, structureScore, length } = analysis
@@ -620,8 +627,10 @@ export class AdvancedCompressionEngine {
   private config: CompressionConfig
   private counter: AdvancedTokenCounter
   private analyzer: ContentAnalyzer
+  private logger: Logger
 
   constructor(config: Partial<CompressionConfig> = {}) {
+    this.logger = new Logger({ serviceName: 'compression-engine' })
     this.config = {
       strategies: ['truncate', 'extract', 'adaptive'],
       defaultStrategy: 'adaptive',
@@ -655,11 +664,21 @@ export class AdvancedCompressionEngine {
 
     // Validate inputs
     if (!text || text.length === 0) {
-      throw new Error('Cannot compress empty text')
+      throw new TokenOptimizationError(
+        'Cannot compress empty text',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { targetRatio }
+      )
     }
 
     if (targetRatio <= 0 || targetRatio > 1) {
-      throw new Error('Target ratio must be between 0 and 1')
+      throw new TokenOptimizationError(
+        'Target ratio must be between 0 and 1',
+        TokenErrorCode.INVALID_INPUT,
+        false,
+        { targetRatio, validRange: '(0, 1]' }
+      )
     }
 
     // Check if compression is needed
@@ -691,7 +710,18 @@ export class AdvancedCompressionEngine {
         selectedStrategy.compress(text, targetRatio),
         new Promise<never>((_, reject) =>
           setTimeout(
-            () => reject(new Error('Compression timeout')),
+            () =>
+              reject(
+                new TokenOptimizationError(
+                  `Compression timed out after ${this.config.maxProcessingTime}ms`,
+                  TokenErrorCode.TIMEOUT,
+                  true,
+                  {
+                    timeoutMs: this.config.maxProcessingTime,
+                    strategy: selectedStrategy.name,
+                  }
+                )
+              ),
             this.config.maxProcessingTime
           )
         ),
@@ -728,7 +758,11 @@ export class AdvancedCompressionEngine {
       }
     } catch (error) {
       // Fallback to simple truncation
-      console.warn(`Compression failed with ${selectedStrategy.name}:`, error)
+      this.logger.warn('Compression failed, using fallback', {
+        strategy: selectedStrategy.name,
+        error: error instanceof Error ? error.message : String(error),
+        targetRatio,
+      })
       return this.fallbackCompression(text, targetRatio, startTime)
     }
   }
@@ -883,7 +917,22 @@ export class AdvancedCompressionEngine {
 }
 
 /**
- * Convenience function for compression
+ * Convenience function for compressing text.
+ *
+ * Creates a temporary AdvancedCompressionEngine and compresses the text
+ * using the optimal strategy.
+ *
+ * @param text - The text content to compress
+ * @param targetRatio - Target compression ratio (0-1), defaults to 0.7
+ * @param strategy - Optional specific strategy name ('truncate', 'extract', 'adaptive')
+ * @param config - Optional compression engine configuration
+ * @returns Compression result with compressed text and metadata
+ *
+ * @example
+ * ```typescript
+ * const result = await compressText(longText, 0.6)
+ * console.log(`Compressed to ${result.compressedTokens} tokens`)
+ * ```
  */
 export async function compressText(
   text: string,
@@ -896,7 +945,22 @@ export async function compressText(
 }
 
 /**
- * Convenience function for batch compression
+ * Convenience function for batch compression.
+ *
+ * Creates a temporary AdvancedCompressionEngine and compresses multiple
+ * texts efficiently using parallel processing.
+ *
+ * @param texts - Array of text contents to compress
+ * @param targetRatio - Target compression ratio (0-1), defaults to 0.7
+ * @param strategy - Optional specific strategy name ('truncate', 'extract', 'adaptive')
+ * @param config - Optional compression engine configuration
+ * @returns Array of compression results in same order as input
+ *
+ * @example
+ * ```typescript
+ * const results = await compressTextBatch(documents, 0.5)
+ * const totalSaved = results.reduce((sum, r) => sum + r.originalTokens - r.compressedTokens, 0)
+ * ```
  */
 export async function compressTextBatch(
   texts: string[],

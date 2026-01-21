@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { cn } from '@clarity-chat/primitives'
+import { glassVariants, getSemanticGradient } from '@clarity-chat/primitives/glass-variants'
 
 export interface OptimizationMetrics {
   /** Total tokens processed */
@@ -206,8 +208,19 @@ export function TokenOptimizationDashboard({
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Total Tokens Saved */}
-        <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+        {/* Total Tokens Saved - Green gradient for success */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('success'),
+              border: 'light',
+              animated: 'glow',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-success">
             {formatNumber(displayMetrics.tokensSaved)}
           </div>
@@ -217,8 +230,19 @@ export function TokenOptimizationDashboard({
           </div>
         </div>
 
-        {/* Cost Saved */}
-        <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+        {/* Cost Saved - Analytics blue gradient */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('analytics'),
+              border: 'light',
+              animated: 'glow',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-primary">
             {formatCost(displayMetrics.costSaved)}
           </div>
@@ -228,8 +252,18 @@ export function TokenOptimizationDashboard({
           </div>
         </div>
 
-        {/* Total Processed */}
-        <div className="p-4 bg-muted border border-border rounded-lg">
+        {/* Total Processed - Highlight pink gradient */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('highlight'),
+              border: 'light',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-foreground">
             {formatNumber(displayMetrics.totalTokens)}
           </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ChatWindow } from '@clarity-chat/react/internal'
+import { ToastProvider, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -268,7 +268,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -286,7 +286,7 @@ import '@clarity-chat/react/styles.css'`}
           title="Simple Chat Interface"
           description="A minimal chat window with messages and input"
           code={`import { useState, useCallback } from 'react'
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function BasicChat() {
@@ -339,18 +339,18 @@ function BasicChat() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
-import { Button } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
+import { Button } from '@clarity-chat/react'
 
 function ChatWithHeader() {
   const handleExport = () => {
     // Export conversation logic
-    logger.debug('Exporting conversation...')
+    console.log('Exporting conversation...')
   }
 
   const handleClear = () => {
     // Clear conversation logic
-    logger.debug('Clearing conversation...')
+    console.log('Clearing conversation...')
   }
 
   return (
@@ -382,7 +382,7 @@ function ChatWithHeader() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { AIStatus } from '@clarity-chat/types'
 
 function ChatWithAIStatus() {
@@ -427,7 +427,7 @@ function ChatWithAIStatus() {
         <p>Enable message editing, deletion, regeneration, and feedback:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithOperations() {
@@ -435,7 +435,7 @@ function ChatWithOperations() {
 
   const handleEdit = (messageId: string) => {
     // Open edit dialog or inline editing
-    logger.debug('Editing message:', messageId)
+    console.log('Editing message:', messageId)
   }
 
   const handleDelete = (messageId: string) => {
@@ -444,12 +444,12 @@ function ChatWithOperations() {
 
   const handleRegenerate = async (messageId: string) => {
     // Regenerate the assistant's response
-    logger.debug('Regenerating message:', messageId)
+    console.log('Regenerating message:', messageId)
   }
 
   const handleFeedback = (messageId: string, type: 'up' | 'down') => {
     // Send feedback to your analytics or API
-    logger.debug('Feedback:', messageId, type)
+    console.log('Feedback:', messageId, type)
   }
 
   const handleCopy = (messageId: string, content: string) => {
@@ -478,7 +478,7 @@ function ChatWithOperations() {
         <p>Provide a custom empty state when there are no messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 
 function ChatWithCustomEmptyState() {
   const customEmptyState = (
@@ -514,7 +514,7 @@ function ChatWithCustomEmptyState() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 
 function ChatWithHook() {
   const chat = useClarityChat({
@@ -612,7 +612,7 @@ function ChatWithHook() {
 
         <EnhancedCodeBlock
           code={`import { useState, useCallback } from 'react'
-import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react/internal'
+import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function CompleteChat() {
@@ -657,7 +657,7 @@ function CompleteChat() {
             navigator.clipboard.writeText(content)
           }}
           onMessageFeedback={(id, type) => {
-            logger.debug('Feedback:', id, type)
+            console.log('Feedback:', id, type)
           }}
           className="border border-border rounded-lg shadow-lg"
         />
@@ -679,7 +679,7 @@ function CompleteChat() {
         <h3>With Message Attachments</h3>
 
         <EnhancedCodeBlock
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message, MessageAttachment } from '@clarity-chat/types'
 
 function ChatWithAttachments() {

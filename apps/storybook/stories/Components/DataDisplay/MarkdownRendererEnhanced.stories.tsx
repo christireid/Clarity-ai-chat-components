@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { MarkdownRendererEnhanced } from '@clarity-chat/react/internal'
+import { MarkdownRendererEnhanced } from '@clarity-chat/react'
 
 const meta: Meta<typeof MarkdownRendererEnhanced> = {
   title: 'Components/DataDisplay/MarkdownRendererEnhanced',

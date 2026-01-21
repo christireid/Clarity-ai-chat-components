@@ -126,7 +126,7 @@ export default function StreamingDemo() {
 // Install: npm install @clarity-chat/react
 
 'use client'
-import { ClarityChat, useTokenUsage } from '@clarity-chat/react'
+import { ClarityChat, TokenUsage } from '@clarity-chat/react'
 
 export default function TokenVisualizerDemo() {
   const { usage, cost, contextWindow } = useTokenUsage()

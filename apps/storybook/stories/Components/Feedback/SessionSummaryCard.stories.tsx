@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SessionSummaryCard } from '@clarity-chat/react/internal'
+import { SessionSummaryCard } from '@clarity-chat/react'
 import type {
   SessionSummaryHighlights,
   SessionMetric,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof SessionSummaryCard> = {
   title: 'Components/Feedback/SessionSummaryCard',

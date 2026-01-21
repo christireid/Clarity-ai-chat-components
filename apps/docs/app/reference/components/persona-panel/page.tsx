@@ -64,7 +64,7 @@ export default function PersonaPanelPage() {
   return (
     <PersonaPanel
       personas={personas}
-      onSelect={(p) => logger.debug('Selected:', p.name)}
+      onSelect={(p) => console.log('Selected:', p.name)}
     />
   )
 }

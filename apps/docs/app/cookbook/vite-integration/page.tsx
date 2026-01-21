@@ -52,7 +52,7 @@ export default defineConfig({
 // src/main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ClarityChat } from '@clarity-chat/react/internal'
+import { ClarityChat } from '@clarity-chat/react'
 import './index.css'
 
 function App() {

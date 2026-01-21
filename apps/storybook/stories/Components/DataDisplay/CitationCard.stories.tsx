@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CitationCard } from '@clarity-chat/react/internal'
+import { CitationCard } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Citation } from '@clarity-chat/types'
 

@@ -111,7 +111,7 @@ export default function CreateMemoryStorePage() {
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
+          code={`import { createMemoryStore } from '@clarity-chat/react'
 import type { CreateMemoryStoreOptions, MemoryStore } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -123,7 +123,7 @@ import type { CreateMemoryStoreOptions, MemoryStore } from '@clarity-chat/react'
         <p>Create a memory store and use it to store and query memories:</p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
+          code={`import { createMemoryStore } from '@clarity-chat/react'
 
 // Create a memory store with defaults
 const memoryStore = createMemoryStore()
@@ -150,7 +150,7 @@ await memoryStore.clear()`}
         <p>Configure memory strategy and token limits:</p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore } from '@clarity-chat/react/internal'
+          code={`import { createMemoryStore } from '@clarity-chat/react'
 
 // Vector store for semantic search
 const vectorMemory = createMemoryStore({
@@ -185,7 +185,7 @@ const topicMemory = createMemoryStore({
         </p>
 
         <EnhancedCodeBlock
-          code={`import { createMemoryStore, MemoryProvider } from '@clarity-chat/react/internal'
+          code={`import { createMemoryStore, MemoryProvider } from '@clarity-chat/react'
 
 // Create shared memory store
 const sharedMemory = createMemoryStore({
@@ -213,7 +213,7 @@ function App() {
 
         <EnhancedCodeBlock
           code={`// app/api/chat/route.ts
-import { createMemoryStore } from '@clarity-chat/react/internal'
+import { createMemoryStore } from '@clarity-chat/react'
 
 // Create per-request memory store
 export async function POST(request: Request) {

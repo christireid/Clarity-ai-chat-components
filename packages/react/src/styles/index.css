@@ -1,11 +1,40 @@
 /**
- * Clarity Chat Components - Main Stylesheet
- * 
- * This file combines all component styles and theme variables
+ * Clarity Chat Components - React Package Component Styles
+ *
+ * This stylesheet contains component-specific styles for .clarity-* React components.
+ * It is separate from the design system's global utilities and theme presets.
+ *
+ * ORGANIZATION:
+ * ============================================================================
+ * 1. CSS Variables & Theme System     - Base variables for .clarity-* components
+ * 2. Base Styles                      - Universal resets and body styles
+ * 3. Component Styles                 - Core chat components (.clarity-message, etc.)
+ * 4. Enhanced Visual Components       - Premium UX components with advanced styling
+ * 5. Streaming Message Stability      - Anti-flicker optimizations for streaming text
+ * 6. Reduced Motion Support           - WCAG 2.1 AA accessibility compliance
+ * 7. GPU Acceleration & Performance   - Hardware acceleration hints
+ *
+ * RELATIONSHIP TO OTHER STYLING SYSTEMS:
+ * ============================================================================
+ * - Global Glass Effects:     /styles/globals.css (OKLCH-based utilities)
+ * - Theme Presets:            /packages/react/src/theme/*.ts (glassmorphism, etc.)
+ * - Primitives Glass System:  /packages/primitives/src/lib/glass-variants.ts (CVA)
+ * - Component Primitives:     /packages/primitives/src/components/ui/*.tsx
+ *
+ * CONVENTIONS:
+ * ============================================================================
+ * - Class naming: .clarity-* prefix for all React component styles
+ * - Color format: HSL with CSS variables (hsl(var(--primary)))
+ * - Modern CSS: Uses oklch(), backdrop-filter, container queries
+ * - Accessibility: All animations respect prefers-reduced-motion
+ * - Performance: GPU acceleration hints for animated elements
+ *
+ * @packageDocumentation
  */
 
 /* ============================================================================
    CSS Variables & Theme System
+   Component-specific variables for .clarity-* React components
    ============================================================================ */
 
 :root {
@@ -56,14 +85,16 @@
   --font-mono:
     'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
 
-  /* Enhanced Visual Effects */
-  --shadow-glow: 0 0 20px -5px;
+  /*
+   * Component-specific shadow system (used by .clarity-* components below)
+   * NOTE: These are separate from theme shadows and glass effects:
+   * - Global glass effects: /styles/globals.css (OKLCH-based glass utilities)
+   * - Theme preset shadows: /packages/react/src/theme/theme.css
+   * - Glass variants: /packages/primitives/src/lib/glass-variants.ts
+   */
   --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
   --shadow-medium: 0 8px 30px -8px rgba(0, 0, 0, 0.12);
   --shadow-elevated: 0 12px 40px -12px rgba(0, 0, 0, 0.18);
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: 12px;
 }
 
 .dark {
@@ -90,12 +121,10 @@
   --surface-elevated: 222 36% 16%;
   --surface-overlay: 222 43% 12%;
 
-  /* Dark mode enhanced visual effects */
+  /* Dark mode component shadows (deeper shadows for contrast) */
   --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
   --shadow-medium: 0 8px 30px -8px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 12px 40px -12px rgba(0, 0, 0, 0.5);
-  --glass-bg: rgba(30, 41, 59, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================================================================
@@ -476,25 +505,17 @@ body, .text-base {
    Enhanced Visual Components - Dazzling UX
    ============================================================================ */
 
-/* Glass Morphism Utilities */
-.clarity-glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-}
-
-.clarity-glass-subtle {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.dark .clarity-glass-subtle {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+/*
+ * GLASS EFFECTS NOTE:
+ * Legacy .clarity-glass utilities have been removed in favor of:
+ * - CVA-based glass variants: @clarity-chat/primitives/glass-variants
+ * - Global glass utilities: .glass-panel, .glass-animated, .glass-glow (in /styles/globals.css)
+ * - Component-specific glass props: <Card glass glassGradient="blue" />
+ *
+ * Migration:
+ * - .clarity-glass → Use glassVariants({ intensity: 'medium' })
+ * - .clarity-glass-subtle → Use glassVariants({ intensity: 'subtle' })
+ */
 
 /* Enhanced Chat Window */
 .clarity-chat-window-enhanced {
@@ -558,9 +579,10 @@ body, .text-base {
 /* Enhanced Chat Input */
 .clarity-chat-input-enhanced {
   padding: var(--spacing-md);
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  /* Using global glass effect variables from /styles/globals.css */
+  background: oklch(from var(--background) l c h / var(--glass-bg-opacity));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-top: 1px solid hsl(var(--border) / 0.4);
 }
 
@@ -678,18 +700,19 @@ body, .text-base {
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border: 1px solid var(--glass-border);
+  /* Using global glass effect variables */
+  border: 1px solid oklch(from var(--border) l c h / var(--glass-border-opacity));
   border-radius: 50%;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: oklch(from var(--background) l c h / var(--glass-bg-opacity));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   color: hsl(var(--foreground));
   cursor: pointer;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease;
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .clarity-scroll-button:hover {
