@@ -234,3 +234,67 @@ The Clarity Chat docs site has a solid accessibility foundation with thoughtful 
 4. Adding main landmark to pages
 
 Addressing the High Priority items will achieve WCAG AA compliance. The existing patterns and CSS utilities provide an excellent framework for maintaining accessibility as the site evolves.
+
+---
+
+## Update: January 21, 2026 - Interactive Components Audit
+
+A comprehensive 10-phase audit of all interactive components and hooks was conducted. Key findings and fixes:
+
+### Components Audited
+
+| Category | Components Found |
+|----------|------------------|
+| Interactive Components | 120+ |
+| Custom Hooks | 50+ |
+| Event Handler Types | 15+ |
+
+### Performance & Memory Leak Fixes Applied
+
+| Issue | Severity | Component | Fix Applied |
+|-------|----------|-----------|-------------|
+| Missing `memo()` wrapper | CRITICAL | ConversationList | Added `memo()` wrapper |
+| setTimeout memory leak | HIGH | ChatInput | Added timeout cleanup ref |
+| setTimeout memory leak | HIGH | AdvancedChatInput | Added focus timeout cleanup |
+
+### New Accessibility Features Verified
+
+**MentionInput** (`input/mention-system.tsx`)
+- Full ARIA combobox pattern implemented
+- `role="combobox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`
+- Proper listbox with `role="option"` and `aria-selected`
+- Keyboard navigation: Arrow keys, Enter, Escape
+- Reduced motion support with `useReducedMotion`
+
+**ConversationList** (`conversation/conversation-list.tsx`)
+- Keyboard activation: Enter/Space for items
+- `aria-pressed` for toggle button states
+- `aria-label` for accessible item names
+- Focus-visible ring styles
+- Filter buttons with `role="group"` and `aria-pressed`
+- Reduced motion support
+
+### Patterns Verified as Production-Ready
+
+1. **ChatInput** - Uses `useRequestDeduplication` to prevent double-submit
+2. **CommandPalette** - Full combobox pattern with focus trap and restoration
+3. **ModelSelector** - Listbox pattern with `aria-activedescendant`
+4. **ThemeSelector** - Radiogroup pattern with roving tabindex
+5. **Tabs** - Full WCAG tablist/tab/tabpanel implementation
+
+### Phase Status
+
+| Phase | Status |
+|-------|--------|
+| 1. Discovery & Classification | ✅ Complete |
+| 2. Interaction Testing | ✅ Complete |
+| 3. Event Handling Deep Dive | ✅ Complete |
+| 4. Accessibility Audit | ✅ Complete |
+| 5. Performance Optimization | ✅ Complete |
+| 6. Visual Consistency | ✅ Complete |
+| 7. Hook Quality Audit | ✅ Complete |
+| 8. Cross-Browser Testing | ⏳ Manual Required |
+| 9. Documentation | ✅ Complete |
+| 10. Integration Testing | ⏳ Manual Required |
+
+See also: `packages/react/COMPREHENSIVE_INTERACTIVE_AUDIT.md` and `packages/react/INTERACTIVE_COMPONENTS_AUDIT.md` for full details.

@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 🔧 Fixed
+
+#### Performance & Memory Leak Fixes
+
+**ConversationList - Added memo() Wrapper**
+- Wrapped component in `React.memo()` to prevent unnecessary re-renders
+- **Impact**: Significant performance improvement for large conversation lists
+
+**ChatInput - Fixed Memory Leak**
+- Added `buttonStateTimeoutRef` to track setTimeout calls
+- Added cleanup effect to clear timeout on unmount
+- **Impact**: Eliminated memory leaks when component unmounts during button state transitions
+
+**AdvancedChatInput - Fixed Memory Leak**
+- Added `focusTimeoutRef` to track focus setTimeout calls
+- Added cleanup effect to clear timeout on unmount
+- **Impact**: Eliminated memory leaks in suggestion selection flow
+
+### ✨ Added
+
+#### Accessibility Improvements
+
+**MentionInput - Full ARIA Combobox Pattern**
+- Added `role="combobox"` with `aria-expanded` state
+- Added `aria-activedescendant` for virtual focus management
+- Added `aria-autocomplete="list"` attribute
+- Implemented proper listbox with `role="option"` and `aria-selected`
+- Added keyboard navigation: Arrow keys, Enter, Escape
+- Added reduced motion support with `useReducedMotion`
+
+**ConversationList - Enhanced Accessibility**
+- Added keyboard activation (Enter/Space) for items
+- Added `aria-pressed` for toggle button states
+- Added `aria-label` for accessible item names
+- Added focus-visible ring styles
+- Added filter buttons with `role="group"` and `aria-pressed`
+- Added reduced motion support
+
+### 📚 Documentation
+
+**Comprehensive Interactive Components Audit**
+- Added `COMPREHENSIVE_INTERACTIVE_AUDIT.md` tracking 120+ interactive components
+- Updated `INTERACTIVE_COMPONENTS_AUDIT.md` with MentionInput and ConversationList findings
+- Updated accessibility guide with new component patterns
+- Updated orchestration audit with January 2026 findings
+
 ## [2.1.0] - 2025-11-07
 
 ### 🔧 Fixed

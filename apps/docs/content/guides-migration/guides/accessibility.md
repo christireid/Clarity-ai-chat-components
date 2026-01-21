@@ -79,6 +79,45 @@ import { ThemeSelector } from '@clarity-chat/react'
 - Selection moves with focus (WAI-ARIA radiogroup pattern)
 - Roving tabindex for focus management
 
+**Combobox/Autocomplete Pattern**
+
+```tsx
+import { MentionInput } from '@clarity-chat/react'
+
+;<MentionInput
+  users={users}
+  value={message}
+  onChange={setMessage}
+  placeholder="Type @ to mention..."
+/>
+```
+
+- `role="combobox"` with `aria-expanded` state
+- `aria-activedescendant` for virtual focus in suggestions
+- `aria-autocomplete="list"` indicates suggestions available
+- Arrow keys navigate suggestions, Enter selects, Escape dismisses
+- Listbox with `role="option"` and `aria-selected` for each suggestion
+
+**List Selection Pattern**
+
+```tsx
+import { ConversationList } from '@clarity-chat/react'
+
+;<ConversationList
+  conversations={conversations}
+  activeId={currentId}
+  onSelect={handleSelect}
+  showSearch
+  showFilters
+/>
+```
+
+- Items have `role="button"` with `tabIndex={0}`
+- `aria-pressed` indicates selection state
+- `aria-label` provides accessible name for each item
+- Enter/Space activates focused item
+- Filter buttons use `aria-pressed` for toggle state
+
 ### 2. ARIA Attributes
 
 All components use proper ARIA attributes for screen reader compatibility.
@@ -232,10 +271,17 @@ Components with reduced motion support:
 
 ### Input Components
 
-| Component    | Keyboard Support     | Screen Reader              | Reduced Motion |
-| ------------ | -------------------- | -------------------------- | -------------- |
-| `VoiceInput` | Enter to toggle      | Live region for transcript | Yes            |
-| `FileUpload` | Enter to open picker | Button with file input     | N/A            |
+| Component       | Keyboard Support           | Screen Reader                                        | Reduced Motion |
+| --------------- | -------------------------- | ---------------------------------------------------- | -------------- |
+| `MentionInput`  | Arrow keys, Enter, Escape  | Combobox pattern with aria-activedescendant          | Yes            |
+| `VoiceInput`    | Enter to toggle            | Live region for transcript                           | Yes            |
+| `FileUpload`    | Enter to open picker       | Button with file input                               | N/A            |
+
+### List Components
+
+| Component          | Keyboard Support          | Screen Reader                    | Reduced Motion |
+| ------------------ | ------------------------- | -------------------------------- | -------------- |
+| `ConversationList` | Enter/Space to select     | Button role with aria-pressed    | Yes            |
 
 ## Testing Accessibility
 
