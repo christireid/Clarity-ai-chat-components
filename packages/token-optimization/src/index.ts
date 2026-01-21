@@ -260,6 +260,37 @@ export type {
 
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
 
+// Provider-Native Caching (Anthropic, OpenAI, Google) - 90% savings on cached tokens
+export {
+  // Advanced API (full control)
+  ProviderCachingManager,
+  applyProviderCaching,
+  parseOpenAICacheMetrics,
+  // Simple API (recommended for most use cases)
+  createProviderCache,
+  quickCache,
+  anthropicCache,
+  openaiCache,
+  googleCache,
+  estimateCacheSavings,
+} from './providers'
+export type {
+  CachingProvider,
+  AnthropicCacheControl,
+  AnthropicContentBlock,
+  AnthropicMessage,
+  OpenAICacheConfig,
+  OpenAIUsageMetadata,
+  GeminiCacheConfig,
+  GeminiCachedContent,
+  GeminiCachingMode,
+  ProviderCacheMetadata,
+  ProviderCachingResult,
+  ProviderCachingConfig,
+  CacheableMessage,
+} from './providers/types'
+export type { SimpleProviderCachingConfig } from './providers/simple-caching'
+
 // Text chunking - using llm-splitter (100x smaller than LangChain)
 export { TextChunker, ChunkingStrategy } from './chunking/text-chunker'
 export type {

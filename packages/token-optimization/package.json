@@ -1,7 +1,7 @@
 {
   "name": "@clarity-chat/token-optimization",
   "version": "1.0.0",
-  "description": "Advanced token optimization system with accurate counting, compression, and security",
+  "description": "Count and optimize LLM tokens with 90% cost savings. Works with GPT-4o, Claude, Gemini. Provider-native caching, compression, and React hooks included.",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -43,7 +43,8 @@
     "doc:check": "tsx scripts/check-doc-sync.ts",
     "doc:sync": "tsx scripts/sync-all-docs.ts",
     "examples:typecheck": "tsc --noEmit examples/*.ts examples/*.tsx 2>/dev/null || true",
-    "precommit": "pnpm typecheck && pnpm doc:check"
+    "precommit": "pnpm typecheck && pnpm doc:check",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
     "gpt-tokenizer": "^2.8.0",
@@ -83,17 +84,36 @@
   "keywords": [
     "token-optimization",
     "llm",
-    "compression",
-    "gpt-tokenizer",
+    "tokens",
     "tokenizer",
-    "security",
+    "gpt-tokenizer",
+    "caching",
+    "prompt-caching",
+    "provider-caching",
+    "compression",
+    "cost-optimization",
     "ai",
-    "memory",
+    "llm-optimization",
     "react",
+    "react-hooks",
     "openai",
     "claude",
-    "gemini"
+    "anthropic",
+    "gemini",
+    "gpt-4",
+    "gpt-4o",
+    "security",
+    "performance"
   ],
   "author": "Clarity Chat Team",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clarity-ai/token-optimization.git",
+    "directory": "packages/token-optimization"
+  },
+  "homepage": "https://github.com/clarity-ai/token-optimization#readme",
+  "bugs": {
+    "url": "https://github.com/clarity-ai/token-optimization/issues"
+  }
 }

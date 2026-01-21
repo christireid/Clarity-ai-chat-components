@@ -84,6 +84,35 @@ const { model, cost, reason } = router.route(prompt)
 console.log(`Use ${model} - ${reason}`)
 ```
 
+### Provider-Native Caching (90% Savings!)
+
+Leverage built-in caching from Anthropic, OpenAI, and Google:
+
+```typescript
+import { quickCache } from '@clarity-chat/token-optimization'
+
+// Zero-config caching with Anthropic (default)
+const result = await quickCache([
+  {
+    role: 'system',
+    content: 'You are a helpful coding assistant...', // This gets cached!
+  },
+  { role: 'user', content: 'How do I create a React component?' },
+])
+
+// Use result.messages in your API call to Anthropic
+// Subsequent calls with same system prompt = 90% cheaper! 🎉
+console.log(`Estimated savings: ${result.estimatedSavings.percentage * 100}%`)
+```
+
+Works with:
+
+- **Anthropic**: Automatic `cache_control` breakpoints
+- **OpenAI**: Auto-caches prompts ≥1024 tokens
+- **Google Gemini**: Implicit and explicit caching modes
+
+[→ Full Provider Caching Guide](./docs/PROVIDER_CACHING.md)
+
 ## Installation
 
 ```bash
@@ -162,7 +191,16 @@ import { UnsupportedModelError } from '@clarity-chat/token-optimization'
 const { count } = useTokenCount(text)
 ```
 
-### Level 2: Add Caching
+### Level 2: Add Provider Caching (90% savings)
+
+```typescript
+import { createProviderCache } from '@clarity-chat/token-optimization'
+
+const cache = createProviderCache({ provider: 'anthropic' })
+const result = await cache(messages)
+```
+
+### Level 3: Add Local Caching
 
 ```typescript
 const { count, cacheStats } = useTokenOptimization(text, {
@@ -171,7 +209,7 @@ const { count, cacheStats } = useTokenOptimization(text, {
 })
 ```
 
-### Level 3: Full Pipeline
+### Level 4: Full Pipeline
 
 ```typescript
 const { result, stats } = useOptimizationPipeline(text, {
@@ -185,6 +223,7 @@ const { result, stats } = useOptimizationPipeline(text, {
 
 This package provides:
 
+- **Provider-Native Caching**: 90% cost reduction with Anthropic, OpenAI, Google ⭐ NEW
 - **Token Counting**: 99%+ accurate with gpt-tokenizer (20x smaller than tiktoken)
 - **Text Chunking**: Smart splitting with overlap support
 - **Compression**: LLMLingua-style compression (up to 20x reduction)
@@ -205,7 +244,19 @@ This package provides:
 
 ## API Reference
 
-### Hooks
+### Provider Caching Functions (NEW!)
+
+| Function                 | Purpose                          |
+| ------------------------ | -------------------------------- |
+| `quickCache`             | Zero-config caching              |
+| `anthropicCache`         | Anthropic-specific caching       |
+| `openaiCache`            | OpenAI-specific caching          |
+| `googleCache`            | Google Gemini-specific caching   |
+| `createProviderCache`    | Create reusable cache function   |
+| `estimateCacheSavings`   | Estimate savings before applying |
+| `ProviderCachingManager` | Advanced caching control         |
+
+### React Hooks
 
 | Hook                      | Purpose                | Complexity |
 | ------------------------- | ---------------------- | ---------- |
@@ -238,6 +289,46 @@ This package provides:
 | `CompressionError`         | Compression failed      |
 | `QualityThresholdError`    | Quality below minimum   |
 | `SecurityViolationError`   | Security rule triggered |
+
+## Documentation
+
+### 📖 Guides
+
+| Guide                                              | What You'll Learn                                                             |
+| -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **[Getting Started](./docs/GETTING_STARTED.md)**   | Install, count your first tokens, and build your first React component        |
+| **[Provider Caching](./docs/PROVIDER_CACHING.md)** | Save 90% on API costs with Anthropic, OpenAI, and Google caching              |
+| **[Best Practices](./docs/BEST_PRACTICES.md)**     | Production patterns, security, performance, monitoring, and cost optimization |
+| **[Troubleshooting](./docs/TROUBLESHOOTING.md)**   | Solutions to common issues with installation, caching, React hooks, and more  |
+
+### 💡 Examples
+
+Ready-to-run examples organized by complexity:
+
+| Example                                                            | Description               | Run It                                    |
+| ------------------------------------------------------------------ | ------------------------- | ----------------------------------------- |
+| **[01-basic-react.tsx](./examples/01-basic-react.tsx)**            | React hooks basics        | Copy into your React app                  |
+| **[02-node-counting.ts](./examples/02-node-counting.ts)**          | Node.js token counting    | `npx tsx examples/02-node-counting.ts`    |
+| **[03-model-routing.ts](./examples/03-model-routing.ts)**          | Automatic model selection | `npx tsx examples/03-model-routing.ts`    |
+| **[04-full-pipeline.tsx](./examples/04-full-pipeline.tsx)**        | Complete optimization     | Copy into your React app                  |
+| **[05-provider-caching.ts](./examples/05-provider-caching.ts)** ⭐ | 90% cost savings!         | `npx tsx examples/05-provider-caching.ts` |
+| **[06-security.ts](./examples/06-security.ts)** 🔒                 | Security features         | `npx tsx examples/06-security.ts`         |
+| **[07-compression.ts](./examples/07-compression.ts)** 📦           | Compression strategies    | `npx tsx examples/07-compression.ts`      |
+
+[→ Full Examples Directory](./examples/README.md) with by-goal and by-use-case navigation
+
+### 🎯 Quick Start Paths
+
+**Just want to count tokens?** → Start with [Getting Started](./docs/GETTING_STARTED.md) →
+[Example 01](./examples/01-basic-react.tsx)
+
+**Want to save 90% on API costs?** ⭐ RECOMMENDED → Read
+[Provider Caching](./docs/PROVIDER_CACHING.md) → [Example 05](./examples/05-provider-caching.ts)
+
+**Building for production?** → Read [Best Practices](./docs/BEST_PRACTICES.md) →
+[Example 04](./examples/04-full-pipeline.tsx)
+
+**Having issues?** → Check [Troubleshooting](./docs/TROUBLESHOOTING.md)
 
 ## TypeScript
 

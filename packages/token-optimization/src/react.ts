@@ -9,12 +9,19 @@
 
 // React Hooks
 export {
+  // Simple hooks (recommended starting point)
+  useTokenCount,
+  // Full-featured hooks
   useTieredCache,
   useModelRouter,
   useOptimizationPipeline,
 } from './hooks'
 
 export type {
+  // Simple hook types
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+  // Full-featured hook types
   UseTieredCacheConfig,
   UseTieredCacheReturn,
   UseModelRouterConfig,

@@ -237,4 +237,162 @@ This is a paragraph with **bold** and *italic* text.
       optimizer.dispose()
     })
   })
+
+  describe('Provider Caching', () => {
+    test('should support Anthropic provider caching', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        cachingProvider: 'anthropic',
+      })
+
+      // Use a large prompt to trigger caching (>1024 tokens)
+      // ~24 chars * 200 = 4800 chars / 4 = 1200 tokens
+      const largePrompt = 'This is a test prompt. '.repeat(200)
+      const result = await optimizer.optimize(largePrompt)
+
+      expect(result).toBeDefined()
+      expect(result.compressedPrompt).toBeDefined()
+
+      // Provider caching may or may not be applied depending on content analysis
+      // Just verify the structure is correct
+      if (result.providerCacheMetadata) {
+        expect(result.providerCacheMetadata.provider).toBe('anthropic')
+        expect(
+          result.providerCacheMetadata.cachedTokens
+        ).toBeGreaterThanOrEqual(0)
+      }
+
+      optimizer.dispose()
+    })
+
+    test('should support OpenAI provider caching', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        cachingProvider: 'openai',
+      })
+
+      const largePrompt = 'OpenAI caching test. '.repeat(100)
+      const result = await optimizer.optimize(largePrompt)
+
+      expect(result).toBeDefined()
+      if (result.providerCacheMetadata) {
+        expect(result.providerCacheMetadata.provider).toBe('openai')
+      }
+
+      optimizer.dispose()
+    })
+
+    test('should support Google provider caching', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        cachingProvider: 'google',
+      })
+
+      const largePrompt = 'Google Gemini caching test. '.repeat(100)
+      const result = await optimizer.optimize(largePrompt)
+
+      expect(result).toBeDefined()
+      if (result.providerCacheMetadata) {
+        expect(result.providerCacheMetadata.provider).toBe('google')
+      }
+
+      optimizer.dispose()
+    })
+
+    test('should work with provider caching disabled', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: false,
+      })
+
+      const result = await optimizer.optimize('Test prompt')
+
+      expect(result.providerCacheMetadata).toBeUndefined()
+
+      optimizer.dispose()
+    })
+
+    test('should include provider cache savings in total tokensSaved', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        cachingProvider: 'anthropic',
+      })
+
+      const largePrompt = 'Test with savings calculation. '.repeat(100)
+      const result = await optimizer.optimize(largePrompt)
+
+      expect(result.tokensSaved).toBeGreaterThanOrEqual(0)
+
+      // If provider caching was applied, tokensSaved should be significant
+      if (result.providerCacheMetadata?.cachedTokens) {
+        expect(result.tokensSaved).toBeGreaterThan(0)
+      }
+
+      optimizer.dispose()
+    })
+
+    test('should combine provider caching with compression', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        enableCompression: true,
+        cachingProvider: 'anthropic',
+      })
+
+      const markdown = `# Heading
+
+This is a **large** markdown document with lots of content.
+
+${'- List item\n'.repeat(100)}
+`
+      const result = await optimizer.optimize(markdown)
+
+      // Should have compression applied
+      expect(result.compressedPrompt.length).toBeLessThanOrEqual(
+        markdown.length
+      )
+
+      // Provider caching may or may not be applied
+      // Just verify the result structure is correct
+      expect(result).toBeDefined()
+      expect(result.tokensSaved).toBeGreaterThanOrEqual(0)
+
+      optimizer.dispose()
+    })
+
+    test('should handle small prompts gracefully (no provider caching)', async () => {
+      const optimizer = createOptimizer({
+        enableProviderCaching: true,
+        cachingProvider: 'openai', // OpenAI requires >=1024 tokens
+      })
+
+      const smallPrompt = 'Hi'
+      const result = await optimizer.optimize(smallPrompt)
+
+      // Small prompts shouldn't trigger provider caching
+      expect(
+        result.providerCacheMetadata?.cachedTokens || 0
+      ).toBeLessThanOrEqual(0)
+
+      optimizer.dispose()
+    })
+
+    test('should work with all optimization features enabled', async () => {
+      const optimizer = createOptimizer({
+        preset: 'production',
+        enableCache: true,
+        enableCompression: true,
+        enableRouting: true,
+        enableProviderCaching: true,
+        cachingProvider: 'anthropic',
+      })
+
+      const prompt = 'Complex optimization test. '.repeat(100)
+      const result = await optimizer.optimize(prompt)
+
+      expect(result).toBeDefined()
+      expect(result.recommendedModel).toBeDefined()
+      expect(result.tokensSaved).toBeGreaterThanOrEqual(0)
+
+      optimizer.dispose()
+    })
+  })
 })

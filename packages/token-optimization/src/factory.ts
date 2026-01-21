@@ -26,6 +26,8 @@ import {
 import type { CompressionResult as MarkdownCompressionResult } from './compression/markdown-compressor'
 import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 import type { SemanticCacheConfig } from './caching/advanced-semantic-cache'
+import { ProviderCachingManager } from './providers/prompt-caching'
+import type { ProviderCachingConfig, CacheableMessage } from './providers/types'
 
 /**
  * Preset configuration levels
@@ -76,6 +78,18 @@ export interface OptimizerConfig {
   enableRouting?: boolean
 
   /**
+   * Enable provider-native caching (Anthropic, OpenAI, Google)
+   * @default false (opt-in for safety)
+   */
+  enableProviderCaching?: boolean
+
+  /**
+   * Provider for native caching
+   * @default 'anthropic'
+   */
+  cachingProvider?: 'anthropic' | 'openai' | 'google'
+
+  /**
    * Custom cache configuration (overrides preset)
    */
   cacheConfig?: Partial<TieredCacheConfig>
@@ -111,7 +125,7 @@ export interface Optimizer {
   route: (prompt: string) => RoutingResult
 
   /**
-   * Optimize a prompt (compress + route + check cache)
+   * Optimize a prompt (cache + provider caching + compress + route)
    */
   optimize: (prompt: string) => Promise<{
     cachedResponse?: string
@@ -119,6 +133,15 @@ export interface Optimizer {
     recommendedModel: string
     tokensSaved: number
     estimatedCostSaved: number
+    providerCacheMetadata?: {
+      provider: string
+      cachedTokens: number
+      savingsPercentage: number
+      estimatedSavings: {
+        tokens: number
+        costReduction: number
+      }
+    }
   }>
 
   /**
@@ -265,6 +288,8 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
     enableCache = true,
     enableCompression = true,
     enableRouting = true,
+    enableProviderCaching = false,
+    cachingProvider = 'anthropic',
     cacheConfig,
   } = config
 
@@ -316,6 +341,17 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
 
   const counter = new AccurateTokenCounter({ model })
 
+  // Initialize provider caching if enabled
+  const providerCaching = enableProviderCaching
+    ? new ProviderCachingManager(
+        {
+          enabled: true,
+          provider: cachingProvider,
+        } as ProviderCachingConfig,
+        counter
+      )
+    : null
+
   return {
     countTokens: (text: string) => counter.count(text),
 
@@ -355,8 +391,10 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
 
     optimize: async (prompt: string) => {
       const originalTokens = counter.count(prompt)
+      let providerCacheMetadata: any = undefined
+      let providerCacheApplied = false
 
-      // Check cache
+      // Step 1: Check local cache
       if (cache) {
         const result = await cache.get(prompt)
         if (result.hit && result.data) {
@@ -368,15 +406,47 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
             recommendedModel: model,
             tokensSaved: originalTokens,
             estimatedCostSaved: originalTokens * 0.00001,
+            providerCacheMetadata,
           }
         }
       }
 
-      // Compress
-      let compressedPrompt = prompt
+      // Step 2: Apply provider-native caching
+      let optimizedPrompt = prompt
+      if (providerCaching) {
+        try {
+          const messages: CacheableMessage[] = [
+            {
+              role: 'user',
+              content: prompt,
+              cacheable: true,
+            },
+          ]
+
+          const providerResult = await providerCaching.applyCaching(messages)
+
+          if (providerResult.cached) {
+            providerCacheApplied = true
+            providerCacheMetadata = {
+              provider: providerResult.metadata.provider,
+              cachedTokens: providerResult.metadata.cachedTokens || 0,
+              savingsPercentage: providerResult.metadata.savingsPercentage || 0,
+              estimatedSavings: {
+                tokens: providerResult.estimatedSavings.tokens,
+                costReduction: providerResult.estimatedSavings.costReduction,
+              },
+            }
+          }
+        } catch (error) {
+          console.warn('Provider caching failed:', error)
+        }
+      }
+
+      // Step 3: Compress
+      let compressedPrompt = optimizedPrompt
       let compressedTokens = originalTokens
       if (compressor) {
-        const result = compressor.compress(prompt)
+        const result = compressor.compress(optimizedPrompt)
         compressedPrompt = result.compressed
         // Estimate compressed tokens from character ratio
         compressedTokens = Math.ceil(
@@ -384,14 +454,23 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
         )
       }
 
-      // Route
+      // Step 4: Route
       let recommendedModel = availableModels[0] || model
       if (router) {
         const result = router.route(compressedPrompt)
         recommendedModel = result.selectedModel?.id ?? recommendedModel
       }
 
-      const tokensSaved = originalTokens - compressedTokens
+      // Calculate total savings including provider caching
+      let tokensSaved = originalTokens - compressedTokens
+      if (providerCacheApplied && providerCacheMetadata) {
+        // Provider caching provides 90% reduction on cached tokens
+        tokensSaved += Math.floor(
+          providerCacheMetadata.cachedTokens *
+            providerCacheMetadata.savingsPercentage
+        )
+      }
+
       stats.tokensProcessed += originalTokens
       stats.tokensSaved += tokensSaved
 
@@ -401,6 +480,7 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
         recommendedModel,
         tokensSaved,
         estimatedCostSaved: tokensSaved * 0.00001,
+        providerCacheMetadata,
       }
     },
 
