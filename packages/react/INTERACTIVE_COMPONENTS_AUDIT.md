@@ -59,6 +59,15 @@ Several areas were identified for improvement, primarily around:
 | Draggable           | `ui/draggable.tsx`        | Drag and drop       | ⭐⭐⭐⭐ Good  |
 | InteractiveListItem | `ui/interactive-card.tsx` | Click selection     | ⭐⭐⭐⭐ Good  |
 
+### Category 5: Menu-like & Selector Components
+
+| Component                | File                                  | Primary Interaction | Quality Rating       |
+| ------------------------ | ------------------------------------- | ------------------- | -------------------- |
+| ModelSelector            | `ai/model-selector.tsx`               | Dropdown selection  | ⭐⭐⭐⭐⭐ Excellent |
+| ThemeSelector            | `theme-components/theme-selector.tsx` | Radio group         | ⭐⭐⭐⭐⭐ Excellent |
+| ThemeSelectorDropdown    | `theme-components/theme-selector.tsx` | Dropdown selection  | ⭐⭐⭐⭐⭐ Excellent |
+| OutputPreferenceSelector | `ai/output-preference-selector.tsx`   | Radio group         | ⭐⭐⭐⭐⭐ Excellent |
+
 ---
 
 ## Detailed Findings
@@ -123,6 +132,48 @@ Several areas were identified for improvement, primarily around:
 - Reduced motion support with useReducedMotion
 - Ripple effects with reduced motion alternative
 - Proper focus ring styling
+
+#### 6. ModelSelector (`ai/model-selector.tsx`)
+
+**Strengths:**
+
+- Full keyboard navigation (Arrow keys, Home, End, Enter, Escape)
+- Proper ARIA listbox pattern (`role="listbox"`, `role="option"`, `aria-selected`)
+- `aria-activedescendant` for virtual focus management
+- Focus management with restoration on close
+- Reduced motion support with useReducedMotion
+- Scroll focused item into view
+- Close on click outside and Tab key
+
+#### 7. ThemeSelector (`theme-components/theme-selector.tsx`)
+
+**Strengths:**
+
+- Proper radiogroup pattern (`role="radiogroup"`, `role="radio"`, `aria-checked`)
+- Roving tabindex for keyboard navigation
+- Arrow key navigation (horizontal/vertical based on orientation)
+- Home/End key support
+- Focus moves to selected item on selection
+
+#### 8. ThemeSelectorDropdown (`theme-components/theme-selector.tsx`)
+
+**Strengths:**
+
+- Full keyboard navigation (Arrow keys, Home, End, Enter, Space, Escape)
+- Proper ARIA listbox pattern with `aria-activedescendant`
+- Focus management and restoration
+- `aria-expanded`, `aria-haspopup`, `aria-controls` on trigger
+- Scroll focused item into view
+- Close on Tab, Escape, or click outside
+
+#### 9. OutputPreferenceSelector (`ai/output-preference-selector.tsx`)
+
+**Strengths:**
+
+- Proper radiogroup pattern with `role="radiogroup"`
+- `aria-checked` on radio options
+- Arrow key navigation with roving tabindex
+- Reduced motion support
 
 ---
 
@@ -269,6 +320,8 @@ The hooks demonstrate mature patterns:
 
 ## Implementation Checklist
 
+### Phase 1: Core Interactive Components
+
 - [x] Fix Tabs keyboard navigation
 - [x] Fix Tabs ARIA linking (aria-controls, ids)
 - [x] Add InteractiveListItem keyboard handlers
@@ -278,7 +331,24 @@ The hooks demonstrate mature patterns:
 - [x] Add VoiceInput live region
 - [x] Add Draggable reduced motion support
 - [x] Verify all fixes with syntax check
+
+### Phase 2: Menu-like & Selector Components
+
+- [x] Add ModelSelector keyboard navigation (Arrow keys, Home, End, Enter, Escape)
+- [x] Add ModelSelector ARIA listbox pattern with aria-activedescendant
+- [x] Add ModelSelector focus management and restoration
+- [x] Add ModelSelector reduced motion support
+- [x] Add ThemeSelector keyboard navigation with roving tabindex
+- [x] Add ThemeSelectorDropdown keyboard navigation
+- [x] Add ThemeSelectorDropdown ARIA listbox pattern
+- [x] Fix FloatingChatWidget missing durations import
+- [x] Verify all selector component fixes with syntax check
+
+### Phase 3: Testing & Documentation
+
 - [ ] Run accessibility linter (manual testing recommended)
+- [ ] Add accessibility tests for modified components
+- [ ] Update Storybook stories with accessibility annotations
 
 ---
 
