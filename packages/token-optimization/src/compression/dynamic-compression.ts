@@ -1,9 +1,25 @@
 /**
  * Dynamic Compression Engine
  *
- * Implements adaptive compression with quality preservation
- * Provides 70-85% compression ratio with 95%+ quality preservation
+ * @deprecated This class has been superseded by the new compression strategies:
+ * - LLMLinguaCompressor: Real statistical compression (2-20x)
+ * - ExtractiveCompressor: Sentence-level extraction (2-5x)
+ * - AdaptiveCompressor: Auto-selects best strategy
+ *
+ * IMPORTANT: The claimed "70-85% compression ratio" was misleading.
+ * The actual compression achieved is primarily whitespace normalization
+ * (10-20% reduction) with some filler word removal.
+ *
+ * For real compression, use the new strategies:
+ * @see {@link LLMLinguaCompressor} for token-level compression
+ * @see {@link ExtractiveCompressor} for sentence-level compression
+ * @see {@link AdaptiveCompressor} for automatic strategy selection
+ *
+ * This class is maintained for backward compatibility only.
  */
+
+import { TokenOptimizationError, TokenErrorCode } from '../errors'
+import { Logger } from '../observability/index.js'
 
 export interface DynamicCompressionConfig {
   targetQuality: number // Target quality score (0.8-0.99)
@@ -60,6 +76,10 @@ export interface QualityMetrics {
 
 /**
  * Dynamic compression engine with adaptive strategy selection
+ *
+ * @deprecated Use AdaptiveCompressor from './strategies/adaptive' instead.
+ * This class provides primarily whitespace normalization and filler word removal,
+ * achieving only 10-30% actual compression despite complex infrastructure.
  */
 export class DynamicCompressionEngine {
   private strategies: Map<string, CompressionStrategy>
@@ -68,8 +88,26 @@ export class DynamicCompressionEngine {
   private contentAnalyzer: ContentAnalyzer
   private adaptiveController: AdaptiveController
   private feedbackLoop: FeedbackLoop
+  private logger: Logger
 
   constructor(private config: DynamicCompressionConfig) {
+    this.logger = new Logger({
+      logLevel: 'info',
+      structuredLogging: true,
+      metricsEnabled: false,
+      tracingEnabled: false,
+    })
+
+    // Deprecation warning
+    this.logger.warn(
+      '⚠️ DynamicCompressionEngine is deprecated and will be removed in v2.0.0',
+      {
+        migration: 'Use LLMLinguaCompressor for real compression (2-20x)',
+        alternative: 'Or use AdaptiveCompressor for automatic strategy selection',
+        docs: 'https://github.com/clarity-chat/token-optimization/blob/main/MIGRATION.md',
+      }
+    )
+
     this.strategies = new Map()
     this.qualityMonitor = new QualityMonitor()
     this.performanceTracker = new PerformanceTracker()
@@ -261,7 +299,15 @@ export class DynamicCompressionEngine {
         )
 
       default:
-        throw new Error(`Unknown compression strategy: ${strategy.type}`)
+        throw new TokenOptimizationError(
+          `Unknown compression strategy: ${strategy.type}`,
+          TokenErrorCode.INVALID_INPUT,
+          false,
+          {
+            strategyType: strategy.type,
+            validTypes: ['llmlingua', 'semantic', 'syntactic', 'hybrid'],
+          }
+        )
     }
   }
 
@@ -415,7 +461,9 @@ export class DynamicCompressionEngine {
     content: string,
     error: Error
   ): Promise<CompressionResult> {
-    console.error('Compression failed, applying emergency fallback:', error)
+    this.logger.error('Compression failed, applying emergency fallback', {
+      error,
+    })
 
     const minimalCompressed = await this.applyMinimalCompression(content)
     const qualityScore = await this.qualityMonitor.quickQualityCheck(

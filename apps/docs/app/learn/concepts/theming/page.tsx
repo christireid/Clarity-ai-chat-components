@@ -35,7 +35,7 @@ export default function ThemingConceptPage() {
   ThemeSwitcher,
   createTheme,
   defaultTheme,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const brandTheme = createTheme({
   name: 'brand',
@@ -142,7 +142,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { useTheme } from '@clarity-chat/react/internal'
+          code={`import { useTheme } from '@clarity-chat/react'
 
 function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme()

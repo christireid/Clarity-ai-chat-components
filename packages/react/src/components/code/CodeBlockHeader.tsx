@@ -20,12 +20,37 @@ export interface CodeBlockHeaderProps {
   className?: string
   /** Children (typically copy button) */
   children?: React.ReactNode
+  /** Show traffic light buttons (macOS window chrome style) */
+  showWindowChrome?: boolean
+}
+
+/**
+ * Traffic light window controls - macOS style
+ */
+function WindowControls() {
+  return (
+    <div className="flex items-center gap-2 mr-4 shrink-0" aria-hidden="true">
+      <div
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: '#FF5F57', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+      />
+      <div
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: '#FEBC2E', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+      />
+      <div
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: '#28C840', boxShadow: 'inset 0 -1px 1px rgba(0,0,0,0.2)' }}
+      />
+    </div>
+  )
 }
 
 /**
  * CodeBlockHeader Component
  *
- * Header bar for code blocks displaying title, language badge, and actions.
+ * Premium header bar for code blocks with macOS-style window chrome.
+ * Features traffic light buttons, title, language badge, and actions.
  *
  * @example
  * ```tsx
@@ -33,6 +58,7 @@ export interface CodeBlockHeaderProps {
  *   title="example.ts"
  *   language="typescript"
  *   showLanguageBadge
+ *   showWindowChrome
  * >
  *   <CopyButton text={code} />
  * </CodeBlockHeader>
@@ -43,6 +69,7 @@ export const CodeBlockHeader = React.memo<CodeBlockHeaderProps>(
     title,
     language,
     showLanguageBadge = true,
+    showWindowChrome = true,
     actions,
     className,
     children,
@@ -50,27 +77,27 @@ export const CodeBlockHeader = React.memo<CodeBlockHeaderProps>(
     const displayLanguage =
       language && language !== 'text' && language !== 'plaintext'
 
-    // Don't render if there's nothing to show
-    if (!title && !displayLanguage && !actions && !children) {
-      return null
-    }
+    // Always render header with window chrome for premium look
+    const hasContent = title || displayLanguage || actions || children
 
     return (
       <div
         className={cn(
           'flex items-center justify-between',
-          'px-4 py-2',
-          'border-b border-border/50',
-          'bg-muted/30',
+          'px-3 py-2.5',
+          'border-b border-white/[0.06]',
+          'bg-[#011627]/80 dark:bg-[#011627]',
+          'backdrop-blur-sm',
           className
         )}
       >
-        {/* Left side: Title and Language Badge */}
+        {/* Left side: Window Controls, Title and Language Badge */}
         <div className="flex items-center gap-2 min-w-0">
+          {showWindowChrome && <WindowControls />}
           {title && (
             <span
               className={cn(
-                'text-sm font-medium text-muted-foreground',
+                'text-[13px] font-medium text-neutral-400',
                 'truncate max-w-[200px]'
               )}
               title={title}
@@ -81,9 +108,9 @@ export const CodeBlockHeader = React.memo<CodeBlockHeaderProps>(
           {showLanguageBadge && displayLanguage && (
             <span
               className={cn(
-                'text-xs px-2 py-0.5 rounded',
-                'bg-muted text-muted-foreground',
-                'font-mono uppercase tracking-wide'
+                'text-[10px] px-1.5 py-0.5 rounded',
+                'bg-white/[0.06] text-neutral-500',
+                'font-mono uppercase tracking-wider'
               )}
             >
               {getLanguageDisplayName(language)}
@@ -92,7 +119,7 @@ export const CodeBlockHeader = React.memo<CodeBlockHeaderProps>(
         </div>
 
         {/* Right side: Actions and Children */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {actions}
           {children}
         </div>

@@ -22,6 +22,10 @@ export default function IntegrationGuidePage() {
       </div>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Quick Start</h2>
 
         <h3>Installation</h3>
@@ -30,7 +34,7 @@ export default function IntegrationGuidePage() {
         <h3>Basic Setup</h3>
         <CodeBlock
           language="tsx"
-          code={`import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -52,7 +56,7 @@ function App() {
         <h3>Enhanced Markdown Rendering</h3>
         <CodeBlock
           language="tsx"
-          code={`import { EnhancedMarkdownRenderer } from '@clarity-chat/react/internal'
+          code={`import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
 <EnhancedMarkdownRenderer
   content={markdownContent}
@@ -68,7 +72,7 @@ function App() {
         <h3>Prompt Suggestions</h3>
         <CodeBlock
           language="tsx"
-          code={`import { PromptSuggestions, usePromptSuggestions } from '@clarity-chat/react/internal'
+          code={`import { PromptSuggestions, usePromptSuggestions } from '@clarity-chat/react'
 
 const suggestions = usePromptSuggestions(messages)
 <PromptSuggestions
@@ -81,7 +85,7 @@ const suggestions = usePromptSuggestions(messages)
         <h3>Advanced Search</h3>
         <CodeBlock
           language="tsx"
-          code={`import { AdvancedMessageSearch } from '@clarity-chat/react/internal'
+          code={`import { AdvancedMessageSearch } from '@clarity-chat/react'
 
 <AdvancedMessageSearch
   messages={messages}
@@ -97,7 +101,7 @@ const suggestions = usePromptSuggestions(messages)
         <h3>Using Configuration Builder</h3>
         <CodeBlock
           language="tsx"
-          code={`import { createChatConfig } from '@clarity-chat/react/internal'
+          code={`import { createChatConfig } from '@clarity-chat/react'
 
 const config = createChatConfig()
   .withStreaming({

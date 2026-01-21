@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { Eye, EyeOff, Volume2, VolumeX, Zap, ZapOff, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
+import { cn } from '@/lib/utils'
 
 interface AccessibilityMenuProps {
   isOpen: boolean
@@ -137,26 +138,50 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="accessibility-menu-title"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-primary border border-border rounded-xl shadow-xl p-6"
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              'fixed top-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] rounded-xl p-6',
+              'bg-bg-primary dark:bg-gray-900/95',
+              // Multi-layer shadow system with green accessibility accent
+              'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06),0_16px_48px_rgba(0,0,0,0.04)]',
+              'dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25),0_16px_48px_rgba(34,197,94,0.1)]'
+            )}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 id="accessibility-menu-title" className="text-lg font-semibold">
+            {/* Premium gradient border */}
+            <div
+              className="absolute inset-0 rounded-xl pointer-events-none"
+              style={{
+                padding: '1px',
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.4) 0%, rgba(59,130,246,0.25) 50%, rgba(34,197,94,0.35) 100%)',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+              aria-hidden="true"
+            />
+            <div className="relative z-10 flex items-center justify-between mb-4">
+              <h2 id="accessibility-menu-title" className="text-lg font-semibold text-gray-900 dark:text-gray-50">
                 Accessibility Options
               </h2>
               <button
                 ref={closeButtonRef}
                 onClick={onClose}
-                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className={cn(
+                  'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all duration-300',
+                  'hover:bg-gray-100 dark:hover:bg-gray-800',
+                  'hover:shadow-[0_0_12px_rgba(34,197,94,0.2)]',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2'
+                )}
                 aria-label="Close accessibility menu"
               >
-                <X className="w-4 h-4" aria-hidden="true" />
+                <X className="w-4 h-4 text-gray-600 dark:text-gray-400" aria-hidden="true" />
               </button>
             </div>
 
-          <div className="space-y-4" role="group" aria-label="Accessibility settings">
+          <div className="relative z-10 space-y-4" role="group" aria-label="Accessibility settings">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4" aria-hidden="true" />
@@ -170,7 +195,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                   toggleFeature('highContrast', highContrast, setHighContrast)
                 }
                 className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
-                  highContrast ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                  highContrast ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
@@ -199,7 +224,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                   )
                 }
                 className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
-                  reducedMotion ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                  reducedMotion ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
@@ -224,7 +249,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                   toggleFeature('largerText', largerText, setLargerText)
                 }
                 className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
-                  largerText ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                  largerText ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
@@ -253,7 +278,7 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
                   )
                 }
                 className={`relative inline-flex h-7 w-12 min-w-[48px] items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
-                  screenReaderMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                  screenReaderMode ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
@@ -266,8 +291,8 @@ export function AccessibilityMenu({ isOpen, onClose }: AccessibilityMenuProps) {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-border">
-            <p className="text-xs text-text-secondary">
+          <div className="relative z-10 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700/50">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               These settings are saved in your browser and will persist across
               sessions.
             </p>
@@ -283,11 +308,16 @@ export function AccessibilityButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md hover:bg-bg-secondary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      className={cn(
+        'p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all duration-300',
+        'hover:bg-gray-100 dark:hover:bg-gray-800',
+        'hover:shadow-[0_0_12px_rgba(34,197,94,0.15)]',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500'
+      )}
       aria-label="Open accessibility menu"
       title="Accessibility options"
     >
-      <Eye className="w-4 h-4" />
+      <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400 transition-colors duration-300 group-hover:text-green-600 dark:group-hover:text-green-400" />
     </button>
   )
 }

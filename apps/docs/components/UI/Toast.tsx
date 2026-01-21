@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react'
-import { fadeIn, slideInRight, durations, springs } from '@/lib/animations'
+import { fadeIn, slideInRight, durations, springs, easings } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { ToastType } from '@/lib/toast'
 
@@ -43,6 +43,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-success/10 border-success/50',
           textClass: 'text-success',
           progressClass: 'bg-success',
+          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(34,197,94,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(34,197,94,0.2)]',
+          glowColor: 'rgba(34,197,94,0.4)',
         }
       case 'error':
         return {
@@ -50,6 +52,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-error/10 border-error/50',
           textClass: 'text-error',
           progressClass: 'bg-error',
+          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(239,68,68,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(239,68,68,0.2)]',
+          glowColor: 'rgba(239,68,68,0.4)',
         }
       case 'warning':
         return {
@@ -57,6 +61,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-warning/10 border-warning/50',
           textClass: 'text-warning',
           progressClass: 'bg-warning',
+          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(245,158,11,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(245,158,11,0.2)]',
+          glowColor: 'rgba(245,158,11,0.4)',
         }
       case 'info':
       default:
@@ -65,6 +71,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
           bgClass: 'bg-brand-500/10 border-brand-500/50',
           textClass: 'text-brand-600 dark:text-brand-400',
           progressClass: 'bg-brand-500',
+          shadowClass: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_0_20px_rgba(99,102,241,0.15)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(99,102,241,0.2)]',
+          glowColor: 'rgba(99,102,241,0.4)',
         }
     }
   }
@@ -88,24 +96,37 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       }}
       transition={{
         duration: durations.fast,
-        ease: springs.smooth.ease,
+        ease: easings.easeOut,
       }}
       className={cn(
-        'relative flex items-start gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',
-        'min-w-[320px] max-w-md',
-        config.bgClass
+        'group relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-md',
+        'min-w-[320px] max-w-md overflow-hidden',
+        config.bgClass,
+        config.shadowClass
       )}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
     >
+      {/* Gradient border */}
+      <div
+        className="absolute inset-0 rounded-xl opacity-60 pointer-events-none"
+        style={{
+          padding: '1px',
+          background: `linear-gradient(135deg, ${config.glowColor} 0%, transparent 50%, ${config.glowColor} 100%)`,
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+        aria-hidden="true"
+      />
       {/* Icon */}
-      <div className={cn('flex-shrink-0 mt-0.5', config.textClass)}>
+      <div className={cn('relative z-10 flex-shrink-0 mt-0.5', config.textClass)}>
         {toast.icon ?? config.icon}
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="relative z-10 flex-1 min-w-0">
         <p className="text-sm font-medium text-text-primary break-words">
           {toast.message}
         </p>
@@ -119,7 +140,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
             }}
             className={cn(
               'mt-2 text-xs font-semibold underline underline-offset-2',
-              'hover:no-underline transition-all',
+              'hover:no-underline transition-all duration-200',
               config.textClass
             )}
           >
@@ -132,8 +153,9 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
       <button
         onClick={() => onDismiss(toast.id)}
         className={cn(
-          'flex-shrink-0 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10',
-          'transition-colors',
+          'relative z-10 flex-shrink-0 p-1.5 rounded-lg',
+          'hover:bg-black/10 dark:hover:bg-white/10',
+          'transition-all duration-200 hover:scale-110',
           config.textClass
         )}
         aria-label="Dismiss notification"

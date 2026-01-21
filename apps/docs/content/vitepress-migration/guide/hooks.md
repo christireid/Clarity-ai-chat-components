@@ -12,22 +12,36 @@ Clarity Chat provides a comprehensive set of React hooks organized in a three-ti
 
 ## Top-Level Hooks (Recommended)
 
-### `useClarityChat`
+### `useClarityChat` - Flagship Hook
 
-The primary hook for chat functionality. Includes memory integration, token optimization, and streaming support.
+**The primary hook for production chat applications** with memory integration, streaming, and enterprise features.
+
+**Key Features:**
+- ✅ **Memory Integration**: Sliding-window, semantic-chunks, or vector-store strategies
+- ✅ **Race-Condition-Free**: Stable async memory operations
+- ✅ **Transport Selection**: SSE or WebSocket streaming
+- ✅ **Context Enrichment**: Automatic memory context injection
+- ✅ **Error Recovery**: Built-in retry logic and error classification
 
 ```tsx
-import { ChatWindow, useClarityChat } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
-export function SupportWidget() {
+export function EnterpriseChat() {
   const {
     messages,
-    isLoading,
     append,
-    error,
+    isLoading,
+    memoryInfo,
+    contextSummary,
+    error
   } = useClarityChat({
     api: '/api/chat',
-    memory: { enabled: true },
+    memory: {
+      enabled: true,
+      strategy: 'vector-store', // sliding-window | semantic-chunks | vector-store
+      maxTokens: 4000
+    },
+    transport: 'sse', // 'sse' | 'websocket'
     tokenOptimization: { enabled: true },
   })
 
@@ -35,11 +49,28 @@ export function SupportWidget() {
     <ChatWindow
       messages={messages}
       isLoading={isLoading}
-      onSendMessage={content => append({ role: 'user', content })}
+      onSendMessage={(content) => append({ role: 'user', content })}
+      header={{
+        show: true,
+        title: 'AI Assistant',
+        showMessageCount: true
+      }}
+      messageActions={{
+        onFeedback: (id, type) => console.log('Feedback:', id, type),
+        onRetry: (id) => console.log('Retry:', id)
+      }}
     />
   )
 }
 ```
+
+### Memory Strategies
+
+| Strategy | Use Case | Performance | Context Quality |
+|----------|----------|-------------|-----------------|
+| `sliding-window` | Short conversations | ⚡ Fast | 📝 Recent context |
+| `semantic-chunks` | Medium conversations | ⚖️ Balanced | 🎯 Relevant chunks |
+| `vector-store` | Enterprise/long-term | 🐌 Slower | 🔍 Semantic search |
 
 ### `useClarityChatWithTools`
 
@@ -71,11 +102,15 @@ For single-turn text completions with caching and progress tracking.
 
 Low-level streaming primitive for custom streaming implementations.
 
+### `useStreamingChat`
+
+Orchestrates live token streaming with abort/timeout management for complex streaming scenarios.
+
 ## Utility Hooks
 
 ### `useMessageOperations`
 
-Provides helpers for branching, editing, retrying, and tagging messages. Ideal for human-in-the-loop review flows.
+Manages end-to-end chat state for simpler use cases without memory integration.
 
 ### `useTokenTracker`
 
@@ -84,12 +119,6 @@ Track token usage and estimate costs for AI API calls.
 ### `useKeyboardShortcuts`
 
 Register keyboard shortcuts with cross-platform modifier support.
-
-## Legacy Hooks
-
-### `useChat` (Deprecated)
-
-> **Note:** `useChat` is maintained for backwards compatibility. For new projects, use `useClarityChat` instead.
 
 ## Best Practices
 

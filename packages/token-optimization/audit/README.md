@@ -51,8 +51,6 @@ npx tsx packages/token-optimization/audit/run-audit.ts --scenarios=short-01-gree
 ```
 audit/
 ├── run-audit.ts              # CLI entry point
-├── FINAL_SCORECARD.md        # Complete audit results
-├── TOKEN_WASTE_FINDINGS.md   # Root cause analysis
 ├── harness/
 │   ├── index.ts              # Exports
 │   ├── types.ts              # TypeScript interfaces
@@ -139,6 +137,4 @@ Edit `harness/scenarios.ts`:
 
 ## See Also
 
-- [FINAL_SCORECARD.md](./FINAL_SCORECARD.md) - Complete results
-- [TOKEN_WASTE_FINDINGS.md](./TOKEN_WASTE_FINDINGS.md) - Root causes
 - [Package README](../README.md) - Main documentation

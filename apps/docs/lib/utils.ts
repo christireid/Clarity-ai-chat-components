@@ -1,11 +1,8 @@
-import { truncate, formatDate } from '@clarity-chat/utils/format'
+import { truncate } from '@clarity-chat/utils/format'
 import { debounce } from '@clarity-chat/utils/async'
 
 // Re-export cn from primitives (canonical source)
 export { cn } from '@clarity-chat/primitives'
-
-// Re-export formatDate from utils (canonical source)
-export { formatDate }
 
 /**
  * Generate a slug from a string

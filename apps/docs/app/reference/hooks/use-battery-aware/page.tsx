@@ -69,7 +69,7 @@ export default function UseBatteryAwarePage() {
         <h2>Basic Usage</h2>
         <p>Monitor battery status and get optimization recommendations:</p>
         <CodePlayground
-          initialCode={`import { useBatteryAware } from '@clarity-chat/react/internal'
+          initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
 function BatteryOptimized() {
   const {
@@ -98,7 +98,7 @@ function BatteryOptimized() {
         <h2>Custom Configuration</h2>
         <p>Configure battery saver thresholds and optimizations:</p>
         <CodePlayground
-          initialCode={`import { useBatteryAware } from '@clarity-chat/react/internal'
+          initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
 function CustomConfig() {
   const { recommendations, batteryStatus } = useBatteryAware({
@@ -132,16 +132,16 @@ function CustomConfig() {
         <h2>Battery Status Monitoring</h2>
         <p>Monitor battery status changes:</p>
         <CodePlayground
-          initialCode={`import { useBatteryAware } from '@clarity-chat/react/internal'
+          initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
 function StatusMonitor() {
   const { batteryStatus } = useBatteryAware({
     onStatusChange: (status) => {
       if (status.level < 0.1) {
-        logger.warn('Battery critically low')
+        console.warn('Battery critically low')
       }
       if (status.charging) {
-        logger.debug('Device is charging')
+        console.log('Device is charging')
       }
     },
   })
@@ -163,7 +163,7 @@ function StatusMonitor() {
         <h2>Optimization Recommendations</h2>
         <p>Apply optimizations based on recommendations:</p>
         <CodePlayground
-          initialCode={`import { useBatteryAware } from '@clarity-chat/react/internal'
+          initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
 function ApplyOptimizations() {
   const { recommendations } = useBatteryAware()

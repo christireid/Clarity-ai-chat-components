@@ -81,7 +81,7 @@ export default function UserInteractionAnalyticsPage() {
         <h2>Basic Usage</h2>
         <p>Display interaction analytics:</p>
         <CodePlayground
-          initialCode={`import { UserInteractionAnalytics, useInteractionTracking } from '@clarity-chat/react/internal'
+          initialCode={`import { UserInteractionAnalytics, useInteractionTracking } from '@clarity-chat/react'
 
 function AnalyticsDashboard() {
   const { events, sessions, features } = useInteractionTracking()
@@ -104,7 +104,7 @@ function AnalyticsDashboard() {
         <h2>Click Heatmap</h2>
         <p>Visualize click patterns:</p>
         <CodePlayground
-          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react/internal'
+          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react'
 
 function HeatmapView({ events }: { events: InteractionEvent[] }) {
   return (
@@ -112,7 +112,7 @@ function HeatmapView({ events }: { events: InteractionEvent[] }) {
       events={events}
       showHeatmap={true}
       onEventClick={(event) => {
-        logger.debug('Clicked event:', event)
+        console.log('Clicked event:', event)
         // Show event details
       }}
     />
@@ -125,7 +125,7 @@ function HeatmapView({ events }: { events: InteractionEvent[] }) {
         <h2>User Journey</h2>
         <p>Track user journey through the application:</p>
         <CodePlayground
-          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react/internal'
+          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react'
 
 function JourneyView({ sessions }: { sessions: SessionAnalytics[] }) {
   return (
@@ -145,7 +145,7 @@ function JourneyView({ sessions }: { sessions: SessionAnalytics[] }) {
         <h2>Engagement Metrics</h2>
         <p>Display engagement metrics:</p>
         <CodePlayground
-          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react/internal'
+          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react'
 
 function EngagementView({ events, sessions }: { events: InteractionEvent[], sessions: SessionAnalytics[] }) {
   return (
@@ -163,7 +163,7 @@ function EngagementView({ events, sessions }: { events: InteractionEvent[], sess
         <h2>Feature Discovery</h2>
         <p>Track feature discovery and usage:</p>
         <CodePlayground
-          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react/internal'
+          initialCode={`import { UserInteractionAnalytics } from '@clarity-chat/react'
 
 function FeatureDiscovery({ features }: { features: FeatureInteraction[] }) {
   return (

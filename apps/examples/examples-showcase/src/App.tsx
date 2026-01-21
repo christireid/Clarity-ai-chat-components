@@ -25,7 +25,7 @@ import {
   minimalDarkTheme,
   vibrantLightTheme,
   vibrantDarkTheme,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 const themes = {

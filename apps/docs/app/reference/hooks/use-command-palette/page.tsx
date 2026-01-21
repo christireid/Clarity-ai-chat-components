@@ -67,7 +67,7 @@ export default function UseCommandPalettePage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useCommandPalette, CommandPalette } from '@clarity-chat/react/internal'
+          code={`import { useCommandPalette, CommandPalette } from '@clarity-chat/react'
 
 function App() {
   const {
@@ -78,8 +78,8 @@ function App() {
     shortcutDisplay, // "⌘K" on Mac, "Ctrl+K" on Windows
   } = useCommandPalette({
     shortcut: 'mod+k', // 'mod' = Cmd on Mac, Ctrl on Windows
-    onOpen: () => logger.debug('Command palette opened'),
-    onClose: () => logger.debug('Command palette closed'),
+    onOpen: () => console.log('Command palette opened'),
+    onClose: () => console.log('Command palette closed'),
   })
 
   return (

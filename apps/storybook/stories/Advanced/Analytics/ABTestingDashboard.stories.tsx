@@ -3,7 +3,7 @@ import React from 'react'
 import {
   ABTestingDashboard,
   type ExperimentResult,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 /**
  * Helper to create a Map from variant metrics array

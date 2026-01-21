@@ -49,13 +49,13 @@ export default function MobileGuidePage() {
   ChatWindow,
   useChat,
   useMobileKeyboard,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function MobileChat() {
   const chat = useChat({ api: '/api/chat/mobile' })
   const keyboard = useMobileKeyboard({
-    onKeyboardShow: (height) => logger.debug('Keyboard height', height),
-    onKeyboardHide: () => logger.debug('Keyboard hidden'),
+    onKeyboardShow: (height) => console.log('Keyboard height', height),
+    onKeyboardHide: () => console.log('Keyboard hidden'),
     autoScroll: true,
     scrollOffset: 24,
   })
@@ -100,7 +100,7 @@ export function MobileChat() {
   usePullToRefresh,
   useLongPress,
   hapticFeedback,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function MobileThread({ children }: { children: React.ReactNode }) {
   const swipeHandlers = useSwipe((event) => {
@@ -158,7 +158,7 @@ export function MobileThread({ children }: { children: React.ReactNode }) {
   useSafeAreaInsets,
   getTouchTargetClass,
   TOUCH_TARGET,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function MobileActions() {
   const insets = useSafeAreaInsets()
@@ -175,7 +175,7 @@ function MobileActions() {
   )
 }
 
-logger.debug('Touch target minimum', TOUCH_TARGET.minimum) // 44
+console.log('Touch target minimum', TOUCH_TARGET.minimum) // 44
 `}
         />
         <Callout type="warning">

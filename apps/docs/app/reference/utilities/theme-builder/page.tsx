@@ -41,7 +41,7 @@ const theme = createTheme({
 
 const validation = validateTheme(theme)
 if (validation.valid) {
-  logger.debug('Theme is valid!')
+  console.log('Theme is valid!')
 }`}</code></pre>
         </div>
       </section>

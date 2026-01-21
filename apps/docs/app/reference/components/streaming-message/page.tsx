@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { ToastProvider, StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+import { ToastProvider, StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall, Citation } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -223,8 +223,8 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall, Citation } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
           language="tsx"
         />
@@ -239,7 +239,7 @@ import '@clarity-chat/react/styles.css'`}
         <ComponentPreview
           title="Simple Streaming Message"
           description="Basic streaming with token-by-token display"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 
 function SimpleStreaming() {
@@ -283,8 +283,8 @@ function SimpleStreaming() {
         <ComponentPreview
           title="Streaming with Tool Calls"
           description="Tool calls with approval workflow"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall } from '@clarity-chat/react'
 
 function StreamingWithTools() {
   const toolCalls: ToolCall[] = [
@@ -323,8 +323,8 @@ function StreamingWithTools() {
         <p>Display citations and sources referenced in the response:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { Citation } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import type { Citation } from '@clarity-chat/react'
 
 function StreamingWithCitations() {
   const citations: Citation[] = [
@@ -361,7 +361,7 @@ function StreamingWithCitations() {
         <p>Show chain-of-thought reasoning steps during AI processing:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingWithThinking() {
   const thinkingSteps = [
@@ -390,7 +390,7 @@ function StreamingWithThinking() {
         <p>Display error messages when streaming fails:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingWithError() {
   return (
@@ -413,7 +413,7 @@ function StreamingWithError() {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 function StreamingJSON() {
   const [content, setContent] = useState('{"name": "John", "age": 30')
@@ -444,8 +444,8 @@ function StreamingJSON() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { StreamingMessage } from '@clarity-chat/react/internal'
-import type { ToolCall, Citation } from '@clarity-chat/react/internal'
+import { StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall, Citation } from '@clarity-chat/react'
 
 function CompleteStreamingExample() {
   const [content, setContent] = useState('')
@@ -560,8 +560,8 @@ function CompleteStreamingExample() {
         <p>StreamingMessage works seamlessly with streaming hooks:</p>
 
         <EnhancedCodeBlock
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
-import { useStreamingSSE } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
+import { useStreamingSSE } from '@clarity-chat/react'
 
 function StreamingWithHook() {
   const { content, isStreaming, toolCalls, citations, error } = useStreamingSSE({

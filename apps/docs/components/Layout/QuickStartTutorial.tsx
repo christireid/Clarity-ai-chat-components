@@ -28,24 +28,27 @@ interface Step {
 const steps: Step[] = [
   {
     id: 1,
-    title: 'Install the Package',
+    title: 'One-Line Install',
     description:
       'Add Clarity Chat to your React project with a single command.',
     icon: <Package className="w-5 h-5" />,
-    code: 'npm install @clarity-chat/react',
+    code: `# Coming Soon — Join the waitlist at clarity-chat.dev/waitlist
+npm install @clarity-chat/react`,
     language: 'bash',
   },
   {
     id: 2,
-    title: 'Import & Use',
-    description: 'Import components and build your chat UI in minutes.',
+    title: 'Import & Build',
+    description: 'Production-ready chat with built-in Token Optimization.',
     icon: <Code className="w-5 h-5" />,
     code: `import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
   const { messages, append, isLoading } = useClarityChat({
-    api: '/api/chat'
+    api: '/api/chat',
+    // Token Optimization: 90% cost reduction built-in
+    tokenOptimization: true,
   })
 
   return (
@@ -61,7 +64,7 @@ function App() {
   {
     id: 3,
     title: 'Customize & Ship',
-    description: 'Apply themes, add features, and deploy your AI chat.',
+    description: 'Themes, streaming, and advanced features out of the box.',
     icon: <Palette className="w-5 h-5" />,
     code: `<ChatWindow
   {...chat}
@@ -69,6 +72,7 @@ function App() {
   features={{
     streaming: true,
     codeHighlighting: true,
+    tokenOptimization: true, // Reduce API costs by 90%
     fileUploads: true,
   }}
 />`,
@@ -90,8 +94,8 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   }, [code])
 
   return (
-    <div className="relative group rounded-lg overflow-hidden border border-slate-700 dark:border-slate-600">
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-900 border-b border-slate-700 dark:border-slate-600">
+    <div className="relative group rounded-xl overflow-hidden border border-white/[0.08] bg-[#011627] shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2)] transition-shadow duration-300 hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.25),0_8px_16px_rgba(0,0,0,0.2),0_0_30px_rgba(129,140,248,0.15)]">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#011627] border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-xs text-slate-400 font-mono">{language}</span>
@@ -142,16 +146,27 @@ export function QuickStartTutorial() {
   const [activeStep, setActiveStep] = useState(1)
 
   return (
-    <section className="py-20 bg-bg-secondary/30">
-      <div className="container-docs">
+    <section className="py-20 bg-bg-secondary/30 overflow-x-hidden relative">
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] opacity-30 dark:opacity-15 pointer-events-none"
+        aria-hidden="true"
+      />
+      {/* Radial gradient accent */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06)_0%,transparent_70%)] pointer-events-none"
+        aria-hidden="true"
+      />
+      <div className="container-docs relative z-10">
         <div className="text-center mb-12">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-block px-3 py-1 text-sm font-medium text-brand-600 bg-brand-100 dark:bg-brand-900 dark:text-brand-300 rounded-full mb-4"
+            className="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium text-brand-600 bg-brand-100 dark:bg-brand-900 dark:text-brand-300 rounded-full mb-4"
           >
-            Quick Start
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+            Preview — Coming Soon
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -160,7 +175,7 @@ export function QuickStartTutorial() {
             transition={{ delay: 0.1 }}
             className="text-3xl md:text-4xl font-bold mb-4"
           >
-            Up and Running in <span className="text-brand-500">3 Steps</span>
+            Ship in <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">3 Simple Steps</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -169,14 +184,15 @@ export function QuickStartTutorial() {
             transition={{ delay: 0.2 }}
             className="text-lg text-text-secondary max-w-2xl mx-auto"
           >
-            Get from zero to a fully functional AI chat interface in under 5
-            minutes.
+            From zero to production chat with{' '}
+            <span className="text-indigo-600 dark:text-indigo-400 font-medium">Token Optimization</span>{' '}
+            built in. Reduce your API costs by 90%.
           </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start max-w-full overflow-hidden">
           {/* Step Navigation */}
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-hidden">
             {steps.map((step, index) => (
               <motion.button
                 key={step.id}
@@ -186,13 +202,27 @@ export function QuickStartTutorial() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  'w-full flex items-start gap-4 p-4 min-h-[72px] rounded-xl text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none',
+                  'group/step w-full max-w-full flex items-start gap-3 sm:gap-4 p-3 sm:p-4 min-h-[72px] rounded-xl text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none overflow-hidden relative',
                   activeStep === step.id
-                    ? 'bg-bg-primary border-2 border-brand-500 shadow-lg shadow-brand-500/10'
+                    ? 'bg-bg-primary border-2 border-transparent shadow-lg shadow-brand-500/10'
                     : 'bg-bg-primary/50 border-2 border-transparent hover:border-border hover:bg-bg-primary'
                 )}
                 aria-pressed={activeStep === step.id}
               >
+                {/* Gradient border for active step */}
+                {activeStep === step.id && (
+                  <div
+                    className="absolute inset-0 rounded-xl pointer-events-none"
+                    style={{
+                      padding: '2px',
+                      background: 'linear-gradient(135deg, rgba(99,102,241,0.8) 0%, rgba(139,92,246,0.6) 50%, rgba(244,114,182,0.7) 100%)',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
                 <div
                   className={cn(
                     'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
@@ -203,7 +233,7 @@ export function QuickStartTutorial() {
                 >
                   {step.icon}
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="flex items-center gap-2 mb-1">
                     <span
                       className={cn(
@@ -219,13 +249,13 @@ export function QuickStartTutorial() {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="w-1.5 h-1.5 rounded-full bg-brand-500"
+                        className="w-1.5 h-1.5 rounded-full bg-brand-500 flex-shrink-0"
                       />
                     )}
                   </div>
                   <h3
                     className={cn(
-                      'font-semibold mb-1 transition-colors',
+                      'font-semibold mb-1 transition-colors truncate',
                       activeStep === step.id
                         ? 'text-text-primary'
                         : 'text-text-secondary'
@@ -271,7 +301,7 @@ export function QuickStartTutorial() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="sticky top-24"
+            className="sticky top-24 min-w-0 overflow-hidden"
           >
             <AnimatePresence mode="wait">
               {steps.map(

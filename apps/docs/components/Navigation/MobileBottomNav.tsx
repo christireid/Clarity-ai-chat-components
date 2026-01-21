@@ -15,7 +15,7 @@ import {
   FileCode,
   Lightbulb,
 } from 'lucide-react'
-import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 
 interface NavItem {
   icon: React.ReactNode
@@ -121,15 +121,37 @@ export function MobileBottomNav() {
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-20 left-4 right-4 z-40 md:hidden"
           >
-            <div className="bg-bg-primary/95 backdrop-blur-lg border border-border rounded-xl p-3 shadow-xl">
-              <div className="flex justify-around gap-2">
+            <div className={cn(
+              'relative bg-bg-primary/95 backdrop-blur-lg rounded-xl p-3',
+              // Multi-layer shadow system with brand glow
+              'shadow-[0_4px_12px_rgba(0,0,0,0.1),0_8px_24px_rgba(0,0,0,0.08),0_0_40px_rgba(99,102,241,0.1)]',
+              'dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.25),0_0_40px_rgba(129,140,248,0.15)]'
+            )}>
+              {/* Gradient border */}
+              <div
+                className="absolute inset-0 rounded-xl pointer-events-none"
+                style={{
+                  padding: '1px',
+                  background: 'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(139,92,246,0.25) 50%, rgba(244,114,182,0.35) 100%)',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                }}
+                aria-hidden="true"
+              />
+              <div className="relative z-10 flex justify-around gap-2">
                 {quickActions.map((action, i) =>
                   action.href ? (
                     <Link
                       key={i}
                       href={action.href}
                       onClick={() => setShowQuickActions(false)}
-                      className="flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg hover:bg-bg-secondary transition-colors flex-1 justify-center"
+                      className={cn(
+                        'flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg flex-1 justify-center',
+                        'transition-all duration-300',
+                        'hover:bg-brand-50 dark:hover:bg-brand-900/20',
+                        'hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]'
+                      )}
                     >
                       <span className="text-brand-500">{action.icon}</span>
                       <span className="text-xs text-text-secondary">
@@ -143,7 +165,12 @@ export function MobileBottomNav() {
                         action.action?.()
                         setShowQuickActions(false)
                       }}
-                      className="flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg hover:bg-bg-secondary transition-colors flex-1 justify-center"
+                      className={cn(
+                        'flex flex-col items-center gap-1 p-3 min-w-[64px] min-h-[64px] rounded-lg flex-1 justify-center',
+                        'transition-all duration-300',
+                        'hover:bg-brand-50 dark:hover:bg-brand-900/20',
+                        'hover:shadow-[0_0_12px_rgba(99,102,241,0.15)]'
+                      )}
                     >
                       <span className="text-brand-500">{action.icon}</span>
                       <span className="text-xs text-text-secondary">
@@ -165,7 +192,16 @@ export function MobileBottomNav() {
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       >
-        <div className="bg-bg-primary/95 backdrop-blur-lg border-t border-border shadow-lg safe-area-bottom">
+        <div className={cn(
+          'bg-bg-primary/95 backdrop-blur-lg safe-area-bottom',
+          // Multi-layer shadow on top
+          'shadow-[0_-4px_12px_rgba(0,0,0,0.05),0_-8px_24px_rgba(0,0,0,0.04)]',
+          'dark:shadow-[0_-4px_12px_rgba(0,0,0,0.2),0_-8px_24px_rgba(0,0,0,0.15)]',
+          // Gradient top border
+          'border-t border-transparent',
+          'before:absolute before:inset-x-0 before:top-0 before:h-px',
+          'before:bg-gradient-to-r before:from-transparent before:via-brand-500/30 before:to-transparent'
+        )}>
           <div className="flex items-center justify-around px-2 py-1">
             {navItems.map((item) => {
               const active = item.isActive?.(pathname) ?? pathname === item.href
@@ -173,10 +209,11 @@ export function MobileBottomNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={clsx(
-                    'flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg transition-all justify-center',
+                  className={cn(
+                    'relative flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg justify-center',
+                    'transition-all duration-300',
                     active
-                      ? 'text-brand-500 bg-brand-500/10'
+                      ? 'text-brand-500 bg-brand-500/10 shadow-[0_0_12px_rgba(99,102,241,0.15)]'
                       : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
                   )}
                 >
@@ -186,7 +223,7 @@ export function MobileBottomNav() {
                   >
                     {item.icon}
                   </motion.div>
-                  <span className="text-[10px] font-medium">{item.label}</span>
+                  <span className="text-[11px] font-medium">{item.label}</span>
                   {active && (
                     <motion.div
                       layoutId="activeTab"
@@ -200,10 +237,11 @@ export function MobileBottomNav() {
             {/* More button */}
             <button
               onClick={() => setShowQuickActions(!showQuickActions)}
-              className={clsx(
-                'flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg transition-all justify-center',
+              className={cn(
+                'flex flex-col items-center gap-0.5 px-3 py-2 min-w-[60px] min-h-[48px] rounded-lg justify-center',
+                'transition-all duration-300',
                 showQuickActions
-                  ? 'text-brand-500 bg-brand-500/10'
+                  ? 'text-brand-500 bg-brand-500/10 shadow-[0_0_12px_rgba(99,102,241,0.15)]'
                   : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
               )}
             >
@@ -213,7 +251,7 @@ export function MobileBottomNav() {
               >
                 <ChevronUp className="w-5 h-5" />
               </motion.div>
-              <span className="text-[10px] font-medium">More</span>
+              <span className="text-[11px] font-medium">More</span>
             </button>
           </div>
         </div>

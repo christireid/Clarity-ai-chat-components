@@ -7,106 +7,232 @@ import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
 export const metadata: Metadata = {
-  title: 'useChatEnhanced Hook | Clarity Chat',
+  title: 'useChatEnhanced Hook (Deprecated) | Clarity Chat',
   description:
-    'Enhanced chat hook with Vercel AI SDK compatibility. Mid-level API for building custom chat interfaces.',
+    'DEPRECATED: useChatEnhanced has been replaced by useClarityChat. This page is for migration guidance only.',
 }
 
-const useChatEnhancedOptions: Prop[] = [
-  {
-    name: 'api',
-    type: 'string',
-    default: '"/api/chat"',
-    description: 'API endpoint URL for chat requests.',
-  },
-  {
-    name: 'initialMessages',
-    type: 'CoreMessage[]',
-    default: '[]',
-    description: 'Initial messages to load in the chat.',
-  },
-  {
-    name: 'body',
-    type: 'Record<string, any>',
-    description: 'Additional body data to send with requests.',
-  },
-  {
-    name: 'headers',
-    type: 'Record<string, string>',
-    default: '{}',
-    description: 'Custom headers to include in API requests.',
-  },
-  {
-    name: 'credentials',
-    type: 'RequestCredentials',
-    description: 'Fetch credentials mode (same-origin, include, omit).',
-  },
-  {
-    name: 'fetch',
-    type: 'typeof fetch',
-    description:
-      'Custom fetch implementation (for testing or custom behavior).',
-  },
-  {
-    name: 'maxSteps',
-    type: 'number',
-    description: 'Maximum number of steps for agentic workflows.',
-  },
-  {
-    name: 'streamProtocol',
-    type: '"sse" | "data"',
-    default: '"sse"',
-    description: 'Streaming protocol. SSE is Vercel-compatible.',
-  },
-  {
-    name: 'id',
-    type: '() => string',
-    description: 'Custom function to generate unique message IDs.',
-  },
-  {
-    name: 'onResponse',
-    type: '(response: Response) => void | Promise<void>',
-    description: 'Callback when HTTP response is received.',
-  },
-  {
-    name: 'onFinish',
-    type: '(message: CoreMessage) => void | Promise<void>',
-    description: 'Callback when a message stream finishes.',
-  },
-  {
-    name: 'onError',
-    type: '(error: Error) => void',
-    description: 'Callback when an error occurs.',
-  },
-  {
-    name: 'onMessageAppend',
-    type: '(message: CoreMessage) => void',
-    description: 'Callback when a message is appended to the conversation.',
-  },
-  {
-    name: 'transform',
-    type: '(messages: CoreMessage[]) => CoreMessage[]',
-    description: 'Transform messages before sending to API.',
-  },
-  {
-    name: 'stream',
-    type: 'boolean',
-    default: 'true',
-    description: 'Enable streaming responses.',
-  },
-  {
-    name: 'keepLastMessageOnError',
-    type: 'boolean',
-    default: 'false',
-    description: 'Keep the last message when an error occurs.',
-  },
-  {
-    name: 'sendExtraMessageFields',
-    type: 'boolean',
-    default: 'false',
-    description: 'Send additional message fields to the API.',
-  },
-]
+export default function UseChatEnhancedPage() {
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-full text-sm font-medium mb-4">
+          <span>⚠️ DEPRECATED</span>
+        </div>
+        <h1 className="text-4xl font-bold mb-4">useChatEnhanced (Deprecated)</h1>
+        <p className="text-xl text-muted-foreground mb-4">
+          <strong>This hook has been deprecated.</strong> Please migrate to{' '}
+          <a href="/reference/hooks/use-clarity-chat" className="text-brand-600 hover:underline">
+            useClarityChat
+          </a>{' '}
+          for new projects.
+        </p>
+        <p className="text-muted-foreground">
+          <strong>Status:</strong> Deprecated •{' '}
+          <strong>Replacement:</strong> useClarityChat •{' '}
+          <strong>Removal:</strong> v2.0.0
+        </p>
+      </div>
+
+      <Callout type="error" title="Migration Required">
+        <p className="mb-2">
+          <strong>useChatEnhanced is deprecated</strong> and will be removed in v2.0.0.
+          All functionality has been moved to <code>useClarityChat</code> with additional enterprise features.
+        </p>
+        <p>
+          Migration is straightforward and mostly involves updating import statements.
+        </p>
+      </Callout>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Migration Guide</h2>
+
+        <h3 className="text-xl font-semibold mb-4">1. Update Imports</h3>
+        <CodePlayground
+          code={`// Before
+import { useChatEnhanced } from '@clarity-chat/react'
+
+// After
+import { useClarityChat } from '@clarity-chat/react'`}
+        />
+
+        <h3 className="text-xl font-semibold mb-4 mt-8">2. Update Hook Usage</h3>
+        <CodePlayground
+          code={`// Before
+const { messages, append, isLoading, error } = useChatEnhanced({
+  api: '/api/chat',
+  initialMessages: [],
+})
+
+// After
+const { messages, append, isLoading, error } = useClarityChat({
+  api: '/api/chat',
+  initialMessages: [],
+})`}
+        />
+
+        <h3 className="text-xl font-semibold mb-4 mt-8">3. New Enterprise Features</h3>
+        <p className="mb-4">useClarityChat includes powerful new features not available in useChatEnhanced:</p>
+
+        <CodePlayground
+          code={`// Rate limiting with automatic queuing
+const chat = useClarityChat({
+  api: '/api/chat',
+  enableRateLimiting: true,
+  maxConcurrentRequests: 3,
+  maxQueueSize: 10,
+})
+
+// Cross-device synchronization
+const syncChat = useClarityChat({
+  api: '/api/chat',
+  conversationId: 'session-123', // Enables sync
+})
+
+// Real-time status
+console.log(chat.isRateLimited)     // Rate limit status
+console.log(chat.queueStatus)       // Queue information
+console.log(sync.status)            // Sync status`}
+        />
+
+        <Callout type="tip" title="Enhanced Error Handling">
+          <p>
+            useClarityChat provides better error handling with automatic retries,
+            rate limit recovery, and detailed error information.
+          </p>
+        </Callout>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Breaking Changes</h2>
+
+        <div className="space-y-4">
+          <div className="border-l-4 border-yellow-500 pl-4">
+            <h4 className="font-semibold">Return Value Changes</h4>
+            <p className="text-sm text-muted-foreground">
+              Some property names have changed for consistency:
+            </p>
+            <ul className="list-disc list-inside mt-2 text-sm">
+              <li><code>loading</code> → <code>isLoading</code></li>
+              <li><code>input</code> → <code>inputValue</code> (in some cases)</li>
+              <li>Added: <code>isRateLimited</code>, <code>queueStatus</code></li>
+            </ul>
+          </div>
+
+          <div className="border-l-4 border-blue-500 pl-4">
+            <h4 className="font-semibold">Enhanced Options</h4>
+            <p className="text-sm text-muted-foreground">
+              New options for enterprise features:
+            </p>
+            <ul className="list-disc list-inside mt-2 text-sm">
+              <li><code>enableRateLimiting</code> - Enable automatic rate limiting</li>
+              <li><code>conversationId</code> - Enable cross-device sync</li>
+              <li><code>maxConcurrentRequests</code> - Control concurrency</li>
+              <li><code>onRateLimited</code> - Rate limit callback</li>
+            </ul>
+          </div>
+
+          <div className="border-l-4 border-green-500 pl-4">
+            <h4 className="font-semibold">Improved Performance</h4>
+            <p className="text-sm text-muted-foreground">
+              Better memory management and automatic cleanup.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Migration Checklist</h2>
+
+        <div className="space-y-3">
+          {[
+            'Update import statements',
+            'Change hook name from useChatEnhanced to useClarityChat',
+            'Review and update option names (loading → isLoading)',
+            'Add enterprise features (rate limiting, sync) if desired',
+            'Update error handling to use new error properties',
+            'Test with new features enabled',
+            'Remove useChatEnhanced from codebase'
+          ].map((item, index) => (
+            <div key={index} className="flex items-center space-x-3">
+              <input type="checkbox" className="rounded" />
+              <span className="text-sm">{item}</span>
+            </div>
+          ))}
+        </div>
+
+        <Callout type="info" title="Automated Migration">
+          <p>
+            For large codebases, consider writing a codemod to automate the migration
+            from useChatEnhanced to useClarityChat.
+          </p>
+        </Callout>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Legacy Documentation</h2>
+
+        <Callout type="warning" title="This Documentation is Deprecated">
+          <p>
+            The documentation below is for the deprecated useChatEnhanced hook.
+            It remains for reference during migration but should not be used for new development.
+          </p>
+        </Callout>
+
+        <div className="mt-6 p-6 bg-muted rounded-lg opacity-75">
+          <p className="text-sm text-muted-foreground mb-4">
+            <em>The original useChatEnhanced documentation has been moved here for reference.</em>
+          </p>
+
+          <div className="text-sm text-muted-foreground">
+            <p>
+              useChatEnhanced was a mid-level React hook for building chat interfaces
+              with message management, streaming responses, memory integration, and AI model integration.
+            </p>
+            <p className="mt-2">
+              It has been superseded by useClarityChat which includes all original functionality
+              plus enterprise features like rate limiting and cross-device synchronization.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Need Help?</h2>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="border rounded-lg p-6">
+            <h3 className="font-semibold mb-3">Migration Support</h3>
+            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+              <li>Check the <a href="/reference/hooks/use-clarity-chat" className="text-brand-600 hover:underline">useClarityChat documentation</a></li>
+              <li>Review the <a href="/learn/migration" className="text-brand-600 hover:underline">migration guide</a></li>
+              <li>Join our <a href="https://discord.gg/clarity-chat" className="text-brand-600 hover:underline">Discord community</a></li>
+              <li>Open a <a href="https://github.com/christireid/Clarity-ai-chat-components/issues" className="text-brand-600 hover:underline">GitHub issue</a></li>
+            </ul>
+          </div>
+
+          <div className="border rounded-lg p-6">
+            <h3 className="font-semibold mb-3">Timeline</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm">v1.0.0: useChatEnhanced deprecated (current)</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm">v1.5.0: Deprecation warnings added</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span className="text-sm">v2.0.0: useChatEnhanced removed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
 
 const useChatEnhancedReturn: Prop[] = [
   {
@@ -210,7 +336,7 @@ export default function UseChatEnhancedPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function Chat() {
@@ -239,7 +365,7 @@ function Chat() {
           Experiment with the useChatEnhanced hook:
         </p>
         <CodePlayground
-          initialCode={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          initialCode={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function Example() {
@@ -270,7 +396,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Form Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, handleSubmit, input, setInput, isLoading } = useChatEnhanced({
@@ -296,7 +422,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Error Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, append, error, isLoading } = useChatEnhanced({
@@ -325,7 +451,7 @@ function Chat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, append } = useChatEnhanced({
@@ -346,7 +472,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Custom Headers</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, append } = useChatEnhanced({
@@ -364,7 +490,7 @@ function Chat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Reload/Retry</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, append, reload, isLoading } = useChatEnhanced({
@@ -449,7 +575,7 @@ const { messages, append, isLoading } = useChat({
 })
 
 // After (Clarity Chat)
-import { useChatEnhanced } from '@clarity-chat/react/internal'
+import { useChatEnhanced } from '@clarity-chat/react'
 
 const { messages, append, isLoading } = useChatEnhanced({
   api: '/api/chat',

@@ -10,12 +10,11 @@ import type { AnalyticsProvider, AnalyticsEvent } from './types'
 // Global Type Declarations for Third-Party Analytics Libraries
 // ============================================================================
 
-/** Google Analytics gtag function signature */
-type GtagCommand = 'config' | 'event' | 'js' | 'set'
+/** Google Analytics gtag function signature - matches DOM lib types */
 type GtagFunction = (
-  command: GtagCommand | Date,
-  targetOrEventName?: string,
-  params?: Record<string, unknown>
+  command: 'js' | 'config' | 'event',
+  targetId: string | Date,
+  config?: Record<string, unknown>
 ) => void
 
 /** Mixpanel API interface */
@@ -117,12 +116,12 @@ export function createGoogleAnalyticsProvider(
       document.head.appendChild(script)
 
       window.dataLayer = window.dataLayer || []
-      const gtag: GtagFunction = (command, targetOrEventName, params) => {
-        window.dataLayer?.push([command, targetOrEventName, params])
+      const gtag: GtagFunction = (command, targetId, config) => {
+        window.dataLayer?.push([command, targetId, config])
       }
       window.gtag = gtag
 
-      gtag('js' as GtagCommand, new Date().toISOString())
+      gtag('js', new Date())
       gtag('config', measurementId)
     },
     track: (event) => {

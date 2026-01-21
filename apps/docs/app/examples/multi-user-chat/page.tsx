@@ -487,7 +487,7 @@ function useWebSocketChat(roomId) {
     ws.current = new WebSocket(\`wss://api.example.com/chat/\${roomId}\`)
 
     ws.current.onopen = () => {
-      logger.debug('Connected to chat')
+      console.log('Connected to chat')
       // Send join event
       ws.current.send(JSON.stringify({
         type: 'join',
@@ -521,7 +521,7 @@ function useWebSocketChat(roomId) {
     }
 
     ws.current.onclose = () => {
-      logger.debug('Disconnected from chat')
+      console.log('Disconnected from chat')
     }
 
     return () => {

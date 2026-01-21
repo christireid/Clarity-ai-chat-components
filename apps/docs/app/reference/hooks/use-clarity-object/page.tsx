@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider, useClarityObject } from '@clarity-chat/react/internal'
+import { ToastProvider, useClarityObject } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -342,10 +342,10 @@ function UserGenerator() {
 
   // TypeScript knows the structure!
   if (object) {
-    logger.debug(object.name) // ✅ Type-safe
-    logger.debug(object.email) // ✅ Type-safe
-    logger.debug(object.preferences.theme) // ✅ Type-safe
-    // logger.debug(object.invalid) // ❌ TypeScript error
+    console.log(object.name) // ✅ Type-safe
+    console.log(object.email) // ✅ Type-safe
+    console.log(object.preferences.theme) // ✅ Type-safe
+    // console.log(object.invalid) // ❌ TypeScript error
   }
 
   return <div>...</div>
@@ -363,11 +363,11 @@ function UserGenerator() {
   api: '/api/generate-products',
   stream: true,
   onProgress: (chunk) => {
-    logger.debug('Progress:', chunk)
+    console.log('Progress:', chunk)
     // Update UI with partial results
   },
   onFinish: (object) => {
-    logger.debug('Generation complete:', object)
+    console.log('Generation complete:', object)
   },
 })`}
           language="tsx"
@@ -462,7 +462,7 @@ function UserGenerator() {
         <h3>Complete Example with All Features</h3>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react/internal'
+          code={`import { useClarityObject } from '@clarity-chat/react'
 
 interface BlogPost {
   title: string
@@ -478,10 +478,10 @@ function BlogPostGenerator() {
     initialInput: { topic: 'React hooks' },
     stream: true,
     onProgress: (chunk) => {
-      logger.debug('Generating...', chunk)
+      console.log('Generating...', chunk)
     },
     onFinish: (post) => {
-      logger.debug('Post generated:', post)
+      console.log('Post generated:', post)
       // Save to database, etc.
     },
     onError: (error) => {
@@ -656,7 +656,7 @@ export async function POST(req: Request) {
         </p>
 
         <EnhancedCodeBlock
-          code={`import { useClarityObject } from '@clarity-chat/react/internal'
+          code={`import { useClarityObject } from '@clarity-chat/react'
 import { z } from 'zod'
 
 // Define Zod schema for runtime validation
@@ -688,7 +688,7 @@ function ValidatedProductGenerator() {
       }
 
       // result.data is now fully validated
-      logger.debug('Valid products:', result.data)
+      console.log('Valid products:', result.data)
     },
     onError: (error) => {
       console.error('Generation error:', error)

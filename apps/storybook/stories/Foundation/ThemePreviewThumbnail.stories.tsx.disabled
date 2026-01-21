@@ -1,0 +1,443 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import React from 'react'
+import { ThemeProvider } from '@clarity-chat/react'
+import {
+  ThemePreviewThumbnail,
+  ThemePreviewGrid,
+  createTheme,
+  type ModernThemePresetName,
+} from '@clarity-chat/react'
+
+const meta: Meta<typeof ThemePreviewThumbnail> = {
+  title: 'Foundation/Theme Preview Thumbnail',
+  component: ThemePreviewThumbnail,
+  parameters: {
+    docs: {
+      description: {
+        component: `
+# Theme Preview Thumbnail
+
+A visual thumbnail component that displays a miniature preview of a theme's color scheme.
+Perfect for theme selectors, settings panels, and theme documentation.
+
+## Features
+
+- **Visual Preview** - Shows background, card, primary, and accent colors
+- **Multiple Sizes** - Small, medium, and large variants
+- **Selection State** - Visual indicator for selected themes
+- **Accessibility** - Full keyboard navigation and screen reader support
+- **Custom Themes** - Preview both presets and custom themes
+
+## Usage
+
+\`\`\`tsx
+import { ThemePreviewThumbnail, ThemePreviewGrid } from '@clarity-chat/react'
+
+// Single thumbnail
+<ThemePreviewThumbnail preset="default" />
+
+// Grid of all themes
+<ThemePreviewGrid
+  selectedPreset="default"
+  onSelect={(preset) => setTheme({ preset })}
+/>
+\`\`\`
+
+## Keyboard Navigation (ThemePreviewGrid)
+
+| Key | Action |
+|-----|--------|
+| **Arrow Right/Down** | Move to next theme |
+| **Arrow Left/Up** | Move to previous theme |
+| **Home** | Jump to first theme |
+| **End** | Jump to last theme |
+| **Enter/Space** | Select focused theme |
+        `,
+      },
+    },
+    layout: 'padded',
+  },
+  tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <ThemeProvider>
+        <div className="p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
+}
+
+export default meta
+type Story = StoryObj<typeof ThemePreviewThumbnail>
+
+/**
+ * Default thumbnail preview showing the default theme preset.
+ */
+export const Default: Story = {
+  render: () => <ThemePreviewThumbnail preset="default" />,
+}
+
+/**
+ * Dark theme preview showing the default-dark preset.
+ */
+export const DarkTheme: Story = {
+  render: () => <ThemePreviewThumbnail preset="default-dark" />,
+}
+
+/**
+ * All available size variants: small, medium, and large.
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex items-end gap-8">
+      <div className="flex flex-col items-center gap-2">
+        <ThemePreviewThumbnail preset="default" size="sm" />
+        <span className="text-sm text-muted-foreground">Small</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <ThemePreviewThumbnail preset="default" size="md" />
+        <span className="text-sm text-muted-foreground">Medium</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <ThemePreviewThumbnail preset="default" size="lg" />
+        <span className="text-sm text-muted-foreground">Large</span>
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Selection state comparison - showing selected vs unselected thumbnails.
+ */
+export const SelectionState: Story = {
+  render: () => (
+    <div className="flex items-center gap-8">
+      <div className="flex flex-col items-center gap-2">
+        <ThemePreviewThumbnail preset="default" selected onClick={() => {}} />
+        <span className="text-sm text-muted-foreground">Selected</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <ThemePreviewThumbnail preset="default" onClick={() => {}} />
+        <span className="text-sm text-muted-foreground">Unselected</span>
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * All preset themes displayed side by side.
+ */
+export const AllPresets: Story = {
+  render: () => {
+    const presets: ModernThemePresetName[] = [
+      'default',
+      'default-dark',
+      'neutral',
+      'neutral-dark',
+      'vibrant',
+      'vibrant-dark',
+      'high-contrast',
+      'high-contrast-dark',
+    ]
+
+    return (
+      <div className="flex flex-wrap gap-4">
+        {presets.map((preset) => (
+          <ThemePreviewThumbnail key={preset} preset={preset} />
+        ))}
+      </div>
+    )
+  },
+}
+
+/**
+ * Custom theme preview using createTheme.
+ */
+export const CustomTheme: Story = {
+  render: () => {
+    const customTheme = createTheme({
+      extends: 'default',
+      brandColor: '#10b981',
+      name: 'Emerald Brand',
+    })
+
+    return (
+      <div className="flex items-center gap-8">
+        <div className="flex flex-col items-center gap-2">
+          <ThemePreviewThumbnail theme={customTheme} />
+          <span className="text-sm text-muted-foreground">Custom Theme</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <ThemePreviewThumbnail preset="default" />
+          <span className="text-sm text-muted-foreground">
+            Default for comparison
+          </span>
+        </div>
+      </div>
+    )
+  },
+}
+
+/**
+ * Without labels - useful for compact displays.
+ */
+export const WithoutLabels: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <ThemePreviewThumbnail preset="default" showLabel={false} />
+      <ThemePreviewThumbnail preset="default-dark" showLabel={false} />
+      <ThemePreviewThumbnail preset="vibrant" showLabel={false} />
+    </div>
+  ),
+}
+
+/**
+ * Interactive thumbnail with click handler.
+ */
+export const Interactive: Story = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName | null>(null)
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Click a thumbnail to select it. Currently selected:{' '}
+          {selected || 'none'}
+        </p>
+        <div className="flex gap-4">
+          {(['default', 'neutral', 'vibrant'] as const).map((preset) => (
+            <ThemePreviewThumbnail
+              key={preset}
+              preset={preset}
+              selected={selected === preset}
+              onClick={() => setSelected(preset)}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  },
+}
+
+// ThemePreviewGrid Stories
+const gridMeta: Meta<typeof ThemePreviewGrid> = {
+  title: 'Foundation/Theme Preview Grid',
+  component: ThemePreviewGrid,
+}
+
+type GridStory = StoryObj<typeof ThemePreviewGrid>
+
+/**
+ * Default grid showing all available theme presets.
+ */
+export const Grid: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Selected theme: <strong>{selected}</strong>
+        </p>
+        <ThemePreviewGrid selectedPreset={selected} onSelect={setSelected} />
+      </div>
+    )
+  },
+}
+
+/**
+ * Grid filtered to show only light themes.
+ */
+export const LightThemesOnly: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Light Themes</h3>
+        <ThemePreviewGrid
+          selectedPreset={selected}
+          onSelect={setSelected}
+          filter="light"
+        />
+      </div>
+    )
+  },
+}
+
+/**
+ * Grid filtered to show only dark themes.
+ */
+export const DarkThemesOnly: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default-dark')
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Dark Themes</h3>
+        <ThemePreviewGrid
+          selectedPreset={selected}
+          onSelect={setSelected}
+          filter="dark"
+        />
+      </div>
+    )
+  },
+}
+
+/**
+ * Grid with small thumbnails for compact displays.
+ */
+export const CompactGrid: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+
+    return (
+      <div className="max-w-md">
+        <ThemePreviewGrid
+          selectedPreset={selected}
+          onSelect={setSelected}
+          size="sm"
+        />
+      </div>
+    )
+  },
+}
+
+/**
+ * Grid with large thumbnails for detailed view.
+ */
+export const LargeGrid: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+
+    return (
+      <ThemePreviewGrid
+        selectedPreset={selected}
+        onSelect={setSelected}
+        size="lg"
+      />
+    )
+  },
+}
+
+/**
+ * Keyboard navigation demo - focus and use arrow keys to navigate.
+ */
+export const KeyboardNavigation: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+
+    return (
+      <div className="space-y-4">
+        <div className="p-4 bg-muted rounded-lg">
+          <p className="text-sm font-medium mb-2">Keyboard Controls:</p>
+          <ul className="text-sm text-muted-foreground space-y-1">
+            <li>
+              <kbd className="px-1 py-0.5 bg-background rounded border">
+                Tab
+              </kbd>{' '}
+              to focus the grid
+            </li>
+            <li>
+              <kbd className="px-1 py-0.5 bg-background rounded border">←</kbd>{' '}
+              <kbd className="px-1 py-0.5 bg-background rounded border">→</kbd>{' '}
+              <kbd className="px-1 py-0.5 bg-background rounded border">↑</kbd>{' '}
+              <kbd className="px-1 py-0.5 bg-background rounded border">↓</kbd>{' '}
+              to navigate
+            </li>
+            <li>
+              <kbd className="px-1 py-0.5 bg-background rounded border">
+                Home
+              </kbd>{' '}
+              /{' '}
+              <kbd className="px-1 py-0.5 bg-background rounded border">
+                End
+              </kbd>{' '}
+              to jump to first/last
+            </li>
+            <li>
+              <kbd className="px-1 py-0.5 bg-background rounded border">
+                Enter
+              </kbd>{' '}
+              or{' '}
+              <kbd className="px-1 py-0.5 bg-background rounded border">
+                Space
+              </kbd>{' '}
+              to select
+            </li>
+          </ul>
+        </div>
+        <ThemePreviewGrid selectedPreset={selected} onSelect={setSelected} />
+        <p className="text-sm text-muted-foreground">
+          Selected: <strong>{selected}</strong>
+        </p>
+      </div>
+    )
+  },
+}
+
+/**
+ * Theme selector integration example.
+ */
+export const ThemeSelectorExample: GridStory = {
+  render: () => {
+    const [selected, setSelected] =
+      React.useState<ModernThemePresetName>('default')
+    const [mode, setMode] = React.useState<'light' | 'dark'>('light')
+
+    const handleSelect = (preset: ModernThemePresetName) => {
+      setSelected(preset)
+      setMode(preset.endsWith('-dark') ? 'dark' : 'light')
+    }
+
+    return (
+      <div className="border border-border rounded-lg overflow-hidden max-w-2xl">
+        <div className="bg-muted px-4 py-3 border-b border-border">
+          <h3 className="font-semibold">Theme Settings</h3>
+          <p className="text-sm text-muted-foreground">
+            Choose a theme preset for your application
+          </p>
+        </div>
+        <div className="p-4 space-y-4">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setMode('light')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                mode === 'light'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Light Themes
+            </button>
+            <button
+              onClick={() => setMode('dark')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                mode === 'dark'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Dark Themes
+            </button>
+          </div>
+          <ThemePreviewGrid
+            selectedPreset={selected}
+            onSelect={handleSelect}
+            filter={mode}
+          />
+        </div>
+      </div>
+    )
+  },
+}

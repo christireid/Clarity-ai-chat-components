@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Share2, Download, Code2, ExternalLink, Check, X } from 'lucide-react'
-import { useToast } from '@clarity-chat/react/internal'
+import { useToast } from '@clarity-chat/react'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
 
@@ -193,7 +193,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           onClick={handleExportCodeSandbox}
           disabled={isExporting}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium',
+            'flex items-center gap-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-all text-sm font-medium',
             isExporting && 'opacity-75 cursor-wait'
           )}
         >

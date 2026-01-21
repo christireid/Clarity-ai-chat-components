@@ -4,7 +4,7 @@
  * High-performance text chunking using llm-splitter.
  *
  * llm-splitter is a lightweight alternative to LangChain's text splitters:
- * - 100x smaller footprint (~KB vs 21MB for @langchain/textsplitters)
+ * - Much smaller footprint than @langchain/textsplitters (per library docs)
  * - Single-pass greedy algorithm for speed
  * - Paragraph-aware chunking
  * - Rich metadata with character positions

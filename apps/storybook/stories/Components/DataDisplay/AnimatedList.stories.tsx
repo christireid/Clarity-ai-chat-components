@@ -7,7 +7,7 @@ import {
   SlidePresence,
   ScalePresence,
   ConditionalPresence,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const demoItems = [
   'Define success metrics',

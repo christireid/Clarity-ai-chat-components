@@ -493,7 +493,7 @@ export const CommandMenu = memo(function CommandMenu({
         <div className="p-1">
           {Object.entries(groupedCommands).map(([category, commands]) => (
             <div key={category} role="group" aria-label={category}>
-              <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {category}
               </div>
               {commands.map((cmd) => {
@@ -553,21 +553,21 @@ export const CommandMenu = memo(function CommandMenu({
 
         {/* Footer hint */}
         <div className="px-3 py-1.5 border-t border-border/50 bg-muted/30">
-          <p className="text-[10px] text-muted-foreground flex items-center gap-2">
+          <p className="text-xs text-muted-foreground flex items-center gap-2">
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 text-[9px] font-mono bg-background border border-border rounded">
+              <kbd className="px-1 py-0.5 text-xs font-mono bg-background border border-border rounded">
                 ↑↓
               </kbd>
               navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 text-[9px] font-mono bg-background border border-border rounded">
+              <kbd className="px-1 py-0.5 text-xs font-mono bg-background border border-border rounded">
                 ↵
               </kbd>
               select
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 text-[9px] font-mono bg-background border border-border rounded">
+              <kbd className="px-1 py-0.5 text-xs font-mono bg-background border border-border rounded">
                 esc
               </kbd>
               close

@@ -57,7 +57,7 @@ let presence: Presence[] = []
 let messages: Message[] = []
 
 io.on('connection', (socket) => {
-  logger.debug('Client connected', socket.id)
+  console.log('Client connected', socket.id)
 
   socket.emit('bootstrap', { messages, presence })
 
@@ -94,7 +94,7 @@ io.on('connection', (socket) => {
           language="tsx"
           code={`import { useEffect } from 'react'
 import { io, Socket } from 'socket.io-client'
-import { useChat, useTyping } from '@clarity-chat/react/internal'
+import { useChat, useTyping } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 interface Presence {
@@ -166,7 +166,7 @@ export function useTeamChat(user: Presence) {
   ChatWindow,
   PresenceAvatarStack,
   TypingIndicator,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function TeamChatPage({ user }: { user: Presence }) {
   const chat = useTeamChat(user)

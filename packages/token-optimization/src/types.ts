@@ -1,6 +1,6 @@
 /**
  * Token Optimization Types
- * 
+ *
  * Comprehensive type definitions for the token optimization system
  */
 
@@ -153,7 +153,7 @@ export interface CachedResponse {
   response: string
   timestamp: number
   accessCount: number
-  metadata: any
+  metadata: Record<string, unknown>
 }
 
 export interface CacheStats {
@@ -184,7 +184,7 @@ export interface TrainingData {
   prediction: MLPrediction
   actualTokens: number
   quality: number
-  context: any
+  context: Record<string, unknown>
 }
 
 export interface ModelStats {
@@ -207,14 +207,14 @@ export interface SecurityCheck {
   check: string
   passed: boolean
   severity: 'none' | 'low' | 'medium' | 'high'
-  details?: any
+  details?: Record<string, unknown>
 }
 
 export interface SecurityValidation {
   check: string
   passed: boolean
   severity: 'none' | 'low' | 'medium' | 'high'
-  details?: any
+  details?: Record<string, unknown>
 }
 
 export interface SecurityContext {
@@ -231,7 +231,7 @@ export interface SecurityAudit {
   timestamp: string
   riskScore: number
   validations: SecurityValidation[]
-  context: any
+  context: Record<string, unknown>
   recommendations: string[]
   compliance: ComplianceStatus
 }
@@ -266,7 +266,7 @@ export interface OptimizationResult {
     threats: Threat[]
     riskLevel: 'low' | 'medium' | 'high'
   }
-  metadata?: any
+  metadata?: Record<string, unknown>
 }
 
 export interface TokenOptimizationStats {
@@ -280,5 +280,10 @@ export interface TokenOptimizationStats {
 
 // Export commonly used types for convenience
 export type TokenCount = TokenInfo
-export type OptimizationStrategy = 'toon' | 'llmlingua' | 'semantic' | 'truncation' | 'hybrid'
+export type OptimizationStrategy =
+  | 'toon'
+  | 'llmlingua'
+  | 'semantic'
+  | 'truncation'
+  | 'hybrid'
 export type AdvancedSecurityConfigType = AdvancedSecurityConfig

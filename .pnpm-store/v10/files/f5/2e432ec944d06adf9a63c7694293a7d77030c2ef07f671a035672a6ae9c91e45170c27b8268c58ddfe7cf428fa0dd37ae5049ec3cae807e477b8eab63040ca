@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importDefault(require("react"));
+const AnimatedImage = ({ src, alt, animation, animationDuration, animationTimingFunction, animationIterationCount, height, width, objectFit = 'contain' // Default to 'contain' to maintain aspect ratio
+ }) => {
+    const [isLoaded, setIsLoaded] = react_1.default.useState(false);
+    // Base styles that apply both before and after loading
+    const baseStyle = {
+        height: height || 'auto',
+        width: width || 'auto',
+        objectFit: objectFit, // This maintains aspect ratio
+        maxWidth: '100%', // Ensure image doesn't overflow container
+    };
+    const imageStyle = isLoaded ? Object.assign(Object.assign({}, baseStyle), { animationName: animation, animationDuration: animationDuration, animationTimingFunction: animationTimingFunction, animationIterationCount: animationIterationCount, whiteSpace: 'pre-wrap' }) : Object.assign(Object.assign({}, baseStyle), { opacity: 0.0, backgroundColor: '#f0f0f0' });
+    return (react_1.default.createElement("img", { src: src, alt: alt, onLoad: () => setIsLoaded(true), style: imageStyle }));
+};
+exports.default = AnimatedImage;

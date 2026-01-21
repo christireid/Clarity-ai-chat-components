@@ -429,6 +429,50 @@ export const referenceNavigation: NavItem[] = [
         title: 'createMemoryStore',
         href: '/reference/utilities/create-memory-store',
       },
+      {
+        title: 'Performance Monitoring',
+        href: '/reference/utilities/performance-monitoring',
+      },
+      {
+        title: 'Accessibility Testing',
+        href: '/reference/utilities/accessibility-testing',
+      },
+      {
+        title: 'Security Utilities',
+        href: '/reference/utilities/security',
+      },
+      {
+        title: 'Analytics & Tracking',
+        href: '/reference/utilities/analytics',
+      },
+      {
+        title: 'Quick Start Helpers',
+        href: '/reference/utilities/quick-start-helpers',
+      },
+      {
+        title: 'Development Helpers',
+        href: '/reference/utilities/dev-helpers',
+      },
+      {
+        title: 'Setup Wizard',
+        href: '/reference/utilities/setup-wizard',
+      },
+      {
+        title: 'Lazy Loading',
+        href: '/reference/utilities/lazy-loading',
+      },
+      {
+        title: 'IntelliSense Helpers',
+        href: '/reference/utilities/intellisense-helpers',
+      },
+      {
+        title: 'Testing Helpers',
+        href: '/reference/utilities/testing-helpers',
+      },
+      {
+        title: 'Migration Helpers',
+        href: '/reference/utilities/migration-helpers',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },
