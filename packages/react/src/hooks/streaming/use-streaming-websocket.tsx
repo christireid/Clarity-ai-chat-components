@@ -79,6 +79,9 @@ export interface UseStreamingWebSocketOptions {
   /** Maximum number of messages to keep in buffer (default: 1000, prevents memory leaks) */
   maxMessageBufferSize?: number
 
+  /** DELIVERY-3: Called when message buffer overflows (oldest messages dropped) */
+  onMessageBufferOverflow?: (droppedCount: number, bufferSize: number) => void
+
   /** Event handlers */
   onOpen?: (event: Event) => void
   onMessage?: (message: WebSocketMessage) => void
@@ -235,6 +238,7 @@ export function useStreamingWebSocket(
     autoParseJson = true,
     connectOnMount = false,
     maxMessageBufferSize: rawMaxMessageBufferSize = 1000,
+    onMessageBufferOverflow, // DELIVERY-3: Buffer overflow callback
     onOpen,
     onMessage,
     onError,
@@ -426,6 +430,9 @@ export function useStreamingWebSocket(
           const newMessages = [...prev, message]
           // Keep only the last maxMessageBufferSize messages
           if (newMessages.length > maxMessageBufferSize) {
+            // DELIVERY-3: Notify about buffer overflow
+            const droppedCount = newMessages.length - maxMessageBufferSize
+            onMessageBufferOverflow?.(droppedCount, maxMessageBufferSize)
             return newMessages.slice(-maxMessageBufferSize)
           }
           return newMessages

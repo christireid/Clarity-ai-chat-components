@@ -76,6 +76,9 @@ export interface UseStreamingSSEOptions {
   /** Maximum number of events to keep in buffer (default: 1000, prevents memory leaks) */
   maxEventBufferSize?: number
 
+  /** DELIVERY-3: Called when event buffer overflows (oldest events dropped) */
+  onEventBufferOverflow?: (droppedCount: number, bufferSize: number) => void
+
   /** Resume from last event ID (default: true) */
   resumeFromLastEventId?: boolean
 
@@ -260,6 +263,7 @@ export function useStreamingSSE(
     heartbeatInterval = 30000,
     connectionTimeout = 15000,
     maxEventBufferSize: rawMaxEventBufferSize = 1000,
+    onEventBufferOverflow, // DELIVERY-3: Buffer overflow callback
     resumeFromLastEventId = true,
     autoParseJson = true,
     onOpen,
@@ -331,6 +335,9 @@ export function useStreamingSSE(
         const newEvents = [...prev, event]
         // Keep only the last maxEventBufferSize events
         if (newEvents.length > maxEventBufferSize) {
+          // DELIVERY-3: Notify about buffer overflow
+          const droppedCount = newEvents.length - maxEventBufferSize
+          onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
           return newEvents.slice(-maxEventBufferSize)
         }
         return newEvents
