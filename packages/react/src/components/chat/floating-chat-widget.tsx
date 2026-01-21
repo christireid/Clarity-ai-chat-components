@@ -7,6 +7,7 @@ import {
   springPresets,
   animationPresets,
   useReducedMotion,
+  durations,
 } from '@clarity-chat/primitives'
 import {
   Sparkles,
