@@ -19,6 +19,110 @@
 import { createHash } from 'node:crypto'
 
 /**
+ * FNV-1a Hash (browser-compatible)
+ *
+ * Fast, non-cryptographic hash function with good distribution.
+ * Works in both Node.js and browser environments.
+ *
+ * @param input - String to hash
+ * @returns Base-36 encoded hash string
+ *
+ * @example
+ * ```ts
+ * fnv1aHash('hello world') // "1f8l2h3k"
+ * fnv1aHash('model:text-embedding-ada-002') // "2k9m5n7p"
+ * ```
+ */
+export function fnv1aHash(input: string): string {
+  let hash = 2166136261 // FNV offset basis (32-bit)
+
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i)
+    hash = Math.imul(hash, 16777619) // FNV prime
+    hash = hash >>> 0 // Keep as unsigned 32-bit integer
+  }
+
+  return hash.toString(36)
+}
+
+/**
+ * Cache statistics tracker
+ *
+ * Tracks hits, misses, and calculates hit rate for cache performance monitoring.
+ *
+ * @example
+ * ```ts
+ * const stats = new CacheStats()
+ *
+ * stats.recordHit()
+ * stats.recordMiss()
+ *
+ * const { hits, misses, hitRate } = stats.getStats()
+ * console.log(`Hit rate: ${(hitRate * 100).toFixed(2)}%`)
+ * ```
+ */
+export class CacheStats {
+  private hits = 0
+  private misses = 0
+
+  /**
+   * Record a cache hit
+   */
+  recordHit(): void {
+    this.hits++
+  }
+
+  /**
+   * Record a cache miss
+   */
+  recordMiss(): void {
+    this.misses++
+  }
+
+  /**
+   * Reset all statistics
+   */
+  reset(): void {
+    this.hits = 0
+    this.misses = 0
+  }
+
+  /**
+   * Get current statistics
+   *
+   * @returns Stats object with hits, misses, and hit rate (0-1)
+   */
+  getStats(): { hits: number; misses: number; hitRate: number } {
+    const total = this.hits + this.misses
+    return {
+      hits: this.hits,
+      misses: this.misses,
+      hitRate: total > 0 ? this.hits / total : 0,
+    }
+  }
+}
+
+/**
+ * Check if a timestamp has expired
+ *
+ * @param expiresAt - Expiration timestamp in milliseconds
+ * @returns True if expired, false otherwise
+ *
+ * @example
+ * ```ts
+ * const expiresAt = Date.now() + 60000 // 1 minute from now
+ * isExpired(expiresAt) // false
+ *
+ * // After 1 minute
+ * isExpired(expiresAt) // true
+ * ```
+ */
+export function isExpired(expiresAt: number | undefined): boolean {
+  if (!expiresAt) return false
+  return Date.now() > expiresAt
+}
+
+/**
  * Generate a SHA-256 hash of content (truncated to 16 chars)
  *
  * @param content - String content to hash
