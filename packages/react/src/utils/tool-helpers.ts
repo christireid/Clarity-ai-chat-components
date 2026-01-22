@@ -10,7 +10,11 @@
  * @module utils/tool-helpers
  */
 
-import type { ToolDefinition, ToolParameters, ToolArguments } from '../types/tool-definition'
+import type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+} from '../types/tool-definition'
 
 // =============================================================================
 // Input Validation Helpers
@@ -35,7 +39,9 @@ export function requireString(
   const value = args[key]
 
   if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(errorMessage || `Required parameter "${key}" must be a non-empty string`)
+    throw new Error(
+      errorMessage || `Required parameter "${key}" must be a non-empty string`
+    )
   }
 
   return value.trim()
@@ -61,7 +67,9 @@ export function requireNumber(
   const value = args[key]
 
   if (typeof value !== 'number' || isNaN(value)) {
-    throw new Error(errorMessage || `Required parameter "${key}" must be a number`)
+    throw new Error(
+      errorMessage || `Required parameter "${key}" must be a number`
+    )
   }
 
   if (options?.integer && !Number.isInteger(value)) {
@@ -90,7 +98,9 @@ export function requireBoolean(
   const value = args[key]
 
   if (typeof value !== 'boolean') {
-    throw new Error(errorMessage || `Required parameter "${key}" must be a boolean`)
+    throw new Error(
+      errorMessage || `Required parameter "${key}" must be a boolean`
+    )
   }
 
   return value
@@ -108,15 +118,21 @@ export function requireArray<T = unknown>(
   const value = args[key]
 
   if (!Array.isArray(value)) {
-    throw new Error(errorMessage || `Required parameter "${key}" must be an array`)
+    throw new Error(
+      errorMessage || `Required parameter "${key}" must be an array`
+    )
   }
 
   if (options?.minLength !== undefined && value.length < options.minLength) {
-    throw new Error(`Parameter "${key}" must have at least ${options.minLength} items`)
+    throw new Error(
+      `Parameter "${key}" must have at least ${options.minLength} items`
+    )
   }
 
   if (options?.maxLength !== undefined && value.length > options.maxLength) {
-    throw new Error(`Parameter "${key}" must have at most ${options.maxLength} items`)
+    throw new Error(
+      `Parameter "${key}" must have at most ${options.maxLength} items`
+    )
   }
 
   return value as T[]
@@ -190,7 +206,8 @@ export function withErrorHandling<TArgs extends ToolArguments, TResult>(
     try {
       return await fn(args, context)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
 
       if (contextMessage) {
         throw new Error(`${contextMessage}: ${errorMessage}`)
@@ -239,7 +256,7 @@ export function userError(
   const error = new Error(fullMessage)
 
   if (details?.code) {
-    (error as any).code = details.code
+    ;(error as any).code = details.code
   }
 
   return error
@@ -252,12 +269,15 @@ export function userError(
 /**
  * String parameter schema
  */
-export const stringParam = (description: string, options?: {
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-  default?: string
-}): ToolParameters['properties'][string] => ({
+export const stringParam = (
+  description: string,
+  options?: {
+    minLength?: number
+    maxLength?: number
+    pattern?: string
+    default?: string
+  }
+): ToolParameters['properties'][string] => ({
   type: 'string',
   description,
   minLength: options?.minLength,
@@ -269,11 +289,14 @@ export const stringParam = (description: string, options?: {
 /**
  * Number parameter schema
  */
-export const numberParam = (description: string, options?: {
-  minimum?: number
-  maximum?: number
-  default?: number
-}): ToolParameters['properties'][string] => ({
+export const numberParam = (
+  description: string,
+  options?: {
+    minimum?: number
+    maximum?: number
+    default?: number
+  }
+): ToolParameters['properties'][string] => ({
   type: 'number',
   description,
   minimum: options?.minimum,
@@ -284,11 +307,14 @@ export const numberParam = (description: string, options?: {
 /**
  * Integer parameter schema
  */
-export const integerParam = (description: string, options?: {
-  minimum?: number
-  maximum?: number
-  default?: number
-}): ToolParameters['properties'][string] => ({
+export const integerParam = (
+  description: string,
+  options?: {
+    minimum?: number
+    maximum?: number
+    default?: number
+  }
+): ToolParameters['properties'][string] => ({
   type: 'integer',
   description,
   minimum: options?.minimum,
@@ -299,7 +325,10 @@ export const integerParam = (description: string, options?: {
 /**
  * Boolean parameter schema
  */
-export const booleanParam = (description: string, defaultValue?: boolean): ToolParameters['properties'][string] => ({
+export const booleanParam = (
+  description: string,
+  defaultValue?: boolean
+): ToolParameters['properties'][string] => ({
   type: 'boolean',
   description,
   default: defaultValue,
@@ -360,7 +389,9 @@ export const arrayParam = (
  * })
  * ```
  */
-export function createReadOnlyTool<TArgs extends Record<string, unknown>>(config: {
+export function createReadOnlyTool<
+  TArgs extends Record<string, unknown>,
+>(config: {
   name: string
   description: string
   parameters: Record<keyof TArgs, ToolParameters['properties'][string]>
@@ -405,7 +436,9 @@ export function createReadOnlyTool<TArgs extends Record<string, unknown>>(config
  * })
  * ```
  */
-export function createApprovalTool<TArgs extends Record<string, unknown>>(config: {
+export function createApprovalTool<
+  TArgs extends Record<string, unknown>,
+>(config: {
   name: string
   description: string
   parameters: Record<keyof TArgs, ToolParameters['properties'][string]>
@@ -515,11 +548,107 @@ export function createAPITool<TArgs extends Record<string, unknown>>(config: {
 }
 
 // =============================================================================
+// Schema Shorthand
+// =============================================================================
+
+/**
+ * Simplified schema definition for createTool shorthand
+ */
+export type SchemaShorthand = Record<
+  string,
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'object'
+  | 'array'
+  | string[] // Enum
+  | ToolParameters['properties'][string] // Full schema object
+>
+
+/**
+ * Expand shorthand schema to full JSON Schema
+ */
+function expandSchema(shorthand: SchemaShorthand): ToolParameters {
+  const properties: ToolParameters['properties'] = {}
+  const required: string[] = []
+
+  for (const [key, value] of Object.entries(shorthand)) {
+    // Add to required by default in shorthand unless explicitly optional in full schema
+    if (
+      typeof value !== 'object' ||
+      Array.isArray(value) ||
+      !('default' in value) // If it has a default, it's optional
+    ) {
+      required.push(key)
+    }
+
+    // Handle array of strings (Enum)
+    if (Array.isArray(value)) {
+      properties[key] = {
+        type: 'string',
+        enum: value,
+      }
+      continue
+    }
+
+    // Handle string shorthand
+    if (typeof value === 'string') {
+      properties[key] = {
+        type: value as any,
+      }
+      continue
+    }
+
+    // Handle full schema object
+    if (typeof value === 'object') {
+      properties[key] = value
+      continue
+    }
+  }
+
+  return {
+    type: 'object',
+    properties,
+    required: required.length > 0 ? required : undefined,
+  }
+}
+
+/**
+ * Create a tool with simplified schema definition
+ *
+ * @example
+ * ```typescript
+ * const tool = createTool({
+ *   name: 'get_weather',
+ *   description: 'Get weather',
+ *   schema: {
+ *     location: 'string',
+ *     units: ['celsius', 'fahrenheit']
+ *   },
+ *   execute: async ({ location, units }) => { ... }
+ * })
+ * ```
+ */
+export function createTool<TArgs extends Record<string, unknown>>(config: {
+  name: string
+  description: string
+  schema: SchemaShorthand
+  execute: (args: TArgs, context?: any) => Promise<any>
+  requiresApproval?: boolean
+  cacheable?: boolean
+}): ToolDefinition {
+  return {
+    name: config.name,
+    description: config.description,
+    parameters: expandSchema(config.schema),
+    execute: withErrorHandling(config.execute as any),
+    requiresApproval: config.requiresApproval ?? true,
+    cacheable: config.cacheable ?? false,
+  }
+}
+
+// =============================================================================
 // Exports
 // =============================================================================
 
-export type {
-  ToolDefinition,
-  ToolParameters,
-  ToolArguments,
-}
+export type { ToolDefinition, ToolParameters, ToolArguments }

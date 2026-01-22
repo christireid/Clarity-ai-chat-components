@@ -67,10 +67,10 @@ export type ToolCallStatus =
 const VALID_TRANSITIONS: Record<ToolCallStatus, ToolCallStatus[]> = {
   idle: ['requested'],
   requested: ['pending_approval', 'approved', 'executing', 'cached'],
-  pending_approval: ['approved', 'rejected', 'cancelled'],
+  pending_approval: ['approved', 'rejected', 'cancelled', 'failed'],
   approved: ['executing', 'cached', 'cancelled'],
   rejected: ['idle'], // Can request again
-  executing: ['completed', 'failed', 'timeout', 'cancelled'],
+  executing: ['completed', 'failed', 'timeout', 'cancelled', 'cached'],
   completed: ['idle'], // Can request again
   failed: ['idle'], // Can retry
   timeout: ['idle'], // Can retry
@@ -81,7 +81,10 @@ const VALID_TRANSITIONS: Record<ToolCallStatus, ToolCallStatus[]> = {
 /**
  * Check if state transition is valid
  */
-export function isValidTransition(from: ToolCallStatus, to: ToolCallStatus): boolean {
+export function isValidTransition(
+  from: ToolCallStatus,
+  to: ToolCallStatus
+): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false
 }
 
@@ -301,9 +304,9 @@ export type ToolLifecycleEvent =
 /**
  * Event listener function
  */
-export type ToolLifecycleListener<E extends ToolLifecycleEvent = ToolLifecycleEvent> = (
-  event: E
-) => void | Promise<void>
+export type ToolLifecycleListener<
+  E extends ToolLifecycleEvent = ToolLifecycleEvent,
+> = (event: E) => void | Promise<void>
 
 /**
  * Event listener map
@@ -802,7 +805,13 @@ export class ToolLifecycleManager {
 
     // Redact sensitive fields in args if they exist
     if (sanitized.call?.args) {
-      const sensitiveKeys = ['password', 'token', 'apiKey', 'secret', 'credential']
+      const sensitiveKeys = [
+        'password',
+        'token',
+        'apiKey',
+        'secret',
+        'credential',
+      ]
       for (const key of Object.keys(sanitized.call.args)) {
         if (sensitiveKeys.some((sk) => key.toLowerCase().includes(sk))) {
           sanitized.call.args[key] = '[REDACTED]'
@@ -905,7 +914,8 @@ export class ToolLifecycleManager {
       byEventType[entry.event.type] = (byEventType[entry.event.type] || 0) + 1
       byToolName[entry.event.call.toolName] =
         (byToolName[entry.event.call.toolName] || 0) + 1
-      byStatus[entry.event.call.status] = (byStatus[entry.event.call.status] || 0) + 1
+      byStatus[entry.event.call.status] =
+        (byStatus[entry.event.call.status] || 0) + 1
     }
 
     return {
