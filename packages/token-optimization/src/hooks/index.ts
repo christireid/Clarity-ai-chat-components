@@ -166,3 +166,20 @@ export type {
   UseTelemetryConfig,
   TelemetryState,
 } from './use-telemetry'
+
+// ============================================================================
+// Schema Optimization Hooks (Week 7) - Function schema optimization
+// ============================================================================
+
+// Schema optimization for function calling
+export {
+  useSchemaOptimizer,
+  useBatchSchemaOptimizer,
+  useSchemaAnalysis,
+  useQuickOptimize,
+  useSchemaComparison,
+} from './use-schema-optimizer'
+export type {
+  UseSchemaOptimizerConfig,
+  SchemaOptimizationState,
+} from './use-schema-optimizer'
