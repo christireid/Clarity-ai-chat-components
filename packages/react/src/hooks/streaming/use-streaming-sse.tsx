@@ -303,6 +303,7 @@ export function useStreamingSSE(
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
+  const reconnectingRef = React.useRef(false) // FIX: Issue #5 - Prevent concurrent reconnections
 
   /**
    * Parse SSE event data
@@ -352,7 +353,20 @@ export function useStreamingSSE(
 
       // Note: `data` accumulates all event data. For long sessions, consider
       // using only `lastEvent` or clearing data periodically with `reset()`
-      setData((prev) => prev + eventData)
+      // FIX: Issue #4 - Apply size limit to prevent buffer overflow
+      const MAX_DATA_SIZE = 10 * 1024 * 1024 // 10MB limit
+
+      setData((prev) => {
+        const newData = prev + eventData
+        if (newData.length > MAX_DATA_SIZE) {
+          console.warn(
+            `[useStreamingSSE] Data buffer size limit (${MAX_DATA_SIZE} bytes) reached. Truncating to last 10MB.`
+          )
+          onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
+          return newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
+        }
+        return newData
+      })
 
       onMessage?.(event)
     },
@@ -416,6 +430,11 @@ export function useStreamingSSE(
             `SSE connection timeout after ${connectionTimeout}ms`
           )
           logger.error('[useStreamingSSE] Connection timeout:', timeoutError)
+
+          // FIX: Issue #5 - Prevent reconnection cascade
+          shouldReconnectRef.current = false
+          reconnectingRef.current = false
+
           setError(timeoutError)
           setStatus('error')
           onError?.(timeoutError)
@@ -593,8 +612,11 @@ export function useStreamingSSE(
       if (
         autoReconnect &&
         shouldReconnectRef.current &&
+        !reconnectingRef.current && // FIX: Issue #5 - Check reconnection flag
         reconnectAttempt < maxReconnectAttempts
       ) {
+        reconnectingRef.current = true // FIX: Set flag before reconnecting
+
         const nextAttempt = reconnectAttempt + 1
         // Calculate delay with exponential backoff and additive jitter (±30%)
         // Jitter prevents "thundering herd" when many clients reconnect simultaneously
@@ -612,6 +634,7 @@ export function useStreamingSSE(
         onReconnecting?.(nextAttempt, delay)
 
         reconnectTimeoutRef.current = setTimeout(() => {
+          reconnectingRef.current = false // FIX: Clear flag before reconnecting
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {

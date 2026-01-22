@@ -350,6 +350,9 @@ export function ClarityChat({
 
   // Track when we're regenerating after an edit
   const [isRegenerating, setIsRegenerating] = React.useState(false)
+  // FIX: Issue #1 - Prevent concurrent edit operations with mutex
+  const [isEditOperationInProgress, setIsEditOperationInProgress] =
+    React.useState(false)
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
@@ -436,6 +439,12 @@ export function ClarityChat({
   // Handle saving edits
   const handleSaveEdit = React.useCallback(
     async (messageId: string, newContent: string) => {
+      // FIX: Issue #1 - Prevent concurrent edits with mutex
+      if (isEditOperationInProgress) {
+        toast?.warning('Another edit operation is in progress. Please wait.')
+        return
+      }
+
       // Prevent saving while a request is in progress (defense in depth)
       if (chat.isLoading || isRegenerating) {
         toast?.info('Please wait for the current request to complete')
@@ -449,11 +458,14 @@ export function ClarityChat({
         return
       }
 
+      // FIX: Acquire lock BEFORE any state operations
+      setIsEditOperationInProgress(true)
+
       try {
         // Clear editing state first
         setEditingMessageId(null)
 
-        // Capture current messages for potential rollback
+        // FIX: Re-capture messages AFTER acquiring lock (most recent state)
         const originalMessages = chat.messages
 
         // Find the message and determine if we need to regenerate
@@ -501,9 +513,12 @@ export function ClarityChat({
           console.error('Failed to update message:', error)
           toast?.error('Failed to update message. Please try again.')
         }
+      } finally {
+        // FIX: Always release lock
+        setIsEditOperationInProgress(false)
       }
     },
-    [chat, isRegenerating, toast]
+    [chat, isRegenerating, isEditOperationInProgress, toast]
   )
 
   // Handle canceling edits

@@ -103,6 +103,7 @@
     "@storybook/react-vite": "^10.1.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
+    "@types/dompurify": "^3.0.5",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
     "@vitejs/plugin-react": "^5.1.2",
@@ -184,6 +185,7 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
+    "dompurify": "^3.3.1",
     "tsx": "^4.21.0"
   }
 }

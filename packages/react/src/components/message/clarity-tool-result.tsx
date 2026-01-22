@@ -21,6 +21,7 @@
  */
 
 import * as React from 'react'
+import DOMPurify from 'dompurify'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type {
   ToolComponentRegistry,
@@ -28,6 +29,16 @@ import type {
 } from '../../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
 import { ErrorBoundary } from '../feedback/error-boundary'
+
+/**
+ * Escape HTML special characters to prevent XSS
+ * FIX: TOOL-011
+ */
+function escapeHtml(text: string): string {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
 
 /**
  * Tool call interface for ClarityToolResult
@@ -89,14 +100,26 @@ function DefaultToolResult({
   toolCall: ClarityToolCall
   result: unknown
 }) {
+  // FIX: TOOL-011 - Escape tool name to prevent XSS
+  const escapedName = escapeHtml(toolCall.name)
+
+  // FIX: TOOL-011 - Sanitize result if it's a string
+  const sanitizedResult =
+    typeof result === 'string'
+      ? DOMPurify.sanitize(result)
+      : JSON.stringify(result, null, 2)
+
   return (
     <Card className="mt-2">
       <CardHeader>
-        <h4 className="text-sm font-semibold">Tool: {toolCall.name}</h4>
+        <h4
+          className="text-sm font-semibold"
+          dangerouslySetInnerHTML={{ __html: `Tool: ${escapedName}` }}
+        />
       </CardHeader>
       <CardContent>
         <pre className="text-xs overflow-auto max-h-64 bg-muted p-2 rounded">
-          {JSON.stringify(result, null, 2)}
+          {sanitizedResult}
         </pre>
       </CardContent>
     </Card>
@@ -159,7 +182,9 @@ export function ClarityToolResult({
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">{error.message}</p>
+            <p className="text-xs text-muted-foreground">
+              {escapeHtml(error.message)}
+            </p>
             <pre className="text-xs overflow-auto max-h-32 bg-muted p-2 rounded mt-2">
               {JSON.stringify(result, null, 2)}
             </pre>

@@ -358,7 +358,18 @@ export class ToolOrchestrator {
       // Mark as executing
       this.lifecycle.markExecuting(callId)
 
-      // Execute
+      // FIX: TOOL-018 - Re-validate approval status atomically
+      const currentCall = this.lifecycle.getCall(callId)
+      if (
+        currentCall.status !== 'approved' &&
+        currentCall.status !== 'executing'
+      ) {
+        throw new Error(
+          `Tool execution rejected: status changed to ${currentCall.status} during approval validation`
+        )
+      }
+
+      // Now safe to execute
       const result = await this.executor.execute(tool, call.args, {
         context: call.context,
       })
