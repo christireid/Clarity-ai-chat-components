@@ -37,20 +37,19 @@ import { durations } from '@/lib/animations'
 const ANIMATION_DURATION = 0.3
 const ANIMATION_EASE = [0.25, 0.1, 0.25, 1] as const
 
-// Primary nav items always visible - only Token Optimization (maximizes search bar width)
+// Primary nav items - aligned with new IA structure
 const primaryNav = [
-  { name: 'Token Optimization', href: '/guides/token-optimization', icon: Zap, highlight: true, description: 'Reduce API costs by 90%' },
+  { name: 'Get Started', href: '/get-started', icon: GraduationCap, description: 'Quick start guide' },
+  { name: 'Components', href: '/explore', icon: Play, description: 'Interactive demos' },
+  { name: 'API Reference', href: '/api', icon: Library, description: 'Complete API docs' },
 ]
 
-// All other nav items hidden in "More" dropdown for cleaner design
+// Secondary nav items in "More" dropdown
 const moreNav = [
-  { name: 'Docs', href: '/learn/quick-start', icon: GraduationCap },
-  { name: 'Reference', href: '/reference/components', icon: Library },
-  { name: 'Demos', href: '/demos', icon: Play },
-  { name: 'Examples', href: '/examples', icon: Code2 },
-  { name: 'Guides', href: '/guides', icon: Map },
-  { name: 'Cookbook', href: '/cookbook', icon: ChefHat },
-  { name: 'Compare', href: '/compare', icon: GitCompare },
+  { name: 'Build', href: '/build', icon: Map },
+  { name: 'Playground', href: '/playground', icon: Code2 },
+  { name: 'About', href: '/about', icon: BookOpen },
+  { name: 'Contributing', href: '/contributing', icon: GitCompare },
 ]
 
 // Combined for mobile
