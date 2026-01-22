@@ -22,8 +22,10 @@ import {
   GitCompare,
   Zap,
   MoreHorizontal,
+  Keyboard,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
+import { KeyboardShortcuts } from '@/components/Enhanced/KeyboardShortcuts'
 import {
   AccessibilityButton,
   AccessibilityMenu,
@@ -60,6 +62,7 @@ export function Navigation() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [accessibilityOpen, setAccessibilityOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -81,11 +84,16 @@ export function Navigation() {
         e.preventDefault()
         setSearchOpen(true)
       }
+      // Show keyboard shortcuts on ?
+      if (e.key === '?' && !searchOpen) {
+        e.preventDefault()
+        setShortcutsOpen(true)
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [searchOpen])
 
   const cycleTheme = () => {
     let newTheme: string
@@ -267,6 +275,15 @@ export function Navigation() {
                 <ExternalLink className="w-4 h-4" />
               </a>
 
+              {/* Keyboard Shortcuts */}
+              <button
+                onClick={() => setShortcutsOpen(true)}
+                className="hidden sm:flex p-2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                aria-label="Keyboard shortcuts"
+              >
+                <Keyboard className="w-4 h-4" />
+              </button>
+
               {/* Accessibility - in More dropdown for cleaner nav */}
               <div className="hidden">
                 <AccessibilityButton onClick={() => setAccessibilityOpen(true)} />
@@ -354,6 +371,9 @@ export function Navigation() {
 
       {/* Search Dialog */}
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Keyboard Shortcuts */}
+      <KeyboardShortcuts open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
 
       {/* Accessibility Menu */}
       <AccessibilityMenu
