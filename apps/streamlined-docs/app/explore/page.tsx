@@ -1,5 +1,5 @@
 import { EmptyContentPage } from '@/components/EmptyContentPage'
 
 export default function Page() {
-  return <EmptyContentPage />
+  return <EmptyContentPage title="Explore" section="Explore" />
 }

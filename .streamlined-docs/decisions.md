@@ -86,5 +86,52 @@ This document tracks all major design and implementation decisions made during t
 - All individual demo pages (e.g., `/demos/zero-to-chat`)
 - All individual example pages (e.g., `/examples/simple-chat`)
 
+## Route Restructuring (IA Implementation)
+
+### Implement Designed IA in Routes
+- **Decision:** Restructure all routes to match the designed IA
+- **Rationale:**
+  - Original routes didn't match the designed 6-section IA
+  - Alignment needed for consistency between design and implementation
+  - Cleaner, more intuitive URL structure
+
+### Route Changes
+**Renamed:**
+- `/learn` → `/get-started`
+- `/reference` → `/api`
+- `/guides` → `/build`
+
+**Consolidated:**
+- `/demos`, `/examples`, `/cookbook` → `/explore` (with subdirectories)
+
+**Removed:**
+- `/tools`, `/commercial`, `/research`, `/integrations`
+- `/enterprise`, `/enterprise-standalone`
+- `/examples-catalog`, `/playground-demo`, `/compare`
+
+**Kept:**
+- `/about`, `/contributing`, `/changelog`, `/license`
+- `/playground`, `/why-clarity`
+
+### Final Route Structure (10 top-level routes)
+```
+/
+├── /get-started (was /learn)
+├── /build (was /guides)
+├── /explore (new, consolidates demos/examples/cookbook)
+│   ├── /explore/demos
+│   ├── /explore/examples
+│   └── /explore/recipes (was cookbook)
+├── /api (was /reference)
+├── /about
+├── /contributing
+├── /changelog
+├── /license
+├── /playground
+└── /why-clarity
+```
+
+**Result:** Clean alignment with designed IA, from 22 top-level routes to 10
+
 ## Future Decisions
 Will be documented as phases progress

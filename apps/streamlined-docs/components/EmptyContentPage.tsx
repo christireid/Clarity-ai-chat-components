@@ -83,16 +83,16 @@ function generateSectionFromPath(pathname: string): string | null {
   if (segments.length === 0) return null
 
   const sectionMap: Record<string, string> = {
-    'learn': 'Learn',
-    'reference': 'API Reference',
-    'guides': 'Guides',
-    'cookbook': 'Cookbook',
-    'demos': 'Demos',
-    'examples': 'Examples',
-    'tools': 'Developer Tools',
-    'enterprise': 'Enterprise',
+    'get-started': 'Get Started',
+    'build': 'Build',
+    'explore': 'Explore',
+    'api': 'API',
     'about': 'About',
     'contributing': 'Contributing',
+    'changelog': 'Changelog',
+    'license': 'License',
+    'playground': 'Playground',
+    'why-clarity': 'Why Clarity',
   }
 
   return sectionMap[segments[0]] || null
