@@ -207,10 +207,19 @@ export function useTieredCache(
     }
   })
 
-  // Initialize cache lazily (refs can be set during render)
-  if (!cacheRef.current) {
-    cacheRef.current = new TieredCache(cacheConfig)
-  }
+  // Initialize cache in useEffect (not during render!)
+  useEffect(() => {
+    // Initialize cache
+    if (!cacheRef.current) {
+      cacheRef.current = new TieredCache(cacheConfig)
+    }
+
+    // Cleanup on unmount or config change
+    return () => {
+      cacheRef.current?.clear()
+      cacheRef.current = null
+    }
+  }, [cacheConfig])
 
   // Initialize stats in effect to avoid setState during render
   useEffect(() => {

@@ -122,10 +122,18 @@ export function useModelRouter(
   // Track stats reactively if enabled
   const [stats, setStats] = useState<RouterStats | null>(null)
 
-  // Initialize router lazily (refs can be set during render)
-  if (!routerRef.current) {
-    routerRef.current = new ModelRouter(routerConfig)
-  }
+  // Initialize router in useEffect (not during render!)
+  useEffect(() => {
+    // Initialize router
+    if (!routerRef.current) {
+      routerRef.current = new ModelRouter(routerConfig)
+    }
+
+    // Cleanup on unmount or config change
+    return () => {
+      routerRef.current = null
+    }
+  }, [routerConfig])
 
   // Initialize stats in effect to avoid setState during render
   useEffect(() => {
