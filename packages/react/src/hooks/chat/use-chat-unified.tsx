@@ -35,7 +35,7 @@ import {
   validateApiEndpoint,
   validateStorageKey,
 } from '../../utils/config/runtime-validation'
-import type { Message } from '../../types/messages'
+import type { UIMessage as Message } from '../../types/messages'
 
 // ============================================================================
 // TYPES

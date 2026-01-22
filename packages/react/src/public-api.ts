@@ -887,19 +887,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 // Keyboard navigation
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
-// Security
-export {
-  SecurityMonitor,
-  securityMonitor,
-  useSecureContent,
-  useCSP,
-  sanitizeHTML,
-  sanitizeMarkdown,
-  sanitizeUserInput,
-  DEFAULT_SECURITY_CONFIG,
-  type SecurityConfig,
-  type SecurityHeaders,
-} from './utils/security'
+// Security - see comprehensive exports below (around line 1014)
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -1013,6 +1001,7 @@ export {
 
 // Security utilities
 export {
+  SecurityMonitor,
   sanitizeHTML,
   sanitizeMarkdown,
   sanitizeUserInput,
