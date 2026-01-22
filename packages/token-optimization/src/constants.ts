@@ -1,8 +1,35 @@
 /**
  * Token Optimization Constants
  *
+ * @deprecated This file is deprecated and will be removed in v2.0.0.
+ * Use './defaults' instead for all default configurations.
+ *
+ * ⚠️ CRITICAL SECURITY ISSUE: This file has conflicting DEFAULT_SECURITY_CONFIG
+ * with defaults.ts. To avoid unpredictable security behavior:
+ *
+ * Migration guide:
+ * ```typescript
+ * // BEFORE (deprecated):
+ * import { DEFAULT_SECURITY_CONFIG } from './constants'
+ *
+ * // AFTER (recommended):
+ * import { DEFAULT_SECURITY_CONFIG } from './defaults'
+ * ```
+ *
+ * This file will log deprecation warnings when imported.
+ * See MIGRATION.md for full migration guide.
+ *
  * Default configurations and constants for the token optimization system
  */
+
+// Log deprecation warning when this module is imported
+if (typeof console !== 'undefined') {
+  console.warn(
+    '[DEPRECATION] constants.ts is deprecated and will be removed in v2.0.0.\n' +
+      'Use defaults.ts instead. Reason: Conflicting security defaults.\n' +
+      'See documentation for migration guide.'
+  )
+}
 
 // Default configurations
 export const DEFAULT_TOKENIZER_CONFIG = {

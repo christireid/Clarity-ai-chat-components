@@ -201,16 +201,28 @@ export const DEFAULT_FALLBACK_MODEL = 'gpt-4o-mini'
 
 /**
  * Default security configuration.
+ *
+ * ⚠️ SECURITY NOTE: These defaults prioritize safety for enterprise use.
+ * - PII redaction: ENABLED by default (safer for compliance)
+ * - Audit logging: ENABLED by default (safer for accountability)
+ * - Compliance: 'standard' provides good balance
+ *
+ * If you need minimal security for development/testing, explicitly configure:
+ * ```typescript
+ * { enablePIIRedaction: false, enableAuditLogging: false }
+ * ```
  */
 export const DEFAULT_SECURITY_CONFIG = {
   /** Enable input sanitization */
   enableSanitization: true,
-  /** Enable PII detection and redaction */
-  enablePIIRedaction: false,
-  /** Enable audit logging */
-  enableAuditLogging: false,
-  /** Compliance level */
-  complianceLevel: 'basic' as const,
+  /** Enable PII detection and redaction (ENABLED for safety) */
+  enablePIIRedaction: true,
+  /** Enable audit logging (ENABLED for accountability) */
+  enableAuditLogging: true,
+  /** Compliance level ('standard' balances security and performance) */
+  complianceLevel: 'standard' as const,
+  /** Audit log retention in days */
+  auditRetention: 30,
 } as const
 
 // ═══════════════════════════════════════════════════════════════════════════
