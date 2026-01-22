@@ -420,26 +420,55 @@ export async function processStream(
  * Process chunk based on format
  */
 function processChunkByFormat(chunk: string, format: StreamFormat): string {
-  switch (format) {
-    case 'sse': {
-      const parsed = parseSSELine(chunk)
-      if (parsed?.data) {
-        if (parsed.data.trim() === '[DONE]') return ''
-        const jsonData = safeParseJSON(parsed.data)
-        return jsonData ? extractStreamContent(jsonData) : parsed.data
+  // FIX: Issue #9 - Add error handling and logging for chunk processing
+  try {
+    switch (format) {
+      case 'sse': {
+        const parsed = parseSSELine(chunk)
+        if (parsed?.data) {
+          if (parsed.data.trim() === '[DONE]') return ''
+          const jsonData = safeParseJSON(parsed.data)
+          // FIX: Log when JSON parsing fails for debugging
+          if (jsonData === null && parsed.data.trim().startsWith('{')) {
+            console.warn(
+              '[processChunkByFormat] Failed to parse SSE data as JSON:',
+              parsed.data.substring(0, 100)
+            )
+          }
+          return jsonData ? extractStreamContent(jsonData) : parsed.data
+        }
+        return ''
       }
-      return ''
-    }
 
-    case 'json-stream':
-    case 'ndjson': {
-      const parsed = safeParseJSON(chunk)
-      return parsed ? extractStreamContent(parsed) : ''
-    }
+      case 'json-stream':
+      case 'ndjson': {
+        const parsed = safeParseJSON(chunk)
+        // FIX: Log when JSON parsing fails for debugging
+        if (parsed === null && chunk.trim()) {
+          console.warn(
+            '[processChunkByFormat] Failed to parse chunk as JSON:',
+            chunk.substring(0, 100)
+          )
+          // Return empty string instead of potentially malformed data
+          return ''
+        }
+        return parsed ? extractStreamContent(parsed) : ''
+      }
 
-    case 'plain-text':
-    default:
-      return chunk
+      case 'plain-text':
+      default:
+        return chunk
+    }
+  } catch (error) {
+    // FIX: Catch any unexpected errors during chunk processing
+    console.error(
+      '[processChunkByFormat] Unexpected error processing chunk:',
+      error,
+      'Chunk:',
+      chunk.substring(0, 100)
+    )
+    // Return empty string to prevent stream corruption
+    return ''
   }
 }
 

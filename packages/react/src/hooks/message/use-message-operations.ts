@@ -254,6 +254,15 @@ export function useMessageOperations(
    */
   const addMessage = React.useCallback(
     (message: Omit<MessageWithOperations, 'id' | 'timestamp'>): string => {
+      // FIX: Issue #2 - Validate content is not empty or whitespace-only
+      if (!message.content || typeof message.content !== 'string') {
+        throw new Error('Message content is required')
+      }
+      const trimmedContent = message.content.trim()
+      if (trimmedContent.length === 0) {
+        throw new Error('Message cannot be empty or contain only whitespace')
+      }
+
       const id = generateId()
       const newMessage: MessageWithOperations = {
         ...message,
@@ -496,6 +505,7 @@ export function useMessageOperations(
     setHistory((prev) => [...prev, operation])
 
     // Re-apply the operation
+    // FIX: Issue #3 - Add missing 'edit' and 'regenerate' cases for complete undo/redo
     switch (operation.type) {
       case 'add':
         if (operation.previousState) {
@@ -504,6 +514,23 @@ export function useMessageOperations(
         break
       case 'delete':
         setMessages((prev) => prev.filter((m) => m.id !== operation.messageId))
+        break
+      case 'edit':
+        // Restore the edited state
+        if (operation.previousState) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === operation.messageId ? operation.previousState! : m
+            )
+          )
+        }
+        break
+      case 'regenerate':
+        // Restore the regenerated messages
+        if (operation.previousState) {
+          // previousState should contain the full message array after regeneration
+          setMessages(operation.previousState as MessageWithOperations[])
+        }
         break
     }
   }, [redoStack])

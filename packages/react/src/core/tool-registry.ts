@@ -73,6 +73,9 @@ export type RegistryListener = (event: RegistryEvent) => void
 export class ToolRegistry implements IToolRegistry {
   private tools = new Map<string, ToolDefinition>()
   private listeners: RegistryListener[] = []
+  // FIX: TOOL-004 - Add max listeners to prevent memory leaks
+  private maxListeners = 100 // Default limit like Node.js EventEmitter
+  private hasWarnedMaxListeners = false
 
   /**
    * Register a tool
@@ -327,6 +330,30 @@ export class ToolRegistry implements IToolRegistry {
    * @returns Unsubscribe function
    */
   on(listener: RegistryListener): () => void {
+    // FIX: TOOL-004 - Check listener count before adding to prevent memory leaks
+    // Skip check if maxListeners is 0 (unlimited)
+    if (this.maxListeners > 0 && this.listeners.length >= this.maxListeners) {
+      const error = new Error(
+        `Maximum listener count (${this.maxListeners}) exceeded for ToolRegistry. ` +
+          'This may indicate a memory leak. Ensure listeners are properly unsubscribed.'
+      )
+      console.error(error)
+      throw error
+    }
+
+    // FIX: TOOL-004 - Warn when approaching limit (only if limit is set)
+    if (
+      this.maxListeners > 0 &&
+      this.listeners.length >= this.maxListeners * 0.8 &&
+      !this.hasWarnedMaxListeners
+    ) {
+      console.warn(
+        `[ToolRegistry] Approaching maximum listener count: ${this.listeners.length}/${this.maxListeners}. ` +
+          'Ensure listeners are properly cleaned up to avoid memory leaks.'
+      )
+      this.hasWarnedMaxListeners = true
+    }
+
     this.listeners.push(listener)
 
     // Return unsubscribe function
@@ -334,8 +361,34 @@ export class ToolRegistry implements IToolRegistry {
       const index = this.listeners.indexOf(listener)
       if (index !== -1) {
         this.listeners.splice(index, 1)
+        // Reset warning flag when count drops below threshold
+        if (this.listeners.length < this.maxListeners * 0.7) {
+          this.hasWarnedMaxListeners = false
+        }
       }
     }
+  }
+
+  /**
+   * Set maximum number of listeners (default: 100)
+   * Set to 0 for unlimited listeners (not recommended)
+   *
+   * FIX: TOOL-004 - Allow configuration of listener limits
+   */
+  setMaxListeners(n: number): void {
+    if (n < 0) {
+      throw new Error('maxListeners must be non-negative')
+    }
+    this.maxListeners = n
+  }
+
+  /**
+   * Get current listener count
+   *
+   * FIX: TOOL-004 - Provide visibility into listener count
+   */
+  getListenerCount(): number {
+    return this.listeners.length
   }
 
   /**

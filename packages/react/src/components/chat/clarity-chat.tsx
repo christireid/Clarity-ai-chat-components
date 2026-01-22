@@ -477,12 +477,30 @@ export function ClarityChat({
           return
         }
 
+        // FIX: Issue #7 - Assert message is a user message to prevent duplicates
+        const editedMessage = originalMessages[messageIndex]
+        if (editedMessage?.role !== 'user') {
+          toast?.error('Only user messages can be edited')
+          return
+        }
+
         const needsRegeneration = messageIndex < originalMessages.length - 1
 
         if (needsRegeneration) {
           // Truncate to BEFORE the edited message - append will add it back with new content
           // This avoids duplicate user messages (setMessages + append would create two)
           const truncated = originalMessages.slice(0, messageIndex)
+
+          // FIX: Issue #7 - Add debug logging to track message operations
+          console.debug(
+            '[handleSaveEdit] Truncating from',
+            originalMessages.length,
+            'to',
+            truncated.length,
+            'messages. Editing user message at index',
+            messageIndex
+          )
+
           chat.setMessages(truncated)
 
           // Regenerate response - append adds the edited user message and triggers AI response
@@ -543,9 +561,11 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          console.warn('Cannot regenerate: message not found')
-          toast?.error('Cannot regenerate: message not found')
-          return
+          const error = new Error('Cannot regenerate: message not found')
+          console.warn(error.message)
+          toast?.error(error.message)
+          // FIX: Issue #6 - Throw error instead of silent return
+          throw error
         }
 
         // Find the preceding user message AND its index
@@ -559,9 +579,13 @@ export function ClarityChat({
         }
 
         if (userMessageIndex === -1) {
-          console.warn('Cannot regenerate: no preceding user message found')
+          const error = new Error(
+            'Cannot regenerate: no preceding user message found'
+          )
+          console.warn(error.message)
           toast?.error('Cannot regenerate: no previous message to resend')
-          return
+          // FIX: Issue #6 - Throw error instead of silent return
+          throw error
         }
 
         const userMessage = originalMessages[userMessageIndex]!
