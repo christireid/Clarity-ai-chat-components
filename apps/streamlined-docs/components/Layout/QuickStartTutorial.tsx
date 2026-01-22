@@ -287,7 +287,7 @@ export function QuickStartTutorial() {
               className="pt-4"
             >
               <Link
-                href="/learn/quick-start"
+                href="/get-started/quick-start"
                 className="group inline-flex items-center gap-2 text-brand-500 hover:text-brand-600 font-medium transition-colors"
               >
                 View full documentation

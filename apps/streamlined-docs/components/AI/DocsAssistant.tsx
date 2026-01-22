@@ -838,7 +838,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                     Try Again
                   </button>
                   <a
-                    href="/guides/configuration"
+                    href="/build/configuration"
                     className="text-sm text-muted-foreground hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 rounded px-1"
                   >
                     Configuration Guide

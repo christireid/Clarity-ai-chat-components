@@ -352,7 +352,7 @@ render(<Example />)`}
         <h2 id="related">Related</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <a
-            href="/reference/components/token-counter"
+            href="/api/reference/components/token-counter"
             className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
           >
             <h3 className="font-semibold mb-1">TokenCounter</h3>
@@ -361,7 +361,7 @@ render(<Example />)`}
             </p>
           </a>
           <a
-            href="/guides/token-optimization"
+            href="/build/token-optimization"
             className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
           >
             <h3 className="font-semibold mb-1">Token Optimization Guide</h3>

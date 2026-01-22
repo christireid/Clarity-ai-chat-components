@@ -27,7 +27,7 @@ export interface RecipeCardProps {
  * @example
  * ```tsx
  * <RecipeCard
- *   href="/cookbook/openai-streaming"
+ *   href="/explore/recipes/openai-streaming"
  *   icon="💬"
  *   title="OpenAI Streaming Chat"
  *   description="Build a chat with streaming responses"

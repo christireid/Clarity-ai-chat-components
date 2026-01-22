@@ -84,7 +84,7 @@ export function DemoErrorFallback({
           )}
 
           <Link
-            href="/demos"
+            href="/explore/demos"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-primary rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             aria-label="View all demos"
           >

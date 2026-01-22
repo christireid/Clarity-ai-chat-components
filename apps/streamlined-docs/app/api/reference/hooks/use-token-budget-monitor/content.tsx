@@ -474,17 +474,17 @@ function BasicMonitor() {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-token-optimization-enhanced">
+            <a href="/api/reference/hooks/use-token-optimization-enhanced">
               useTokenOptimization
             </a>{' '}
             - Comprehensive token optimization
           </li>
           <li>
-            <a href="/reference/hooks/use-token-tracker">useTokenTracker</a> -
+            <a href="/api/reference/hooks/use-token-tracker">useTokenTracker</a> -
             Token usage and cost tracking
           </li>
           <li>
-            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            <a href="/build/token-optimization">Token Optimization Guide</a> -
             Token management strategies
           </li>
         </ul>
