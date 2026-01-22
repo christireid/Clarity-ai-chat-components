@@ -109,7 +109,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Integration Example</h2>
         <pre>
-          <code>{`import { UsageDashboard } from '@clarity-chat/react/internal'
+          <code>{`import { UsageDashboard } from '@clarity-chat/react'
 import { QuotaManager } from '@clarity-chat/react/utils'
 
 export default function AdminPanel() {

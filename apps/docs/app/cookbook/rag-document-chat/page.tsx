@@ -188,7 +188,7 @@ Context:
           language="typescript"
           code={`'use client'
 
-import { ChatWindow, FileUpload, ContextCard } from '@clarity-chat/react/internal'
+import { ChatWindow, FileUpload, ContextCard } from '@clarity-chat/react'
 import { useState } from 'react'
 
 export default function RAGChatPage() {
@@ -294,7 +294,7 @@ const citations = searchResults.matches.map(match => ({
 
 // Include in streamed response metadata
 // Then in your UI:
-import { CitationCard } from '@clarity-chat/react/internal'
+import { CitationCard } from '@clarity-chat/react'
 
 <div className="mt-2 space-y-2">
   <p className="text-sm font-medium">Sources:</p>

@@ -5,7 +5,7 @@ import {
   KeyboardHint,
   UsageDashboard,
   FollowUpSuggestions,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 

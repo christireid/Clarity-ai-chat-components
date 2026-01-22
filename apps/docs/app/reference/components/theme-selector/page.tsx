@@ -43,18 +43,18 @@ export default function ThemeSelectorPage() {
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
           <pre className="text-sm overflow-x-auto">
-            <code>{`import { ThemeSelector, ThemeSelectorDropdown } from '@clarity-chat/react/internal'
+            <code>{`import { ThemeSelector, ThemeSelectorDropdown } from '@clarity-chat/react'
 
 // List layout
 <ThemeSelector 
   showPreview
   orientation="vertical"
-  onThemeChange={(theme) => logger.debug(theme)}
+  onThemeChange={(theme) => console.log(theme)}
 />
 
 // Dropdown variant
 <ThemeSelectorDropdown 
-  onThemeChange={(theme) => logger.debug(theme)}
+  onThemeChange={(theme) => console.log(theme)}
 />`}</code>
           </pre>
         </div>

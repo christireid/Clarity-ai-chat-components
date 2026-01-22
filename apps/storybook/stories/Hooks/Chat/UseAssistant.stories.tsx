@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useAssistant } from '@clarity-chat/react/internal'
+import { useAssistant } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
 

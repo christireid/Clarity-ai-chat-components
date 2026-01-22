@@ -1,0 +1,46 @@
+import {c,a}from'./chunk-F4FP4ZIZ.js';import y,{lazy,Component,Fragment,useState,useEffect,Suspense,useMemo,useCallback}from'react';import {addons,types,useParameter,useStorybookState}from'storybook/manager-api';import {AddonPanel,Placeholder,Link,FlexBar,Separator,Tabs,IconButton}from'storybook/internal/components';import {css,jsx}from'storybook/theming';import {ZoomIcon,ZoomOutIcon,ZoomResetIcon}from'@storybook/icons';var w="STORYBOOK_ADDON_DESIGNS",L=w+"/panel",P="design";var C=class extends Component{state={hasError:false};static getDerivedStateFromError(t){return {hasError:true,error:t}}componentDidCatch(t,r){console.group("An error occurred during rendering Addon panel of storybook-addon-designs"),console.log("--- Error ---"),console.error(t),console.log("--- React Component Stack ---"),console.error(r.componentStack),console.groupEnd();}render(){return this.state.hasError?jsx(Placeholder,null,jsx(Fragment,null,"Failed to render addon UI"),jsx(Fragment,null,jsx("p",null,"Sorry, this addon has crashed due to the below error has thrown during rendering the addon UI."),jsx("pre",null,String(this.state.error)),jsx("p",null,"See console log for more details. To clear the error state, please reload the page."," ",jsx(Link,{href:"https://github.com/storybookjs/addon-designs/issues/new?assignees=&labels=category%3A+bug&template=bug_report.yml",target:"_blank",rel:"noopener",withArrow:true,cancel:false},"Bug report")))):this.props.children}};var O=(e,t)=>{let[r,o]=useState([0,0]),[n,s]=useState(false),l=useCallback(i=>{i.button===0&&(o([i.screenX,i.screenY]),s(true));},[s,o]),m=useCallback(i=>{let d=i.touches[0];o([d.screenX,d.screenY]),s(true);},[s,o]),b=useCallback(i=>{n&&o(d=>(e([i[0]-d[0],i[1]-d[1]]),i));},[o,n,...t]),T=useCallback(i=>{let{screenX:d,screenY:I}=i;b([d,I]);},[b]),f=useCallback(i=>{let{screenX:d,screenY:I}=i.touches[0];b([d,I]);},[o,n,...t]),u=useCallback(()=>{o([0,0]),s(false);},[s,o]);return {onMouseDown:l,onMouseMove:T,onMouseUp:u,onMouseLeave:u,onTouchStart:m,onTouchMove:f,onTouchCancel:u,onTouchEnd:u}};var _=({children:e,className:t,style:r,defaultValue:o,value:n,onChange:s})=>{let[l,m]=useState([0,0]);useEffect(()=>{m(o||n||[0,0]);},[o]);let b=O(f=>{s&&s(f),m(u=>[u[0]+f[0],u[1]+f[1]]);},[m,s]),T=useMemo(()=>{let f=n||l;return {transform:`translate(${f[0]}px, ${f[1]}px)`}},[n,l]);return jsx("div",{css:ie,className:t,style:r,...b},jsx("div",{css:ce,style:T},e))};var ie=css`
+  position: relative;
+  overflow: hidden;
+
+  &:active {
+    cursor: move;
+  }
+`,ce=css`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+`;var z=({onZoomIn:e,onZoomOut:t,onReset:r})=>jsx(Fragment,null,jsx(IconButton,{onClick:e},jsx(ZoomIcon,null)),jsx(IconButton,{onClick:t},jsx(ZoomOutIcon,null)),jsx(IconButton,{onClick:r},jsx(ZoomResetIcon,null)));var W=(e,t)=>{let[r,o]=useState(1);useEffect(()=>{o(e);},t);let n=useCallback(()=>{o(m=>m+.1);},[o]),s=useCallback(()=>{o(m=>Math.max(m-.1,.1));},[o]),l=useCallback(()=>{o(1);},[o]);return {scale:r,zoomIn:n,zoomOut:s,resetZoom:l}};var Y=({config:e})=>{let t=W(e.scale||1,[e.scale]),r=useMemo(()=>({transform:`scale(${t.scale})`}),[t.scale]);return jsx("div",{css:ye},jsx(FlexBar,{border:true},jsx("div",{style:{display:"grid",gridAutoFlow:"column",gap:"4px",alignItems:"center"}},jsx(Fragment,{key:"left"},jsx("p",null,jsx("b",null,"Image")),jsx(Separator,null),jsx(z,{onReset:t.resetZoom,onZoomIn:t.zoomIn,onZoomOut:t.zoomOut})))),jsx(_,{css:be,defaultValue:e.offset},jsx("img",{css:Ce,src:e.url,style:r})))};var ye=css`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`,be=css`
+  flex-grow: 1;
+`,Ce=css`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+
+  pointer-events: none;
+  border-radius: 1px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.15);
+`;var K=({config:e})=>jsx("div",{css:Fe},jsx(Link,{cancel:false,href:e.url,target:e.target??"_blank",rel:e.rel??"noopener",withArrow:e.showArrow??true},e.label||e.url));var Fe=css`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;var Te=e=>{if(e.protocol!=="https:")return {valid:false,error:jsx(Fragment,null,"Expected HTTPS link, received ",jsx("code",null,e.protocol),".")};if(e.hostname!=="www.sketch.com")return {valid:false,error:jsx(Fragment,null,"Expected a hostname ",jsx("code",null,"www.sketch.com"),", received"," ",jsx("code",null,e.hostname))};let t=jsx(Fragment,null,"Expected pathname ",jsx("code",null,"/s/<string>/a/<string>"),", received"," ",jsx("code",null,e.pathname),"."),r=e.pathname.split("/").slice(1);if(r.length<4)return {valid:false,error:t};if(r[0]==="embed")return {valid:true,data:{url:e.href,offscreen:false}};let[o,n,s,l]=r;return o!=="s"||!n||s!=="a"||!l?{valid:false,error:t}:{valid:true,data:{url:`https://www.sketch.com/embed/s/${n}/a/${l}`,offscreen:false}}},G=({config:e})=>{let t=useMemo(()=>{let r=Te(new URL(e.url));return r.valid?{...r,data:{...e,...r.data}}:r},[e]);return t.valid?jsx(a,{defer:true,config:t.data}):jsx(Placeholder,null,jsx(Fragment,null,"Invalid Sketch URL"),jsx(Fragment,null,t.error))};var V=({tabs:e,deps:t=[]})=>{let[r,o]=useState(e[0].id);return useEffect(()=>{o(e[0].id);},t),jsx(Tabs,{absolute:true,selected:r,actions:{onSelect:o}},e.map(n=>jsx("div",{key:n.id,id:n.id,title:n.name},n.offscreen||r===n.id?n.content:null)))};var Ne=lazy(()=>import('./Figspec-TUXHDRDA.js')),x=({config:e})=>{if(!e||"length"in e&&e.length===0)return jsx(Placeholder,null,jsx(Fragment,null,"No designs found"),jsx(Fragment,null,"Learn how to"," ",jsx(Link,{href:"https://github.com/storybookjs/addon-designs#3-add-it-to-story",target:"_blank",rel:"noopener",withArrow:true,cancel:false},"display design preview for the story")));let t=[...e instanceof Array?e:[e]].map(r=>{let o={id:JSON.stringify(r),name:r.name||r.type?.toUpperCase()||"ERROR",offscreen:r.offscreen??true};switch(r.type){case "iframe":return {...o,content:jsx(a,{config:r})};case "figma":return {...o,content:jsx(c,{config:r}),offscreen:false};case "sketch":return {...o,content:jsx(G,{config:r})};case "figspec":case "experimental-figspec":return r.type==="experimental-figspec"&&console.warn("[storybook-addon-designs] `experimental-figspec` is deprecated. We will remove it in v7.0. Please replace it to `figspec` type."),{...o,content:jsx(Suspense,{fallback:"Preparing Figspec viewer..."},jsx(Ne,{config:r})),offscreen:false};case "image":return {...o,content:jsx(Y,{config:r})};case "link":return {...o,content:jsx(K,{config:r})}}return {...o,content:jsx(Placeholder,null,jsx(Fragment,null,"Invalid config type"),jsx(Fragment,null,"Config type you set is not supported. Please choose one from"," ",jsx(Link,{href:"https://github.com/storybookjs/addon-designs/blob/master/packages/storybook-addon-designs/src/config.ts",target:"_blank",rel:"noopener",withArrow:true,cancel:false},"available config types")))}});return t.length===1?jsx("div",null,t[0].content):jsx(V,{tabs:t,deps:[e]})};var N=({active:e})=>{let t=useStorybookState(),r=useParameter(P),[o,n]=useState(e);return useEffect(()=>{n(e);},[r]),useEffect(()=>{e&&n(true);},[e]),o?jsx(x,{key:t.storyId,config:r}):null};var k="Design";function ur(e){addons.register(w,t=>{let r=function(){let o=useParameter(P);return o?Array.isArray(o)?o.length>0?`${k} (${o.length})`:k:(o.name||k)+" (1)":k};e==="tab"?addons.add(L,{title:k,render({active:o}){return o?y.createElement(C,null,y.createElement(N,{active:true})):y.createElement("noscript",null)},type:types.TAB,paramKey:P}):addons.add(L,{type:types.PANEL,title:r,paramKey:P,render({active:o}){return y.createElement(AddonPanel,{active:!!o},y.createElement(C,null,y.createElement(N,{active:!!o})))}});});}
+export{ur as a};

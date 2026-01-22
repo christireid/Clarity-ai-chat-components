@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { StructuredInputBuilder } from '@clarity-chat/react/internal'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -42,6 +42,7 @@ function BasicBuilderDemo() {
       label: 'Additional Details',
       type: 'textarea' as const,
       rows: 3,
+      required: false,
     },
   ]
 
@@ -51,7 +52,7 @@ function BasicBuilderDemo() {
         fields={fields}
         values={values}
         onChange={setValues}
-        onSubmit={(result: Record<string, string>) => alert(JSON.stringify(result, null, 2))}
+        onSubmit={(result) => alert(JSON.stringify(result.values, null, 2))}
       />
     </div>
   )
@@ -166,7 +167,7 @@ export function StructuredInputBuilderContent() {
           title="Prompt Builder"
           description="A simple form to build a structured prompt."
           code={`import { useState } from 'react'
-import { StructuredInputBuilder } from '@clarity-chat/react/internal'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 
 function PromptBuilder() {
   const [values, setValues] = useState({})
@@ -202,7 +203,7 @@ function PromptBuilder() {
       fields={fields}
       values={values}
       onChange={setValues}
-      onSubmit={(result) => logger.debug(result)}
+      onSubmit={(result) => console.log(result)}
     />
   )
 }`}

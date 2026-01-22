@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   ToastProvider,
   useStreamingWebSocket,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -33,8 +33,8 @@ function BasicWebSocketDemo() {
     onMessage: (msg: { data: unknown; timestamp: number }) => {
       console.log('Received:', msg.data)
     },
-    onError: (err: Error) => {
-      console.error('WebSocket Error:', err)
+    onError: (event) => {
+      console.error('WebSocket Error:', event)
     },
   })
 
@@ -358,7 +358,7 @@ export default function UseStreamingWebSocketPage() {
   const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org',
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -386,7 +386,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSocketReturn } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -398,7 +398,7 @@ import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSoc
         <ComponentPreview
           title="Simple WebSocket Connection"
           description="Basic WebSocket connection with send/receive"
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function SimpleWebSocket() {
@@ -411,7 +411,7 @@ function SimpleWebSocket() {
   } = useStreamingWebSocket({
     url: 'wss://api.example.com/ws',
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -441,7 +441,7 @@ function SimpleWebSocket() {
         <p>Automatically connect when component mounts:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function AutoConnectWebSocket() {
   const {
@@ -453,7 +453,7 @@ function AutoConnectWebSocket() {
     url: 'wss://api.example.com/ws',
     connectOnMount: true, // Connect automatically
     onMessage: (msg) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
   })
 
@@ -473,7 +473,7 @@ function AutoConnectWebSocket() {
         <p>Send text, JSON, or binary messages:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function WebSocketWithSend() {
   const {
@@ -528,7 +528,7 @@ function WebSocketWithSend() {
         <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function WebSocketWithReconnect() {
   const {
@@ -543,7 +543,7 @@ function WebSocketWithReconnect() {
     reconnectDelay: 1000,
     maxReconnectDelay: 30000,
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
       console.error('Max reconnection attempts reached')
@@ -568,7 +568,7 @@ function WebSocketWithReconnect() {
         <p>Keep connection alive with heartbeat mechanism:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
 
 function WebSocketWithHeartbeat() {
   const {
@@ -610,8 +610,8 @@ function WebSocketWithHeartbeat() {
         <p>Handle different message types:</p>
 
         <EnhancedCodeBlock
-          code={`import { useStreamingWebSocket } from '@clarity-chat/react/internal'
-import type { WebSocketMessage } from '@clarity-chat/react/internal'
+          code={`import { useStreamingWebSocket } from '@clarity-chat/react'
+import type { WebSocketMessage } from '@clarity-chat/react'
 
 function WebSocketWithMessageHandling() {
   const {
@@ -623,13 +623,13 @@ function WebSocketWithMessageHandling() {
     onMessage: (msg: WebSocketMessage) => {
       switch (msg.type) {
         case 'text':
-          logger.debug('Text message:', msg.data)
+          console.log('Text message:', msg.data)
           break
         case 'binary':
-          logger.debug('Binary message:', msg.raw)
+          console.log('Binary message:', msg.raw)
           break
         case 'blob':
-          logger.debug('Blob message:', msg.raw)
+          console.log('Blob message:', msg.raw)
           break
       }
     },
@@ -705,8 +705,8 @@ function WebSocketWithMessageHandling() {
 
         <EnhancedCodeBlock
           code={`import { useState, useEffect, useCallback } from 'react'
-import { useStreamingWebSocket } from '@clarity-chat/react/internal'
-import type { WebSocketMessage } from '@clarity-chat/react/internal'
+import { useStreamingWebSocket } from '@clarity-chat/react'
+import type { WebSocketMessage } from '@clarity-chat/react'
 
 function CompleteWebSocketExample() {
   const [input, setInput] = useState('')
@@ -731,13 +731,13 @@ function CompleteWebSocketExample() {
     enableHeartbeat: true,
     heartbeatInterval: 30000,
     onMessage: (msg: WebSocketMessage) => {
-      logger.debug('Received:', msg.data)
+      console.log('Received:', msg.data)
     },
     onError: (err) => {
       console.error('WebSocket Error:', err)
     },
     onReconnecting: (attempt, delay) => {
-      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+      console.log(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
     },
   })
 

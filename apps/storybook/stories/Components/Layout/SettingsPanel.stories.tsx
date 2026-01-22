@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SettingsPanel } from '@clarity-chat/react/internal'
+import { SettingsPanel } from '@clarity-chat/react'
 import type { UserSettings } from '@clarity-chat/types'
 
 const meta = {

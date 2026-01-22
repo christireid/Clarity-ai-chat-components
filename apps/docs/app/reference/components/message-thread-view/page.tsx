@@ -101,7 +101,7 @@ export default function MessageThreadViewPage() {
         <h2>Basic Usage</h2>
         <p>Display a thread view for a message:</p>
         <CodePlayground
-          initialCode={`import { MessageThreadView } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageThreadView } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ThreadedMessage({ message, thread }: { message: Message, thread?: Thread }) {
@@ -110,10 +110,10 @@ function ThreadedMessage({ message, thread }: { message: Message, thread?: Threa
       parentMessage={message}
       thread={thread}
       onSendMessage={(threadId, content) => {
-        logger.debug('Sending to thread:', threadId, content)
+        console.log('Sending to thread:', threadId, content)
       }}
       onCreateThread={(parentMessageId) => {
-        logger.debug('Creating thread for:', parentMessageId)
+        console.log('Creating thread for:', parentMessageId)
       }}
     />
   )
@@ -125,7 +125,7 @@ function ThreadedMessage({ message, thread }: { message: Message, thread?: Threa
         <h2>Thread List</h2>
         <p>Display a list of all threads:</p>
         <CodePlayground
-          initialCode={`import { ThreadList } from '@clarity-chat/react/internal'
+          initialCode={`import { ThreadList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function AllThreads({ threads, parentMessages }: { threads: Thread[], parentMessages: Map<string, Message> }) {
@@ -134,10 +134,10 @@ function AllThreads({ threads, parentMessages }: { threads: Thread[], parentMess
       threads={threads}
       parentMessages={parentMessages}
       onSelectThread={(threadId) => {
-        logger.debug('Selected thread:', threadId)
+        console.log('Selected thread:', threadId)
       }}
       onArchiveThread={(threadId) => {
-        logger.debug('Archived thread:', threadId)
+        console.log('Archived thread:', threadId)
       }}
     />
   )
@@ -149,7 +149,7 @@ function AllThreads({ threads, parentMessages }: { threads: Thread[], parentMess
         <h2>Thread Configuration</h2>
         <p>Configure thread display and behavior:</p>
         <CodePlayground
-          initialCode={`import { MessageThreadView } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageThreadView } from '@clarity-chat/react'
 
 function ConfiguredThread({ message, thread }: { message: Message, thread?: Thread }) {
   return (
@@ -173,7 +173,7 @@ function ConfiguredThread({ message, thread }: { message: Message, thread?: Thre
         <h2>Layout Options</h2>
         <p>Use inline or sidebar layout:</p>
         <CodePlayground
-          initialCode={`import { MessageThreadView } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageThreadView } from '@clarity-chat/react'
 
 function InlineThread({ message, thread }: { message: Message, thread?: Thread }) {
   return (
@@ -201,7 +201,7 @@ function SidebarThread({ message, thread }: { message: Message, thread?: Thread 
         <h2>Participant Tracking</h2>
         <p>Track thread participants and unread counts:</p>
         <CodePlayground
-          initialCode={`import { MessageThreadView } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageThreadView } from '@clarity-chat/react'
 
 function WithParticipants({ message, thread }: { message: Message, thread?: Thread }) {
   return (

@@ -12,7 +12,6 @@ import type {
   SafetyStats,
   ToolStats,
   ClarityEvent,
-  ClarityResolvedConfig,
 } from './types'
 import { resolveConfig } from './resolve-config'
 import {

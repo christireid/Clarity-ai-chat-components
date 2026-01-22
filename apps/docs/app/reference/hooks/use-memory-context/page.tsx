@@ -64,7 +64,7 @@ export default function UseMemoryContextPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react/internal'
+          code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   const memory = useMemoryContext()
@@ -84,7 +84,7 @@ function ChatWithMemory() {
       limit: 10,
       types: ['preference'],
     })
-    logger.debug('Found memories:', results)
+    console.log('Found memories:', results)
   }
 
   return (
@@ -275,7 +275,7 @@ useEffect(() => {
   if (!memory) return
 
   const unsubscribe = memory.subscribe('memory:added', (event) => {
-    logger.debug('New memory added:', event.memory)
+    console.log('New memory added:', event.memory)
   })
 
   return () => unsubscribe()

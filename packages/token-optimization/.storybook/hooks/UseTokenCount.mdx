@@ -1,0 +1,519 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useTokenCount" />
+
+# useTokenCount
+
+The simplest way to count tokens in React. Perfect for displaying token counts in real-time as users type.
+
+## Overview
+
+`useTokenCount` is your starting point for token optimization. It counts tokens accurately across GPT-4, Claude, and Gemini models with automatic debouncing and caching for performance.
+
+**When to use:**
+- Display real-time token counts in text editors
+- Show token usage in chat interfaces
+- Validate content length before sending to LLMs
+- Calculate approximate costs
+
+**When not to use:**
+- If you need compression or caching → use `useTokenOptimization`
+- If you need budget tracking → use `useTokenBudgetMonitor`
+- If you need model routing → use `useModelRouter`
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function TokenCounter() {
+  const [text, setText] = useState('')
+  const { count, isLoading } = useTokenCount(text)
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Type something..."
+      />
+      <div>
+        {isLoading ? 'Counting...' : `${count} tokens`}
+      </div>
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Parameters
+
+```tsx
+useTokenCount(
+  text: string,
+  options?: UseTokenCountOptions
+): UseTokenCountReturn
+```
+
+#### `text: string`
+
+The text to count tokens for. Can be empty.
+
+#### `options: UseTokenCountOptions` (optional)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `model` | `string` | `'gpt-4o'` | Model to use for tokenization |
+| `debounceMs` | `number` | `150` | Debounce delay in milliseconds (0 to disable) |
+| `enabled` | `boolean` | `true` | Enable or disable the hook |
+
+### Return Value
+
+```tsx
+{
+  count: number          // Token count (0 while loading)
+  isLoading: boolean     // True during debounce/counting
+  error: Error | undefined
+  info: {
+    characters: number   // Character count
+    words: number        // Word count
+    ratio: number        // Characters per token
+  }
+  recount: () => void    // Force immediate recount
+  isStale: boolean       // React 19: count is for previous text
+}
+```
+
+## Examples
+
+### With Cost Estimation
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+const MODEL_COSTS = {
+  'gpt-4': { input: 0.00003, output: 0.00006 },
+  'gpt-4o': { input: 0.0000025, output: 0.00001 },
+  'gpt-4o-mini': { input: 0.00000015, output: 0.0000006 },
+}
+
+function TokenCounterWithCost() {
+  const [text, setText] = useState('')
+  const model = 'gpt-4o'
+
+  const { count, info } = useTokenCount(text, { model })
+
+  const estimatedCost = count * MODEL_COSTS[model].input
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Type your prompt..."
+      />
+      <div>
+        <p>{count} tokens</p>
+        <p>{info.characters} characters</p>
+        <p>{info.words} words</p>
+        <p>Estimated cost: ${estimatedCost.toFixed(6)}</p>
+        <p>Efficiency: {info.ratio.toFixed(2)} chars/token</p>
+      </div>
+    </div>
+  )
+}
+```
+
+### With Different Models
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+const MODELS = ['gpt-4', 'gpt-4o', 'gpt-4o-mini', 'claude-3-opus']
+
+function MultiModelCounter() {
+  const [text, setText] = useState('Hello, world!')
+  const [selectedModel, setSelectedModel] = useState('gpt-4o')
+
+  const { count, isLoading } = useTokenCount(text, {
+    model: selectedModel,
+  })
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+
+      <select
+        value={selectedModel}
+        onChange={(e) => setSelectedModel(e.target.value)}
+      >
+        {MODELS.map((model) => (
+          <option key={model} value={model}>
+            {model}
+          </option>
+        ))}
+      </select>
+
+      <p>
+        {isLoading ? 'Counting...' : `${count} tokens for ${selectedModel}`}
+      </p>
+    </div>
+  )
+}
+```
+
+### With Custom Debouncing
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function DebouncedCounter() {
+  const [text, setText] = useState('')
+
+  // Count immediately (no debounce)
+  const immediate = useTokenCount(text, { debounceMs: 0 })
+
+  // Count after 500ms of no typing
+  const slow = useTokenCount(text, { debounceMs: 500 })
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div>
+        <p>Immediate: {immediate.count} tokens</p>
+        <p>Debounced (500ms): {slow.count} tokens</p>
+      </div>
+    </div>
+  )
+}
+```
+
+### With Manual Recount
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function ManualRecountCounter() {
+  const [text, setText] = useState('')
+
+  const { count, recount, isLoading } = useTokenCount(text, {
+    debounceMs: 1000, // Long debounce
+  })
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <div>
+        <p>{isLoading ? 'Counting...' : `${count} tokens`}</p>
+        <button onClick={recount}>
+          Recount Now
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+### With Conditional Counting
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function ConditionalCounter() {
+  const [text, setText] = useState('')
+  const [shouldCount, setShouldCount] = useState(true)
+
+  const { count } = useTokenCount(text, {
+    enabled: shouldCount,
+  })
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <label>
+        <input
+          type="checkbox"
+          checked={shouldCount}
+          onChange={(e) => setShouldCount(e.target.checked)}
+        />
+        Enable counting
+      </label>
+      {shouldCount && <p>{count} tokens</p>}
+    </div>
+  )
+}
+```
+
+### With React 19 Transitions
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+import { startTransition } from 'react'
+
+function React19Counter() {
+  const [text, setText] = useState('')
+
+  const { count, isStale } = useTokenCount(text)
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    startTransition(() => {
+      setText(e.target.value)
+    })
+  }
+
+  return (
+    <div>
+      <textarea value={text} onChange={handleChange} />
+      <p style={{ opacity: isStale ? 0.6 : 1 }}>
+        {count} tokens
+        {isStale && ' (calculating...)'}
+      </p>
+    </div>
+  )
+}
+```
+
+### With Error Handling
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization/react'
+
+function SafeCounter() {
+  const [text, setText] = useState('')
+
+  const { count, error, isLoading } = useTokenCount(text)
+
+  if (error) {
+    return (
+      <div className="error">
+        Error counting tokens: {error.message}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <p>
+        {isLoading ? 'Counting...' : `${count} tokens`}
+      </p>
+    </div>
+  )
+}
+```
+
+## Performance
+
+### Debouncing
+
+By default, `useTokenCount` debounces by 150ms to avoid excessive re-renders as users type. This means:
+
+- ✅ Counting happens 150ms after the last keystroke
+- ✅ No unnecessary re-renders during typing
+- ✅ Smooth UX without blocking
+
+You can customize or disable debouncing:
+
+```tsx
+// No debounce (count every keystroke)
+useTokenCount(text, { debounceMs: 0 })
+
+// Longer debounce (wait 500ms)
+useTokenCount(text, { debounceMs: 500 })
+```
+
+### Caching
+
+Token counts are automatically cached:
+
+- ✅ Same text = instant result (no recounting)
+- ✅ Cache persists for component lifetime
+- ✅ Automatic cleanup on unmount
+
+### Memory Usage
+
+The hook uses minimal memory:
+
+- ~1KB per instance
+- Shared tokenizer instance across all hooks
+- No memory leaks
+
+## Comparison with Other Hooks
+
+| Feature | useTokenCount | useTokenOptimization | useTokenBudgetMonitor |
+|---------|---------------|----------------------|----------------------|
+| Token counting | ✅ | ✅ | ✅ |
+| Cost estimation | ✅ (manual) | ✅ | ✅ |
+| Compression | ❌ | ✅ | ❌ |
+| Caching | ❌ | ✅ | ❌ |
+| Model routing | ❌ | ✅ | ❌ |
+| Budget tracking | ❌ | ❌ | ✅ |
+| Complexity | Simple | Moderate | Moderate |
+| Best for | Basic counting | Optimization | Usage limits |
+
+## Supported Models
+
+The hook supports all major LLM models:
+
+### OpenAI
+- `gpt-4`, `gpt-4-32k`
+- `gpt-4-turbo`, `gpt-4-turbo-preview`
+- `gpt-4o`, `gpt-4o-mini`
+- `gpt-3.5-turbo`
+
+### Anthropic
+- `claude-3-opus`, `claude-3-sonnet`, `claude-3-haiku`
+- `claude-3-5-sonnet`
+
+### Google
+- `gemini-pro`, `gemini-ultra`
+- `gemini-1.5-pro`, `gemini-1.5-flash`
+
+Different models use different tokenizers, so counts may vary slightly.
+
+## TypeScript
+
+Full TypeScript support with detailed types:
+
+```tsx
+import type {
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+} from '@clarity-chat/token-optimization/react'
+
+const options: UseTokenCountOptions = {
+  model: 'gpt-4o',
+  debounceMs: 150,
+  enabled: true,
+}
+
+const result: UseTokenCountReturn = useTokenCount('text', options)
+```
+
+## Common Patterns
+
+### Display Token Count Badge
+
+```tsx
+function TokenBadge({ text }: { text: string }) {
+  const { count, isLoading } = useTokenCount(text)
+
+  return (
+    <span className="badge">
+      {isLoading ? '...' : count} tokens
+    </span>
+  )
+}
+```
+
+### Validate Before Send
+
+```tsx
+function ChatInput() {
+  const [message, setMessage] = useState('')
+  const { count } = useTokenCount(message)
+
+  const canSend = count > 0 && count < 4096
+
+  const handleSend = () => {
+    if (!canSend) return
+    // Send message...
+  }
+
+  return (
+    <div>
+      <textarea
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button disabled={!canSend} onClick={handleSend}>
+        Send ({count}/4096 tokens)
+      </button>
+    </div>
+  )
+}
+```
+
+### Show Efficiency Metrics
+
+```tsx
+function EfficiencyDisplay({ text }: { text: string }) {
+  const { count, info } = useTokenCount(text)
+
+  return (
+    <div className="metrics">
+      <div>{info.characters} characters</div>
+      <div>{info.words} words</div>
+      <div>{count} tokens</div>
+      <div>{info.ratio.toFixed(2)} chars/token</div>
+      <div>
+        Efficiency: {info.characters > 0
+          ? ((count / info.characters) * 100).toFixed(1)
+          : 0}%
+      </div>
+    </div>
+  )
+}
+```
+
+## Troubleshooting
+
+### Count not updating
+
+Make sure you're passing a string:
+
+```tsx
+// ❌ Wrong
+useTokenCount(undefined)
+
+// ✅ Correct
+useTokenCount(text || '')
+```
+
+### Counting too often
+
+Increase debounce delay:
+
+```tsx
+useTokenCount(text, { debounceMs: 500 })
+```
+
+### Wrong model
+
+Verify model name matches exactly:
+
+```tsx
+// ❌ Wrong
+useTokenCount(text, { model: 'GPT-4' })
+
+// ✅ Correct
+useTokenCount(text, { model: 'gpt-4' })
+```
+
+## See Also
+
+- **[useTokenOptimization](/docs/hooks-usetokenoptimization--docs)** - Full optimization with caching and compression
+- **[useTokenBudgetMonitor](/docs/hooks-usetokenbudgetmonitor--docs)** - Track and limit token usage
+- **[TokenCostPreview](/docs/components-tokencostpreview--docs)** - Visual component for token counts

@@ -84,7 +84,7 @@ render(<Example />)`}
       <PerformanceDashboard 
         thresholds={thresholds}
         onThresholdExceeded={(metric) => {
-          logger.warn('Performance issue:', metric)
+          console.warn('Performance issue:', metric)
         }}
       />
     </div>
@@ -133,7 +133,7 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Integration with Observability</h2>
         <pre>
-          <code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react/internal'
+          <code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react'
 
 export default function DevTools() {
   const tracer = new Tracer({

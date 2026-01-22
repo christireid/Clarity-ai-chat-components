@@ -6,7 +6,7 @@ import {
   ThemeContrastChecker,
   type CompleteThemeConfig,
   type ModernThemePresetName,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta = {
   title: 'Foundation/Theme Playground',

@@ -1,0 +1,91 @@
+{
+  "name": "@storybook/addon-designs",
+  "version": "11.0.3",
+  "description": "Storybook addon for embedding your design preview in addon panel",
+  "keywords": [
+    "storybook-addon",
+    "design",
+    "figma",
+    "figspec",
+    "image",
+    "preview"
+  ],
+  "homepage": "https://github.com/storybookjs/addon-designs",
+  "repository": "git@github.com:storybookjs/addon-designs.git",
+  "license": "MIT",
+  "author": "pocka <pockawoooh@gmail.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./blocks": {
+      "types": "./dist/blocks.d.ts",
+      "default": "./dist/blocks.js"
+    },
+    "./register-panel": "./dist/register-panel.js",
+    "./register-tab": "./dist/register-tab.js",
+    "./preset": "./dist/preset.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "*.js",
+    "*.d.ts"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "npm run build -- --watch",
+    "check": "tsc --noEmit",
+    "prepublishOnly": "cp ../../README.md ./",
+    "release": "npm run prepublishOnly && auto shipit"
+  },
+  "dependencies": {
+    "@figspec/react": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@storybook/addon-docs": "^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "storybook": "^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0"
+  },
+  "devDependencies": {
+    "@storybook/icons": "^1.6.0",
+    "@types/node": "^22.13.5"
+  },
+  "peerDependenciesMeta": {
+    "@storybook/addon-docs": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bundler": {
+    "exportEntries": [
+      "src/index.ts"
+    ],
+    "managerEntries": [
+      "src/register-panel.ts",
+      "src/register-tab.ts"
+    ],
+    "previewEntries": [
+      "src/blocks.tsx"
+    ],
+    "nodeEntries": [
+      "src/preset.ts"
+    ]
+  },
+  "storybook": {
+    "icon": "https://raw.githubusercontent.com/storybookjs/addon-designs/master/packages/examples/assets/logo.png",
+    "displayName": "Designs"
+  }
+}

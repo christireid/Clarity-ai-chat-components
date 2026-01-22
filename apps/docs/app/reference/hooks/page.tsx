@@ -7,7 +7,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { ToastProvider } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
 
 const useMessageOperationsProps: Prop[] = [
   {
@@ -301,10 +301,10 @@ export default function HooksPage() {
             </div>
           </div>
 
-          {/* useTokenOptimizationEnhanced */}
+          {/* useTokenOptimization */}
           <div>
             <h3 className="text-2xl font-semibold mb-4">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </h3>
             <p className="text-text-secondary mb-6">
               Comprehensive token optimization with TOON, prompt caching,
@@ -332,7 +332,7 @@ export default function HooksPage() {
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+              code={`import { useMessageOperations } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatComponent() {
@@ -491,7 +491,7 @@ function ChatComponent() {
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useStreamingChat } from '@clarity-chat/react/internal'
+              code={`import { useStreamingChat } from '@clarity-chat/react'
 
 function StreamingChat() {
   const {
@@ -532,7 +532,7 @@ function StreamingChat() {
             </p>
 
             <EnhancedCodeBlock
-              code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
+              code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
 
 function ChatWithTracking() {
   const [messages, setMessages] = useState<Message[]>([])

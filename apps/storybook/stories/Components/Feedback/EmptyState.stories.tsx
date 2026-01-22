@@ -6,7 +6,7 @@ import {
   NoConversationsState,
   ErrorState,
   SuccessState,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Database, FileQuestion } from 'lucide-react'
 import { expect, userEvent, within } from 'storybook/test'
 

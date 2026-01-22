@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ThemeProvider } from '@clarity-chat/react'
-import { getAllThemes } from '@clarity-chat/react/internal'
+import { getAllThemes } from '@clarity-chat/react'
 import {
   StatusBadge,
   FeatureGrid,

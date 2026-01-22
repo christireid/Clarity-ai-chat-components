@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ToastProvider, useToast } from '@clarity-chat/react/internal'
+import { ToastProvider, useToast } from '@clarity-chat/react'
 import { useState } from 'react'
 import { expect, userEvent, within, waitFor } from 'storybook/test'
 

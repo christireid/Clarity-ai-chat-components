@@ -4,7 +4,7 @@ import {
   ThemeSelector,
   ThemeSelectorDropdown,
   ThemeToggle,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta = {
   title: 'Foundation/ThemeSelector',

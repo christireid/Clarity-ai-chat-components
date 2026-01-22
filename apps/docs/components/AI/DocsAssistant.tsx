@@ -92,6 +92,13 @@ import {
 } from './utils'
 import { useBranching, useDocsChat } from './hooks'
 
+// Local type for follow-up suggestions (matches library's FollowUpSuggestion interface)
+interface LocalFollowUpSuggestion {
+  id: string
+  title: string
+  description?: string
+}
+
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
 // ============================================================================
@@ -331,8 +338,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   )
 
   const handleSelectFollowUp = useCallback(
-    (text: string) => {
-      handleSendMessage(text)
+    (suggestion: LocalFollowUpSuggestion) => {
+      handleSendMessage(suggestion.title)
     },
     [handleSendMessage]
   )
@@ -372,8 +379,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   return (
     <>
-      {/* Chat Button */}
-      <ChatButton onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+      {/* Chat Button - only render when dialog is closed to avoid overlap */}
+      {!isOpen && (
+        <ChatButton onClick={() => setIsOpen(true)} isOpen={false} />
+      )}
 
       {/* Chat Window */}
       <AnimatePresence>
@@ -393,9 +402,13 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               'lg:right-6 lg:left-auto lg:top-6 lg:bottom-6 lg:w-[640px] xl:w-[720px]',
               'z-[70]',
               'flex flex-col',
-              'rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden',
-              'bg-white dark:bg-gray-900',
-              'border border-gray-200/80 dark:border-gray-800',
+              'rounded-xl sm:rounded-2xl overflow-hidden',
+              // Glass effect with backdrop blur
+              'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl',
+              'border border-gray-200/60 dark:border-gray-700/40',
+              // Multi-layer shadow system with brand glow
+              'shadow-[0_8px_32px_rgba(0,0,0,0.12),0_16px_48px_rgba(0,0,0,0.1),0_0_40px_rgba(99,102,241,0.1)]',
+              'dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),0_16px_48px_rgba(0,0,0,0.3),0_0_60px_rgba(129,140,248,0.15)]',
               'touch-manipulation',
               className
             )}
@@ -404,6 +417,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             aria-labelledby="docs-assistant-title"
             aria-describedby="docs-assistant-description"
           >
+            {/* Premium gradient border */}
+            <div
+              className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none z-50"
+              style={{
+                padding: '1px',
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.4) 0%, rgba(139,92,246,0.25) 50%, rgba(244,114,182,0.35) 100%)',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+              aria-hidden="true"
+            />
+
             {/* Screen reader title */}
             <h2 id="docs-assistant-title" className="sr-only">
               Documentation Assistant
@@ -458,7 +484,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 onClick={() => setShowHistory((prev) => !prev)}
                 className={cn(
                   'flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-md transition-colors',
-                  'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                  'bg-secondary hover:bg-secondary/80 text-secondary-foreground',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2'
                 )}
                 aria-label="Toggle chat history"
               >
@@ -524,8 +551,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               </div>
             )}
 
-            {/* Wrapper to hide ChatWindow's internal input - we use our own with command support */}
-            <div className="flex-1 min-h-0 [&_.docs-assistant-chat-window>div:last-child]:hidden">
+            {/* Chat content area - ChatWindow renders messages */}
+            <div className="flex-1 overflow-auto docs-assistant-chat-container">
               <ChatWindow
                 messages={messages}
                 isLoading={isLoading}
@@ -573,7 +600,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                             handleOpenInPlayground(lastWithCode.id)
                           }
                         }}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
                         title="Open code in playground"
                         aria-label="Open code in CodeSandbox playground"
                       >
@@ -600,38 +627,41 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   />
                 }
                 className="h-full flex flex-col docs-assistant-chat-window"
-              >
-                {/* Tool Use Progress Indicator */}
-                <AnimatePresence>
-                  {currentToolUse && (
-                    <div className="px-4 py-2">
-                      <ToolUseIndicator toolUse={currentToolUse} />
-                    </div>
-                  )}
-                </AnimatePresence>
+              />
 
-                {/* Tool Results - rendered inline after messages */}
-                {messageToolResults.length > 0 && (
-                  <div className="px-4 space-y-2">
-                    {messageToolResults.map(({ result }) => (
-                      <ToolResultRenderer
-                        key={result.tool_use_id}
-                        result={result}
-                      />
-                    ))}
+              {/* Tool Use Progress Indicator - rendered after ChatWindow */}
+              <AnimatePresence>
+                {currentToolUse && (
+                  <div className="px-4 py-2">
+                    <ToolUseIndicator toolUse={currentToolUse} />
                   </div>
                 )}
+              </AnimatePresence>
 
-                {/* Follow-up Suggestions at bottom of chat */}
-                {suggestedFollowUps.length > 0 && !isLoading && (
-                  <div className="px-4 pb-4">
-                    <FollowUpSuggestions
-                      suggestions={suggestedFollowUps}
-                      onSelect={handleSelectFollowUp}
+              {/* Tool Results - rendered inline after messages */}
+              {messageToolResults.length > 0 && (
+                <div className="px-4 space-y-2">
+                  {messageToolResults.map(({ result }) => (
+                    <ToolResultRenderer
+                      key={result.tool_use_id}
+                      result={result}
                     />
-                  </div>
-                )}
-              </ChatWindow>
+                  ))}
+                </div>
+              )}
+
+              {/* Follow-up Suggestions at bottom of chat */}
+              {suggestedFollowUps.length > 0 && !isLoading && (
+                <div className="px-4 pb-4">
+                  <FollowUpSuggestions
+                    suggestions={suggestedFollowUps.map((text, idx) => ({
+                      id: `followup-${idx}`,
+                      title: text,
+                    }))}
+                    onSelect={handleSelectFollowUp}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Custom Input with Slash/@ Commands */}
@@ -803,13 +833,13 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                 <div className="flex gap-2 pt-1">
                   <button
                     onClick={resetError}
-                    className="text-sm font-medium text-primary hover:underline"
+                    className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 rounded px-1"
                   >
                     Try Again
                   </button>
                   <a
                     href="/guides/configuration"
-                    className="text-sm text-muted-foreground hover:underline"
+                    className="text-sm text-muted-foreground hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 rounded px-1"
                   >
                     Configuration Guide
                   </a>
@@ -819,7 +849,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
           </div>
         )
       }}
-      onError={(error: Error, errorInfo: { componentStack: string }) => {
+      onError={(error: Error, errorInfo: { componentStack?: string | null }) => {
         console.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {

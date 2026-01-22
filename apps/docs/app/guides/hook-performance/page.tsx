@@ -38,7 +38,7 @@ export default function HookPerformancePage() {
         <p>Optimize hook dependencies:</p>
         <CodePlayground
           initialCode={`import { useMemo, useCallback } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const [messages, setMessages] = useState([])
@@ -51,7 +51,7 @@ function OptimizedChat() {
   }), [])
 
   // Hook uses memoized options
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     ...optimizationOptions,
   })
@@ -71,7 +71,7 @@ function OptimizedChat() {
 
 // ❌ Bad: Creating new object on every render
 function BadExample() {
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     options: { enableToon: true }, // New object every render!
   })
@@ -84,10 +84,10 @@ function BadExample() {
         <p>Memoize expensive hook computations:</p>
         <CodePlayground
           initialCode={`import { useMemo } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function MemoizedResults() {
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     enableToon: true,
   })
@@ -126,11 +126,11 @@ function FilteredMessages() {
         <h2>Avoiding Unnecessary Hook Calls</h2>
         <p>Avoid calling hooks unnecessarily:</p>
         <CodePlayground
-          initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+          initialCode={`import { useTokenOptimization } from '@clarity-chat/react'
 
 // ✅ Good: Conditional logic inside hook
 function ConditionalOptimization({ enableOptimization }: { enableOptimization: boolean }) {
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     enableToon: enableOptimization,
     // Hook always called, but options change
@@ -142,7 +142,7 @@ function ConditionalOptimization({ enableOptimization }: { enableOptimization: b
 // ❌ Bad: Conditional hook call
 function BadConditional({ enableOptimization }: { enableOptimization: boolean }) {
   if (enableOptimization) {
-    const optimization = useTokenOptimizationEnhanced({ messages })
+    const optimization = useTokenOptimization({ messages })
     // Error: Hooks must be called unconditionally
   }
 }
@@ -151,7 +151,7 @@ function BadConditional({ enableOptimization }: { enableOptimization: boolean })
 function SmartOptimization() {
   const [enabled, setEnabled] = useState(true)
 
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     enableToon: enabled, // Control via options
     enablePromptCaching: enabled,
@@ -175,9 +175,9 @@ function SmartOptimization() {
         <CodePlayground
           initialCode={`import {
   useClarityChat,
-  useTokenOptimizationEnhanced,
+  useTokenOptimization,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // ✅ Good: Compose hooks in order
 function ComposedHooks() {
@@ -185,7 +185,7 @@ function ComposedHooks() {
   const chat = useClarityChat({ api: '/api/chat' })
 
   // Depends on chat.messages
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages,
   })
 
@@ -205,7 +205,7 @@ function ComposedHooks() {
 // Custom hook to encapsulate composition
 function useOptimizedChat() {
   const chat = useClarityChat({ api: '/api/chat' })
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages: chat.messages,
   })
   const budget = useTokenBudgetMonitor({
@@ -233,22 +233,22 @@ function ChatWithOptimization() {
         <p>Measure hook performance:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/internal'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function MeasuredOptimization() {
   const startTime = useRef(Date.now())
 
-  const optimization = useTokenOptimizationEnhanced({
+  const optimization = useTokenOptimization({
     messages,
     enableToon: true,
   })
 
   useEffect(() => {
     const duration = Date.now() - startTime.current
-    logger.debug(\`Optimization took \${duration}ms\`)
+    console.log(\`Optimization took \${duration}ms\`)
 
     if (duration > 100) {
-      logger.warn('Optimization is slow')
+      console.warn('Optimization is slow')
     }
   }, [optimization.messages])
 
@@ -258,7 +258,7 @@ function MeasuredOptimization() {
 // Use React DevTools Profiler
 // Or PerformanceAnalyticsDashboard
 function AnalyticsOptimization() {
-  const optimization = useTokenOptimizationEnhanced({ messages })
+  const optimization = useTokenOptimization({ messages })
 
   return (
     <div>

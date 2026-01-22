@@ -20,6 +20,10 @@ export default function RemixIntegrationPage() {
       </div>
 
       <section className="docs-section">
+        <Callout type="warning" className="mb-6">
+          <strong>Coming Soon!</strong> The Clarity Chat packages are currently in development and not yet available on npm registries. These installation commands will work once the packages are published.
+        </Callout>
+
         <h2>Quick Start</h2>
         <p>
           <strong>1. Create Remix app:</strong>
@@ -53,7 +57,7 @@ export function links() {
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ChatWindow } from '@clarity-chat/react/internal'
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 

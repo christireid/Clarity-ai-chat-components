@@ -123,7 +123,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
         initial={prefersReducedMotion ? {} : { opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: ANIMATION_DURATION, delay: 0.1 }}
-        className="font-semibold text-sm text-text-primary dark:text-slate-200 mb-4"
+        className="font-semibold text-sm bg-gradient-to-r from-text-primary to-text-secondary dark:from-slate-200 dark:to-slate-400 bg-clip-text text-transparent mb-4"
       >
         On this page
       </motion.h4>
@@ -161,14 +161,15 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                         ? [
                             'border-brand-500 dark:border-brand-400',
                             'text-brand-600 dark:text-brand-400',
-                            'bg-brand-50/50 dark:bg-brand-900/20',
+                            'bg-gradient-to-r from-brand-50/80 to-brand-50/40 dark:from-brand-900/30 dark:to-brand-900/10',
                             'font-medium',
+                            'shadow-[0_0_12px_rgba(99,102,241,0.1)] dark:shadow-[0_0_12px_rgba(129,140,248,0.15)]',
                           ]
                         : [
                             'border-transparent',
                             'text-text-secondary dark:text-slate-400',
                             'hover:text-text-primary dark:hover:text-slate-200',
-                            'hover:border-border dark:hover:border-slate-600',
+                            'hover:border-brand-300/50 dark:hover:border-brand-700/50',
                             'hover:bg-bg-secondary/50 dark:hover:bg-slate-800/30',
                           ],
                       // Focus state

@@ -131,7 +131,7 @@ export default function MessageActionsSecurePage() {
         <h2>Basic Usage</h2>
         <p>Use secure message actions with security info:</p>
         <CodePlayground
-          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
 function SecureMessageActions({ message }: { message: Message }) {
   return (
@@ -143,7 +143,7 @@ function SecureMessageActions({ message }: { message: Message }) {
       showConfetti={false}
       hasError={false}
       onFeedback={(type) => {
-        logger.debug('Feedback:', type)
+        console.log('Feedback:', type)
       }}
       show={true}
       securityInfo={{
@@ -153,7 +153,7 @@ function SecureMessageActions({ message }: { message: Message }) {
         sanitized: false,
       }}
       onReport={(reason) => {
-        logger.debug('Reported:', reason)
+        console.log('Reported:', reason)
         // Send report to server
       }}
     />
@@ -166,7 +166,7 @@ function SecureMessageActions({ message }: { message: Message }) {
         <h2>PII Detection</h2>
         <p>Display PII detection indicators:</p>
         <CodePlayground
-          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
 function WithPIIDetection({ message }: { message: Message }) {
   return (
@@ -195,7 +195,7 @@ function WithPIIDetection({ message }: { message: Message }) {
         <h2>Security Warnings</h2>
         <p>Handle security warnings and threats:</p>
         <CodePlayground
-          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
 function WithWarnings({ message }: { message: Message }) {
   return (
@@ -227,7 +227,7 @@ function WithWarnings({ message }: { message: Message }) {
         <h2>Security Details Tooltip</h2>
         <p>The component automatically shows security details on hover:</p>
         <CodePlayground
-          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
 function WithDetails({ message }: { message: Message }) {
   return (
@@ -257,7 +257,7 @@ function WithDetails({ message }: { message: Message }) {
         <h2>Reporting Unsafe Content</h2>
         <p>Enable reporting for unsafe content:</p>
         <CodePlayground
-          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react/internal'
+          initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
 function WithReporting({ message }: { message: Message }) {
   return (

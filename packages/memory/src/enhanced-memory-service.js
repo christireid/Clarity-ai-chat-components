@@ -6,7 +6,7 @@
  */
 // Enhanced imports with new token optimization
 import { TokenCounter as _TokenCounter, ContextOptimizer } from './token-optimizer';
-import { AccurateTokenCounter, TokenSecurityManager, ToonOptimizer, LLMLinguaOptimizer, SemanticCache, ContextAwareCompressor, PredictiveTokenOptimizer, AdvancedSecurityManager } from '@clarity-chat/token-optimization';
+import { AccurateTokenCounter, TokenSecurityManager, ToonOptimizer, Optimizer, AdvancedSemanticCache } from '@clarity-chat/token-optimization';
 import { DecayManager, } from './utils/decay-manager';
 /**
  * Enhanced Memory Service with Advanced Token Optimization

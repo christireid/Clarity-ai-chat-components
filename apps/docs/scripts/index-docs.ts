@@ -50,8 +50,8 @@ function extractContentFromTSX(content: string): string {
   // Extract text from JSX strings
   const jsxStrings: string[] = []
 
-  // Extract from string literals
-  const stringMatches = text.matchAll(/['"`]([^'"`]{10,}?)['"`]/g)
+  // Extract from string literals (lowered threshold to 4 chars to capture prop names)
+  const stringMatches = text.matchAll(/['"`]([^'"`]{4,}?)['"`]/g)
   for (const match of stringMatches) {
     jsxStrings.push(match[1])
   }

@@ -26,7 +26,16 @@ export default function ToastPage() {
               In Use
             </span>
           </div>
-          <h1>Toast</h1>
+          <h1>Toast (Sonner-based)</h1>
+
+          <Callout type="warning">
+            <p>
+              <strong>API Changed:</strong> The custom toast system has been replaced with
+              Sonner toast for better performance and accessibility. The old
+              <code>useToast</code>, <code>ToastProvider</code>, and <code>ToastContainer</code>
+              APIs are deprecated.
+            </p>
+          </Callout>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
             A temporary notification component that displays brief messages
             about app processes without interrupting the user experience.

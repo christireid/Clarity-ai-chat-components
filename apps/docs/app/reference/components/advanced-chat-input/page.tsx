@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react/internal'
+import { ClarityToaster, AdvancedChatInput } from '@clarity-chat/react'
 import type {
   MessageAttachment,
   SavedPrompt,
   InputSuggestion,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -176,7 +176,7 @@ const advancedChatInputProps: Prop[] = [
 
 export default function AdvancedChatInputPage() {
   return (
-    <ToastProvider>
+    <ClarityToaster />
       <div className="docs-content">
         <Breadcrumbs />
 
@@ -247,8 +247,8 @@ render(<Example />)`}
           <h2 id="import">Import</h2>
 
           <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment, SavedPrompt, InputSuggestion } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment, SavedPrompt, InputSuggestion } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
             language="tsx"
           />
@@ -267,8 +267,8 @@ import '@clarity-chat/react/styles.css'`}
             title="Simple Advanced Input"
             description="Basic usage with file upload support"
             code={`import { useState, useCallback } from 'react'
-import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment } from '@clarity-chat/react/internal'
+import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/react'
 
 function SimpleAdvancedInput() {
   const [value, setValue] = useState('')
@@ -304,8 +304,8 @@ function SimpleAdvancedInput() {
           <ComponentPreview
             title="With File Upload"
             description="File upload with preview and size limits"
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { MessageAttachment } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/react'
 
 function ChatWithFileUpload() {
   const [value, setValue] = useState('')
@@ -362,8 +362,8 @@ function ChatWithFileUpload() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
-import type { InputSuggestion, SavedPrompt } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
+import type { InputSuggestion, SavedPrompt } from '@clarity-chat/react'
 
 function ChatWithAutocomplete() {
   const [value, setValue] = useState('')
@@ -481,7 +481,7 @@ function ChatWithAutocomplete() {
           </p>
 
           <EnhancedCodeBlock
-            code={`import { AdvancedChatInput } from '@clarity-chat/react/internal'
+            code={`import { AdvancedChatInput } from '@clarity-chat/react'
 
 function ChatWithLinkPreview() {
   const handleLinkPaste = async (url: string) => {
@@ -674,8 +674,8 @@ function ChatWithLinkPreview() {
 
           <EnhancedCodeBlock
             code={`import { useState, useCallback } from 'react'
-import { AdvancedChatInput, useClarityChat } from '@clarity-chat/react/internal'
-import type { MessageAttachment, InputSuggestion, SavedPrompt } from '@clarity-chat/react/internal'
+import { AdvancedChatInput, useClarityChat } from '@clarity-chat/react'
+import type { MessageAttachment, InputSuggestion, SavedPrompt } from '@clarity-chat/react'
 
 function CompleteAdvancedChat() {
   const chat = useClarityChat({ api: '/api/chat' })
@@ -841,6 +841,6 @@ function CompleteAdvancedChat() {
           }}
         />
       </div>
-    </ToastProvider>
+    </>
   )
 }

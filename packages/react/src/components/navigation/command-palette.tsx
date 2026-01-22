@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo, useEffect, useId } from 'react'
+import { useDebounce } from '../../hooks/ui/use-debounce'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
@@ -59,6 +60,9 @@ export function CommandPalette({
   const inputId = useId()
   const prefersReducedMotion = useReducedMotion()
 
+  // PERFORMANCE: Debounce search filtering to prevent excessive filtering on rapid typing
+  const debouncedSearch = useDebounce(search, 150)
+
   // Use existing focus management utilities
   const focusTrapRef = useFocusTrap<HTMLDivElement>(open)
   const { saveFocus, restoreFocus } = useFocusRestoration()
@@ -87,18 +91,18 @@ export function CommandPalette({
     }
   }, [open, saveFocus, restoreFocus])
 
-  // Filter items based on search
+  // Filter items based on debounced search to prevent excessive filtering
   const filteredItems = useMemo(() => {
-    if (!search) return items
+    if (!debouncedSearch) return items
 
-    const query = search.toLowerCase()
+    const query = debouncedSearch.toLowerCase()
     return items.filter(
       (item) =>
         item.label.toLowerCase().includes(query) ||
         item.description?.toLowerCase().includes(query) ||
         item.category?.toLowerCase().includes(query)
     )
-  }, [items, search])
+  }, [items, debouncedSearch])
 
   // Group items by category
   const groupedItems = useMemo(() => {

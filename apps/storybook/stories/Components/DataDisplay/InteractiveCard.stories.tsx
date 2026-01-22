@@ -3,7 +3,7 @@ import React from 'react'
 import {
   InteractiveCard,
   InteractiveButton,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta = {
   title: 'Components/DataDisplay/InteractiveCard',

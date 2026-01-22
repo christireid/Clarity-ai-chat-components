@@ -15,6 +15,61 @@ import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import { MarkdownCodeBlock } from './markdown-code-block'
+
+// Lazy Markdown Renderer for performance optimization
+const LazyMarkdownRenderer = React.memo(function LazyMarkdownRenderer({
+  content,
+  remarkPlugins,
+  rehypePlugins,
+  components,
+  isStreaming,
+}: {
+  content: string
+  remarkPlugins: any[]
+  rehypePlugins: any[]
+  components: Partial<Components>
+  isStreaming: boolean
+}) {
+  const [renderedContent, setRenderedContent] = React.useState<React.ReactNode | null>(null)
+
+  React.useEffect(() => {
+    // Defer expensive markdown rendering to prevent blocking UI
+    const timer = setTimeout(() => {
+      setRenderedContent(
+        <ReactMarkdown
+          remarkPlugins={remarkPlugins}
+          rehypePlugins={rehypePlugins}
+          components={components}
+        >
+          {content}
+        </ReactMarkdown>
+      )
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [content, remarkPlugins, rehypePlugins, components])
+
+  // Show plain text as fallback while markdown is rendering
+  return (
+    <>
+      {renderedContent || (
+        <div className={cn(isStreaming && 'clarity-streaming-text')}>
+          {content.split('\n').map((line, i) => (
+            <React.Fragment key={i}>
+              {line}
+              {i < content.split('\n').length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+      {/* Cursor inside the streaming wrapper for proper inline positioning */}
+      {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
+      {isStreaming && (
+        <span aria-hidden="true" className="clarity-streaming-cursor" />
+      )}
+    </>
+  )
+})
 import { MessageActions } from './message-actions'
 import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
@@ -500,20 +555,13 @@ export function Message({
               </p>
             )
           ) : (
-            <div className={cn(isStreaming && 'clarity-streaming-text')}>
-              <ReactMarkdown
-                remarkPlugins={remarkPlugins}
-                rehypePlugins={rehypePlugins}
-                components={markdownComponents}
-              >
-                {message.content}
-              </ReactMarkdown>
-              {/* Cursor inside the streaming wrapper for proper inline positioning */}
-              {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
-              {isStreaming && (
-                <span aria-hidden="true" className="clarity-streaming-cursor" />
-              )}
-            </div>
+            <LazyMarkdownRenderer
+              content={message.content}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
+              components={markdownComponents}
+              isStreaming={isStreaming}
+            />
           )}
         </div>
 

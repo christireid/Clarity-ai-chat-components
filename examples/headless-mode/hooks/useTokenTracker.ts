@@ -20,7 +20,7 @@ export type ModelKey = keyof typeof MODEL_PRICING
 
 /**
  * Simple token estimation based on character count.
- * For production, use a proper tokenizer like tiktoken.
+ * For production, use @clarity-chat/token-optimization for accurate counting.
  */
 export function estimateTokens(text: string): number {
   return Math.ceil(text.length / CHARS_PER_TOKEN)

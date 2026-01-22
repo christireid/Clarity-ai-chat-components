@@ -5,7 +5,7 @@ import {
   ErrorBoundaryEnhanced,
   ErrorReporterProvider,
   createConsoleErrorProvider,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
   if (explode) {

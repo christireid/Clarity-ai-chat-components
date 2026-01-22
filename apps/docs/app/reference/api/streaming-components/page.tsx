@@ -70,7 +70,7 @@ export default function StreamingComponentsAPIPage() {
         <h3>Example</h3>
         <CodeBlock
           language="tsx"
-          code={`import { StreamingMessage } from '@clarity-chat/react/internal'
+          code={`import { StreamingMessage } from '@clarity-chat/react'
 
 <StreamingMessage
   content={streamingText}

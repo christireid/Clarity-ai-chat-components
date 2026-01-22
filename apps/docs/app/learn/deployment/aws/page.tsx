@@ -407,7 +407,7 @@ const apiKey = response.SecretString`}</code>
         <h3>CloudWatch Logs</h3>
         <pre>
           <code>{`// Lambda function logging
-logger.debug('Request received:', JSON.stringify(event))
+console.log('Request received:', JSON.stringify(event))
 console.error('Error:', error.message)
 
 // Query logs with CloudWatch Insights

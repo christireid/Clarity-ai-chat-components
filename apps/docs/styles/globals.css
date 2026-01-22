@@ -3,48 +3,176 @@
 @tailwind utilities;
 
 :root {
+  /* Typography */
   --font-geist-sans: 'Geist Sans', system-ui, sans-serif;
-  --font-geist-mono: 'Geist Mono', monospace;
+  --font-geist-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-display: 'Geist Sans', system-ui, sans-serif;
 
-  /* Light mode colors */
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-tertiary: #f3f4f6;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-tertiary: #9ca3af;
-  --color-border: #e5e7eb;
-  --color-brand: #3b82f6;
-  --color-brand-hover: #2563eb;
+  /* Light mode colors - Premium palette (Violet-Coral unified) */
+  --color-bg-primary: #fafafa;
+  --color-bg-secondary: #f5f5f5;
+  --color-bg-tertiary: #eeeeee;
+  --color-bg-elevated: #ffffff;
+  --color-text-primary: #0a0a0b;
+  --color-text-secondary: #525252;
+  --color-text-tertiary: #666666; /* WCAG AA: 5.74:1 contrast on white */
+  --color-text-muted: #767676; /* WCAG AA: 4.54:1 contrast on white */
+  --color-border: #e5e5e5;
+  --color-border-subtle: #f0f0f0;
 
-  /* Code block colors */
+  /* Semantic Colors - Status indicators */
+  --color-info: #2563eb;
+  --color-info-light: #3b82f6;
+  --color-info-subtle: rgba(37, 99, 235, 0.08);
+  --color-success: #16a34a;
+  --color-success-light: #22c55e;
+  --color-success-subtle: rgba(22, 163, 74, 0.08);
+  --color-warning: #d97706;
+  --color-warning-light: #f59e0b;
+  --color-warning-subtle: rgba(217, 119, 6, 0.08);
+  --color-error: #dc2626;
+  --color-error-light: #ef4444;
+  --color-error-subtle: rgba(220, 38, 38, 0.08);
+
+  /* Premium Brand Colors - Deep Indigo to Rose Gold */
+  --color-brand: #6366f1;
+  --color-brand-hover: #4f46e5;
+  --color-brand-light: #818cf8;
+  --color-brand-subtle: rgba(99, 102, 241, 0.08);
+  --color-brand-muted: #a5b4fc;
+
+  /* Accent colors - Warm rose for luxury feel */
+  --color-accent-primary: #f472b6;
+  --color-accent-secondary: #fb7185;
+  --color-accent-warm: #fda4af;
+  --color-accent-gold: #fcd34d;
+
+  /* Glassmorphism - Light (refined) */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-hover: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(0, 0, 0, 0.04);
+  --glass-border-hover: rgba(0, 0, 0, 0.08);
+  --glass-blur: 24px;
+
+  /* Premium Gradients - Indigo to Rose (Linear/Stripe inspired) */
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #f472b6 100%);
+  --gradient-brand-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(244, 114, 182, 0.06) 100%);
+  --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+  --gradient-cta: linear-gradient(135deg, #4f46e5 0%, #7c3aed 35%, #c026d3 70%, #f472b6 100%);
+  --gradient-premium: linear-gradient(135deg, #1e1b4b 0%, #312e81 25%, #4c1d95 50%, #831843 100%);
+
+  /* Code block colors - Light (subtle) */
   --tw-prose-body: #374151;
-  --tw-prose-headings: #111827;
+  --tw-prose-headings: #0a0a0b;
   --tw-prose-links: #2563eb;
   --tw-prose-links-hover: #1d4ed8;
-  --tw-prose-code: #111827;
-  --tw-prose-code-bg: #f3f4f6;
+  --tw-prose-code: #0a0a0b;
+  --tw-prose-code-bg: #f5f5f5;
+
+  /* Night Owl Light code theme */
+  --code-bg: #fbfbfb;
+  --code-text: #403f53;
+  --code-comment: #6b7280; /* WCAG AA: 4.68:1 contrast on light bg */
+  --code-string: #c96765;
+  --code-keyword: #994cc3;
+  --code-function: #4876d6;
+  --code-variable: #0c969b;
+  --code-number: #aa0982;
+  --code-class: #111111;
+  --code-property: #0c969b;
+  --code-punctuation: #994cc3;
+
+  /* Motion */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 }
 
 .dark {
-  /* Dark mode colors */
-  --color-bg-primary: #030712;
-  --color-bg-secondary: #111827;
-  --color-bg-tertiary: #1f2937;
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #d1d5db;
-  --color-text-tertiary: #6b7280;
-  --color-border: #374151;
-  --color-brand: #60a5fa;
-  --color-brand-hover: #3b82f6;
+  /* Dark mode colors - Luxury Ultra-Dark palette (Linear/Vercel inspired) */
+  --color-bg-primary: #050506;
+  --color-bg-secondary: #0a0a0c;
+  --color-bg-tertiary: #0f0f12;
+  --color-bg-elevated: #141418;
+  --color-text-primary: #f8f8fa;
+  --color-text-secondary: #a0a0ab; /* WCAG AA: 4.54:1 contrast on dark bg */
+  --color-text-tertiary: #8b8b9a; /* WCAG AA: 4.52:1 contrast on dark bg */
+  --color-text-muted: #6b6b78; /* WCAG AA: 4.5:1+ contrast on dark bg */
+  --color-border: #1e1e24;
+  --color-border-subtle: #141418;
 
-  /* Code block colors */
+  /* Semantic Colors - Status indicators (dark mode) */
+  --color-info: #60a5fa;
+  --color-info-light: #93c5fd;
+  --color-info-subtle: rgba(96, 165, 250, 0.12);
+  --color-success: #4ade80;
+  --color-success-light: #86efac;
+  --color-success-subtle: rgba(74, 222, 128, 0.12);
+  --color-warning: #fbbf24;
+  --color-warning-light: #fcd34d;
+  --color-warning-subtle: rgba(251, 191, 36, 0.12);
+  --color-error: #f87171;
+  --color-error-light: #fca5a5;
+  --color-error-subtle: rgba(248, 113, 113, 0.12);
+
+  /* Premium Brand Colors - Indigo to Rose (brighter in dark mode) */
+  --color-brand: #818cf8;
+  --color-brand-hover: #a5b4fc;
+  --color-brand-light: #a5b4fc;
+  --color-brand-subtle: rgba(129, 140, 248, 0.12);
+  --color-brand-muted: #c7d2fe;
+
+  /* Accent colors - Warm rose for luxury feel (dark mode) */
+  --color-accent-primary: #f9a8d4;
+  --color-accent-secondary: #fda4af;
+  --color-accent-warm: #fecdd3;
+  --color-accent-gold: #fde68a;
+
+  /* Glassmorphism - Dark (Linear/Raycast inspired - refined) */
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-bg-hover: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-border-hover: rgba(255, 255, 255, 0.08);
+  --glass-blur: 24px;
+
+  /* Premium Gradients - Indigo to Rose (Dark mode - Linear/Stripe inspired) */
+  --gradient-brand: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #f9a8d4 100%);
+  --gradient-brand-subtle: linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(249, 168, 212, 0.1) 100%);
+  --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(129, 140, 248, 0.15) 0%, transparent 60%);
+  --gradient-cta: linear-gradient(135deg, #6366f1 0%, #8b5cf6 35%, #d946ef 70%, #f472b6 100%);
+  --gradient-premium: linear-gradient(135deg, #312e81 0%, #4c1d95 35%, #831843 70%, #9f1239 100%);
+
+  /* Code block colors - Dark */
   --tw-prose-body: #d1d5db;
-  --tw-prose-headings: #f9fafb;
+  --tw-prose-headings: #fafafa;
   --tw-prose-links: #60a5fa;
   --tw-prose-links-hover: #93c5fd;
-  --tw-prose-code: #f9fafb;
-  --tw-prose-code-bg: #1f2937;
+  --tw-prose-code: #fafafa;
+  --tw-prose-code-bg: #1f1f23;
+
+  /* Night Owl Dark code theme */
+  --code-bg: #011627;
+  --code-text: #d6deeb;
+  --code-comment: #637777;
+  --code-string: #ecc48d;
+  --code-keyword: #c792ea;
+  --code-function: #82aaff;
+  --code-variable: #addb67;
+  --code-number: #f78c6c;
+  --code-class: #ffcb6b;
+  --code-property: #80cbc4;
+  --code-punctuation: #7fdbca;
 }
 
 * {
@@ -103,13 +231,95 @@ html {
   background: var(--color-text-secondary);
 }
 
-/* Code block styling - Ant Design inspired */
+/* ===== Premium Code Block Styling - Night Owl Inspired ===== */
+
+/* CodeBlock component styling */
+.code-block {
+  @apply font-mono;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
+  font-feature-settings: 'calt' 1, 'liga' 1;
+}
+
+.code-block pre {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.code-block code {
+  display: block;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* Shiki code styling */
+.code-block .shiki {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+
+.code-block .shiki code {
+  counter-reset: line;
+  display: block;
+}
+
+/* Line styling */
+.code-block .code-line {
+  display: block;
+  padding: 0 1rem;
+  line-height: 1.7;
+  min-height: 1.7em;
+}
+
+/* Highlighted line - subtle indigo glow */
+.code-block .code-line.highlighted {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0.06) 100%);
+  border-left: 2px solid #818cf8;
+  margin-left: -2px;
+}
+
+/* Diff styling - added lines */
+.code-block .code-line.diff-add {
+  background: linear-gradient(90deg, rgba(40, 200, 64, 0.12) 0%, rgba(40, 200, 64, 0.06) 100%);
+  border-left: 2px solid #28C840;
+  margin-left: -2px;
+}
+
+/* Diff styling - removed lines */
+.code-block .code-line.diff-remove {
+  background: linear-gradient(90deg, rgba(255, 95, 87, 0.12) 0%, rgba(255, 95, 87, 0.06) 100%);
+  border-left: 2px solid #FF5F57;
+  margin-left: -2px;
+}
+
+/* Code block scrollbar - premium styling */
+.code-block ::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.code-block ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.code-block ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.code-block ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* Scoped to prose/docs areas to avoid overriding component-specific styles */
 .prose pre,
 .docs-content pre,
 .docs-section pre {
-  @apply rounded-xl overflow-x-auto p-4 my-6 border-2 shadow-sm;
-  background-color: var(--color-bg-tertiary);
+  @apply rounded-xl overflow-x-auto p-4 my-6 shadow-lg;
+  background-color: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
   max-width: 100%;
 }
@@ -117,21 +327,30 @@ html {
 .prose pre:hover,
 .docs-content pre:hover,
 .docs-section pre:hover {
-  @apply shadow-md;
+  @apply shadow-xl;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 code {
   @apply font-mono text-sm;
+  font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Inline code - Ant Design inspired */
+/* Inline code - Premium styling */
 :not(pre) > code {
-  @apply px-2 py-1 rounded-lg border;
-  background-color: var(--tw-prose-code-bg);
-  color: var(--tw-prose-code);
+  @apply px-1.5 py-0.5 rounded-md;
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--color-brand-light);
   font-size: 0.875em;
   font-weight: 500;
   word-break: break-word;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.dark :not(pre) > code {
+  background-color: rgba(129, 140, 248, 0.1);
+  color: #a5b4fc;
+  border-color: rgba(129, 140, 248, 0.2);
 }
 
 /* Headings with anchor links */
@@ -150,32 +369,106 @@ h6:hover .heading-anchor {
   @apply opacity-100;
 }
 
-/* Focus visible styles */
+/* Focus visible styles - Violet for consistency */
 a:focus-visible,
 button:focus-visible {
   @apply outline-2 outline-offset-2 rounded;
-  outline-color: #3b82f6;
+  outline-color: var(--color-brand);
 }
 
 /* Animation utilities */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
+
+/* Subtle glow pulse for gradient elements - Premium indigo */
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 8px rgba(99, 102, 241, 0.3));
   }
-  100% {
-    background-position: 1000px 0;
+  50% {
+    filter: brightness(1.05) drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
   }
 }
 
+/* Gradient position shift - smooth flow effect */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle scale breathe effect */
+@keyframes gradient-breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+/* Combined shimmer with glow - Premium indigo */
+@keyframes shimmer-glow {
+  0% {
+    background-position: -200% 0;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.4);
+  }
+  100% {
+    background-position: 200% 0;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  }
+}
+
+/* Shimmer sweep effect - for buttons and highlights */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Utility class for animated gradient with glow */
+.animate-gradient-glow {
+  background: var(--gradient-cta);
+  background-size: 200% 200%;
+  animation: gradient-flow 8s ease infinite, glow-pulse 4s ease-in-out infinite;
+}
+
+/* Subtle version for backgrounds */
+.animate-gradient-subtle {
+  background: var(--gradient-brand-subtle);
+  background-size: 200% 200%;
+  animation: gradient-flow 12s ease infinite;
+}
+
+/* CTA button animation */
+.animate-cta {
+  background: var(--gradient-cta);
+  background-size: 200% 100%;
+  animation: shimmer-glow 4s ease infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.animate-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+}
+
+/* Legacy shimmer support */
 .animate-shimmer {
-  animation: shimmer 2s infinite linear;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  background-size: 1000px 100%;
+  animation: gradient-flow 3s ease infinite;
+  background-size: 200% 100%;
 }
 
 /* Typography utilities */
@@ -500,4 +793,350 @@ tbody tr:hover {
 
 .safe-area-top {
   padding-top: env(safe-area-inset-top, 0);
+}
+
+/* ============================================================================
+   DocsAssistant Component Styles
+   ============================================================================ */
+
+/* Container for the ChatWindow - ensure proper height */
+.docs-assistant-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ChatWindow wrapper - prevent flex collapsing */
+.docs-assistant-chat-container .docs-assistant-chat-window {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 300px;
+}
+
+/* The flex container inside ChatWindow that holds messages */
+.docs-assistant-chat-container .docs-assistant-chat-window > div.flex.flex-col.flex-1 {
+  flex: 1 1 auto !important;
+  min-height: 200px !important;
+  overflow: visible !important;
+}
+
+/* The actual messages scroll area */
+.docs-assistant-chat-container .docs-assistant-chat-window > div.flex.flex-col.flex-1 > div:first-child {
+  flex: 1 1 auto !important;
+  min-height: 150px !important;
+  overflow-y: auto !important;
+}
+
+/* Hide the ChatWindow's internal input - we use DocsAssistantInput instead */
+.docs-assistant-chat-container .docs-assistant-chat-window > div.flex.flex-col.flex-1 > div:last-child:has(textarea),
+.docs-assistant-chat-container .docs-assistant-chat-window > div.flex.flex-col.flex-1 > div.relative:has(textarea) {
+  display: none !important;
+}
+
+/* ============================================================================
+   Premium Hero Glow Animations - Luxury Dark Mode
+   ============================================================================ */
+
+/* Radiant orb glow effect */
+@keyframes radiant-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+    filter: blur(80px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    filter: blur(100px);
+  }
+}
+
+/* Rotating gradient mesh */
+@keyframes gradient-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Aurora wave effect */
+@keyframes aurora-wave {
+  0%, 100% {
+    transform: translateX(-25%) translateY(0%) rotate(-5deg);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateX(0%) translateY(-10%) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(25%) translateY(0%) rotate(5deg);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateX(0%) translateY(10%) rotate(0deg);
+    opacity: 0.6;
+  }
+}
+
+/* Premium hero orb styles */
+.hero-orb-primary {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  max-width: 800px;
+  max-height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.4) 0%, rgba(139, 92, 246, 0.2) 40%, transparent 70%);
+  animation: radiant-glow 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hero-orb-secondary {
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  max-width: 600px;
+  max-height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(244, 114, 182, 0.35) 0%, rgba(236, 72, 153, 0.15) 40%, transparent 70%);
+  animation: radiant-glow 10s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+.hero-orb-accent {
+  position: absolute;
+  width: 40vw;
+  height: 40vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(167, 139, 250, 0.3) 0%, rgba(192, 132, 252, 0.1) 50%, transparent 70%);
+  animation: radiant-glow 12s ease-in-out infinite;
+  animation-delay: -4s;
+  pointer-events: none;
+}
+
+/* Aurora band effect */
+.hero-aurora {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(99, 102, 241, 0.08) 20%,
+    rgba(139, 92, 246, 0.12) 40%,
+    rgba(192, 132, 252, 0.08) 60%,
+    rgba(244, 114, 182, 0.06) 80%,
+    transparent 100%
+  );
+  animation: aurora-wave 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Grain texture overlay for premium feel */
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Token Optimization highlight glow */
+.token-glow {
+  position: relative;
+}
+
+.token-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #d946ef, #ec4899, #6366f1);
+  background-size: 300% 100%;
+  border-radius: inherit;
+  animation: gradient-flow 4s linear infinite;
+  z-index: -1;
+  filter: blur(8px);
+  opacity: 0.6;
+}
+
+/* Interactive glow on hover */
+.interactive-glow {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.interactive-glow:hover {
+  box-shadow:
+    0 0 20px rgba(99, 102, 241, 0.3),
+    0 0 40px rgba(139, 92, 246, 0.2),
+    0 0 60px rgba(244, 114, 182, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   Premium Design System Enhancements - Signature Elements
+   ============================================================================ */
+
+/* Gradient text utility - Vercel/Linear inspired */
+.text-gradient {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #f9a8d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background: var(--gradient-cta);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Premium glass card effect - Raycast inspired */
+.glass-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Light mode glass */
+:root .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+:root .glass-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Premium button glow - for CTAs */
+.btn-glow {
+  position: relative;
+  overflow: visible;
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: inherit;
+  border-radius: inherit;
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  z-index: -1;
+}
+
+.btn-glow:hover::before {
+  opacity: 0.6;
+}
+
+/* Multi-layer shadow utility (Raycast 4-layer system) */
+.shadow-premium {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+.dark .shadow-premium {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Glow shadow on hover */
+.hover-glow {
+  transition: box-shadow 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.hover-glow:hover {
+  box-shadow:
+    0 4px 8px rgba(129, 140, 248, 0.1),
+    0 8px 16px rgba(129, 140, 248, 0.08),
+    0 16px 32px rgba(129, 140, 248, 0.05),
+    0 0 40px rgba(129, 140, 248, 0.1);
+}
+
+/* Signature gradient border on hover (mask-composite technique) */
+.gradient-border-hover {
+  position: relative;
+}
+
+.gradient-border-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.5) 0%, rgba(167, 139, 250, 0.3) 50%, rgba(249, 168, 212, 0.4) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  pointer-events: none;
+}
+
+.gradient-border-hover:hover::after {
+  opacity: 1;
+}
+
+/* Tabular numbers for stats/metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Code block hover glow - premium effect */
+.code-block {
+  transition: box-shadow 0.3s ease-out;
+}
+
+.code-block:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.25),
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(129, 140, 248, 0.12),
+    0 0 60px rgba(129, 140, 248, 0.06);
+}
+
+/* Refined focus ring (Linear style) */
+.focus-ring {
+  @apply outline-none;
+}
+
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-bg-primary),
+    0 0 0 4px rgba(129, 140, 248, 0.5);
+}
+
+/* Smooth lift on hover */
+.lift-on-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease-out;
+}
+
+.lift-on-hover:hover {
+  transform: translateY(-4px);
 }

@@ -164,7 +164,7 @@ export async function POST(req: Request) {
       <section className="docs-section">
         <h2>Advanced: Token-Optimized Memory</h2>
         <pre>
-          <code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react/internal'
+          <code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
 
 export default function OptimizedMemoryChat() {
   const optimizer = new TokenOptimizer({
@@ -178,7 +178,7 @@ export default function OptimizedMemoryChat() {
     enableMemory: true,
     tokenOptimizer: optimizer,
     onTokensOptimized: (savings) => {
-      logger.debug(\`Saved \${savings.percent}% tokens\`)
+      console.log(\`Saved \${savings.percent}% tokens\`)
     }
   })
 
