@@ -53,6 +53,11 @@ import { RequestQueueStatus } from '../ai/request-queue-status'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useToast } from '../ui/toast'
+import {
+  useLiveAnnouncer,
+  LiveRegionAnnouncer,
+  ChatAnnouncements,
+} from '../../accessibility/live-region-announcer'
 
 // Grouped props interfaces for cleaner API
 export interface ClarityChatHeaderProps {
@@ -326,6 +331,9 @@ export function ClarityChat({
   // which provides a ComponentError with helpful messaging and security checks
   const toast = useToast()
 
+  // Initialize live announcer for screen reader accessibility
+  const { announce, announcements } = useLiveAnnouncer()
+
   // Use rate-limited chat if enabled
   const chat = processedProps.enableRateLimiting
     ? useRateLimitedChat({
@@ -357,19 +365,51 @@ export function ClarityChat({
     [chat.messages]
   )
 
+  // Announce new assistant messages to screen readers
+  React.useEffect(() => {
+    if (chat.messages.length === 0) return
+
+    const lastMessage = chat.messages[chat.messages.length - 1]
+    if (lastMessage && lastMessage.role === 'assistant') {
+      // Only announce completed messages
+      const content = typeof lastMessage.content === 'string'
+        ? lastMessage.content
+        : ''
+
+      if (content && !chat.isLoading) {
+        // Announce to screen readers with polite priority
+        announce(
+          ChatAnnouncements.newMessage('assistant', content.substring(0, 150) + (content.length > 150 ? '...' : '')),
+          'polite'
+        )
+      }
+    }
+  }, [chat.messages, chat.isLoading, announce])
+
+  // Announce loading/thinking states
+  React.useEffect(() => {
+    if (chat.isLoading) {
+      announce(ChatAnnouncements.thinking(), 'polite')
+    }
+  }, [chat.isLoading, announce])
+
   const handleSendMessage = React.useCallback(
     async (content: string) => {
       try {
+        announce(ChatAnnouncements.sending(), 'polite')
         await chat.append({ role: 'user', content })
+        announce(ChatAnnouncements.sent(), 'polite')
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to send message:', error)
-          toast?.error('Failed to send message. Please try again.')
+          const errorMessage = 'Failed to send message. Please try again.'
+          toast?.error(errorMessage)
+          announce(ChatAnnouncements.error(errorMessage), 'assertive')
         }
       }
     },
-    [chat, toast]
+    [chat, toast, announce]
   )
 
   const handleStopGeneration = React.useCallback(() => {
@@ -393,7 +433,9 @@ export function ClarityChat({
     (messageId: string) => {
       // Prevent deletion while a request is in progress to avoid race conditions
       if (chat.isLoading || isRegenerating) {
-        toast?.info('Please wait for the current request to complete')
+        const message = 'Please wait for the current request to complete'
+        toast?.info(message)
+        announce(message, 'polite')
         return
       }
       // Clear editing state if deleting the message being edited
@@ -406,7 +448,9 @@ export function ClarityChat({
       )
       // Show toast after successful deletion (not in child component to avoid
       // showing toast when loading guard blocks the action)
-      toast?.info('Message deleted')
+      const successMessage = 'Message deleted'
+      toast?.info(successMessage)
+      announce(successMessage, 'polite')
       onDeleteMessage?.(messageId)
     },
     [
@@ -416,6 +460,7 @@ export function ClarityChat({
       isRegenerating,
       onDeleteMessage,
       toast,
+      announce,
     ]
   )
 
@@ -445,7 +490,9 @@ export function ClarityChat({
       // Validate content - reject empty or whitespace-only
       const trimmedContent = newContent.trim()
       if (!trimmedContent) {
-        toast?.error('Message cannot be empty')
+        const errorMsg = 'Message cannot be empty'
+        toast?.error(errorMsg)
+        announce(ChatAnnouncements.error(errorMsg), 'assertive')
         return
       }
 
@@ -461,7 +508,9 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          toast?.error('Message not found')
+          const errorMsg = 'Message not found'
+          toast?.error(errorMsg)
+          announce(ChatAnnouncements.error(errorMsg), 'assertive')
           return
         }
 
@@ -475,10 +524,14 @@ export function ClarityChat({
 
           // Regenerate response - append adds the edited user message and triggers AI response
           setIsRegenerating(true)
-          toast?.info('Regenerating response...')
+          const regeneratingMsg = 'Regenerating response...'
+          toast?.info(regeneratingMsg)
+          announce(regeneratingMsg, 'polite')
           try {
             await chat.append({ role: 'user', content: trimmedContent })
-            toast?.success('Response regenerated')
+            const successMsg = 'Response regenerated'
+            toast?.success(successMsg)
+            announce(successMsg, 'polite')
           } catch (error) {
             // CRITICAL: Restore original messages on failure to prevent data loss
             chat.setMessages(originalMessages)
@@ -493,13 +546,17 @@ export function ClarityChat({
               m.id === messageId ? { ...m, content: trimmedContent } : m
             )
           )
-          toast?.success('Message updated')
+          const successMsg = 'Message updated'
+          toast?.success(successMsg)
+          announce(successMsg, 'polite')
         }
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to update message:', error)
-          toast?.error('Failed to update message. Please try again.')
+          const errorMsg = 'Failed to update message. Please try again.'
+          toast?.error(errorMsg)
+          announce(ChatAnnouncements.error(errorMsg), 'assertive')
         }
       }
     },
@@ -529,7 +586,9 @@ export function ClarityChat({
         )
         if (messageIndex === -1) {
           console.warn('Cannot regenerate: message not found')
-          toast?.error('Cannot regenerate: message not found')
+          const errorMsg = 'Cannot regenerate: message not found'
+          toast?.error(errorMsg)
+          announce(ChatAnnouncements.error(errorMsg), 'assertive')
           return
         }
 
@@ -545,7 +604,9 @@ export function ClarityChat({
 
         if (userMessageIndex === -1) {
           console.warn('Cannot regenerate: no preceding user message found')
-          toast?.error('Cannot regenerate: no previous message to resend')
+          const errorMsg = 'Cannot regenerate: no previous message to resend'
+          toast?.error(errorMsg)
+          announce(ChatAnnouncements.error(errorMsg), 'assertive')
           return
         }
 
@@ -559,12 +620,15 @@ export function ClarityChat({
         // Set loading state for UI feedback and show toast
         // (toast shown here, not in child component, to avoid double toasts when loading guard blocks)
         setIsRegenerating(true)
-        toast?.info('Regenerating response...')
+        const regeneratingMsg = 'Regenerating response...'
+        toast?.info(regeneratingMsg)
+        announce(regeneratingMsg, 'polite')
 
         try {
           // Resend the user message - append adds it and triggers AI response
           await chat.append({ role: 'user', content: userMessage.content })
           onRegenerateMessage?.(messageId)
+          announce('Response regenerated', 'polite')
         } catch (error) {
           // CRITICAL: Restore original messages on failure to prevent data loss
           chat.setMessages(originalMessages)
@@ -576,7 +640,9 @@ export function ClarityChat({
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to regenerate message:', error)
-          toast?.error('Failed to regenerate response. Please try again.')
+          const errorMsg = 'Failed to regenerate response. Please try again.'
+          toast?.error(errorMsg)
+          announce(ChatAnnouncements.error(errorMsg), 'assertive')
         }
       }
     },
@@ -584,16 +650,28 @@ export function ClarityChat({
   )
 
   return (
-    <div className="clarity-chat-container">
+    <main
+      className="clarity-chat-container"
+      role="main"
+      aria-label="Chat conversation"
+    >
+      {/* Live region announcer for screen reader accessibility */}
+      <LiveRegionAnnouncer announcements={announcements} />
+
       {/* Request Queue Status */}
       {processedProps.enableRateLimiting && processedProps.showQueueStatus && 'queueStatus' in chat && (
-        <RequestQueueStatus
-          queueStatus={chat.queueStatus}
-          isRateLimited={chat.isRateLimited}
-          rateLimitResetAt={chat.rateLimitResetAt}
-          compact={processedProps.compactQueueStatus}
-          onClearQueue={chat.clearQueue}
-        />
+        <section
+          role="status"
+          aria-label="Request queue status"
+        >
+          <RequestQueueStatus
+            queueStatus={chat.queueStatus}
+            isRateLimited={chat.isRateLimited}
+            rateLimitResetAt={chat.rateLimitResetAt}
+            compact={processedProps.compactQueueStatus}
+            onClearQueue={chat.clearQueue}
+          />
+        </section>
       )}
 
       <ChatWindow
@@ -624,7 +702,7 @@ export function ClarityChat({
         showNetworkStatus={processedProps.showNetworkStatus}
         enableMessageOperations={processedProps.enableMessageOperations}
       />
-    </div>
+    </main>
   )
 }
 
