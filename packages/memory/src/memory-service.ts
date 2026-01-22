@@ -40,21 +40,11 @@ import {
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
-import {
-  ConsentManager,
-  type ConsentPurpose,
-} from './consent'
-import {
-  AuditLogger,
-} from './audit'
-import {
-  DEFAULT_RETENTION_POLICY,
-  DEFAULT_MEMORY_LIMITS,
-} from './constants'
-import type {
-  DataExportResult,
-  DataExportOptions,
-} from './types'
+import { ConsentManager, type ConsentPurpose } from './consent'
+import { AuditLogger } from './audit'
+import { DEFAULT_RETENTION_POLICY, DEFAULT_MEMORY_LIMITS } from './constants'
+import type { DataExportResult, DataExportOptions } from './types'
+import { ImportanceScorer } from './scoring/importance-scorer'
 
 /**
  * Simple token counter utility
@@ -232,6 +222,7 @@ export class MemoryService {
   private decayInterval?: ReturnType<typeof setInterval>
   private consentManager?: ConsentManager
   private auditLogger: AuditLogger
+  private importanceScorer?: ImportanceScorer
 
   constructor(
     config: MemoryServiceConfig,
@@ -251,6 +242,15 @@ export class MemoryService {
 
     // Initialize audit logger
     this.auditLogger = auditLogger || new AuditLogger(vectorStore, config.audit)
+
+    // Initialize importance scorer if enabled
+    if (config.importanceScoring?.enabled) {
+      this.importanceScorer = new ImportanceScorer({
+        recencyHalfLife: config.importanceScoring.recencyHalfLife,
+        maxFrequencyAccesses: config.importanceScoring.maxFrequencyAccesses,
+        weights: config.importanceScoring.weights,
+      })
+    }
 
     this.initialize()
   }
@@ -322,32 +322,38 @@ export class MemoryService {
 
       if (requireConsent) {
         // Extract user ID from metadata
-        const userId = this.config.consent.getUserId?.(metadata) || metadata.userId as string | undefined
+        const userId =
+          this.config.consent.getUserId?.(metadata) ||
+          (metadata.userId as string | undefined)
 
         if (!userId) {
           if (this.config.debug) {
             console.warn(
               '[MemoryService] Consent check failed: No user ID found in metadata. ' +
-              'Configure consent.getUserId or include userId in metadata.'
+                'Configure consent.getUserId or include userId in metadata.'
             )
           }
           throw new Error(
             'Cannot add memory: User ID required for consent verification. ' +
-            'Include userId in metadata or configure consent.getUserId.'
+              'Include userId in metadata or configure consent.getUserId.'
           )
         }
 
         // Determine consent purpose based on operation
-        const purpose: ConsentPurpose = type === 'episodic' || type === 'semantic'
-          ? 'message_storage'
-          : 'personalization'
+        const purpose: ConsentPurpose =
+          type === 'episodic' || type === 'semantic'
+            ? 'message_storage'
+            : 'personalization'
 
         // Check consent (will throw if not granted)
         try {
           await this.consentManager.requireConsent(userId, purpose)
         } catch (error) {
           if (this.config.debug) {
-            console.warn('[MemoryService] Memory write blocked:', (error as Error).message)
+            console.warn(
+              '[MemoryService] Memory write blocked:',
+              (error as Error).message
+            )
           }
           throw error
         }
@@ -356,17 +362,24 @@ export class MemoryService {
 
     // Get limits with defaults
     const limits = {
-      maxMemories: this.config.limits?.maxMemories ?? DEFAULT_MEMORY_LIMITS.maxMemories,
-      maxTotalTokens: this.config.limits?.maxTotalTokens ?? DEFAULT_MEMORY_LIMITS.maxTotalTokens,
-      maxMemorySize: this.config.limits?.maxMemorySize ?? DEFAULT_MEMORY_LIMITS.maxMemorySize,
-      warnThreshold: this.config.limits?.warnThreshold ?? DEFAULT_MEMORY_LIMITS.warnThreshold,
+      maxMemories:
+        this.config.limits?.maxMemories ?? DEFAULT_MEMORY_LIMITS.maxMemories,
+      maxTotalTokens:
+        this.config.limits?.maxTotalTokens ??
+        DEFAULT_MEMORY_LIMITS.maxTotalTokens,
+      maxMemorySize:
+        this.config.limits?.maxMemorySize ??
+        DEFAULT_MEMORY_LIMITS.maxMemorySize,
+      warnThreshold:
+        this.config.limits?.warnThreshold ??
+        DEFAULT_MEMORY_LIMITS.warnThreshold,
     }
 
     // Check memory size limit
     if (content.length > limits.maxMemorySize) {
       const error = new Error(
         `Memory content exceeds maximum size: ${content.length} > ${limits.maxMemorySize} characters. ` +
-        `Consider chunking or summarizing large content.`
+          `Consider chunking or summarizing large content.`
       )
       if (this.config.debug) {
         console.error('[MemoryService]', error.message)
@@ -379,13 +392,14 @@ export class MemoryService {
       if (this.config.debug) {
         console.warn(
           `[MemoryService] Memory limit reached (${this.cache.size}/${limits.maxMemories}). ` +
-          `Evicting oldest memory (LRU).`
+            `Evicting oldest memory (LRU).`
         )
       }
 
       // Evict oldest memory (LRU - least recently accessed)
-      const oldestMemory = Array.from(this.cache.values()).reduce((oldest, current) =>
-        current.lastAccessed < oldest.lastAccessed ? current : oldest
+      const oldestMemory = Array.from(this.cache.values()).reduce(
+        (oldest, current) =>
+          current.lastAccessed < oldest.lastAccessed ? current : oldest
       )
 
       await this.deleteMemory(oldestMemory.id)
@@ -408,7 +422,8 @@ export class MemoryService {
 
     // Check total tokens limit (evict if needed)
     const currentTotalTokens = Array.from(this.cache.values()).reduce(
-      (sum, m) => sum + m.tokens, 0
+      (sum, m) => sum + m.tokens,
+      0
     )
     const newTotalTokens = currentTotalTokens + memory.tokens
 
@@ -416,17 +431,30 @@ export class MemoryService {
       if (this.config.debug) {
         console.warn(
           `[MemoryService] Token limit would be exceeded (${newTotalTokens}/${limits.maxTotalTokens}). ` +
-          `Evicting lowest priority memories.`
+            `Evicting lowest priority memories.`
         )
       }
 
       // Evict lowest priority memories until under limit
+      // Deterministic ordering: priority (asc) -> lastAccessed (asc) -> id (asc)
       const sortedMemories = Array.from(this.cache.values()).sort((a, b) => {
         const priorityOrder = { low: 0, medium: 1, high: 2, critical: 3 }
         const aPriority = priorityOrder[a.priority]
         const bPriority = priorityOrder[b.priority]
         if (aPriority !== bPriority) return aPriority - bPriority
-        return a.lastAccessed.getTime() - b.lastAccessed.getTime()
+
+        // Secondary: Last accessed time (older first for eviction)
+        const timeA = a.lastAccessed.getTime()
+        const timeB = b.lastAccessed.getTime()
+        if (timeA !== timeB) return timeA - timeB
+
+        // Tertiary: Importance (lower first for eviction)
+        const importanceA = a.importance ?? 0.5
+        const importanceB = b.importance ?? 0.5
+        if (importanceA !== importanceB) return importanceA - importanceB
+
+        // Final tiebreaker: ID (deterministic)
+        return a.id.localeCompare(b.id)
       })
 
       let tokensToFree = newTotalTokens - limits.maxTotalTokens
@@ -445,14 +473,14 @@ export class MemoryService {
     if (memoryUtilization >= limits.warnThreshold && !this.config.debug) {
       console.warn(
         `[MemoryService] Approaching memory limit: ${newMemoryCount}/${limits.maxMemories} ` +
-        `(${Math.round(memoryUtilization * 100)}% utilization)`
+          `(${Math.round(memoryUtilization * 100)}% utilization)`
       )
     }
 
     if (tokenUtilization >= limits.warnThreshold && !this.config.debug) {
       console.warn(
         `[MemoryService] Approaching token limit: ${newTotalTokens}/${limits.maxTotalTokens} ` +
-        `(${Math.round(tokenUtilization * 100)}% utilization)`
+          `(${Math.round(tokenUtilization * 100)}% utilization)`
       )
     }
 
@@ -501,7 +529,7 @@ export class MemoryService {
         memoryId: memory.id,
         memoryType: type,
         memoryScope: scope,
-        purpose: metadata.purpose as string | undefined || 'general',
+        purpose: (metadata.purpose as string | undefined) || 'general',
         legalBasis: this.consentManager ? 'consent' : 'legitimate_interest',
         result: 'success',
       },
@@ -563,15 +591,55 @@ export class MemoryService {
     // Apply filters
     results = this.applyFilters(results, query)
 
-    // Optimize for token budget
-    if (query.tokenBudget) {
-      results = this.optimizeForBudget(results, query.tokenBudget)
+    // Re-rank using importance scoring if enabled
+    if (this.importanceScorer && results.length > 0) {
+      const scored = this.importanceScorer.scoreBatch(
+        results.map((r) => r.memory),
+        query.query
+      )
+
+      // Map back to MemorySearchResult format with importance scores
+      results = scored.map(({ memory, score }) => {
+        const existing = results.find((r) => r.memory.id === memory.id)
+        return {
+          memory,
+          relevance: score.final, // Use importance score as relevance
+          score: score.final,
+          distance: existing?.distance,
+          highlights: existing?.highlights,
+        }
+      })
     }
 
-    // Update access stats
-    for (const result of results) {
-      result.memory.accessCount++
-      result.memory.lastAccessed = new Date()
+    // Enforce token budget (use query budget or fall back to global config)
+    const tokenBudget =
+      query.tokenBudget ?? this.config.tokenBudget?.maxContextWindow
+    if (tokenBudget) {
+      const originalCount = results.length
+      const originalTokens = results.reduce(
+        (sum, r) => sum + r.memory.tokens,
+        0
+      )
+
+      results = this.optimizeForBudget(results, tokenBudget)
+
+      // Warn if budget enforcement dropped results
+      if (results.length < originalCount && this.config.debug) {
+        const finalTokens = results.reduce((sum, r) => sum + r.memory.tokens, 0)
+        console.warn(
+          `[MemoryService] Token budget enforced: ${originalCount} results (${originalTokens} tokens) ` +
+            `reduced to ${results.length} results (${finalTokens} tokens) to fit ${tokenBudget} token budget`
+        )
+      }
+    }
+
+    // Update access stats (only if explicitly requested)
+    // This prevents write side effects in read operations
+    if (query.trackAccess) {
+      for (const result of results) {
+        result.memory.accessCount++
+        result.memory.lastAccessed = new Date()
+      }
     }
 
     // Auto-decay on recall if enabled
@@ -675,11 +743,30 @@ export class MemoryService {
       results.push({ memory, relevance, score: relevance })
     }
 
-    // Sort by relevance and confidence
+    // Sort by relevance and confidence with deterministic secondary criteria
     results.sort((a, b) => {
+      // Primary: Combined score (relevance * confidence)
       const scoreA = a.relevance * a.memory.confidence
       const scoreB = b.relevance * b.memory.confidence
-      return scoreB - scoreA
+      if (scoreA !== scoreB) return scoreB - scoreA
+
+      // Secondary: Importance (if available)
+      const importanceA = a.memory.importance ?? 0.5
+      const importanceB = b.memory.importance ?? 0.5
+      if (importanceA !== importanceB) return importanceB - importanceA
+
+      // Tertiary: Recency (newer first)
+      const timeA = a.memory.createdAt.getTime()
+      const timeB = b.memory.createdAt.getTime()
+      if (timeA !== timeB) return timeB - timeA
+
+      // Quaternary: Access frequency (more accessed first)
+      if (a.memory.accessCount !== b.memory.accessCount) {
+        return b.memory.accessCount - a.memory.accessCount
+      }
+
+      // Final tiebreaker: ID (lexicographic for determinism)
+      return a.memory.id.localeCompare(b.memory.id)
     })
 
     return results.slice(0, query.limit || 10)
@@ -708,20 +795,70 @@ export class MemoryService {
 
   /**
    * Optimize results for token budget
+   *
+   * Enforces strict token budget by:
+   * 1. Selecting results in relevance order while staying under budget
+   * 2. Attempting to fit as many high-relevance results as possible
+   * 3. Optionally truncating large results to fit more content
+   *
+   * Note: Results are processed in order to preserve relevance ranking.
+   * A greedy bin-packing approach is used to maximize information density.
    */
   private optimizeForBudget(
     results: MemorySearchResult[],
     budget: number
   ): MemorySearchResult[] {
+    if (budget <= 0) return []
+
     const optimized: MemorySearchResult[] = []
     let usedTokens = 0
 
+    // First pass: Fit complete results that don't exceed budget
     for (const result of results) {
-      if (usedTokens + result.memory.tokens <= budget) {
+      const tokensNeeded = result.memory.tokens
+
+      if (usedTokens + tokensNeeded <= budget) {
+        // Result fits completely
         optimized.push(result)
-        usedTokens += result.memory.tokens
+        usedTokens += tokensNeeded
+      } else if (optimized.length === 0 && tokensNeeded > budget) {
+        // Special case: First result is too large, truncate it to fit
+        // This ensures we always return at least some content
+        const truncationRatio = budget / tokensNeeded
+        const truncatedContent =
+          result.memory.content.slice(
+            0,
+            Math.floor(result.memory.content.length * truncationRatio)
+          ) + '...'
+
+        optimized.push({
+          ...result,
+          memory: {
+            ...result.memory,
+            content: truncatedContent,
+            tokens: budget,
+            metadata: {
+              ...result.memory.metadata,
+              truncated: true,
+              originalTokens: tokensNeeded,
+            },
+          },
+        })
+        usedTokens = budget
+        break // Budget exhausted
       } else {
+        // Budget exceeded, stop adding more results
         break
+      }
+    }
+
+    if (this.config.debug && optimized.length > 0) {
+      const efficiency = (usedTokens / budget) * 100
+      if (efficiency < 70) {
+        console.debug(
+          `[MemoryService] Budget utilization: ${Math.round(efficiency)}% ` +
+            `(${usedTokens}/${budget} tokens). Consider adjusting result filtering.`
+        )
       }
     }
 
@@ -787,7 +924,7 @@ export class MemoryService {
     this.cache.delete(id)
 
     // Delete from buffer
-    const bufferIndex = this.buffer.items.findIndex(item => item.id === id)
+    const bufferIndex = this.buffer.items.findIndex((item) => item.id === id)
     if (bufferIndex !== -1) {
       const removed = this.buffer.items.splice(bufferIndex, 1)[0]
       this.buffer.totalTokens -= removed.tokens
@@ -860,7 +997,9 @@ export class MemoryService {
     let consentRecordsDeleted = 0
 
     if (this.config.debug) {
-      console.log(`[MemoryService] Starting complete deletion for user: ${userId}`)
+      console.log(
+        `[MemoryService] Starting complete deletion for user: ${userId}`
+      )
     }
 
     // 1. Delete from cache
@@ -882,7 +1021,7 @@ export class MemoryService {
     }
 
     // 2. Delete from buffer
-    this.buffer.items = this.buffer.items.filter(item => {
+    this.buffer.items = this.buffer.items.filter((item) => {
       if (item.metadata?.userId === userId) {
         bufferEntriesDeleted++
         this.buffer.totalTokens -= item.tokens
@@ -910,7 +1049,10 @@ export class MemoryService {
           } catch (error) {
             failed.push(memory.id)
             if (this.config.debug) {
-              console.error(`Failed to delete from vector store: ${memory.id}`, error)
+              console.error(
+                `Failed to delete from vector store: ${memory.id}`,
+                error
+              )
             }
           }
         }
@@ -991,8 +1133,8 @@ export class MemoryService {
       console.log(
         `[MemoryService] Deletion complete for user ${userId}:`,
         `${memoriesDeleted} memories, ${cacheEntriesDeleted} cache entries, ` +
-        `${bufferEntriesDeleted} buffer entries, ${failed.length} failed, ` +
-        `verified: ${verification.passed}`
+          `${bufferEntriesDeleted} buffer entries, ${failed.length} failed, ` +
+          `verified: ${verification.passed}`
       )
     }
 
@@ -1038,8 +1180,8 @@ export class MemoryService {
 
       // Check buffer
       const bufferRemaining = this.buffer.items
-        .filter(item => item.metadata?.userId === userId)
-        .map(item => item.id)
+        .filter((item) => item.metadata?.userId === userId)
+        .map((item) => item.id)
       if (bufferRemaining.length > 0) {
         remainingData.push({
           location: 'buffer',
@@ -1059,7 +1201,7 @@ export class MemoryService {
             remainingData.push({
               location: 'vectorStore',
               count: storeRemaining.length,
-              sampleIds: storeRemaining.slice(0, 5).map(r => r.memory.id),
+              sampleIds: storeRemaining.slice(0, 5).map((r) => r.memory.id),
             })
           }
         } catch (error) {
@@ -1072,7 +1214,10 @@ export class MemoryService {
       // Check consent records (should only have withdrawal record)
       if (this.consentManager) {
         try {
-          const hasConsent = await this.consentManager.hasConsent(userId, 'message_storage')
+          const hasConsent = await this.consentManager.hasConsent(
+            userId,
+            'message_storage'
+          )
           if (hasConsent) {
             // Should not have active consent after deletion
             remainingData.push({
@@ -1192,7 +1337,7 @@ export class MemoryService {
 
         for (const { memory } of storeMemories) {
           // Check if not already in cache
-          if (!userMemories.find(m => m.id === memory.id)) {
+          if (!userMemories.find((m) => m.id === memory.id)) {
             const exportedMemory = { ...memory }
 
             if (!opts.includeEmbeddings && exportedMemory.embedding) {
@@ -1216,7 +1361,7 @@ export class MemoryService {
     if (opts.includeConsentHistory && this.consentManager) {
       try {
         const events = await this.consentManager.getConsentHistory(userId)
-        consentHistory = events.map(event => ({
+        consentHistory = events.map((event) => ({
           type: event.type === 'granted' ? 'granted' : 'withdrawn',
           purposes: event.purposes,
           timestamp: event.timestamp,
@@ -1234,7 +1379,7 @@ export class MemoryService {
     if (opts.includeAuditTrail) {
       try {
         const logs = await this.auditLogger.getUserAuditTrail(userId)
-        auditTrail = logs.map(log => ({
+        auditTrail = logs.map((log) => ({
           eventType: log.eventType,
           timestamp: log.timestamp,
           description: log.description,
@@ -1251,18 +1396,21 @@ export class MemoryService {
     let profile: Record<string, unknown> | undefined = undefined
     if (opts.includeProfile) {
       // Try to find profile-type memories
-      const profileMemories = userMemories.filter(m => m.type === 'profile')
+      const profileMemories = userMemories.filter((m) => m.type === 'profile')
       if (profileMemories.length > 0) {
-        profile = profileMemories.reduce((acc, memory) => {
-          // Try to parse JSON content as profile data
-          try {
-            const parsed = JSON.parse(memory.content)
-            return { ...acc, ...parsed }
-          } catch {
-            acc[memory.id] = memory.content
-            return acc
-          }
-        }, {} as Record<string, unknown>)
+        profile = profileMemories.reduce(
+          (acc, memory) => {
+            // Try to parse JSON content as profile data
+            try {
+              const parsed = JSON.parse(memory.content)
+              return { ...acc, ...parsed }
+            } catch {
+              acc[memory.id] = memory.content
+              return acc
+            }
+          },
+          {} as Record<string, unknown>
+        )
       }
     }
 
@@ -1532,7 +1680,7 @@ export class MemoryService {
         if (this.config.debug) {
           console.log(
             `[MemoryService] Memory expired (explicit): ${memory.id} ` +
-            `(expired at ${memory.expiresAt.toISOString()})`
+              `(expired at ${memory.expiresAt.toISOString()})`
           )
         }
         continue
@@ -1549,7 +1697,7 @@ export class MemoryService {
           if (this.config.debug) {
             console.log(
               `[MemoryService] Memory expired (retention): ${memory.id} ` +
-              `(age: ${Math.round(ageSeconds / 86400)} days, limit: ${Math.round(retention / 86400)} days)`
+                `(age: ${Math.round(ageSeconds / 86400)} days, limit: ${Math.round(retention / 86400)} days)`
             )
           }
         }
@@ -1567,7 +1715,9 @@ export class MemoryService {
     }
 
     if (this.config.debug && toDelete.length > 0) {
-      console.log(`[MemoryService] Cleanup complete: ${toDelete.length} memories deleted`)
+      console.log(
+        `[MemoryService] Cleanup complete: ${toDelete.length} memories deleted`
+      )
     }
 
     return toDelete.length
@@ -1872,8 +2022,14 @@ export class MemoryService {
       return { sentence, score, index }
     })
 
-    // Sort by score and select top sentences
-    scoredSentences.sort((a, b) => b.score - a.score)
+    // Sort by score and select top sentences (deterministic ordering)
+    scoredSentences.sort((a, b) => {
+      // Primary: Score (higher first)
+      if (a.score !== b.score) return b.score - a.score
+
+      // Secondary: Original index (earlier sentences preferred)
+      return a.index - b.index
+    })
 
     // Build summary from top sentences, preserving original order
     const selectedIndices = new Set<number>()
@@ -2028,7 +2184,10 @@ export class MemoryService {
       }
 
       // Fall back to defaults for type
-      const typeDefault = DEFAULT_RETENTION_POLICY[memory.type as keyof typeof DEFAULT_RETENTION_POLICY]
+      const typeDefault =
+        DEFAULT_RETENTION_POLICY[
+          memory.type as keyof typeof DEFAULT_RETENTION_POLICY
+        ]
       if (typeDefault !== undefined) {
         return typeDefault
       }
@@ -2106,12 +2265,57 @@ export class MemoryService {
 
   /**
    * Recall memories matching a query (alias for query)
+   *
+   * Note: This convenience method enables access tracking by default,
+   * updating accessCount and lastAccessed for retrieved memories.
+   * For pure read operations without side effects, use query() directly.
    */
   async recall(
     queryText: string,
     options?: Partial<MemoryQuery>
   ): Promise<MemorySearchResult[]> {
-    return this.query({ query: queryText, ...options })
+    return this.query({
+      query: queryText,
+      trackAccess: true, // Enable tracking for convenience method
+      ...options,
+    })
+  }
+
+  /**
+   * Track access for memories (explicitly update accessCount and lastAccessed)
+   *
+   * This method provides explicit control over access tracking, separating
+   * read operations from write side effects. Use this when you want to:
+   * - Track memory usage for importance scoring
+   * - Update lastAccessed timestamps for decay calculations
+   * - Record access patterns for analytics
+   *
+   * @param memoryIds - Memory IDs to track
+   * @returns Number of memories tracked
+   *
+   * @example
+   * ```typescript
+   * // Pure read without side effects
+   * const results = await service.query({ query: 'test' })
+   *
+   * // Explicitly track access for importance scoring
+   * await service.trackAccess(results.map(r => r.memory.id))
+   * ```
+   */
+  async trackAccess(memoryIds: string | string[]): Promise<number> {
+    const ids = Array.isArray(memoryIds) ? memoryIds : [memoryIds]
+    let tracked = 0
+
+    for (const id of ids) {
+      const memory = this.cache.get(id)
+      if (memory) {
+        memory.accessCount++
+        memory.lastAccessed = new Date()
+        tracked++
+      }
+    }
+
+    return tracked
   }
 
   /**

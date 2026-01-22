@@ -156,6 +156,9 @@ export interface MemoryQuery {
 
   /** Include embeddings in results */
   includeEmbeddings?: boolean
+
+  /** Track access (updates accessCount and lastAccessed) - default: false for pure reads */
+  trackAccess?: boolean
 }
 
 /**
@@ -246,12 +249,15 @@ export interface VectorStore {
     options?: VectorStoreUpsertOptions
   ): Promise<void>
   delete(ids: string | string[], namespace?: string): Promise<void>
-  
+
   // Methods for compatibility with stores/base.ts and AuditLogger
   add(memory: MemoryItem): Promise<void>
   get(id: string): Promise<MemoryItem | null>
   update(id: string, memory: MemoryItem): Promise<void>
-  search(query: string, options: any): Promise<Array<{ memory: MemoryItem; score: number }>>
+  search(
+    query: string,
+    options: any
+  ): Promise<Array<{ memory: MemoryItem; score: number }>>
   getAll(options?: { types?: MemoryType[] }): Promise<MemoryItem[]>
   close(): Promise<void>
 }
@@ -622,6 +628,32 @@ export interface MemoryServiceConfig {
 
   /** Token budget configuration */
   tokenBudget?: TokenBudgetConfig
+
+  /**
+   * Importance scoring configuration
+   *
+   * When enabled, uses multi-factor scoring for intelligent retrieval:
+   * - Base importance (user-defined or default)
+   * - Recency (exponential decay)
+   * - Access frequency
+   * - Semantic relevance (when query provided)
+   * - Scope boost (user-scoped memories prioritized)
+   */
+  importanceScoring?: {
+    /** Enable importance-based re-ranking (default: false) */
+    enabled?: boolean
+    /** Half-life for recency decay in days (default: 7) */
+    recencyHalfLife?: number
+    /** Maximum accesses for frequency normalization (default: 10) */
+    maxFrequencyAccesses?: number
+    /** Weight configuration for scoring components */
+    weights?: {
+      base?: number
+      recency?: number
+      frequency?: number
+      relevance?: number
+    }
+  }
 }
 
 /**
