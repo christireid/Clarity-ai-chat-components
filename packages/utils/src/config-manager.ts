@@ -239,18 +239,20 @@ export function createSimpleConfig<T extends Record<string, any>>(
 /**
  * Validate configuration with detailed error messages
  */
-export function validateConfig<T>(
+export function validateConfig<T extends Record<string, unknown>>(
   config: unknown,
   schema: ConfigSchema<T>
 ): StrictValidation<T> {
-  return createConfigManager(schema).validate(config) as StrictValidation<T>
+  return createConfigManager(schema).validate(config)
 }
 
 /**
  * Get default values from a configuration schema
  */
-export function getConfigDefaults<T>(schema: ConfigSchema<T>): Partial<T> {
-  return createConfigManager(schema).getDefaults() as Partial<T>
+export function getConfigDefaults<T extends Record<string, unknown>>(
+  schema: ConfigSchema<T>
+): Partial<T> {
+  return createConfigManager(schema).getDefaults()
 }
 
 /**

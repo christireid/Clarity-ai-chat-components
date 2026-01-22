@@ -20,6 +20,7 @@ import type {
   IToolRegistry,
 } from '../types/tool-definition'
 import { validateToolDefinition } from '../types/tool-definition'
+import { validateToolImplementationStrict } from './tool-implementation-validator'
 
 // =============================================================================
 // Registry Events
@@ -83,6 +84,9 @@ export class ToolRegistry implements IToolRegistry {
   register(tool: ToolDefinition): void {
     // Validate tool definition
     validateToolDefinition(tool)
+
+    // Validate tool implementation (security checks)
+    validateToolImplementationStrict(tool)
 
     // Check for name conflicts
     if (this.tools.has(tool.name)) {
