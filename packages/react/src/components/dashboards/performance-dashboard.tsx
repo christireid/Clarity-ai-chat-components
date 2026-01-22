@@ -9,6 +9,7 @@ import {
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
+import { useRenderPerformance, useMemoryUsage } from '../../utils/analytics'
 
 interface PerformanceDashboardProps {
   className?: string
@@ -266,4 +267,75 @@ export function PerformanceDashboard({
   )
 }
 
+/**
+ * Performance Badge - shows current render performance status
+ */
+function formatBytes(bytes: number): string {
+  if (bytes <= 0 || !Number.isFinite(bytes)) return '0 B'
+
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1
+  )
+
+  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
+}
+
+/**
+ * Compact Performance Badge
+ *
+ * Small performance indicator for corners
+ */
 PerformanceDashboard.displayName = 'PerformanceDashboard'
+
+export function PerformanceBadge({ className }: { className?: string }) {
+  const performanceMetrics = useRenderPerformance('PerformanceBadge')
+  const memoryInfo = useMemoryUsage()
+
+  const status = React.useMemo(() => {
+    if (performanceMetrics.lastRenderTime > 50) return 'poor'
+    if (performanceMetrics.lastRenderTime > 16) return 'warning'
+    if (
+      memoryInfo &&
+      memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.9
+    )
+      return 'poor'
+    if (
+      memoryInfo &&
+      memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.7
+    )
+      return 'warning'
+    return 'good'
+  }, [performanceMetrics.lastRenderTime, memoryInfo])
+
+  return (
+    <div
+      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border/50 shadow-xs transition-all duration-150 ease-out hover:shadow-md ${
+        status === 'good'
+          ? 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20'
+          : status === 'warning'
+            ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20'
+            : 'bg-destructive/10 text-destructive border-destructive/20'
+      } ${className || ''}`}
+      title={`Last render: ${performanceMetrics.lastRenderTime.toFixed(2)}ms`}
+      role="status"
+      aria-label={`Performance status: ${status}, last render ${performanceMetrics.lastRenderTime.toFixed(1)} milliseconds`}
+    >
+      <span
+        className={`w-2 h-2 rounded-full ${
+          status === 'good'
+            ? 'bg-[hsl(var(--success))]'
+            : status === 'warning'
+              ? 'bg-[hsl(var(--warning))]'
+              : 'bg-destructive'
+        }`}
+        aria-hidden="true"
+      />
+      {performanceMetrics.lastRenderTime.toFixed(1)}ms
+    </div>
+  )
+}
+
+PerformanceBadge.displayName = 'PerformanceBadge'

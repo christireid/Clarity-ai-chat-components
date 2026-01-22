@@ -81,7 +81,7 @@ export function DocumentViewer({
         className
       )}
     >
-      <header className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border/50 bg-card/70 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm">
+      <header className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border/50 bg-card/70 p-4 shadow-xs backdrop-blur-sm">
         <div>
           <h3 className="text-base font-semibold text-foreground">
             {name ?? 'Document'}
@@ -115,7 +115,7 @@ export function DocumentViewer({
       </header>
 
       {summary ? (
-        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-xs">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Summary
           </h4>
@@ -145,7 +145,7 @@ export function DocumentViewer({
       </section>
 
       {metadata && Object.keys(metadata).length ? (
-        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-xs">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Metadata
           </h4>

@@ -587,6 +587,66 @@ export function LoadingState({
 LoadingState.displayName = 'LoadingState'
 
 /**
+ * Loading State with Timeout Fallback
+ *
+ * Automatically transitions to an error state if loading takes too long.
+ * This prevents users from being stuck in an infinite loading state.
+ *
+ * @param timeout - Timeout duration in milliseconds (default: 30000ms / 30s)
+ * @param onTimeout - Callback when timeout is reached
+ *
+ * @enhanced WCAG Accessibility: Prevents indefinite loading states
+ */
+export function LoadingStateWithTimeout({
+  title = 'Loading...',
+  description = 'Please wait while we load your content',
+  timeout = 30000,
+  onTimeout,
+  className,
+}: {
+  title?: string
+  description?: string
+  timeout?: number
+  onTimeout?: () => void
+  className?: string
+}) {
+  const [hasTimedOut, setHasTimedOut] = React.useState(false)
+
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setHasTimedOut(true)
+      onTimeout?.()
+    }, timeout)
+
+    return () => clearTimeout(timeoutId)
+  }, [timeout, onTimeout])
+
+  if (hasTimedOut) {
+    return (
+      <ErrorState
+        title="Loading Timeout"
+        description="The content is taking longer than expected to load. Please try again."
+        onRetry={() => {
+          setHasTimedOut(false)
+          onTimeout?.()
+        }}
+        className={className}
+      />
+    )
+  }
+
+  return (
+    <LoadingState
+      title={title}
+      description={description}
+      className={className}
+    />
+  )
+}
+
+LoadingStateWithTimeout.displayName = 'LoadingStateWithTimeout'
+
+/**
  * Offline State
  */
 export function OfflineState({

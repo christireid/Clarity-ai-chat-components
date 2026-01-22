@@ -424,7 +424,7 @@ export function ContextMenu({
                 style={{ zIndex: 'var(--z-popover)' }}
                 className={cn(
                   'absolute left-full top-0 ml-2',
-                  'min-w-[180px] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-lg',
+                  'min-w-[180px] bg-card border border-border/60 shadow-2xl rounded-lg',
                   'p-2'
                 )}
               >
@@ -478,7 +478,7 @@ export function ContextMenu({
                 top: position.y,
                 zIndex: 'var(--z-popover)',
               }}
-              className="min-w-[200px] bg-card border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] rounded-lg p-2 backdrop-blur-sm focus:outline-none"
+              className="min-w-[200px] bg-card border border-border/50 shadow-md rounded-lg p-2 backdrop-blur-sm focus:outline-none"
               tabIndex={-1}
             >
               {renderMenuItems(items)}
