@@ -44,6 +44,10 @@ import {
   ConsentManager,
   type ConsentPurpose,
 } from './consent'
+import {
+  DEFAULT_RETENTION_POLICY,
+  DEFAULT_MEMORY_LIMITS,
+} from './constants'
 
 /**
  * Simple token counter utility
@@ -338,6 +342,43 @@ export class MemoryService {
       }
     }
 
+    // Get limits with defaults
+    const limits = {
+      maxMemories: this.config.limits?.maxMemories ?? DEFAULT_MEMORY_LIMITS.maxMemories,
+      maxTotalTokens: this.config.limits?.maxTotalTokens ?? DEFAULT_MEMORY_LIMITS.maxTotalTokens,
+      maxMemorySize: this.config.limits?.maxMemorySize ?? DEFAULT_MEMORY_LIMITS.maxMemorySize,
+      warnThreshold: this.config.limits?.warnThreshold ?? DEFAULT_MEMORY_LIMITS.warnThreshold,
+    }
+
+    // Check memory size limit
+    if (content.length > limits.maxMemorySize) {
+      const error = new Error(
+        `Memory content exceeds maximum size: ${content.length} > ${limits.maxMemorySize} characters. ` +
+        `Consider chunking or summarizing large content.`
+      )
+      if (this.config.debug) {
+        console.error('[MemoryService]', error.message)
+      }
+      throw error
+    }
+
+    // Check and enforce memory count limit (LRU eviction)
+    if (this.cache.size >= limits.maxMemories) {
+      if (this.config.debug) {
+        console.warn(
+          `[MemoryService] Memory limit reached (${this.cache.size}/${limits.maxMemories}). ` +
+          `Evicting oldest memory (LRU).`
+        )
+      }
+
+      // Evict oldest memory (LRU - least recently accessed)
+      const oldestMemory = Array.from(this.cache.values()).reduce((oldest, current) =>
+        current.lastAccessed < oldest.lastAccessed ? current : oldest
+      )
+
+      await this.deleteMemory(oldestMemory.id)
+    }
+
     const memory: MemoryItem = {
       id: this.generateId(),
       type,
@@ -351,6 +392,56 @@ export class MemoryService {
       lastAccessed: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
+    }
+
+    // Check total tokens limit (evict if needed)
+    const currentTotalTokens = Array.from(this.cache.values()).reduce(
+      (sum, m) => sum + m.tokens, 0
+    )
+    const newTotalTokens = currentTotalTokens + memory.tokens
+
+    if (newTotalTokens > limits.maxTotalTokens) {
+      if (this.config.debug) {
+        console.warn(
+          `[MemoryService] Token limit would be exceeded (${newTotalTokens}/${limits.maxTotalTokens}). ` +
+          `Evicting lowest priority memories.`
+        )
+      }
+
+      // Evict lowest priority memories until under limit
+      const sortedMemories = Array.from(this.cache.values()).sort((a, b) => {
+        const priorityOrder = { low: 0, medium: 1, high: 2, critical: 3 }
+        const aPriority = priorityOrder[a.priority]
+        const bPriority = priorityOrder[b.priority]
+        if (aPriority !== bPriority) return aPriority - bPriority
+        return a.lastAccessed.getTime() - b.lastAccessed.getTime()
+      })
+
+      let tokensToFree = newTotalTokens - limits.maxTotalTokens
+      for (const mem of sortedMemories) {
+        if (tokensToFree <= 0) break
+        await this.deleteMemory(mem.id)
+        tokensToFree -= mem.tokens
+      }
+    }
+
+    // Warn if approaching limits
+    const newMemoryCount = this.cache.size + 1
+    const memoryUtilization = newMemoryCount / limits.maxMemories
+    const tokenUtilization = newTotalTokens / limits.maxTotalTokens
+
+    if (memoryUtilization >= limits.warnThreshold && !this.config.debug) {
+      console.warn(
+        `[MemoryService] Approaching memory limit: ${newMemoryCount}/${limits.maxMemories} ` +
+        `(${Math.round(memoryUtilization * 100)}% utilization)`
+      )
+    }
+
+    if (tokenUtilization >= limits.warnThreshold && !this.config.debug) {
+      console.warn(
+        `[MemoryService] Approaching token limit: ${newTotalTokens}/${limits.maxTotalTokens} ` +
+        `(${Math.round(tokenUtilization * 100)}% utilization)`
+      )
     }
 
     // Generate embedding if not provided
@@ -1150,27 +1241,52 @@ export class MemoryService {
   /**
    * Cleanup expired memories
    */
+  /**
+   * Cleanup expired memories based on retention policies
+   *
+   * Automatically deletes memories that exceed their TTL based on:
+   * - Memory type (episodic, semantic, procedural, etc.)
+   * - Memory scope (session, thread, global, user)
+   * - Explicit expiresAt timestamp
+   *
+   * @returns Number of memories deleted
+   */
   async cleanup(): Promise<number> {
     const now = new Date()
     const toDelete: string[] = []
 
     for (const memory of this.cache.values()) {
-      // Check expiry
+      // Check explicit expiry
       if (memory.expiresAt && memory.expiresAt < now) {
         toDelete.push(memory.id)
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Memory expired (explicit): ${memory.id} ` +
+            `(expired at ${memory.expiresAt.toISOString()})`
+          )
+        }
         continue
       }
 
-      // Check retention policy
-      const retention = this.getRetentionForScope(memory.scope)
+      // Check retention policy (TTL)
+      const retention = this.getRetentionForMemory(memory)
       if (retention > 0) {
         const age = now.getTime() - memory.createdAt.getTime()
-        if (age > retention * 1000) {
+        const ageSeconds = age / 1000
+
+        if (ageSeconds > retention) {
           toDelete.push(memory.id)
+          if (this.config.debug) {
+            console.log(
+              `[MemoryService] Memory expired (retention): ${memory.id} ` +
+              `(age: ${Math.round(ageSeconds / 86400)} days, limit: ${Math.round(retention / 86400)} days)`
+            )
+          }
         }
       }
     }
 
+    // Delete expired memories
     for (const id of toDelete) {
       await this.deleteMemory(id)
       this.emitEvent({
@@ -1178,6 +1294,10 @@ export class MemoryService {
         timestamp: new Date(),
         data: { id },
       })
+    }
+
+    if (this.config.debug && toDelete.length > 0) {
+      console.log(`[MemoryService] Cleanup complete: ${toDelete.length} memories deleted`)
     }
 
     return toDelete.length
@@ -1616,19 +1736,65 @@ export class MemoryService {
     return 'medium'
   }
 
+  /**
+   * Get retention TTL for memory (checks both type and scope)
+   *
+   * Priority order:
+   * 1. Memory type (episodic, semantic, procedural, etc.)
+   * 2. Memory scope (session, thread, global, user)
+   * 3. Default retention policies
+   *
+   * @param memory - Memory item
+   * @returns TTL in seconds (0 = never expires)
+   */
+  private getRetentionForMemory(memory: MemoryItem): number {
+    const policy = this.config.retentionPolicy || {}
+
+    // Check type-specific retention first (higher priority)
+    if (memory.type) {
+      const typeRetention = policy[memory.type as keyof typeof policy]
+      if (typeRetention !== undefined) {
+        return typeRetention
+      }
+
+      // Fall back to defaults for type
+      const typeDefault = DEFAULT_RETENTION_POLICY[memory.type as keyof typeof DEFAULT_RETENTION_POLICY]
+      if (typeDefault !== undefined) {
+        return typeDefault
+      }
+    }
+
+    // Fall back to scope-based retention
+    switch (memory.scope) {
+      case 'session':
+        return policy.session ?? DEFAULT_RETENTION_POLICY.session
+      case 'thread':
+        return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
+      case 'global':
+        return policy.global ?? DEFAULT_RETENTION_POLICY.global
+      case 'user':
+        return policy.user ?? DEFAULT_RETENTION_POLICY.user
+      default:
+        return DEFAULT_RETENTION_POLICY.session // Safe default
+    }
+  }
+
+  /**
+   * @deprecated Use getRetentionForMemory instead
+   */
   private getRetentionForScope(scope: MemoryScope): number {
-    const policy = this.config.retentionPolicy
+    const policy = this.config.retentionPolicy || {}
     switch (scope) {
       case 'session':
-        return policy.session
+        return policy.session ?? DEFAULT_RETENTION_POLICY.session
       case 'thread':
-        return policy.thread
+        return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
       case 'global':
-        return policy.global
+        return policy.global ?? DEFAULT_RETENTION_POLICY.global
       case 'user':
-        return policy.user ?? 0
+        return policy.user ?? DEFAULT_RETENTION_POLICY.user
       default:
-        return 0
+        return DEFAULT_RETENTION_POLICY.session
     }
   }
 

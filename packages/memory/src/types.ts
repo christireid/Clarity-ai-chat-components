@@ -499,18 +499,54 @@ export interface MemoryServiceConfig {
   /** Cleanup interval (ms) */
   cleanupInterval?: number
 
-  /** Memory retention policy */
-  retentionPolicy: {
+  /**
+   * Memory retention policy - TTLs for automatic deletion
+   *
+   * Defaults (GDPR-compliant retention limits):
+   * - episodic: 30 days (2592000 seconds)
+   * - semantic: 90 days (7776000 seconds)
+   * - procedural: 60 days (5184000 seconds)
+   * - short-term: Session only (0 seconds)
+   * - profile: 1 year (31536000 seconds)
+   */
+  retentionPolicy?: {
+    /** Episodic memory TTL (seconds) */
+    episodic?: number
+    /** Semantic memory TTL (seconds) */
+    semantic?: number
+    /** Procedural memory TTL (seconds) */
+    procedural?: number
     /** Short-term memory TTL (seconds) */
-    shortTerm: number
+    shortTerm?: number
     /** Session memory TTL (seconds) */
-    session: number
+    session?: number
     /** Thread memory TTL (seconds) */
-    thread: number
+    thread?: number
     /** Global memory TTL (seconds, 0 = never expires) */
-    global: number
+    global?: number
     /** User-scoped memory TTL (seconds, 0 = never expires) */
     user?: number
+    /** Profile memory TTL (seconds) */
+    profile?: number
+  }
+
+  /**
+   * Memory size limits to prevent unbounded growth
+   *
+   * Defaults:
+   * - maxMemories: 1000 (LRU eviction when exceeded)
+   * - maxTotalTokens: 100,000 (approx 400KB of text)
+   * - maxMemorySize: 10,000 characters per memory
+   */
+  limits?: {
+    /** Maximum number of memories to store (default: 1000) */
+    maxMemories?: number
+    /** Maximum total tokens across all memories (default: 100,000) */
+    maxTotalTokens?: number
+    /** Maximum size of single memory in characters (default: 10,000) */
+    maxMemorySize?: number
+    /** Warn when approaching limits (default: 0.9 = 90%) */
+    warnThreshold?: number
   }
 
   /** Decay manager configuration for intelligent memory forgetting */
