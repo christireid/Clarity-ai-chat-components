@@ -26,6 +26,108 @@ export type {
   AdapterRegistry,
 } from './types'
 
+// Error types and classes
+export {
+  AdapterErrorCode,
+  AdapterError,
+  AuthenticationError,
+  APIKeyMissingError,
+  RateLimitError,
+  InvalidRequestError,
+  ServerError,
+  NetworkError,
+  TimeoutError,
+  ContentFilterError,
+  parseHttpError,
+  parseNetworkError,
+  isAdapterError,
+  isRetryableError,
+  getErrorRetryDelay,
+} from './errors'
+
+// Retry types and utilities
+export type {
+  RetryConfig,
+  RetryContext,
+  RetryStats,
+} from './retry'
+
+export {
+  DEFAULT_RETRY_CONFIG,
+  calculateRetryDelay,
+  withRetry,
+  withRetryWrapper,
+  RetryTracker,
+} from './retry'
+
+// Circuit breaker types and utilities
+export {
+  CircuitState,
+  CircuitBreakerError,
+  CircuitBreaker,
+  CircuitBreakerRegistry,
+  globalCircuitBreakerRegistry,
+} from './circuit-breaker'
+
+export type {
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+} from './circuit-breaker'
+
+// Logging types and utilities
+export {
+  LogLevel,
+  Logger,
+  ConsoleLogTransport,
+  JSONLogTransport,
+  BufferedLogTransport,
+  globalLogger,
+  createCorrelationId,
+  logAdapterRequest,
+  logAdapterResponse,
+  logAdapterError,
+} from './logging'
+
+export type {
+  LogEntry,
+  LogTransport,
+  LoggerConfig,
+} from './logging'
+
+// Monitoring types and utilities
+export {
+  HealthMonitor,
+  HealthMonitorRegistry,
+  globalHealthMonitorRegistry,
+} from './monitoring'
+
+export type {
+  LatencyPercentiles,
+  ErrorStats,
+  ProviderHealthMetrics,
+  HealthThresholds,
+} from './monitoring'
+
+// Telemetry types and utilities
+export {
+  TelemetryEventType,
+  TelemetryManager,
+  globalTelemetry,
+  exportPrometheusMetrics,
+  exportPrometheusText,
+  createSpan,
+  endSpan,
+  exportSpan,
+} from './telemetry'
+
+export type {
+  TelemetryEvent,
+  TelemetryHook,
+  TelemetryConfig,
+  PrometheusMetrics,
+  Span,
+} from './telemetry'
+
 // Runtime functions and type guards
 export {
   createAdapterRegistry,

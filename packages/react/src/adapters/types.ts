@@ -6,6 +6,19 @@
  */
 
 import type { RateLimitInfo } from '../utils/api/rate-limit-headers'
+import type { RetryConfig } from './retry'
+import type { CircuitBreakerConfig } from './circuit-breaker'
+
+/**
+ * Why generation stopped
+ */
+export type FinishReason =
+  | 'stop' // Natural end of response
+  | 'length' // Hit max tokens
+  | 'tool-calls' // Model wants to call a tool
+  | 'content-filter' // Content was filtered
+  | 'error' // An error occurred
+  | 'unknown' // Unknown reason
 
 export interface ModelConfig {
   /** Provider name */
@@ -28,6 +41,8 @@ export interface ModelConfig {
   presencePenalty?: number
   /** Stop sequences */
   stop?: string[]
+  /** Tool definitions for function calling */
+  tools?: ToolDefinition[]
   /** Request timeout in milliseconds (default: 30000 for chat, 60000 for stream) */
   timeout?: number
   /** AbortSignal for request cancellation */
@@ -43,6 +58,10 @@ export interface ModelConfig {
     /** Callback for citations */
     onCitation?: (citation: Citation) => void
   }
+  /** Retry configuration for automatic retry on failures */
+  retry?: RetryConfig | false
+  /** Enable circuit breaker protection (default: true) */
+  circuitBreaker?: boolean | CircuitBreakerConfig
 }
 
 export interface ChatMessage {
@@ -56,6 +75,8 @@ export interface ChatMessage {
   citations?: Citation[]
   /** Message name (for function results) */
   name?: string
+  /** Why generation stopped (for assistant messages) */
+  finishReason?: FinishReason
 }
 
 export interface ContentPart {
@@ -83,6 +104,51 @@ export interface ToolCall {
     /** Function arguments (JSON string) */
     arguments: string
   }
+}
+
+/**
+ * JSON Schema for function parameters
+ */
+export interface FunctionParameters {
+  /** Parameter type (usually "object") */
+  type: 'object' | 'string' | 'number' | 'boolean' | 'array'
+  /** Parameter properties */
+  properties?: Record<string, {
+    type: 'string' | 'number' | 'boolean' | 'array' | 'object'
+    description?: string
+    enum?: unknown[]
+    items?: unknown
+    [key: string]: unknown
+  }>
+  /** Required parameter names */
+  required?: string[]
+  /** Additional properties allowed */
+  additionalProperties?: boolean
+  /** Description */
+  description?: string
+  [key: string]: unknown
+}
+
+/**
+ * Function tool definition
+ */
+export interface FunctionDefinition {
+  /** Function name */
+  name: string
+  /** Function description */
+  description?: string
+  /** Function parameters (JSON Schema) */
+  parameters?: FunctionParameters
+}
+
+/**
+ * Tool definition for function calling
+ */
+export interface ToolDefinition {
+  /** Tool type */
+  type: 'function'
+  /** Function definition */
+  function: FunctionDefinition
 }
 
 export interface Citation {
@@ -113,6 +179,8 @@ export interface StreamChunk {
   citation?: Citation
   /** Token usage stats */
   usage?: TokenUsage
+  /** Why generation stopped (on done) */
+  finishReason?: FinishReason
   /** Error message */
   error?: string
   /** Rate limit info (on error) */
@@ -219,17 +287,6 @@ export interface AdapterCapabilities {
   /** List of supported model IDs */
   supportedModels?: string[]
 }
-
-/**
- * Why generation stopped
- */
-export type FinishReason =
-  | 'stop' // Natural end of response
-  | 'length' // Hit max tokens
-  | 'tool-calls' // Model wants to call a tool
-  | 'content-filter' // Content was filtered
-  | 'error' // An error occurred
-  | 'unknown' // Unknown reason
 
 /**
  * Typed streaming chunk events
