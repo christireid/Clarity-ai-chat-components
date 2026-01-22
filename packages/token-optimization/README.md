@@ -232,11 +232,11 @@ console.log(`Chunks: ${result.chunks?.length || 1}`)
 **Supported conversions:**
 
 - HTML → Markdown/TOON (40-60% savings)*
-- JSON → TOON (30-50% savings with single-letter keys)*
+- JSON → TOON (20-45% measured savings)*
 - Code → Markdown (remove comments, normalize whitespace)
 - PDF → Text (extract and optimize)
 
-<sub>*Compression rates vary by content type and configuration.</sub>
+<sub>*TOON savings measured using real GPT tokenizer across diverse test cases. HTML/Markdown rates vary by content type and configuration.</sub>
 
 **Chunking strategies:**
 
@@ -369,7 +369,7 @@ This package provides:
   - *Compression rates vary by content type and configuration.
 - **Caching**: Multi-tier with semantic similarity matching
 - **Model Routing**: Automatic model selection by cost/quality/complexity
-- **TOON Format**: Token-Optimized Object Notation (40-60% savings)
+- **TOON Format**: Token-Optimized Object Notation (20-45% measured savings)
 - **Security**: OWASP LLM Top 10 compliance
 - **Accessibility**: WCAG 2.1 AA compliant components
 - **Production**: Health checks, observability, circuit breakers
