@@ -223,6 +223,26 @@ export {
 export { Avatar } from './components/avatar'
 export type { AvatarProps } from './components/avatar'
 
+// Export Avatar sub-components for composability
+export { AvatarImage, AvatarFallback } from './components/ui/avatar'
+
+// Export Select components
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from './components/ui/select'
+
+// Export Separator
+export { Separator } from './components/ui/separator'
+
 export { Badge } from './components/badge'
 export type { BadgeProps } from './components/badge'
 
