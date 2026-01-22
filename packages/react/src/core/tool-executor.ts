@@ -419,18 +419,85 @@ export class ToolResultCache {
   }
 
   /**
-   * Generate cache key
+   * Generate cache key with robust hashing
+   *
+   * Handles edge cases:
+   * - Circular references (uses [Circular] marker)
+   * - Functions (uses function signature)
+   * - Dates (uses ISO string)
+   * - RegExp (uses source)
+   * - Nested objects (recursive hash)
+   * - Arrays (preserves order)
+   * - Null/undefined (explicit markers)
+   *
+   * @param toolName - Tool name
+   * @param args - Tool arguments
+   * @returns Cache key string
    */
   private getCacheKey(toolName: string, args: ToolArguments): string {
-    // Sort keys for consistent hashing
-    const sortedArgs = Object.keys(args)
-      .sort()
-      .reduce((acc, key) => {
-        acc[key] = args[key]
-        return acc
-      }, {} as Record<string, unknown>)
+    const seen = new WeakSet()
 
-    return `${toolName}:${JSON.stringify(sortedArgs)}`
+    const hash = (value: unknown): string => {
+      // Handle primitives
+      if (value === null) return 'null'
+      if (value === undefined) return 'undefined'
+      if (typeof value === 'string') return `"${value}"`
+      if (typeof value === 'number') return String(value)
+      if (typeof value === 'boolean') return String(value)
+
+      // Handle functions
+      if (typeof value === 'function') {
+        return `function:${value.name || 'anonymous'}:${value.length}`
+      }
+
+      // Handle Date
+      if (value instanceof Date) {
+        return `date:${value.toISOString()}`
+      }
+
+      // Handle RegExp
+      if (value instanceof RegExp) {
+        return `regex:${value.source}:${value.flags}`
+      }
+
+      // Handle arrays
+      if (Array.isArray(value)) {
+        return `[${value.map(hash).join(',')}]`
+      }
+
+      // Handle objects
+      if (typeof value === 'object') {
+        // Check for circular references
+        if (seen.has(value as object)) {
+          return '[Circular]'
+        }
+        seen.add(value as object)
+
+        // Sort keys for consistent hashing
+        const keys = Object.keys(value).sort()
+        const pairs = keys.map((key) => `${key}:${hash((value as any)[key])}`)
+        return `{${pairs.join(',')}}`
+      }
+
+      // Fallback
+      return String(value)
+    }
+
+    try {
+      const argsHash = hash(args)
+      return `${toolName}:${argsHash}`
+    } catch (error) {
+      // Fallback to JSON.stringify if hashing fails
+      console.warn('Cache key generation failed, using fallback:', error)
+      const sortedArgs = Object.keys(args)
+        .sort()
+        .reduce((acc, key) => {
+          acc[key] = args[key]
+          return acc
+        }, {} as Record<string, unknown>)
+
+      return `${toolName}:${JSON.stringify(sortedArgs)}`
+    }
   }
 
   /**
