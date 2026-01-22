@@ -1062,7 +1062,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
                         <CalendarIcon className="h-3.5 w-3.5" />
                         Date Range
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <Input
                           type="date"
                           value={
@@ -1116,7 +1116,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
                         <HashIcon className="h-3.5 w-3.5" />
                         Token Count
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <Input
                           type="number"
                           placeholder="Min"

@@ -10,6 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { ImageIcon, MicIcon, FileIcon, LinkIcon, PlayIcon } from '../ui/icons'
+import { ProgressiveImage } from '../ui/progressive-image'
 
 export type AttachmentType = 'image' | 'audio' | 'video' | 'file' | 'link'
 
@@ -83,10 +84,11 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   const renderThumbnail = (attachment: AttachmentPreview) => {
     if (attachment.thumbnailUrl) {
       return (
-        <img
+        <ProgressiveImage
           src={attachment.thumbnailUrl}
           alt={attachment.title}
           className="h-16 w-16 rounded-lg object-cover"
+          placeholderClassName="rounded-lg"
         />
       )
     }
@@ -109,7 +111,7 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   return (
     <Card
       className={cn(
-        'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        'border-border/50 bg-background shadow-md',
         className
       )}
     >
@@ -134,7 +136,7 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
           {attachments.map((attachment) => (
             <li
               key={attachment.id}
-              className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
+              className="flex flex-col gap-3 rounded-lg border border-border/50 bg-muted p-4 shadow-md"
             >
               <div className="flex flex-wrap items-start gap-4">
                 {renderThumbnail(attachment)}

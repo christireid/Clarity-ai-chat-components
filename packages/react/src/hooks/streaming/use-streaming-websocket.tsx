@@ -43,6 +43,9 @@ export interface UseStreamingWebSocketOptions {
   /** Enable automatic reconnection (default: true) */
   autoReconnect?: boolean
 
+  /** Reconnect on clean server close (default: true). Enable for server restarts/deploys. */
+  reconnectOnCleanClose?: boolean
+
   /** Maximum reconnection attempts (default: 5) */
   maxReconnectAttempts?: number
 
@@ -51,6 +54,12 @@ export interface UseStreamingWebSocketOptions {
 
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
+
+  /** RECONNECT-2: Consecutive successes required to reset backoff (default: 3) */
+  reconnectSuccessThreshold?: number
+
+  /** Connection timeout in ms (default: 15000) */
+  connectionTimeout?: number
 
   /** Enable heartbeat/ping-pong (default: true) */
   enableHeartbeat?: boolean
@@ -72,6 +81,18 @@ export interface UseStreamingWebSocketOptions {
 
   /** Maximum number of messages to keep in buffer (default: 1000, prevents memory leaks) */
   maxMessageBufferSize?: number
+
+  /** DELIVERY-3: Called when message buffer overflows (oldest messages dropped) */
+  onMessageBufferOverflow?: (droppedCount: number, bufferSize: number) => void
+
+  /** DELIVERY-5: Enable automatic message acknowledgment (default: false) */
+  enableAcknowledgment?: boolean
+
+  /** DELIVERY-5: Message type for acknowledgment messages (default: 'ack') */
+  ackMessageType?: string
+
+  /** DELIVERY-5: Called when an acknowledgment is sent */
+  onAcknowledgmentSent?: (messageId: string) => void
 
   /** Event handlers */
   onOpen?: (event: Event) => void
@@ -198,13 +219,31 @@ export function useStreamingWebSocket(
     )
   }
 
+  // Validate WebSocket protocol
+  const url = options.url.trim()
+  if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+    throw new Error(
+      `useStreamingWebSocket: Invalid WebSocket URL "${url}".\n` +
+        'WebSocket URLs must use ws:// (insecure) or wss:// (secure) protocol.\n\n' +
+        'Example:\n' +
+        '  ✓ wss://api.example.com/ws (secure, recommended)\n' +
+        '  ✓ ws://localhost:8080/ws (local development)\n' +
+        '  ✗ https://api.example.com/ws (HTTP protocol not supported)\n' +
+        '  ✗ api.example.com/ws (missing protocol)\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/streaming'
+    )
+  }
+
   const {
     url,
     protocols,
     autoReconnect = true,
+    reconnectOnCleanClose = true,
     maxReconnectAttempts = 5,
     reconnectDelay: initialReconnectDelay = 1000,
     maxReconnectDelay = 30000,
+    reconnectSuccessThreshold = 3, // RECONNECT-2: Consecutive successes to reset backoff
+    connectionTimeout = 15000,
     enableHeartbeat = true,
     heartbeatInterval = 30000,
     heartbeatTimeout = 5000,
@@ -212,6 +251,10 @@ export function useStreamingWebSocket(
     autoParseJson = true,
     connectOnMount = false,
     maxMessageBufferSize: rawMaxMessageBufferSize = 1000,
+    onMessageBufferOverflow, // DELIVERY-3: Buffer overflow callback
+    enableAcknowledgment = false, // DELIVERY-5: Acknowledgment support
+    ackMessageType = 'ack', // DELIVERY-5: Ack message type
+    onAcknowledgmentSent, // DELIVERY-5: Ack sent callback
     onOpen,
     onMessage,
     onError,
@@ -234,6 +277,7 @@ export function useStreamingWebSocket(
   const [readyState, setReadyState] = React.useState<number>(WebSocket.CLOSED)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
+  const [reconnectSuccessCount, setReconnectSuccessCount] = React.useState(0) // RECONNECT-2: Track consecutive successes
 
   // Refs
   const wsRef = React.useRef<WebSocket | null>(null)
@@ -243,6 +287,8 @@ export function useStreamingWebSocket(
   const reconnectDelayRef = React.useRef(initialReconnectDelay)
   const shouldReconnectRef = React.useRef(false)
   const lastPongRef = React.useRef<number>(Date.now())
+  const reconnectFnRef = React.useRef<(() => void) | null>(null)
+  const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
 
   /**
    * Parse message data
@@ -266,38 +312,51 @@ export function useStreamingWebSocket(
   const startHeartbeat = React.useCallback(() => {
     if (!enableHeartbeat) return
 
-    // Clear existing intervals
+    // Clear existing timers
     if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current)
+      clearTimeout(heartbeatIntervalRef.current)
     }
 
-    // Send ping at interval
-    heartbeatIntervalRef.current = setInterval(() => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(heartbeatMessage)
+    // RECONNECT-3: Recursive setTimeout with jitter for each heartbeat
+    const scheduleNextHeartbeat = () => {
+      // Add ±10% jitter to prevent synchronized heartbeats across clients
+      const jitterRange = heartbeatInterval * 0.1
+      const jitter = (Math.random() - 0.5) * 2 * jitterRange
+      const intervalWithJitter = Math.floor(heartbeatInterval + jitter)
 
-        // Set timeout for pong response
-        if (heartbeatTimeoutRef.current) {
-          clearTimeout(heartbeatTimeoutRef.current)
-        }
+      heartbeatIntervalRef.current = setTimeout(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(heartbeatMessage)
 
-        heartbeatTimeoutRef.current = setTimeout(() => {
-          const timeSinceLastPong = Date.now() - lastPongRef.current
-
-          if (timeSinceLastPong > heartbeatTimeout) {
-            logger.warn(
-              '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
-            )
-            onHeartbeatFailed?.()
-
-            // Trigger reconnection
-            if (autoReconnect && shouldReconnectRef.current) {
-              reconnect()
-            }
+          // Set timeout for pong response
+          if (heartbeatTimeoutRef.current) {
+            clearTimeout(heartbeatTimeoutRef.current)
           }
-        }, heartbeatTimeout)
-      }
-    }, heartbeatInterval)
+
+          heartbeatTimeoutRef.current = setTimeout(() => {
+            const timeSinceLastPong = Date.now() - lastPongRef.current
+
+            if (timeSinceLastPong > heartbeatTimeout) {
+              logger.warn(
+                '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
+              )
+              onHeartbeatFailed?.()
+
+              // Trigger reconnection
+              if (autoReconnect && shouldReconnectRef.current) {
+                reconnectFnRef.current?.()
+              }
+            }
+          }, heartbeatTimeout)
+
+          // Schedule next heartbeat
+          scheduleNextHeartbeat()
+        }
+      }, intervalWithJitter)
+    }
+
+    // Start first heartbeat
+    scheduleNextHeartbeat()
   }, [
     enableHeartbeat,
     heartbeatMessage,
@@ -339,6 +398,10 @@ export function useStreamingWebSocket(
       setError(null)
       shouldReconnectRef.current = true
 
+      // RECONNECT-1: Increment connection ID to prevent mount/unmount races
+      connectionIdRef.current += 1
+      const currentConnectionId = connectionIdRef.current
+
       // Create WebSocket connection
       const ws = new WebSocket(url, protocols)
       wsRef.current = ws
@@ -346,15 +409,47 @@ export function useStreamingWebSocket(
       // Update ready state
       setReadyState(ws.readyState)
 
+      // Set connection timeout
+      const timeoutId = setTimeout(() => {
+        if (ws.readyState === WebSocket.CONNECTING) {
+          logger.error(
+            `[useStreamingWebSocket] Connection timeout after ${connectionTimeout}ms`
+          )
+          ws.close()
+          const timeoutError = new Event('timeout')
+          setError(timeoutError)
+          setStatus('error')
+          onError?.(timeoutError)
+        }
+      }, connectionTimeout)
+
       // Handle connection open
       ws.addEventListener('open', (event) => {
+        // RECONNECT-1: Check connection ID to prevent stale connection updates
+        if (currentConnectionId !== connectionIdRef.current) {
+          logger.debug('[useStreamingWebSocket] Stale connection detected, aborting')
+          return
+        }
+
+        // Clear connection timeout
+        clearTimeout(timeoutId)
         logger.debug('[useStreamingWebSocket] Connected')
         setStatus('connected')
         setReadyState(ws.readyState)
         setReconnectAttempt(0)
         setIsReconnecting(false)
-        reconnectDelayRef.current = initialReconnectDelay
         lastPongRef.current = Date.now()
+
+        // RECONNECT-2: Only reset backoff after sustained success
+        setReconnectSuccessCount((prev) => {
+          const newCount = prev + 1
+          // Reset delay only after reaching threshold
+          if (newCount >= reconnectSuccessThreshold) {
+            reconnectDelayRef.current = initialReconnectDelay
+            return 0 // Reset success count after backoff reset
+          }
+          return newCount
+        })
 
         // Start heartbeat
         startHeartbeat()
@@ -386,21 +481,46 @@ export function useStreamingWebSocket(
           const newMessages = [...prev, message]
           // Keep only the last maxMessageBufferSize messages
           if (newMessages.length > maxMessageBufferSize) {
+            // DELIVERY-3: Notify about buffer overflow
+            const droppedCount = newMessages.length - maxMessageBufferSize
+            onMessageBufferOverflow?.(droppedCount, maxMessageBufferSize)
             return newMessages.slice(-maxMessageBufferSize)
           }
           return newMessages
         })
         setLastMessage(message)
 
+        // DELIVERY-5: Send acknowledgment if enabled and message has ID
+        if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
+          const messageId = message.data.id as string
+          try {
+            const ackMessage = JSON.stringify({
+              type: ackMessageType,
+              id: messageId,
+            })
+            ws.send(ackMessage)
+            onAcknowledgmentSent?.(messageId)
+          } catch (err) {
+            logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
+          }
+        }
+
         onMessage?.(message)
       })
 
       // Handle errors
       ws.addEventListener('error', (event) => {
+        // RECONNECT-1: Check connection ID to prevent stale connection updates
+        if (currentConnectionId !== connectionIdRef.current) {
+          logger.debug('[useStreamingWebSocket] Stale connection error, ignoring')
+          return
+        }
+
         logger.error('[useStreamingWebSocket] Error:', event)
         setError(event)
         setStatus('error')
         setReadyState(ws.readyState)
+        setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on error
 
         onError?.(event)
       })
@@ -414,18 +534,20 @@ export function useStreamingWebSocket(
         )
         setStatus('closed')
         setReadyState(ws.readyState)
+        setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on close
 
         // Stop heartbeat
         stopHeartbeat()
 
         onClose?.(event)
 
-        // Attempt reconnection if not a clean close
+        // Attempt reconnection (on unclean close or clean close if configured)
+        const shouldReconnectOnClose = !event.wasClean || reconnectOnCleanClose
         if (
           autoReconnect &&
           shouldReconnectRef.current &&
           reconnectAttempt < maxReconnectAttempts &&
-          !event.wasClean
+          shouldReconnectOnClose
         ) {
           const nextAttempt = reconnectAttempt + 1
           const delay = Math.min(
@@ -503,6 +625,7 @@ export function useStreamingWebSocket(
 
       setStatus('closed')
       setIsReconnecting(false)
+      setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on disconnect
       setReadyState(WebSocket.CLOSED)
     },
     [stopHeartbeat]
@@ -528,6 +651,10 @@ export function useStreamingWebSocket(
             : data
 
         wsRef.current.send(payload as string | ArrayBuffer | Blob)
+
+        // Update last pong time on send (any activity counts as keepalive)
+        lastPongRef.current = Date.now()
+
         return true
       } catch (err) {
         logger.error('[useStreamingWebSocket] Send error:', err)
@@ -566,6 +693,11 @@ export function useStreamingWebSocket(
     setIsReconnecting(false)
     reconnectDelayRef.current = initialReconnectDelay
   }, [initialReconnectDelay])
+
+  // Update reconnect ref to avoid circular dependency in heartbeat
+  React.useEffect(() => {
+    reconnectFnRef.current = reconnect
+  }, [reconnect])
 
   // Connect on mount if specified
   React.useEffect(() => {

@@ -41,17 +41,23 @@ npm install @clarity-chat/react`,
     title: 'Import & Build',
     description: 'Production-ready chat with built-in Token Optimization.',
     icon: <Code className="w-5 h-5" />,
-    code: `import { ChatWindow, useChat } from '@clarity-chat/react'
+    code: `import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const chat = useChat({
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
     // Token Optimization: 90% cost reduction built-in
     tokenOptimization: true,
   })
 
-  return <ChatWindow {...chat} />
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={(content) => append({ role: 'user', content })}
+      isLoading={isLoading}
+    />
+  )
 }`,
     language: 'tsx',
   },

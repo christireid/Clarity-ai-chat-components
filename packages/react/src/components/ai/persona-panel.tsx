@@ -113,9 +113,9 @@ export function PersonaPanel({
                   <Button
                     variant={isActive ? 'surface' : 'outline'}
                     className={cn(
-                      'group flex w-full items-start gap-4 rounded-lg border border-border/50 p-4 text-left transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+                      'group flex w-full items-start gap-4 rounded-lg border border-border/50 p-4 text-left transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40 hover:shadow-md',
                       isActive &&
-                        'border-primary/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]'
+                        'border-primary/50 shadow-md'
                     )}
                     onClick={() => onSelect?.(persona)}
                     data-state={isActive ? 'active' : 'inactive'}
