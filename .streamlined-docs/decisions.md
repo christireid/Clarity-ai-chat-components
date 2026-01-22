@@ -61,5 +61,30 @@ This document tracks all major design and implementation decisions made during t
   - Easier to maintain and navigate
   - Future content can be added without structural changes
 
+## Additional Optimization (Post Phase 9)
+
+### Remove Individual Pages
+- **Decision:** Remove all individual component, hook, guide, tutorial, recipe, demo, and example pages
+- **Rationale:**
+  - Further streamline the shell to focus on structure, not individual items
+  - Keep only hub pages and category pages
+  - **Result:** 401 pages removed (90.5% reduction from 443 to 42 pages)
+  - Structural pages only: section hubs + category pages
+- **Final count:** 42 pages total (vs 453 originally - **91% total reduction**)
+
+### Pages Kept (42 total)
+- Homepage + top-level section pages
+- Category pages within sections (e.g., `/reference/components`, `/reference/hooks`)
+- Hub pages (e.g., `/guides`, `/demos`, `/examples`, `/cookbook`)
+
+### Pages Removed (401 total)
+- All individual component pages (e.g., `/reference/components/avatar`)
+- All individual hook pages (e.g., `/reference/hooks/use-chat`)
+- All individual guide pages (e.g., `/guides/streaming`)
+- All individual tutorial pages (e.g., `/learn/tutorials/building-first-chatbot`)
+- All individual recipe pages (e.g., `/cookbook/authentication`)
+- All individual demo pages (e.g., `/demos/zero-to-chat`)
+- All individual example pages (e.g., `/examples/simple-chat`)
+
 ## Future Decisions
 Will be documented as phases progress
