@@ -3,6 +3,7 @@ import React from 'react'
 import { ThemeProvider, ToastProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
 import { clarityTheme, clarityDarkTheme } from './manager'
+import '../../../styles/globals.css'
 import './globals.css'
 
 // Suppress AbortError from Storybook's waitForAnimations in React 19
