@@ -538,7 +538,10 @@ export function useAsyncErrorHandler(componentName?: string) {
   const wrapAsync = React.useCallback(
     <T extends any[], R>(asyncFn: (...args: T) => Promise<R>) => {
       return (...args: T): Promise<R> => {
-        return asyncFn(...args).catch(handleAsyncError)
+        return asyncFn(...args).catch((error) => {
+          handleAsyncError(error)
+          throw error // Re-throw to maintain Promise<R> type
+        })
       }
     },
     [handleAsyncError]

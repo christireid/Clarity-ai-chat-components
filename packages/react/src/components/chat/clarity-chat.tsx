@@ -663,11 +663,6 @@ export function ClarityChat({
         showMessageCount={processedProps.showMessageCount}
         onExport={processedProps.onExport}
         onClear={processedProps.onClear ? handleClear : undefined}
-        autoScroll={processedProps.autoScroll}
-        theme={processedProps.theme}
-        showTokenCounter={processedProps.showTokenCounter}
-        showNetworkStatus={processedProps.showNetworkStatus}
-        enableMessageOperations={processedProps.enableMessageOperations}
       />
     </div>
   )

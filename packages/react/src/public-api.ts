@@ -185,9 +185,8 @@ export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
-  InlineCode,
-  type InlineCodeProps,
 } from './components/code/CodeBlock'
+export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -569,8 +568,8 @@ export {
   testDataFactories,
   chatAssertions,
   vi,
-  Mock,
 } from './utils/testing-helpers'
+export type { Mock } from './utils/testing-helpers'
 
 // Migration Helpers - Easy migration from other libraries
 export {
@@ -939,8 +938,8 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-export { ApiTokenManager } from './components/enterprise/api-token-manager'
-export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
+export { ApiTokenManager } from './components/enterprise/ApiTokenManager'
+export { AuthTenantDashboard } from './components/enterprise/AuthTenantDashboard'
 
 // ============================================================================
 // THEME COMPONENTS (Theme Preview & Testing)
@@ -962,8 +961,10 @@ export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboa
 // Performance monitoring
 export {
   usePerformanceTracking,
-  logPerformanceMetrics,
   getPerformanceSummary,
+  measureExecutionTime,
+  withPerformanceTracking,
+  getMemoryUsage,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
 } from './utils/performance-monitoring'

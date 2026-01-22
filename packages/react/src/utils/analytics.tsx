@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import { errorReporter } from './error-boundary'
+import { errorReporter } from '../components/ui/error-boundary'
 
 // ============================================================================
 // TYPES
@@ -40,6 +40,10 @@ export interface ComponentUsageEvent extends AnalyticsEvent {
     renderTime?: number
     interactionType?: string
     element?: string
+    /** Duration in ms (for unmount events) */
+    duration?: number
+    /** Number of renders (for unmount/render events) */
+    renderCount?: number
   }
 }
 
@@ -165,8 +169,6 @@ class AnalyticsManager {
     this.trackEvent({
       type: 'session',
       action: 'start',
-      timestamp: Date.now(),
-      sessionId: this.sessionId,
     })
   }
 
@@ -434,7 +436,7 @@ export const analyticsManager = AnalyticsManager.getInstance()
  * Hook for component usage tracking
  */
 export function useAnalytics(componentName: string, trackUsage = true) {
-  const mountTime = React.useRef<number>()
+  const mountTime = React.useRef<number | undefined>(undefined)
   const renderCount = React.useRef(0)
 
   React.useEffect(() => {
@@ -503,7 +505,7 @@ export function useAnalytics(componentName: string, trackUsage = true) {
  * Hook for measuring render performance
  */
 export function useRenderPerformance(componentName: string, enabled = true) {
-  const renderStartTime = React.useRef<number>()
+  const renderStartTime = React.useRef<number | undefined>(undefined)
   const lastRenderDuration = React.useRef<number>(0)
 
   React.useLayoutEffect(() => {
@@ -592,7 +594,7 @@ export function useInteractionTracking(componentName: string) {
  * Hook for measuring interaction latency
  */
 export function useInteractionLatency(componentName: string) {
-  const interactionStartTime = React.useRef<number>()
+  const interactionStartTime = React.useRef<number | undefined>(undefined)
 
   const startInteraction = React.useCallback(() => {
     interactionStartTime.current = performance.now()
@@ -773,15 +775,4 @@ export function batchAnalyticsEvents(
   events.forEach((event) => analyticsManager.trackEvent(event))
 }
 
-// ============================================================================
-// DEFAULT EXPORT
-// ============================================================================
-
-export {
-  type AnalyticsEvent,
-  type ComponentUsageEvent,
-  type PerformanceEvent,
-  type ErrorEvent,
-  type UserJourneyEvent,
-  type AnalyticsConfig,
-}
+// Types are exported at their declarations above

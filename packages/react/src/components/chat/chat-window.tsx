@@ -466,7 +466,7 @@ const FollowUpSuggestions = ({
 
 // Error Banner Component
 interface ErrorBannerProps {
-  error: string | null
+  error?: string | null
   onRetry?: () => void
   onDismissError?: () => void
 }
@@ -952,13 +952,14 @@ export function ChatWindow({
   // Check if we should show follow-up suggestions
   // Only show when: not loading, has messages, last message is from assistant, has suggestions
   const lastMessage = normalizedMessages[normalizedMessages.length - 1]
-  const shouldShowFollowUp =
+  const shouldShowFollowUp = Boolean(
     effectivePrompts.showFollowUpSuggestions &&
     !isLoading &&
     effectivePrompts.followUpSuggestions &&
     effectivePrompts.followUpSuggestions.length > 0 &&
     lastMessage?.role === 'assistant' &&
     lastMessage?.status !== 'streaming'
+  )
 
   // React 19: Simple string derivation - compiler optimizes
   const messageCountText =

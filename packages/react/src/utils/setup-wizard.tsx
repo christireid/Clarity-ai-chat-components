@@ -116,7 +116,7 @@ export class QuickSetup {
         api={api}
         memory={{ enabled: true, strategy: 'vector-store' }}
         promptOptimization={{ enabled: true }}
-        rateLimiting={{ enabled: true }}
+        rateLimiting={{ enable: true }}
         header={{ show: true, title: 'Enterprise Assistant' }}
       />
     )
@@ -155,7 +155,7 @@ export function interactiveSetup(): void {
 
   const config = {
     api,
-    features: { memory, streaming, enterprise },
+    features: { memory, streaming, rateLimiting: true, enterprise },
     ui: { header: true, prompts: true, darkMode: false }
   }
 

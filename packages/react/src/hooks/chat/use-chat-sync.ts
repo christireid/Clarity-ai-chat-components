@@ -14,11 +14,17 @@ import type {
   SyncOptions,
   SyncResult,
 } from '../../utils/sync-manager'
-import type { CoreMessage as Message } from '../../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+
+// Extended message type for sync operations
+interface SyncMessage extends CoreMessage {
+  timestamp?: number
+  metadata?: Record<string, unknown>
+}
 
 // Convert messages to syncable format
 function messagesToSyncable(
-  messages: Message[],
+  messages: SyncMessage[],
   conversationId: string
 ): SyncableData {
   return {
@@ -39,7 +45,7 @@ function messagesToSyncable(
 }
 
 // Convert syncable data back to messages
-function syncableToMessages(syncable: SyncableData): Message[] {
+function syncableToMessages(syncable: SyncableData): SyncMessage[] {
   const data = syncable.data
   return data.messages.map((m: any) => ({
     id: m.id,
@@ -107,13 +113,13 @@ class ChatLocalStorage {
     }
   }
 
-  private async getStoredMessages(): Promise<Message[]> {
+  private async getStoredMessages(): Promise<SyncMessage[]> {
     const key = `chat_sync_${this.conversationId}`
     const stored = localStorage.getItem(key)
     return stored ? JSON.parse(stored) : []
   }
 
-  private async storeMessages(messages: Message[]): Promise<void> {
+  private async storeMessages(messages: SyncMessage[]): Promise<void> {
     const key = `chat_sync_${this.conversationId}`
     localStorage.setItem(key, JSON.stringify(messages))
   }
@@ -271,8 +277,8 @@ export interface ChatSyncReturn {
  * Hook for chat synchronization across devices
  */
 export function useChatSync(
-  messages: Message[],
-  onMessagesChange: (messages: Message[]) => void,
+  messages: SyncMessage[],
+  onMessagesChange: (messages: SyncMessage[]) => void,
   options: ChatSyncOptions
 ): ChatSyncReturn {
   const {

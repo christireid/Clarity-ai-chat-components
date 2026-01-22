@@ -35,7 +35,7 @@ import {
   validateApiEndpoint,
   validateStorageKey,
 } from '../../utils/config/runtime-validation'
-import type { UIMessage as Message } from '../../types/messages'
+import type { Message } from '@clarity-chat/types'
 
 // ============================================================================
 // TYPES
