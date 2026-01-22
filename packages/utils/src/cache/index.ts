@@ -399,7 +399,7 @@ export function memoize<Args extends unknown[], Result>(
 
     try {
       key = keyFn ? keyFn(...args) : JSON.stringify(args)
-    } catch (err) {
+    } catch {
       // JSON.stringify can throw on circular references
       // In this case, always call the function (no caching)
       return fn(...args)
@@ -468,7 +468,7 @@ export function memoizeAsync<Args extends unknown[], Result>(
 
     try {
       key = keyFn ? keyFn(...args) : JSON.stringify(args)
-    } catch (err) {
+    } catch {
       // JSON.stringify can throw on circular references
       // In this case, always call the function (no caching)
       return await fn(...args)
