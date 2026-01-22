@@ -67,16 +67,13 @@ export * from './use-rag-pipeline'
 // CoreMessage and related types are re-exported for consumers who need type compatibility
 export { type CoreMessage } from './use-chat-enhanced'
 
-
 // ============================================================================
-// INTERNAL HOOKS (Not for public use - use useClarityChat instead)
+// INTERNAL HOOKS (For advanced use cases only)
 // ============================================================================
 
-// useChatEnhanced is now internal only - exported here for backward compatibility
-// but should not be used directly by external consumers
 /**
  * @internal
- * @deprecated This hook is for internal use only. Use useClarityChat instead.
+ * Internal hook used by useClarityChat. For most use cases, use useClarityChat instead.
  */
 export {
   useChat as useChatEnhanced,

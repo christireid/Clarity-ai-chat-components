@@ -179,7 +179,7 @@ export function FloatingChatWidget({
             transition={
               prefersReducedMotion ? { duration: 0 } : springPresets.snappy
             }
-            className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            className="mb-4 w-[min(95vw,350px)] sm:w-96 md:w-[400px] h-[min(70vh,500px)] max-h-[500px] bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
             {/* Header */}
             <div className="p-4 border-b border-white/5 bg-gradient-to-r from-primary to-primary/80 flex items-center justify-between">

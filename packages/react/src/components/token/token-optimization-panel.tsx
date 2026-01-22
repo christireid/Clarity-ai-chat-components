@@ -82,13 +82,7 @@ export function TokenOptimizationPanel({
   return (
     <div
       className={cn(
-        glassVariants({
-          intensity: 'strong',
-          gradient: getSemanticGradient('premium'),
-          border: 'medium',
-          animated: 'gradient',
-        }),
-        'rounded-xl p-6',
+        'rounded-lg border border-border/60 bg-card p-4 shadow-sm',
         sizeClasses[size],
         className
       )}

@@ -151,21 +151,21 @@ export function ThemeSelector({
             {showPreview && metadata.preview && (
               <div className="theme-preview flex gap-1 items-center">
                 <div
-                  className="w-8 h-8 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+                  className="w-8 h-8 rounded-full border border-white shadow-xs"
                   style={{ backgroundColor: metadata.preview.primaryColor }}
                   aria-hidden="true"
                 />
                 {!isHorizontal && (
                   <>
                     <div
-                      className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+                      className="w-6 h-6 rounded-full border border-white shadow-xs"
                       style={{
                         backgroundColor: metadata.preview.secondaryColor,
                       }}
                       aria-hidden="true"
                     />
                     <div
-                      className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+                      className="w-6 h-6 rounded-full border border-white shadow-xs"
                       style={{
                         backgroundColor: metadata.preview.backgroundColor,
                       }}
@@ -396,7 +396,7 @@ export function ThemeSelectorDropdown({
             id={listboxId}
             className="
               absolute top-full left-0 right-0 mt-2 z-50
-              bg-popover border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-sm
+              bg-popover border border-border/60 rounded-lg shadow-2xl backdrop-blur-sm
               max-h-96 overflow-y-auto
               focus:outline-none
             "

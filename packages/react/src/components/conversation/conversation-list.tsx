@@ -683,7 +683,7 @@ export const ConversationList = memo(function ConversationList({
           {filteredConversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <svg
-                className="w-12 h-12 text-muted-foreground/50 mb-3"
+                className="w-12 h-12 text-muted-foreground/70 mb-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -703,7 +703,7 @@ export const ConversationList = memo(function ConversationList({
               {onCreate && !searchQuery && (
                 <button
                   onClick={onCreate}
-                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px"
+                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-150 ease-out hover:shadow-md hover:-translate-y-px"
                 >
                   Start a conversation
                 </button>

@@ -10,7 +10,6 @@ export * from './use-debounce'
 export * from './use-throttle'
 export * from './use-toggle'
 export * from './use-previous'
-export * from './use-mounted'
 export * from './use-is-mounted'
 export {
   useMergedRef,

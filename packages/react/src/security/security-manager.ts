@@ -59,6 +59,8 @@ export interface SecurityResult {
   sanitizedInput?: string
   /** Detailed information about the validation */
   details?: Record<string, unknown>
+  /** Remaining requests in rate limit window (if rate limiting is enabled) */
+  rateLimitRemaining?: number
 }
 
 /**
@@ -168,8 +170,10 @@ export class SecurityManager {
     this.metrics.totalRequests++
 
     // Check rate limit
+    let rateLimitRemaining: number | undefined
     if (this.config.rateLimit?.enabled && context?.userId) {
-      const isLimited = this.checkRateLimit(context.userId)
+      const { isLimited, remaining } = this.checkRateLimit(context.userId)
+      rateLimitRemaining = remaining
       if (isLimited) {
         this.metrics.rateLimitHits++
         this.addEvent({
@@ -182,6 +186,7 @@ export class SecurityManager {
           allowed: false,
           reason: 'rate_limit_exceeded',
           action: 'block',
+          rateLimitRemaining: 0,
         }
       }
     }
@@ -232,6 +237,7 @@ export class SecurityManager {
       allowed: true,
       action: 'allow',
       sanitizedInput,
+      rateLimitRemaining,
     }
   }
 
@@ -314,7 +320,7 @@ export class SecurityManager {
   // Private Methods
   // =============================================================================
 
-  private checkRateLimit(userId: string): boolean {
+  private checkRateLimit(userId: string): { isLimited: boolean; remaining: number } {
     const now = Date.now()
     const entry = this.rateLimitMap.get(userId)
     const windowMs = this.config.rateLimit?.windowMs ?? 60000
@@ -322,11 +328,12 @@ export class SecurityManager {
 
     if (!entry || now > entry.resetTime) {
       this.rateLimitMap.set(userId, { count: 1, resetTime: now + windowMs })
-      return false
+      return { isLimited: false, remaining: maxRequests - 1 }
     }
 
     entry.count++
-    return entry.count > maxRequests
+    const remaining = Math.max(0, maxRequests - entry.count)
+    return { isLimited: entry.count > maxRequests, remaining }
   }
 
   private detectPromptInjection(input: string): {
