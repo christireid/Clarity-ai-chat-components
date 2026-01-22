@@ -74,6 +74,60 @@ export type {
   CircuitBreakerStats,
 } from './circuit-breaker'
 
+// Logging types and utilities
+export {
+  LogLevel,
+  Logger,
+  ConsoleLogTransport,
+  JSONLogTransport,
+  BufferedLogTransport,
+  globalLogger,
+  createCorrelationId,
+  logAdapterRequest,
+  logAdapterResponse,
+  logAdapterError,
+} from './logging'
+
+export type {
+  LogEntry,
+  LogTransport,
+  LoggerConfig,
+} from './logging'
+
+// Monitoring types and utilities
+export {
+  HealthMonitor,
+  HealthMonitorRegistry,
+  globalHealthMonitorRegistry,
+} from './monitoring'
+
+export type {
+  LatencyPercentiles,
+  ErrorStats,
+  ProviderHealthMetrics,
+  HealthThresholds,
+} from './monitoring'
+
+// Telemetry types and utilities
+export {
+  TelemetryEventType,
+  TelemetryManager,
+  globalTelemetry,
+  exportPrometheusMetrics,
+  exportPrometheusText,
+  createSpan,
+  endSpan,
+  exportSpan,
+} from './telemetry'
+
+export type {
+  TelemetryEvent,
+  TelemetryHook,
+  TelemetryConfig,
+  PrometheusMetrics,
+  Span,
+} from './telemetry'
+
 // Runtime functions and type guards
 export {
   createAdapterRegistry,
