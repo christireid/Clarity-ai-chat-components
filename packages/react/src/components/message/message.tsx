@@ -1,80 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
-import { Avatar, Button, Badge, cn, useA11y } from '@clarity-chat/primitives'
-import { formatRelativeTime } from '../../internal/helpers'
+import { Avatar, Badge, cn, useA11y } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
 } from '../../animations/constants'
-import ReactMarkdown from 'react-markdown'
-import type { Components } from 'react-markdown'
-import rehypeHighlight from 'rehype-highlight'
-import remarkGfm from 'remark-gfm'
-import { MarkdownCodeBlock } from './markdown-code-block'
-
-// Lazy Markdown Renderer for performance optimization
-const LazyMarkdownRenderer = React.memo(function LazyMarkdownRenderer({
-  content,
-  remarkPlugins,
-  rehypePlugins,
-  components,
-  isStreaming,
-}: {
-  content: string
-  remarkPlugins: any[]
-  rehypePlugins: any[]
-  components: Partial<Components>
-  isStreaming: boolean
-}) {
-  const [renderedContent, setRenderedContent] = React.useState<React.ReactNode | null>(null)
-
-  React.useEffect(() => {
-    // Defer expensive markdown rendering to prevent blocking UI
-    const timer = setTimeout(() => {
-      setRenderedContent(
-        <ReactMarkdown
-          remarkPlugins={remarkPlugins}
-          rehypePlugins={rehypePlugins}
-          components={components}
-        >
-          {content}
-        </ReactMarkdown>
-      )
-    }, 0)
-
-    return () => clearTimeout(timer)
-  }, [content, remarkPlugins, rehypePlugins, components])
-
-  // Show plain text as fallback while markdown is rendering
-  return (
-    <>
-      {renderedContent || (
-        <div className={cn(isStreaming && 'clarity-streaming-text')}>
-          {content.split('\n').map((line, i) => (
-            <React.Fragment key={i}>
-              {line}
-              {i < content.split('\n').length - 1 && <br />}
-            </React.Fragment>
-          ))}
-        </div>
-      )}
-      {/* Cursor inside the streaming wrapper for proper inline positioning */}
-      {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
-      {isStreaming && (
-        <span aria-hidden="true" className="clarity-streaming-cursor" />
-      )}
-    </>
-  )
-})
+import { LazyMarkdownRenderer } from './markdown-renderer'
 import { MessageActions } from './message-actions'
 import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
 import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
-import { CopyButton } from './copy-button'
+import { MessageHeader } from './message-header'
 
 export interface MessageProps {
   message: MessageType
@@ -260,151 +200,6 @@ export function Message({
     onCancelEdit?.(message.id)
   }, [message.id, onCancelEdit])
 
-  // Memoize markdown components to avoid recreation on every render.
-  // react-markdown's `components` prop accepts Partial<Components>, allowing us to
-  // override only specific elements while using defaults for the rest.
-  const markdownComponents = React.useMemo<Partial<Components>>(() => {
-    // Create wrapper for memoized component to match react-markdown's expected type
-    const CodeWrapper: Components['code'] = (props) => {
-      return <MarkdownCodeBlock {...props} />
-    }
-
-    return {
-      code: CodeWrapper,
-      // Custom pre handler - wrap code blocks with styling and copy button
-      pre: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
-        // Extract code string from the code element for copy button
-        let codeString = ''
-        React.Children.forEach(children, (child) => {
-          if (React.isValidElement(child) && child.props) {
-            // Get from data attribute or extract text content
-            const props = child.props as Record<string, unknown>
-            codeString = (props['data-code-string'] as string) || ''
-            if (!codeString && props.children) {
-              // Fallback: extract text from children
-              const extractText = (node: React.ReactNode): string => {
-                if (typeof node === 'string') return node
-                if (Array.isArray(node)) return node.map(extractText).join('')
-                if (React.isValidElement(node)) {
-                  const nodeProps = node.props as { children?: React.ReactNode }
-                  if (nodeProps?.children) {
-                    return extractText(nodeProps.children)
-                  }
-                }
-                return ''
-              }
-              codeString = extractText(props.children as React.ReactNode)
-            }
-          }
-        })
-
-        return (
-          <div className="relative group/code my-4">
-            <pre
-              className={cn(
-                'relative overflow-x-auto p-4',
-                'bg-gradient-to-br from-muted/60 to-muted/40',
-                'border border-border/50',
-                'rounded-xl',
-                'shadow-sm',
-                'transition-shadow duration-200',
-                'group-hover/code:shadow-md'
-              )}
-              {...props}
-            >
-              {children}
-            </pre>
-            {codeString && (
-              <CopyButton
-                text={codeString}
-                className="absolute top-2.5 right-2.5 opacity-0 group-hover/code:opacity-100 transition-all duration-200 translate-y-1 group-hover/code:translate-y-0"
-              />
-            )}
-          </div>
-        )
-      },
-      // Always use div for paragraphs to prevent hydration mismatches
-      // The <p> element cannot contain block elements, and detecting them
-      // reliably across server/client is problematic. Using div is safe.
-      p: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-        <div className="mb-4 leading-relaxed" {...props}>
-          {children}
-        </div>
-      ),
-      // Table styling
-      table: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableElement>) => (
-        <div className="overflow-x-auto my-4 w-full">
-          <table
-            className="min-w-full table-auto border-collapse divide-y divide-border"
-            {...props}
-          >
-            {children}
-          </table>
-        </div>
-      ),
-      thead: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-        <thead className="bg-muted" {...props}>
-          {children}
-        </thead>
-      ),
-      tbody: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-        <tbody className="bg-background divide-y divide-border" {...props}>
-          {children}
-        </tbody>
-      ),
-      th: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableCellElement>) => (
-        <th
-          className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
-          {...props}
-        >
-          {children}
-        </th>
-      ),
-      td: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableCellElement>) => (
-        <td className="px-6 py-4 text-sm border border-border" {...props}>
-          {children}
-        </td>
-      ),
-      tr: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLTableRowElement>) => (
-        <tr className="hover:bg-muted/50 transition-colors" {...props}>
-          {children}
-        </tr>
-      ),
-    }
-  }, [])
-
-  // Memoize plugin arrays to avoid recreation on every render
-  const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-  // rehypeHighlight has type incompatibilities due to vfile version mismatches across
-  // the unified ecosystem. This is a known upstream issue. We use a readonly tuple
-  // assertion to preserve the plugin reference while satisfying the type checker.
-  // See: https://github.com/rehypejs/rehype-highlight/issues/26
-  const rehypePlugins = React.useMemo(
-    () => [rehypeHighlight] as unknown as any[],
-    []
-  )
-
   // Build descriptive ARIA label for screen readers
   const messageAuthor = isUser ? 'You' : 'AI Assistant'
   const messageTime = message.createdAt
@@ -489,37 +284,13 @@ export function Message({
       >
         {/* Header - only show on group start */}
         {isGroupStart && (
-          <div
-            className={cn(
-              'flex items-center',
-              isUser ? 'gap-2 flex-row-reverse' : 'gap-2'
-            )}
-          >
-            <h4 className="font-semibold text-sm whitespace-nowrap">
-              {isUser ? 'You' : 'AI Assistant'}
-            </h4>
-            {showTimestamp && (
-              <>
-                <span className="text-muted-foreground/70" aria-hidden="true">·</span>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: duration('normal') }}
-                  className="text-xs text-muted-foreground whitespace-nowrap"
-                >
-                  {formatRelativeTime(message.createdAt)}
-                </motion.span>
-              </>
-            )}
-            {message.status === 'sending' && (
-              <Badge variant="secondary" dot>
-                Sending
-              </Badge>
-            )}
-            {message.status === 'error' && (
-              <Badge variant="destructive">Error</Badge>
-            )}
-          </div>
+          <MessageHeader
+            role={message.role}
+            timestamp={message.createdAt}
+            status={message.status}
+            showTimestamp={showTimestamp}
+            isHovered={isHovered}
+          />
         )}
 
         {/* Content */}
@@ -557,9 +328,6 @@ export function Message({
           ) : (
             <LazyMarkdownRenderer
               content={message.content}
-              remarkPlugins={remarkPlugins}
-              rehypePlugins={rehypePlugins}
-              components={markdownComponents}
               isStreaming={isStreaming}
             />
           )}

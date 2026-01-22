@@ -66,6 +66,9 @@ export interface TanStackMessageListProps {
 
   /** Threshold in pixels for "near bottom" detection */
   scrollThreshold?: number
+
+  /** VIRT-3: Maximum number of messages to render (windowing) */
+  maxMessages?: number
 }
 
 // ============================================================================
@@ -80,9 +83,10 @@ export interface TanStackMessageListProps {
  * - Smooth scrolling support
  * - Auto-scroll to bottom
  * - Efficient re-renders with React 19 patterns
+ * - VIRT-3: Built-in message windowing for memory safety
  */
 export function TanStackMessageList({
-  messages,
+  messages: rawMessages,
   renderMessage,
   estimatedItemSize = 150,
   overscanCount = 5,
@@ -95,7 +99,14 @@ export function TanStackMessageList({
   getItemKey,
   onScrollAwayFromBottom,
   scrollThreshold = 100,
+  maxMessages = 1000,
 }: TanStackMessageListProps) {
+  // VIRT-3: Apply message windowing
+  const messages = React.useMemo(() => {
+    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
+    return rawMessages.slice(rawMessages.length - maxMessages)
+  }, [rawMessages, maxMessages])
+
   // Screen reader detection - render non-virtualized for accessibility
   const isScreenReader = useScreenReaderDetection()
 

@@ -73,6 +73,9 @@ export interface VirtualizedMessageListProps {
 
   /** Custom item key getter */
   itemKey?: (index: number, data: Message[]) => string
+
+  /** VIRT-3: Maximum number of messages to render (windowing) */
+  maxMessages?: number
 }
 
 export interface MessageListProps extends Omit<
@@ -229,7 +232,7 @@ function MessageItem({ index, style, data }: MessageItemProps) {
  * - Note: Some callbacks kept for stable refs required by react-window
  */
 export function VirtualizedMessageList({
-  messages,
+  messages: rawMessages,
   renderMessage,
   estimatedItemSize = 150,
   overscanCount = 3,
@@ -237,7 +240,14 @@ export function VirtualizedMessageList({
   onScroll,
   className,
   itemKey,
+  maxMessages = 1000,
 }: VirtualizedMessageListProps) {
+  // VIRT-3: Apply message windowing
+  const messages = React.useMemo(() => {
+    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
+    return rawMessages.slice(rawMessages.length - maxMessages)
+  }, [rawMessages, maxMessages])
+
   // Screen reader detection - render non-virtualized for accessibility
   const isScreenReader = useScreenReaderDetection()
 

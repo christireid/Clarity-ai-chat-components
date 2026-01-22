@@ -1,8 +1,8 @@
 /**
  * Runtime Validation Utilities
  *
- * Simple runtime checks for agent configuration.
- * These are development-time helpers to catch common mistakes.
+ * Simple runtime checks for configuration and props.
+ * These helpers ensure type safety at runtime, especially for JavaScript consumers.
  */
 
 import type { Tool } from '../../agents/types'
@@ -58,6 +58,7 @@ export function validateApiEndpoint(
   }
 
   // Basic URL validation
+  // Allow relative paths starting with / or absolute URLs
   if (!endpoint.startsWith('/') && !endpoint.startsWith('http')) {
     throw new Error(
       `${prefix}API endpoint must be a valid URL or path starting with /`
@@ -174,6 +175,63 @@ export function validateStreamingProtocol(protocol: string): void {
   if (!validProtocols.includes(protocol)) {
     throw new Error(
       `Invalid streaming protocol: ${protocol}. Must be one of: ${validProtocols.join(', ')}`
+    )
+  }
+}
+
+/**
+ * Validate a required string prop
+ * @param value - The value to validate
+ * @param propName - The name of the prop
+ * @param componentName - The component name for error context
+ * @throws Error if value is not a string
+ */
+export function validateStringProp(
+  value: any,
+  propName: string,
+  componentName: string
+): void {
+  if (typeof value !== 'string') {
+    throw new Error(
+      `[${componentName}] "${propName}" prop must be a string. Received: ${typeof value}`
+    )
+  }
+}
+
+/**
+ * Validate a required function prop
+ * @param value - The value to validate
+ * @param propName - The name of the prop
+ * @param componentName - The component name for error context
+ * @throws Error if value is not a function
+ */
+export function validateFunctionProp(
+  value: any,
+  propName: string,
+  componentName: string
+): void {
+  if (typeof value !== 'function') {
+    throw new Error(
+      `[${componentName}] "${propName}" prop must be a function. Received: ${typeof value}`
+    )
+  }
+}
+
+/**
+ * Validate a required array prop
+ * @param value - The value to validate
+ * @param propName - The name of the prop
+ * @param componentName - The component name for error context
+ * @throws Error if value is not an array
+ */
+export function validateArrayProp(
+  value: any,
+  propName: string,
+  componentName: string
+): void {
+  if (!Array.isArray(value)) {
+    throw new Error(
+      `[${componentName}] "${propName}" prop must be an array. Received: ${typeof value}`
     )
   }
 }
