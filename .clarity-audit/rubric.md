@@ -164,13 +164,16 @@ messages.
 
 **Gaps** (-4):
 
-- ❌ TypeScript strict mode disabled (MED-015) -2pts
+- ⚠️ TypeScript strict mode disabled (MED-015) -2pts
+  - **Progress**: Fixed 98 errors (NODE_ENV patterns, React imports)
+  - **Remaining**: 728 errors need context-aware fixes (~40h estimate)
+  - See TYPESCRIPT-IMPROVEMENTS.md for details
 - ⚠️ Generic constraints weak -1pt
 - ⚠️ Tool utilities not exported -1pt
 
 **To Reach 15/15**:
 
-- Re-enable noUncheckedIndexedAccess
+- Complete strict mode enablement (728 remaining errors)
 - Add conditional return types
 - Export tool/message utilities
 - Create codemods for migrations

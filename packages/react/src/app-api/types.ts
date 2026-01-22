@@ -106,6 +106,23 @@ export interface ToolsConfig {
   customRenderer?: React.ComponentType<{ result: unknown; toolName: string }>
   /** Auto-approve safe tool calls */
   autoApprove?: boolean
+  /**
+   * Approval mode for tool execution.
+   * - auto: Automatically approve all tools (use with caution)
+   * - manual: Require approval for tools marked requiresApproval
+   * - allowlist: Only approve tools in allowedTools list
+   * - blocklist: Approve all except tools in blockedTools list
+   * @default 'manual' for risky tools
+   */
+  approvalMode?: 'auto' | 'manual' | 'allowlist' | 'blocklist'
+  /** Tool names that are always approved (for allowlist mode) */
+  allowedTools?: string[]
+  /** Tool names that are always blocked (for blocklist mode) */
+  blockedTools?: string[]
+  /** Auto-approve tools with these risk levels */
+  autoApproveRiskLevels?: Array<'safe' | 'low' | 'medium' | 'high'>
+  /** Custom approval handler for interactive approval UI */
+  approvalHandler?: (call: ToolCall) => Promise<boolean>
   /** Timeout for tool execution (ms) */
   timeoutMs?: number
 }
@@ -130,6 +147,72 @@ export interface ToolDefinition {
    * @default true
    */
   deterministic?: boolean
+  /**
+   * Risk level of this tool (affects approval requirements).
+   * - safe: No side effects, read-only operations (e.g., get_current_time, calculate)
+   * - low: Limited side effects, local operations (e.g., read file)
+   * - medium: Network access, external APIs (e.g., fetch_url)
+   * - high: Code execution, system commands (e.g., execute_code, system_command)
+   * @default 'safe'
+   */
+  riskLevel?: 'safe' | 'low' | 'medium' | 'high'
+  /**
+   * Capabilities required by this tool.
+   * Used for capability-based access control.
+   * @default []
+   */
+  capabilities?: Array<
+    | 'read:filesystem'
+    | 'write:filesystem'
+    | 'network:outbound'
+    | 'network:inbound'
+    | 'code:execute'
+    | 'system:command'
+    | 'data:sensitive'
+    | 'user:impersonate'
+  >
+  /**
+   * Whether this tool requires explicit user approval before execution.
+   * If not specified, determined by riskLevel and approval configuration.
+   */
+  requiresApproval?: boolean
+}
+
+/**
+ * Audit log entry for tool execution
+ */
+export interface ToolAuditLog {
+  /** Timestamp of the tool call */
+  timestamp: number
+  /** Name of the tool that was called */
+  toolName: string
+  /** Unique identifier for this tool call */
+  callId: string
+  /** Risk level of the tool */
+  riskLevel: 'safe' | 'low' | 'medium' | 'high'
+  /** Capabilities required by the tool */
+  capabilities: Array<
+    | 'read:filesystem'
+    | 'write:filesystem'
+    | 'network:outbound'
+    | 'network:inbound'
+    | 'code:execute'
+    | 'system:command'
+    | 'data:sensitive'
+    | 'user:impersonate'
+  >
+  /** Sanitized parameters (sensitive data removed) */
+  parameters: Record<string, unknown>
+  /** Whether the tool execution was approved */
+  approved: boolean
+  /** How the approval was granted */
+  approvedBy?: 'user' | 'auto' | 'allowlist'
+  /** Execution status */
+  executionStatus: 'success' | 'failure' | 'timeout' | 'denied'
+  /** Execution time in milliseconds */
+  executionTimeMs?: number
+  /** Error message if execution failed */
+  error?: string
 }
 
 /**

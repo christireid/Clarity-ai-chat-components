@@ -11,7 +11,7 @@
  * - Auto-approval for safe tools
  */
 
-import type { ToolsConfig, ToolDefinition } from './types'
+import type { ToolsConfig, ToolDefinition, ToolAuditLog } from './types'
 
 // =============================================================================
 // Types
@@ -49,6 +49,13 @@ export interface ToolsEngineState {
   timeoutMs: number
   cache: Map<string, { result: unknown; timestamp: number }>
   cacheTtlMs: number
+  // NEW: Approval system fields
+  approvalMode?: 'auto' | 'manual' | 'allowlist' | 'blocklist'
+  allowedTools?: string[]
+  blockedTools?: string[]
+  autoApproveRiskLevels?: Array<'safe' | 'low' | 'medium' | 'high'>
+  approvalHandler?: (call: ToolCall) => Promise<boolean>
+  auditLog: ToolAuditLog[]
 }
 
 // =============================================================================
@@ -60,6 +67,9 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
     name: 'get_current_time',
     description: 'Get the current date and time',
     deterministic: false, // Time changes on each call
+    riskLevel: 'safe',
+    capabilities: [],
+    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -81,6 +91,9 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'calculate',
     description: 'Perform a mathematical calculation',
+    riskLevel: 'safe',
+    capabilities: [],
+    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -107,6 +120,9 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
     name: 'generate_uuid',
     description: 'Generate a unique identifier',
     deterministic: false, // Generates random/unique IDs each call
+    riskLevel: 'safe',
+    capabilities: [],
+    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -136,6 +152,9 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'format_json',
     description: 'Format or validate JSON data',
+    riskLevel: 'safe',
+    capabilities: [],
+    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -269,6 +288,13 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
     timeoutMs: config.timeoutMs || 30000,
     cache: new Map(),
     cacheTtlMs: 60000, // 1 minute cache
+    // NEW: Approval system configuration
+    approvalMode: config.approvalMode,
+    allowedTools: config.allowedTools,
+    blockedTools: config.blockedTools,
+    autoApproveRiskLevels: config.autoApproveRiskLevels,
+    approvalHandler: config.approvalHandler,
+    auditLog: [],
   }
 }
 
@@ -311,6 +337,118 @@ export function getAvailableTools(state: ToolsEngineState): Array<{
   }))
 }
 
+// =============================================================================
+// Approval Logic & Audit Logging
+// =============================================================================
+
+/**
+ * Sanitize parameters for logging (remove sensitive data)
+ */
+function sanitizeParameters(params: Record<string, unknown>): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {}
+  const sensitiveKeywords = ['password', 'apikey', 'api_key', 'secret', 'token', 'auth', 'key']
+
+  for (const [key, value] of Object.entries(params)) {
+    const lowerKey = key.toLowerCase()
+    // Check if key contains any sensitive keyword
+    const isSensitive = sensitiveKeywords.some((keyword) => lowerKey.includes(keyword))
+
+    if (isSensitive) {
+      sanitized[key] = '***REDACTED***'
+    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      sanitized[key] = sanitizeParameters(value as Record<string, unknown>)
+    } else {
+      sanitized[key] = value
+    }
+  }
+
+  return sanitized
+}
+
+/**
+ * Create an audit log entry
+ */
+function createAuditLog(
+  toolName: string,
+  callId: string,
+  tool: ToolDefinition,
+  parameters: Record<string, unknown>,
+  approved: boolean,
+  approvedBy: 'user' | 'auto' | 'allowlist',
+  executionStatus: 'success' | 'failure' | 'timeout' | 'denied',
+  executionTimeMs?: number,
+  error?: string
+): ToolAuditLog {
+  return {
+    timestamp: Date.now(),
+    toolName,
+    callId,
+    riskLevel: tool.riskLevel || 'safe',
+    capabilities: tool.capabilities || [],
+    parameters: sanitizeParameters(parameters),
+    approved,
+    approvedBy: approved ? approvedBy : undefined,
+    executionStatus,
+    executionTimeMs,
+    error,
+  }
+}
+
+/**
+ * Determine if a tool call requires user approval based on configuration
+ */
+function shouldRequireApproval(
+  state: ToolsEngineState,
+  tool: ToolDefinition
+): boolean {
+  // Check if tool is explicitly blocked
+  if (state.blockedTools?.includes(tool.name)) {
+    return true // Blocked tools always require approval (which will deny them)
+  }
+
+  // Check approval mode
+  switch (state.approvalMode) {
+    case 'auto':
+      // Auto mode: never require approval (approve everything)
+      return false
+
+    case 'allowlist':
+      // Allowlist mode: require approval unless in allowed list
+      return !state.allowedTools?.includes(tool.name)
+
+    case 'blocklist':
+      // Blocklist mode: require approval only if in blocked list
+      return state.blockedTools?.includes(tool.name) ?? false
+
+    case 'manual':
+    default:
+      // Manual mode (default): check tool properties and risk level
+
+      // If tool explicitly requires approval, honor that
+      if (tool.requiresApproval === true) {
+        return true
+      }
+      if (tool.requiresApproval === false) {
+        return false
+      }
+
+      const riskLevel = tool.riskLevel || 'safe'
+
+      // If autoApproveRiskLevels is configured, ONLY use that for approval decisions
+      if (state.autoApproveRiskLevels && state.autoApproveRiskLevels.length > 0) {
+        return !state.autoApproveRiskLevels.includes(riskLevel)
+      }
+
+      // Fall back to legacy autoApprove flag
+      if (state.autoApprove) {
+        return false
+      }
+
+      // Default: require approval for medium/high risk tools
+      return riskLevel === 'medium' || riskLevel === 'high'
+  }
+}
+
 /**
  * Create a tool call (request execution)
  */
@@ -351,11 +489,14 @@ export function createToolCall(
     }
   }
 
+  // Determine if approval is required using new approval system
+  const requiresApproval = shouldRequireApproval(state, tool)
+
   const call: ToolCall = {
     id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
     name,
     parameters,
-    status: state.autoApprove ? 'approved' : 'pending',
+    status: requiresApproval ? 'pending' : 'approved',
   }
 
   return {
@@ -410,6 +551,29 @@ export async function executeToolCall(
 ): Promise<{ state: ToolsEngineState; result: ToolExecutionResult }> {
   const call = state.pendingCalls.find((c) => c.id === callId)
   if (!call || call.status !== 'approved') {
+    // Audit log for denied execution
+    if (call) {
+      const tool = state.registry.get(call.name)
+      if (tool) {
+        const auditEntry = createAuditLog(
+          call.name,
+          call.id,
+          tool,
+          call.parameters,
+          false,
+          'auto',
+          'denied'
+        )
+        return {
+          state: { ...state, auditLog: [...state.auditLog, auditEntry] },
+          result: {
+            success: false,
+            error: 'Call not found or not approved',
+            executionTimeMs: 0,
+          },
+        }
+      }
+    }
     return {
       state,
       result: {
@@ -446,11 +610,24 @@ export async function executeToolCall(
         endTime: Date.now(),
       }
 
+      // Audit log for cached execution
+      const auditEntry = createAuditLog(
+        call.name,
+        call.id,
+        tool,
+        call.parameters,
+        true,
+        'auto',
+        'success',
+        0
+      )
+
       return {
         state: {
           ...state,
           pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
           completedCalls: [...state.completedCalls, completedCall],
+          auditLog: [...state.auditLog, auditEntry],
         },
         result: {
           success: true,
@@ -501,6 +678,18 @@ export async function executeToolCall(
       endTime,
     }
 
+    // Audit log for successful execution
+    const auditEntry = createAuditLog(
+      call.name,
+      call.id,
+      tool,
+      call.parameters,
+      true,
+      'auto', // TODO: Track actual approval source
+      'success',
+      executionTimeMs
+    )
+
     return {
       state: {
         ...executingState,
@@ -509,6 +698,7 @@ export async function executeToolCall(
         ),
         completedCalls: [...executingState.completedCalls, completedCall],
         cache: newCache,
+        auditLog: [...executingState.auditLog, auditEntry],
       },
       result: {
         success: true,
@@ -520,14 +710,28 @@ export async function executeToolCall(
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
     const errorMessage = err instanceof Error ? err.message : String(err)
+    const isTimeout = errorMessage === 'Execution timeout'
 
     const failedCall: ToolCall = {
       ...call,
-      status: errorMessage === 'Execution timeout' ? 'timeout' : 'failed',
+      status: isTimeout ? 'timeout' : 'failed',
       error: errorMessage,
       startTime,
       endTime,
     }
+
+    // Audit log for failed/timeout execution
+    const auditEntry = createAuditLog(
+      call.name,
+      call.id,
+      tool,
+      call.parameters,
+      true,
+      'auto', // TODO: Track actual approval source
+      isTimeout ? 'timeout' : 'failure',
+      executionTimeMs,
+      errorMessage
+    )
 
     return {
       state: {
@@ -536,6 +740,7 @@ export async function executeToolCall(
           (c) => c.id !== callId
         ),
         completedCalls: [...executingState.completedCalls, failedCall],
+        auditLog: [...executingState.auditLog, auditEntry],
       },
       result: {
         success: false,
