@@ -40,10 +40,13 @@ export interface TanStackMessageListProps {
   /** Render function for each message */
   renderMessage: (message: Message, index: number) => React.ReactNode
 
-  /** Estimated height of each message in pixels */
+  /** Estimated height of each message in pixels (default: 150) */
   estimatedItemSize?: number
 
-  /** Number of items to render outside of the visible area */
+  /**
+   * Number of items to render outside of the visible area (default: 5)
+   * Note: Higher than VirtualizedMessageList (3) due to TanStack's better dynamic height measurement
+   */
   overscanCount?: number
 
   /** Auto-scroll to bottom when new messages arrive */
@@ -405,7 +408,10 @@ TanStackMessageList.displayName = 'TanStackMessageList'
 // ============================================================================
 
 export interface AutoTanStackMessageListProps extends TanStackMessageListProps {
-  /** Threshold for enabling virtualization (message count) */
+  /**
+   * Threshold for enabling virtualization (message count, default: 50)
+   * Note: Lower than VirtualizedMessageList (100) due to TanStack's lower overhead
+   */
   virtualizationThreshold?: number
 }
 

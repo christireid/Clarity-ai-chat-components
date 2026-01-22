@@ -58,10 +58,13 @@ export interface VirtualizedMessageListProps {
   /** Render function for each message */
   renderMessage: (message: Message, index: number) => React.ReactNode
 
-  /** Estimated height of each message in pixels */
+  /** Estimated height of each message in pixels (default: 150) */
   estimatedItemSize?: number
 
-  /** Number of items to render outside of the visible area */
+  /**
+   * Number of items to render outside of the visible area (default: 3)
+   * Note: Lower than TanStackMessageList (5) for better performance with react-window
+   */
   overscanCount?: number
 
   /** Auto-scroll to bottom when new messages arrive */
@@ -87,7 +90,10 @@ export interface MessageListProps extends Omit<
   VirtualizedMessageListProps,
   'threshold'
 > {
-  /** Enable virtualization automatically at this threshold */
+  /**
+   * Enable virtualization automatically at this threshold (default: 100)
+   * Note: Higher than TanStackMessageList (50) due to react-window's higher overhead
+   */
   virtualizationThreshold?: number
 }
 
