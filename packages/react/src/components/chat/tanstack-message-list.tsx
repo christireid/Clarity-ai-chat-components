@@ -99,6 +99,8 @@ export function TanStackMessageList({
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
   const lastScrollTop = React.useRef(0)
+  const [focusedIndex, setFocusedIndex] = React.useState(0)
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([])
 
   // Default key getter
   const itemKey = React.useCallback(
@@ -159,6 +161,63 @@ export function TanStackMessageList({
     previousMessagesLength.current = messages.length
   }, [messages.length, autoScrollToBottom, smoothScroll, virtualizer])
 
+  // Keyboard navigation handler
+  React.useEffect(() => {
+    const parent = parentRef.current
+    if (!parent) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { key } = e
+      let newIndex = focusedIndex
+
+      switch (key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 1, messages.length - 1)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 1, 0)
+          break
+        case 'Home':
+          e.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newIndex = messages.length - 1
+          break
+        case 'PageDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 10, messages.length - 1)
+          break
+        case 'PageUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 10, 0)
+          break
+        default:
+          return
+      }
+
+      if (newIndex !== focusedIndex) {
+        setFocusedIndex(newIndex)
+        // Scroll to the newly focused item
+        virtualizer.scrollToIndex(newIndex, {
+          align: 'center',
+          behavior: smoothScroll ? 'smooth' : 'auto',
+        })
+        // Focus the element
+        const el = itemRefs.current[newIndex]
+        if (el) {
+          el.focus()
+        }
+      }
+    }
+
+    parent.addEventListener('keydown', handleKeyDown)
+    return () => parent.removeEventListener('keydown', handleKeyDown)
+  }, [focusedIndex, messages.length, virtualizer, smoothScroll])
+
   // Check if any message is streaming
   const isStreaming = React.useMemo(
     () => messages.some((m) => m.status === 'streaming'),
@@ -191,17 +250,32 @@ export function TanStackMessageList({
           const message = messages[virtualItem.index]
           if (!message) return null
 
+          const isFocused = focusedIndex === virtualItem.index
+
           return (
             <div
               key={virtualItem.key}
               data-index={virtualItem.index}
-              ref={virtualizer.measureElement}
+              ref={(el) => {
+                virtualizer.measureElement(el)
+                itemRefs.current[virtualItem.index] = el
+              }}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${virtualItem.index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={virtualItem.index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(virtualItem.index)}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
                 transform: `translateY(${virtualItem.start}px)`,
+                outline: isFocused ? '2px solid var(--focus-ring-color, #0066cc)' : 'none',
+                outlineOffset: '2px',
               }}
             >
               {renderMessage(message, virtualItem.index)}

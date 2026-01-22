@@ -34,6 +34,8 @@ type MessageListData = {
   renderMessage: (message: Message, index: number) => React.ReactNode
   heightCache: MessageHeightCache
   setItemHeight: (index: number, height: number) => void
+  focusedIndex: number
+  onItemFocus: (index: number) => void
 }
 // List component - using 'as any' to work around strict generic type constraints with refs
 // Note: react-window v2 has breaking API changes, staying on v1.8.11 for compatibility
@@ -118,9 +120,17 @@ interface MessageItemProps extends ListChildComponentProps<MessageListData> {
 }
 
 function MessageItem({ index, style, data }: MessageItemProps) {
-  const { messages, renderMessage, heightCache, setItemHeight } = data
+  const {
+    messages,
+    renderMessage,
+    heightCache,
+    setItemHeight,
+    focusedIndex,
+    onItemFocus,
+  } = data
   const message = messages[index]
   const itemRef = React.useRef<HTMLDivElement>(null)
+  const isFocused = focusedIndex === index
 
   // Use ResizeObserver instead of offsetHeight to avoid forced layouts
   React.useEffect(() => {
@@ -155,13 +165,52 @@ function MessageItem({ index, style, data }: MessageItemProps) {
     }
   }, [message, index, heightCache, setItemHeight])
 
+  // Auto-focus when this item becomes the focused index
+  React.useEffect(() => {
+    if (isFocused && itemRef.current) {
+      itemRef.current.focus()
+    }
+  }, [isFocused])
+
   if (!message) {
     return <div style={style} />
   }
 
+  const handleFocus = () => {
+    onItemFocus(index)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Let parent handle navigation keys
+    if (
+      ['ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(
+        e.key
+      )
+    ) {
+      e.preventDefault()
+    }
+  }
+
   return (
     <div style={style}>
-      <div ref={itemRef}>{renderMessage(message, index)}</div>
+      <div
+        ref={itemRef}
+        tabIndex={isFocused ? 0 : -1}
+        role="article"
+        aria-label={`Message ${index + 1} of ${messages.length}${
+          message.role ? ` from ${message.role}` : ''
+        }`}
+        aria-posinset={index + 1}
+        aria-setsize={messages.length}
+        onFocus={handleFocus}
+        onKeyDown={handleKeyDown}
+        style={{
+          outline: isFocused ? '2px solid var(--focus-ring-color, #0066cc)' : 'none',
+          outlineOffset: '2px',
+        }}
+      >
+        {renderMessage(message, index)}
+      </div>
     </div>
   )
 }
@@ -189,12 +238,14 @@ export function VirtualizedMessageList({
   itemKey,
 }: VirtualizedMessageListProps) {
   const listRef = React.useRef<List>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
   const heightCacheRef = React.useRef(new MessageHeightCache(estimatedItemSize))
   // Replace force update anti-pattern with useReducer
   const [, forceRender] = React.useReducer((x: number) => x + 1, 0)
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
   const [scrollOffset, setScrollOffset] = React.useState(0)
+  const [focusedIndex, setFocusedIndex] = React.useState(0)
 
   // Track if user is near bottom and preserve scroll position
   // React 19: Keep useCallback for stable ref (required by react-window)
@@ -296,6 +347,62 @@ export function VirtualizedMessageList({
     }
   }, [messages.length])
 
+  // Keyboard navigation handler
+  React.useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { key } = e
+      let newIndex = focusedIndex
+
+      switch (key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 1, messages.length - 1)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 1, 0)
+          break
+        case 'Home':
+          e.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newIndex = messages.length - 1
+          break
+        case 'PageDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 10, messages.length - 1)
+          break
+        case 'PageUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 10, 0)
+          break
+        default:
+          return
+      }
+
+      if (newIndex !== focusedIndex) {
+        setFocusedIndex(newIndex)
+        // Scroll to the newly focused item
+        if (listRef.current) {
+          listRef.current.scrollToItem(newIndex, 'smart')
+        }
+      }
+    }
+
+    container.addEventListener('keydown', handleKeyDown)
+    return () => container.removeEventListener('keydown', handleKeyDown)
+  }, [focusedIndex, messages.length])
+
+  // Callback for when an item receives focus (via mouse click)
+  const handleItemFocus = React.useCallback((index: number) => {
+    setFocusedIndex(index)
+  }, [])
+
   // Check if any message is currently streaming (for aria-busy)
   // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
   const isStreaming = React.useMemo(
@@ -305,6 +412,7 @@ export function VirtualizedMessageList({
 
   return (
     <div
+      ref={containerRef}
       className={className}
       style={{ height: '100%', width: '100%' }}
       role="log"
@@ -326,6 +434,8 @@ export function VirtualizedMessageList({
               renderMessage,
               heightCache: heightCacheRef.current,
               setItemHeight,
+              focusedIndex,
+              onItemFocus: handleItemFocus,
             }}
             itemKey={getItemKey}
             overscanCount={overscanCount}
