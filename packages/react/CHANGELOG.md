@@ -2,14 +2,45 @@
 
 All notable changes to @clarity-chat/react will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-01-22
 
-### ✨ **New Features**
+### 🛡️ **Enterprise Tool Calling System**
 
-#### 📄 **Enterprise Document Loaders**
+- **Unified Architecture**: Consolidated ToolRegistry, ToolExecutor, and ToolOrchestrator for robust
+  tool management
+- **Security Hardening**:
+  - `new Function` / `eval` usage removed in favor of safe evaluators
+  - `autoApprove` defaults to `false` with production safety checks
+  - Input validation with detailed error messages (hints, expected types)
+- **Advanced Features**:
+  - **Rate Limiting**: Configurable token bucket implementation for API protection
+  - **Concurrency Control**: Queue-based execution limiting to prevent overload
+  - **Caching**: LRU (Least Recently Used) cache with TTL and memory limits
+  - **Batch Execution**: Optimized parallel execution with deduplication
+- **Observability**:
+  - **Lifecycle Events**: 11 distinct events for granular tracking
+  - **Audit Logging**: Comprehensive execution logs for compliance
+  - **Statistics**: Built-in monitoring for cache hit rates and execution times
+
+### 📚 **Documentation**
+
+- **Migration Guides**: Detailed paths from legacy systems
+- **Security Guide**: Best practices for secure tool implementation
+- **API Reference**: Comprehensive decision trees and usage examples
+
+### 🧪 **Quality Assurance**
+
+- **E2E Testing**: Complete flow verification from registration to execution
+- **Unit Testing**: 95%+ coverage for core systems
+- **Performance**: Validated benchmarks for high-throughput scenarios
+
+---
+
+## [1.0.0] - 2025-01-21
+
 - **PDF Loader**: Complete pdfjs-dist integration for PDF document ingestion
   - Page-by-page text extraction with metadata preservation
   - Password-protected PDF support
@@ -29,11 +60,12 @@ import { PDFLoader, DOCXLoader } from '@clarity-chat/react/internal'
 const pdfLoader = new PDFLoader()
 const docs = await pdfLoader.load(pdfFile, {
   pageRanges: '1-10',
-  preserveMetadata: true
+  preserveMetadata: true,
 })
 ```
 
 #### 🎯 **Production Reranking**
+
 - **Cohere Reranker**: Enterprise-grade reranking with Cohere Rerank API
   - Support for all Cohere models (rerank-english-v2.0, v3.0, multilingual)
   - Exponential backoff retry logic for network resilience
@@ -46,17 +78,18 @@ import { CohereReranker } from '@clarity-chat/react/internal'
 
 const reranker = new CohereReranker({
   apiKey: process.env.COHERE_API_KEY,
-  model: 'rerank-english-v3.0'
+  model: 'rerank-english-v3.0',
 })
 
 const reranked = await reranker.rerank({
   query: 'user question',
   documents: candidates,
-  topK: 5
+  topK: 5,
 })
 ```
 
 #### 📊 **RAG Evaluation Framework**
+
 - **Complete evaluation system** with 5 standard Information Retrieval metrics
   - **Precision@K**: Accuracy of top-K retrieved documents
   - **Recall@K**: Coverage of relevant documents in top-K
@@ -85,6 +118,7 @@ console.log(`Quality (MAP): ${results.map.toFixed(3)}`)
 ### 📚 **Documentation**
 
 #### **Comprehensive RAG Documentation** (140KB total)
+
 - `docs/rag-audit-report.md` (42KB) - Complete 9-phase audit findings and recommendations
 - `docs/rag-getting-started.md` (12KB) - 5-minute quick start guide for RAG components
 - `docs/rag-architecture.md` (31KB) - Architecture deep dive with diagrams and design decisions
@@ -94,6 +128,7 @@ console.log(`Quality (MAP): ${results.map.toFixed(3)}`)
 - `packages/react/src/evaluation/README.md` (11KB) - Evaluation framework guide with examples
 
 #### **Updated Docs Site**
+
 - Complete RAG guide update with all new implementations
 - Corrected import paths to `@clarity-chat/react/internal`
 - Configuration presets (development, production, enterprise)
@@ -102,33 +137,36 @@ console.log(`Quality (MAP): ${results.map.toFixed(3)}`)
 ### 🔧 **Enhancements**
 
 #### **Package Exports**
+
 - Added PDF and DOCX loaders to document-loaders exports
 - Added Cohere reranker to reranking exports
 - Created new evaluation module exports
 - Updated internal.ts with comprehensive RAG component access
 
 #### **Type Safety**
+
 - Added `error` field to `RerankResponse` interface for graceful error handling
 - Enhanced type definitions for all new components
 
 ### 📈 **Quality Improvements**
 
-| Capability | Before | After | Improvement |
-|------------|--------|-------|-------------|
-| **Document Formats** | 5 formats | 7 formats | +40% |
-| **Reranking** | Basic TF-IDF | Cohere API | +10-30% accuracy |
-| **Evaluation** | None | 5 metrics | ✅ Complete |
-| **Documentation** | Sparse | 140KB | ✅ Comprehensive |
-| **Production Grade** | B+ | A | Grade improvement |
+| Capability           | Before       | After      | Improvement       |
+| -------------------- | ------------ | ---------- | ----------------- |
+| **Document Formats** | 5 formats    | 7 formats  | +40%              |
+| **Reranking**        | Basic TF-IDF | Cohere API | +10-30% accuracy  |
+| **Evaluation**       | None         | 5 metrics  | ✅ Complete       |
+| **Documentation**    | Sparse       | 140KB      | ✅ Comprehensive  |
+| **Production Grade** | B+           | A          | Grade improvement |
 
 ### 🔄 **Dependencies**
 
 #### **Optional Dependencies** (for full RAG functionality)
+
 ```json
 {
-  "pdfjs-dist": "^3.x",    // For PDF document loading
-  "mammoth": "^1.x",       // For DOCX document loading
-  "cohere-ai": "^7.x"      // For Cohere reranking API
+  "pdfjs-dist": "^3.x", // For PDF document loading
+  "mammoth": "^1.x", // For DOCX document loading
+  "cohere-ai": "^7.x" // For Cohere reranking API
 }
 ```
 
@@ -142,13 +180,16 @@ console.log(`Quality (MAP): ${results.map.toFixed(3)}`)
 
 ### 🎉 **Major Release: Enterprise-Ready AI Chat Components**
 
-This major release transforms Clarity Chat into a production-ready, enterprise-grade AI chat component library with comprehensive features for building sophisticated AI interfaces.
+This major release transforms Clarity Chat into a production-ready, enterprise-grade AI chat
+component library with comprehensive features for building sophisticated AI interfaces.
 
 ### ✨ **New Features**
 
 #### 🔄 **Cross-Device Chat Synchronization**
+
 - **Real-time sync**: Automatic synchronization across multiple devices with WebSocket support
-- **Conflict resolution**: Intelligent merging strategies (merge, last-write-wins, manual resolution)
+- **Conflict resolution**: Intelligent merging strategies (merge, last-write-wins, manual
+  resolution)
 - **Offline support**: Queue changes when offline, sync when connection restored
 - **Sync status UI**: Visual indicators for sync state, errors, and pending changes
 - **Version control**: Prevent data loss with conflict detection and resolution
@@ -161,7 +202,7 @@ function SyncedChat() {
     conversationId: 'my-chat',
     apiEndpoint: '/api/sync',
     enableRealtime: true,
-    conflictStrategy: 'merge'
+    conflictStrategy: 'merge',
   })
 
   return (
@@ -174,6 +215,7 @@ function SyncedChat() {
 ```
 
 #### 🛡️ **Advanced Rate Limiting System**
+
 - **Request queuing**: Intelligent queue management with priority support
 - **Exponential backoff**: Smart retry logic for failed requests
 - **Rate limit detection**: Automatic detection and handling of API rate limits
@@ -191,6 +233,7 @@ function SyncedChat() {
 ```
 
 #### 🎨 **Template Marketplace & Sharing**
+
 - **Template library**: Comprehensive local template management
 - **Community marketplace**: Share and discover templates from other users
 - **Template versioning**: Track changes and fork templates
@@ -208,16 +251,14 @@ function TemplateSystem() {
         enableSharing={true}
         onTemplateShare={handleShare}
       />
-      <TemplateMarketplace
-        currentUser={user}
-        onTemplateInstall={handleInstall}
-      />
+      <TemplateMarketplace currentUser={user} onTemplateInstall={handleInstall} />
     </div>
   )
 }
 ```
 
 #### 🧪 **Comprehensive Integration Testing**
+
 - **6 new integration test suites**: 100+ test scenarios covering all features
 - **Cross-package testing**: Verify component interoperability
 - **End-to-end workflows**: Complete user journey validation
@@ -227,18 +268,21 @@ function TemplateSystem() {
 ### 🔧 **Enhancements**
 
 #### **API Improvements**
+
 - **Unified hook API**: Consolidated `useClarityChat` as primary interface
 - **Deprecated export cleanup**: Removed legacy exports in favor of modern APIs
 - **Type safety**: Enhanced TypeScript types across all components
 - **Export consolidation**: Cleaner public API surface
 
 #### **Performance Optimizations**
+
 - **React 18/19 compatibility**: Optimized for latest React features
 - **Memory management**: Improved cleanup and resource management
 - **Bundle optimization**: Tree-shaking friendly exports
 - **Lazy loading**: Optional component loading for better performance
 
 #### **Developer Experience**
+
 - **Enhanced documentation**: Comprehensive guides and examples
 - **Better error messages**: Clearer error reporting and debugging
 - **TypeScript improvements**: Better type inference and IntelliSense
@@ -247,12 +291,14 @@ function TemplateSystem() {
 ### 🐛 **Bug Fixes**
 
 #### **Critical Fixes**
+
 - **Race condition fix**: Resolved chunk accumulation race in `useAssistant`
 - **State update optimization**: Fixed performance issues with `React.startTransition`
 - **Memory leak prevention**: Improved cleanup in long-running components
 - **Type safety**: Fixed TypeScript errors in complex component compositions
 
 #### **Component Fixes**
+
 - **Streaming stability**: Improved streaming response handling
 - **Error boundary coverage**: Better error isolation in component trees
 - **Accessibility**: Enhanced ARIA labels and keyboard navigation
@@ -261,6 +307,7 @@ function TemplateSystem() {
 ### 📚 **Documentation**
 
 #### **New Documentation**
+
 - **Integration guides**: Step-by-step setup for all major features
 - **API reference**: Comprehensive API documentation
 - **Migration guide**: Upgrade path from previous versions
@@ -268,6 +315,7 @@ function TemplateSystem() {
 - **Troubleshooting**: Common issues and solutions
 
 #### **Examples & Tutorials**
+
 - **Complete applications**: Full-featured chat applications
 - **Feature showcases**: Individual feature demonstrations
 - **Integration examples**: Third-party service integrations
@@ -276,12 +324,14 @@ function TemplateSystem() {
 ### 🔒 **Security & Reliability**
 
 #### **Security Enhancements**
+
 - **Input sanitization**: Improved XSS protection
 - **API key handling**: Secure credential management
 - **Content security**: Safe HTML rendering
 - **Rate limiting**: Client-side abuse prevention
 
 #### **Reliability Improvements**
+
 - **Error recovery**: Automatic retry and fallback mechanisms
 - **Connection handling**: Robust network failure recovery
 - **Memory management**: Prevent memory leaks in long sessions
@@ -290,6 +340,7 @@ function TemplateSystem() {
 ### 🧪 **Testing Infrastructure**
 
 #### **Test Coverage Expansion**
+
 - **Unit tests**: 200+ individual component/function tests
 - **Integration tests**: 6 comprehensive test suites
 - **End-to-end tests**: Complete workflow validation
@@ -297,6 +348,7 @@ function TemplateSystem() {
 - **Performance tests**: Load and stress testing
 
 #### **Testing Tools**
+
 - **Test utilities**: Enhanced testing helpers and fixtures
 - **Mock systems**: Realistic API and service mocking
 - **CI integration**: Automated testing pipelines
@@ -305,12 +357,14 @@ function TemplateSystem() {
 ### 📦 **Build & Distribution**
 
 #### **Build System Improvements**
+
 - **Multi-format outputs**: ESM, CJS, and UMD builds
 - **Tree shaking**: Optimized bundle sizes
 - **Source maps**: Better debugging experience
 - **Type definitions**: Comprehensive TypeScript support
 
 #### **Package Management**
+
 - **Monorepo optimization**: Improved build times and caching
 - **Dependency management**: Updated and audited dependencies
 - **Peer dependency handling**: Clear React version requirements
@@ -319,12 +373,14 @@ function TemplateSystem() {
 ### 🚀 **Migration Guide**
 
 #### **Breaking Changes**
+
 - **Hook consolidation**: `useChat` → `useClarityChat`
 - **Component renaming**: Some legacy component names updated
 - **API structure**: Streamlined public API surface
 - **Type definitions**: Enhanced but backward-compatible types
 
 #### **Upgrade Path**
+
 ```bash
 # Update to latest version
 npm install @clarity-chat/react@latest
@@ -335,13 +391,16 @@ import { useClarityChat } from '@clarity-chat/react' // instead of useChat
 
 ### 🙏 **Credits**
 
-This release includes contributions from the comprehensive AI Components & Hooks Audit, which identified and resolved 10+ critical issues and added 5 major new feature sets. Special thanks to the audit process for ensuring production readiness.
+This release includes contributions from the comprehensive AI Components & Hooks Audit, which
+identified and resolved 10+ critical issues and added 5 major new feature sets. Special thanks to
+the audit process for ensuring production readiness.
 
 ---
 
 ## Previous Versions
 
 ### [0.1.0-alpha.x] - 2024
+
 - Initial alpha releases with core chat functionality
 - Basic streaming support and component library
 - Foundation for enterprise features
@@ -349,6 +408,7 @@ This release includes contributions from the comprehensive AI Components & Hooks
 ---
 
 **Legend:**
+
 - ✨ **New Features**
 - 🔧 **Enhancements**
 - 🐛 **Bug Fixes**
@@ -360,4 +420,5 @@ This release includes contributions from the comprehensive AI Components & Hooks
 
 ---
 
-For more detailed information about each feature, see the [documentation](https://clarity-chat.dev) or [examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples).
+For more detailed information about each feature, see the [documentation](https://clarity-chat.dev)
+or [examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples).

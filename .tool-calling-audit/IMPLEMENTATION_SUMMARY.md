@@ -1267,9 +1267,9 @@ sandboxing, minor test coverage)
 - [x] Security safeguards in place
 - [x] Run full test suite (checked locally)
 - [ ] Security review by team
-- [ ] Performance benchmarks
-- [ ] Update package version
-- [ ] Create release notes
+- [x] Performance benchmarks
+- [x] Update package version
+- [x] Create release notes
 - [ ] Merge to main branch
 - [ ] Deploy to production
 
