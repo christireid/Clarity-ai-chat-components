@@ -119,20 +119,17 @@ export function useModelRouter(
   // Persist router instance across renders
   const routerRef = useRef<ModelRouter | null>(null)
 
+  // Lazy initialization
+  if (routerRef.current === null) {
+    routerRef.current = new ModelRouter(routerConfig)
+  }
+
   // Track stats reactively if enabled
   const [stats, setStats] = useState<RouterStats | null>(null)
 
-  // Initialize router in useEffect (not during render!)
+  // Update router on config change
   useEffect(() => {
-    // Initialize router
-    if (!routerRef.current) {
-      routerRef.current = new ModelRouter(routerConfig)
-    }
-
-    // Cleanup on unmount or config change
-    return () => {
-      routerRef.current = null
-    }
+    routerRef.current = new ModelRouter(routerConfig)
   }, [routerConfig])
 
   // Initialize stats in effect to avoid setState during render

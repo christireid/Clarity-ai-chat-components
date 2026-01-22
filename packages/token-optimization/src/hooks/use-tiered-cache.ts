@@ -167,6 +167,11 @@ export function useTieredCache(
   // Persist cache instance across renders
   const cacheRef = useRef<TieredCache | null>(null)
 
+  // Lazy initialization
+  if (cacheRef.current === null) {
+    cacheRef.current = new TieredCache(cacheConfig)
+  }
+
   // Track stats reactively if enabled
   const [stats, setStats] = useState<CacheStats | null>(null)
 

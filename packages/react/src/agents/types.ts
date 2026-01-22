@@ -32,13 +32,13 @@ export type {
  *
  * JSON Schema property types for tool parameters
  */
-export interface ToolParameterProperty {
+export interface LegacyToolParameterProperty {
   type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
   description?: string
   enum?: (string | number | boolean)[]
   default?: unknown
-  items?: ToolParameterProperty
-  properties?: Record<string, ToolParameterProperty>
+  items?: LegacyToolParameterProperty
+  properties?: Record<string, LegacyToolParameterProperty>
   required?: string[]
   minimum?: number
   maximum?: number
@@ -48,18 +48,28 @@ export interface ToolParameterProperty {
 }
 
 /** JSON Schema for tool parameters */
-export interface ToolParameters {
+export interface LegacyToolParameters {
   type: 'object'
-  properties: Record<string, ToolParameterProperty>
+  properties: Record<string, LegacyToolParameterProperty>
   required?: string[]
   additionalProperties?: boolean
 }
 
 /** Arguments passed to tool execution */
-export type ToolArguments = Record<string, string | number | boolean | string[] | number[] | Record<string, unknown>>
+export type LegacyToolArguments = Record<
+  string,
+  string | number | boolean | string[] | number[] | Record<string, unknown>
+>
 
 /** Result from tool execution */
-export type ToolResult = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined
+export type LegacyToolResult =
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | unknown[]
+  | null
+  | undefined
 
 export interface Tool {
   /** Tool name */
@@ -67,9 +77,9 @@ export interface Tool {
   /** Tool description for AI */
   description: string
   /** Input schema (JSON Schema) */
-  parameters: ToolParameters
+  parameters: LegacyToolParameters
   /** Tool execution function */
-  execute: (args: ToolArguments) => Promise<ToolResult>
+  execute: (args: LegacyToolArguments) => Promise<LegacyToolResult>
   /** Whether tool requires approval */
   requiresApproval?: boolean
   /** Tool category */
@@ -106,7 +116,10 @@ export interface AgentConfig {
 }
 
 /** Metadata attached to agent messages */
-export type AgentMessageMetadata = Record<string, string | number | boolean | null>
+export type AgentMessageMetadata = Record<
+  string,
+  string | number | boolean | null
+>
 
 export interface AgentMessage {
   /** Message role */
@@ -119,7 +132,7 @@ export interface AgentMessage {
     arguments: string
   }
   /** Function result (if role is 'function') */
-  functionResult?: ToolResult
+  functionResult?: LegacyToolResult
   /** Tool calls (for parallel function calling) */
   toolCalls?: Array<{
     id: string
@@ -143,9 +156,9 @@ export interface AgentStep {
   /** Tool used (if action) */
   tool?: string
   /** Tool arguments (if action) */
-  args?: ToolArguments
+  args?: LegacyToolArguments
   /** Tool result (if observation) */
-  result?: ToolResult
+  result?: LegacyToolResult
   /** Error (if failed) */
   error?: string
   /** Timestamp */
@@ -201,32 +214,32 @@ export interface Agent {
   description: string
   /** Available tools */
   tools: Tool[]
-  
+
   /**
    * Execute a query
    */
   execute(query: string, context?: AgentMessage[]): Promise<AgentExecution>
-  
+
   /**
    * Execute a single step
    */
   step(execution: AgentExecution): Promise<AgentStep>
-  
+
   /**
    * Add a tool
    */
   addTool(tool: Tool): void
-  
+
   /**
    * Remove a tool
    */
   removeTool(toolName: string): void
-  
+
   /**
    * Get tool by name
    */
   getTool(name: string): Tool | undefined
-  
+
   /**
    * Create a plan for a query
    */
@@ -238,17 +251,17 @@ export interface AgentMemory {
    * Add message to memory
    */
   addMessage(message: AgentMessage): void
-  
+
   /**
    * Get recent messages
    */
   getMessages(limit?: number): AgentMessage[]
-  
+
   /**
    * Clear memory
    */
   clear(): void
-  
+
   /**
    * Summarize memory if needed
    */
@@ -256,16 +269,16 @@ export interface AgentMemory {
 }
 
 export interface ToolApprovalCallback {
-  (tool: Tool, args: ToolArguments): Promise<boolean>
+  (tool: Tool, args: LegacyToolArguments): Promise<boolean>
 }
 
 export interface AgentCallbacks {
   /** Called when agent starts thinking */
   onThought?: (thought: string) => void
   /** Called when agent decides on an action */
-  onAction?: (tool: string, args: ToolArguments) => void
+  onAction?: (tool: string, args: LegacyToolArguments) => void
   /** Called when tool execution completes */
-  onObservation?: (result: ToolResult) => void
+  onObservation?: (result: LegacyToolResult) => void
   /** Called when agent provides final answer */
   onAnswer?: (answer: string) => void
   /** Called on error */
@@ -273,4 +286,3 @@ export interface AgentCallbacks {
   /** Called for tool approval (if required) */
   onToolApproval?: ToolApprovalCallback
 }
-
