@@ -1,14 +1,23 @@
-// Enhanced components index
-export { EnhancedCodeBlock } from './EnhancedCodeBlock'
-export { PropsTable } from './PropsTable'
-export { RelatedPages } from './RelatedPages'
-export { SuccessCelebration } from './SuccessCelebration'
-export { TableOfContents } from './TableOfContents'
-export { TryItOut } from './TryItOut'
-export { TutorialProgress } from './TutorialProgress'
-export { TutorialProgressWrapper } from './TutorialProgressWrapper'
-export { TutorialStep } from './TutorialStep'
-export { YouWillLearn } from './YouWillLearn'
+/**
+ * Enhanced Components - 2025 Design Patterns
+ *
+ * Premium UI components with modern animations, micro-interactions,
+ * and skeleton loading states for the streamlined docs site.
+ */
 
-// Hooks
-export { useTutorialProgress } from './useTutorialProgress'
+export { EnhancedCopyButton } from './EnhancedCopyButton'
+export {
+  SkeletonLoader,
+  SkeletonStyles,
+  ComponentCardSkeleton,
+  SearchResultSkeleton,
+  CodeBlockSkeleton,
+  NavigationSkeleton,
+} from './SkeletonLoader'
+export {
+  ScrollReveal,
+  ScrollRevealStagger,
+  ScrollRevealStaggerItem,
+  ParallaxScroll,
+  KineticText,
+} from './ScrollReveal'
