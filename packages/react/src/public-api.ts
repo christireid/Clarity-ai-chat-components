@@ -185,9 +185,9 @@ export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
-  InlineCode,
-  type InlineCodeProps,
 } from './components/code/CodeBlock'
+
+export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -230,8 +230,14 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
-export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
+export {
+  OfflineChatSync,
+  useOfflineChat,
+} from './components/chat/offline-chat-sync'
+export {
+  ChatSyncStatus,
+  type ChatSyncStatusProps,
+} from './components/chat/chat-sync-status'
 export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
@@ -455,7 +461,7 @@ export {
   streamingChat,
   ChatBuilder,
   ChatPresets,
-} from './utils/quick-start.tsx'
+} from './utils/quick-start'
 
 // Development Helpers - DX utilities
 export {
@@ -469,11 +475,7 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export {
-  SetupWizard,
-  QuickSetup,
-  interactiveSetup,
-} from './utils/setup-wizard.tsx'
+export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -485,16 +487,17 @@ export {
   loadFeature,
   LazyComponents,
   LazyLoadPerformanceMonitor,
-} from './utils/lazy-loading.tsx'
+} from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
-export {
-  migrateToV1,
-  createMigrationWrapper,
-  applyMigration,
-  validateMigration,
-  MigrationUtils,
-} from './utils/migration-helpers.tsx'
+// Note: migration-helpers file doesn't exist, commented out dead code
+// export {
+//   migrateToV1,
+//   createMigrationWrapper,
+//   applyMigration,
+//   validateMigration,
+//   MigrationUtils,
+// } from './utils/migration-helpers'
 
 // IntelliSense Helpers - Enhanced TypeScript DX
 export type {
@@ -526,21 +529,22 @@ export {
 } from './utils/component-composition'
 
 // Theme Helpers - Easy theming and customization
-export {
-  ThemePresets,
-  createThemeFromPalette,
-  createThemeFromCSSVariables,
-  mergeThemes,
-  createThemeVariant,
-  createThemeClasses,
-  applyThemeToCSS,
-  // useTheme, // Duplicate - exported from './theme'
-  useResponsiveTheme,
-  usePersistentTheme,
-  // ThemeProvider, // Duplicate - exported from './theme'
-  ThemeToggle,
-  ThemeSelector,
-} from './utils/theme-helpers'
+// COMMENTED OUT: theme-helpers file doesn't exist
+// export {
+//   ThemePresets,
+//   createThemeFromPalette,
+//   createThemeFromCSSVariables,
+//   mergeThemes,
+//   createThemeVariant,
+//   createThemeClasses,
+//   applyThemeToCSS,
+//   // useTheme, // Duplicate - exported from './theme'
+//   useResponsiveTheme,
+//   usePersistentTheme,
+//   // ThemeProvider, // Duplicate - exported from './theme'
+//   ThemeToggle,
+//   ThemeSelector,
+// } from './utils/theme-helpers'
 
 // Accessibility Helpers - Enhanced A11y support
 export {
@@ -587,21 +591,23 @@ export {
   testDataFactories,
   chatAssertions,
   vi,
-  Mock,
 } from './utils/testing-helpers'
 
+export type { Mock } from './utils/testing-helpers'
+
 // Migration Helpers - Easy migration from other libraries
-export {
-  VercelAdapter,
-  OpenAIAdapter,
-  ChatbotKitAdapter,
-  CustomAdapter,
-  MigrationTracker,
-  MigrationAnalyzer,
-  MigrationPresets,
-  generateMigrationReport,
-  migrateQuick,
-} from './utils/migration-helpers'
+// Note: migration-helpers file doesn't exist, commented out dead code
+// export {
+//   VercelAdapter,
+//   OpenAIAdapter,
+//   ChatbotKitAdapter,
+//   CustomAdapter,
+//   MigrationTracker,
+//   MigrationAnalyzer,
+//   MigrationPresets,
+//   generateMigrationReport,
+//   migrateQuick,
+// } from './utils/migration-helpers'
 
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
@@ -734,7 +740,10 @@ export {
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
+export {
+  AdaptiveTokenOptimizer as TokenOptimizer,
+  adaptiveOptimizer,
+} from './utils/tokenization/adaptive-optimizer'
 export {
   TokenCostPreview,
   useTokenEstimate,
@@ -813,7 +822,10 @@ export { AdvancedChatInput } from './components/input/advanced-chat-input'
 export { FileUpload } from './components/input/file-upload'
 export { InlineVoiceInput } from './components/input/voice-input'
 export { StructuredInputBuilder } from './components/input/structured-input-builder'
-export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
+export {
+  DocumentIntegration,
+  useDocumentIntegration,
+} from './components/media/document-integration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
@@ -824,7 +836,10 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
-export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
+export {
+  CollaborativeEditor,
+  useCollaborativeSession,
+} from './components/ai/collaborative-editing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
@@ -902,7 +917,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
 // Security
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+export { SecurityMonitor, securityMonitor } from './utils/security'
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -954,8 +969,9 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-export { ApiTokenManager } from './components/enterprise/api-token-manager'
-export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
+// COMMENTED OUT: These files don't exist
+// export { ApiTokenManager } from './components/enterprise/api-token-manager'
+// export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
 
 // ============================================================================
 // THEME COMPONENTS (Theme Preview & Testing)
@@ -977,11 +993,10 @@ export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboa
 // Performance monitoring
 export {
   usePerformanceTracking,
-  logPerformanceMetrics,
   getPerformanceSummary,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
-} from './utils/performance-monitoring.tsx'
+} from './utils/performance-monitoring'
 
 // Accessibility testing
 export {
@@ -996,7 +1011,7 @@ export {
   type AccessibilityViolation,
   type AccessibilityReport,
   type AccessibilityTestOptions,
-} from './utils/accessibility-testing.tsx'
+} from './utils/accessibility-testing'
 
 // Visual regression testing
 export {
@@ -1027,7 +1042,6 @@ export {
   createSecureContentWrapper,
   useSecureContent,
   useCSP,
-  securityMonitor,
   DEFAULT_SECURITY_CONFIG,
   type SecurityConfig,
   type SanitizationOptions,
@@ -1075,4 +1089,4 @@ export {
   type UserJourneyEvent,
   type AnalyticsConfig,
   type AnalyticsProviderProps,
-} from './utils/analytics.tsx'
+} from './utils/analytics'

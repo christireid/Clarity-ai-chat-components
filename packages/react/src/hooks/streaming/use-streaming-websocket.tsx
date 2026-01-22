@@ -235,7 +235,6 @@ export function useStreamingWebSocket(
   }
 
   const {
-    url,
     protocols,
     autoReconnect = true,
     reconnectOnCleanClose = true,
@@ -427,7 +426,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('open', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection detected, aborting')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection detected, aborting'
+          )
           return
         }
 
@@ -491,7 +492,12 @@ export function useStreamingWebSocket(
         setLastMessage(message)
 
         // DELIVERY-5: Send acknowledgment if enabled and message has ID
-        if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
+        if (
+          enableAcknowledgment &&
+          message.data &&
+          typeof message.data === 'object' &&
+          'id' in message.data
+        ) {
           const messageId = message.data.id as string
           try {
             const ackMessage = JSON.stringify({
@@ -501,7 +507,10 @@ export function useStreamingWebSocket(
             ws.send(ackMessage)
             onAcknowledgmentSent?.(messageId)
           } catch (err) {
-            logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
+            logger.warn(
+              '[useStreamingWebSocket] Failed to send acknowledgment:',
+              err
+            )
           }
         }
 
@@ -512,7 +521,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('error', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection error, ignoring')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection error, ignoring'
+          )
           return
         }
 
@@ -585,6 +596,14 @@ export function useStreamingWebSocket(
     reconnectAttempt,
     initialReconnectDelay,
     maxReconnectDelay,
+    ackMessageType,
+    connectionTimeout,
+    enableAcknowledgment,
+    maxMessageBufferSize,
+    onAcknowledgmentSent,
+    onMessageBufferOverflow,
+    reconnectOnCleanClose,
+    reconnectSuccessThreshold,
     onOpen,
     onMessage,
     onError,

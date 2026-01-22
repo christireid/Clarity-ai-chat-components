@@ -3,6 +3,20 @@
 import type { ReactNode } from 'react'
 import type { Message } from '@clarity-chat/types'
 
+// Forward declaration to avoid circular dependency with tools-engine
+interface ToolCall {
+  id: string
+  name: string
+  parameters: Record<string, unknown>
+  status:
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'executing'
+    | 'completed'
+    | 'failed'
+}
+
 // =============================================================================
 // Feature Flags
 // =============================================================================
@@ -351,9 +365,12 @@ export interface ClarityResolvedConfig {
   features: Required<ClarityFeatureFlags>
   memory: Required<MemoryConfig>
   tokenOptimization: Required<TokenOptimizationConfig>
-  tools: Required<Omit<ToolsConfig, 'registry' | 'customRenderer'>> & {
+  tools: Required<
+    Omit<ToolsConfig, 'registry' | 'customRenderer' | 'approvalHandler'>
+  > & {
     registry: ToolDefinition[]
     customRenderer?: React.ComponentType<{ result: unknown; toolName: string }>
+    approvalHandler?: (call: ToolCall) => Promise<boolean>
   }
   rag: Required<Omit<RAGConfig, 'sources'>> & { sources: RAGSource[] }
   safety: Required<Omit<SafetyConfig, 'customPolicy'>> & {

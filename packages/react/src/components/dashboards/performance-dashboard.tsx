@@ -1,7 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@clarity-chat/primitives'
 import { Badge } from '@clarity-chat/primitives'
 import { cn } from '../../utils/cn'
 import {
@@ -9,7 +14,18 @@ import {
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
-import { useRenderPerformance, useMemoryUsage } from '../../utils/analytics'
+import { useRenderPerformance } from '../../utils/analytics'
+
+// Stub for useMemoryUsage - not yet implemented in analytics
+function useMemoryUsage() {
+  return undefined as
+    | {
+        usedJSHeapSize: number
+        jsHeapSizeLimit: number
+        totalJSHeapSize: number
+      }
+    | undefined
+}
 
 interface PerformanceDashboardProps {
   className?: string
@@ -29,9 +45,7 @@ export function PerformanceDashboard({
   refreshInterval = 5000,
 }: PerformanceDashboardProps) {
   const [metrics, setMetrics] = React.useState<PerformanceMetrics[]>([])
-  const [summary, setSummary] = React.useState(() =>
-    getPerformanceSummary()
-  )
+  const [summary, setSummary] = React.useState(() => getPerformanceSummary())
 
   // Load metrics from localStorage
   const loadMetrics = React.useCallback(() => {
@@ -82,7 +96,8 @@ export function PerformanceDashboard({
   }, [])
 
   const formatTime = (ms: number) => `${ms.toFixed(2)}ms`
-  const formatMemory = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(2)}MB`
+  const formatMemory = (bytes: number) =>
+    `${(bytes / (1024 * 1024)).toFixed(2)}MB`
 
   const getPerformanceColor = (renderTime: number) => {
     if (renderTime > 16) return 'destructive' // > 60fps
@@ -177,44 +192,47 @@ export function PerformanceDashboard({
             </p>
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {metrics.slice().reverse().map((metric, index) => (
-                <div
-                  key={`${metric.timestamp}-${index}`}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <Badge variant={getPerformanceColor(metric.renderTime)}>
-                      {formatTime(metric.renderTime)}
-                    </Badge>
-                    <span className="font-medium text-sm">
-                      {metric.component}
-                    </span>
-                    {metric.metadata && (
-                      <span className="text-xs text-muted-foreground">
-                        {Object.entries(metric.metadata)
-                          .slice(0, 2)
-                          .map(([key, value]) => `${key}: ${value}`)
-                          .join(', ')}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {metric.memoryDelta !== undefined && (
-                      <Badge
-                        variant={getMemoryColor(Math.abs(metric.memoryDelta))}
-                        className="text-xs"
-                      >
-                        {metric.memoryDelta > 0 ? '+' : ''}
-                        {(metric.memoryDelta / 1024).toFixed(0)}KB
+              {metrics
+                .slice()
+                .reverse()
+                .map((metric, index) => (
+                  <div
+                    key={`${metric.timestamp}-${index}`}
+                    className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge variant={getPerformanceColor(metric.renderTime)}>
+                        {formatTime(metric.renderTime)}
                       </Badge>
-                    )}
-                    <span>
-                      {new Date(metric.timestamp).toLocaleTimeString()}
-                    </span>
+                      <span className="font-medium text-sm">
+                        {metric.component}
+                      </span>
+                      {metric.metadata && (
+                        <span className="text-xs text-muted-foreground">
+                          {Object.entries(metric.metadata)
+                            .slice(0, 2)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ')}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      {metric.memoryDelta !== undefined && (
+                        <Badge
+                          variant={getMemoryColor(Math.abs(metric.memoryDelta))}
+                          className="text-xs"
+                        >
+                          {metric.memoryDelta > 0 ? '+' : ''}
+                          {(metric.memoryDelta / 1024).toFixed(0)}KB
+                        </Badge>
+                      )}
+                      <span>
+                        {new Date(metric.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </CardContent>
@@ -232,8 +250,9 @@ export function PerformanceDashboard({
                 ⚠️ Slow Render Performance
               </h4>
               <p className="text-sm text-destructive/80">
-                Average render time ({formatTime(summary.averageRenderTime)}) exceeds 60fps threshold.
-                Consider optimizing component re-renders or implementing virtualization for large lists.
+                Average render time ({formatTime(summary.averageRenderTime)})
+                exceeds 60fps threshold. Consider optimizing component
+                re-renders or implementing virtualization for large lists.
               </p>
             </div>
           )}
@@ -244,8 +263,9 @@ export function PerformanceDashboard({
                 ⚠️ High Memory Usage
               </h4>
               <p className="text-sm text-warning/80">
-                Current memory usage ({formatMemory(summary.memoryUsage)}) is high.
-                Consider implementing lazy loading or code splitting for heavy components.
+                Current memory usage ({formatMemory(summary.memoryUsage)}) is
+                high. Consider implementing lazy loading or code splitting for
+                heavy components.
               </p>
             </div>
           )}
@@ -256,8 +276,8 @@ export function PerformanceDashboard({
                 ✅ Excellent Performance
               </h4>
               <p className="text-sm text-success/80">
-                All tracked components are rendering efficiently with average times under 8ms.
-                Performance optimizations are working well!
+                All tracked components are rendering efficiently with average
+                times under 8ms. Performance optimizations are working well!
               </p>
             </div>
           )}
@@ -295,8 +315,8 @@ export function PerformanceBadge({ className }: { className?: string }) {
   const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
-    if (performanceMetrics.lastRenderTime > 50) return 'poor'
-    if (performanceMetrics.lastRenderTime > 16) return 'warning'
+    if (performanceMetrics.lastRenderDuration > 50) return 'poor'
+    if (performanceMetrics.lastRenderDuration > 16) return 'warning'
     if (
       memoryInfo &&
       memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.9
@@ -308,7 +328,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
     )
       return 'warning'
     return 'good'
-  }, [performanceMetrics.lastRenderTime, memoryInfo])
+  }, [performanceMetrics.lastRenderDuration, memoryInfo])
 
   return (
     <div
@@ -319,9 +339,9 @@ export function PerformanceBadge({ className }: { className?: string }) {
             ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20'
             : 'bg-destructive/10 text-destructive border-destructive/20'
       } ${className || ''}`}
-      title={`Last render: ${performanceMetrics.lastRenderTime.toFixed(2)}ms`}
+      title={`Last render: ${performanceMetrics.lastRenderDuration.toFixed(2)}ms`}
       role="status"
-      aria-label={`Performance status: ${status}, last render ${performanceMetrics.lastRenderTime.toFixed(1)} milliseconds`}
+      aria-label={`Performance status: ${status}, last render ${performanceMetrics.lastRenderDuration.toFixed(1)} milliseconds`}
     >
       <span
         className={`w-2 h-2 rounded-full ${
@@ -333,7 +353,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
         }`}
         aria-hidden="true"
       />
-      {performanceMetrics.lastRenderTime.toFixed(1)}ms
+      {performanceMetrics.lastRenderDuration.toFixed(1)}ms
     </div>
   )
 }
