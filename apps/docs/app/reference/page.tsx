@@ -13,14 +13,46 @@ const sections = [
     icon: Box,
     description: 'Complete reference for all UI components',
     items: [
-      { title: 'ChatWindow', href: '/reference/components/chat-window', description: 'Main chat container' },
-      { title: 'Message', href: '/reference/components/message', description: 'Individual message display' },
-      { title: 'MessageList', href: '/reference/components/message-list', description: 'Scrollable message list' },
-      { title: 'MessageInput', href: '/reference/components/message-input', description: 'Message input field' },
-      { title: 'TypingIndicator', href: '/reference/components/typing-indicator', description: 'Typing animation' },
-      { title: 'CommandPalette', href: '/reference/components/command-palette', description: 'Keyboard-driven commands' },
-      { title: 'ContextMenu', href: '/reference/components/context-menu', description: 'Right-click menus' },
-      { title: 'Draggable', href: '/reference/components/draggable', description: 'Drag and drop system' },
+      {
+        title: 'ChatWindow',
+        href: '/reference/components/chat-window',
+        description: 'Main chat container',
+      },
+      {
+        title: 'Message',
+        href: '/reference/components/message',
+        description: 'Individual message display',
+      },
+      {
+        title: 'MessageList',
+        href: '/reference/components/message-list',
+        description: 'Scrollable message list',
+      },
+      {
+        title: 'MessageInput',
+        href: '/reference/components/message-input',
+        description: 'Message input field',
+      },
+      {
+        title: 'TypingIndicator',
+        href: '/reference/components/typing-indicator',
+        description: 'Typing animation',
+      },
+      {
+        title: 'CommandPalette',
+        href: '/reference/components/command-palette',
+        description: 'Keyboard-driven commands',
+      },
+      {
+        title: 'ContextMenu',
+        href: '/reference/components/context-menu',
+        description: 'Right-click menus',
+      },
+      {
+        title: 'Draggable',
+        href: '/reference/components/draggable',
+        description: 'Drag and drop system',
+      },
     ],
   },
   {
@@ -28,13 +60,41 @@ const sections = [
     icon: Anchor,
     description: 'React hooks for state management and utilities',
     items: [
-      { title: 'useChat', href: '/reference/hooks/use-chat', description: 'Manage chat state' },
-      { title: 'useMessages', href: '/reference/hooks/use-messages', description: 'Handle message operations' },
-      { title: 'useTyping', href: '/reference/hooks/use-typing', description: 'Typing indicator state' },
-      { title: 'useKeyboardShortcuts', href: '/reference/hooks/use-keyboard-shortcuts', description: 'Keyboard bindings' },
-      { title: 'useUndoRedo', href: '/reference/hooks/use-undo-redo', description: 'History management' },
-      { title: 'useHaptic', href: '/reference/hooks/use-haptic', description: 'Haptic feedback' },
-      { title: 'useTheme', href: '/reference/hooks/use-theme', description: 'Theme management' },
+      {
+        title: 'useClarityChat',
+        href: '/reference/hooks/use-clarity-chat',
+        description: 'Manage chat state with memory',
+      },
+      {
+        title: 'useMessages',
+        href: '/reference/hooks/use-messages',
+        description: 'Handle message operations',
+      },
+      {
+        title: 'useTyping',
+        href: '/reference/hooks/use-typing',
+        description: 'Typing indicator state',
+      },
+      {
+        title: 'useKeyboardShortcuts',
+        href: '/reference/hooks/use-keyboard-shortcuts',
+        description: 'Keyboard bindings',
+      },
+      {
+        title: 'useUndoRedo',
+        href: '/reference/hooks/use-undo-redo',
+        description: 'History management',
+      },
+      {
+        title: 'useHaptic',
+        href: '/reference/hooks/use-haptic',
+        description: 'Haptic feedback',
+      },
+      {
+        title: 'useTheme',
+        href: '/reference/hooks/use-theme',
+        description: 'Theme management',
+      },
     ],
   },
   {
@@ -42,9 +102,21 @@ const sections = [
     icon: Code,
     description: 'Types, interfaces, and utilities',
     items: [
-      { title: 'Types', href: '/reference/api/types', description: 'TypeScript type definitions' },
-      { title: 'Utilities', href: '/reference/api/utilities', description: 'Helper functions' },
-      { title: 'Configuration', href: '/reference/api/configuration', description: 'Config options' },
+      {
+        title: 'Types',
+        href: '/reference/api/types',
+        description: 'TypeScript type definitions',
+      },
+      {
+        title: 'Utilities',
+        href: '/reference/api/utilities',
+        description: 'Helper functions',
+      },
+      {
+        title: 'Configuration',
+        href: '/reference/api/configuration',
+        description: 'Config options',
+      },
     ],
   },
   {
@@ -52,8 +124,16 @@ const sections = [
     icon: Palette,
     description: 'Customize colors and styles',
     items: [
-      { title: 'Theme Configuration', href: '/learn/concepts/theming', description: 'Create custom themes' },
-      { title: 'CSS Variables', href: '/learn/guides/styling', description: 'Available CSS variables' },
+      {
+        title: 'Theme Configuration',
+        href: '/learn/concepts/theming',
+        description: 'Create custom themes',
+      },
+      {
+        title: 'CSS Variables',
+        href: '/learn/guides/styling',
+        description: 'Available CSS variables',
+      },
     ],
   },
   {
@@ -61,7 +141,11 @@ const sections = [
     icon: Server,
     description: 'Cross-framework packages and context services',
     items: [
-      { title: 'MemoryService', href: '/reference/services/memory-service', description: 'AI memory & context orchestration' },
+      {
+        title: 'MemoryService',
+        href: '/reference/services/memory-service',
+        description: 'AI memory & context orchestration',
+      },
     ],
   },
 ]
@@ -72,7 +156,8 @@ export default function ReferencePage() {
       <div className="max-w-4xl">
         <h1 className="text-5xl font-bold mb-6">API Reference</h1>
         <p className="text-xl text-text-secondary mb-12">
-          Comprehensive documentation for every component, hook, and utility in Clarity Chat UI.
+          Comprehensive documentation for every component, hook, and utility in
+          Clarity Chat UI.
         </p>
 
         <div className="grid gap-8">
@@ -117,7 +202,8 @@ export default function ReferencePage() {
         <div className="mt-12 p-8 bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-950 dark:to-purple-950 rounded-xl border border-brand-200 dark:border-brand-800">
           <h2 className="text-2xl font-bold mb-4">Interactive Examples</h2>
           <p className="text-text-secondary mb-6">
-            Want to see these components in action? Check out our interactive examples and live playground.
+            Want to see these components in action? Check out our interactive
+            examples and live playground.
           </p>
           <div className="flex gap-4 flex-wrap">
             <Link

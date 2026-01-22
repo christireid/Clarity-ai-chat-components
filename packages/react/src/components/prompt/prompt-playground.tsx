@@ -481,7 +481,7 @@ export function PromptPlayground({
               <div className="space-y-4">
                 {/* Cost Breakdown */}
                 {showCostEstimate && (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     <Card>
                       <CardContent className="p-3 text-center">
                         <p className="text-xs text-muted-foreground">Input</p>

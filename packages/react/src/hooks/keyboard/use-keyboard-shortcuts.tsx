@@ -424,7 +424,20 @@ export interface ScopedKeyboardShortcutsOptions {
   priority?: number
 }
 
-// Global registry for managing shortcut priorities
+/**
+ * Module-level global registry for managing scoped keyboard shortcuts.
+ *
+ * This pattern is intentional for the following reasons:
+ * 1. We need a single global keyboard listener to manage priority-based shortcuts
+ * 2. Multiple components can register shortcuts with different priorities
+ * 3. The registry allows conflict resolution (highest priority wins)
+ *
+ * Note for testing: Tests should ensure proper cleanup by unmounting all
+ * components that use useScopedKeyboardShortcuts to clear the registry.
+ *
+ * Note for HMR: The registry persists across hot reloads, which is the
+ * desired behavior to maintain registered shortcuts during development.
+ */
 const scopeRegistry = new Map<
   symbol,
   { shortcuts: KeyboardShortcut[]; priority: number; enabled: boolean }

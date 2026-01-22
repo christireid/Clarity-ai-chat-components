@@ -16,13 +16,14 @@
  * ```
  */
 
-import { createHash } from 'node:crypto'
-
 /**
- * Generate a SHA-256 hash of content (truncated to 16 chars)
+ * Generate a hash of content (for cache keys)
+ *
+ * Uses a simple but fast hashing algorithm suitable for cache keys.
+ * Not cryptographically secure - for cache keying purposes only.
  *
  * @param content - String content to hash
- * @returns 16-character hex hash string
+ * @returns Hash string
  *
  * @example
  * ```ts
@@ -30,7 +31,17 @@ import { createHash } from 'node:crypto'
  * ```
  */
 export function getContentHash(content: string): string {
-  return createHash('sha256').update(content).digest('hex').slice(0, 16)
+  // Simple hash function that works in all environments (browser + Node.js)
+  // FNV-1a hash algorithm - fast and good distribution
+  let hash = 2166136261 // FNV offset basis
+
+  for (let i = 0; i < content.length; i++) {
+    hash ^= content.charCodeAt(i)
+    hash = Math.imul(hash, 16777619) // FNV prime
+  }
+
+  // Convert to unsigned 32-bit and return as hex
+  return (hash >>> 0).toString(16).padStart(8, '0')
 }
 
 /**
@@ -259,9 +270,14 @@ export class TTLCache<K, V> {
 
   /**
    * Check if a key exists and is not expired
+   * Note: This method does NOT delete expired entries as a side effect
    */
   has(key: K): boolean {
-    return this.get(key) !== undefined
+    const entry = this.cache.get(key)
+    if (!entry) return false
+
+    // Check if expired without deleting
+    return Date.now() <= entry.expiry
   }
 
   /**
@@ -323,7 +339,16 @@ export interface MemoizeOptions<Args extends unknown[]> {
   maxSize?: number
   /** Time-to-live in milliseconds (if set, uses TTL instead of LRU) */
   ttlMs?: number
-  /** Custom key generation function */
+  /**
+   * Custom key generation function
+   *
+   * Default uses JSON.stringify which has limitations:
+   * - Fails on circular references
+   * - Loses type information (functions, symbols, Date objects)
+   * - May produce same key for different BigInt values
+   *
+   * Provide a custom keyFn for complex objects
+   */
   keyFn?: (...args: Args) => string
 }
 
@@ -332,6 +357,13 @@ export interface MemoizeOptions<Args extends unknown[]> {
  *
  * Caches function results based on arguments. Uses LRU eviction by default,
  * or TTL expiration if ttlMs is specified.
+ *
+ * **Important:** Default key generation uses JSON.stringify which fails for:
+ * - Circular references
+ * - Functions, symbols, BigInts
+ * - Loses type information for Date objects
+ *
+ * For complex arguments, provide a custom `keyFn` option.
  *
  * @param fn - Function to memoize
  * @param options - Memoization options
@@ -345,7 +377,7 @@ export interface MemoizeOptions<Args extends unknown[]> {
  * cached(42) // Computes
  * cached(42) // Returns cached result
  *
- * // With custom key function
+ * // With custom key function for complex objects
  * const cached2 = memoize(
  *   (user: User) => fetchData(user),
  *   { keyFn: (user) => user.id }
@@ -363,7 +395,15 @@ export function memoize<Args extends unknown[], Result>(
     : new LRUCache<string, Result>(maxSize)
 
   return (...args: Args): Result => {
-    const key = keyFn ? keyFn(...args) : JSON.stringify(args)
+    let key: string
+
+    try {
+      key = keyFn ? keyFn(...args) : JSON.stringify(args)
+    } catch (err) {
+      // JSON.stringify can throw on circular references
+      // In this case, always call the function (no caching)
+      return fn(...args)
+    }
 
     // Use has() to check existence, not value comparison
     // This correctly handles cached undefined/null values
@@ -383,6 +423,13 @@ export function memoize<Args extends unknown[], Result>(
  * Caches the returned Promise, so concurrent calls with the same arguments
  * will share the same Promise. Failed promises are removed from cache.
  *
+ * **Important:** Default key generation uses JSON.stringify which fails for:
+ * - Circular references
+ * - Functions, symbols, BigInts
+ * - Loses type information for Date objects
+ *
+ * For complex arguments, provide a custom `keyFn` option.
+ *
  * @param fn - Async function to memoize
  * @param options - Memoization options
  * @returns Memoized async function
@@ -398,6 +445,12 @@ export function memoize<Args extends unknown[], Result>(
  *   cachedFetch('123'),
  *   cachedFetch('123'),
  * ])
+ *
+ * // With custom key function
+ * const cachedFetchComplex = memoizeAsync(
+ *   fetchWithOptions,
+ *   { keyFn: (url, opts) => `${url}:${opts.method}` }
+ * )
  * ```
  */
 export function memoizeAsync<Args extends unknown[], Result>(
@@ -411,7 +464,15 @@ export function memoizeAsync<Args extends unknown[], Result>(
     : new LRUCache<string, Promise<Result>>(maxSize)
 
   return async (...args: Args): Promise<Result> => {
-    const key = keyFn ? keyFn(...args) : JSON.stringify(args)
+    let key: string
+
+    try {
+      key = keyFn ? keyFn(...args) : JSON.stringify(args)
+    } catch (err) {
+      // JSON.stringify can throw on circular references
+      // In this case, always call the function (no caching)
+      return await fn(...args)
+    }
 
     // Use has() to check existence, not value comparison
     // This correctly handles in-flight promises

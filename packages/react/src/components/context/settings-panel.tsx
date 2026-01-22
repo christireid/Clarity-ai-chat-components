@@ -134,7 +134,7 @@ export function SettingsPanel({
                       <label className="text-sm font-medium mb-2 block">
                         Tone
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {(
                           [
                             'professional',
@@ -165,7 +165,7 @@ export function SettingsPanel({
                       <label className="text-sm font-medium mb-2 block">
                         Verbosity
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {(
                           [
                             'concise',
@@ -249,7 +249,7 @@ export function SettingsPanel({
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Theme</h3>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {['light', 'dark', 'system'].map((theme) => (
                       <Button
                         key={theme}
@@ -283,7 +283,7 @@ export function SettingsPanel({
 
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Text Size</h3>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {['small', 'medium', 'large', 'extra-large'].map((size) => (
                       <Button
                         key={size}
@@ -308,7 +308,7 @@ export function SettingsPanel({
 
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Message Layout</h3>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {['bubbles', 'compact', 'spacious'].map((layout) => (
                       <Button
                         key={layout}
@@ -419,7 +419,7 @@ export function SettingsPanel({
                   ))}
                 </div>
 
-                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
+                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
                   <h4 className="text-sm font-medium mb-2">
                     ⚠️ Privacy Notice
                   </h4>

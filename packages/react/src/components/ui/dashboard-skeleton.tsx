@@ -269,7 +269,7 @@ export function MetricCardSkeleton({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        'rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-xs',
         className
       )}
       role="presentation"

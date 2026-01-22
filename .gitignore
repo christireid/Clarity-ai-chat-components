@@ -164,6 +164,9 @@ core
 # Exception: prompt system core directory
 !**/src/prompt/core/
 !**/src/prompt/core/**
+# Exception: tool lifecycle core directory
+!**/src/core/
+!**/src/core/**
 
 # Temporary documentation files (archived)
 archive/documentation-overhaul/

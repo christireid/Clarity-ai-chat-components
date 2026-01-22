@@ -513,7 +513,7 @@ const TimeStats: React.FC<TimeStatsProps> = ({
       {items.map((item, index) => (
         <span key={item.label} className="text-muted-foreground/70 tabular-nums">
           {index > 0 && <span className="mx-1.5">|</span>}
-          <span className="text-muted-foreground/50">{item.label}:</span>{' '}
+          <span className="text-muted-foreground/70">{item.label}:</span>{' '}
           <span className="font-medium">{item.value}</span>
         </span>
       ))}

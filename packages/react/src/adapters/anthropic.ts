@@ -8,7 +8,7 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter } from './types'
+import type { ModelAdapter, FinishReason, ToolDefinition, ToolCall } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
@@ -17,6 +17,60 @@ import {
   filterConversationMessages,
   DEFAULT_TIMEOUTS,
 } from './shared'
+
+/**
+ * Map Anthropic stop reasons to unified finish reasons
+ */
+function normalizeFinishReason(
+  reason: string | null | undefined
+): FinishReason {
+  if (!reason) return 'unknown'
+  switch (reason) {
+    case 'end_turn':
+    case 'stop_sequence':
+      return 'stop'
+    case 'max_tokens':
+      return 'length'
+    case 'tool_use':
+      return 'tool-calls'
+    default:
+      return 'unknown'
+  }
+}
+
+/**
+ * Convert our ToolDefinition format to Anthropic's tool format
+ */
+function convertToolsToAnthropicFormat(tools?: ToolDefinition[]) {
+  if (!tools || tools.length === 0) return undefined
+
+  return tools.map((tool) => ({
+    name: tool.function.name,
+    description: tool.function.description,
+    input_schema: tool.function.parameters || {
+      type: 'object',
+      properties: {},
+    },
+  }))
+}
+
+/**
+ * Parse Anthropic tool use blocks to our ToolCall format
+ */
+function parseToolCalls(content: Array<{ type: string; [key: string]: unknown }>): ToolCall[] {
+  return content
+    .filter((block): block is { type: 'tool_use'; id: string; name: string; input: unknown } =>
+      block.type === 'tool_use'
+    )
+    .map((block) => ({
+      id: block.id,
+      type: 'function' as const,
+      function: {
+        name: block.name,
+        arguments: JSON.stringify(block.input),
+      },
+    }))
+}
 
 export const anthropicAdapter: ModelAdapter = {
   name: 'anthropic',
@@ -50,6 +104,7 @@ export const anthropicAdapter: ModelAdapter = {
           temperature: config.temperature,
           top_p: config.topP,
           stop_sequences: config.stop,
+          tools: convertToolsToAnthropicFormat(config.tools),
         }),
         timeout,
         signal: config.signal,
@@ -71,9 +126,20 @@ export const anthropicAdapter: ModelAdapter = {
 
     const data = await response.json()
 
+    // Extract text content from all text blocks
+    const textContent = data.content
+      .filter((block: { type: string }) => block.type === 'text')
+      .map((block: { text: string }) => block.text)
+      .join('')
+
+    // Parse tool calls from tool_use blocks
+    const toolCalls = parseToolCalls(data.content)
+
     return {
       role: 'assistant',
-      content: data.content[0]?.text || '',
+      content: textContent,
+      toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+      finishReason: normalizeFinishReason(data.stop_reason),
     }
   },
 
@@ -104,6 +170,7 @@ export const anthropicAdapter: ModelAdapter = {
           max_tokens: config.maxTokens || 4096,
           temperature: config.temperature,
           stream: true,
+          tools: convertToolsToAnthropicFormat(config.tools),
         }),
         timeout,
         signal: config.signal,
@@ -130,6 +197,11 @@ export const anthropicAdapter: ModelAdapter = {
     }
 
     let buffer = ''
+    // Track tool use blocks being built during streaming
+    const toolUseBlocks = new Map<
+      number,
+      { id: string; name: string; partialInput: string }
+    >()
 
     try {
       while (true) {
@@ -152,6 +224,7 @@ export const anthropicAdapter: ModelAdapter = {
           try {
             const json = JSON.parse(trimmed.slice(6))
 
+            // Handle text content
             if (json.type === 'content_block_delta' && json.delta?.text) {
               yield {
                 type: 'token',
@@ -161,10 +234,53 @@ export const anthropicAdapter: ModelAdapter = {
               config.streamOptions?.onToken?.(json.delta.text)
             }
 
-            if (json.type === 'message_delta' && json.usage) {
+            // Handle tool use block start
+            if (
+              json.type === 'content_block_start' &&
+              json.content_block?.type === 'tool_use'
+            ) {
+              toolUseBlocks.set(json.index, {
+                id: json.content_block.id,
+                name: json.content_block.name,
+                partialInput: '',
+              })
+            }
+
+            // Handle tool use input delta
+            if (
+              json.type === 'content_block_delta' &&
+              json.delta?.type === 'input_json_delta'
+            ) {
+              const block = toolUseBlocks.get(json.index)
+              if (block) {
+                block.partialInput += json.delta.partial_json
+              }
+            }
+
+            // Handle tool use block completion
+            if (json.type === 'content_block_stop') {
+              const block = toolUseBlocks.get(json.index)
+              if (block) {
+                yield {
+                  type: 'tool_call',
+                  toolCall: {
+                    id: block.id,
+                    type: 'function',
+                    function: {
+                      name: block.name,
+                      arguments: block.partialInput,
+                    },
+                  },
+                }
+                toolUseBlocks.delete(json.index)
+              }
+            }
+
+            // Handle message completion with usage
+            if (json.type === 'message_delta') {
               yield {
                 type: 'done',
-                usage: {
+                usage: json.usage ? {
                   promptTokens: json.usage.input_tokens || 0,
                   completionTokens: json.usage.output_tokens || 0,
                   totalTokens:
@@ -180,7 +296,10 @@ export const anthropicAdapter: ModelAdapter = {
                     },
                     config.model
                   ),
-                },
+                } : undefined,
+                finishReason: json.delta?.stop_reason
+                  ? normalizeFinishReason(json.delta.stop_reason)
+                  : undefined,
               }
             }
           } catch (e) {

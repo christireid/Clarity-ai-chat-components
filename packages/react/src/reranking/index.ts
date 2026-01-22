@@ -31,8 +31,28 @@
  *   topK: 10,
  * })
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Production-grade reranking with Cohere
+ * import { CohereReranker } from '@clarity-chat/react'
+ *
+ * const reranker = new CohereReranker({
+ *   apiKey: process.env.COHERE_API_KEY,
+ *   model: 'rerank-english-v3.0'
+ * })
+ *
+ * const reranked = await reranker.rerank({
+ *   query: 'machine learning best practices',
+ *   documents: searchResults,
+ *   topK: 5
+ * })
+ *
+ * console.log(reranked.results) // Top 5 with improved relevance scores
+ * ```
  */
 
 export * from './types'
 export * from './simple-reranker'
+export * from './cohere'
 

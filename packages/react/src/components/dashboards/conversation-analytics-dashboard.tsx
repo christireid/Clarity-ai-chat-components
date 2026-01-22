@@ -725,7 +725,7 @@ export function ConversationAnalyticsDashboard({
                         }}
                       />
                     </div>
-                    <div className="grid grid-cols-4 gap-2 mt-3 text-xs">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-3 text-xs">
                       {Object.entries(analytics.quality.factors).map(
                         ([key, value]) => (
                           <div key={key}>
