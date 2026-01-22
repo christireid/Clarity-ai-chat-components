@@ -7,6 +7,7 @@
  * @module utils/theme-helpers
  */
 
+import * as React from 'react'
 import { createTheme, type Theme } from '../theme/create-theme'
 
 // =============================================================================
@@ -203,7 +204,9 @@ export function createThemeFromPalette(palette: {
 export function createThemeFromCSSVariables(prefix = '--chat'): Theme {
   const getCSSVar = (name: string) => {
     if (typeof document === 'undefined') return undefined
-    return getComputedStyle(document.documentElement).getPropertyValue(`${prefix}-${name}`).trim()
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(`${prefix}-${name}`)
+      .trim()
   }
 
   return createTheme({
@@ -223,13 +226,16 @@ export function createThemeFromCSSVariables(prefix = '--chat'): Theme {
  * Merge multiple themes together
  */
 export function mergeThemes(...themes: Theme[]): Theme {
-  return themes.reduce((merged, theme) => ({
-    ...merged,
-    ...theme,
-    colors: { ...merged.colors, ...theme.colors },
-    spacing: { ...merged.spacing, ...theme.spacing },
-    typography: { ...merged.typography, ...theme.typography },
-  }), {} as Theme)
+  return themes.reduce(
+    (merged, theme) => ({
+      ...merged,
+      ...theme,
+      colors: { ...merged.colors, ...theme.colors },
+      spacing: { ...merged.spacing, ...theme.spacing },
+      typography: { ...merged.typography, ...theme.typography },
+    }),
+    {} as Theme
+  )
 }
 
 /**
@@ -240,14 +246,17 @@ export function createThemeVariant(
   variant: 'light' | 'dark',
   adjustments?: Partial<Theme>
 ): Theme {
-  const variantAdjustments = variant === 'dark' ? {
-    colors: {
-      background: '#111827',
-      foreground: '#f9fafb',
-      border: '#374151',
-      muted: '#1f2937',
-    },
-  } : {}
+  const variantAdjustments =
+    variant === 'dark'
+      ? {
+          colors: {
+            background: '#111827',
+            foreground: '#f9fafb',
+            border: '#374151',
+            muted: '#1f2937',
+          },
+        }
+      : {}
 
   return mergeThemes(baseTheme, variantAdjustments, adjustments || {})
 }
@@ -266,20 +275,23 @@ function adjustColor(color: string, amount: number): string {
 
   const num = parseInt(col, 16)
   let r = (num >> 16) + amount
-  let g = (num >> 8 & 0x00FF) + amount
-  let b = (num & 0x0000FF) + amount
+  let g = ((num >> 8) & 0x00ff) + amount
+  let b = (num & 0x0000ff) + amount
 
   r = r > 255 ? 255 : r < 0 ? 0 : r
   g = g > 255 ? 255 : g < 0 ? 0 : g
   b = b > 255 ? 255 : b < 0 ? 0 : b
 
-  return (usePound ? '#' : '') + (r << 16 | g << 8 | b).toString(16)
+  return (usePound ? '#' : '') + ((r << 16) | (g << 8) | b).toString(16)
 }
 
 /**
  * Generate theme-aware class names
  */
-export function createThemeClasses(theme: Theme, prefix = 'chat'): Record<string, string> {
+export function createThemeClasses(
+  theme: Theme,
+  prefix = 'chat'
+): Record<string, string> {
   const classes: Record<string, string> = {}
 
   // Color classes
@@ -334,7 +346,9 @@ export function applyThemeToCSS(theme: Theme, prefix = '--chat'): void {
  * React hook for theme management
  */
 export function useTheme(theme?: Theme) {
-  const [currentTheme, setCurrentTheme] = React.useState(theme || ThemePresets.Light)
+  const [currentTheme, setCurrentTheme] = React.useState(
+    theme || ThemePresets.Light
+  )
 
   React.useEffect(() => {
     applyThemeToCSS(currentTheme)
@@ -420,22 +434,18 @@ export const ThemeProvider: React.FC<{
 }> = ({ theme = ThemePresets.Light, children }) => {
   const themeContext = useTheme(theme)
 
-  return (
-    <div data-theme="clarity-chat">
-      {children}
-    </div>
-  )
+  return <div data-theme="clarity-chat">{children}</div>
 }
 
 /**
  * Theme toggle component
  */
 export const ThemeToggle: React.FC<{
-  themes?: { light: Theme, dark: Theme }
+  themes?: { light: Theme; dark: Theme }
   className?: string
 }> = ({
   themes = { light: ThemePresets.Light, dark: ThemePresets.Dark },
-  className = ''
+  className = '',
 }) => {
   const { theme, setTheme } = useTheme()
   const isDark = theme === themes.dark
@@ -458,11 +468,7 @@ export const ThemeSelector: React.FC<{
   themes?: Record<string, Theme>
   onThemeChange?: (theme: Theme) => void
   className?: string
-}> = ({
-  themes = ThemePresets,
-  onThemeChange,
-  className = ''
-}) => {
+}> = ({ themes = ThemePresets, onThemeChange, className = '' }) => {
   const { setTheme } = useTheme()
 
   const handleThemeChange = (themeName: string) => {

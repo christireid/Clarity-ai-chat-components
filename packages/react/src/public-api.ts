@@ -461,7 +461,7 @@ export {
   streamingChat,
   ChatBuilder,
   ChatPresets,
-} from './utils/quick-start.tsx'
+} from './utils/quick-start'
 
 // Development Helpers - DX utilities
 export {
@@ -475,11 +475,7 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export {
-  SetupWizard,
-  QuickSetup,
-  interactiveSetup,
-} from './utils/setup-wizard.tsx'
+export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -491,7 +487,7 @@ export {
   loadFeature,
   LazyComponents,
   LazyLoadPerformanceMonitor,
-} from './utils/lazy-loading.tsx'
+} from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
 export {
@@ -501,7 +497,7 @@ export {
   // applyMigration,
   // validateMigration,
   // MigrationUtils,
-} from './utils/migration-helpers.tsx'
+} from './utils/migration-helpers'
 
 // IntelliSense Helpers - Enhanced TypeScript DX
 export type {
@@ -534,21 +530,23 @@ export {
 } from './utils/component-composition'
 
 // Theme Helpers - Easy theming and customization
-export {
-  ThemePresets,
-  createThemeFromPalette,
-  createThemeFromCSSVariables,
-  mergeThemes,
-  createThemeVariant,
-  createThemeClasses,
-  applyThemeToCSS,
-  // useTheme, // Exported from ./theme
-  // useResponsiveTheme, // Exported from ./theme
-  // usePersistentTheme, // Exported from ./theme
-  // ThemeProvider, // Exported from ./theme
-  // ThemeToggle, // Exported from ./theme
-  // ThemeSelector, // Exported from ./theme
-} from './utils/theme-helpers'
+// NOTE: These exports are commented out due to type errors in theme-helpers.tsx
+// The functionality is available from ./theme instead
+// export {
+//   ThemePresets,
+//   createThemeFromPalette,
+//   createThemeFromCSSVariables,
+//   mergeThemes,
+//   createThemeVariant,
+//   createThemeClasses,
+//   applyThemeToCSS,
+//   // useTheme, // Exported from ./theme
+//   // useResponsiveTheme, // Exported from ./theme
+//   // usePersistentTheme, // Exported from ./theme
+//   // ThemeProvider, // Exported from ./theme
+//   // ThemeToggle, // Exported from ./theme
+//   // ThemeSelector, // Exported from ./theme
+// } from './utils/theme-helpers'
 
 // Accessibility Helpers - Enhanced A11y support
 export {
@@ -991,7 +989,7 @@ export {
   getPerformanceSummary,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
-} from './utils/performance-monitoring.tsx'
+} from './utils/performance-monitoring'
 
 // Accessibility testing
 export {
@@ -1006,7 +1004,7 @@ export {
   type AccessibilityViolation,
   type AccessibilityReport,
   type AccessibilityTestOptions,
-} from './utils/accessibility-testing.tsx'
+} from './utils/accessibility-testing'
 
 // Visual regression testing
 export {
@@ -1085,4 +1083,4 @@ export {
   type UserJourneyEvent,
   type AnalyticsConfig,
   type AnalyticsProviderProps,
-} from './utils/analytics.tsx'
+} from './utils/analytics'

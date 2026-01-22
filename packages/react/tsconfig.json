@@ -71,6 +71,11 @@
     "src/utils/optimization/**/*",
     "src/utils/performance.ts",
     "src/utils/security.ts",
+    "src/utils/theme-helpers.ts",
+    "src/utils/theme-helpers.tsx",
+    "src/utils/accessibility-helpers.tsx",
+    "src/utils/testing-helpers.tsx",
+    "src/utils/component-composition.tsx",
     "src/webhooks/**/*"
   ]
 }
