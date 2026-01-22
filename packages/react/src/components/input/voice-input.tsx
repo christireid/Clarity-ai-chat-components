@@ -392,7 +392,12 @@ export function VoiceInput({
             )}
 
             {/* Transcript text */}
-            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/30 border border-border/40 rounded-xl">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-label="Voice transcript"
+              className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/30 border border-border/40 rounded-xl"
+            >
               {voice.transcript ? (
                 <p className="text-sm text-foreground">
                   {voice.finalTranscript && (
@@ -415,6 +420,8 @@ export function VoiceInput({
             {/* Error message */}
             {voice.error && (
               <motion.div
+                role="alert"
+                aria-live="assertive"
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl"

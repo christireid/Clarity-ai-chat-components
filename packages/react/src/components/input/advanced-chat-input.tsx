@@ -7,6 +7,7 @@ import {
   useTransition,
   useCallback,
   useMemo,
+  useId,
 } from 'react'
 import { useDebounce } from '../../hooks/ui/use-debounce'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -121,6 +122,9 @@ export function AdvancedChatInput({
   const [cursorPosition, setCursorPosition] = useState(0)
   const internalRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Generate unique ID for file input accessibility
+  const fileInputId = useId()
 
   // React Concurrent Features - useTransition for non-blocking suggestion updates
   const [isPending, startTransition] = useTransition()
@@ -521,8 +525,12 @@ export function AdvancedChatInput({
         onDrop={handleDrop}
       >
         {/* File Upload Button */}
+        <label htmlFor={fileInputId} className="sr-only">
+          Attach files
+        </label>
         <input
           ref={fileInputRef}
+          id={fileInputId}
           type="file"
           multiple
           accept={acceptedFileTypes.join(',')}
@@ -561,6 +569,9 @@ export function AdvancedChatInput({
           />
           {maxLength && (
             <div
+              role="status"
+              aria-live="polite"
+              aria-label={`Character count: ${charCount} of ${maxLength}${isOverLimit ? ', over limit' : ''}`}
               className={cn(
                 'absolute bottom-2 right-2 text-xs',
                 isOverLimit ? 'text-destructive' : 'text-muted-foreground'

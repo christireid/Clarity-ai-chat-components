@@ -832,6 +832,14 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
+export {
+  SkipLinks,
+  Landmark,
+  useSkipLinkTarget,
+  type SkipLinksProps,
+  type SkipLink,
+  type LandmarkProps,
+} from './components/navigation/skip-links'
 export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
 
 // ============================================================================

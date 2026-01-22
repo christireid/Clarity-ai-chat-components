@@ -32,6 +32,9 @@
  * @packageDocumentation
  */
 
+/* Import focus ring styles for WCAG 2.1 AA accessibility compliance */
+@import './focus-ring.css';
+
 /* ============================================================================
    CSS Variables & Theme System
    Component-specific variables for .clarity-* React components

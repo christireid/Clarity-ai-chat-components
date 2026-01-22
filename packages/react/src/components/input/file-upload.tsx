@@ -45,6 +45,11 @@ export function FileUpload({
   const [error, setError] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
+  // Generate unique ID for accessibility
+  const inputId = React.useId()
+  const hintId = `${inputId}-hint`
+  const errorId = `${inputId}-error`
+
   // Memoize validation function to prevent recreation
   const validateFile = React.useCallback(
     (file: File): string | null => {
@@ -184,13 +189,18 @@ export function FileUpload({
         )}
         onClick={() => fileInputRef.current?.click()}
       >
+        <label htmlFor={inputId} className="sr-only">
+          Upload files
+        </label>
         <input
           ref={fileInputRef}
+          id={inputId}
           type="file"
           multiple
           accept={acceptedFileTypes.join(',')}
           onChange={handleFileInput}
           className="hidden"
+          aria-describedby={error ? `${hintId} ${errorId}` : hintId}
         />
 
         <motion.div
@@ -225,7 +235,7 @@ export function FileUpload({
                 ? 'Drop files here'
                 : 'Click to upload or drag and drop'}
             </p>
-            <p className="text-xs text-muted-foreground/90 mt-1">
+            <p id={hintId} className="text-xs text-muted-foreground/90 mt-1">
               Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
             </p>
           </div>
@@ -255,6 +265,9 @@ export function FileUpload({
       <AnimatePresence>
         {error && (
           <motion.div
+            id={errorId}
+            role="alert"
+            aria-live="assertive"
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}

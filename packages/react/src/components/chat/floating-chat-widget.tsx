@@ -103,6 +103,8 @@ export function FloatingChatWidget({
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            role="dialog"
+            aria-label="Chat widget"
             variants={customChatVariants}
             initial="initial"
             animate="animate"
@@ -174,7 +176,12 @@ export function FloatingChatWidget({
             </AnimatePresence>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+            <div
+              id="floating-chat-messages"
+              role="log"
+              aria-label="Chat messages"
+              className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+            >
               {messages.map((msg) => (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -211,7 +218,11 @@ export function FloatingChatWidget({
                   animate={{ opacity: 1 }}
                   className="flex justify-center my-2"
                 >
-                  <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs px-3 py-2 rounded-lg max-w-[90%] text-center">
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    className="bg-destructive/10 border border-destructive/20 text-destructive text-xs px-3 py-2 rounded-lg max-w-[90%] text-center"
+                  >
                     <span className="font-bold block mb-1">Error</span>
                     {error.message || 'Something went wrong. Please try again.'}
                   </div>
@@ -241,11 +252,13 @@ export function FloatingChatWidget({
                 className="relative flex items-center"
               >
                 <input
+                  id="floating-chat-input"
                   autoFocus
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask anything..."
+                  aria-label="Chat input"
                   className="w-full bg-background border border-border rounded-xl pl-4 pr-12 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
                 />
                 <button
