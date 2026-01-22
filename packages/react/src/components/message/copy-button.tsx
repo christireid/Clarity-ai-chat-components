@@ -167,7 +167,10 @@ export function CopyButton({
     >
       {/* Celebration particles */}
       {showCelebration && (
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+        >
           {[...Array(6)].map((_, i) => (
             <motion.div
               key={i}
@@ -180,7 +183,7 @@ export function CopyButton({
                 opacity: [1, 1, 0],
               }}
               transition={{
-                duration: 0.6,
+                duration: durations.slower,
                 ease: 'easeOut',
               }}
             />

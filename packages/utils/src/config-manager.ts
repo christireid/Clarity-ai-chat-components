@@ -243,7 +243,7 @@ export function validateConfig<T extends Record<string, unknown>>(
   config: unknown,
   schema: ConfigSchema<T>
 ): StrictValidation<T> {
-  return createConfigManager(schema).validate(config) as StrictValidation<T>
+  return createConfigManager(schema).validate(config)
 }
 
 /**
@@ -252,7 +252,7 @@ export function validateConfig<T extends Record<string, unknown>>(
 export function getConfigDefaults<T extends Record<string, unknown>>(
   schema: ConfigSchema<T>
 ): Partial<T> {
-  return createConfigManager(schema).getDefaults() as Partial<T>
+  return createConfigManager(schema).getDefaults()
 }
 
 /**

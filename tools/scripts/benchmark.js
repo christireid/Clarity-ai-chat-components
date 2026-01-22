@@ -5,10 +5,16 @@
  * Measures component render performance, bundle load times, and memory usage
  */
 
-const { performance } = require('perf_hooks')
-const fs = require('fs')
-const path = require('path')
-const chalk = require('chalk')
+import { performance } from 'perf_hooks'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import chalk from 'chalk'
+// import { createRequire } from 'module'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+// const require = createRequire(import.meta.url)
 
 // Configuration
 const ITERATIONS = 100
@@ -27,13 +33,14 @@ function calculateStats(values) {
   const sorted = values.slice().sort((a, b) => a - b)
   const sum = values.reduce((a, b) => a + b, 0)
   const mean = sum / values.length
-  
-  const variance = values.reduce((acc, val) => {
-    return acc + Math.pow(val - mean, 2)
-  }, 0) / values.length
-  
+
+  const variance =
+    values.reduce((acc, val) => {
+      return acc + Math.pow(val - mean, 2)
+    }, 0) / values.length
+
   const stdDev = Math.sqrt(variance)
-  
+
   return {
     min: sorted[0],
     max: sorted[sorted.length - 1],
@@ -59,33 +66,33 @@ function formatDuration(ms) {
  */
 async function benchmark(name, fn, iterations = ITERATIONS) {
   console.log(chalk.blue(`\n⏱️  Benchmarking: ${name}`))
-  
+
   // Warmup
   console.log(chalk.gray('  Warming up...'))
   for (let i = 0; i < WARMUP_ITERATIONS; i++) {
     await fn()
   }
-  
+
   // Actual benchmark
   console.log(chalk.gray(`  Running ${iterations} iterations...`))
   const timings = []
-  
+
   for (let i = 0; i < iterations; i++) {
     const start = performance.now()
     await fn()
     const end = performance.now()
     timings.push(end - start)
-    
+
     // Progress indicator
     if ((i + 1) % Math.floor(iterations / 10) === 0) {
       process.stdout.write(chalk.gray('.'))
     }
   }
-  
+
   console.log() // New line after progress dots
-  
+
   const stats = calculateStats(timings)
-  
+
   // Print results
   console.log(chalk.green('  ✓ Complete'))
   console.log(`    Mean: ${chalk.cyan(formatDuration(stats.mean))}`)
@@ -95,7 +102,7 @@ async function benchmark(name, fn, iterations = ITERATIONS) {
   console.log(`    P95: ${chalk.cyan(formatDuration(stats.p95))}`)
   console.log(`    P99: ${chalk.cyan(formatDuration(stats.p99))}`)
   console.log(`    StdDev: ${chalk.cyan(formatDuration(stats.stdDev))}`)
-  
+
   return {
     name,
     iterations,
@@ -104,8 +111,9 @@ async function benchmark(name, fn, iterations = ITERATIONS) {
 }
 
 /**
- * Benchmark bundle loading
+ * Benchmark bundle loading (unused for now)
  */
+/*
 async function benchmarkBundleLoad(packageName) {
   return benchmark(
     `Bundle Load: ${packageName}`,
@@ -119,6 +127,7 @@ async function benchmarkBundleLoad(packageName) {
     }
   )
 }
+*/
 
 /**
  * Benchmark JSON parsing (simulating config/data loading)
@@ -128,24 +137,22 @@ async function benchmarkJSONParsing() {
     messages: Array.from({ length: 1000 }, (_, i) => ({
       id: i,
       role: i % 2 === 0 ? 'user' : 'assistant',
-      content: 'This is a sample message content that simulates realistic chat data.',
+      content:
+        'This is a sample message content that simulates realistic chat data.',
       timestamp: Date.now(),
       metadata: {
         provider: 'openai',
         model: 'gpt-4',
         tokens: 50,
-      }
-    }))
+      },
+    })),
   }
-  
+
   const jsonString = JSON.stringify(largeObject)
-  
-  return benchmark(
-    'JSON Parsing (1000 messages)',
-    () => {
-      JSON.parse(jsonString)
-    }
-  )
+
+  return benchmark('JSON Parsing (1000 messages)', () => {
+    JSON.parse(jsonString)
+  })
 }
 
 /**
@@ -158,16 +165,13 @@ async function benchmarkArrayOperations() {
     content: 'Sample content',
     timestamp: Date.now() - i * 1000,
   }))
-  
-  return benchmark(
-    'Array Operations (filtering 10k messages)',
-    () => {
-      messages
-        .filter(m => m.role === 'user')
-        .map(m => ({ ...m, processed: true }))
-        .slice(0, 100)
-    }
-  )
+
+  return benchmark('Array Operations (filtering 10k messages)', () => {
+    messages
+      .filter((m) => m.role === 'user')
+      .map((m) => ({ ...m, processed: true }))
+      .slice(0, 100)
+  })
 }
 
 /**
@@ -188,15 +192,12 @@ async function benchmarkObjectCloning() {
     metadata: {
       sessionId: 'test',
       userId: 'user123',
-    }
+    },
   }
-  
-  return benchmark(
-    'Object Cloning (deep clone state)',
-    () => {
-      JSON.parse(JSON.stringify(state))
-    }
-  )
+
+  return benchmark('Object Cloning (deep clone state)', () => {
+    JSON.parse(JSON.stringify(state))
+  })
 }
 
 /**
@@ -309,11 +310,12 @@ function generateHTMLReport(results) {
     <h1>⚡ Performance Benchmark Report</h1>
     <div class="timestamp">Generated: ${results.timestamp}</div>
     
-    ${results.benchmarks.map(bench => {
-      const maxValue = Math.max(...results.benchmarks.map(b => b.mean))
-      const percentage = (bench.mean / maxValue) * 100
-      
-      return `
+    ${results.benchmarks
+      .map((bench) => {
+        const maxValue = Math.max(...results.benchmarks.map((b) => b.mean))
+        const percentage = (bench.mean / maxValue) * 100
+
+        return `
         <div class="benchmark">
           <div class="benchmark-name">${bench.name}</div>
           <div class="stats">
@@ -349,12 +351,13 @@ function generateHTMLReport(results) {
           </div>
         </div>
       `
-    }).join('')}
+      })
+      .join('')}
   </div>
 </body>
 </html>
   `
-  
+
   return html
 }
 
@@ -363,12 +366,12 @@ function generateHTMLReport(results) {
  */
 async function main() {
   console.log(chalk.blue.bold('\n⚡ Starting Performance Benchmarks\n'))
-  
+
   const results = {
     timestamp: new Date().toISOString(),
     benchmarks: [],
   }
-  
+
   // Run benchmarks
   try {
     results.benchmarks.push(await benchmarkJSONParsing())
@@ -378,20 +381,19 @@ async function main() {
     console.error(chalk.red(`\n❌ Error running benchmarks: ${error.message}`))
     process.exit(1)
   }
-  
+
   // Save results
   const jsonPath = path.join(OUTPUT_DIR, 'benchmark-results.json')
   fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2))
   console.log(chalk.green(`\n✓ Results saved to ${jsonPath}`))
-  
+
   // Generate HTML report
   const htmlReport = generateHTMLReport(results)
   const htmlPath = path.join(OUTPUT_DIR, 'benchmark-report.html')
   fs.writeFileSync(htmlPath, htmlReport)
   console.log(chalk.green(`✓ HTML report saved to ${htmlPath}`))
-  
+
   console.log(chalk.blue.bold('\n✓ Benchmark complete!\n'))
 }
 
 main()
-

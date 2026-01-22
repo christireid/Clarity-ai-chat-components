@@ -15,11 +15,9 @@
  * @module core/tool-registry
  */
 
-import type {
-  ToolDefinition,
-  IToolRegistry,
-} from '../types/tool-definition'
+import type { ToolDefinition, IToolRegistry } from '../types/tool-definition'
 import { validateToolDefinition } from '../types/tool-definition'
+import { validateToolImplementationStrict } from './tool-implementation-validator'
 
 // =============================================================================
 // Registry Events
@@ -86,6 +84,9 @@ export class ToolRegistry implements IToolRegistry {
   register(tool: ToolDefinition): void {
     // Validate tool definition
     validateToolDefinition(tool)
+
+    // Validate tool implementation (security checks)
+    validateToolImplementationStrict(tool)
 
     // Check for name conflicts
     if (this.tools.has(tool.name)) {
@@ -264,7 +265,9 @@ export class ToolRegistry implements IToolRegistry {
       }
 
       // Tag match
-      if (tool.tags?.some((tag) => tag.toLowerCase().includes(normalizedQuery))) {
+      if (
+        tool.tags?.some((tag) => tag.toLowerCase().includes(normalizedQuery))
+      ) {
         score += 10
       }
 
@@ -344,7 +347,8 @@ export class ToolRegistry implements IToolRegistry {
     for (const tool of this.getAll()) {
       // Count by category
       if (tool.category) {
-        stats.byCategory[tool.category] = (stats.byCategory[tool.category] || 0) + 1
+        stats.byCategory[tool.category] =
+          (stats.byCategory[tool.category] || 0) + 1
       }
 
       // Count by tags
@@ -504,7 +508,9 @@ export class NamespacedRegistry implements IToolRegistry {
   ) {}
 
   private getFullName(name: string): string {
-    return name.startsWith(`${this.namespace}.`) ? name : `${this.namespace}.${name}`
+    return name.startsWith(`${this.namespace}.`)
+      ? name
+      : `${this.namespace}.${name}`
   }
 
   private isInNamespace(name: string): boolean {
