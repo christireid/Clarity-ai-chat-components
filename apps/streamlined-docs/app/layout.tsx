@@ -142,6 +142,22 @@ export default function RootLayout({
             <Footer />
             <DocsAssistant />
             <MobileBottomNav />
+            <FloatingActionButton
+              onSearchClick={() => {
+                // Trigger search dialog (handled by Navigation component via window event)
+                const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true })
+                window.dispatchEvent(event)
+              }}
+              onShortcutsClick={() => {
+                const event = new KeyboardEvent('keydown', { key: '?' })
+                window.dispatchEvent(event)
+              }}
+              onAIClick={() => {
+                // Trigger AI assistant (Cmd+.)
+                const event = new KeyboardEvent('keydown', { key: '.', metaKey: true })
+                window.dispatchEvent(event)
+              }}
+            />
           </div>
           <ToastManager />
         </Providers>
