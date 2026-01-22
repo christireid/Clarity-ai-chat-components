@@ -5,7 +5,7 @@
  * Provides helpers for screenshot comparison, visual diffing, and baseline management.
  */
 
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 // ============================================================================
 // TYPES
@@ -47,7 +47,7 @@ export interface VisualTestResult {
   passed: boolean
   pixelDifference?: number
   percentageDifference?: number
-  viewport?: { width: number; height: number }
+  viewport?: { width: number; height: number; name?: string }
   theme?: string
   scenario?: string
 }
@@ -282,7 +282,7 @@ export class VisualRegressionTester {
 
     // Hide elements
     for (const selector of hideSelectors) {
-      await this.page.locator(selector).evaluate(el => {
+      await this.page.locator(selector).evaluate((el: HTMLElement) => {
         el.style.display = 'none'
       })
     }

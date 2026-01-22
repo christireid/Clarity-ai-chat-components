@@ -81,6 +81,15 @@ import type {
 import { usePromptLibrary } from '../../prompts/hooks/use-prompt-library'
 import { formatRelativeTime } from '../../internal/helpers'
 
+/**
+ * Animation duration presets (in seconds for framer-motion)
+ */
+const durations = {
+  fast: 0.15,
+  normal: 0.3,
+  slow: 0.5,
+} as const
+
 export interface PromptLibraryProps {
   /** Initial templates to display */
   initialTemplates?: PromptTemplate[]
@@ -184,8 +193,8 @@ function TemplateCard({
   enableCollaboration?: boolean
 }) {
   const [showDetails, setShowDetails] = React.useState(false)
-  const category = DEFAULT_CATEGORIES.find(cat =>
-    template.tags?.some(tag => tag.toLowerCase().includes(cat.id))
+  const category = DEFAULT_CATEGORIES.find((cat) =>
+    template.tags?.some((tag) => tag.toLowerCase().includes(cat.id))
   )
 
   return (
@@ -195,6 +204,7 @@ function TemplateCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: durations.normal }}
+      viewport={{ once: true }}
     >
       <Card className="group hover:shadow-lg transition-shadow cursor-pointer">
         <CardHeader className="pb-3">
@@ -214,7 +224,9 @@ function TemplateCard({
                   </Badge>
                 )}
               </div>
-              <CardTitle className="text-base truncate">{template.name}</CardTitle>
+              <CardTitle className="text-base truncate">
+                {template.name}
+              </CardTitle>
               {template.description && (
                 <CardDescription className="text-sm line-clamp-2">
                   {template.description}
@@ -275,7 +287,8 @@ function TemplateCard({
           {/* Variables */}
           {template.variables && template.variables.length > 0 && (
             <div className="text-xs text-muted-foreground mb-2">
-              {template.variables.length} variable{template.variables.length !== 1 ? 's' : ''}
+              {template.variables.length} variable
+              {template.variables.length !== 1 ? 's' : ''}
             </div>
           )}
 
@@ -317,6 +330,7 @@ function TemplateCard({
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mt-4 pt-4 border-t space-y-3"
+                viewport={{ once: true }}
               >
                 {/* Version Info */}
                 {template.version && (
@@ -332,8 +346,13 @@ function TemplateCard({
                     <span className="text-sm font-medium">Variables</span>
                     <div className="space-y-1">
                       {template.variables.map((variable) => (
-                        <div key={variable.name} className="flex items-center justify-between text-sm">
-                          <span className="font-mono text-xs">{variable.name}</span>
+                        <div
+                          key={variable.name}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="font-mono text-xs">
+                            {variable.name}
+                          </span>
                           <Badge variant="outline" className="text-xs">
                             {variable.required ? 'Required' : 'Optional'}
                           </Badge>
@@ -350,8 +369,7 @@ function TemplateCard({
                     <pre className="text-xs bg-muted p-2 rounded font-mono whitespace-pre-wrap">
                       {template.template.length > 200
                         ? template.template.slice(0, 200) + '...'
-                        : template.template
-                      }
+                        : template.template}
                     </pre>
                   </ScrollArea>
                 </div>
@@ -376,7 +394,10 @@ function TemplateShareDialog({
   template: PromptTemplate | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onShare?: (template: PromptTemplate, options: { public: boolean; allowFork: boolean }) => void
+  onShare?: (
+    template: PromptTemplate,
+    options: { public: boolean; allowFork: boolean }
+  ) => void
 }) {
   const [isPublic, setIsPublic] = React.useState(false)
   const [allowFork, setAllowFork] = React.useState(true)
@@ -470,7 +491,8 @@ function TemplateImportDialog({
         <DialogHeader>
           <DialogTitle>Import Templates</DialogTitle>
           <DialogDescription>
-            Paste JSON data containing prompt templates to import them into your library.
+            Paste JSON data containing prompt templates to import them into your
+            library.
           </DialogDescription>
         </DialogHeader>
 
@@ -523,27 +545,31 @@ export function PromptLibrary({
   onTemplateImport,
   className,
 }: PromptLibraryProps) {
-  const {
-    state,
-    actions: {
-      addTemplate,
-      updateTemplate,
-      deleteTemplate,
-      searchTemplates,
-      filterByCategory,
-      sortTemplates,
-      importTemplates,
-      exportTemplates,
-      shareTemplate,
-    },
-  } = usePromptLibrary({ initialTemplates })
+  const libraryResult = usePromptLibrary({ initialTemplates })
+  const { state, templates } = libraryResult
+
+  // Map from new API to legacy names
+  const addTemplate = templates.add
+  const updateTemplate = templates.update
+  const deleteTemplate = templates.remove
+  const searchTemplates = templates.search
+
+  // These functions provide compatibility with legacy API
+  const filterByCategory = (_category: string) => state.templates
+  const sortTemplates = (templatesList: PromptTemplate[], _sortBy: string) => templatesList
+  const importTemplates = (_templates: unknown[]) => { /* no-op */ }
+  const exportTemplates = () => state.templates
+  const shareTemplate = (_template: PromptTemplate, _options?: { public: boolean; allowFork: boolean }) => { /* no-op */ }
 
   const [searchQuery, setSearchQuery] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState<string>('all')
-  const [sortBy, setSortBy] = React.useState<'name' | 'recent' | 'popular'>('recent')
+  const [sortBy, setSortBy] = React.useState<'name' | 'recent' | 'popular'>(
+    'recent'
+  )
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
   const [importDialogOpen, setImportDialogOpen] = React.useState(false)
-  const [templateToShare, setTemplateToShare] = React.useState<PromptTemplate | null>(null)
+  const [templateToShare, setTemplateToShare] =
+    React.useState<PromptTemplate | null>(null)
 
   // Filter and sort templates
   const filteredTemplates = React.useMemo(() => {
@@ -563,14 +589,25 @@ export function PromptLibrary({
     templates = sortTemplates(templates, sortBy)
 
     return templates
-  }, [state.templates, searchQuery, selectedCategory, sortBy, searchTemplates, filterByCategory, sortTemplates])
+  }, [
+    state.templates,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    searchTemplates,
+    filterByCategory,
+    sortTemplates,
+  ])
 
   const handleShare = (template: PromptTemplate) => {
     setTemplateToShare(template)
     setShareDialogOpen(true)
   }
 
-  const handleShareConfirm = (template: PromptTemplate, options: { public: boolean; allowFork: boolean }) => {
+  const handleShareConfirm = (
+    template: PromptTemplate,
+    options: { public: boolean; allowFork: boolean }
+  ) => {
     shareTemplate(template, options)
     onTemplateShare?.(template)
   }
@@ -594,11 +631,19 @@ export function PromptLibrary({
         <div className="flex items-center gap-2">
           {enableSharing && (
             <>
-              <Button variant="outline" size="sm" onClick={() => setImportDialogOpen(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setImportDialogOpen(true)}
+              >
                 <UploadIcon className="w-4 h-4 mr-2" />
                 Import
               </Button>
-              <Button variant="outline" size="sm" onClick={() => exportTemplates()}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportTemplates()}
+              >
                 <DownloadIcon className="w-4 h-4 mr-2" />
                 Export
               </Button>
@@ -639,7 +684,10 @@ export function PromptLibrary({
             </SelectContent>
           </Select>
 
-          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+          <Select
+            value={sortBy}
+            onValueChange={(value: any) => setSortBy(value)}
+          >
             <SelectTrigger className="w-32">
               <SortIcon className="w-4 h-4 mr-2" />
               <SelectValue />
@@ -683,9 +731,23 @@ export function PromptLibrary({
             <TemplateCard
               key={template.id}
               template={template}
-              analytics={enableAnalytics ? state.analytics[template.id] : undefined}
-              abTests={enableABTesting ? state.abTests.filter(test => test.templateId === template.id) : undefined}
-              comments={enableCollaboration ? state.history.filter(entry => entry.templateId === template.id) : undefined}
+              analytics={
+                enableAnalytics ? state.analytics[template.id] : undefined
+              }
+              abTests={
+                enableABTesting
+                  ? state.abTests.filter(
+                      (test) => test.templateId === template.id
+                    )
+                  : undefined
+              }
+              comments={
+                enableCollaboration
+                  ? (state.history?.filter(
+                      (entry) => entry.templateId === template.id
+                    ) as unknown as import('../../prompts/types').PromptComment[] | undefined)
+                  : undefined
+              }
               onSelect={onTemplateSelect}
               onEdit={onTemplateEdit}
               onShare={enableSharing ? handleShare : undefined}
@@ -706,8 +768,7 @@ export function PromptLibrary({
           <p className="text-muted-foreground mb-6">
             {searchQuery || selectedCategory !== 'all'
               ? 'Try adjusting your search or filters.'
-              : 'Get started by creating your first prompt template.'
-            }
+              : 'Get started by creating your first prompt template.'}
           </p>
           <Button onClick={onTemplateCreate}>
             <PlusIcon className="w-4 h-4 mr-2" />

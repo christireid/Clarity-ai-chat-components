@@ -8,29 +8,27 @@
  * These types are kept for backward compatibility but are deprecated.
  */
 
-import type {
-  ToolDefinition as CanonicalToolDefinition,
-  ToolParameters as CanonicalToolParameters,
-  ToolArguments as CanonicalToolArguments,
-  ToolResult as CanonicalToolResult,
+// Re-export canonical types without confusing aliases
+export type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
 } from '../types/tool-definition'
 
-// Re-export canonical types as primary exports
-export type {
-  CanonicalToolDefinition as ToolDefinition,
-  CanonicalToolParameters as ToolParameters,
-  CanonicalToolArguments as ToolArguments,
-  CanonicalToolResult as ToolResult,
-}
-
-// =============================================================================
-// DEPRECATED: Legacy Types (kept for backward compatibility)
-// =============================================================================
-
 /**
- * @deprecated Use ToolParameterProperty from '../types/tool-definition' instead
+ * @deprecated Use ToolDefinition from '../types/tool-definition' instead
  *
- * JSON Schema property types for tool parameters
+ * This simplified Tool interface is missing critical fields like:
+ * - displayName, cacheable, cacheTtl, timeout, parallelizable
+ * - hooks (lifecycle callbacks)
+ * - execute function doesn't receive ToolExecutionContext
+ *
+ * Migrate to ToolDefinition for full feature support and security.
  */
 export interface LegacyToolParameterProperty {
   type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'

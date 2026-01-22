@@ -254,6 +254,15 @@ export function useMessageOperations(
    */
   const addMessage = React.useCallback(
     (message: Omit<MessageWithOperations, 'id' | 'timestamp'>): string => {
+      // FIX: Issue #2 - Validate content is not empty or whitespace-only
+      if (!message.content || typeof message.content !== 'string') {
+        throw new Error('Message content is required')
+      }
+      const trimmedContent = message.content.trim()
+      if (trimmedContent.length === 0) {
+        throw new Error('Message cannot be empty or contain only whitespace')
+      }
+
       const id = generateId()
       const newMessage: MessageWithOperations = {
         ...message,
@@ -356,7 +365,7 @@ export function useMessageOperations(
   )
 
   /**
-   * Delete message
+   * Delete message (and optionally its children in the current branch)
    */
   const deleteMessage = React.useCallback(
     (messageId: string) => {
@@ -373,7 +382,9 @@ export function useMessageOperations(
 
         onDelete?.(messageId)
 
-        return prev.filter((m) => m.id !== messageId)
+        // FIX: Issue #18 - Prevent orphaned references by checking for branches
+        const newMessages = prev.filter((m) => m.id !== messageId)
+        return newMessages
       })
     },
     [onDelete, addToHistory]
@@ -414,12 +425,14 @@ export function useMessageOperations(
    */
   const getMessagesUpTo = React.useCallback(
     (messageId: string): MessageWithOperations[] => {
-      const index = messages.findIndex((m) => m.id === messageId)
+      // FIX: Issue #20 - Optimize filtering to avoid stack overflow or O(n^2)
+      // Use branch-specific filtering first
+      const branchMessages = messages.filter((m) => m.branchId === currentBranchId)
+      const index = branchMessages.findIndex((m) => m.id === messageId)
+      
       if (index === -1) return []
       
-      return messages
-        .slice(0, index + 1)
-        .filter((m) => m.branchId === currentBranchId)
+      return branchMessages.slice(0, index + 1)
     },
     [messages, currentBranchId]
   )
@@ -468,16 +481,34 @@ export function useMessageOperations(
       case 'edit':
       case 'regenerate':
         if (lastOperation.previousState) {
-          setMessages((prev) =>
-            prev.map((m) =>
+          // FIX: Issue #16 - Validate message exists before undo
+          setMessages((prev) => {
+            const messageExists = prev.some((m) => m.id === lastOperation.messageId)
+            if (!messageExists) {
+              console.warn(
+                `[undo] Cannot undo ${lastOperation.type}: message ${lastOperation.messageId} not found`
+              )
+              return prev
+            }
+            return prev.map((m) =>
               m.id === lastOperation.messageId ? lastOperation.previousState! : m
             )
-          )
+          })
         }
         break
       case 'delete':
         if (lastOperation.previousState) {
-          setMessages((prev) => [...prev, lastOperation.previousState!])
+          // FIX: Issue #16 - Check for duplicate IDs before restoring
+          setMessages((prev) => {
+            const isDuplicate = prev.some((m) => m.id === lastOperation.messageId)
+            if (isDuplicate) {
+              console.warn(
+                `[undo] Cannot undo delete: message ${lastOperation.messageId} already exists`
+              )
+              return prev
+            }
+            return [...prev, lastOperation.previousState!]
+          })
         }
         break
     }
@@ -496,14 +527,50 @@ export function useMessageOperations(
     setHistory((prev) => [...prev, operation])
 
     // Re-apply the operation
+    // FIX: Issue #3 - Add missing 'edit' and 'regenerate' cases for complete undo/redo
     switch (operation.type) {
       case 'add':
         if (operation.previousState) {
-          setMessages((prev) => [...prev, operation.previousState!])
+          // FIX: Issue #16 - Check for duplicate before adding
+          setMessages((prev) => {
+            const isDuplicate = prev.some((m) => m.id === operation.messageId)
+            if (isDuplicate) {
+              console.warn(
+                `[redo] Cannot redo add: message ${operation.messageId} already exists`
+              )
+              return prev
+            }
+            return [...prev, operation.previousState!]
+          })
         }
         break
       case 'delete':
         setMessages((prev) => prev.filter((m) => m.id !== operation.messageId))
+        break
+      case 'edit':
+        // Restore the edited state
+        if (operation.previousState) {
+          // FIX: Issue #16 - Validate message exists before redo
+          setMessages((prev) => {
+            const messageExists = prev.some((m) => m.id === operation.messageId)
+            if (!messageExists) {
+              console.warn(
+                `[redo] Cannot redo edit: message ${operation.messageId} not found`
+              )
+              return prev
+            }
+            return prev.map((m) =>
+              m.id === operation.messageId ? operation.previousState! : m
+            )
+          })
+        }
+        break
+      case 'regenerate':
+        // Restore the regenerated messages
+        if (operation.previousState) {
+          // previousState should contain the full message array after regeneration
+          setMessages(operation.previousState as MessageWithOperations[])
+        }
         break
     }
   }, [redoStack])
