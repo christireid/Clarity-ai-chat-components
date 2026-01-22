@@ -297,21 +297,126 @@ function validateObject(
 // =============================================================================
 
 /**
- * Cache entry
+ * Cache entry with LRU tracking
  */
 interface CacheEntry {
   result: ToolResult
-  timestamp: number
+  timestamp: number        // When entry was created
+  lastAccessed: number     // When entry was last accessed (for LRU)
   ttl: number
+  accessCount: number      // Number of times accessed
 }
 
 /**
- * Tool result cache
+ * Tool result cache configuration
+ */
+export interface ToolResultCacheConfig {
+  /** Maximum cache size (number of entries, default: 1000) */
+  maxSize?: number
+
+  /** Enable periodic cleanup of expired entries (default: false) */
+  enablePeriodicCleanup?: boolean
+
+  /** Cleanup interval in milliseconds (default: 60000 = 1 minute) */
+  cleanupIntervalMs?: number
+}
+
+/**
+ * Tool result cache with LRU eviction
+ *
+ * **Features**:
+ * - LRU (Least Recently Used) eviction when maxSize is reached
+ * - TTL-based expiration
+ * - Optional periodic cleanup of expired entries
+ * - Cache hit/miss statistics
+ * - Per-tool cache clearing
+ *
+ * **Usage**:
+ * ```typescript
+ * const cache = new ToolResultCache({
+ *   maxSize: 1000,
+ *   enablePeriodicCleanup: true,
+ *   cleanupIntervalMs: 60000,
+ * })
+ * ```
  */
 export class ToolResultCache {
   private cache = new Map<string, CacheEntry>()
   private hits = 0
   private misses = 0
+  private evictions = 0
+  private maxSize: number
+  private cleanupIntervalMs: number
+  private cleanupTimer?: NodeJS.Timeout | number
+
+  constructor(config: ToolResultCacheConfig = {}) {
+    this.maxSize = config.maxSize ?? 1000
+    this.cleanupIntervalMs = config.cleanupIntervalMs ?? 60000
+
+    // Start periodic cleanup if enabled
+    if (config.enablePeriodicCleanup) {
+      this.startPeriodicCleanup()
+    }
+  }
+
+  /**
+   * Start periodic cleanup of expired entries
+   */
+  private startPeriodicCleanup(): void {
+    this.cleanupTimer = setInterval(() => {
+      this.cleanupExpired()
+    }, this.cleanupIntervalMs)
+
+    // Unref timer in Node.js to allow process to exit
+    if (typeof this.cleanupTimer === 'object' && 'unref' in this.cleanupTimer) {
+      this.cleanupTimer.unref()
+    }
+  }
+
+  /**
+   * Stop periodic cleanup
+   */
+  stopPeriodicCleanup(): void {
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer as any)
+      this.cleanupTimer = undefined
+    }
+  }
+
+  /**
+   * Clean up expired entries
+   * @returns Number of entries removed
+   */
+  cleanupExpired(): number {
+    const now = Date.now()
+    let removed = 0
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (now - entry.timestamp > entry.ttl) {
+        this.cache.delete(key)
+        removed++
+      }
+    }
+
+    return removed
+  }
+
+  /**
+   * Evict least recently used entries to make room
+   * @param count Number of entries to evict
+   */
+  private evictLRU(count: number): void {
+    // Sort entries by lastAccessed (oldest first)
+    const entries = Array.from(this.cache.entries()).sort(
+      ([, a], [, b]) => a.lastAccessed - b.lastAccessed
+    )
+
+    // Remove oldest entries
+    for (let i = 0; i < Math.min(count, entries.length); i++) {
+      this.cache.delete(entries[i][0])
+      this.evictions++
+    }
+  }
 
   /**
    * Generate cache key
@@ -348,6 +453,10 @@ export class ToolResultCache {
       return undefined
     }
 
+    // Update LRU tracking
+    entry.lastAccessed = now
+    entry.accessCount++
+
     this.hits++
     return entry.result
   }
@@ -357,10 +466,21 @@ export class ToolResultCache {
    */
   set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number): void {
     const key = this.getCacheKey(toolName, args)
+    const now = Date.now()
+
+    // Check if we need to evict entries to make room
+    if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
+      // Evict 10% of cache (or at least 1 entry)
+      const evictCount = Math.max(1, Math.floor(this.maxSize * 0.1))
+      this.evictLRU(evictCount)
+    }
+
     this.cache.set(key, {
       result,
-      timestamp: Date.now(),
+      timestamp: now,
+      lastAccessed: now,
       ttl,
+      accessCount: 0,
     })
   }
 
@@ -385,12 +505,25 @@ export class ToolResultCache {
    */
   getStats(): {
     size: number
+    maxSize: number
     hits: number
     misses: number
+    evictions: number
     hitRate: number
-    entries: Array<{ toolName: string; age: number }>
+    fillRate: number
+    entries: Array<{
+      toolName: string
+      age: number
+      lastAccessed: number
+      accessCount: number
+    }>
   } {
-    const entries: Array<{ toolName: string; age: number }> = []
+    const entries: Array<{
+      toolName: string
+      age: number
+      lastAccessed: number
+      accessCount: number
+    }> = []
     const now = Date.now()
 
     for (const [key, entry] of this.cache.entries()) {
@@ -398,19 +531,33 @@ export class ToolResultCache {
       entries.push({
         toolName,
         age: now - entry.timestamp,
+        lastAccessed: entry.lastAccessed,
+        accessCount: entry.accessCount,
       })
     }
 
     const total = this.hits + this.misses
     const hitRate = total > 0 ? this.hits / total : 0
+    const fillRate = this.maxSize > 0 ? this.cache.size / this.maxSize : 0
 
     return {
       size: this.cache.size,
+      maxSize: this.maxSize,
       hits: this.hits,
       misses: this.misses,
+      evictions: this.evictions,
       hitRate,
+      fillRate,
       entries,
     }
+  }
+
+  /**
+   * Destroy cache and stop periodic cleanup
+   */
+  destroy(): void {
+    this.stopPeriodicCleanup()
+    this.cache.clear()
   }
 }
 
@@ -525,6 +672,9 @@ export interface ExecutorConfig {
 
   /** Maximum concurrent executions (default: 10) */
   maxConcurrentExecutions?: number
+
+  /** Cache configuration */
+  cache?: ToolResultCacheConfig
 }
 
 // =============================================================================
@@ -598,10 +748,10 @@ export interface ExecutionResult {
  * ```
  */
 export class ToolExecutor {
-  private cache = new ToolResultCache()
+  private cache: ToolResultCache
   private rateLimiter?: RateLimiter
   private concurrencyLimiter?: ConcurrencyLimiter
-  private config: Required<ExecutorConfig>
+  private config: Required<Omit<ExecutorConfig, 'cache'>> & { cache?: ToolResultCacheConfig }
 
   constructor(
     private lifecycle?: ToolLifecycleManager,
@@ -613,7 +763,11 @@ export class ToolExecutor {
       rateLimitWindowMs: config.rateLimitWindowMs ?? 60000,
       enableConcurrencyLimit: config.enableConcurrencyLimit ?? false,
       maxConcurrentExecutions: config.maxConcurrentExecutions ?? 10,
+      cache: config.cache,
     }
+
+    // Initialize cache with configuration
+    this.cache = new ToolResultCache(this.config.cache)
 
     // Initialize rate limiter if enabled
     if (this.config.enableRateLimit) {
@@ -854,6 +1008,49 @@ export class ToolExecutor {
   }
 
   /**
+   * Clean up expired cache entries
+   *
+   * Removes all expired entries from the cache. This is useful for periodic
+   * maintenance when periodic cleanup is not enabled.
+   *
+   * @returns Number of entries removed
+   *
+   * @example
+   * ```typescript
+   * // Manually cleanup cache periodically
+   * setInterval(() => {
+   *   const removed = executor.cleanupCache()
+   *   console.log(`Cleaned up ${removed} expired cache entries`)
+   * }, 60000) // Every minute
+   * ```
+   */
+  cleanupCache(): number {
+    return this.cache.cleanupExpired()
+  }
+
+  /**
+   * Destroy executor and cleanup resources
+   *
+   * Stops periodic cleanup timers and clears caches. Call this when you're
+   * done with the executor to prevent memory leaks.
+   *
+   * @example
+   * ```typescript
+   * const executor = new ToolExecutor(lifecycle, {
+   *   cache: { enablePeriodicCleanup: true }
+   * })
+   *
+   * // Use executor...
+   *
+   * // Cleanup when done
+   * executor.destroy()
+   * ```
+   */
+  destroy(): void {
+    this.cache.destroy()
+  }
+
+  /**
    * Generate unique call ID
    */
   private generateCallId(): string {
@@ -865,4 +1062,4 @@ export class ToolExecutor {
 // Exports
 // =============================================================================
 
-export type { ExecutionOptions, ExecutionResult, ExecutorConfig }
+export type { ExecutionOptions, ExecutionResult, ExecutorConfig, ToolResultCacheConfig }
