@@ -309,7 +309,48 @@ export class MemoryService {
   }
 
   /**
-   * Add memory item
+   * Add a new memory item to the memory system
+   *
+   * Stores a memory with the specified type, scope, and metadata. The memory will be:
+   * - Validated for consent (if enabled)
+   * - Checked for duplicates (if deduplication enabled)
+   * - Checked against size and count limits
+   * - Embedded (if embedding provider configured)
+   * - Stored in cache and optionally persisted to vector store
+   *
+   * @param content - Memory content to store
+   * @param type - Memory type (episodic, semantic, procedural, working)
+   * @param scope - Memory scope (global, user, thread, session)
+   * @param metadata - Optional metadata (userId, threadId, etc.)
+   * @param options - Optional priority, confidence, and embedding
+   * @returns The created memory item with generated ID and timestamps
+   *
+   * @throws {MemoryConsentError} If consent is required but not granted or userId missing
+   * @throws {MemoryOperationError} If content exceeds maximum size limit
+   *
+   * @sideEffects
+   * - Writes to memory cache
+   * - May evict old memories if limits exceeded (LRU)
+   * - May write to vector store (if configured)
+   * - May update similar existing memory (if deduplication enabled)
+   * - Logs audit event (if audit logging enabled)
+   * - Emits 'memory:added' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Store a user message
+   * const memory = await service.addMemory(
+   *   'User asked about pricing',
+   *   'episodic',
+   *   'thread',
+   *   {
+   *     userId: 'user_123',
+   *     threadId: 'thread_456',
+   *     role: 'user',
+   *   },
+   *   { priority: 'medium', confidence: 0.9 }
+   * )
+   * ```
    */
   async addMemory(
     content: string,
@@ -700,7 +741,40 @@ export class MemoryService {
   }
 
   /**
-   * Query memories
+   * Query memories with semantic search and filtering
+   *
+   * Searches memories using vector similarity (if embedding provided), filters by metadata,
+   * and applies importance scoring for ranking. Results are optimized for token budget limits.
+   *
+   * **Pure Operation**: This method does NOT track access by default. Use trackAccess parameter
+   * to update access counts and timestamps.
+   *
+   * @param query - Query configuration with filters, limits, and search parameters
+   * @returns Array of search results with memories and relevance scores, sorted by importance
+   *
+   * @sideEffects
+   * - May track access if trackAccess=true (updates accessCount and lastAccessed)
+   * - May trigger embeddings API call (if query string provided without embedding)
+   * - May query vector store (if embedding search used)
+   * - Emits 'memory:queried' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Semantic search with filters
+   * const results = await service.query({
+   *   query: 'user preferences',
+   *   types: ['semantic'],
+   *   scopes: ['user'],
+   *   metadata: { userId: 'user_123' },
+   *   limit: 10,
+   *   tokenBudget: 4000,
+   *   trackAccess: false, // Pure read, no side effects
+   * })
+   *
+   * // Results sorted by importance score
+   * console.log(results[0].relevance) // 0.95
+   * console.log(results[0].memory.content)
+   * ```
    */
   async query(query: MemoryQuery): Promise<MemorySearchResult[]> {
     let results: MemorySearchResult[] = []
@@ -1102,7 +1176,36 @@ export class MemoryService {
   }
 
   /**
-   * Update memory item
+   * Update an existing memory item
+   *
+   * Updates memory fields and automatically recalculates tokens and embeddings if content changes.
+   * Updates both the in-memory cache and persistent vector store (if configured).
+   *
+   * @param id - Memory ID to update
+   * @param updates - Partial memory item with fields to update
+   * @returns Updated memory item, or null if memory not found
+   *
+   * @sideEffects
+   * - Updates memory in cache
+   * - Updates updatedAt timestamp
+   * - Recalculates tokens if content changed
+   * - Regenerates embedding if content changed (async, may fail silently)
+   * - Updates vector store (if configured)
+   * - Emits 'memory:updated' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Update memory priority
+   * const updated = await service.updateMemory('mem_123', {
+   *   priority: 'high',
+   *   confidence: 0.95,
+   * })
+   *
+   * // Update content (triggers re-embedding)
+   * const updated = await service.updateMemory('mem_123', {
+   *   content: 'Updated user preference: prefers dark mode',
+   * })
+   * ```
    */
   async updateMemory(
     id: string,
@@ -1150,7 +1253,25 @@ export class MemoryService {
   }
 
   /**
-   * Delete memory item
+   * Delete a memory item by ID
+   *
+   * Removes memory from cache and vector store (if configured). Part of GDPR Right to Erasure support.
+   *
+   * @param id - Memory ID to delete
+   * @returns true if memory was deleted, false if not found
+   *
+   * @sideEffects
+   * - Removes memory from cache
+   * - Deletes from vector store (if configured)
+   * - Logs audit event (if audit logging enabled)
+   * - Emits 'memory:deleted' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Delete a single memory
+   * const deleted = await service.deleteMemory('mem_123')
+   * console.log(deleted ? 'Deleted' : 'Not found')
+   * ```
    */
   async deleteMemory(id: string): Promise<boolean> {
     const memory = this.cache.get(id)
@@ -2556,13 +2677,45 @@ export class MemoryService {
 
   /**
    * Capture a tool call and its result to memory
-   * Automatically handles token limits and summarization
+   *
+   * Automatically stores tool invocations with intelligent token management:
+   * - Enforces per-tool token limits (default: 500 tokens)
+   * - Enforces total tool memory budget (default: 5000 tokens)
+   * - Auto-summarizes large outputs (configurable)
+   * - Applies tool filtering (if configured)
+   * - LRU eviction when budget exceeded
    *
    * @param toolName - Name of the tool that was called
-   * @param params - Tool parameters
-   * @param result - Tool result/output
-   * @param options - Optional metadata and configuration
-   * @returns The created memory item, or null if filtered out
+   * @param params - Tool parameters (will be JSON stringified)
+   * @param result - Tool result/output (will be JSON stringified)
+   * @param options - Optional tool type, metadata, scope, and priority
+   * @returns The created memory item, or null if capture is disabled or tool filtered out
+   *
+   * @sideEffects
+   * - Stores tool memory as episodic type
+   * - May summarize large outputs (if autoSummarize=true)
+   * - May evict old tool memories (if budget exceeded)
+   * - Writes to cache and vector store (if configured)
+   * - Emits 'memory:added' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Capture a database query
+   * const memory = await service.captureToolCall(
+   *   'database_query',
+   *   { sql: 'SELECT * FROM users WHERE active = true' },
+   *   { rows: 42, time: 150 },
+   *   {
+   *     toolType: 'database',
+   *     priority: 'medium',
+   *   }
+   * )
+   *
+   * // Returns null if capture disabled or filtered
+   * if (memory === null) {
+   *   console.log('Tool capture disabled or filtered')
+   * }
+   * ```
    */
   async captureToolCall(
     toolName: string,
