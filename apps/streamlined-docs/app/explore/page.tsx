@@ -1,4 +1,5 @@
 import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
+import { ScrollReveal, ScrollRevealStagger, ScrollRevealStaggerItem, KineticText } from '@/components/Enhanced/ScrollReveal'
 import Link from 'next/link'
 import {
   Play,
@@ -23,62 +24,79 @@ export default function Page() {
 
         <div className="container-docs relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 dark:bg-brand-950/50 border border-brand-200 dark:border-brand-800/50 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-brand-500" />
-              <span className="text-sm font-medium text-brand-600 dark:text-brand-400">
-                155+ Components & 70+ Hooks
-              </span>
-            </div>
+            <ScrollReveal direction="down" delay={0.1}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-50 dark:bg-brand-950/50 border border-brand-200 dark:border-brand-800/50 rounded-full mb-6">
+                <Sparkles className="w-4 h-4 text-brand-500" />
+                <span className="text-sm font-medium text-brand-600 dark:text-brand-400">
+                  155+ Components & 70+ Hooks
+                </span>
+              </div>
+            </ScrollReveal>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              Explore{' '}
-              <span className="bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Interactive Examples
-              </span>
-            </h1>
+            <ScrollReveal direction="up" delay={0.2}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+                Explore{' '}
+                <KineticText
+                  gradient={true}
+                  className="inline-block bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+                >
+                  Interactive Examples
+                </KineticText>
+              </h1>
+            </ScrollReveal>
 
-            <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
-              See our components in action. Interactive demos, code examples,
-              and production-ready recipes to accelerate your development.
-            </p>
+            <ScrollReveal direction="up" delay={0.3}>
+              <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 mb-8 max-w-2xl mx-auto">
+                See our components in action. Interactive demos, code examples,
+                and production-ready recipes to accelerate your development.
+              </p>
+            </ScrollReveal>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/explore/demos"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-purple-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                <Play className="w-4 h-4" />
-                View Demos
-              </Link>
-              <Link
-                href="/explore/examples"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white rounded-lg font-medium border border-neutral-200 dark:border-neutral-800 hover:border-brand-300 dark:hover:border-brand-700 transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                <Code2 className="w-4 h-4" />
-                Browse Examples
-              </Link>
-            </div>
+            <ScrollReveal direction="up" delay={0.4}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  href="/explore/demos"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-purple-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  <Play className="w-4 h-4" />
+                  View Demos
+                </Link>
+                <Link
+                  href="/explore/examples"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white rounded-lg font-medium border border-neutral-200 dark:border-neutral-800 hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  <Code2 className="w-4 h-4" />
+                  Browse Examples
+                </Link>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Component Showcase */}
-      <ComponentShowcase />
+      <ScrollReveal direction="up" delay={0.2}>
+        <ComponentShowcase />
+      </ScrollReveal>
 
       {/* Explore Sections Grid */}
       <section className="container-docs py-16 sm:py-20 md:py-24">
-        <div className="text-center mb-12 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent">
-            What would you like to explore?
-          </h2>
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">
-            Choose your learning path based on what you need right now.
-          </p>
-        </div>
+        <ScrollReveal direction="up" delay={0.2}>
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <KineticText className="text-3xl sm:text-4xl font-bold mb-4">
+              What would you like to explore?
+            </KineticText>
+            <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400">
+              Choose your learning path based on what you need right now.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <ScrollRevealStagger staggerDelay={0.1}>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Demos Card */}
-          <Link
+          <ScrollRevealStaggerItem>
+            <Link
             href="/explore/demos"
             className="group relative rounded-xl overflow-hidden bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-transparent transition-all duration-300 hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_16px_32px_rgba(99,102,241,0.04)] dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_16px_32px_rgba(129,140,248,0.05)] hover:-translate-y-1"
           >
@@ -123,9 +141,11 @@ export default function Page() {
               aria-hidden="true"
             />
           </Link>
+          </ScrollRevealStaggerItem>
 
           {/* Examples Card */}
-          <Link
+          <ScrollRevealStaggerItem>
+            <Link
             href="/explore/examples"
             className="group relative rounded-xl overflow-hidden bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-transparent transition-all duration-300 hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_16px_32px_rgba(99,102,241,0.04)] dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_16px_32px_rgba(129,140,248,0.05)] hover:-translate-y-1"
           >
@@ -170,9 +190,11 @@ export default function Page() {
               aria-hidden="true"
             />
           </Link>
+          </ScrollRevealStaggerItem>
 
           {/* Recipes Card */}
-          <Link
+          <ScrollRevealStaggerItem>
+            <Link
             href="/explore/recipes"
             className="group relative rounded-xl overflow-hidden bg-white/60 dark:bg-white/[0.02] backdrop-blur-sm border border-neutral-200/60 dark:border-white/[0.06] hover:border-transparent transition-all duration-300 hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_16px_32px_rgba(99,102,241,0.04)] dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_16px_32px_rgba(129,140,248,0.05)] hover:-translate-y-1"
           >
@@ -217,7 +239,9 @@ export default function Page() {
               aria-hidden="true"
             />
           </Link>
+          </ScrollRevealStaggerItem>
         </div>
+        </ScrollRevealStagger>
       </section>
 
       {/* Quick Links Section */}
