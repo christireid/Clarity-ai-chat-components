@@ -259,6 +259,8 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
   const messageIdRef = React.useRef<string | null>(null)
   const rafRef = React.useRef<number | null>(null)
+  const readerRef = React.useRef<ReadableStreamDefaultReader | null>(null)
+  const connectionIdRef = React.useRef<number>(0)
 
   // Track if component is mounted
   const mountedRef = React.useRef(true)
@@ -266,6 +268,16 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     mountedRef.current = true
     return () => {
       mountedRef.current = false
+      // Cleanup RAF on unmount
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      // Cleanup reader on unmount
+      if (readerRef.current) {
+        readerRef.current.cancel().catch(() => {})
+        readerRef.current = null
+      }
     }
   }, [])
 
@@ -273,9 +285,25 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
    * Abort current request
    */
   const abort = React.useCallback(() => {
+    // Invalidate current connection
+    connectionIdRef.current++
+
+    // Cancel reader to prevent dangling promises
+    if (readerRef.current) {
+      readerRef.current.cancel('User aborted stream').catch(() => {})
+      readerRef.current = null
+    }
+
+    // Abort fetch request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+    }
+
+    // Cancel pending RAF updates
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
     }
   }, [])
 
@@ -333,6 +361,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         setIsLoading(true)
         setError(undefined)
         setData(undefined)
+
+        // Increment connection ID to invalidate any previous streams
+        const currentConnectionId = ++connectionIdRef.current
 
         abortControllerRef.current = new AbortController()
         const assistantMessageId = generateMessageId()
@@ -404,16 +435,21 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
           // Streaming response
           const reader = response.body.getReader()
+          readerRef.current = reader // Store reader ref for cleanup
           const decoder = new TextDecoder()
           let accumulatedContent = ''
           let currentMessage = { ...assistantMessage }
 
           // Helper to schedule batched update
           const scheduleUpdate = () => {
+            // Check if this stream is still active
+            if (connectionIdRef.current !== currentConnectionId) return
+
             if (mountedRef.current && !rafRef.current) {
               rafRef.current = requestAnimationFrame(() => {
                 rafRef.current = null
-                if (!mountedRef.current) return
+                // Double-check connection is still active
+                if (!mountedRef.current || connectionIdRef.current !== currentConnectionId) return
 
                 setMessages((prev) =>
                   prev.map((msg) =>
@@ -426,6 +462,12 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           }
 
           while (true) {
+            // Check if this stream was cancelled by a newer request
+            if (connectionIdRef.current !== currentConnectionId) {
+              console.log('[useChat] Stream cancelled - newer request started')
+              break
+            }
+
             const { done, value } = await reader.read()
 
             if (done) break
@@ -521,8 +563,11 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
             rafRef.current = null
           }
 
-          // Finalize message
-          if (mountedRef.current) {
+          // Clear reader ref
+          readerRef.current = null
+
+          // Finalize message (only if this stream is still active)
+          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
             const finalMessage: CoreMessage = {
               ...currentMessage,
               content: accumulatedContent,
@@ -543,18 +588,29 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           }
 
           const error = err instanceof Error ? err : new Error(String(err))
-          setError(error)
-          onError?.(error)
 
-          if (!keepLastMessageOnError && mountedRef.current) {
-            setMessages((prev) =>
-              prev.filter((msg) => msg.id !== assistantMessageId)
-            )
+          // Only update state if this stream is still active
+          if (connectionIdRef.current === currentConnectionId) {
+            setError(error)
+            onError?.(error)
+
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
           }
 
           throw error
         } finally {
-          if (mountedRef.current) {
+          // Cleanup reader ref
+          if (readerRef.current) {
+            readerRef.current.cancel().catch(() => {})
+            readerRef.current = null
+          }
+
+          // Only cleanup if this is still the active connection
+          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
             setIsLoading(false)
             abortControllerRef.current = null
             currentAssistantMessageRef.current = null
