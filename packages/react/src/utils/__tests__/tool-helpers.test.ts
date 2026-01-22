@@ -17,6 +17,8 @@ import {
   createReadOnlyTool,
   createApprovalTool,
   createAPITool,
+  createTool,
+  type SchemaShorthand,
 } from '../tool-helpers'
 
 describe('Tool Helpers', () => {
@@ -334,6 +336,88 @@ describe('Tool Helpers', () => {
         await expect(tool.execute({}, {} as any)).rejects.toThrow(
           'Failed to call api_tool API: API request failed: 404 Not Found'
         )
+      })
+    })
+  })
+
+  describe('Schema Shorthand', () => {
+    it('should expand basic string types', () => {
+      const tool = createTool({
+        name: 'test',
+        description: 'test tool',
+        schema: {
+          str: 'string',
+          num: 'number',
+          bool: 'boolean',
+        },
+        execute: async () => {},
+      })
+
+      const props = tool.parameters.properties
+      expect(props.str).toEqual({ type: 'string' })
+      expect(props.num).toEqual({ type: 'number' })
+      expect(props.bool).toEqual({ type: 'boolean' })
+      expect(tool.parameters.required).toEqual(['str', 'num', 'bool'])
+    })
+
+    it('should expand enum arrays', () => {
+      const tool = createTool({
+        name: 'test',
+        description: 'test tool',
+        schema: {
+          choice: ['a', 'b', 'c'],
+        },
+        execute: async () => {},
+      })
+
+      const props = tool.parameters.properties
+      expect(props.choice).toEqual({
+        type: 'string',
+        enum: ['a', 'b', 'c'],
+      })
+      expect(tool.parameters.required).toEqual(['choice'])
+    })
+
+    it('should handle full schema objects', () => {
+      const tool = createTool({
+        name: 'test',
+        description: 'test tool',
+        schema: {
+          full: {
+            type: 'string',
+            description: 'full description',
+            default: 'default',
+          },
+        },
+        execute: async () => {},
+      })
+
+      const props = tool.parameters.properties
+      expect(props.full).toEqual({
+        type: 'string',
+        description: 'full description',
+        default: 'default',
+      })
+      // Should not be required because it has a default
+      expect(tool.parameters.required).toBeUndefined()
+    })
+
+    it('should handle mixed definitions', () => {
+      const tool = createTool({
+        name: 'test',
+        description: 'test tool',
+        schema: {
+          simple: 'string',
+          complex: { type: 'number', default: 0 },
+        },
+        execute: async () => {},
+      })
+
+      expect(tool.parameters.required).toEqual(['simple'])
+      expect(tool.parameters.properties.simple).toEqual({ type: 'string' })
+      expect(tool.parameters.properties.complex).toEqual({
+        type: 'number',
+        default: 0,
       })
     })
   })

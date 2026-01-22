@@ -1246,6 +1246,7 @@ sandboxing, minor test coverage)
 - [x] Comprehensive documentation
 - [x] Test Coverage (adapters & utils)
 - [x] Error Message Improvements (DX-5) - Enhanced ToolValidationError with hints
+- [x] Schema Shorthand (DX-4) - Simplified tool definition API
 
 ### Optional Future Enhancements (P3)
 
