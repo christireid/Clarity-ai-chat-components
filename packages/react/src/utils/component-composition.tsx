@@ -70,7 +70,8 @@ export function withProps<T extends React.ComponentType<any>, P extends Partial<
 ): React.ComponentType<Omit<React.ComponentProps<T>, keyof P>> {
   return (props: Omit<React.ComponentProps<T>, keyof P>) => {
     const enhancedProps = enhancer(props as React.ComponentProps<T>)
-    return <BaseComponent {...props} {...enhancedProps} />
+    const mergedProps = { ...props, ...enhancedProps } as React.ComponentProps<T>
+    return <BaseComponent {...mergedProps} />
   }
 }
 
@@ -94,12 +95,12 @@ export function withProps<T extends React.ComponentType<any>, P extends Partial<
 export function conditional<T extends React.ComponentType<any>>(
   condition: (props: React.ComponentProps<T>) => boolean,
   Component: T,
-  fallback: React.ComponentType<React.ComponentProps<T>> = () => null
+  Fallback: React.ComponentType<React.ComponentProps<T>> = () => null
 ): React.ComponentType<React.ComponentProps<T>> {
   return (props: React.ComponentProps<T>) => {
     return condition(props)
       ? <Component {...props} />
-      : <fallback {...props} />
+      : <Fallback {...props} />
   }
 }
 
@@ -307,9 +308,10 @@ export function transformProps<T extends React.ComponentType<any>>(
 export function withDefaults<T extends React.ComponentType<any>>(
   defaultProps: Partial<React.ComponentProps<T>>
 ) {
-  return (Component: T) => (props: React.ComponentProps<T>) => (
-    <Component {...defaultProps} {...props} />
-  )
+  return (Component: T) => (props: React.ComponentProps<T>) => {
+    const mergedProps = { ...defaultProps, ...props } as React.ComponentProps<T>
+    return <Component {...mergedProps} />
+  }
 }
 
 // =============================================================================
@@ -339,12 +341,12 @@ export function withVariants<
   T extends React.ComponentType<any>,
   V extends Record<string, Partial<React.ComponentProps<T>>>
 >(
-  baseComponent: T,
+  BaseComponent: T,
   variants: V
 ): React.ComponentType<React.ComponentProps<T> & { variant?: keyof V }> {
   return ({ variant, ...props }: React.ComponentProps<T> & { variant?: keyof V }) => {
     const variantProps = variant ? variants[variant] : {}
-    return <baseComponent {...variantProps} {...(props as any)} />
+    return <BaseComponent {...variantProps} {...(props as any)} />
   }
 }
 

@@ -61,6 +61,15 @@ import {
 import type { SharedTemplate } from '../../prompts/sharing'
 import { templateMarketplace } from '../../prompts/sharing'
 
+/**
+ * Animation duration presets (in seconds for framer-motion)
+ */
+const durations = {
+  fast: 0.15,
+  normal: 0.3,
+  slow: 0.5,
+} as const
+
 export interface TemplateMarketplaceProps {
   /** Current user info */
   currentUser?: {
@@ -116,6 +125,7 @@ function MarketplaceTemplateCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: durations.normal }}
+      viewport={{ once: true }}
     >
       <Card className="group hover:shadow-lg transition-shadow">
         <CardHeader className="pb-3">
@@ -135,11 +145,17 @@ function MarketplaceTemplateCard({
                   variant={template.sharing.isPublic ? 'default' : 'secondary'}
                   className="text-xs"
                 >
-                  {template.sharing.isPublic ? <GlobeIcon className="w-3 h-3 mr-1" /> : <ShieldIcon className="w-3 h-3 mr-1" />}
+                  {template.sharing.isPublic ? (
+                    <GlobeIcon className="w-3 h-3 mr-1" />
+                  ) : (
+                    <ShieldIcon className="w-3 h-3 mr-1" />
+                  )}
                   {template.sharing.isPublic ? 'Public' : 'Private'}
                 </Badge>
               </div>
-              <CardTitle className="text-base truncate">{template.name}</CardTitle>
+              <CardTitle className="text-base truncate">
+                {template.name}
+              </CardTitle>
               {template.description && (
                 <CardDescription className="text-sm line-clamp-2">
                   {template.description}
@@ -191,7 +207,8 @@ function MarketplaceTemplateCard({
           {/* Variables */}
           {template.variables && template.variables.length > 0 && (
             <div className="text-xs text-muted-foreground mb-2">
-              {template.variables.length} variable{template.variables.length !== 1 ? 's' : ''}
+              {template.variables.length} variable
+              {template.variables.length !== 1 ? 's' : ''}
             </div>
           )}
 
@@ -237,9 +254,12 @@ function MarketplaceTemplateCard({
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mt-3 p-3 bg-muted/50 rounded-lg space-y-3"
+                viewport={{ once: true }}
               >
                 <div>
-                  <Label className="text-sm font-medium">Rate this template</Label>
+                  <Label className="text-sm font-medium">
+                    Rate this template
+                  </Label>
                   <div className="flex gap-1 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -272,7 +292,11 @@ function MarketplaceTemplateCard({
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={handleRate} disabled={userRating === 0}>
+                  <Button
+                    size="sm"
+                    onClick={handleRate}
+                    disabled={userRating === 0}
+                  >
                     Submit Rating
                   </Button>
                   <Button
@@ -320,7 +344,8 @@ function TemplatePreviewDialog({
             <div>
               <DialogTitle>{template.name}</DialogTitle>
               <DialogDescription>
-                by {template.author.name} • {new Date(template.sharedAt).toLocaleDateString()}
+                by {template.author.name} •{' '}
+                {new Date(template.sharedAt).toLocaleDateString()}
               </DialogDescription>
             </div>
           </div>
@@ -332,14 +357,18 @@ function TemplatePreviewDialog({
             {template.description && (
               <div>
                 <h4 className="font-medium mb-2">Description</h4>
-                <p className="text-sm text-muted-foreground">{template.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {template.description}
+                </p>
               </div>
             )}
 
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold">{template.stats.downloads}</div>
+                <div className="text-2xl font-bold">
+                  {template.stats.downloads}
+                </div>
                 <div className="text-sm text-muted-foreground">Downloads</div>
               </div>
               <div className="text-center">
@@ -347,11 +376,15 @@ function TemplatePreviewDialog({
                 <div className="text-sm text-muted-foreground">Forks</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold">{template.stats.rating.toFixed(1)}</div>
+                <div className="text-2xl font-bold">
+                  {template.stats.rating.toFixed(1)}
+                </div>
                 <div className="text-sm text-muted-foreground">Rating</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold">{template.stats.reviews}</div>
+                <div className="text-2xl font-bold">
+                  {template.stats.reviews}
+                </div>
                 <div className="text-sm text-muted-foreground">Reviews</div>
               </div>
             </div>
@@ -376,16 +409,23 @@ function TemplatePreviewDialog({
                 <h4 className="font-medium mb-2">Variables</h4>
                 <div className="space-y-2">
                   {template.variables.map((variable) => (
-                    <div key={variable.name} className="flex items-center justify-between p-2 bg-muted/50 rounded">
+                    <div
+                      key={variable.name}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded"
+                    >
                       <div>
-                        <span className="font-mono text-sm">{variable.name}</span>
+                        <span className="font-mono text-sm">
+                          {variable.name}
+                        </span>
                         {variable.description && (
                           <p className="text-xs text-muted-foreground mt-1">
                             {variable.description}
                           </p>
                         )}
                       </div>
-                      <Badge variant={variable.required ? 'default' : 'outline'}>
+                      <Badge
+                        variant={variable.required ? 'default' : 'outline'}
+                      >
                         {variable.required ? 'Required' : 'Optional'}
                       </Badge>
                     </div>
@@ -449,8 +489,11 @@ export function TemplateMarketplace({
   const [loading, setLoading] = React.useState(true)
   const [searchQuery, setSearchQuery] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState<string>('all')
-  const [sortBy, setSortBy] = React.useState<'popular' | 'recent' | 'rating' | 'downloads'>('popular')
-  const [previewTemplate, setPreviewTemplate] = React.useState<SharedTemplate | null>(null)
+  const [sortBy, setSortBy] = React.useState<
+    'popular' | 'recent' | 'rating' | 'downloads'
+  >('popular')
+  const [previewTemplate, setPreviewTemplate] =
+    React.useState<SharedTemplate | null>(null)
   const [showPreview, setShowPreview] = React.useState(false)
 
   // Load templates on mount
@@ -478,18 +521,21 @@ export function TemplateMarketplace({
     // Search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(t =>
-        t.name.toLowerCase().includes(query) ||
-        t.description?.toLowerCase().includes(query) ||
-        t.tags?.some(tag => tag.toLowerCase().includes(query)) ||
-        t.author.name.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (t) =>
+          t.name.toLowerCase().includes(query) ||
+          t.description?.toLowerCase().includes(query) ||
+          t.tags?.some((tag) => tag.toLowerCase().includes(query)) ||
+          t.author.name.toLowerCase().includes(query)
       )
     }
 
     // Category
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(t =>
-        t.tags?.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()))
+      filtered = filtered.filter((t) =>
+        t.tags?.some((tag) =>
+          tag.toLowerCase().includes(selectedCategory.toLowerCase())
+        )
       )
     }
 
@@ -505,11 +551,17 @@ export function TemplateMarketplace({
     }
   }
 
-  const handleRate = async (templateId: string, rating: number, review?: string) => {
+  const handleRate = async (
+    templateId: string,
+    rating: number,
+    review?: string
+  ) => {
     try {
       await templateMarketplace.rateTemplate(templateId, rating, review)
       // Refresh templates to show updated ratings
-      const updatedTemplates = await templateMarketplace.getSharedTemplates({ sortBy })
+      const updatedTemplates = await templateMarketplace.getSharedTemplates({
+        sortBy,
+      })
       setTemplates(updatedTemplates)
       onTemplateRate?.(templateId, rating, review)
     } catch (error) {
@@ -584,7 +636,10 @@ export function TemplateMarketplace({
             </SelectContent>
           </Select>
 
-          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+          <Select
+            value={sortBy}
+            onValueChange={(value: any) => setSortBy(value)}
+          >
             <SelectTrigger className="w-32">
               <TrendingUpIcon className="w-4 h-4 mr-2" />
               <SelectValue />
@@ -602,11 +657,10 @@ export function TemplateMarketplace({
       {/* Stats */}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>
-          {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} available
+          {filteredTemplates.length} template
+          {filteredTemplates.length !== 1 ? 's' : ''} available
         </span>
-        {currentUser && (
-          <span>Welcome back, {currentUser.name}!</span>
-        )}
+        {currentUser && <span>Welcome back, {currentUser.name}!</span>}
       </div>
 
       {/* Template Grid */}
@@ -633,8 +687,7 @@ export function TemplateMarketplace({
           <p className="text-muted-foreground">
             {searchQuery || selectedCategory !== 'all'
               ? 'Try adjusting your search or filters.'
-              : 'Be the first to share a template!'
-            }
+              : 'Be the first to share a template!'}
           </p>
         </div>
       )}
