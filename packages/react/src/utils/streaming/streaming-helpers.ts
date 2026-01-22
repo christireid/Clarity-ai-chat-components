@@ -332,7 +332,7 @@ export async function processStream(
           buffer = ''
         }
 
-        // Flush any in-progress SSE event at EOF.
+        // FIX: Issue #17 - Flush any in-progress SSE event at EOF to ensure completion
         if (format === 'sse' && sseParser && !sseDone) {
           const flushed = sseParser.flush()
           if (flushed?.data?.trim() === '[DONE]') {
@@ -348,6 +348,9 @@ export async function processStream(
               onChunk?.(processed)
             }
           }
+          // FIX: Issue #17 - Explicitly mark as done after flush to trigger completion
+          // This ensures the stream doesn't appear to hang waiting for more data
+          sseDone = true
         }
         break
       }

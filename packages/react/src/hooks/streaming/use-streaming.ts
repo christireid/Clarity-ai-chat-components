@@ -142,6 +142,12 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       // STREAM-1: Set up timeout if specified
       if (timeout && timeout > 0) {
         timeoutRef.current = setTimeout(() => {
+          // FIX: Issue #15 - Cancel reader to prevent stuck streams
+          if (readerRef.current) {
+            readerRef.current.cancel().catch(() => {
+              // Ignore cancel errors during timeout
+            })
+          }
           controller.abort()
           const timeoutError = new Error(
             `Streaming timeout after ${timeout}ms`

@@ -704,8 +704,18 @@ export function useStreamingSSE(
    * Reconnect (disconnect and connect)
    */
   const reconnect = React.useCallback(() => {
+    // FIX: Issue #10 - Reset reconnecting flag and shouldReconnect before reconnecting
+    // This prevents multiple concurrent reconnection attempts
+    reconnectingRef.current = false
+    shouldReconnectRef.current = false
+
     disconnect()
-    setTimeout(() => connect(), 100)
+
+    // FIX: Issue #10 - Wait slightly longer to ensure cleanup completes
+    setTimeout(() => {
+      shouldReconnectRef.current = true
+      connect()
+    }, 200) // Increased from 100ms to 200ms
   }, [disconnect, connect])
 
   /**

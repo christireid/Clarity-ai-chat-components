@@ -614,7 +614,19 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     ) => {
       event?.preventDefault()
 
-      if (!input.trim() || isLoading) return
+      // FIX: Issue #13 - Provide feedback when input is empty
+      if (!input.trim()) {
+        const error = new Error('Message cannot be empty')
+        onError?.(error)
+        return
+      }
+
+      // Check if already loading
+      if (isLoading) {
+        const error = new Error('Please wait for the current response to complete')
+        onError?.(error)
+        return
+      }
 
       const userMessage: CoreMessage = {
         role: 'user',
@@ -629,7 +641,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           // Error already handled in append
         })
     },
-    [input, isLoading, append]
+    [input, isLoading, append, onError]
   )
 
   // Cleanup on unmount
