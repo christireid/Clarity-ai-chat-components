@@ -398,7 +398,9 @@ export function useClarityChat(
         }
       }
 
-      optimizeMessages()
+      // Debounce optimization to avoid excessive processing during rapid updates
+      const timeoutId = setTimeout(optimizeMessages, 500)
+      return () => clearTimeout(timeoutId)
     }
   }, [
     promptOptimization?.enabled,
