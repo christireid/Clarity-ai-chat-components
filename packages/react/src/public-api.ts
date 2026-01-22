@@ -112,6 +112,14 @@ export {
 // Primary markdown renderer (unified API with LaTeX, Mermaid, syntax highlighting)
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
 
+// Unified Markdown Renderer - Consolidated renderer combining all markdown implementations
+export {
+  UnifiedMarkdownRenderer,
+  useMarkdownFeatures,
+  type UnifiedMarkdownConfig,
+  type UnifiedMarkdownRendererProps,
+} from './components/markdown/unified-markdown-renderer'
+
 // Chain of Thought - AI reasoning visualization
 export {
   ChainOfThought,
