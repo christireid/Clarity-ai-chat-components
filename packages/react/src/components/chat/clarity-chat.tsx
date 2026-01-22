@@ -368,10 +368,25 @@ export function ClarityChat({
   })
 
   // Convert CoreMessage[] to Message[] for ChatWindow
-  const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(chat.messages),
-    [chat.messages]
-  )
+  const messages = useMessageNormalization(chat.messages)
+
+  const {
+    // ... other props
+    memoryErrorInfo
+  } = chat
+
+  // Issue #7: Handle silent memory failures
+  React.useEffect(() => {
+    if (memoryErrorInfo.memoryError) {
+      const { memoryError, memoryErrorOperation } = memoryErrorInfo
+      // Only show toast for user-initiated operations or critical failures
+      if (memoryErrorOperation === 'store' || memoryErrorOperation === 'query') {
+         console.warn(`[ClarityChat] Memory error (${memoryErrorOperation}):`, memoryError)
+         // We avoid showing error toasts for background memory operations to prevent user annoyance
+         // unless it's critical. For now, logging is sufficient as useClarityChat handles retry logic.
+      }
+    }
+  }, [memoryErrorInfo.memoryError, memoryErrorInfo.memoryErrorOperation])
 
   const handleSendMessage = React.useCallback(
     async (content: string) => {

@@ -9,7 +9,7 @@ import { MessageList } from '../message/message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from '../message/thinking-indicator'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+import { useMessageNormalization } from '../../hooks/chat/use-message-normalization'
 import { ChatWindowHeader, type ChatWindowHeaderProps } from './chat-window-header'
 import { DefaultEmptyState } from './empty-state'
 import { ErrorBanner } from '../ui/error-banner'
@@ -401,24 +401,7 @@ export function ChatWindow({
   const inputId = `${chatWindowId}-input`
 
   // Convert CoreMessage[] to Message[] if needed
-  const normalizedMessages = React.useMemo(() => {
-    if (messages.length === 0) return []
-
-    // Check if it's CoreMessage[] format by checking first message structure
-    const firstMessage = messages[0]
-    const isCoreMessage =
-      firstMessage &&
-      'content' in firstMessage &&
-      (typeof firstMessage.content === 'string' ||
-        Array.isArray(firstMessage.content)) &&
-      !('status' in firstMessage)
-
-    if (isCoreMessage) {
-      return convertCoreMessagesToMessages(messages as CoreMessage[])
-    }
-
-    return messages as Message[]
-  }, [messages])
+  const normalizedMessages = useMessageNormalization(messages)
 
   const handleSubmit = (content: string) => {
     onSendMessage(content)
