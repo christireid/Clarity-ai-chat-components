@@ -180,3 +180,15 @@ archive/documentation-overhaul/
 
 # Build reports
 build-report.json
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*

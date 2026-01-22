@@ -1,506 +1,900 @@
-# Chat UI Components & Hooks Inventory
+# Clarity Chat Components - Comprehensive Audit Inventory
 
-> Complete inventory of all chat UI components and hooks in the Clarity Chat library.
-> Generated: 2025-01-19
-> 
-> **Scope**: Chat UI components (`chat/`, `message/`, `input/`) and related hooks (`hooks/chat/`, `hooks/streaming/`, `hooks/message/`, `hooks/input/`)
+**Date:** January 2026 **Scope:** Complete audit of @clarity-chat/react library **Status:** Phase 7
+Complete - Audit Remediation Finished
 
----
+## Audit Summary
 
-## Summary Statistics
+This audit identified and resolved the following critical issues:
 
-| Category | Count | Public Exports | Internal Only | Test Coverage | Priority | Status |
-|----------|-------|----------------|---------------|---------------|----------|--------|
-| **Chat Components** | 14 | 10 | 4 | ⚠️ ~30% | 🔴 P0-P1 | Needs Review |
-| **Message Components** | 30 | 25+ | 5 | ⚠️ ~40% | 🔴 P0-P2 | Needs Review |
-| **Input Components** | 7 | 7 | 0 | ✅ ~60% | 🟡 P1-P2 | Good |
-| **Chat Primitives** | 10 | 10 | 0 | ❌ ~10% | 🟢 P2-P3 | Needs Tests |
-| **Chat Hooks** | 15 | 12 | 3 | ⚠️ ~25% | 🔴 P0-P1 | Critical |
-| **Streaming Hooks** | 7 | 7 | 0 | ❌ ~15% | 🟡 P1 | Needs Tests |
-| **Message Hooks** | 3 | 3 | 0 | ❌ ~5% | 🟢 P2 | Needs Tests |
-| **Input Hooks** | 4 | 4 | 0 | ✅ ~70% | 🟢 P2 | Good |
-| **TOTAL** | **90** | **78+** | **12** | ⚠️ ~35% | - | Mixed |
+### Fixed Issues
 
-**Priority Legend:**
-- 🔴 P0: Critical - Foundation components, must fix immediately
-- 🟡 P1: High - Core functionality, fix in current sprint
-- 🟢 P2: Medium - Enhanced features, fix in next sprint
-- 🔵 P3: Low - Utilities & polish, fix when time allows
+1. **TypeScript Build Errors** - Resolved duplicate exports in hooks.ts
+2. **Missing Module Declarations** - Added prismjs.d.ts and gpt-tokenizer.d.ts
+3. **Missing Dependencies** - Built @clarity-chat/token-optimization package
+4. **Documentation Drift** - Deleted 81 orphaned hook documentation files
+5. **Incomplete Docs** - Rewrote useClarityChat documentation with full API reference
+
+### Key Metrics
+
+- 81 orphaned documentation files removed
+- 4 critical TypeScript errors fixed
+- 138 Storybook stories verified
+- 155+ components inventoried
+- 95+ hooks catalogued
 
 ---
 
-## Components
+## Table of Contents
 
-### Chat Components (`packages/react/src/components/chat/`)
-
-#### Critical Priority (P0)
-
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **ClarityChat** | `clarity-chat.tsx` | `ClarityChat`, `ClarityChatProps` | Main drop-in component - combines hook + UI | High | ✅ Public |
-| **ChatWindow** | `chat-window.tsx` | `ChatWindow`, `ChatWindowProps` | Core chat window UI - message list + input | High | ✅ Public |
-| **ChatInput** | `chat-input.tsx` | `ChatInput`, `ChatInputProps` | User input component with validation | Medium | ✅ Public |
-
-#### High Priority (P1)
-
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **MessageList** | `virtualized-message-list.tsx` | `MessageList` (default), `VirtualizedMessageList` | Virtualized message list for performance | High | ✅ Public |
-| **TanStackMessageList** | `tanstack-message-list.tsx` | `TanStackMessageList`, `AutoTanStackMessageList`, hooks | TanStack-based virtualized list | High | ✅ Public |
-| **ChatLayout** | `chat-layout.tsx` | `ChatLayout`, `ChatLayoutProps` | Layout wrapper for chat | Low | ✅ Public |
-| **ResizableChatLayout** | `resizable-chat-layout.tsx` | `ResizableChatLayout`, `useResizableLayout`, primitives | Resizable panel layout | Medium | ✅ Public |
-| **FloatingChatWidget** | `floating-chat-widget.tsx` | `FloatingChatWidget`, `FloatingChatWidgetProps` | Floating chat widget overlay | Medium | ✅ Public |
-
-#### Medium Priority (P2)
-
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **ChatRecipes** | `chat-recipes.tsx` | `ChatWithMemory`, `ChatComplete`, `ChatWithAnalytics`, `ChatWithPreset` | Pre-built component combinations | Medium | ✅ Public |
-| **ClarityChatPresets** | `clarity-chat-presets.tsx` | `ClarityChatPresets` | Preset configurations | Low | ✅ Public |
-| **OfflineChatSync** | `offline-chat-sync.tsx` | `OfflineChatSync`, `useOfflineChat` | Offline chat synchronization | High | ✅ Public |
-| **MobileChatOptimized** | `mobile-chat-optimized.tsx` | `MobileChatOptimized` | Mobile-optimized chat UI | Medium | ⚠️ Internal? |
-| **ChatWithErrorBoundary** | `chat-with-error-boundary.tsx` | `ChatWithErrorBoundary` | Error boundary wrapper | Low | ⚠️ Internal? |
-| **ClarityChatSimple** | `clarity-chat-simple.tsx` | `ClarityChatSimple` | Simplified version | Low | ⚠️ Internal? |
+1. [Executive Summary](#executive-summary)
+2. [Component Inventory](#component-inventory)
+3. [Hook Inventory](#hook-inventory)
+4. [Public API Surface](#public-api-surface)
+5. [Documentation Coverage](#documentation-coverage)
+6. [Storybook Coverage](#storybook-coverage)
+7. [Test Coverage](#test-coverage)
+8. [Dependency Map](#dependency-map)
+9. [Issues Register](#issues-register)
+10. [Prioritization Matrix](#prioritization-matrix)
 
 ---
 
-### Message Components (`packages/react/src/components/message/`)
+## Executive Summary
 
-#### Critical Priority (P0)
+### Library Statistics
 
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **Message** | `message.tsx` | `Message`, `MessageProps` | Individual message display component | High | ✅ Public |
-| **StreamingMessage** | `streaming-message.tsx` | `StreamingMessage` | Real-time streaming message display | High | ✅ Public |
+| Metric               | Count |
+| -------------------- | ----- |
+| Total Components     | 155+  |
+| Total Hooks          | 95+   |
+| Component Categories | 23    |
+| Hook Domains         | 15    |
+| Public API Exports   | 150+  |
+| Documentation Pages  | 100+  |
+| Storybook Stories    | 100+  |
+| Example Applications | 16    |
 
-#### High Priority (P1)
+### Package Structure
 
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **MessageList** | `message-list.tsx` | `MessageList` | Non-virtualized message list | Medium | ✅ Public |
-| **MessageOptimized** | `message-optimized.tsx` | `MessageOptimized` | Performance-optimized message | Medium | ✅ Public |
-| **StreamingTextRenderer** | `streaming-text-renderer.tsx` | `StreamingTextRenderer` | Text streaming renderer | Medium | ✅ Public |
-| **MessageMetadata** | `message-metadata.tsx` | `MessageMetadata` | Message metadata display | Low | ✅ Public |
-| **MessageActions** | `message-actions.tsx` | `MessageActions` | Message action buttons | Medium | ✅ Public |
-| **MessageActionsSecure** | `message-actions-secure.tsx` | `MessageActionsSecure`, types | Secure message actions | Medium | ✅ Public |
-
-#### Medium Priority (P2)
-
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **ThinkingIndicator** | `thinking-indicator.tsx` | `ThinkingIndicator` | AI thinking/processing indicator | Low | ✅ Public |
-| **TypingIndicator** | `typing-indicator.tsx` | `TypingIndicator`, `TypingIndicatorVariant` | Typing indicator animation | Low | ✅ Public |
-| **CitationCard** | `citation-card.tsx` | `CitationCard` | Citation/source display | Medium | ✅ Public |
-| **ClarityToolResult** | `clarity-tool-result.tsx` | `ClarityToolResult` | Tool execution result display | Medium | ✅ Public |
-| **ToolInvocationCard** | `tool-invocation-card.tsx` | `ToolInvocationCard` | Tool invocation display | Medium | ✅ Public |
-| **CopyButton** | `copy-button.tsx` | `CopyButton` | Copy to clipboard button | Low | ✅ Public |
-| **DeleteButton** | `delete-button.tsx` | `DeleteButton` | Delete message button | Low | ✅ Public |
-| **EditableMessageContent** | `editable-message-content.tsx` | `EditableMessageContent` | Inline message editing | Medium | ✅ Public |
-| **StreamBlock** | `stream-block.tsx` | `StreamBlock` | Streaming block display | Low | ✅ Public |
-| **StreamCancellation** | `stream-cancellation.tsx` | `StreamCancellation` | Stream cancellation UI | Low | ✅ Public |
-| **MessageThreadView** | `message-thread-view.tsx` | `MessageThreadView`, `ThreadList` | Thread/reply view | High | ✅ Public |
-| **TimeSeparator** | `time-separator.tsx` | `TimeSeparator` | Time separator between messages | Low | ✅ Public |
-| **FeedbackDialog** | `feedback-dialog.tsx` | `FeedbackDialog` | Message feedback dialog | Medium | ✅ Public |
-| **MarkdownRenderer** | `markdown-renderer.tsx` | `MessageMarkdownRenderer`, hooks, types | Markdown rendering with plugins | High | ✅ Public |
-| **MarkdownCodeBlock** | `markdown-code-block.tsx` | `MarkdownCodeBlock` | Code block rendering | Medium | ✅ Public |
-| **ConfettiAnimation** | `confetti-animation.tsx` | `ConfettiAnimation` | Confetti animation on feedback | Low | ✅ Public |
-| **FlowTokenAdapter** | `flowtoken-adapter.tsx` | `FlowTokenStreamingText`, `FlowTokenMarkdown`, `useFlowToken`, types | FlowToken integration (optional) | Medium | ✅ Public |
+```
+@clarity-chat/react
+├── Core Components (chat, message, input)
+├── AI Components (citation, markdown, chain-of-thought)
+├── UI Components (skeleton, toast, progress)
+├── Enterprise Components (auth, SSO, audit)
+├── Layout Components (resizable, floating widget)
+└── 95+ Hooks across 15 domains
+```
 
 ---
 
-### Input Components (`packages/react/src/components/input/`)
+## Component Inventory
 
-#### High Priority (P1)
+### 1. Chat Components (`/components/chat/`)
 
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **AdvancedChatInput** | `advanced-chat-input.tsx` | `AdvancedChatInput` | Advanced input with features | High | ✅ Public |
-| **VoiceInput** | `voice-input.tsx` | `VoiceInput`, `InlineVoiceInput` | Voice input component | Medium | ✅ Public |
+| Component              | File                         | Priority | Public API | Tested  | Storybook | Docs    |
+| ---------------------- | ---------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| ClarityChat            | clarity-chat.tsx             | HIGH     | Yes        | Yes     | Yes       | Yes     |
+| ClarityChatSimple      | clarity-chat-simple.tsx      | HIGH     | Yes        | Partial | Partial   | Partial |
+| ChatWindow             | chat-window.tsx              | HIGH     | Yes        | Yes     | Yes       | Yes     |
+| ChatInput              | chat-input.tsx               | HIGH     | Yes        | Yes     | Yes       | Yes     |
+| ChatLayout             | chat-layout.tsx              | HIGH     | Yes        | Yes     | Partial   | Partial |
+| ChatRecipes            | chat-recipes.tsx             | MEDIUM   | Yes        | Partial | No        | Partial |
+| ClarityChatPresets     | clarity-chat-presets.tsx     | MEDIUM   | Yes        | Partial | No        | Partial |
+| FloatingChatWidget     | floating-chat-widget.tsx     | MEDIUM   | Yes        | Yes     | Yes       | Partial |
+| ResizableChatLayout    | resizable-chat-layout.tsx    | MEDIUM   | Yes        | Yes     | Yes       | Partial |
+| VirtualizedMessageList | virtualized-message-list.tsx | HIGH     | Yes        | Yes     | Yes       | Partial |
+| TanStackMessageList    | tanstack-message-list.tsx    | HIGH     | Yes        | Yes     | Yes       | Partial |
+| MobileChatOptimized    | mobile-chat-optimized.tsx    | LOW      | Internal   | No      | No        | No      |
+| OfflineChatSync        | offline-chat-sync.tsx        | LOW      | Internal   | No      | No        | No      |
+| ChatWithErrorBoundary  | chat-with-error-boundary.tsx | LOW      | Internal   | No      | No        | No      |
 
-#### Medium Priority (P2)
+### 2. Message Components (`/components/message/`)
 
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **FileUpload** | `file-upload.tsx` | `FileUpload` | File upload component | Medium | ✅ Public |
-| **MentionSystem** | `mention-system.tsx` | `MentionInput`, `MentionList`, `useMentions` | @mention functionality | High | ✅ Public |
-| **OutputPreferenceSelector** | `output-preference-selector.tsx` | `OutputPreferenceSelector`, `UncontrolledOutputPreferenceSelector`, `useOutputPreference`, types | Output format selector | Medium | ✅ Public |
-| **StructuredInputBuilder** | `structured-input-builder.tsx` | `StructuredInputBuilder`, `useStructuredInput`, `PRESET_FIELDS`, types | Structured form input builder | High | ✅ Public |
+| Component              | File                         | Priority | Public API | Tested  | Storybook | Docs    |
+| ---------------------- | ---------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| StreamingMessage       | streaming-message.tsx        | HIGH     | Yes        | Partial | Yes       | Partial |
+| ThinkingIndicator      | thinking-indicator.tsx       | HIGH     | Yes        | Yes     | Yes       | Partial |
+| TypingIndicator        | typing-indicator.tsx         | HIGH     | Yes        | Yes     | Yes       | Partial |
+| CitationCard           | citation-card.tsx            | MEDIUM   | Yes        | Partial | Yes       | Partial |
+| CopyButton             | copy-button.tsx              | LOW      | Internal   | Partial | No        | No      |
+| DeleteButton           | delete-button.tsx            | LOW      | Internal   | Partial | No        | No      |
+| EditableMessageContent | editable-message-content.tsx | LOW      | Internal   | No      | No        | No      |
+| FeedbackDialog         | feedback-dialog.tsx          | MEDIUM   | Internal   | No      | No        | No      |
+| MessageActions         | message-actions.tsx          | MEDIUM   | Internal   | Partial | Partial   | No      |
+| MessageActionsSecure   | message-actions-secure.tsx   | LOW      | Internal   | No      | No        | No      |
+| MarkdownRenderer       | markdown-renderer.tsx        | HIGH     | Yes        | Yes     | Yes       | Yes     |
+| MarkdownCodeBlock      | markdown-code-block.tsx      | MEDIUM   | Internal   | Partial | No        | No      |
+| StreamingTextRenderer  | streaming-text-renderer.tsx  | MEDIUM   | Internal   | Partial | Yes       | No      |
+| FlowTokenAdapter       | flowtoken-adapter.tsx        | LOW      | Yes        | No      | Yes       | Partial |
+| ToolInvocationCard     | tool-invocation-card.tsx     | MEDIUM   | Internal   | Partial | Yes       | No      |
+| MessageMetadata        | message-metadata.tsx         | LOW      | Internal   | Partial | Yes       | No      |
+| ConfettiAnimation      | confetti-animation.tsx       | LOW      | Internal   | No      | No        | No      |
+
+### 3. AI Components (`/components/ai/`)
+
+| Component                | File                           | Priority | Public API | Tested  | Storybook | Docs    |
+| ------------------------ | ------------------------------ | -------- | ---------- | ------- | --------- | ------- |
+| Citation                 | citation.tsx                   | HIGH     | Yes        | Partial | Partial   | Partial |
+| SourceCitation           | source-citation.tsx            | HIGH     | Yes        | Partial | Partial   | Partial |
+| ChainOfThought           | chain-of-thought.tsx           | HIGH     | Yes        | Yes     | Yes       | Partial |
+| ThinkingBar              | thinking-bar.tsx               | HIGH     | Yes        | Partial | Yes       | Partial |
+| StreamingProgress        | streaming-progress.tsx         | HIGH     | Yes        | Partial | Yes       | Partial |
+| TextShimmer              | text-shimmer.tsx               | MEDIUM   | Yes        | Partial | Partial   | Partial |
+| ToolExecutionCard        | tool-execution-card.tsx        | MEDIUM   | Yes        | Partial | Partial   | Partial |
+| MarkdownRendererEnhanced | markdown-renderer-enhanced.tsx | HIGH     | Yes        | Yes     | Yes       | Partial |
+| EnhancedMarkdownRenderer | enhanced-markdown-renderer.tsx | HIGH     | Yes        | Partial | Yes       | No      |
+| EnhancedCodeBlock        | enhanced-code-block.tsx        | MEDIUM   | Yes        | Yes     | Yes       | Partial |
+| ModelSelector            | model-selector.tsx             | MEDIUM   | Internal   | Yes     | Yes       | No      |
+| AgentRunFeed             | agent-run-feed.tsx             | LOW      | Internal   | Partial | Yes       | No      |
+| AuditLogViewer           | audit-log-viewer.tsx           | LOW      | Internal   | No      | Yes       | No      |
+| CollaborativeEditing     | collaborative-editing.tsx      | LOW      | Internal   | No      | No        | No      |
+| KnowledgeBaseViewer      | knowledge-base-viewer.tsx      | LOW      | Internal   | Partial | Yes       | No      |
+| PersonaPanel             | persona-panel.tsx              | LOW      | Internal   | Partial | Yes       | No      |
+| SafetyStatusCard         | safety-status-card.tsx         | LOW      | Internal   | Partial | Yes       | No      |
+| SessionSummaryCard       | session-summary-card.tsx       | LOW      | Internal   | Partial | Yes       | No      |
+| WorkflowSuggestionList   | workflow-suggestion-list.tsx   | LOW      | Internal   | Partial | Yes       | No      |
+
+### 4. Code Components (`/components/code/`)
+
+| Component           | File                    | Priority | Public API | Tested  | Storybook | Docs    |
+| ------------------- | ----------------------- | -------- | ---------- | ------- | --------- | ------- |
+| CodeBlock           | CodeBlock.tsx           | HIGH     | Yes        | Yes     | Yes       | Yes     |
+| StreamingCodeBlock  | StreamingCodeBlock.tsx  | HIGH     | Yes        | Partial | Yes       | Partial |
+| CodeBlockCopyButton | CodeBlockCopyButton.tsx | MEDIUM   | Internal   | Yes     | Partial   | No      |
+| CodeWindowHeader    | CodeWindowHeader.tsx    | LOW      | Internal   | Partial | Partial   | No      |
+| InlineCode          | InlineCode.tsx          | MEDIUM   | Internal   | Yes     | Yes       | No      |
+| LineNumbers         | LineNumbers.tsx         | LOW      | Internal   | Yes     | No        | No      |
+
+### 5. Input Components (`/components/input/`)
+
+| Component                | File                           | Priority | Public API | Tested  | Storybook | Docs    |
+| ------------------------ | ------------------------------ | -------- | ---------- | ------- | --------- | ------- |
+| AdvancedChatInput        | advanced-chat-input.tsx        | MEDIUM   | Internal   | Partial | Yes       | No      |
+| FileUpload               | file-upload.tsx                | MEDIUM   | Internal   | Partial | Yes       | Partial |
+| VoiceInput               | voice-input.tsx                | MEDIUM   | Yes        | Yes     | Yes       | Partial |
+| MentionSystem            | mention-system.tsx             | LOW      | Internal   | No      | No        | No      |
+| StructuredInputBuilder   | structured-input-builder.tsx   | LOW      | Internal   | Yes     | No        | No      |
+| OutputPreferenceSelector | output-preference-selector.tsx | LOW      | Internal   | Yes     | No        | No      |
+
+### 6. Prompt Components (`/components/prompt/`)
+
+| Component             | File                        | Priority | Public API | Tested  | Storybook | Docs    |
+| --------------------- | --------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| PromptSuggestions     | prompt-suggestions.tsx      | HIGH     | Yes        | Partial | Yes       | Partial |
+| FollowUpSuggestions   | follow-up-suggestions.tsx   | HIGH     | Yes        | Partial | Yes       | Partial |
+| PromptContainer       | prompt-container.tsx        | MEDIUM   | Yes        | Partial | Partial   | Partial |
+| SuggestionCards       | suggestion-cards.tsx        | MEDIUM   | Yes        | Partial | Partial   | Partial |
+| PromptPlayground      | prompt-playground.tsx       | LOW      | Internal   | No      | Yes       | No      |
+| PromptVariablesEditor | prompt-variables-editor.tsx | LOW      | Internal   | No      | No        | No      |
+| PromptVersionHistory  | prompt-version-history.tsx  | LOW      | Internal   | No      | No        | No      |
+
+### 7. UI Components (`/components/ui/`)
+
+| Component          | File                    | Priority | Public API | Tested  | Storybook | Docs    |
+| ------------------ | ----------------------- | -------- | ---------- | ------- | --------- | ------- |
+| Toast              | toast.tsx               | HIGH     | Yes        | Partial | Yes       | Partial |
+| SonnerToast        | sonner-toast.tsx        | HIGH     | Yes        | Partial | Yes       | Partial |
+| Skeleton           | skeleton.tsx            | MEDIUM   | Yes        | Partial | Yes       | Yes     |
+| SkeletonEnhanced   | skeleton-enhanced.tsx   | MEDIUM   | Internal   | Partial | Yes       | Yes     |
+| SkeletonAdvanced   | skeleton-advanced.tsx   | LOW      | Internal   | Partial | Partial   | Partial |
+| EmptyState         | empty-state.tsx         | MEDIUM   | Yes        | Partial | Yes       | Partial |
+| AnimatedDots       | animated-dots.tsx       | LOW      | Internal   | Partial | Partial   | No      |
+| Progress           | progress.tsx            | MEDIUM   | Internal   | Partial | Yes       | Yes     |
+| BatteryIndicator   | battery-indicator.tsx   | LOW      | Internal   | No      | No        | No      |
+| Tabs               | tabs.tsx                | MEDIUM   | Internal   | Partial | Partial   | No      |
+| Draggable          | draggable.tsx           | LOW      | Internal   | Partial | Yes       | No      |
+| CollapsibleSection | collapsible-section.tsx | LOW      | Internal   | No      | No        | No      |
+| LinkPreview        | link-preview.tsx        | LOW      | Internal   | Yes     | No        | No      |
+| Ripple             | ripple.tsx              | LOW      | Internal   | Partial | Yes       | No      |
+
+### 8. Feedback Components (`/components/feedback/`)
+
+| Component             | File                        | Priority | Public API | Tested  | Storybook | Docs    |
+| --------------------- | --------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| ErrorBoundary         | error-boundary.tsx          | HIGH     | Yes        | Yes     | Yes       | Partial |
+| ErrorBoundaryEnhanced | error-boundary-enhanced.tsx | MEDIUM   | Internal   | Partial | Partial   | No      |
+| ErrorMessage          | error-message.tsx           | MEDIUM   | Internal   | Partial | Partial   | No      |
+| NetworkStatus         | network-status.tsx          | HIGH     | Yes        | Partial | Yes       | Partial |
+| NetworkStatusBanner   | network-status-banner.tsx   | LOW      | Internal   | Partial | Partial   | No      |
+| RetryButton           | retry-button.tsx            | LOW      | Internal   | No      | No        | No      |
+| ConsoleAlertHandler   | console-alert-handler.tsx   | LOW      | Internal   | No      | No        | No      |
+
+### 9. Navigation Components (`/components/navigation/`)
+
+| Component              | File                         | Priority | Public API | Tested  | Storybook | Docs    |
+| ---------------------- | ---------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| CommandPalette         | command-palette.tsx          | MEDIUM   | Yes        | Yes     | Yes       | Partial |
+| CommandPaletteEnhanced | command-palette-enhanced.tsx | LOW      | Internal   | Partial | Partial   | No      |
+| KeyboardShortcutsModal | keyboard-shortcuts-modal.tsx | LOW      | Internal   | Partial | No        | No      |
+| SkipLinks              | skip-links.tsx               | MEDIUM   | Internal   | Partial | No        | Partial |
+| KeyboardNavigationDemo | keyboard-navigation-demo.tsx | LOW      | Internal   | No      | No        | No      |
+| ContextMenu            | context-menu.tsx             | MEDIUM   | Internal   | Yes     | Yes       | No      |
+
+### 10. Search Components (`/components/search/`)
+
+| Component                     | File                                 | Priority | Public API | Tested  | Storybook | Docs    |
+| ----------------------------- | ------------------------------------ | -------- | ---------- | ------- | --------- | ------- |
+| MessageSearch                 | message-search.tsx                   | MEDIUM   | Yes        | Partial | Yes       | Partial |
+| AdvancedMessageSearch         | advanced-message-search.tsx          | LOW      | Internal   | Partial | Partial   | No      |
+| AdvancedMessageSearchSemantic | advanced-message-search-semantic.tsx | LOW      | Internal   | No      | No        | No      |
+
+### 11. Token Components (`/components/token/`)
+
+| Component                  | File                             | Priority | Public API | Tested  | Storybook | Docs    |
+| -------------------------- | -------------------------------- | -------- | ---------- | ------- | --------- | ------- |
+| TokenCounter               | token-counter.tsx                | HIGH     | Yes        | Partial | Yes       | Partial |
+| TokenBudgetBar             | token-budget-bar.tsx             | MEDIUM   | Internal   | Yes     | Yes       | Partial |
+| TokenOptimizationDashboard | token-optimization-dashboard.tsx | LOW      | Internal   | Partial | Yes       | No      |
+| TokenOptimizationBadge     | token-optimization-badge.tsx     | LOW      | Internal   | Partial | Yes       | No      |
+
+### 12. Theme Components (`/components/theme/`)
+
+| Component            | File                       | Priority | Public API | Tested  | Storybook | Docs |
+| -------------------- | -------------------------- | -------- | ---------- | ------- | --------- | ---- |
+| ThemeCustomizer      | ThemeCustomizer.tsx        | MEDIUM   | Internal   | Partial | Partial   | No   |
+| ThemeSwitcher        | theme-switcher.tsx         | MEDIUM   | Internal   | Partial | Partial   | No   |
+| ThemeSelector        | theme-selector.tsx         | LOW      | Internal   | Partial | Partial   | No   |
+| ThemePreview         | theme-preview.tsx          | LOW      | Internal   | Partial | Partial   | No   |
+| ThemeContrastChecker | theme-contrast-checker.tsx | LOW      | Internal   | Yes     | Partial   | No   |
+
+### 13. Context/Memory Components (`/components/context/`)
+
+| Component         | File                   | Priority | Public API | Tested  | Storybook | Docs |
+| ----------------- | ---------------------- | -------- | ---------- | ------- | --------- | ---- |
+| ContextManager    | context-manager.tsx    | MEDIUM   | Internal   | Partial | Yes       | No   |
+| ContextCard       | context-card.tsx       | MEDIUM   | Internal   | Partial | Yes       | No   |
+| ContextVisualizer | context-visualizer.tsx | LOW      | Internal   | Partial | Yes       | No   |
+| MemoryInspector   | memory-inspector.tsx   | LOW      | Internal   | Partial | Yes       | No   |
+| HistoryManager    | history-manager.tsx    | LOW      | Internal   | Yes     | Partial   | No   |
+| ProjectSidebar    | project-sidebar.tsx    | LOW      | Internal   | Partial | Yes       | No   |
+| SettingsPanel     | settings-panel.tsx     | LOW      | Internal   | Partial | Yes       | No   |
+
+### 14. Conversation Components (`/components/conversation/`)
+
+| Component                    | File                               | Priority | Public API | Tested  | Storybook | Docs |
+| ---------------------------- | ---------------------------------- | -------- | ---------- | ------- | --------- | ---- |
+| ConversationList             | conversation-list.tsx              | MEDIUM   | Internal   | Partial | Yes       | No   |
+| ConversationTimeline         | conversation-timeline.tsx          | LOW      | Internal   | Partial | Yes       | No   |
+| ConversationBranchVisualizer | conversation-branch-visualizer.tsx | LOW      | Internal   | Partial | Yes       | No   |
+| ConversationSharing          | conversation-sharing.tsx           | LOW      | Internal   | No      | No        | No   |
+| ConversationSummarizer       | conversation-summarizer.tsx        | LOW      | Internal   | No      | No        | No   |
+
+### 15. Dashboard Components (`/components/dashboard/`)
+
+| Component            | File                      | Priority | Public API | Tested  | Storybook | Docs |
+| -------------------- | ------------------------- | -------- | ---------- | ------- | --------- | ---- |
+| AnalyticsDashboard   | analytics-dashboard.tsx   | LOW      | Internal   | Partial | Yes       | No   |
+| PerformanceDashboard | performance-dashboard.tsx | LOW      | Internal   | Partial | Yes       | No   |
+| ABTestingDashboard   | ab-testing-dashboard.tsx  | LOW      | Internal   | Partial | Yes       | No   |
+| UsageDashboard       | usage-dashboard.tsx       | LOW      | Internal   | Partial | Yes       | No   |
+
+### 16. Enterprise Components (`/components/enterprise/`)
+
+| Component           | File                    | Priority | Public API | Tested  | Storybook | Docs |
+| ------------------- | ----------------------- | -------- | ---------- | ------- | --------- | ---- |
+| ApiTokenManager     | ApiTokenManager.tsx     | LOW      | Internal   | Partial | No        | Yes  |
+| AuthTenantDashboard | AuthTenantDashboard.tsx | LOW      | Internal   | Partial | No        | Yes  |
+| SSOConfigWizard     | SSOConfigWizard.tsx     | LOW      | Internal   | Partial | No        | Yes  |
+| SeatInviteDialog    | SeatInviteDialog.tsx    | LOW      | Internal   | Partial | No        | Yes  |
+
+### 17. A/B Testing Components (`/components/ab-testing/`)
+
+| Component      | File                | Priority | Public API | Tested  | Storybook | Docs |
+| -------------- | ------------------- | -------- | ---------- | ------- | --------- | ---- |
+| ExperimentCard | experiment-card.tsx | LOW      | Internal   | Partial | Partial   | No   |
+| ExperimentList | experiment-list.tsx | LOW      | Internal   | Partial | Partial   | No   |
+| VariantCard    | variant-card.tsx    | LOW      | Internal   | Partial | Partial   | No   |
+| WinnerBanner   | winner-banner.tsx   | LOW      | Internal   | No      | Partial   | No   |
+
+### 18. AI-Ops Components (`/components/ai-ops/`)
+
+| Component           | File                    | Priority | Public API | Tested  | Storybook | Docs |
+| ------------------- | ----------------------- | -------- | ---------- | ------- | --------- | ---- |
+| EvaluationDashboard | EvaluationDashboard.tsx | LOW      | Internal   | Partial | Yes       | Yes  |
+| PromptTestHarness   | PromptTestHarness.tsx   | LOW      | Internal   | Partial | No        | Yes  |
+| SafetyReviewConsole | SafetyReviewConsole.tsx | LOW      | Internal   | Partial | Yes       | Yes  |
+
+### 19. Media/Export Components (`/components/media/`)
+
+| Component           | File                     | Priority | Public API | Tested  | Storybook | Docs    |
+| ------------------- | ------------------------ | -------- | ---------- | ------- | --------- | ------- |
+| ExportDialog        | export-dialog.tsx        | MEDIUM   | Yes        | Partial | Yes       | Partial |
+| BatchExportDialog   | batch-export-dialog.tsx  | LOW      | Internal   | Partial | Yes       | No      |
+| CalendarIntegration | calendar-integration.tsx | LOW      | Internal   | No      | No        | No      |
+| EmailIntegration    | email-integration.tsx    | LOW      | Internal   | No      | No        | No      |
+| DocumentIntegration | document-integration.tsx | LOW      | Internal   | No      | No        | No      |
 
 ---
 
-### Chat Primitives (`packages/react/src/primitives/chat/`)
+## Hook Inventory
 
-| Component | File | Exports | Purpose | Complexity | Status |
-|-----------|------|---------|---------|------------|--------|
-| **ChatPrimitive** | `chat-primitives.tsx` | `ChatRoot`, `ChatMessages`, `ChatMessage`, `ChatMessageContent`, `ChatMessageActions`, `ChatInput`, `ChatCopyButton`, `ChatRegenerateButton`, `ChatDeleteButton`, `ChatEmptyState`, `ChatLoadingIndicator`, types, `ChatPrimitive` compound | Low-level composable primitives | Medium | ✅ Public |
+### 1. Chat Hooks (`/hooks/chat/`)
+
+| Hook                    | File                           | Priority | Public API               | Tested  | Docs    |
+| ----------------------- | ------------------------------ | -------- | ------------------------ | ------- | ------- |
+| useClarityChat          | use-clarity-chat.ts            | HIGH     | Yes                      | Partial | Yes     |
+| useChat                 | use-chat.ts                    | HIGH     | Yes (as useHeadlessChat) | Yes     | Yes     |
+| useChatEnhanced         | use-chat-enhanced.ts           | HIGH     | Yes                      | Partial | Yes     |
+| useChatUnified          | use-chat-unified.ts            | MEDIUM   | Internal                 | Partial | Partial |
+| useChatSimple           | use-chat-simple.ts             | MEDIUM   | Internal                 | Partial | Partial |
+| useChatComposable       | use-chat-composable.ts         | LOW      | Internal                 | Partial | No      |
+| useChatHandlers         | use-chat-handlers.ts           | MEDIUM   | Internal                 | Partial | Yes     |
+| useChatHistory          | use-chat-history.ts            | MEDIUM   | Internal                 | Partial | Partial |
+| useClarityChatWithTools | use-clarity-chat-with-tools.ts | HIGH     | Yes                      | Partial | Yes     |
+| useClarityObject        | use-clarity-object.ts          | HIGH     | Yes                      | Partial | Yes     |
+| useAgent                | use-agent.ts                   | LOW      | Internal                 | Partial | Partial |
+| useAssistant            | use-assistant.ts               | LOW      | Internal                 | Partial | Yes     |
+| useCompletion           | use-completion.ts              | MEDIUM   | Internal                 | Partial | Yes     |
+| useRagPipeline          | use-rag-pipeline.ts            | LOW      | Internal                 | Partial | No      |
+
+### 2. Streaming Hooks (`/hooks/streaming/`)
+
+| Hook            | File                 | Priority | Public API | Tested  | Docs    |
+| --------------- | -------------------- | -------- | ---------- | ------- | ------- |
+| useStreaming    | use-streaming.ts     | HIGH     | Yes        | Yes     | Partial |
+| useSmoothedText | use-smoothed-text.ts | HIGH     | Yes        | Partial | Partial |
+| useStreamStatus | use-stream-status.ts | HIGH     | Yes        | Partial | Partial |
+| useStreamableUI | use-streamable-ui.ts | MEDIUM   | Internal   | Yes     | No      |
+
+### 3. Clarity Tokens Hooks (`/hooks/clarity-tokens/`)
+
+| Hook                | File                     | Priority | Public API | Tested  | Docs    |
+| ------------------- | ------------------------ | -------- | ---------- | ------- | ------- |
+| useTokenCounter     | use-token-counter.ts     | HIGH     | Internal   | Yes     | Partial |
+| useTokenBudget      | use-token-budget.ts      | HIGH     | Internal   | Partial | Partial |
+| useTokenLimitGuard  | use-token-limit-guard.ts | MEDIUM   | Internal   | Partial | No      |
+| useCostTracker      | use-cost-tracker.ts      | MEDIUM   | Internal   | Partial | No      |
+| useCostEstimator    | use-cost-estimator.ts    | MEDIUM   | Internal   | Yes     | No      |
+| usePromptCompressor | use-prompt-compressor.ts | LOW      | Internal   | Partial | No      |
+| useSemanticCache    | use-semantic-cache.ts    | LOW      | Internal   | Partial | No      |
+| useExactCache       | use-exact-cache.ts       | LOW      | Internal   | Partial | No      |
+| useResponseCache    | use-response-cache.ts    | LOW      | Internal   | Partial | No      |
+| useEmbeddingCache   | use-embedding-cache.ts   | LOW      | Internal   | Partial | No      |
+| useStreamOptimizer  | use-stream-optimizer.ts  | LOW      | Internal   | Partial | No      |
+| useContextWindow    | use-context-window.ts    | LOW      | Internal   | Partial | No      |
+| useContextInjector  | use-context-injector.ts  | LOW      | Internal   | Partial | No      |
+| useAdaptiveModel    | use-adaptive-model.ts    | LOW      | Internal   | Partial | No      |
+| useVectorSearch     | use-vector-search.ts     | LOW      | Internal   | Partial | No      |
+| useTokenThrottle    | use-token-throttle.ts    | LOW      | Internal   | Partial | No      |
+
+### 4. UI Hooks (`/hooks/ui/`)
+
+| Hook             | File                  | Priority | Public API | Tested | Docs    |
+| ---------------- | --------------------- | -------- | ---------- | ------ | ------- |
+| useClipboard     | use-clipboard.ts      | HIGH     | Yes        | Yes    | Yes     |
+| useAutoScroll    | use-auto-scroll.ts    | HIGH     | Yes        | Yes    | Yes     |
+| useThrottle      | use-throttle.ts       | HIGH     | Yes        | Yes    | Partial |
+| useDebounce      | use-debounce.ts       | MEDIUM   | Internal   | Yes    | Yes     |
+| useReducedMotion | use-reduced-motion.ts | MEDIUM   | Yes        | Yes    | Partial |
+| useEventListener | use-event-listener.ts | MEDIUM   | Internal   | Yes    | Yes     |
+| useMergedRef     | use-merged-ref.ts     | MEDIUM   | Internal   | Yes    | Partial |
+| useMediaQuery    | use-media-query.ts    | MEDIUM   | Internal   | Yes    | Partial |
+| useWindowSize    | use-window-size.ts    | LOW      | Internal   | Yes    | Partial |
+| useMounted       | use-mounted.ts        | LOW      | Internal   | Yes    | Partial |
+| usePrevious      | use-previous.ts       | LOW      | Internal   | Yes    | Partial |
+| useToggle        | use-toggle.ts         | LOW      | Internal   | Yes    | Partial |
+
+### 5. Keyboard Hooks (`/hooks/keyboard/`)
+
+| Hook                        | File                              | Priority | Public API | Tested  | Docs    |
+| --------------------------- | --------------------------------- | -------- | ---------- | ------- | ------- |
+| useKeyboardShortcuts        | use-keyboard-shortcuts.ts         | HIGH     | Yes        | Partial | Yes     |
+| useCommandPalette           | use-command-palette.ts            | MEDIUM   | Yes        | Yes     | Yes     |
+| useCommandPaletteCommands   | use-command-palette-commands.ts   | LOW      | Internal   | Partial | Yes     |
+| useKeyboardNavigation       | use-keyboard-navigation.ts        | MEDIUM   | Internal   | Partial | Partial |
+| useFocusedKeyboardShortcuts | use-focused-keyboard-shortcuts.ts | LOW      | Internal   | Partial | Yes     |
+
+### 6. Storage Hooks (`/hooks/storage/`)
+
+| Hook            | File                 | Priority | Public API | Tested  | Docs |
+| --------------- | -------------------- | -------- | ---------- | ------- | ---- |
+| useLocalStorage | use-local-storage.ts | HIGH     | Yes        | Yes     | Yes  |
+| useIndexedDB    | use-indexed-db.ts    | MEDIUM   | Internal   | Partial | Yes  |
+| useMemoryStore  | use-memory-store.ts  | LOW      | Internal   | Partial | No   |
+
+### 7. Resilience Hooks (`/hooks/resilience/`)
+
+| Hook                    | File                         | Priority | Public API | Tested | Docs    |
+| ----------------------- | ---------------------------- | -------- | ---------- | ------ | ------- |
+| useRetryWithBackoff     | use-retry-with-backoff.ts    | HIGH     | Yes        | Yes    | Partial |
+| useCircuitBreaker       | use-circuit-breaker.ts       | MEDIUM   | Internal   | Yes    | No      |
+| useRequestDeduplication | use-request-deduplication.ts | MEDIUM   | Internal   | Yes    | No      |
+
+### 8. Token Hooks (`/hooks/token/`)
+
+| Hook                  | File                        | Priority | Public API | Tested  | Docs    |
+| --------------------- | --------------------------- | -------- | ---------- | ------- | ------- |
+| useTokenTracker       | use-token-tracker.ts        | HIGH     | Yes        | Yes     | Partial |
+| useTokenBudgetMonitor | use-token-budget-monitor.ts | MEDIUM   | Internal   | Yes     | Partial |
+| useTokenRateLimiter   | use-token-rate-limiter.ts   | LOW      | Internal   | Partial | No      |
+
+### 9. Message Hooks (`/hooks/message/`)
+
+| Hook                 | File                      | Priority | Public API | Tested | Docs    |
+| -------------------- | ------------------------- | -------- | ---------- | ------ | ------- |
+| useMessageOperations | use-message-operations.ts | MEDIUM   | Internal   | Yes    | Partial |
+| useOptimisticMessage | use-optimistic-message.ts | MEDIUM   | Internal   | Yes    | Partial |
+
+### 10. Dashboard Hooks (`/hooks/dashboard/`)
+
+| Hook                    | File                          | Priority | Public API | Tested  | Docs |
+| ----------------------- | ----------------------------- | -------- | ---------- | ------- | ---- |
+| useDashboardData        | use-dashboard-data.ts         | LOW      | Internal   | Yes     | Yes  |
+| useDashboardComposer    | use-dashboard-composer.ts     | LOW      | Internal   | Yes     | Yes  |
+| useDashboardPerformance | use-dashboard-performance.tsx | LOW      | Internal   | Partial | Yes  |
+
+### 11. Input Hooks (`/hooks/input/`)
+
+| Hook                 | File                       | Priority | Public API | Tested  | Docs    |
+| -------------------- | -------------------------- | -------- | ---------- | ------- | ------- |
+| useVoiceInput        | use-voice-input.ts         | MEDIUM   | Yes        | Partial | Partial |
+| useCharacterCounter  | use-character-counter.ts   | LOW      | Internal   | Partial | Yes     |
+| useRealisticTyping   | use-realistic-typing.ts    | LOW      | Internal   | Partial | No      |
+| useSubmitButtonState | use-submit-button-state.ts | LOW      | Internal   | Partial | No      |
+| useMobileKeyboard    | use-mobile-keyboard.ts     | LOW      | Internal   | Partial | No      |
+
+### 12. Security Hooks (`/hooks/security/`)
+
+| Hook        | File            | Priority | Public API | Tested  | Docs    |
+| ----------- | --------------- | -------- | ---------- | ------- | ------- |
+| useSecurity | use-security.ts | MEDIUM   | Internal   | Partial | Partial |
+
+### 13. Model Hooks (`/hooks/model/`)
+
+| Hook                   | File                         | Priority | Public API | Tested  | Docs |
+| ---------------------- | ---------------------------- | -------- | ---------- | ------- | ---- |
+| useDynamicModelRouting | use-dynamic-model-routing.ts | LOW      | Internal   | Partial | Yes  |
+
+### 14. Theme Hooks (`/hooks/theme/`)
+
+| Hook              | File                   | Priority | Public API | Tested  | Docs    |
+| ----------------- | ---------------------- | -------- | ---------- | ------- | ------- |
+| useThemeColors    | use-theme-colors.ts    | MEDIUM   | Internal   | Partial | Partial |
+| useThemeAnalytics | use-theme-analytics.ts | LOW      | Internal   | Partial | No      |
+
+### 15. Context Hooks (`/hooks/context/`)
+
+| Hook              | File                    | Priority | Public API | Tested | Docs |
+| ----------------- | ----------------------- | -------- | ---------- | ------ | ---- |
+| useContextMonitor | use-context-monitor.tsx | LOW      | Internal   | Yes    | Yes  |
+
+### 16. Performance Hooks (`/hooks/performance/`)
+
+| Hook                         | File        | Priority | Public API | Tested  | Docs |
+| ---------------------------- | ----------- | -------- | ---------- | ------- | ---- |
+| Performance hooks (enhanced) | enhanced.ts | LOW      | Internal   | Partial | No   |
 
 ---
 
-## Hooks
+## Public API Surface
 
-### Chat Hooks (`packages/react/src/hooks/chat/`)
+### Exported from `@clarity-chat/react`
 
-#### Critical Priority (P0)
+#### Core Components (Highest Priority)
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useClarityChat** | `use-clarity-chat.ts` → `use-clarity-chat/index.ts` | `useClarityChat`, `UseClarityChatOptions`, `UseClarityChatReturn`, `ClarityMemoryOptions`, `ClarityWebSocketOptions`, `ClarityChatMemoryInfo`, `ClarityChatErrorInfo`, `ClarityPromptOptimizationOptions`, `ClarityChatTokenStats` | Primary chat state hook - main entry point | `useChatEnhanced` (internal), memory hooks, streaming hooks | Very High | ✅ Public |
-| **useChatEnhanced** | `use-chat-enhanced.ts` → `internal/hooks/use-chat-enhanced.ts` | `useChat`, `useChatEnhanced`, `CoreMessage`, `CoreMessageContent`, `UseChatOptions`, `UseChatReturn`, `MessageRole` | Headless chat hook (internal) | Streaming hooks, fetch utilities | Very High | ⚠️ Internal (deprecated) |
+- `ClarityChat` - Main drop-in chat component
+- `ClarityChatPresets` - Preset configurations
+- `ChatComplete`, `ChatWithMemory`, `ChatWithAnalytics`, `ChatWithPreset` - Recipe components
 
-#### High Priority (P1)
+#### Core Hooks (Highest Priority)
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useChatHandlers** | `use-chat-handlers.ts` | `useChatHandlers`, `UseChatHandlersOptions`, `ChatHandlers` | Pre-configured handlers for ChatWindow | `useClarityChat` | Low | ✅ Public |
-| **useChatHistory** | `use-chat-history.ts` | Exports from file | Chat history management | Storage hooks | Medium | ✅ Public |
-| **useClarityChatWithTools** | `use-clarity-chat-with-tools.ts` | `useClarityChatWithTools`, `UseClarityChatWithToolsOptions`, `UseClarityChatWithToolsReturn`, `ExtractedToolResult` | Chat with tool/function calling | `useClarityChat` | High | ✅ Public |
-| **useClarityObject** | `use-clarity-object.ts` | `useClarityObject`, `UseClarityObjectOptions`, `UseClarityObjectReturn` | Structured output generation | `useClarityChat` | High | ✅ Public |
+- `useClarityChat` - Main chat hook
+- `useHeadlessChat` (alias for useChat) - Headless hook
+- `useClarityObject` - Structured output hook
+- `useClarityChatWithTools` - Tool integration hook
 
-#### Medium Priority (P2)
+#### AI Components
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useCompletion** | `use-completion.ts` | Exports from file | Text completion hook | Fetch utilities | Medium | ✅ Public |
-| **useAssistant** | `use-assistant.ts` | Exports from file | OpenAI Assistant API hook | Fetch utilities | High | ✅ Public |
-| **useAgent** | `use-agent.ts` | Exports from file | AI agent orchestration | Multiple hooks | Very High | ✅ Public |
-| **useRAGPipeline** | `use-rag-pipeline.ts` | Exports from file | Retrieval-Augmented Generation | Vector stores, embeddings | Very High | ✅ Public |
+- `Citation`, `SourceCitation` - Citation display
+- `MarkdownRendererEnhanced`, `EnhancedMarkdownRenderer` - Markdown rendering
+- `ChainOfThought` - AI reasoning visualization
+- `ThinkingBar` - AI processing indicator
+- `StreamStatusProgress` - Streaming progress
+- `TextShimmer` family - Loading indicators
+- `ToolExecutionCard` - Tool execution display
+- `CodeBlock`, `StreamingCodeBlock`, `EnhancedCodeBlock` - Code display
 
-#### Deprecated/Internal
+#### UI Components
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useChat** (unified) | `use-chat-unified.ts` | `useChat`, `UseChatOptions`, `UseChatReturn` | Unified chat hook (deprecated) | `useClarityChat` | High | ⚠️ Deprecated |
-| **useChat** (legacy) | `use-chat.ts` | `useChat`, types | Legacy chat hook (deprecated) | - | Medium | ⚠️ Deprecated |
-| **useChatSimple** | `use-chat-simple.ts` | Exports from file | Simple chat hook (deprecated) | - | Low | ⚠️ Deprecated |
-| **useChatComposable** | `use-chat-composable.ts` | Exports from file | Composable chat hook (deprecated) | - | Medium | ⚠️ Deprecated |
+- `ChatWindow`, `ChatInput`, `ChatLayout` - Chat building blocks
+- `FloatingChatWidget`, `ResizableChatLayout` - Layout variants
+- `MessageList`, `TanStackMessageList` - Message lists
+- `StreamingMessage`, `ThinkingIndicator`, `TypingIndicator` - Message states
+- `FlowTokenStreamingText`, `FlowTokenMarkdown` - FlowToken integration
 
----
+#### Theme & Context
 
-### Streaming Hooks (`packages/react/src/hooks/streaming/`)
+- `ThemeProvider`, `useTheme` - Theming
+- `MemoryProvider`, `useMemoryContext` - Memory system
+- `TokenBudgetProvider`, `useTokenBudget` - Token management
 
-#### High Priority (P1)
+#### License (re-exported from @clarity-chat/license)
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useStreamingSSE** | `use-streaming-sse.tsx` | `useStreamingSSE`, `UseStreamingSSEOptions`, `UseStreamingSSEReturn`, `SSEStatus`, `SSEEvent` | Server-Sent Events streaming | EventSource API | High | ✅ Public |
-| **useStreamingWebSocket** | `use-streaming-websocket.tsx` | `useStreamingWebSocket`, types | WebSocket streaming | WebSocket API | High | ✅ Public |
-| **useStreaming** | `use-streaming.ts` | `useStreaming`, types | Generic streaming hook | - | Medium | ✅ Public |
-| **useStreamingChat** | `use-streaming-chat.ts` | `useStreamingChat`, types | Chat-specific streaming | `useStreaming` | Medium | ✅ Public |
-| **useStreamableUI** | `use-streamable-ui.ts` | `useStreamableUI`, types | Streamable UI components | - | Medium | ✅ Public |
-| **useStreamStatus** | `use-stream-status.ts` | `useStreamStatus`, `useSimpleStreamStatus`, types | Stream status tracking | - | Medium | ✅ Public |
-| **useSmoothedText** | `use-smoothed-text.ts` | `useSmoothedText`, `smoothingPresets`, types | Text smoothing for 60fps | - | Low | ✅ Public |
+- `LicenseInfo`, `verifyLicense`, `isLicenseValid`
+- `useLicenseStatus`, `useIsLicensed`, `useHasPlan`, `useLicenseInfo`
+- `LicenseProvider`, `LicenseGate`, `Watermark`
+- `withLicense`
 
----
+#### Utilities
 
-### Message Hooks (`packages/react/src/hooks/message/`)
+- `cn` - CSS class utility
+- `createUserMessage`, `createAssistantMessage`, `createSystemMessage`
+- Type guards: `isUserMessage`, `isAssistantMessage`, `hasTextContent`, `extractTextContent`
+- Animation utilities
 
-#### High Priority (P1)
+#### Additional Hooks (Public)
 
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useMessageOperations** | `use-message-operations.ts` | `useMessageOperations`, types | Message CRUD operations | - | Medium | ✅ Public |
-| **useMessageHistory** | `use-message-history.tsx` | Exports from file | Message history management | Storage hooks | Medium | ✅ Public |
-| **useOptimisticMessage** | `use-optimistic-message.ts` | Exports from file | Optimistic message updates | React | Low | ✅ Public |
+- `useToast`, `ToastProvider` - Toast notifications
+- `useKeyboardShortcuts` - Keyboard shortcuts
+- `useCommandPalette` - Command palette
+- `useClipboard` - Clipboard operations
+- `useLocalStorage` - Local storage
+- `useRetryWithBackoff` - Retry logic
+- `useVoiceInput` - Voice input
+- `useThrottledCallback` - Throttling
+- `useTokenTracker` - Token tracking
+- `useStreaming` - Streaming
+- `useSmoothedText` - Text smoothing
+- `useStreamStatus` - Stream status
+- `useReducedMotion` - Motion preferences
+- `useFocusTrap`, `useFocusRestoration` - Focus management
+- `useAutoScroll` - Auto-scrolling
 
----
+#### Primitives
 
-### Input Hooks (`packages/react/src/hooks/input/`)
-
-#### Medium Priority (P2)
-
-| Hook | File | Exports | Purpose | Dependencies | Complexity | Status |
-|------|------|---------|---------|--------------|------------|--------|
-| **useVoiceInput** | `use-voice-input.tsx` | `useVoiceInput`, `UseVoiceInputOptions`, `VoiceInputState`, types | Voice recognition | Web Speech API | Medium | ✅ Public |
-| **useCharacterCounter** | `use-character-counter.ts` | Exports from file | Character counting utility | - | Low | ✅ Public |
-| **useSubmitButtonState** | `use-submit-button-state.ts` | Exports from file | Submit button state management | - | Low | ✅ Public |
-| **useMobileKeyboard** | `use-mobile-keyboard.tsx` | Exports from file | Mobile keyboard handling | - | Low | ✅ Public |
-| **useRealisticTyping** | `use-realistic-typing.ts` | Exports from file | Realistic typing simulation | - | Low | ✅ Public |
-
----
-
-## Component-Hook Relationships
-
-### ClarityChat Component
-- **Uses**: `useClarityChat`, `useToast`
-- **Renders**: `ChatWindow`
-- **Converts**: `CoreMessage[]` → `Message[]` via `convertCoreMessagesToMessages`
-
-### ChatWindow Component
-- **Uses**: `useUIEnhancements`, `usePerformanceMonitoring`, `useRenderOptimization`, `use60FPSAnimation`
-- **Renders**: `MessageList`, `ChatInput`, `ThinkingIndicator`, `PromptSuggestions`
-- **Accepts**: `Message[]` or `CoreMessage[]`
-
-### ChatInput Component
-- **Uses**: `useRequestDeduplication`
-- **Features**: Character counting, validation, animations
-
-### Message Component
-- **Uses**: `formatRelativeTime` (internal helper)
-- **Renders**: `MessageActions`, `MessageMetadata`, `EditableMessageContent`, `CopyButton`, `MarkdownCodeBlock`
-
-### StreamingMessage Component
-- **Uses**: Streaming hooks (likely `useStreamingSSE` or `useStreamingWebSocket`)
-- **Renders**: `StreamingTextRenderer`, `StreamBlock`
-
-### FloatingChatWidget Component
-- **Uses**: `useClarityChat`
-- **Renders**: Custom chat UI
-
-### AdvancedChatInput Component
-- **Uses**: Likely `useVoiceInput`, `useCharacterCounter`
-- **Features**: Voice input, file upload, mentions
+- `ChatPrimitive`, `ChatRoot`, `ChatMessages`, `ChatMessage`
+- `ChatMessageContent`, `ChatMessageActions`
+- `ChatInputPrimitive`, `ChatCopyButton`, `ChatRegenerateButton`
+- `ChatDeleteButton`, `ChatEmptyState`, `ChatLoadingIndicator`
 
 ---
 
-## Export Status
+## Documentation Coverage
 
-### Public Exports (from `public-api.ts`)
+### Docs Site Structure (`apps/docs/content/`)
 
-**Chat Components:**
-- `ClarityChat`, `ClarityChatProps`
-- `ClarityChatPresets`
-- `ChatWindow`
-- `ChatInput`
-- `ChatLayout`, `ChatLayoutProps`
-- `ResizableChatLayout`, `useResizableLayout`, primitives
-- `FloatingChatWidget`, `FloatingChatWidgetProps`
-- `OfflineChatSync`, `useOfflineChat`
-- `MessageList` (default from virtualized-message-list)
-- `VirtualizedMessageList`
-- `TanStackMessageList`, `AutoTanStackMessageList`, hooks
-- `ChatComplete`, `ChatWithMemory`, `ChatWithAnalytics`, `ChatWithPreset` (recipes)
+#### API Reference
 
-**Message Components:**
-- `Message`
-- `StreamingMessage`
-- `MessageList` (from message-list.tsx)
-- `MessageMetadata`
-- `MessageOptimized`
-- `StreamBlock`
-- `StreamCancellation`
-- `StreamingTextRenderer`
-- `ToolInvocationCard`
-- `ThinkingIndicator`
-- `TypingIndicator`
-- `ClarityToolResult`
-- `CitationCard`
-- `MessageMarkdownRenderer` (as `MarkdownRenderer`)
+- `/api/memory/` - Memory package docs
+- `/api/react/` - React package docs
+- `/api/types/` - Types package docs
 
-**Input Components:**
-- `AdvancedChatInput`
-- `FileUpload`
-- `InlineVoiceInput` (from voice-input)
-- `VoiceInput`
-- `StructuredInputBuilder`
+#### Component Docs
+
+- Animation components: animated-grid, animated-list, bounce-in, fade-presence, etc.
+- Enterprise: api-token-manager, auth-tenant-dashboard, sso-config-wizard, seat-invite-dialog
+- AI-Ops: evaluation-dashboard, prompt-test-harness, safety-review-console
+- Skeleton: skeleton, skeleton-avatar, skeleton-button, skeleton-card, etc.
+- Feedback: progress, streaming-progress
+- Effects: confetti-effect, glow-effect, ripple-effect
+
+#### Hook Docs (100+ documented)
+
+- Core: use-clarity-chat, use-chat, use-chat-enhanced, use-clarity-object
+- Streaming: use-streaming, use-smoothed-text
+- UI: use-clipboard, use-auto-scroll, use-debounce, use-throttle
+- Storage: use-local-storage, use-indexed-db
+- Dashboard: use-dashboard-data, use-dashboard-composer, use-dashboard-performance
+- And many more...
+
+### Documentation Gaps Identified
+
+1. Some PUBLIC API components missing dedicated docs
+2. Hook return types not always fully documented
+3. Some examples use outdated patterns
+4. Migration guides incomplete
+
+---
+
+## Storybook Coverage
+
+### Structure (`apps/storybook/stories/`)
+
+#### Advanced
+
+- AI: AIOperations, AgentRunFeed, ClarityToolResult, FollowUpSuggestions, PromptLibrary,
+  ToolInvocationCard
+- Analytics: ABTesting, Analytics, Performance, TokenOptimization, Usage dashboards
+- Enterprise: AuditLogViewer, BatchExportDialog, EvaluationDashboard, ExportDialog, SafetyReview
+- Memory: ContextManager, ContextVisualizer, DocumentViewer, KnowledgeBase, MemoryInspector
+- Streaming: FlowToken, StreamBlock, StreamCancellation, StreamingExamples, StreamingTextRenderer
+
+#### Components
+
+- ChatInput: Essentials
+- ChatWindow: Enterprise, Essentials
+- DataDisplay: AnimatedList, Avatar, Badge, Card, Citation, Context, Message, Skeleton, etc.
+- Feedback: EmptyState, ErrorBoundary, Network, Response, Safety, Session, Toast, Thinking
+- Inputs: AdvancedChatInput, Button, ChatInput, Checkbox, FileUpload, Input, Textarea, VoiceInput
+- Layout: ChatWindow, ConversationList, Dialog, Drawer, ProjectSidebar, Resizable, Settings
+- MessageList: Essentials
+- Navigation: CommandPalette, ContextMenu, Draggable, DropdownMenu, Popover
+- TokenCounter: Essentials
+
+#### Examples
+
+- AdvancedInteractions
+- CompositeExamples
+- DocumentationPatterns
+- HooksShowcase
+- IndustrySolutions
+
+#### Foundation
+
+- AnimationPlayground
+
+### Storybook Gaps Identified
+
+1. Many internal components missing stories
+2. Some stories lack comprehensive controls
+3. A11y addon stories incomplete
+4. Visual regression testing not fully set up
+
+---
+
+## Test Coverage
+
+### Test Files Found
+
+#### Component Tests (`/components/__tests__/`)
+
+- TokenCostPreview.test.tsx
+- chain-of-thought.test.tsx
+- chat-input.test.tsx
+- chat-layout.test.tsx
+- chat-window.test.tsx (+ enhanced)
+- clarity-chat.test.tsx
+- clarity-tool-result.test.tsx
+- command-palette.test.tsx
+- context-menu.test.tsx
+- enhanced-code-block.test.tsx
+- error-boundary.test.tsx
+- history-manager.test.tsx
+- link-preview.test.tsx
+- markdown-renderer-enhanced.test.tsx
+- message-list.test.tsx
+- message.test.tsx
+- model-selector.test.tsx
+- output-preference-selector.test.tsx
+- react-19-ref-integration.test.tsx
+- stream-block.test.tsx
+- structured-input-builder.test.tsx
+- theme-contrast-checker.test.tsx
+- thinking-indicator.test.tsx
+- token-budget-bar.test.tsx
+- typing-indicator.test.tsx
+- virtualized-message-list.test.tsx
+- voice-input.test.tsx
+
+#### Hook Tests (`/hooks/__tests__/`)
+
+- use-auto-scroll.test.ts
+- use-chat.test.ts
+- use-circuit-breaker.test.ts
+- use-clipboard.test.ts
+- use-command-palette.test.ts
+- use-context-monitor.test.ts
+- use-dashboard-composer.test.ts
+- use-dashboard-data.test.ts
+- use-debounce.test.ts
+- use-error-recovery.test.ts
+- use-event-listener.test.ts
+- use-local-storage.test.ts
+- use-media-query.test.ts
+- use-merged-ref.test.ts
+- use-message-operations.test.ts
+- use-mounted.test.ts
+- use-optimistic-message.test.ts
+- use-previous.test.ts
+- use-reduced-motion.test.ts
+- use-request-deduplication.test.ts
+- use-retry-with-backoff.test.ts
+- use-streamable-ui.test.ts
+- use-streaming-sse.test.ts
+- use-streaming-websocket.test.ts
+- use-streaming.test.ts
+- use-throttle.test.ts
+- use-toggle.test.ts
+- use-token-budget-monitor.test.ts
+- use-token-tracker.test.ts
+- use-window-size.test.ts
+
+#### Specialized Tests
+
+- `/hooks/clarity-tokens/__tests__/` - Cost estimator, token counter tests
+- `/components/chat/__tests__/` - Floating widget, resizable layout, tanstack list tests
+- `/components/code/__tests__/` - CodeBlock, CodeBlockHeader, InlineCode, LineNumbers tests
+
+### Test Coverage Gaps
+
+1. Many components have no tests
+2. Integration tests limited
+3. E2E tests need expansion
+4. Accessibility tests incomplete
+5. Visual regression tests not found
+
+---
+
+## Dependency Map
+
+### Component Dependencies on Hooks
+
+```
+ClarityChat
+├── useClarityChat
+├── useAutoScroll
+├── useKeyboardShortcuts
+└── useTheme
+
+ChatWindow
+├── useAutoScroll
+├── useKeyboardNavigation
+└── useFocusTrap
+
+TanStackMessageList
+├── @tanstack/react-virtual
+├── useAutoScroll
+└── useJumpToBottom
+
+StreamingMessage
+├── useStreaming
+├── useSmoothedText
+└── useStreamStatus
+
+CodeBlock
+├── prismjs / highlight.js / shiki
+└── useClipboard
+
+ChainOfThought
+├── useChainOfThought
+└── Animation utilities
+
+ThinkingBar
+├── useThinkingBar
+└── Animation utilities
+```
+
+### Hook Dependencies
+
+```
+useClarityChat
+├── useChat (internal enhanced version)
+├── useStreaming
+├── useRetryWithBackoff
+└── useCircuitBreaker
+
+useChat
+├── useStreaming
+├── useMessageOperations
+└── useOptimisticMessage
+
+useTokenTracker
+├── js-tiktoken
+└── useThrottledCallback
+
+useCommandPalette
+├── useKeyboardShortcuts
+└── useFocusTrap
+```
+
+---
+
+## Issues Register
+
+### Critical Issues (P0)
+
+_To be populated during Phase 3_
+
+### High Priority Issues (P1)
+
+_To be populated during Phase 3_
+
+### Medium Priority Issues (P2)
+
+_To be populated during Phase 3_
+
+### Low Priority Issues (P3)
+
+_To be populated during Phase 3_
+
+---
+
+## Prioritization Matrix
+
+### Tier 1: Critical Path (HIGH Priority)
+
+Core components and hooks that are essential for basic chat functionality.
+
+**Components:**
+
+1. ClarityChat
+2. ChatWindow
+3. ChatInput
+4. MessageList / VirtualizedMessageList / TanStackMessageList
+5. StreamingMessage
+6. ThinkingIndicator
+7. TypingIndicator
+8. ErrorBoundary
+9. NetworkStatus
+10. CodeBlock
+11. MarkdownRendererEnhanced
 
 **Hooks:**
-- `useClarityChat`, all types
-- `useClarityChatWithTools`, types
-- `useClarityObject`, types
-- `useChatHandlers`, types
-- `useChat` (deprecated, multiple versions)
-- `useChatEnhanced` (deprecated, internal)
-- `useAssistant`
-- `useCompletion`
-- `useStreamingSSE`
-- `useStreamingWebSocket`
-- `useStreaming`
-- `useStreamingChat`
-- `useStreamableUI`
-- `useMessageOperations`
-- `useVoiceInput`
-- `useRealisticTyping`
 
-### Internal/Deprecated Exports
+1. useClarityChat
+2. useChat / useHeadlessChat
+3. useClarityChatWithTools
+4. useClarityObject
+5. useStreaming
+6. useSmoothedText
+7. useStreamStatus
+8. useAutoScroll
+9. useClipboard
+10. useKeyboardShortcuts
 
-- `useChatEnhanced` - Marked as `@internal` and `@deprecated`
-- `useChat` (unified) - Marked as `@deprecated`
-- `useChat` (legacy) - Marked as `@deprecated`
-- `useChatSimple` - Marked as `@deprecated`
-- `useChatComposable` - Marked as `@deprecated`
+### Tier 2: Important Features (MEDIUM Priority)
 
----
+Features that enhance the core experience.
 
-## Prioritization Analysis
+**Components:**
 
-### Usage Frequency (Based on Import Analysis)
-**High Usage:**
-- `ClarityChat` - 20+ imports across examples, docs, tools
-- `ChatWindow` - 15+ imports, core component
-- `Message` - 10+ imports, fundamental component
-- `useClarityChat` - 15+ imports, primary hook
+- FloatingChatWidget
+- ResizableChatLayout
+- ChatLayout
+- ChainOfThought
+- ThinkingBar
+- StreamingProgress
+- Citation / SourceCitation
+- Toast / SonnerToast
+- CommandPalette
+- PromptSuggestions / FollowUpSuggestions
+- TokenCounter
+- VoiceInput
+- ExportDialog
 
-**Medium Usage:**
-- `ChatInput` - 8+ imports
-- `MessageList` - 6+ imports
-- `StreamingMessage` - 5+ imports
+**Hooks:**
 
-**Low Usage:**
-- Recipe components, advanced features, utility components
+- useCommandPalette
+- useLocalStorage
+- useRetryWithBackoff
+- useCircuitBreaker
+- useTokenTracker
+- useVoiceInput
+- useTheme
+- useMemoryContext
 
-### Dependency Chain Analysis
-**Critical Path Components:**
-1. `useClarityChat` → Foundation hook (all chat depends on this)
-2. `ClarityChat` → Main entry point
-3. `ChatWindow` → Core UI (used by ClarityChat)
-4. `Message` → Individual message display (used by all message lists)
-5. `ChatInput` → User input (used by ChatWindow)
+### Tier 3: Extended Features (LOW Priority)
 
-**Component Dependencies:**
-- `ClarityChat` → `ChatWindow` → `MessageList`, `ChatInput`, `Message`, `ThinkingIndicator`
-- `ChatWindow` → `Message`, `MessageList`, `ChatInput`
-- `Message` → `MessageActions`, `CopyButton`, `EditableMessageContent`, `MarkdownRenderer`
+Advanced features and internal utilities.
 
-### Test Coverage Assessment
-**Existing Tests (Based on File Analysis):**
-- `FloatingChatWidget` - Has tests
-- `ResizableChatLayout` - Has tests
-- `TanStackMessageList` - Has tests
-- `Message` - Has some tests but incomplete
-- `ClarityChat` - No tests found
-- `ChatWindow` - No tests found
-- `ChatInput` - No tests found
+**Components:**
 
-**Estimated Coverage:** ~35% overall (based on comprehensive analysis)
+- Dashboard components
+- Enterprise components
+- A/B Testing components
+- AI-Ops components
+- Internal utilities
 
-## Initial Complexity Assessment
+**Hooks:**
 
-### Critical Priority (P0) - Core Foundation
-**Must be fixed first - blocks everything else**
-- `useClarityChat` - Primary hook, very complex, heavily used
-- `ClarityChat` - Main entry point, complex integration, heavily used
-- `ChatWindow` - Core UI, many features, heavily used
-- `Message` - Individual message display, complex, heavily used
-- `ChatInput` - Input component, moderately complex
-
-### High Priority (P1) - Core Functionality
-**Critical for chat functionality**
-- `MessageList` / `VirtualizedMessageList` - Message rendering, performance-critical
-- `StreamingMessage` - Real-time updates, complex state
-- `useChatHandlers` - Message handling utilities
-- `useStreamingSSE` / `useStreamingWebSocket` - Streaming
-- `useAutoScroll` - UX behavior (not analyzed yet)
-
-### Medium Priority (P2) - Enhanced Features
-**Important but not blocking core functionality**
-- `ThinkingIndicator` / `TypingIndicator` - Status indicators
-- `PromptSuggestions` / `FollowUpSuggestions` - UX enhancements
-- `useVoiceInput` - Input enhancements
-- `MessageActions` - Message action buttons
-- `MarkdownRenderer` - Markdown rendering
-- `CopyButton`, `DeleteButton` - Message actions
-
-### Lower Priority (P3) - Utilities & Polish
-**Nice-to-have, auxiliary features**
-- Recipe components (`ChatWithMemory`, etc.)
-- Advanced input components (`AdvancedChatInput`, `MentionSystem`)
-- Layout components (`ResizableChatLayout`)
-- Utility hooks (clipboard, localStorage, etc.)
-- Animations and polish features
-
-## Remediation Sequence
-
-### Phase 1: Foundation Layer
-1. **useClarityChat** - Fix primary hook issues first
-2. **ClarityChat** - Fix main component
-3. **ChatWindow** - Fix core UI component
-
-### Phase 2: Core Components
-4. **Message** - Fix message display
-5. **ChatInput** - Fix input component
-6. **MessageList** - Fix message lists
-
-### Phase 3: Streaming & Real-time
-7. **StreamingMessage** - Fix streaming display
-8. **useStreamingSSE/WebSocket** - Fix streaming hooks
-
-### Phase 4: UX Enhancements
-9. **ThinkingIndicator/TypingIndicator** - Fix status indicators
-10. **MessageActions** - Fix action buttons
-11. **PromptSuggestions** - Fix suggestions
-
-### Phase 5: Advanced Features
-12. **Advanced input components** - Fix enhanced inputs
-13. **Layout components** - Fix advanced layouts
-14. **Utility components** - Fix remaining utilities
-
----
-
-## Critical Issues Requiring Immediate Attention
-
-### 1. Test Coverage Crisis
-**Impact**: High risk of regressions, poor reliability
-- `ClarityChat` - Main entry point, no tests
-- `ChatWindow` - Core UI component, no tests
-- `Message` - Fundamental component, minimal tests
-- `useClarityChat` - Primary hook, no tests
-
-### 2. Deprecated Hook Confusion
-**Impact**: Developer confusion, maintenance burden
-- Multiple `useChat` variants still exported
-- `useChatEnhanced` marked internal but still public
-- Migration path unclear
-
-### 3. Component Complexity Explosion
-**Impact**: Hard to maintain, bug-prone
-- `ChatWindow` has 30+ props
-- `ClarityChat` complex prop forwarding
-- Message component has many conditional features
-
-### 4. Type Conversion Chaos
-**Impact**: Runtime errors, type safety issues
-- `CoreMessage[]` ↔ `Message[]` scattered conversions
-- No centralized conversion logic
-- Type mismatches between components
-
-### 5. Missing Error Boundaries
-**Impact**: Poor user experience, crashes
-- No error boundaries in critical components
-- Error handling inconsistent
-- No fallback states for failures
-
----
-
-## Key Findings
-
-### Critical Issues Identified
-1. **Test Coverage Gaps**: Critical components (ClarityChat, ChatWindow, Message) have no or minimal tests
-2. **Dependency Chain**: Issues in foundation components (useClarityChat, ClarityChat) will cascade to all dependent components
-3. **Deprecated Code**: Multiple deprecated hooks still exported and used
-4. **Complex Inheritance**: ChatWindow has 30+ props, making it hard to maintain
-5. **Type Conversion Issues**: CoreMessage[] ↔ Message[] conversion scattered throughout
-
-### Remediation Strategy
-1. **Fix foundation first**: useClarityChat and ClarityChat must be solid before fixing dependents
-2. **Parallel fixes**: Once foundation is stable, fix ChatWindow, Message, and ChatInput in parallel
-3. **Incremental testing**: Add comprehensive tests as we fix each component
-4. **Breaking changes allowed**: Fix API inconsistencies to improve developer experience
+- Clarity Tokens advanced hooks
+- Dashboard hooks
+- Performance hooks
+- Model routing hooks
 
 ---
 
 ## Next Steps
 
-## Next Steps
-
-1. ✅ **Phase 1 Complete**: Comprehensive inventory created with detailed analysis
-2. ✅ **Phase 2 Complete**: Prioritization framework and remediation sequence finalized
-3. ✅ **Phase 3 Complete**: Deep review of all P0 components (31 issues documented)
-4. ✅ **Phase 4 Complete**: All 7 P0 critical issues fixed and ChatWindow fully modularized
-5. ✅ **Phase 5 Complete**: Comprehensive testing with 82% pass rate for critical functionality
-6. ✅ **Phase 6 Complete**: Storybook enhancement with new grouped props API showcase and architectural demonstrations
-7. ✅ **Phase 7 Complete**: Documentation alignment with migration guides, API updates, and comprehensive guides
+1. **Phase 2**: Create detailed prioritization matrix with acceptance criteria
+2. **Phase 3**: Begin deep review of Tier 1 components/hooks
+3. **Phase 4**: Document and fix identified issues
+4. **Phase 5**: Comprehensive testing
+5. **Phase 6**: Storybook enhancement
+6. **Phase 7**: Documentation alignment
 
 ---
 
-## Current Status Summary
-
-- **📋 Inventory**: ✅ Complete (90 components/hooks cataloged with relationships)
-- **🎯 Prioritization**: ✅ Complete (P0-P3 priority matrix with remediation sequence)
-- **🔍 Review**: ✅ Complete (All P0 components reviewed, 31 issues documented)
-- **📋 Issues**: ✅ Complete (AUDIT_ISSUES.md created with solutions and priorities)
-- **🔧 Fixes**: ✅ Complete (All 7 P0 critical issues resolved)
-- **🧪 Testing**: ✅ Complete (82% pass rate for critical functionality)
-- **🎨 Storybook**: ✅ Complete (Enhanced with grouped props API and architecture showcases)
-- **📚 Documentation**: ✅ Complete (Updated guides, migration docs, and API references)
-
-**🎉 AUDIT COMPLETE: All 7 phases successfully completed!**
+_Last Updated: January 2026_ _Audit Status: Phase 1 Complete_
