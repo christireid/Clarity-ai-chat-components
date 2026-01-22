@@ -1,0 +1,160 @@
+'use client'
+
+import { durations } from '@/lib/animations'
+import { useState, useEffect } from 'react'
+import { MessageSquare, X, Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
+
+interface ChatButtonProps {
+  onClick: () => void
+  isOpen: boolean
+}
+
+export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [isMac, setIsMac] = useState(false)
+
+  // Detect if user is on Mac for keyboard shortcut display
+  useEffect(() => {
+    setIsMac(navigator.platform.toLowerCase().includes('mac'))
+  }, [])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
+      className="fixed bottom-6 right-6 z-[55] group/container"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)', paddingRight: 'env(safe-area-inset-right)' }}
+    >
+      {/* Keyboard Shortcut Tooltip - Desktop only */}
+      <AnimatePresence>
+        {!isOpen && isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: durations.normal }}
+            className={cn(
+              'hidden lg:block',
+              'absolute bottom-full right-0 mb-2',
+              'px-3 py-1.5 rounded-lg',
+              'bg-gray-900/95 dark:bg-gray-800/95 backdrop-blur-sm text-white text-xs font-medium',
+              // Multi-layer shadow with brand accent
+              'shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2),0_0_20px_rgba(99,102,241,0.1)]',
+              'border border-gray-700/50',
+              'whitespace-nowrap'
+            )}
+          >
+            Press {isMac ? '⌘' : 'Ctrl'}+.
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="absolute bottom-0 right-4 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-800 border-r border-b border-gray-700"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className={cn(
+          'relative flex items-center gap-2 px-4 py-3 rounded-full overflow-hidden',
+          'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500',
+          'text-white font-medium text-sm',
+          // Multi-layer shadow system with brand glow
+          'shadow-[0_4px_12px_rgba(99,102,241,0.3),0_8px_24px_rgba(139,92,246,0.2),0_12px_36px_rgba(244,114,182,0.15)]',
+          'hover:shadow-[0_6px_16px_rgba(99,102,241,0.4),0_12px_32px_rgba(139,92,246,0.3),0_16px_48px_rgba(244,114,182,0.2),0_0_60px_rgba(99,102,241,0.25)]',
+          'transition-all duration-300 ease-out',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900',
+          'group'
+        )}
+        aria-label={
+          isOpen
+            ? 'Close AI Assistant (Esc)'
+            : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+.)`
+        }
+      >
+        {/* Icon Container */}
+        <div className="relative">
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                exit={{ rotate: 90, scale: 0 }}
+                transition={{ duration: durations.normal }}
+              >
+                <X className="w-5 h-5" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="open"
+                initial={{ rotate: 90, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                exit={{ rotate: -90, scale: 0 }}
+                transition={{ duration: durations.normal }}
+                className="relative"
+              >
+                <MessageSquare className="w-5 h-5" />
+                {/* Sparkle indicator for AI */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 15,
+                      }}
+                      className="absolute -top-1 -right-1"
+                    >
+                      <Sparkles className="w-3 h-3 text-yellow-300" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Text Label */}
+        <motion.span
+          animate={{
+            width: isOpen ? 0 : 'auto',
+            opacity: isOpen ? 0 : 1,
+          }}
+          transition={{ duration: durations.moderate }}
+          className="overflow-hidden whitespace-nowrap"
+        >
+          Ask AI
+        </motion.span>
+
+        {/* Pulse Indicator (when closed) */}
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              className="absolute top-2 right-2 flex h-2 w-2"
+            >
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    </motion.div>
+  )
+}

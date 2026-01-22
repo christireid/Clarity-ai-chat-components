@@ -34,7 +34,7 @@ export function chat(
     streaming?: boolean
     enterprise?: boolean
   }
-): JSX.Element {
+): React.ReactElement {
   if (options?.enterprise) {
     return <ClarityChatPresets.Enterprise api={api} />
   }
@@ -69,7 +69,7 @@ export function chat(
 export function chatWithMemory(
   api: string,
   strategy: 'sliding-window' | 'semantic-chunks' | 'vector-store' = 'sliding-window'
-): JSX.Element {
+): React.ReactElement {
   return <ClarityChatPresets.WithMemory api={api} memoryStrategy={strategy} />
 }
 
@@ -92,7 +92,7 @@ export function chatWithMemory(
 export function enterpriseChat(
   api: string,
   title?: string
-): JSX.Element {
+): React.ReactElement {
   return (
     <ClarityChatPresets.Enterprise
       api={api}
@@ -120,7 +120,7 @@ export function enterpriseChat(
 export function streamingChat(
   api: string,
   useWebSocket: boolean = false
-): JSX.Element {
+): React.ReactElement {
   return <ClarityChatPresets.Streaming api={api} useWebSocket={useWebSocket} />
 }
 
@@ -178,7 +178,7 @@ export class ChatBuilder {
     return this
   }
 
-  build(): JSX.Element {
+  build(): React.ReactElement {
     return <ClarityChat api={this.api} {...this.config} />
   }
 }

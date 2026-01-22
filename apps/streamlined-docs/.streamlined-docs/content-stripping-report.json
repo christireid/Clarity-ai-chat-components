@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-01-22T15:20:29.136Z",
+  "stats": {
+    "processed": 0,
+    "skipped": 453,
+    "errors": 0,
+    "paths": []
+  },
+  "processedFiles": []
+}

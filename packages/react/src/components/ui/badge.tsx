@@ -1,5 +1,5 @@
-import React from 'react'
-import { cn } from '../../../utils/cn'
+import * as React from 'react'
+import { cn } from '@clarity-chat/primitives'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'outline'
