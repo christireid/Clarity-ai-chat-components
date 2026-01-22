@@ -122,18 +122,36 @@ function MessageItem({ index, style, data }: MessageItemProps) {
   const message = messages[index]
   const itemRef = React.useRef<HTMLDivElement>(null)
 
+  // Use ResizeObserver instead of offsetHeight to avoid forced layouts
   React.useEffect(() => {
-    if (itemRef.current && message) {
-      const height = itemRef.current.offsetHeight
-      const messageKey = message.id || `msg-${index}`
+    const element = itemRef.current
+    if (!element || !message) return
 
-      if (
-        !heightCache.hasHeight(messageKey) ||
-        heightCache.getHeight(messageKey) !== height
-      ) {
-        heightCache.setHeight(messageKey, height)
-        setItemHeight(index, height)
+    const messageKey = message.id || `msg-${index}`
+
+    // Create ResizeObserver to watch for size changes
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Use contentRect.height to avoid forced layout
+        const height = entry.contentRect.height
+
+        if (height > 0) {
+          const cachedHeight = heightCache.getHeight(messageKey)
+
+          // Only update if height changed significantly (>1px to avoid float rounding)
+          if (Math.abs(cachedHeight - height) > 1) {
+            heightCache.setHeight(messageKey, height)
+            setItemHeight(index, height)
+          }
+        }
       }
+    })
+
+    resizeObserver.observe(element)
+
+    // Cleanup observer on unmount
+    return () => {
+      resizeObserver.disconnect()
     }
   }, [message, index, heightCache, setItemHeight])
 
