@@ -37,7 +37,7 @@ const ToastManager = dynamic(() =>
 
 // Lazy load mobile bottom nav
 const MobileBottomNav = dynamic(() =>
-  import('@/components/Navigation/MobileBottomNav').then((mod) => ({
+  import('@/components/Enhanced/MobileBottomNav').then((mod) => ({
     default: mod.MobileBottomNav,
   }))
 )
