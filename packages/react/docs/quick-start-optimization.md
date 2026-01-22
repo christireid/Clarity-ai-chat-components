@@ -34,7 +34,7 @@ const { optimizedMessages } = useQuickOptimize({
 const { optimizedMessages } = useQuickOptimize({
   messages: chatMessages,
   model: 'gpt-4',
-  preset: 'balanced', // or 'conservative', 'aggressive', 'costOptimized', 'qualityFirst'
+  preset: 'standard', // or 'minimal', 'production', 'enterprise'
 })
 ```
 
@@ -46,7 +46,7 @@ import { quickOptimizeMessages } from '@clarity-chat/react'
 const result = await quickOptimizeMessages(
   messages,
   'gpt-4',
-  { preset: 'balanced' }
+  { preset: 'standard' }
 )
 
 console.log(result.tokenStats) // { original, optimized, saved }
@@ -54,11 +54,10 @@ console.log(result.tokenStats) // { original, optimized, saved }
 
 ## Presets Explained
 
-- **`balanced`** (default) - Good balance of quality and efficiency
-- **`conservative`** - Minimal changes, maximum quality
-- **`aggressive`** - Maximum token savings
-- **`costOptimized`** - Prioritize cost savings
-- **`qualityFirst`** - Prioritize quality over tokens
+- **`minimal`** - Lightweight optimization with basic features
+- **`standard`** (default) - Good balance of quality and efficiency
+- **`production`** - Production-ready with comprehensive features
+- **`enterprise`** - Maximum features with advanced optimizations
 
 ## Available Models
 
@@ -93,7 +92,7 @@ import { quickSetup } from '@clarity-chat/react'
 const config = quickSetup({
   model: 'gpt-4',
   targetTokens: 4000,
-  preset: 'balanced',
+  preset: 'standard',
   customConfig: {
     // Your custom options
   },

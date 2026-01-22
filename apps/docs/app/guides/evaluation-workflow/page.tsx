@@ -44,7 +44,7 @@ export default function EvaluationWorkflowPage() {
         <h2>Evaluation Dashboard</h2>
         <p>Set up evaluation dashboard:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
 function EvaluationSetup() {
   const [results, setResults] = useState([])
@@ -102,7 +102,7 @@ function calculateAccuracy(results: TestResult[]): number {
         <h2>Trend Tracking</h2>
         <p>Track trends over time:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
 function TrendTracking() {
   const [trends, setTrends] = useState([])
@@ -120,7 +120,7 @@ function TrendTracking() {
       trends={trends}
       onTrendAnalysis={(trend) => {
         if (trend.direction === 'down') {
-          logger.warn('Quality declining:', trend)
+          console.warn('Quality declining:', trend)
         }
       }}
     />
@@ -168,7 +168,7 @@ setInterval(scheduledEvaluation, 24 * 60 * 60 * 1000)`}
         <h2>Quality Checks</h2>
         <p>Implement quality checks:</p>
         <CodePlayground
-          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react/internal'
+          initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
 function QualityChecks() {
   return (

@@ -25,6 +25,29 @@
 :root {
   --code-font-size: 14px;
   --code-line-height: 1.5rem; /* 24px */
+
+  /* Night Owl Theme - Single Source of Truth */
+  --night-owl-bg: #011627;
+  --night-owl-bg-secondary: #0b2942;
+  --night-owl-bg-tertiary: #152a3d;
+  --night-owl-fg: #d6deeb;
+  --night-owl-fg-secondary: #7c8794;
+  --night-owl-fg-tertiary: #5f7e97;
+  --night-owl-accent: #82aaff;
+  --night-owl-accent-secondary: #c792ea;
+  --night-owl-accent-tertiary: #ffeb95;
+  --night-owl-keyword: #c792ea;
+  --night-owl-string: #ecc48d;
+  --night-owl-number: #f78c6c;
+  --night-owl-comment: #637777;
+  --night-owl-function: #82aaff;
+  --night-owl-variable: #d6deeb;
+  --night-owl-type: #ffc98b;
+  --night-owl-constant: #ffcb8b;
+  --night-owl-operator: #7fdbca;
+  --night-owl-border: #1e3a5f;
+  --night-owl-selection: #1d3b53;
+  --night-owl-line-highlight: #0b2942;
 }
 
 /* Class to enforce consistent metrics across code blocks and gutters */

@@ -495,7 +495,7 @@ export function limitHistorySmart(
  * Limit conversation history based on strategy
  *
  * Note: 'summarize' strategy in this synchronous function falls back to 'smart'.
- * For true summarization, use the `optimizeHistory` function in `useTokenOptimizationEnhanced` hook.
+ * For true summarization, use the `optimizeHistory` function in `useTokenOptimization` hook.
  */
 export function limitHistory(
   messages: CoreMessage[],

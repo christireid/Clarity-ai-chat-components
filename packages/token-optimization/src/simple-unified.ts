@@ -12,6 +12,16 @@ import {
   DEFAULT_SECURITY_CONFIG,
   DEFAULT_TOON_CONFIG,
 } from './simple-index'
+import { TokenOptimizationError, TokenErrorCode } from './errors'
+import { Logger } from './observability'
+
+/**
+ * Options for simple optimization
+ */
+export interface SimpleOptimizationOptions {
+  strategy?: 'basic' | 'toon' | 'compression' | 'truncated'
+  maxTokens?: number
+}
 
 export interface SimpleOptimizationResult {
   original: string
@@ -23,7 +33,7 @@ export interface SimpleOptimizationResult {
   method: string
   security: {
     sanitized: boolean
-    threats: any[]
+    threats: string[]
     riskLevel: string
   }
 }
@@ -37,9 +47,11 @@ export class SimpleUnifiedOptimizer {
   private toonOptimizer: ToonOptimizer
   private cache: Map<string, SimpleOptimizationResult> = new Map()
   private enableCaching: boolean
+  private logger: Logger
 
   constructor(enableCaching = true) {
     this.enableCaching = enableCaching
+    this.logger = new Logger({ serviceName: 'simple-unified-optimizer' })
     this.tokenCounter = new AccurateTokenCounter(
       DEFAULT_TOKENIZER_CONFIG.enableCaching,
       DEFAULT_TOKENIZER_CONFIG
@@ -53,9 +65,9 @@ export class SimpleUnifiedOptimizer {
    */
   async optimize(
     text: string,
-    options: any = {}
+    options: SimpleOptimizationOptions = {}
   ): Promise<SimpleOptimizationResult> {
-    const strategy = options.strategy || 'basic'
+    const strategy = options.strategy ?? 'basic'
     const maxTokens = options.maxTokens
 
     // Check cache first
@@ -71,7 +83,12 @@ export class SimpleUnifiedOptimizer {
     // Apply security measures
     const secured = this.securityManager.sanitizeInput(text)
     if (secured.riskLevel === 'high') {
-      throw new Error('Security threat detected')
+      throw new TokenOptimizationError(
+        'Security threat detected in input',
+        TokenErrorCode.SECURITY_VIOLATION,
+        false,
+        { riskLevel: secured.riskLevel, threats: secured.threats?.length || 0 }
+      )
     }
 
     // Try TOON optimization if applicable
@@ -80,9 +97,8 @@ export class SimpleUnifiedOptimizer {
 
     try {
       // Check if it's structured data
-      let data: any
       try {
-        data = JSON.parse(secured.sanitized)
+        const data: unknown = JSON.parse(secured.sanitized)
         const toonOptimized = this.toonOptimizer.convertToToon(data)
         const originalTokens = this.tokenCounter.count(secured.sanitized)
         const toonTokens = this.tokenCounter.count(toonOptimized)
@@ -104,7 +120,10 @@ export class SimpleUnifiedOptimizer {
         }
       }
     } catch (error) {
-      console.warn('Optimization failed:', error)
+      this.logger.warn('Optimization failed', {
+        error: error instanceof Error ? error.message : String(error),
+        strategy,
+      })
     }
 
     // Apply max tokens constraint if specified
@@ -133,7 +152,7 @@ export class SimpleUnifiedOptimizer {
       method,
       security: {
         sanitized: true,
-        threats: secured.threats,
+        threats: secured.threats ?? [],
         riskLevel: secured.riskLevel,
       },
     }

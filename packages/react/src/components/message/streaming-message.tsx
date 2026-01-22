@@ -140,7 +140,7 @@ const ErrorDisplay = React.memo(function ErrorDisplay({
         damping: 20,
         stiffness: 300,
       }}
-      className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 shadow-xs"
       role="alert"
     >
       <div className="flex items-start gap-3">
@@ -207,7 +207,7 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="bg-info/5 border border-info/20 rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="bg-info/5 border border-info/20 rounded-lg p-4 shadow-xs"
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
@@ -303,12 +303,12 @@ const ToolCallItem = React.memo(function ToolCallItem({
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 10 }}
-      className="bg-accent/50 border rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="bg-accent/50 border rounded-lg p-4 shadow-xs"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-xs ring-1 ring-primary/20">
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -379,7 +379,7 @@ const CitationItem = React.memo(function CitationItem({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-muted/50 border rounded-lg p-3 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px transition-all duration-150 ease-out cursor-pointer"
+      className="bg-muted/50 border rounded-lg p-3 shadow-xs hover:shadow-md hover:-translate-y-px transition-all duration-150 ease-out cursor-pointer"
     >
       <div className="flex items-start gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
@@ -456,16 +456,16 @@ function useSmoothStreaming(
       return
     }
 
-    // Smooth streaming animation loop
+    // Smooth streaming animation loop at exactly 60fps (~16.67ms intervals)
     const animate = (timestamp: number) => {
       if (!lastUpdateRef.current) {
         lastUpdateRef.current = timestamp
       }
 
       const elapsed = timestamp - lastUpdateRef.current
-      const charsToAdd = Math.floor(elapsed * charsPerMs)
 
-      if (charsToAdd > 0) {
+      // Only update at ~60fps intervals (16.67ms) for smooth animation
+      if (elapsed >= 16.67) {
         lastUpdateRef.current = timestamp
 
         setDisplayedContent((prev) => {
@@ -473,6 +473,9 @@ function useSmoothStreaming(
           if (prev.length >= target.length) {
             return prev
           }
+
+          // Calculate exact characters to add for this frame
+          const charsToAdd = Math.max(1, Math.floor(elapsed * charsPerMs))
           const nextLength = Math.min(prev.length + charsToAdd, target.length)
           return target.slice(0, nextLength)
         })
@@ -568,7 +571,7 @@ export function StreamingMessage({
     }
 
     return (
-      <div className="prose prose-sm dark:prose-invert max-w-none">
+      <div className="prose prose-sm dark:prose-invert max-w-3xl mx-auto">
         <p className="whitespace-pre-wrap text-foreground">
           {displayedContent}
           {isStreaming && <StreamingCursor />}

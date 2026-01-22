@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DocumentViewer } from '@clarity-chat/react/internal'
+import { DocumentViewer } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Memory/DocumentViewer',

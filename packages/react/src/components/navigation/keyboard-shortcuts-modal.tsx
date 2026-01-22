@@ -407,7 +407,7 @@ export function KeyboardShortcutsModal({
                       >
                         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1 flex items-center gap-2">
                           <span>{category}</span>
-                          <span className="text-muted-foreground/50">
+                          <span className="text-muted-foreground/70">
                             ({categoryShortcuts.length})
                           </span>
                         </h3>

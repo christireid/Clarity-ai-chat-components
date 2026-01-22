@@ -5,6 +5,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    environmentMatchGlobs: [
+      // Use jsdom for React hook tests
+      ['src/__tests__/hooks/**', 'jsdom'],
+    ],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', 'coverage'],
     coverage: {
@@ -16,15 +20,15 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
-        '**/*.test.{ts,js}'
-      ]
+        '**/*.test.{ts,js}',
+      ],
     },
     testTimeout: 30000,
-    hookTimeout: 30000
+    hookTimeout: 30000,
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 })

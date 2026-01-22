@@ -14,7 +14,7 @@ import {
   AdvancedChatInput,
   CommandPalette,
   useStreamingSSE,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { ResearchAgent } from '@/components/ResearchAgent'
 import { KnowledgeGraph } from '@/components/KnowledgeGraph'
 import { ResearchDashboard } from '@/components/ResearchDashboard'

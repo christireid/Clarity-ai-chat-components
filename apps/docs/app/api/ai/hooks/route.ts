@@ -15,6 +15,10 @@ import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('ai-hooks-api')
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * AI-Optimized Hooks API
  *
@@ -29,11 +33,12 @@ const logger = getLogger('ai-hooks-api')
 const curatedHooks: HookInfo[] = [
   // Core Chat Hooks
   {
-    name: 'useChat',
+    name: 'useClarityChat',
     description:
-      'Primary hook for managing chat state and operations. Handles messages, sending, loading states, and message history.',
+      'Primary hook for managing chat state with memory integration, token optimization, and streaming. The recommended hook for all chat implementations.',
     category: 'core',
-    signature: 'useChat(options?: UseChatOptions): UseChatReturn',
+    signature:
+      'useClarityChat(options?: UseClarityChatOptions): UseClarityChatReturn',
     parameters: [
       {
         name: 'initialMessages',
@@ -95,13 +100,14 @@ const curatedHooks: HookInfo[] = [
       ],
     },
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-chat',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat',
     examples: [
-      `import { useChat } from "@clarity-chat/react";
+      `import { useClarityChat } from "@clarity-chat/react";
 
 function ChatComponent() {
-  const { messages, input, setInput, handleSubmit, isLoading } = useChat({
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
+    memory: { enabled: true },
   });
 
   return (
@@ -113,7 +119,7 @@ function ChatComponent() {
   );
 }`,
     ],
-    relatedHooks: ['useChatEnhanced', 'useStreaming', 'useCompletion'],
+    relatedHooks: ['useStreaming', 'useCompletion', 'useClarityChatWithTools'],
     version: '0.1.0',
   },
   {
@@ -202,7 +208,11 @@ function StreamingChat() {
   );
 }`,
     ],
-    relatedHooks: ['useStreamingSSE', 'useStreamingWebSocket', 'useChat'],
+    relatedHooks: [
+      'useStreamingSSE',
+      'useStreamingWebSocket',
+      'useClarityChat',
+    ],
     version: '0.1.0',
   },
   {
@@ -292,7 +302,7 @@ function TokenDisplay({ messages }) {
   );
 }`,
     ],
-    relatedHooks: ['useTokenOptimization', 'useChat'],
+    relatedHooks: ['useTokenOptimization', 'useClarityChat'],
     version: '0.1.0',
   },
   {
@@ -372,7 +382,7 @@ function OptimizedChat({ messages }) {
   );
 }`,
     ],
-    relatedHooks: ['useTokenTracker', 'useChat'],
+    relatedHooks: ['useTokenTracker', 'useClarityChat'],
     version: '0.1.0',
   },
   // UI Hooks
@@ -610,7 +620,7 @@ function VoiceChat() {
   );
 }`,
     ],
-    relatedHooks: ['useChat', 'useMediaQuery'],
+    relatedHooks: ['useClarityChat', 'useMediaQuery'],
     version: '0.1.0',
   },
   // Utility Hooks
@@ -839,7 +849,7 @@ function ReliableChat() {
   );
 }`,
     ],
-    relatedHooks: ['useChat', 'useStreaming'],
+    relatedHooks: ['useClarityChat', 'useStreaming'],
     version: '0.1.0',
   },
   // Memory & Context Hooks
@@ -1213,7 +1223,7 @@ function OptimizedChat({ messages }) {
   return <ChatWindow messages={optimizedMessages} />;
 }`,
     ],
-    relatedHooks: ['useTokenTracker', 'useChat'],
+    relatedHooks: ['useTokenTracker', 'useClarityChat'],
     version: '0.1.0',
   },
   // Theme Hooks
@@ -1547,7 +1557,7 @@ export async function GET() {
       usage: {
         installation: 'npm install @clarity-chat/react',
         basicImport:
-          'import { useChat, useStreaming, useTokenTracker } from "@clarity-chat/react"',
+          'import { useClarityChat, useStreaming, useTokenTracker } from "@clarity-chat/react"',
         documentation: `${BASE_URL}/reference/hooks`,
       },
       dataSource: {
@@ -1561,13 +1571,21 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Hooks API] Error:', error)
+    // Log error for debugging
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
 
+    console.error('[AI Hooks API] Error:', errorMessage)
+    if (errorStack) {
+      console.error('[AI Hooks API] Stack:', errorStack)
+    }
+
+    // Return proper JSON error response
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',
       'An unexpected error occurred while fetching hooks',
       '/api/ai/hooks',
-      error instanceof Error ? error.message : undefined
+      process.env.NODE_ENV === 'development' ? errorMessage : undefined
     )
 
     return NextResponse.json(errorResponse, {

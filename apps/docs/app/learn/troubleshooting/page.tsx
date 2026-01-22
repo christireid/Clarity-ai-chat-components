@@ -29,15 +29,13 @@ export default function TroubleshootingPage() {
         </Callout>
         <pre>
           <code>{`// Add to your app
-import { enableDebugMode } from '@clarity-chat/react/internal'
+// Debug mode is controlled via environment variables:
+// NEXT_PUBLIC_DEBUG=true npm run dev
 
-if (process.env.NODE_ENV === 'development') {
-  enableDebugMode({
-    verbose: true,
-    logRequests: true,
-    logTokens: true
-  })
-}`}</code>
+// Or set in your .env.local:
+// NEXT_PUBLIC_DEBUG=true
+// NEXT_PUBLIC_LOG_REQUESTS=true
+// NEXT_PUBLIC_LOG_TOKENS=true`}</code>
         </pre>
       </section>
 
@@ -265,7 +263,7 @@ export async function POST(req: Request) {
         </p>
         <pre>
           <code>{`// Use virtualization for long message lists
-import { VirtualizedMessageList } from '@clarity-chat/react/internal'
+import { VirtualizedMessageList } from '@clarity-chat/react'
 
 <VirtualizedMessageList
   messages={messages}
@@ -274,7 +272,7 @@ import { VirtualizedMessageList } from '@clarity-chat/react/internal'
 />
 
 // Enable message optimization
-import { MessageOptimized } from '@clarity-chat/react/internal'
+import { MessageOptimized } from '@clarity-chat/react'
 
 <MessageOptimized
   content={message.content}
@@ -326,7 +324,7 @@ const { messages } = useChat({
 const ChatWindow = dynamic(() => import('@clarity-chat/react').then(mod => mod.ChatWindow))
 
 // Tree-shake unused components
-import { ChatWindow } from '@clarity-chat/react/components/chat-window'
+import { ChatWindow } from '@clarity-chat/react'
 
 // Analyze bundle
 npm run build && npx @next/bundle-analyzer`}</code>
@@ -354,7 +352,7 @@ import { Pinecone } from '@pinecone-database/pinecone'
 
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY })
 const indexes = await pinecone.listIndexes()
-logger.debug('Available indexes:', indexes)`}</code>
+console.log('Available indexes:', indexes)`}</code>
         </pre>
 
         <h3>Context Window Exceeded</h3>
@@ -422,7 +420,7 @@ const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text
         </p>
         <pre>
           <code>{`// Wrap app with ThemeProvider
-import { ThemeProvider } from '@clarity-chat/react/internal'
+import { ThemeProvider } from '@clarity-chat/react'
 
 export default function App() {
   return (
@@ -581,11 +579,11 @@ export async function POST(req: Request) {
         <h3>Enable Verbose Logging</h3>
         <pre>
           <code>{`// Log all events
-import { ChatWindow } from '@clarity-chat/react/internal'
+import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
   onDebug={(event, data) => {
-    logger.debug(\`[DEBUG] \${event}\`, data)
+    console.log(\`[DEBUG] \${event}\`, data)
   }}
   debug={true}
 />`}</code>
@@ -611,7 +609,7 @@ import { ChatWindow } from '@clarity-chat/react/internal'
 
         <h3>Error Boundaries</h3>
         <pre>
-          <code>{`import { ErrorBoundary } from '@clarity-chat/react/internal'
+          <code>{`import { ErrorBoundary } from '@clarity-chat/react'
 
 <ErrorBoundary
   fallback={(error, reset) => (

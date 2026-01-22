@@ -54,10 +54,10 @@ export default function App() {
   {
     title: 'Token Optimization',
     description: 'Reduce API costs by 40%+',
-    code: `import { ClarityChat, useTokenOptimizer } from '@clarity-chat/react'
+    code: `import { ClarityChat, Optimizer } from '@clarity-chat/react'
 
 export default function App() {
-  const optimizer = useTokenOptimizer({
+  const optimizer = Optimizer({
     kvCacheAlignment: true,
     contextCompression: true,
     maxTokens: 4096

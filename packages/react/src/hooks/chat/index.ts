@@ -68,51 +68,12 @@ export * from './use-rag-pipeline'
 export { type CoreMessage } from './use-chat-enhanced'
 
 // ============================================================================
-// DEPRECATED HOOKS (Will be removed in v2.0)
-// Migrate to useClarityChat - see https://docs.clarity-chat.dev/migration
+// INTERNAL HOOKS (For advanced use cases only)
 // ============================================================================
 
-/**
- * @deprecated Use useClarityChat instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './use-chat-unified'
-
-/**
- * @deprecated Use useClarityChat instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export {
-  useChat as useChatLegacy,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './use-chat'
-
-/**
- * @deprecated Use useClarityChat instead. ChatWindow accepts CoreMessage[] directly.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export * from './use-chat-simple'
-
-/**
- * @deprecated Use useClarityChat with primitives instead.
- * See migration guide: https://docs.clarity-chat.dev/migration
- */
-export * from './use-chat-composable'
-
-// ============================================================================
-// INTERNAL HOOKS (Not for public use - use useClarityChat instead)
-// ============================================================================
-
-// useChatEnhanced is now internal only - exported here for backward compatibility
-// but should not be used directly by external consumers
 /**
  * @internal
- * @deprecated This hook is for internal use only. Use useClarityChat instead.
+ * Internal hook used by useClarityChat. For most use cases, use useClarityChat instead.
  */
 export {
   useChat as useChatEnhanced,

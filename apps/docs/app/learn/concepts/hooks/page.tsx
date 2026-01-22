@@ -1,7 +1,7 @@
 'use client'
 
 import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
@@ -29,15 +29,137 @@ export default function HooksConceptPage() {
 
         <YouWillLearn
           items={[
-            'Understand the hook architecture and patterns',
-            'Learn core hooks for chat functionality',
+            'Understand the three-tier hook architecture',
+            'Learn when to use top-level vs mid-level hooks',
             'Discover hooks for advanced features',
             'Explore hook composition patterns',
           ]}
         />
 
         <section className="my-12">
-          <h2 className="text-3xl font-bold mb-6">Core Hooks</h2>
+          <h2 className="text-3xl font-bold mb-6">Hook Architecture</h2>
+
+          <p className="text-text-secondary mb-6">
+            Clarity Chat hooks follow a three-tier architecture designed for
+            different use cases:
+          </p>
+
+          <div className="grid gap-6 mb-8">
+            <div className="p-6 rounded-lg border-2 border-brand-500 bg-brand-500/5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">🎯</span>
+                <h3 className="text-xl font-bold text-brand-600 dark:text-brand-400">
+                  Top-Level (Recommended)
+                </h3>
+              </div>
+              <p className="text-text-secondary mb-4">
+                Drop-in ready hooks with full feature support. Start here for
+                most use cases.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <code className="px-2 py-1 bg-brand-500/10 rounded text-sm">
+                  useClarityChat
+                </code>
+                <code className="px-2 py-1 bg-brand-500/10 rounded text-sm">
+                  useClarityChatWithTools
+                </code>
+                <code className="px-2 py-1 bg-brand-500/10 rounded text-sm">
+                  useClarityObject
+                </code>
+                <code className="px-2 py-1 bg-brand-500/10 rounded text-sm">
+                  useRAGPipeline
+                </code>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border bg-bg-secondary">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">🔧</span>
+                <h3 className="text-xl font-bold">Mid-Level (Composables)</h3>
+              </div>
+              <p className="text-text-secondary mb-4">
+                Building blocks for custom implementations. Use when you need
+                more control.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useAssistant
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useCompletion
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useChatHandlers
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useStreaming
+                </code>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border bg-bg-secondary">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">⚙️</span>
+                <h3 className="text-xl font-bold">Low-Level (Primitives)</h3>
+              </div>
+              <p className="text-text-secondary mb-4">
+                Foundational utilities for building custom hooks. Maximum
+                flexibility.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useDebounce
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useThrottle
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useSafeTimeout
+                </code>
+                <code className="px-2 py-1 bg-bg-tertiary rounded text-sm">
+                  useLocalStorage
+                </code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="my-12">
+          <h2 className="text-3xl font-bold mb-6">Getting Started</h2>
+
+          <p className="text-text-secondary mb-4">
+            For most projects, start with <code>useClarityChat</code> - it
+            includes memory integration, token optimization, and streaming
+            support out of the box:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useClarityChat } from '@clarity-chat/react'
+
+function Chat() {
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+    memory: { enabled: true },
+    tokenOptimization: { enabled: true },
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={(content) => append({ role: 'user', content })}
+      isLoading={isLoading}
+    />
+  )
+}`}
+            language="tsx"
+            filename="Chat.tsx"
+            showLineNumbers
+            showCopyButton
+          />
+        </section>
+
+        <section className="my-12">
+          <h2 className="text-3xl font-bold mb-6">Specialized Hooks</h2>
 
           <div className="space-y-8">
             <div>
@@ -50,7 +172,7 @@ export default function HooksConceptPage() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+                code={`import { useMessageOperations } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatComponent() {
@@ -91,7 +213,7 @@ function ChatComponent() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useStreamingChat } from '@clarity-chat/react/internal'
+                code={`import { useStreamingChat } from '@clarity-chat/react'
 
 function StreamingChat() {
   const {
@@ -130,7 +252,7 @@ function StreamingChat() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react/internal'
+                code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
 
 function ChatWithTracking() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -243,7 +365,7 @@ function ChatWithTracking() {
   useTokenTracker,
   useLocalStorage,
   useAutoScroll,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function AdvancedChat() {
   // Persist chat ID

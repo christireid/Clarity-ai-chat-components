@@ -132,9 +132,9 @@ export function DocsLayout({
           className={clsx(
             'lg:hidden fixed bottom-6 right-6 z-50 p-4',
             // Glassmorphism styling with brand accent
-            'bg-blue-500/90 backdrop-blur-md text-white rounded-2xl',
-            'shadow-lg shadow-blue-500/25',
-            'hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/30',
+            'bg-brand-500/90 backdrop-blur-md text-white rounded-2xl',
+            'shadow-lg shadow-brand-500/25',
+            'hover:bg-brand-600 hover:shadow-xl hover:shadow-brand-500/30',
             'active:scale-95',
             prefersReducedMotion ? '' : 'transition-all duration-200'
           )}

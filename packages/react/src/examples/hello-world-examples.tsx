@@ -27,6 +27,44 @@ export function HelloWorldChat() {
 }
 
 // ============================================================================
+// Example 1.5: Ultra-Simple Chat (3 lines!)
+// ============================================================================
+
+/**
+ * Even simpler! Using the ultra-simple API.
+ */
+export function UltraSimpleChat() {
+  return chat('/api/chat') // Returns JSX.Element directly!
+}
+
+// ============================================================================
+// Example 1.75: Preset Chat (2 lines!)
+// ============================================================================
+
+/**
+ * Pre-configured chat with presets.
+ */
+export function PresetChat() {
+  return ChatPresets.Minimal('/api/chat') // Even simpler presets!
+}
+
+// ============================================================================
+// Example 1.8: Builder Pattern (Fluent API)
+// ============================================================================
+
+/**
+ * Build custom configurations with a fluent API.
+ */
+export function CustomChatWithBuilder() {
+  return ChatBuilder.create('/api/chat')
+    .withMemory('vector-store')
+    .withHeader('My Custom Chat')
+    .withStreaming()
+    .withRateLimiting(true)
+    .build()
+}
+
+// ============================================================================
 // Example 2: Chat with Memory (10 lines)
 // ============================================================================
 

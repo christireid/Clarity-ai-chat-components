@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   TokenOptimizationBadge,
   type TokenOptimizationStats,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationBadge',

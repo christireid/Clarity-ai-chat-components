@@ -155,12 +155,12 @@ export const InteractiveCard = React.memo(function InteractiveCard({
     <motion.div
       ref={ref}
       className={cn(
-        'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-xs',
         interactive &&
-          'cursor-pointer hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+          'cursor-pointer hover:shadow-md',
         disabled && 'opacity-50 cursor-not-allowed',
         selected &&
-          'ring-2 ring-primary/50 ring-offset-2 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+          'ring-2 ring-primary/50 ring-offset-2 shadow-md',
         showFocusRing &&
           'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
         className
@@ -314,10 +314,10 @@ export function InteractiveButton({
       transition={INTERACTION_VARIANTS.button.transition}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ease-out shadow-xs',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2',
         'disabled:opacity-50 disabled:pointer-events-none',
-        'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px',
+        'hover:shadow-md hover:-translate-y-px',
         variantClasses[variant],
         sizeClasses[size],
         className
@@ -387,7 +387,7 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
         'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 ease-out',
         'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
         'hover:bg-accent/50 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]',
-        selected && 'bg-accent shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        selected && 'bg-accent shadow-sm',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}

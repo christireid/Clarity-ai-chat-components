@@ -93,7 +93,7 @@ export default function OutputPreferenceSelectorPage() {
         <h2>Basic Usage</h2>
         <p>Select output preference with default configuration:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
 function ChatWithPreference() {
   const [preference, setPreference] = React.useState('balanced')
@@ -104,8 +104,8 @@ function ChatWithPreference() {
         value={preference}
         onChange={(pref) => {
           setPreference(pref.mode)
-          logger.debug('Max tokens:', pref.maxTokens)
-          logger.debug('Brevity instruction:', pref.brevityInstruction)
+          console.log('Max tokens:', pref.maxTokens)
+          console.log('Brevity instruction:', pref.brevityInstruction)
         }}
       />
     </div>
@@ -123,7 +123,7 @@ render(<ChatWithPreference />)`}
           tokens:
         </p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
 function TokenAwareSelector() {
   const [preference, setPreference] = React.useState('balanced')
@@ -147,7 +147,7 @@ function TokenAwareSelector() {
         <h2>Task-Specific Preferences</h2>
         <p>Configure task-specific token calculations:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
 function TaskSpecificSelector() {
   return (
@@ -171,7 +171,7 @@ function TaskSpecificSelector() {
         <h2>Display Modes</h2>
         <p>Use compact or expanded display modes:</p>
         <CodePlayground
-          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react/internal'
+          initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
 function CompactSelector() {
   return (

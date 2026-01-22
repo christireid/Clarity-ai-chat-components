@@ -35,10 +35,11 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "src/routing/**",
-    "src/components/**",
+    "src/routing",
+    "src/components",
+    "src/react",
     "src/compression/advanced-engine.ts",
     "src/compression/basic-engine.ts",
-    "src/deployment/**"
+    "src/deployment"
   ]
 }

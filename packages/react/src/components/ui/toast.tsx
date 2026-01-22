@@ -1,27 +1,12 @@
 'use client'
-
 /**
  * Toast Notification System
  *
  * Provides toast notifications for success, error, info, and warning messages.
  * Supports auto-dismiss, queue management, and custom durations.
- *
- * @enhanced Framer Motion 12: Upgraded to use new spring physics
- * - Smoother entrance/exit animations with spring damping
- * - More natural motion for toast notifications
- * - Improved layout animation performance
  */
 
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  memo,
-  createContext,
-  useContext,
-  useMemo,
-} from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
@@ -31,17 +16,16 @@ import {
   AlertCircleIcon,
   CloseIcon,
 } from './icons'
-import {
-  ANIMATION_DURATION,
-  EASING_FRAMER,
-  // createSlideVariant, // Reserved for future use
-} from '../../animations'
+import { ANIMATION_DURATION } from '../../animations'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
-import type { ReactNode } from 'react'
+
+// ============================================================================
+// TYPES
+// ============================================================================
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
 export type ToastPosition =
@@ -136,7 +120,6 @@ export function ToastItem({
         scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
       }}
       transition={{
-        // Framer Motion 12: Enhanced spring physics for toast entrance/exit
         type: 'spring',
         damping: 25,
         stiffness: 300,
@@ -151,12 +134,9 @@ export function ToastItem({
         colorClasses
       )}
     >
-      {/* Icon */}
       <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}>
         <Icon size={18} />
       </div>
-
-      {/* Content */}
       <div className="flex-1 space-y-1.5">
         {title && (
           <div className="font-bold text-sm leading-tight">{title}</div>
@@ -172,8 +152,6 @@ export function ToastItem({
           </button>
         )}
       </div>
-
-      {/* Close button */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -189,6 +167,16 @@ export function ToastItem({
 
 ToastItem.displayName = 'ToastItem'
 
+// Position classes
+const POSITION_CLASSES: Record<ToastPosition, string> = {
+  'top-left': 'top-6 left-6 items-start',
+  'top-center': 'top-6 left-1/2 -translate-x-1/2 items-center',
+  'top-right': 'top-6 right-6 items-end',
+  'bottom-left': 'bottom-6 left-6 items-start',
+  'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2 items-center',
+  'bottom-right': 'bottom-6 right-6 items-end',
+}
+
 /**
  * Toast container component
  */
@@ -198,22 +186,15 @@ export interface ToastContainerProps {
   onClose: (id: string) => void
 }
 
-// Position classes - extracted as constant
-const POSITION_CLASSES = {
-  'top-left': 'top-6 left-6 items-start',
-  'top-center': 'top-6 left-1/2 -translate-x-1/2 items-center',
-  'top-right': 'top-6 right-6 items-end',
-  'bottom-left': 'bottom-6 left-6 items-start',
-  'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2 items-center',
-  'bottom-right': 'bottom-6 right-6 items-end',
-} as const
-
 export function ToastContainer({
   toasts,
   position = 'top-right',
   onClose,
 }: ToastContainerProps) {
-  const positionClass = useMemo(() => POSITION_CLASSES[position], [position])
+  const positionClass = React.useMemo(
+    () => POSITION_CLASSES[position],
+    [position]
+  )
 
   return (
     <div
@@ -236,7 +217,7 @@ export function ToastContainer({
 ToastContainer.displayName = 'ToastContainer'
 
 /**
- * Toast Context
+ * Toast context value type
  */
 export interface ToastContextValue {
   toasts: Toast[]
@@ -248,13 +229,15 @@ export interface ToastContextValue {
   warning: (description: string, title?: string, duration?: number) => string
 }
 
-const ToastContext = createContext<ToastContextValue | undefined>(undefined)
+const ToastContext = React.createContext<ToastContextValue | undefined>(
+  undefined
+)
 
 /**
- * Toast Provider
+ * Toast provider props
  */
 export interface ToastProviderProps {
-  children: ReactNode
+  children: React.ReactNode
   position?: ToastPosition
   defaultDuration?: number
   maxToasts?: number
@@ -266,11 +249,13 @@ export function ToastProvider({
   defaultDuration = 5000,
   maxToasts = 5,
 }: ToastProviderProps) {
-  const [toasts, setToasts] = useState<Toast[]>([])
-  const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map())
+  const [toasts, setToasts] = React.useState<Toast[]>([])
+  const timeoutRefs = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
+  )
 
   // Cleanup timeouts on unmount
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
       timeoutRefs.current.clear()
@@ -278,8 +263,7 @@ export function ToastProvider({
   }, [])
 
   // Remove toast
-  const removeToast = useCallback((id: string) => {
-    // Clear timeout if exists
+  const removeToast = React.useCallback((id: string) => {
     const timeout = timeoutRefs.current.get(id)
     if (timeout) {
       clearTimeout(timeout)
@@ -289,13 +273,12 @@ export function ToastProvider({
   }, [])
 
   // Add toast
-  const addToast = useCallback(
-    (toast: Omit<Toast, 'id'>): string => {
+  const addToast = React.useCallback(
+    (toast: Omit<Toast, 'id'>) => {
       const id = Math.random().toString(36).substring(2, 9)
       const newToast: Toast = { ...toast, id }
 
       setToasts((prev) => {
-        // Limit number of toasts
         const updated = [...prev, newToast]
         if (updated.length > maxToasts) {
           return updated.slice(-maxToasts)
@@ -303,7 +286,6 @@ export function ToastProvider({
         return updated
       })
 
-      // Auto-dismiss
       const duration = toast.duration ?? defaultDuration
       if (duration > 0) {
         const timeout = setTimeout(() => {
@@ -318,35 +300,35 @@ export function ToastProvider({
   )
 
   // Convenience methods
-  const success = useCallback(
+  const success = React.useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'success', description, title, duration })
     },
     [addToast]
   )
 
-  const error = useCallback(
+  const error = React.useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'error', description, title, duration })
     },
     [addToast]
   )
 
-  const info = useCallback(
+  const info = React.useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'info', description, title, duration })
     },
     [addToast]
   )
 
-  const warning = useCallback(
+  const warning = React.useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'warning', description, title, duration })
     },
     [addToast]
   )
 
-  const value: ToastContextValue = useMemo(
+  const value = React.useMemo(
     () => ({
       toasts,
       addToast,
@@ -375,15 +357,16 @@ export function ToastProvider({
  * useToast hook
  */
 export function useToast(): ToastContextValue {
-  const context = useContext(ToastContext)
+  const context = React.useContext(ToastContext)
   if (!context) {
-    // Graceful fallback: components should not hard-crash if a consumer forgets
-    // to add `ToastProvider` (especially in tests / embedded usage).
-    // Warn once in dev to avoid flooding test output.
+    // Graceful fallback for missing provider
     if (process.env.NODE_ENV !== 'production') {
-      ;(globalThis as any).__clarityChatToastProviderWarned ??= false
-      if (!(globalThis as any).__clarityChatToastProviderWarned) {
-        ;(globalThis as any).__clarityChatToastProviderWarned = true
+      const globalObj = globalThis as {
+        __clarityChatToastProviderWarned?: boolean
+      }
+      globalObj.__clarityChatToastProviderWarned ??= false
+      if (!globalObj.__clarityChatToastProviderWarned) {
+        globalObj.__clarityChatToastProviderWarned = true
         console.warn(
           '[Clarity Chat] ToastProvider missing; falling back to no-op toasts.'
         )
@@ -393,19 +376,19 @@ export function useToast(): ToastContextValue {
       toasts: [],
       addToast: () => '',
       removeToast: () => {},
-      success: (description: string, title?: string) => {
+      success: (description, title) => {
         toast.success(description, title)
         return ''
       },
-      error: (description: string, title?: string) => {
+      error: (description, title) => {
         toast.error(description, title)
         return ''
       },
-      info: (description: string, title?: string) => {
+      info: (description, title) => {
         toast.info(description, title)
         return ''
       },
-      warning: (description: string, title?: string) => {
+      warning: (description, title) => {
         toast.warning(description, title)
         return ''
       },
@@ -415,41 +398,19 @@ export function useToast(): ToastContextValue {
 }
 
 /**
- * Standalone toast function (without provider)
- * Useful for one-off toasts without setting up provider
- */
-// Reserved for future implementation
-// let toastContainerRoot: HTMLDivElement | null = null
-
-// function _getToastContainer(): HTMLDivElement {
-//   if (!toastContainerRoot) {
-//     toastContainerRoot = document.createElement('div')
-//     toastContainerRoot.id = 'toast-root'
-//     document.body.appendChild(toastContainerRoot)
-//   }
-//   return toastContainerRoot
-// }
-
-/**
  * Standalone toast object for fallback when ToastProvider is missing.
- * Uses appropriate console methods for visibility.
- * Note: For full toast UI, wrap your app with ToastProvider.
  */
 export const toast = {
   success: (description: string, title?: string) => {
-    // Use console.log for success - visible but not alarming
     console.log('[Toast Success]', title ? `${title}:` : '', description)
   },
   error: (description: string, title?: string) => {
-    // Use console.error for errors - ensures visibility in console
     console.error('[Toast Error]', title ? `${title}:` : '', description)
   },
   info: (description: string, title?: string) => {
-    // Use console.info for informational messages
     console.info('[Toast Info]', title ? `${title}:` : '', description)
   },
   warning: (description: string, title?: string) => {
-    // Use console.warn for warnings - orange in most consoles
     console.warn('[Toast Warning]', title ? `${title}:` : '', description)
   },
 }

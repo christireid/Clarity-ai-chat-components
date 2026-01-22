@@ -9,7 +9,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * 4. Performance Analytics Dashboard
  */
 import * as React from 'react';
-import { useChatEnhanced, PromptSuggestionsEnhanced, ConversationSummarizer, BatteryIndicator, PerformanceAnalyticsDashboard, useBatteryAware, ChatWindow, } from '@clarity-chat/react';
+import { useClarityChat, PromptSuggestionsEnhanced, ConversationSummarizer, BatteryIndicator, PerformanceAnalyticsDashboard, useBatteryAware, ChatWindow, } from '@clarity-chat/react';
 import { useFocusTrap, useEscapeKey } from '../utils/accessibility';
 /**
  * Complete Advanced Chat Application
@@ -32,7 +32,7 @@ export function AdvancedChatApplication() {
         autoOptimize: true,
     });
     // Chat state
-    const { messages, sendMessage, isLoading, error } = useChatEnhanced({
+    const { messages, append, isLoading, error } = useClarityChat({
         api: '/api/chat',
         // Apply battery optimizations
         streamingEnabled: !recommendations.reduceStreaming,
@@ -71,7 +71,7 @@ export function AdvancedChatApplication() {
             console.warn('Low FPS detected:', data.fps);
         }
     }, []);
-    return (_jsxs("div", { className: "relative flex h-screen", children: [_jsx(BatteryIndicator, { position: "top-right", showTooltip: true, showLabel: !shouldEnableBatterySaver }), _jsxs("div", { className: "flex-1 flex flex-col overflow-hidden", children: [_jsxs("header", { className: "border-b p-4 flex items-center justify-between bg-background/95 backdrop-blur-sm", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx("h1", { className: "text-xl font-bold", children: "Advanced Chat" }), shouldEnableBatterySaver && (_jsxs("div", { className: "px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-sm", children: ["Battery Saver Active (", batteryDescription, ")"] })), recommendations.level !== 'none' && (_jsxs("div", { className: "px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm", children: ["Optimizations: ", recommendations.level] }))] }), _jsxs("div", { className: "flex gap-2", children: [_jsxs("button", { onClick: () => setShowSummaryPanel(!showSummaryPanel), className: "px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors", children: [showSummaryPanel ? 'Hide' : 'Show', " Summary"] }), _jsxs("button", { onClick: () => setShowPerformancePanel(!showPerformancePanel), className: "px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors", children: [showPerformancePanel ? 'Hide' : 'Show', " Performance"] })] })] }), _jsx("div", { className: "flex-1 overflow-hidden", children: _jsx(ChatWindow, { messages: messages, isLoading: isLoading, error: error, enableAnimations: !recommendations.disableAnimations, updateInterval: recommendations.updateInterval }) }), _jsx("div", { className: "border-t p-4 bg-background", children: _jsx(PromptSuggestionsEnhanced, { messages: messages, onSelect: (suggestion) => sendMessage(suggestion.text), config: {
+    return (_jsxs("div", { className: "relative flex h-screen", children: [_jsx(BatteryIndicator, { position: "top-right", showTooltip: true, showLabel: !shouldEnableBatterySaver }), _jsxs("div", { className: "flex-1 flex flex-col overflow-hidden", children: [_jsxs("header", { className: "border-b p-4 flex items-center justify-between bg-background/95 backdrop-blur-sm", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx("h1", { className: "text-xl font-bold", children: "Advanced Chat" }), shouldEnableBatterySaver && (_jsxs("div", { className: "px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-sm", children: ["Battery Saver Active (", batteryDescription, ")"] })), recommendations.level !== 'none' && (_jsxs("div", { className: "px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm", children: ["Optimizations: ", recommendations.level] }))] }), _jsxs("div", { className: "flex gap-2", children: [_jsxs("button", { onClick: () => setShowSummaryPanel(!showSummaryPanel), className: "px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors", children: [showSummaryPanel ? 'Hide' : 'Show', " Summary"] }), _jsxs("button", { onClick: () => setShowPerformancePanel(!showPerformancePanel), className: "px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors", children: [showPerformancePanel ? 'Hide' : 'Show', " Performance"] })] })] }), _jsx("div", { className: "flex-1 overflow-hidden", children: _jsx(ChatWindow, { messages: messages, isLoading: isLoading, error: error, enableAnimations: !recommendations.disableAnimations, updateInterval: recommendations.updateInterval }) }), _jsx("div", { className: "border-t p-4 bg-background", children: _jsx(PromptSuggestionsEnhanced, { messages: messages, onSelect: (suggestion) => append({ role: 'user', content: suggestion.text }), config: {
                                 rankingModel: { type: 'hybrid' },
                                 features: {
                                     conversationContext: true,
@@ -117,7 +117,7 @@ export function MobileAdvancedChat() {
         },
         autoOptimize: true,
     });
-    const { messages, sendMessage, isLoading } = useChatEnhanced({
+    const { messages, append, isLoading } = useClarityChat({
         api: '/api/chat',
         streamingEnabled: !recommendations.reduceStreaming,
         updateInterval: recommendations.updateInterval,
@@ -160,7 +160,7 @@ export function DeveloperDashboard() {
         batterySaverThreshold: 0.2,
         autoOptimize: true,
     });
-    const { messages, sendMessage, isLoading } = useChatEnhanced({
+    const { messages, append, isLoading } = useClarityChat({
         api: '/api/chat',
     });
     const [performanceData, setPerformanceData] = React.useState(null);

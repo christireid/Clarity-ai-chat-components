@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   ConversationBranchVisualizer,
   type ConversationBranch,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof ConversationBranchVisualizer> = {
   title: 'Components/DataDisplay/ConversationBranchVisualizer',

@@ -132,7 +132,7 @@ export default function UseCompletionPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react'
 
 function Autocomplete() {
   const { completion, complete, isLoading } = useCompletion({
@@ -141,7 +141,7 @@ function Autocomplete() {
 
   const handleComplete = async (prompt: string) => {
     const result = await complete(prompt)
-    logger.debug('Completion:', result)
+    console.log('Completion:', result)
   }
 
   return (
@@ -163,7 +163,7 @@ function Autocomplete() {
           Experiment with useCompletion:
         </p>
         <CodePlayground
-          initialCode={`import { useCompletion } from '@clarity-chat/react/internal'
+          initialCode={`import { useCompletion } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -199,7 +199,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Autocomplete</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
 
 function Autocomplete() {
@@ -237,13 +237,13 @@ function Autocomplete() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Text Generation</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react'
 
 function TextGenerator() {
   const { completion, complete, isLoading, stop } = useCompletion({
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      logger.debug('Generated:', completion)
+      console.log('Generated:', completion)
     },
   })
 
@@ -266,7 +266,7 @@ function TextGenerator() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function CompletionWithProgress() {
@@ -296,7 +296,7 @@ function CompletionWithProgress() {
         <h3 className="text-xl font-semibold mt-6 mb-4">With Error Handling</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useCompletion } from '@clarity-chat/react/internal'
+          code={`import { useCompletion } from '@clarity-chat/react'
 
 function Completion() {
   const { completion, complete, error, isLoading } = useCompletion({

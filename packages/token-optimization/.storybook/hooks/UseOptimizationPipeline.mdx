@@ -1,0 +1,965 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/useOptimizationPipeline" />
+
+# useOptimizationPipeline
+
+Build custom optimization workflows combining compression, caching, and model routing. For advanced users who need fine-grained control over their optimization pipeline.
+
+## Overview
+
+`useOptimizationPipeline` is a low-level, composable hook that lets you build custom token optimization workflows. It combines three powerful features into one unified pipeline:
+
+1. **Tiered Caching** - Multi-level cache with exact, smart, and semantic matching
+2. **Markdown Compression** - Intelligent content compression with TOON optimization
+3. **Model Routing** - Automatic model selection based on complexity and cost
+
+**When to use:**
+- You need custom optimization workflows beyond what `useTokenOptimization` offers
+- You want fine-grained control over each optimization stage
+- You're building advanced AI applications with specific performance requirements
+- You need to compose optimizations in a specific order
+
+**When not to use:**
+- If you want simple, automatic optimization → use `useTokenOptimization`
+- If you only need counting → use `useTokenCount`
+- If you only need budget tracking → use `useTokenBudgetMonitor`
+- If you only need routing → use `useModelRouter`
+
+## Installation
+
+```bash
+npm install @clarity-chat/token-optimization
+```
+
+## Basic Usage
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+
+function AIChat() {
+  const pipeline = useOptimizationPipeline({
+    compressionLevel: CompressionLevel.Moderate,
+    cache: {
+      exact: { maxSize: 1000, ttl: 3600000 },
+      smart: { maxSize: 500, ttl: 3600000 },
+    },
+    router: {
+      models: [
+        {
+          id: 'gpt-4o-mini',
+          tier: 'small',
+          maxTokens: 8192,
+          costPer1MTokens: 0.15
+        },
+        {
+          id: 'gpt-4o',
+          tier: 'medium',
+          maxTokens: 128000,
+          costPer1MTokens: 2.50
+        }
+      ]
+    },
+    trackStats: true
+  })
+
+  const handleSubmit = async (userPrompt: string) => {
+    // Process through the full pipeline
+    const result = await pipeline.process(userPrompt)
+
+    // Check if we got a cached response
+    if (result.cacheHit) {
+      return result.cachedResponse
+    }
+
+    // Call AI with optimized prompt and selected model
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        model: result.selectedModelId,
+        prompt: result.processedPrompt
+      })
+    })
+
+    const aiResponse = await response.text()
+
+    // Cache the response for future requests
+    await pipeline.cacheResponse(userPrompt, aiResponse)
+
+    return aiResponse
+  }
+
+  return (
+    <div>
+      <ChatInterface onSubmit={handleSubmit} />
+      {pipeline.stats && (
+        <Stats
+          cacheHitRate={pipeline.stats.cacheHitRate}
+          tokensSaved={pipeline.stats.compressionTokensSaved}
+          costSavings={pipeline.stats.routingCostSavings}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+## API Reference
+
+### Parameters
+
+```tsx
+useOptimizationPipeline(
+  config: OptimizationPipelineConfig
+): UseOptimizationPipelineReturn
+```
+
+#### `config: OptimizationPipelineConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `cache` | `TieredCacheConfig` | `undefined` | Cache configuration (optional - disables caching if not provided) |
+| `compressionLevel` | `CompressionLevel` | `undefined` | Compression level (optional - disables compression if not provided) |
+| `router` | `ModelRouterConfig` | `undefined` | Router configuration (optional - disables routing if not provided) |
+| `trackStats` | `boolean` | `false` | Enable reactive stats tracking (triggers re-renders) |
+
+#### Cache Configuration
+
+```tsx
+cache: {
+  exact?: {
+    maxSize: number        // Maximum cache entries
+    ttl: number           // Time to live in milliseconds
+  }
+  smart?: {
+    maxSize: number
+    ttl: number
+  }
+  semantic?: {
+    maxSize: number
+    similarityThreshold: number  // 0-1, default 0.92
+  }
+}
+```
+
+#### Compression Levels
+
+```tsx
+enum CompressionLevel {
+  Low = 'low',           // ~15-25% savings, minimal quality impact
+  Moderate = 'moderate', // ~30-45% savings, good balance
+  High = 'high'         // ~50-65% savings, more aggressive
+}
+```
+
+#### Router Configuration
+
+```tsx
+router: {
+  models: ModelConfig[]
+  defaultStrategy?: RoutingStrategy
+  costWeights?: {
+    quality: number      // 0-1, importance of quality
+    speed: number        // 0-1, importance of speed
+    cost: number         // 0-1, importance of cost
+  }
+}
+
+interface ModelConfig {
+  id: string                    // Model identifier
+  tier: 'small' | 'medium' | 'large'
+  maxTokens: number            // Context window size
+  costPer1MTokens: number      // Cost per 1M tokens
+  latency?: number             // Average latency in ms
+  supportedFeatures?: string[] // Optional capabilities
+}
+```
+
+### Return Value
+
+```tsx
+{
+  // Core pipeline function
+  process: (prompt: string, options?: RoutingOptions) => Promise<PipelineResult>
+
+  // Individual optimization functions
+  cacheResponse: (prompt: string, response: string, metadata?: Record<string, unknown>) => Promise<void>
+  compress: (content: string) => CompressionResult
+  route: (prompt: string, options?: RoutingOptions) => RoutingResult | null
+
+  // Statistics and management
+  getStats: () => PipelineStats
+  resetStats: () => void
+  clearCache: () => void
+
+  // Reactive state
+  stats: PipelineStats | null    // Only updates when trackStats=true
+
+  // Feature flags
+  features: {
+    caching: boolean
+    compression: boolean
+    routing: boolean
+  }
+
+  // Status
+  isReady: boolean
+}
+```
+
+#### PipelineResult
+
+```tsx
+{
+  processedPrompt: string        // Optimized prompt (possibly compressed)
+  originalPrompt: string         // Original input
+  cacheHit: boolean             // Whether cache was hit
+  cacheResult?: TieredCacheResult
+  cachedResponse?: string       // Response from cache (if hit)
+  compressionResult?: {
+    compressed: string
+    originalSize: number
+    compressedSize: number
+    savingsPercent: number
+    estimatedTokensSaved: number
+    toonApplied: boolean
+  }
+  routingResult?: RoutingResult
+  selectedModelId?: string      // Model selected by router
+  estimatedCost?: number        // Estimated cost in USD
+  processingTime: number        // Pipeline execution time in ms
+}
+```
+
+#### PipelineStats
+
+```tsx
+{
+  totalProcessed: number              // Total prompts processed
+  cache?: CacheStats                  // Cache statistics
+  router?: RouterStats                // Router statistics
+  compressionTokensSaved: number      // Total tokens saved via compression
+  routingCostSavings: number         // Total cost saved via routing
+  cacheHitRate: number               // Overall cache hit rate (0-1)
+}
+```
+
+## Examples
+
+### Compression-Only Pipeline
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+
+function CompressionExample() {
+  const pipeline = useOptimizationPipeline({
+    compressionLevel: CompressionLevel.High,
+    trackStats: true
+  })
+
+  const handleSubmit = async (prompt: string) => {
+    const result = await pipeline.process(prompt)
+
+    console.log('Original:', result.originalPrompt.length, 'chars')
+    console.log('Compressed:', result.processedPrompt.length, 'chars')
+    console.log('Saved:', result.compressionResult?.estimatedTokensSaved, 'tokens')
+
+    // Use compressed prompt
+    return await callAI(result.processedPrompt)
+  }
+
+  return (
+    <div>
+      <ChatInput onSubmit={handleSubmit} />
+      {pipeline.stats && (
+        <p>Total tokens saved: {pipeline.stats.compressionTokensSaved}</p>
+      )}
+    </div>
+  )
+}
+```
+
+### Cache-Only Pipeline
+
+```tsx
+import { useOptimizationPipeline } from '@clarity-chat/token-optimization/react'
+
+function CacheExample() {
+  const pipeline = useOptimizationPipeline({
+    cache: {
+      exact: { maxSize: 500, ttl: 1800000 }, // 30 min
+      semantic: { maxSize: 100, similarityThreshold: 0.95 }
+    },
+    trackStats: true
+  })
+
+  const handleQuery = async (query: string) => {
+    const result = await pipeline.process(query)
+
+    if (result.cacheHit) {
+      console.log('Cache hit!', result.cacheResult?.tier)
+      return result.cachedResponse
+    }
+
+    const response = await searchDatabase(query)
+    await pipeline.cacheResponse(query, response)
+
+    return response
+  }
+
+  return (
+    <div>
+      <SearchBox onSearch={handleQuery} />
+      {pipeline.stats && (
+        <p>Cache hit rate: {(pipeline.stats.cacheHitRate * 100).toFixed(1)}%</p>
+      )}
+    </div>
+  )
+}
+```
+
+### Router-Only Pipeline
+
+```tsx
+import { useOptimizationPipeline } from '@clarity-chat/token-optimization/react'
+
+function RouterExample() {
+  const pipeline = useOptimizationPipeline({
+    router: {
+      models: [
+        {
+          id: 'gpt-4o-mini',
+          tier: 'small',
+          maxTokens: 8192,
+          costPer1MTokens: 0.15,
+          latency: 500
+        },
+        {
+          id: 'gpt-4o',
+          tier: 'medium',
+          maxTokens: 128000,
+          costPer1MTokens: 2.50,
+          latency: 1200
+        },
+        {
+          id: 'gpt-4',
+          tier: 'large',
+          maxTokens: 8192,
+          costPer1MTokens: 30.00,
+          latency: 2000
+        }
+      ],
+      costWeights: {
+        quality: 0.5,
+        speed: 0.3,
+        cost: 0.2
+      }
+    }
+  })
+
+  const handlePrompt = async (prompt: string) => {
+    const result = await pipeline.process(prompt, {
+      preferredTier: 'medium',
+      maxCostPerToken: 0.00003
+    })
+
+    console.log('Selected model:', result.selectedModelId)
+    console.log('Estimated cost:', result.estimatedCost)
+
+    return await callAI(result.selectedModelId!, prompt)
+  }
+
+  return <ChatInterface onSubmit={handlePrompt} />
+}
+```
+
+### Full Pipeline with All Features
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+
+function FullPipelineExample() {
+  const pipeline = useOptimizationPipeline({
+    cache: {
+      exact: { maxSize: 1000, ttl: 3600000 },
+      smart: { maxSize: 500, ttl: 3600000 },
+      semantic: { maxSize: 200, similarityThreshold: 0.92 }
+    },
+    compressionLevel: CompressionLevel.Moderate,
+    router: {
+      models: [
+        { id: 'gpt-4o-mini', tier: 'small', maxTokens: 8192, costPer1MTokens: 0.15 },
+        { id: 'gpt-4o', tier: 'medium', maxTokens: 128000, costPer1MTokens: 2.50 },
+        { id: 'claude-3-opus', tier: 'large', maxTokens: 200000, costPer1MTokens: 15.00 }
+      ],
+      costWeights: { quality: 0.4, speed: 0.3, cost: 0.3 }
+    },
+    trackStats: true
+  })
+
+  const handleChat = async (userMessage: string) => {
+    const result = await pipeline.process(userMessage)
+
+    // Log optimization results
+    console.log('Pipeline results:', {
+      cacheHit: result.cacheHit,
+      compressionSavings: result.compressionResult?.savingsPercent,
+      selectedModel: result.selectedModelId,
+      estimatedCost: result.estimatedCost,
+      processingTime: result.processingTime
+    })
+
+    // Return cached response if available
+    if (result.cacheHit) {
+      return result.cachedResponse!
+    }
+
+    // Call AI with optimized prompt and selected model
+    const aiResponse = await callAI(
+      result.selectedModelId!,
+      result.processedPrompt
+    )
+
+    // Cache for future requests
+    await pipeline.cacheResponse(userMessage, aiResponse, {
+      model: result.selectedModelId,
+      timestamp: Date.now()
+    })
+
+    return aiResponse
+  }
+
+  return (
+    <div>
+      <ChatUI onSubmit={handleChat} />
+      {pipeline.stats && (
+        <StatsPanel
+          totalProcessed={pipeline.stats.totalProcessed}
+          cacheHitRate={pipeline.stats.cacheHitRate}
+          tokensSaved={pipeline.stats.compressionTokensSaved}
+          costSavings={pipeline.stats.routingCostSavings}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+### Manual Pipeline Control
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+
+function ManualControlExample() {
+  const pipeline = useOptimizationPipeline({
+    compressionLevel: CompressionLevel.High,
+    cache: {
+      exact: { maxSize: 500, ttl: 3600000 }
+    },
+    router: {
+      models: [
+        { id: 'gpt-4o-mini', tier: 'small', maxTokens: 8192, costPer1MTokens: 0.15 },
+        { id: 'gpt-4o', tier: 'medium', maxTokens: 128000, costPer1MTokens: 2.50 }
+      ]
+    }
+  })
+
+  const handleCustomFlow = async (prompt: string) => {
+    // Step 1: Manually compress first
+    const compression = pipeline.compress(prompt)
+    console.log('Compressed:', compression.savingsPercent, '% savings')
+
+    // Step 2: Manually route to model
+    const routing = pipeline.route(compression.compressed, {
+      preferredTier: 'small',
+      maxCostPerToken: 0.00002
+    })
+    console.log('Selected:', routing?.selectedModel.id)
+
+    // Step 3: Call AI
+    const response = await callAI(
+      routing?.selectedModel.id ?? 'gpt-4o-mini',
+      compression.compressed
+    )
+
+    // Step 4: Manually cache
+    await pipeline.cacheResponse(prompt, response)
+
+    return response
+  }
+
+  return <ChatInterface onSubmit={handleCustomFlow} />
+}
+```
+
+### Dynamic Configuration
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+import { useState } from 'react'
+
+function DynamicConfigExample() {
+  const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>(
+    CompressionLevel.Moderate
+  )
+
+  const pipeline = useOptimizationPipeline({
+    compressionLevel,
+    cache: {
+      exact: { maxSize: 1000, ttl: 3600000 }
+    },
+    trackStats: true
+  })
+
+  const handleLevelChange = (level: CompressionLevel) => {
+    setCompressionLevel(level)
+    pipeline.resetStats() // Reset stats when changing config
+  }
+
+  return (
+    <div>
+      <select
+        value={compressionLevel}
+        onChange={(e) => handleLevelChange(e.target.value as CompressionLevel)}
+      >
+        <option value={CompressionLevel.Low}>Low Compression</option>
+        <option value={CompressionLevel.Moderate}>Moderate Compression</option>
+        <option value={CompressionLevel.High}>High Compression</option>
+      </select>
+
+      {pipeline.stats && (
+        <div>
+          <p>Tokens saved: {pipeline.stats.compressionTokensSaved}</p>
+          <p>Processed: {pipeline.stats.totalProcessed}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+### Conditional Features
+
+```tsx
+import { useOptimizationPipeline, CompressionLevel } from '@clarity-chat/token-optimization/react'
+
+function ConditionalFeaturesExample() {
+  const [enableCache, setEnableCache] = useState(true)
+  const [enableCompression, setEnableCompression] = useState(true)
+
+  const pipeline = useOptimizationPipeline({
+    cache: enableCache ? {
+      exact: { maxSize: 500, ttl: 3600000 }
+    } : undefined,
+    compressionLevel: enableCompression
+      ? CompressionLevel.Moderate
+      : undefined,
+    trackStats: true
+  })
+
+  return (
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          checked={enableCache}
+          onChange={(e) => setEnableCache(e.target.checked)}
+        />
+        Enable Caching
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={enableCompression}
+          onChange={(e) => setEnableCompression(e.target.checked)}
+        />
+        Enable Compression
+      </label>
+
+      <p>Active features:</p>
+      <ul>
+        <li>Caching: {pipeline.features.caching ? '✓' : '✗'}</li>
+        <li>Compression: {pipeline.features.compression ? '✓' : '✗'}</li>
+        <li>Routing: {pipeline.features.routing ? '✓' : '✗'}</li>
+      </ul>
+    </div>
+  )
+}
+```
+
+## Performance Considerations
+
+### Compression Levels
+
+Choose the right compression level for your use case:
+
+**Low Compression** (`CompressionLevel.Low`)
+- 15-25% token savings
+- Minimal quality impact
+- Fast processing (~1-2ms)
+- Best for: Real-time chat, high-quality requirements
+
+**Moderate Compression** (`CompressionLevel.Moderate`)
+- 30-45% token savings
+- Good quality preservation
+- Medium processing (~2-5ms)
+- Best for: General purpose, balanced needs
+
+**High Compression** (`CompressionLevel.High`)
+- 50-65% token savings
+- More aggressive optimization
+- Slower processing (~5-10ms)
+- Best for: Cost optimization, large documents
+
+### Cache Strategy
+
+Optimize cache configuration based on your access patterns:
+
+```tsx
+// High-frequency, exact matches (e.g., common queries)
+cache: {
+  exact: { maxSize: 2000, ttl: 7200000 } // 2 hours
+}
+
+// Similar questions (e.g., support chat)
+cache: {
+  exact: { maxSize: 500, ttl: 3600000 },
+  semantic: { maxSize: 200, similarityThreshold: 0.93 }
+}
+
+// Development/testing (fast iteration)
+cache: {
+  exact: { maxSize: 100, ttl: 300000 } // 5 min
+}
+```
+
+### Stats Tracking
+
+Only enable `trackStats` when you need reactive updates:
+
+```tsx
+// ✅ Good: Display stats in UI
+const pipeline = useOptimizationPipeline({
+  trackStats: true // Enables reactive stats
+})
+return <StatsDisplay stats={pipeline.stats} />
+
+// ✅ Good: Manual stats access
+const pipeline = useOptimizationPipeline({
+  trackStats: false // No re-renders
+})
+const stats = pipeline.getStats() // Call when needed
+```
+
+**Note:** `trackStats: true` triggers re-renders on every stats update. Use `getStats()` for better performance if you don't need reactive updates.
+
+### Memory Management
+
+The pipeline automatically cleans up on unmount:
+
+- Cache entries are cleared
+- Compression instances are garbage collected
+- Router state is reset
+- No manual cleanup required
+
+## Comparison with Other Hooks
+
+| Feature | useOptimizationPipeline | useTokenOptimization | useTokenCount |
+|---------|------------------------|---------------------|---------------|
+| Compression | ✅ Configurable | ✅ Automatic | ❌ |
+| Caching | ✅ Multi-tier | ✅ Simple | ❌ |
+| Model Routing | ✅ Advanced | ❌ | ❌ |
+| Manual Control | ✅ Full control | ⚠️ Limited | ❌ |
+| Stats Tracking | ✅ Detailed | ✅ Basic | ❌ |
+| Complexity | High | Low | Very Low |
+| Best for | Custom workflows | Simple optimization | Token counting |
+| Learning curve | Steep | Gentle | Minimal |
+
+**Use `useOptimizationPipeline` when:**
+- You need custom optimization workflows
+- You want fine-grained control over each stage
+- You're building advanced AI applications
+- You need to compose optimizations in specific ways
+
+**Use `useTokenOptimization` when:**
+- You want simple, automatic optimization
+- You don't need custom workflows
+- You prefer convention over configuration
+
+**Use `useTokenCount` when:**
+- You only need to count tokens
+- No optimization required
+
+## TypeScript
+
+Full TypeScript support with comprehensive types:
+
+```tsx
+import type {
+  OptimizationPipelineConfig,
+  UseOptimizationPipelineReturn,
+  PipelineResult,
+  PipelineStats,
+  CompressionResult,
+  RoutingResult,
+  CompressionLevel,
+  RoutingStrategy,
+  ModelConfig,
+  RoutingOptions,
+} from '@clarity-chat/token-optimization/react'
+
+// Configure pipeline with full type safety
+const config: OptimizationPipelineConfig = {
+  cache: {
+    exact: { maxSize: 1000, ttl: 3600000 },
+    semantic: { maxSize: 200, similarityThreshold: 0.92 }
+  },
+  compressionLevel: CompressionLevel.Moderate,
+  router: {
+    models: [
+      {
+        id: 'gpt-4o-mini',
+        tier: 'small',
+        maxTokens: 8192,
+        costPer1MTokens: 0.15
+      }
+    ]
+  },
+  trackStats: true
+}
+
+const pipeline: UseOptimizationPipelineReturn = useOptimizationPipeline(config)
+
+// Result type inference
+const result: PipelineResult = await pipeline.process('Hello')
+
+// Stats type inference
+const stats: PipelineStats = pipeline.getStats()
+```
+
+## Common Patterns
+
+### Optimistic Caching
+
+```tsx
+function OptimisticCaching() {
+  const pipeline = useOptimizationPipeline({
+    cache: {
+      exact: { maxSize: 1000, ttl: 3600000 }
+    }
+  })
+
+  const handleSubmit = async (prompt: string) => {
+    const result = await pipeline.process(prompt)
+
+    if (result.cacheHit) {
+      // Show cached result immediately
+      showResponse(result.cachedResponse!)
+      return
+    }
+
+    // Show loading state while fetching
+    showLoading()
+    const response = await callAI(prompt)
+
+    // Cache for next time
+    await pipeline.cacheResponse(prompt, response)
+    showResponse(response)
+  }
+
+  return <ChatUI onSubmit={handleSubmit} />
+}
+```
+
+### Progressive Enhancement
+
+```tsx
+function ProgressiveEnhancement() {
+  const pipeline = useOptimizationPipeline({
+    compressionLevel: CompressionLevel.Low, // Start conservative
+    trackStats: true
+  })
+
+  useEffect(() => {
+    // Increase compression if savings are good
+    if (pipeline.stats && pipeline.stats.totalProcessed > 100) {
+      const avgSavings = pipeline.stats.compressionTokensSaved /
+                        pipeline.stats.totalProcessed
+
+      if (avgSavings > 50) {
+        // Can increase compression level dynamically
+        console.log('Good savings, consider increasing compression')
+      }
+    }
+  }, [pipeline.stats])
+
+  return <ChatUI />
+}
+```
+
+### Cost-Aware Routing
+
+```tsx
+function CostAwareRouting() {
+  const [budget, setBudget] = useState(0.10) // $0.10 max
+
+  const pipeline = useOptimizationPipeline({
+    router: {
+      models: [
+        { id: 'gpt-4o-mini', tier: 'small', maxTokens: 8192, costPer1MTokens: 0.15 },
+        { id: 'gpt-4o', tier: 'medium', maxTokens: 128000, costPer1MTokens: 2.50 }
+      ]
+    },
+    trackStats: true
+  })
+
+  const handlePrompt = async (prompt: string) => {
+    const result = await pipeline.process(prompt, {
+      maxCostPerToken: budget / 1000000 // Convert to per-token cost
+    })
+
+    if (result.estimatedCost! > budget) {
+      throw new Error('Exceeds budget')
+    }
+
+    return await callAI(result.selectedModelId!, result.processedPrompt)
+  }
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={budget}
+        onChange={(e) => setBudget(parseFloat(e.target.value))}
+        step="0.01"
+      />
+      <ChatUI onSubmit={handlePrompt} />
+    </div>
+  )
+}
+```
+
+### A/B Testing Optimizations
+
+```tsx
+function ABTestOptimizations() {
+  const variant = Math.random() > 0.5 ? 'A' : 'B'
+
+  const pipeline = useOptimizationPipeline({
+    compressionLevel: variant === 'A'
+      ? CompressionLevel.Moderate
+      : CompressionLevel.High,
+    trackStats: true
+  })
+
+  useEffect(() => {
+    // Log results for analysis
+    if (pipeline.stats && pipeline.stats.totalProcessed > 0) {
+      analytics.track('optimization_variant', {
+        variant,
+        tokensSaved: pipeline.stats.compressionTokensSaved,
+        avgSavings: pipeline.stats.compressionTokensSaved /
+                    pipeline.stats.totalProcessed
+      })
+    }
+  }, [pipeline.stats])
+
+  return <ChatUI />
+}
+```
+
+## Troubleshooting
+
+### Pipeline not processing
+
+Make sure you're awaiting the process call:
+
+```tsx
+// ❌ Wrong
+const result = pipeline.process(prompt)
+console.log(result.processedPrompt) // undefined
+
+// ✅ Correct
+const result = await pipeline.process(prompt)
+console.log(result.processedPrompt) // works
+```
+
+### Stats not updating
+
+Enable `trackStats` for reactive updates:
+
+```tsx
+// ❌ Wrong - stats will always be null
+const pipeline = useOptimizationPipeline({
+  compressionLevel: CompressionLevel.Moderate
+})
+console.log(pipeline.stats) // null
+
+// ✅ Correct
+const pipeline = useOptimizationPipeline({
+  compressionLevel: CompressionLevel.Moderate,
+  trackStats: true
+})
+console.log(pipeline.stats) // PipelineStats
+```
+
+### Features not enabled
+
+Check that you provided configuration:
+
+```tsx
+// ❌ Wrong - compression disabled
+const pipeline = useOptimizationPipeline({})
+console.log(pipeline.features.compression) // false
+
+// ✅ Correct
+const pipeline = useOptimizationPipeline({
+  compressionLevel: CompressionLevel.Moderate
+})
+console.log(pipeline.features.compression) // true
+```
+
+### Cache not working
+
+Verify cache configuration is valid:
+
+```tsx
+// ❌ Wrong - invalid config
+const pipeline = useOptimizationPipeline({
+  cache: { maxSize: 100 } // Missing ttl
+})
+
+// ✅ Correct
+const pipeline = useOptimizationPipeline({
+  cache: {
+    exact: { maxSize: 100, ttl: 3600000 }
+  }
+})
+```
+
+### Router not selecting model
+
+Ensure routing options match model constraints:
+
+```tsx
+// ❌ Wrong - no model matches maxCostPerToken
+const result = await pipeline.process(prompt, {
+  maxCostPerToken: 0.00000001 // Too low
+})
+console.log(result.selectedModelId) // undefined
+
+// ✅ Correct
+const result = await pipeline.process(prompt, {
+  maxCostPerToken: 0.00003 // Reasonable
+})
+console.log(result.selectedModelId) // 'gpt-4o-mini'
+```
+
+## See Also
+
+- **[useTokenOptimization](/docs/hooks-usetokenoptimization--docs)** - Simple, automatic optimization
+- **[useModelRouter](/docs/hooks-usemodelrouter--docs)** - Standalone model routing
+- **[useTokenCount](/docs/hooks-usetokencount--docs)** - Basic token counting
+- **[Compression Guide](/docs/guides-compression--docs)** - Deep dive into compression strategies
+- **[Caching Guide](/docs/guides-caching--docs)** - Cache optimization patterns

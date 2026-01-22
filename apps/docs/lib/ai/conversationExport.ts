@@ -5,8 +5,8 @@
  * Supports markdown and JSON export with proper formatting.
  */
 
-// Re-export copyToClipboard from canonical source
-export { copyToClipboard } from '@clarity-chat/utils'
+// Re-export copyToClipboard from local demos utils
+export { copyToClipboard } from '@/lib/demos/utils'
 
 export interface ExportMessage {
   role: 'user' | 'assistant' | 'system'
@@ -258,7 +258,7 @@ export function downloadConversation(
   URL.revokeObjectURL(url)
 }
 
-// copyToClipboard is now imported from @clarity-chat/utils
+// copyToClipboard is re-exported from @/lib/demos/utils
 
 /**
  * Get export statistics

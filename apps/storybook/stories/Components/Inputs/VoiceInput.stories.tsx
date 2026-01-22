@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { VoiceInput, InlineVoiceInput } from '@clarity-chat/react/internal'
+import { VoiceInput, InlineVoiceInput } from '@clarity-chat/react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 

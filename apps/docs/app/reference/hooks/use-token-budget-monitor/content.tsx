@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   ToastProvider,
   useTokenBudgetMonitor,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -234,7 +234,7 @@ const tokenBudgetConfigProps: Prop[] = [
     type: 'boolean',
     default: 'false',
     description:
-      'Use accurate tokenization (slower but precise). Requires js-tiktoken.',
+      'Use accurate tokenization (slower but precise). Uses @clarity-chat/token-optimization.',
   },
 ]
 
@@ -357,7 +357,7 @@ render(<Example />)`}
         <h2 id="import">Import</h2>
 
         <EnhancedCodeBlock
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
 import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResult } from '@clarity-chat/react'`}
           language="tsx"
         />
@@ -369,7 +369,7 @@ import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResul
         <ComponentPreview
           title="Basic Token Budget Monitor"
           description="Monitor token usage with warnings and critical alerts"
-          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react/internal'
+          code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
 import { useEffect } from 'react'
 
 function BasicMonitor() {
@@ -475,7 +475,7 @@ function BasicMonitor() {
         <ul>
           <li>
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             - Comprehensive token optimization
           </li>
@@ -491,7 +491,7 @@ function BasicMonitor() {
 
         <Pagination
           previous={{
-            title: 'useTokenOptimizationEnhanced',
+            title: 'useTokenOptimization',
             href: '/reference/hooks/use-token-optimization-enhanced',
           }}
           next={{

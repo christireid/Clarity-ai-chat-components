@@ -5,7 +5,7 @@
  * Can save 30-40% through batch discounts and reduced overhead.
  */
 
-export interface BatchRequest<T = any> {
+export interface BatchRequest<T> {
   /** Unique request ID */
   id: string
   /** Request data */
@@ -18,7 +18,7 @@ export interface BatchRequest<T = any> {
   tags?: string[]
 }
 
-export interface BatchResult<T = any, R = any> {
+export interface BatchResult<T, R> {
   /** Request ID */
   id: string
   /** Request data */
@@ -31,7 +31,7 @@ export interface BatchResult<T = any, R = any> {
   processingTime: number
 }
 
-export interface BatcherOptions<T = any, R = any> {
+export interface BatcherOptions<T, R> {
   /** Maximum batch size */
   maxBatchSize?: number
   /** Maximum wait time before processing (ms) */

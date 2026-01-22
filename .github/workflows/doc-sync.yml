@@ -1,0 +1,104 @@
+# Documentation Sync Check
+# Ensures documentation stays in sync with code changes
+
+name: Documentation Sync Check
+
+on:
+  pull_request:
+    paths:
+      - 'packages/token-optimization/src/**/*.ts'
+      - 'packages/token-optimization/src/**/*.tsx'
+      - 'packages/token-optimization/README.md'
+      - 'packages/token-optimization/examples/**'
+
+jobs:
+  check-docs:
+    name: Check Documentation Sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check
+        working-directory: packages/token-optimization
+        run: pnpm typecheck
+
+      - name: Documentation sync check
+        working-directory: packages/token-optimization
+        run: pnpm doc:check
+        continue-on-error: true
+        id: doc-check
+
+      - name: Verify examples compile
+        working-directory: packages/token-optimization
+        run: pnpm examples:typecheck
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: packages/token-optimization
+        run: pnpm test --run
+
+      - name: Comment on PR if docs need attention
+        if: steps.doc-check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `## Documentation Sync Check
+
+            Some documentation may need updating to match code changes.
+
+            **Actions to take:**
+            1. Run \`pnpm doc:check\` locally to see details
+            2. Run \`pnpm doc:sync\` to auto-fix where possible
+            3. Manually update any remaining documentation
+
+            **Common fixes:**
+            - Add JSDoc comments to new exported functions
+            - Update README examples if APIs changed
+            - Update example files if function signatures changed
+
+            See the workflow logs for specific details.`;
+
+            // Check if comment already exists
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(
+              c => c.body?.includes('Documentation Sync Check')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: message,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: message,
+              });
+            }

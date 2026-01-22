@@ -315,7 +315,7 @@ function RAGDocumentManager() {
             context={doc}
             onToggle={toggleActive}
             onRemove={removeDocument}
-            onPreview={(ctx) => logger.debug('Preview:', ctx)}
+            onPreview={(ctx) => console.log('Preview:', ctx)}
             showActions={true}
           />
         ))}
@@ -403,7 +403,7 @@ render(<RAGDocumentManager />)`}
       <section className="docs-section">
         <h2>TypeScript</h2>
         <pre>
-          <code>{`import { ContextCard, type ContextCardProps, type Context } from '@clarity-chat/react/internal'
+          <code>{`import { ContextCard, type ContextCardProps, type Context } from '@clarity-chat/react'
 
 // Full type definition
 interface ContextCardProps {

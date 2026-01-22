@@ -92,7 +92,7 @@ export function Draggable({
       className={cn(
         'touch-none',
         !disabled && 'cursor-grab active:cursor-grabbing',
-        isDragging && 'shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
+        isDragging && 'shadow-2xl',
         className
       )}
       data-drag-id={dragId}

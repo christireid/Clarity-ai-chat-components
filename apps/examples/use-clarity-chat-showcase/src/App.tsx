@@ -11,7 +11,7 @@
 
 import * as React from 'react'
 import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
-import { convertCoreMessagesToMessages } from '@clarity-chat/react/internal'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react'
 import { Button, Card, Badge } from '@clarity-chat/primitives'
 
 const memoryConfig = {

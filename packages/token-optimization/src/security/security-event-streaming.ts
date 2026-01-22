@@ -10,7 +10,12 @@ export interface SecurityStreamEvent extends SecurityEvent {
   id: string
   timestamp: Date
   severity: 'low' | 'medium' | 'high' | 'critical'
-  category: 'threat_detected' | 'rate_limited' | 'quarantined' | 'compliance_violation' | 'system_error'
+  category:
+    | 'threat_detected'
+    | 'rate_limited'
+    | 'quarantined'
+    | 'compliance_violation'
+    | 'system_error'
   metadata?: Record<string, any>
 }
 
@@ -45,13 +50,13 @@ export class SecurityEventStreamer extends EventEmitter {
     eventsPerHour: 0,
     subscribers: 0,
     queueSize: 0,
-    lastEvent: null
+    lastEvent: null,
   }
-  
+
   private metricsInterval: NodeJS.Timeout | null = null
   private readonly MAX_QUEUE_SIZE = 10000
   private readonly BATCH_SIZE = 100
-  
+
   constructor() {
     super()
     this.startMetricsCollection()
@@ -61,18 +66,18 @@ export class SecurityEventStreamer extends EventEmitter {
   async streamEvent(event: SecurityStreamEvent): Promise<void> {
     // Add to queue for processing
     this.eventQueue.push(event)
-    
+
     // Trim queue if it gets too large (prevent memory issues)
     if (this.eventQueue.length > this.MAX_QUEUE_SIZE) {
       this.eventQueue = this.eventQueue.slice(-this.MAX_QUEUE_SIZE)
     }
-    
+
     // Update metrics
     this.updateMetrics(event)
-    
+
     // Notify subscribers
     await this.notifySubscribers(event)
-    
+
     // Emit for external listeners
     this.emit('security_event', event)
   }
@@ -81,8 +86,10 @@ export class SecurityEventStreamer extends EventEmitter {
   subscribe(subscriber: StreamSubscriber): void {
     this.subscribers.set(subscriber.id, subscriber)
     this.metrics.subscribers = this.subscribers.size
-    
-    console.log(`[SECURITY STREAM] New subscriber: ${subscriber.name} (${subscriber.id})`)
+
+    console.log(
+      `[SECURITY STREAM] New subscriber: ${subscriber.name} (${subscriber.id})`
+    )
   }
 
   // Unsubscribe from security events
@@ -91,8 +98,10 @@ export class SecurityEventStreamer extends EventEmitter {
     if (subscriber) {
       this.subscribers.delete(subscriberId)
       this.metrics.subscribers = this.subscribers.size
-      
-      console.log(`[SECURITY STREAM] Unsubscribed: ${subscriber.name} (${subscriberId})`)
+
+      console.log(
+        `[SECURITY STREAM] Unsubscribed: ${subscriber.name} (${subscriberId})`
+      )
     }
   }
 
@@ -101,27 +110,30 @@ export class SecurityEventStreamer extends EventEmitter {
     if (this.eventQueue.length === 0) return
 
     const eventsToProcess = this.eventQueue.splice(0, this.BATCH_SIZE)
-    
+
     for (const event of eventsToProcess) {
       await this.notifySubscribers(event)
     }
-    
+
     this.metrics.queueSize = this.eventQueue.length
   }
 
   private async notifySubscribers(event: SecurityStreamEvent): Promise<void> {
     const notifications: Promise<void>[] = []
-    
+
     for (const subscriber of this.subscribers.values()) {
       if (this.shouldNotifySubscriber(subscriber, event)) {
         try {
           notifications.push(Promise.resolve(subscriber.callback(event)))
         } catch (error) {
-          console.error(`[SECURITY STREAM] Error notifying subscriber ${subscriber.id}:`, error)
+          console.error(
+            `[SECURITY STREAM] Error notifying subscriber ${subscriber.id}:`,
+            error
+          )
         }
       }
     }
-    
+
     // Wait for all notifications to complete
     try {
       await Promise.allSettled(notifications)
@@ -130,24 +142,36 @@ export class SecurityEventStreamer extends EventEmitter {
     }
   }
 
-  private shouldNotifySubscriber(subscriber: StreamSubscriber, event: SecurityStreamEvent): boolean {
+  private shouldNotifySubscriber(
+    subscriber: StreamSubscriber,
+    event: SecurityStreamEvent
+  ): boolean {
     if (!subscriber.filter) return true
-    
+
     // Check severity filter
-    if (subscriber.filter.severity && !subscriber.filter.severity.includes(event.severity)) {
+    if (
+      subscriber.filter.severity &&
+      !subscriber.filter.severity.includes(event.severity)
+    ) {
       return false
     }
-    
+
     // Check category filter
-    if (subscriber.filter.category && !subscriber.filter.category.includes(event.category)) {
+    if (
+      subscriber.filter.category &&
+      !subscriber.filter.category.includes(event.category)
+    ) {
       return false
     }
-    
+
     // Check userId filter
-    if (subscriber.filter.userId && !subscriber.filter.userId.includes(event.userId || '')) {
+    if (
+      subscriber.filter.userId &&
+      !subscriber.filter.userId.includes(event.userId || '')
+    ) {
       return false
     }
-    
+
     return true
   }
 
@@ -169,11 +193,17 @@ export class SecurityEventStreamer extends EventEmitter {
     const oneSecondAgo = now - 1000
     const oneMinuteAgo = now - 60000
     const oneHourAgo = now - 3600000
-    
-    const recentEvents = this.eventQueue.filter(e => e.timestamp.getTime() > oneSecondAgo)
-    const recentMinuteEvents = this.eventQueue.filter(e => e.timestamp.getTime() > oneMinuteAgo)
-    const recentHourEvents = this.eventQueue.filter(e => e.timestamp.getTime() > oneHourAgo)
-    
+
+    const recentEvents = this.eventQueue.filter(
+      (e) => e.timestamp.getTime() > oneSecondAgo
+    )
+    const recentMinuteEvents = this.eventQueue.filter(
+      (e) => e.timestamp.getTime() > oneMinuteAgo
+    )
+    const recentHourEvents = this.eventQueue.filter(
+      (e) => e.timestamp.getTime() > oneHourAgo
+    )
+
     this.metrics.eventsPerSecond = recentEvents.length
     this.metrics.eventsPerMinute = recentMinuteEvents.length
     this.metrics.eventsPerHour = recentHourEvents.length
@@ -196,18 +226,17 @@ export class SecurityEventStreamer extends EventEmitter {
       clearInterval(this.metricsInterval)
       this.metricsInterval = null
     }
-    
+
     this.subscribers.clear()
     this.eventQueue = []
     this.removeAllListeners()
-    
+
     console.log('[SECURITY STREAM] Event streamer shutdown complete')
   }
 }
 
 // Pre-built subscribers for common use cases
 export class SecurityStreamSubscribers {
-  
   // Console logger subscriber
   static consoleLogger(): StreamSubscriber {
     return {
@@ -215,7 +244,7 @@ export class SecurityStreamSubscribers {
       name: 'Console Logger',
       callback: async (event: SecurityStreamEvent) => {
         const logMessage = `[SECURITY EVENT] ${event.severity.toUpperCase()} - ${event.category}: ${event.type}`
-        
+
         switch (event.severity) {
           case 'critical':
             console.error(logMessage, event)
@@ -226,59 +255,101 @@ export class SecurityStreamSubscribers {
           default:
             console.log(logMessage, event)
         }
-      }
+      },
     }
   }
 
   // Alert system subscriber
-  static alertSystem(alertCallback: (event: SecurityStreamEvent) => Promise<void>): StreamSubscriber {
+  static alertSystem(
+    alertCallback: (event: SecurityStreamEvent) => Promise<void>
+  ): StreamSubscriber {
     return {
       id: 'alert-system',
       name: 'Alert System',
       filter: {
-        severity: ['high', 'critical']
+        severity: ['high', 'critical'],
       },
-      callback: alertCallback
+      callback: alertCallback,
     }
   }
 
   // Audit logger subscriber
-  static auditLogger(logCallback: (event: SecurityStreamEvent) => Promise<void>): StreamSubscriber {
+  static auditLogger(
+    logCallback: (event: SecurityStreamEvent) => Promise<void>
+  ): StreamSubscriber {
     return {
       id: 'audit-logger',
       name: 'Audit Logger',
-      callback: logCallback
+      callback: logCallback,
     }
   }
 
   // Metrics collector subscriber
-  static metricsCollector(metricsCallback: (event: SecurityStreamEvent) => Promise<void>): StreamSubscriber {
+  static metricsCollector(
+    metricsCallback: (event: SecurityStreamEvent) => Promise<void>
+  ): StreamSubscriber {
     return {
       id: 'metrics-collector',
       name: 'Metrics Collector',
-      callback: metricsCallback
+      callback: metricsCallback,
     }
   }
 
   // Compliance monitor subscriber
-  static complianceMonitor(complianceCallback: (event: SecurityStreamEvent) => Promise<void>): StreamSubscriber {
+  static complianceMonitor(
+    complianceCallback: (event: SecurityStreamEvent) => Promise<void>
+  ): StreamSubscriber {
     return {
       id: 'compliance-monitor',
       name: 'Compliance Monitor',
       filter: {
-        category: ['compliance_violation']
+        category: ['compliance_violation'],
       },
-      callback: complianceCallback
+      callback: complianceCallback,
     }
   }
 }
 
-// Factory function for creating event streamer
+/**
+ * Create a new security event streamer instance.
+ *
+ * Factory function that initializes a SecurityEventStreamer with
+ * metrics collection and event processing capabilities.
+ *
+ * @returns A new SecurityEventStreamer instance ready for subscriptions
+ *
+ * @example
+ * ```typescript
+ * const streamer = createSecurityEventStreamer()
+ * streamer.subscribe(SecurityStreamSubscribers.consoleLogger())
+ * await streamer.streamEvent(event)
+ * ```
+ */
 export function createSecurityEventStreamer(): SecurityEventStreamer {
   return new SecurityEventStreamer()
 }
 
-// Integration helper for security managers
+/**
+ * Convert a basic SecurityEvent into a streaming-compatible event.
+ *
+ * Enriches a security event with streaming metadata including unique ID,
+ * timestamp, severity level, and category classification.
+ *
+ * @param originalEvent - The original SecurityEvent to transform
+ * @param category - Event category for filtering and routing
+ * @param severity - Severity level for prioritization
+ * @returns A SecurityStreamEvent ready for streaming
+ *
+ * @example
+ * ```typescript
+ * const streamEvent = createStreamingSecurityEvent(
+ *   securityEvent,
+ *   'threat_detected',
+ *   'high'
+ * )
+ * await streamer.streamEvent(streamEvent)
+ * ```
+ */
 export function createStreamingSecurityEvent(
   originalEvent: SecurityEvent,
   category: SecurityStreamEvent['category'],
@@ -293,7 +364,7 @@ export function createStreamingSecurityEvent(
     metadata: {
       originalLength: originalEvent.originalLength,
       processedLength: originalEvent.processedLength,
-      checks: originalEvent.checks
-    }
+      checks: originalEvent.checks,
+    },
   }
 }

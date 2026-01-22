@@ -1018,7 +1018,7 @@ async function chatWithFunctions(message: string) {
   return assistantMessage.content
 }`,
     'cost-tracking': `import { OpenAI } from 'openai'
-import { encoding_for_model } from 'tiktoken'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -1043,11 +1043,14 @@ const tracker: CostTracker = {
   requests: 0
 }
 
+// Create token counter for accurate counting
+const tokenCounter = new AccurateTokenCounter({
+  model: 'gpt-4',
+  enableCaching: true
+})
+
 function countTokens(text: string, model: string): number {
-  const enc = encoding_for_model(model as any)
-  const tokens = enc.encode(text)
-  enc.free()
-  return tokens.length
+  return tokenCounter.count(text)
 }
 
 async function chatWithTracking(message: string, model = 'gpt-4-turbo') {

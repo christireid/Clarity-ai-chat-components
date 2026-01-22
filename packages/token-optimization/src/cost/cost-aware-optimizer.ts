@@ -6,6 +6,7 @@
  */
 
 import type { SecurityContext } from '../types'
+import { Logger } from '../observability/index.js'
 
 export interface CostAwareConfig {
   totalBudget: number // Total budget in dollars
@@ -84,8 +85,15 @@ export class CostAwareOptimizer {
   private costHistory: CostEstimate[] = []
   private budgetTracking: Map<string, number> = new Map()
   private costPredictions: Map<string, number> = new Map()
+  private logger: Logger
 
   constructor(private config: CostAwareConfig) {
+    this.logger = new Logger({
+      logLevel: 'info',
+      structuredLogging: true,
+      metricsEnabled: false,
+      tracingEnabled: false,
+    })
     this.initializeCostPredictions()
   }
 
@@ -142,10 +150,10 @@ export class CostAwareOptimizer {
         const estimate = await this.estimateTechniqueCost(technique, content)
         estimates.push(estimate)
       } catch (error) {
-        console.warn(
-          `Failed to estimate cost for technique ${technique}:`,
-          error
-        )
+        this.logger.warn('Failed to estimate cost for technique', {
+          technique,
+          error,
+        })
       }
     }
 
@@ -739,11 +747,20 @@ export class CostAwareOptimizer {
     const budgetStatus = this.getBudgetStatus()
 
     if (budgetStatus.budgetStatus === 'warning') {
-      console.warn('[COST WARNING] Budget utilization at 80%')
+      this.logger.warn('Budget utilization at 80%', {
+        utilization: budgetStatus.budgetUtilization,
+        remaining: budgetStatus.remainingBudget,
+      })
     } else if (budgetStatus.budgetStatus === 'critical') {
-      console.error('[COST CRITICAL] Budget utilization at 95%')
+      this.logger.error('Budget utilization at 95%', {
+        utilization: budgetStatus.budgetUtilization,
+        remaining: budgetStatus.remainingBudget,
+      })
     } else if (budgetStatus.budgetStatus === 'emergency') {
-      console.error('[COST EMERGENCY] Budget exhausted')
+      this.logger.error('Budget exhausted', {
+        utilization: budgetStatus.budgetUtilization,
+        used: budgetStatus.usedBudget,
+      })
     }
   }
 

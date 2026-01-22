@@ -1,49 +1,130 @@
 # Hooks Overview
 
-Clarity Chat exposes ergonomic React hooks that encapsulate common chat workflows, state machines, and side effects. Hooks are type-safe and integrate seamlessly with streaming model adapters.
+Clarity Chat provides a comprehensive set of React hooks organized in a three-tier architecture. Hooks are type-safe and integrate seamlessly with streaming model adapters.
 
-## `useChat`
+## Hook Architecture
 
-Manages end-to-end chat state, including optimistic updates, retries, and persisted history.
+| Tier | Purpose | Examples |
+|------|---------|----------|
+| **Top-Level** | Drop-in ready, full features | `useClarityChat`, `useClarityChatWithTools` |
+| **Mid-Level** | Building blocks for custom implementations | `useAssistant`, `useCompletion`, `useStreaming` |
+| **Low-Level** | Foundational utilities | `useDebounce`, `useThrottle`, `useSafeTimeout` |
+
+## Top-Level Hooks (Recommended)
+
+### `useClarityChat` - Flagship Hook
+
+**The primary hook for production chat applications** with memory integration, streaming, and enterprise features.
+
+**Key Features:**
+- ✅ **Memory Integration**: Sliding-window, semantic-chunks, or vector-store strategies
+- ✅ **Race-Condition-Free**: Stable async memory operations
+- ✅ **Transport Selection**: SSE or WebSocket streaming
+- ✅ **Context Enrichment**: Automatic memory context injection
+- ✅ **Error Recovery**: Built-in retry logic and error classification
 
 ```tsx
-import { ChatWindow, useChat } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
-export function SupportWidget() {
+export function EnterpriseChat() {
   const {
     messages,
+    append,
     isLoading,
-    sendMessage,
-    regenerateLastResponse,
-  } = useChat({ chatId: 'support', model: 'gpt-4o-mini' })
+    memoryInfo,
+    contextSummary,
+    error
+  } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      strategy: 'vector-store', // sliding-window | semantic-chunks | vector-store
+      maxTokens: 4000
+    },
+    transport: 'sse', // 'sse' | 'websocket'
+    tokenOptimization: { enabled: true },
+  })
 
   return (
     <ChatWindow
       messages={messages}
       isLoading={isLoading}
-      onSendMessage={content => sendMessage({ role: 'user', content })}
-      onRegenerate={regenerateLastResponse}
+      onSendMessage={(content) => append({ role: 'user', content })}
+      header={{
+        show: true,
+        title: 'AI Assistant',
+        showMessageCount: true
+      }}
+      messageActions={{
+        onFeedback: (id, type) => console.log('Feedback:', id, type),
+        onRetry: (id) => console.log('Retry:', id)
+      }}
     />
   )
 }
 ```
 
-## `useStreamingChat`
+### Memory Strategies
 
-Helps orchestrate live token streaming via Server-Sent Events or WebSockets with built-in abort and timeout management.
+| Strategy | Use Case | Performance | Context Quality |
+|----------|----------|-------------|-----------------|
+| `sliding-window` | Short conversations | ⚡ Fast | 📝 Recent context |
+| `semantic-chunks` | Medium conversations | ⚖️ Balanced | 🎯 Relevant chunks |
+| `vector-store` | Enterprise/long-term | 🐌 Slower | 🔍 Semantic search |
 
-## `useMessageOperations`
+### `useClarityChatWithTools`
 
-Provides helpers for branching, editing, retrying, and tagging messages. Ideal for human-in-the-loop review flows.
+Extended chat hook with integrated tool calling support.
 
-## `useComposer`
+```tsx
+import { useClarityChatWithTools } from '@clarity-chat/react'
 
-Drives the chat composer UI, exposing rich event callbacks for mention suggestions, file uploads, and slash commands.
+const { messages, append, toolInvocations } = useClarityChatWithTools({
+  api: '/api/chat',
+  tools: [weatherTool, calculatorTool],
+  onToolCall: async (tool, args) => {
+    // Handle tool execution
+  },
+})
+```
+
+## Mid-Level Hooks
+
+### `useAssistant`
+
+For AI assistants with tool calling, status tracking, and streaming support.
+
+### `useCompletion`
+
+For single-turn text completions with caching and progress tracking.
+
+### `useStreaming`
+
+Low-level streaming primitive for custom streaming implementations.
+
+### `useStreamingChat`
+
+Orchestrates live token streaming with abort/timeout management for complex streaming scenarios.
+
+## Utility Hooks
+
+### `useMessageOperations`
+
+Manages end-to-end chat state for simpler use cases without memory integration.
+
+### `useTokenTracker`
+
+Track token usage and estimate costs for AI API calls.
+
+### `useKeyboardShortcuts`
+
+Register keyboard shortcuts with cross-platform modifier support.
 
 ## Best Practices
 
-- Scope hooks per conversation to avoid cross-talk between concurrent chats.
-- Combine `useChat` with `ModelSelector` to dynamically switch adapters based on operator input.
-- Pair `useStreamingChat` with `StreamingMessage` to reflect gradual completions without blocking UI.
+- Start with top-level hooks (`useClarityChat`) for most use cases
+- Use mid-level hooks when you need more control over specific features
+- Scope hooks per conversation to avoid cross-talk between concurrent chats
+- Pair streaming hooks with `StreamingMessage` to reflect gradual completions
 
 Continue with the [Message Handling](/guide/messages) topic to learn how to model roles, attachments, and metadata.

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
-import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
+import { Card, Button, Badge, cn, glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
 import {
   duration,
   DURATION_SECONDS as durations,
@@ -18,15 +18,98 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
-import {
-  useUIEnhancements,
-  getEnhancedClassName,
-} from '../../contexts/ui-enhancements'
-import {
-  usePerformanceMonitoring,
-  useRenderOptimization,
-  use60FPSAnimation,
-} from '../../utils/performance'
+// Performance and UI enhancement hooks removed to avoid conflicts
+// These can be re-added individually if specific optimizations are needed
+
+// Grouped prop interfaces for better API organization
+export interface ChatWindowMessageActions {
+  /** Callback when message is copied */
+  onCopy?: (messageId: string, content: string) => void
+  /** Callback when feedback is given */
+  onFeedback?: (
+    messageId: string,
+    type: 'up' | 'down',
+    comment?: string
+  ) => void
+  /** Callback when retry is requested */
+  onRetry?: (messageId: string) => void
+  /** Callback when message is edited (starts edit mode) */
+  onEdit?: (messageId: string) => void
+  /** Callback when message is regenerated */
+  onRegenerate?: (messageId: string) => void
+  /** Callback when message is deleted */
+  onDelete?: (messageId: string) => void
+}
+
+export interface ChatWindowEditActions {
+  /** ID of message currently being edited (for inline editing) */
+  editingMessageId?: string | null
+  /** Callback when edit is saved - receives message ID and new content */
+  onSaveEdit?: (messageId: string, newContent: string) => void
+  /** Callback when edit is cancelled */
+  onCancelEdit?: (messageId: string) => void
+}
+
+export interface ChatWindowHeaderConfig {
+  /** Show header with session info */
+  show?: boolean
+  /** Session title */
+  title?: string
+  /** Session subtitle or description */
+  subtitle?: string
+  /** Header actions */
+  actions?: React.ReactNode
+  /** Show message count badge */
+  showMessageCount?: boolean
+}
+
+export interface ChatWindowActions {
+  /** Enable export functionality */
+  onExport?: () => void
+  /** Enable clear chat functionality */
+  onClear?: () => void
+}
+
+export interface ChatWindowErrorHandling {
+  /**
+   * Error message to display (e.g., network errors).
+   * Shows a banner above the chat when set.
+   */
+  error?: string | null
+  /**
+   * Callback to retry after an error.
+   * When provided along with `error`, shows a "Retry" button.
+   */
+  onRetry?: () => void
+  /**
+   * Callback to dismiss the error banner.
+   * When provided, shows a dismiss button on the error banner.
+   */
+  onDismissError?: () => void
+}
+
+export interface ChatWindowPromptConfig {
+  /**
+   * Starter prompts to show in empty state (2024 AI UX trend)
+   * These help users discover what the chat can do
+   */
+  starterPrompts?: PromptSuggestion[]
+  /**
+   * Suggested follow-up prompts shown after assistant messages
+   * Helps maintain conversation flow
+   */
+  followUpSuggestions?: PromptSuggestion[]
+  /**
+   * Whether to show starter prompts in empty state
+   * @default true when starterPrompts is provided
+   */
+  showStarterPrompts?: boolean
+  /**
+   * Whether to show follow-up suggestions after last assistant message
+   * @default true when followUpSuggestions is provided
+   */
+  showFollowUpSuggestions?: boolean
+}
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -55,81 +138,412 @@ export interface ChatWindowProps {
    * ```
    */
   onStopGeneration?: () => void
-  /** Callback when message is copied */
+
+  /** Message interaction callbacks */
+  messageActions?: ChatWindowMessageActions
+  /** Edit-related callbacks */
+  editActions?: ChatWindowEditActions
+  /** Header configuration */
+  header?: ChatWindowHeaderConfig
+  /** Global actions (export, clear) */
+  actions?: ChatWindowActions
+  /** Error handling configuration */
+  errorHandling?: ChatWindowErrorHandling
+  /** Prompt suggestions configuration */
+  prompts?: ChatWindowPromptConfig
+
+  /** Custom empty state */
+  emptyState?: React.ReactNode
+  className?: string
+
+  // Legacy props for backward compatibility (deprecated - use grouped props)
+  /** @deprecated Use messageActions.onCopy instead */
   onMessageCopy?: (messageId: string, content: string) => void
-  /** Callback when feedback is given */
+  /** @deprecated Use messageActions.onFeedback instead */
   onMessageFeedback?: (
     messageId: string,
     type: 'up' | 'down',
     comment?: string
   ) => void
-  /** Callback when retry is requested */
+  /** @deprecated Use messageActions.onRetry instead */
   onMessageRetry?: (messageId: string) => void
-  /** Callback when message is edited (starts edit mode) */
+  /** @deprecated Use messageActions.onEdit instead */
   onEditMessage?: (messageId: string) => void
-  /** Callback when message is regenerated */
+  /** @deprecated Use messageActions.onRegenerate instead */
   onRegenerateMessage?: (messageId: string) => void
-  /** Callback when message is deleted */
+  /** @deprecated Use messageActions.onDelete instead */
   onDeleteMessage?: (messageId: string) => void
-  /** ID of message currently being edited (for inline editing) */
+  /** @deprecated Use editActions.editingMessageId instead */
   editingMessageId?: string | null
-  /** Callback when edit is saved - receives message ID and new content */
+  /** @deprecated Use editActions.onSaveEdit instead */
   onSaveEdit?: (messageId: string, newContent: string) => void
-  /** Callback when edit is cancelled */
+  /** @deprecated Use editActions.onCancelEdit instead */
   onCancelEdit?: (messageId: string) => void
-  /** Custom empty state */
-  emptyState?: React.ReactNode
-  /** Show header with session info */
+  /** @deprecated Use header.show instead */
   showHeader?: boolean
-  /** Session title */
+  /** @deprecated Use header.title instead */
   sessionTitle?: string
-  /** Session subtitle or description */
+  /** @deprecated Use header.subtitle instead */
   sessionSubtitle?: string
-  /** Header actions */
+  /** @deprecated Use header.actions instead */
   headerActions?: React.ReactNode
-  /** Show message count badge */
+  /** @deprecated Use header.showMessageCount instead */
   showMessageCount?: boolean
-  /** Enable export functionality */
+  /** @deprecated Use actions.onExport instead */
   onExport?: () => void
-  /** Enable clear chat functionality */
+  /** @deprecated Use actions.onClear instead */
   onClear?: () => void
-  /**
-   * Error message to display (e.g., network errors).
-   * Shows a banner above the chat when set.
-   */
+  /** @deprecated Use errorHandling.error instead */
   error?: string | null
-  /**
-   * Callback to retry after an error.
-   * When provided along with `error`, shows a "Retry" button.
-   */
+  /** @deprecated Use errorHandling.onRetry instead */
   onRetry?: () => void
-  /**
-   * Callback to dismiss the error banner.
-   * When provided, shows a dismiss button on the error banner.
-   */
+  /** @deprecated Use errorHandling.onDismissError instead */
   onDismissError?: () => void
-  className?: string
-  /**
-   * Starter prompts to show in empty state (2024 AI UX trend)
-   * These help users discover what the chat can do
-   */
+  /** @deprecated Use prompts.starterPrompts instead */
   starterPrompts?: PromptSuggestion[]
-  /**
-   * Suggested follow-up prompts shown after assistant messages
-   * Helps maintain conversation flow
-   */
+  /** @deprecated Use prompts.followUpSuggestions instead */
   followUpSuggestions?: PromptSuggestion[]
-  /**
-   * Whether to show starter prompts in empty state
-   * @default true when starterPrompts is provided
-   */
+  /** @deprecated Use prompts.showStarterPrompts instead */
   showStarterPrompts?: boolean
-  /**
-   * Whether to show follow-up suggestions after last assistant message
-   * @default true when followUpSuggestions is provided
-   */
+  /** @deprecated Use prompts.showFollowUpSuggestions instead */
   showFollowUpSuggestions?: boolean
 }
+
+// Skip Links Navigation Component
+interface SkipLinksProps {
+  messagesId: string
+  inputId: string
+}
+
+const SkipLinks = ({ messagesId, inputId }: SkipLinksProps) => (
+  <nav
+    className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:top-0 focus-within:left-0 focus-within:right-0 focus-within:z-50 focus-within:bg-background focus-within:p-2 focus-within:border-b"
+    aria-label="Skip links"
+  >
+    <ul className="flex gap-4 justify-center">
+      <li>
+        <a
+          href={`#${messagesId}`}
+          className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+        >
+          Skip to messages
+        </a>
+      </li>
+      <li>
+        <a
+          href={`#${inputId}`}
+          className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+        >
+          Skip to chat input
+        </a>
+      </li>
+    </ul>
+  </nav>
+)
+
+// Live Region for Screen Reader Announcements Component
+interface LiveRegionProps {
+  lastAnnouncedMessageId: string | null
+  setLastAnnouncedMessageId: (id: string | null) => void
+  normalizedMessages: Message[]
+  isLoading: boolean
+}
+
+const LiveRegion = ({
+  lastAnnouncedMessageId,
+  setLastAnnouncedMessageId,
+  normalizedMessages,
+  isLoading
+}: LiveRegionProps) => {
+  const liveRegionRef = React.useRef<HTMLDivElement>(null)
+
+  // Accessibility: Announce new messages to screen readers
+  React.useEffect(() => {
+    if (normalizedMessages.length === 0) return
+
+    const latestMessage = normalizedMessages[normalizedMessages.length - 1]
+    if (!latestMessage || latestMessage.id === lastAnnouncedMessageId) return
+
+    // Only announce completed messages (not streaming)
+    if (latestMessage.status === 'streaming') return
+
+    setLastAnnouncedMessageId(latestMessage.id)
+
+    // Construct announcement text
+    const roleLabel = latestMessage.role === 'assistant' ? 'Assistant' : 'You'
+    const contentPreview =
+      typeof latestMessage.content === 'string'
+        ? latestMessage.content.slice(0, 100) +
+          (latestMessage.content.length > 100 ? '...' : '')
+        : 'Message received'
+
+    // Update the live region for screen reader announcement
+    if (liveRegionRef.current) {
+      liveRegionRef.current.textContent = `${roleLabel} said: ${contentPreview}`
+    }
+  }, [normalizedMessages, lastAnnouncedMessageId, setLastAnnouncedMessageId])
+
+  // Accessibility: Announce loading state changes
+  React.useEffect(() => {
+    if (liveRegionRef.current) {
+      if (isLoading) {
+        liveRegionRef.current.textContent = 'AI is generating a response...'
+      }
+    }
+  }, [isLoading])
+
+  return (
+    <div
+      ref={liveRegionRef}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="sr-only"
+    />
+  )
+}
+
+// Chat Window Header Component
+interface ChatWindowHeaderProps {
+  show: boolean
+  title: string
+  subtitle?: string
+  actions?: React.ReactNode
+  showMessageCount: boolean
+  messageCountText: string | null
+  onExport?: () => void
+  onClear?: () => void
+  normalizedMessagesLength: number
+}
+
+const ChatWindowHeader = ({
+  show,
+  title,
+  subtitle,
+  actions,
+  showMessageCount,
+  messageCountText,
+  onExport,
+  onClear,
+  normalizedMessagesLength,
+}: ChatWindowHeaderProps) => {
+  if (!show) return null
+
+  return (
+    <motion.div
+      className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: duration('slow'),
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+    >
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
+          <BotIcon size={22} />
+        </div>
+        <div className="min-w-0 flex-1 space-y-0.5 pl-0.5">
+          <h2 className="text-sm font-bold text-foreground truncate leading-tight">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground/80 truncate leading-tight">
+              {subtitle}
+            </p>
+          )}
+        </div>
+        {showMessageCount && messageCountText && (
+          <Badge
+            variant="secondary"
+            className="shrink-0"
+            aria-label={messageCountText}
+          >
+            {messageCountText}
+          </Badge>
+        )}
+      </div>
+
+      {/* Header Actions */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        {actions}
+
+        {onExport && normalizedMessagesLength > 0 && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onExport}
+            className="gap-2 hover:bg-accent/50 transition-colors"
+            title="Export conversation"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            <span className="hidden sm:inline">Export</span>
+          </Button>
+        )}
+
+        {onClear && normalizedMessagesLength > 0 && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onClear}
+            className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+            title="Clear conversation"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+            <span className="hidden sm:inline">Clear</span>
+          </Button>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+// Follow-up Suggestions Component
+interface FollowUpSuggestionsProps {
+  showFollowUp: boolean
+  followUpSuggestions?: PromptSuggestion[]
+  onPromptSelect: (suggestion: PromptSuggestion) => void
+}
+
+const FollowUpSuggestions = ({
+  showFollowUp,
+  followUpSuggestions,
+  onPromptSelect,
+}: FollowUpSuggestionsProps) => {
+  if (!showFollowUp || !followUpSuggestions?.length) return null
+
+  return (
+    <motion.div
+      className="flex flex-col gap-3 px-5 py-4 sm:px-6 border-t border-border/60"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{
+        duration: duration('normal'),
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <SparklesIcon size={14} className="text-primary" />
+        <span className="text-xs font-medium text-muted-foreground/80">
+          Suggested follow-ups
+        </span>
+      </div>
+      <PromptSuggestions
+        suggestions={followUpSuggestions}
+        onSelect={onPromptSelect}
+        suggestionType="follow-up"
+        layout="chips"
+        maxSuggestions={3}
+      />
+    </motion.div>
+  )
+}
+
+// Error Banner Component
+interface ErrorBannerProps {
+  error?: string | null
+  onRetry?: () => void
+  onDismissError?: () => void
+}
+
+const ErrorBanner = ({ error, onRetry, onDismissError }: ErrorBannerProps) => (
+  <AnimatePresence>
+    {error && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{
+          duration: duration('normal'),
+          ease: [0.25, 0.1, 0.25, 1],
+        }}
+        className="border-b border-destructive/30 bg-destructive/5"
+        role="alert"
+      >
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <svg
+              className="h-4 w-4 text-destructive shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span className="text-sm text-destructive truncate">
+              {error}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {onRetry && (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={onRetry}
+                className="h-7 px-3 text-xs font-medium"
+              >
+                Retry
+              </Button>
+            )}
+            {onDismissError && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onDismissError}
+                className="h-7 w-7 p-0"
+                aria-label="Dismiss error"
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+)
 
 // Default empty state component - extracted for better performance
 interface DefaultEmptyStateProps {
@@ -383,6 +797,16 @@ export function ChatWindow({
   aiStatus,
   onSendMessage,
   onStopGeneration,
+
+  // Grouped props
+  messageActions,
+  editActions,
+  header,
+  actions,
+  errorHandling,
+  prompts,
+
+  // Legacy props for backward compatibility (will be mapped to grouped props)
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
@@ -392,23 +816,66 @@ export function ChatWindow({
   editingMessageId,
   onSaveEdit,
   onCancelEdit,
-  emptyState,
-  showHeader = false,
-  sessionTitle = 'Chat Session',
+  showHeader,
+  sessionTitle,
   sessionSubtitle,
   headerActions,
-  showMessageCount = false,
+  showMessageCount,
   onExport,
   onClear,
   error,
   onRetry,
   onDismissError,
-  className,
   starterPrompts,
   followUpSuggestions,
-  showStarterPrompts = true,
-  showFollowUpSuggestions = true,
+  showStarterPrompts,
+  showFollowUpSuggestions,
+
+  // Other props
+  emptyState,
+  className,
 }: ChatWindowProps) {
+  // Map legacy props to grouped props for backward compatibility
+  const effectiveMessageActions = React.useMemo(() => ({
+    onCopy: messageActions?.onCopy ?? onMessageCopy,
+    onFeedback: messageActions?.onFeedback ?? onMessageFeedback,
+    onRetry: messageActions?.onRetry ?? onMessageRetry,
+    onEdit: messageActions?.onEdit ?? onEditMessage,
+    onRegenerate: messageActions?.onRegenerate ?? onRegenerateMessage,
+    onDelete: messageActions?.onDelete ?? onDeleteMessage,
+  }), [messageActions, onMessageCopy, onMessageFeedback, onMessageRetry, onEditMessage, onRegenerateMessage, onDeleteMessage])
+
+  const effectiveEditActions = React.useMemo(() => ({
+    editingMessageId: editActions?.editingMessageId ?? editingMessageId,
+    onSaveEdit: editActions?.onSaveEdit ?? onSaveEdit,
+    onCancelEdit: editActions?.onCancelEdit ?? onCancelEdit,
+  }), [editActions, editingMessageId, onSaveEdit, onCancelEdit])
+
+  const effectiveHeader = React.useMemo(() => ({
+    show: header?.show ?? showHeader ?? false,
+    title: header?.title ?? sessionTitle ?? 'Chat Session',
+    subtitle: header?.subtitle ?? sessionSubtitle,
+    actions: header?.actions ?? headerActions,
+    showMessageCount: header?.showMessageCount ?? showMessageCount ?? false,
+  }), [header, showHeader, sessionTitle, sessionSubtitle, headerActions, showMessageCount])
+
+  const effectiveActions = React.useMemo(() => ({
+    onExport: actions?.onExport ?? onExport,
+    onClear: actions?.onClear ?? onClear,
+  }), [actions, onExport, onClear])
+
+  const effectiveErrorHandling = React.useMemo(() => ({
+    error: errorHandling?.error ?? error,
+    onRetry: errorHandling?.onRetry ?? onRetry,
+    onDismissError: errorHandling?.onDismissError ?? onDismissError,
+  }), [errorHandling, error, onRetry, onDismissError])
+
+  const effectivePrompts = React.useMemo(() => ({
+    starterPrompts: prompts?.starterPrompts ?? starterPrompts,
+    followUpSuggestions: prompts?.followUpSuggestions ?? followUpSuggestions,
+    showStarterPrompts: prompts?.showStarterPrompts ?? showStarterPrompts ?? true,
+    showFollowUpSuggestions: prompts?.showFollowUpSuggestions ?? showFollowUpSuggestions ?? true,
+  }), [prompts, starterPrompts, followUpSuggestions, showStarterPrompts, showFollowUpSuggestions])
   // Runtime validation
   if (!Array.isArray(messages)) {
     throw new Error(
@@ -434,7 +901,6 @@ export function ChatWindow({
   const [lastAnnouncedMessageId, setLastAnnouncedMessageId] = React.useState<
     string | null
   >(null)
-  const liveRegionRef = React.useRef<HTMLDivElement>(null)
 
   // Unique IDs for skip link targets
   const chatWindowId = React.useId()
@@ -477,22 +943,23 @@ export function ChatWindow({
   // React 19: Simple derivation - compiler optimizes
   const effectiveEmptyState = emptyState || (
     <DefaultEmptyState
-      starterPrompts={starterPrompts}
+      starterPrompts={effectivePrompts.starterPrompts}
       onSelectPrompt={handlePromptSelect}
-      showStarterPrompts={showStarterPrompts}
+      showStarterPrompts={effectivePrompts.showStarterPrompts}
     />
   )
 
   // Check if we should show follow-up suggestions
   // Only show when: not loading, has messages, last message is from assistant, has suggestions
   const lastMessage = normalizedMessages[normalizedMessages.length - 1]
-  const shouldShowFollowUp =
-    showFollowUpSuggestions &&
+  const shouldShowFollowUp = Boolean(
+    effectivePrompts.showFollowUpSuggestions &&
     !isLoading &&
-    followUpSuggestions &&
-    followUpSuggestions.length > 0 &&
+    effectivePrompts.followUpSuggestions &&
+    effectivePrompts.followUpSuggestions.length > 0 &&
     lastMessage?.role === 'assistant' &&
     lastMessage?.status !== 'streaming'
+  )
 
   // React 19: Simple string derivation - compiler optimizes
   const messageCountText =
@@ -500,254 +967,53 @@ export function ChatWindow({
       ? null
       : `${normalizedMessages.length} ${normalizedMessages.length === 1 ? 'message' : 'messages'}`
 
-  // Accessibility: Announce new messages to screen readers
-  React.useEffect(() => {
-    if (normalizedMessages.length === 0) return
-
-    const latestMessage = normalizedMessages[normalizedMessages.length - 1]
-    if (!latestMessage || latestMessage.id === lastAnnouncedMessageId) return
-
-    // Only announce completed messages (not streaming)
-    if (latestMessage.status === 'streaming') return
-
-    setLastAnnouncedMessageId(latestMessage.id)
-
-    // Construct announcement text
-    const roleLabel = latestMessage.role === 'assistant' ? 'Assistant' : 'You'
-    const contentPreview =
-      typeof latestMessage.content === 'string'
-        ? latestMessage.content.slice(0, 100) +
-          (latestMessage.content.length > 100 ? '...' : '')
-        : 'Message received'
-
-    // Update the live region for screen reader announcement
-    if (liveRegionRef.current) {
-      liveRegionRef.current.textContent = `${roleLabel} said: ${contentPreview}`
-    }
-  }, [normalizedMessages, lastAnnouncedMessageId])
-
-  // Accessibility: Announce loading state changes
-  React.useEffect(() => {
-    if (liveRegionRef.current) {
-      if (isLoading) {
-        liveRegionRef.current.textContent = 'AI is generating a response...'
-      }
-    }
-  }, [isLoading])
 
   return (
     <Card
       className={cn(
+        glassVariants({
+          intensity: 'medium',
+          gradient: 'none', // Neutral for chat background
+          border: 'light',
+          animated: 'none',
+        }),
         'flex h-full flex-col overflow-hidden',
-        'bg-gradient-to-b from-card via-card to-background/50',
-        'border-border/30',
-        'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
-        'backdrop-blur-sm',
         'relative', // For skip link positioning
         className
       )}
       role="region"
-      aria-label={sessionTitle}
+      aria-label={effectiveHeader.title}
     >
       {/* Accessibility: Skip Links Navigation */}
-      <nav
-        className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:top-0 focus-within:left-0 focus-within:right-0 focus-within:z-50 focus-within:bg-background focus-within:p-2 focus-within:border-b"
-        aria-label="Skip links"
-      >
-        <ul className="flex gap-4 justify-center">
-          <li>
-            <a
-              href={`#${messagesId}`}
-              className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
-            >
-              Skip to messages
-            </a>
-          </li>
-          <li>
-            <a
-              href={`#${inputId}`}
-              className="text-sm font-medium text-primary underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
-            >
-              Skip to chat input
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <SkipLinks messagesId={messagesId} inputId={inputId} />
 
       {/* Accessibility: Live Region for Screen Reader Announcements */}
-      <div
-        ref={liveRegionRef}
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
+      <LiveRegion
+        lastAnnouncedMessageId={lastAnnouncedMessageId}
+        setLastAnnouncedMessageId={setLastAnnouncedMessageId}
+        normalizedMessages={normalizedMessages}
+        isLoading={isLoading}
       />
 
       {/* Optional Header */}
-      {showHeader && (
-        <motion.div
-          className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: duration('slow'),
-            ease: [0.25, 0.1, 0.25, 1],
-          }}
-        >
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
-              <BotIcon size={22} />
-            </div>
-            <div className="min-w-0 flex-1 space-y-0.5 pl-0.5">
-              <h2 className="text-sm font-bold text-foreground truncate leading-tight">
-                {sessionTitle}
-              </h2>
-              {sessionSubtitle && (
-                <p className="text-xs text-muted-foreground/80 truncate leading-tight">
-                  {sessionSubtitle}
-                </p>
-              )}
-            </div>
-            {showMessageCount && messageCountText && (
-              <Badge
-                variant="secondary"
-                className="shrink-0"
-                aria-label={messageCountText}
-              >
-                {messageCountText}
-              </Badge>
-            )}
-          </div>
-
-          {/* Header Actions */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            {headerActions}
-
-            {onExport && normalizedMessages.length > 0 && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={onExport}
-                className="gap-2 hover:bg-accent/50 transition-colors"
-                title="Export conversation"
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Export</span>
-              </Button>
-            )}
-
-            {onClear && normalizedMessages.length > 0 && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={onClear}
-                className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                title="Clear conversation"
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Clear</span>
-              </Button>
-            )}
-          </div>
-        </motion.div>
-      )}
+      <ChatWindowHeader
+        show={effectiveHeader.show}
+        title={effectiveHeader.title}
+        subtitle={effectiveHeader.subtitle}
+        actions={effectiveHeader.actions}
+        showMessageCount={effectiveHeader.showMessageCount}
+        messageCountText={messageCountText}
+        onExport={effectiveActions.onExport}
+        onClear={effectiveActions.onClear}
+        normalizedMessagesLength={normalizedMessages.length}
+      />
 
       {/* Error Banner */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{
-              duration: duration('normal'),
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
-            className="border-b border-destructive/30 bg-destructive/5"
-            role="alert"
-          >
-            <div className="flex items-center justify-between gap-3 px-4 py-3">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <svg
-                  className="h-4 w-4 text-destructive shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <span className="text-sm text-destructive truncate">
-                  {error}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {onRetry && (
-                  <Button
-                    size="sm"
-                    variant="default"
-                    onClick={onRetry}
-                    className="h-7 px-3 text-xs font-medium"
-                  >
-                    Retry
-                  </Button>
-                )}
-                {onDismissError && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={onDismissError}
-                    className="h-7 w-7 p-0"
-                    aria-label="Dismiss error"
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </Button>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ErrorBanner
+        error={effectiveErrorHandling.error}
+        onRetry={effectiveErrorHandling.onRetry}
+        onDismissError={effectiveErrorHandling.onDismissError}
+      />
 
       {/* Stop Generation Banner */}
       <AnimatePresence>
@@ -795,16 +1061,16 @@ export function ChatWindow({
           id={messagesId}
           messages={normalizedMessages}
           isLoading={isLoading}
-          onMessageCopy={onMessageCopy}
-          onMessageFeedback={onMessageFeedback}
-          onMessageRetry={onMessageRetry}
-          onEditMessage={onEditMessage}
-          onRegenerateMessage={onRegenerateMessage}
-          onDeleteMessage={onDeleteMessage}
+          onMessageCopy={effectiveMessageActions.onCopy}
+          onMessageFeedback={effectiveMessageActions.onFeedback}
+          onMessageRetry={effectiveMessageActions.onRetry}
+          onEditMessage={effectiveMessageActions.onEdit}
+          onRegenerateMessage={effectiveMessageActions.onRegenerate}
+          onDeleteMessage={effectiveMessageActions.onDelete}
           onStopGeneration={onStopGeneration}
-          editingMessageId={editingMessageId}
-          onSaveEdit={onSaveEdit}
-          onCancelEdit={onCancelEdit}
+          editingMessageId={effectiveEditActions.editingMessageId}
+          onSaveEdit={effectiveEditActions.onSaveEdit}
+          onCancelEdit={effectiveEditActions.onCancelEdit}
           emptyState={effectiveEmptyState}
           className="flex-1 min-h-0"
           aria-label="Chat messages"
@@ -813,34 +1079,11 @@ export function ChatWindow({
         />
 
         {/* Follow-up Suggestions - 2024 AI UX Pattern */}
-        <AnimatePresence>
-          {shouldShowFollowUp && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{
-                duration: duration('normal'),
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-              className="px-5 pb-3"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <SparklesIcon size={12} className="text-muted-foreground" />
-                <span className="text-xs font-medium text-muted-foreground/80">
-                  Suggested follow-ups
-                </span>
-              </div>
-              <PromptSuggestions
-                suggestions={followUpSuggestions!}
-                onSelect={handlePromptSelect}
-                suggestionType="follow-up"
-                layout="chips"
-                maxSuggestions={3}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <FollowUpSuggestions
+          showFollowUp={shouldShowFollowUp}
+          followUpSuggestions={effectivePrompts.followUpSuggestions}
+          onPromptSelect={handlePromptSelect}
+        />
 
         {/* Thinking Indicator - positioned above input */}
         <AnimatePresence>

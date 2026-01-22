@@ -12,6 +12,10 @@ import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('ai-hook-lookup-api')
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * Single Hook Lookup API
  *
@@ -24,11 +28,12 @@ const logger = getLogger('ai-hook-lookup-api')
 // Sample hooks data - subset for the lookup endpoint
 const hooks: HookInfo[] = [
   {
-    name: 'useChat',
+    name: 'useClarityChat',
     description:
-      'Primary hook for managing chat state and operations. Handles messages, sending, loading states, and message history.',
+      'Primary hook for managing chat state with memory integration, token optimization, and streaming. The recommended hook for all chat implementations.',
     category: 'core',
-    signature: 'useChat(options?: UseChatOptions): UseChatReturn',
+    signature:
+      'useClarityChat(options?: UseClarityChatOptions): UseClarityChatReturn',
     parameters: [
       {
         name: 'initialMessages',
@@ -67,11 +72,11 @@ const hooks: HookInfo[] = [
       ],
     },
     importPath: '@clarity-chat/react',
-    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-chat',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat',
     examples: [
-      'import { useChat } from "@clarity-chat/react";\n\nconst { messages, handleSubmit, isLoading } = useChat({ api: "/api/chat" });',
+      'import { useClarityChat } from "@clarity-chat/react";\n\nconst { messages, append, isLoading } = useClarityChat({ api: "/api/chat", memory: { enabled: true } });',
     ],
-    relatedHooks: ['useChatEnhanced', 'useStreaming', 'useCompletion'],
+    relatedHooks: ['useStreaming', 'useCompletion', 'useClarityChatWithTools'],
     version: '0.1.0',
   },
   {
@@ -117,7 +122,7 @@ const hooks: HookInfo[] = [
     examples: [
       'import { useStreaming } from "@clarity-chat/react";\n\nconst { data, isStreaming, start } = useStreaming({ url: "/api/stream" });',
     ],
-    relatedHooks: ['useChat', 'useStreamingSSE'],
+    relatedHooks: ['useClarityChat', 'useStreamingSSE'],
     version: '0.1.0',
   },
   {
@@ -161,7 +166,7 @@ const hooks: HookInfo[] = [
     examples: [
       'import { useTokenTracker } from "@clarity-chat/react";\n\nconst { totalTokens, estimatedCost } = useTokenTracker({ model: "gpt-4", messages });',
     ],
-    relatedHooks: ['useTokenOptimization', 'useChat'],
+    relatedHooks: ['useTokenOptimization', 'useClarityChat'],
     version: '0.1.0',
   },
   {

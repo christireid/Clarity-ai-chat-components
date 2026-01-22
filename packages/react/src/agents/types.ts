@@ -1,11 +1,37 @@
 /**
  * Agent Orchestration Types
- * 
+ *
  * Framework for building agentic AI systems with tool calling, planning,
  * and multi-step execution.
+ *
+ * NOTE: Tool definition types have been moved to '../types/tool-definition'
+ * These types are kept for backward compatibility but are deprecated.
  */
 
-/** JSON Schema property types for tool parameters */
+import type {
+  ToolDefinition as CanonicalToolDefinition,
+  ToolParameters as CanonicalToolParameters,
+  ToolArguments as CanonicalToolArguments,
+  ToolResult as CanonicalToolResult,
+} from '../types/tool-definition'
+
+// Re-export canonical types as primary exports
+export type {
+  CanonicalToolDefinition as ToolDefinition,
+  CanonicalToolParameters as ToolParameters,
+  CanonicalToolArguments as ToolArguments,
+  CanonicalToolResult as ToolResult,
+}
+
+// =============================================================================
+// DEPRECATED: Legacy Types (kept for backward compatibility)
+// =============================================================================
+
+/**
+ * @deprecated Use ToolParameterProperty from '../types/tool-definition' instead
+ *
+ * JSON Schema property types for tool parameters
+ */
 export interface ToolParameterProperty {
   type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
   description?: string

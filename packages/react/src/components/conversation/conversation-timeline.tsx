@@ -169,7 +169,7 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   </span>
                   <div
                     className={cn(
-                      'group flex flex-col gap-2 rounded-lg border bg-gradient-to-br p-4 text-sm shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40',
+                      'group flex flex-col gap-2 rounded-lg border bg-gradient-to-br p-4 text-sm shadow-md backdrop-blur-sm transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40',
                       style.bg,
                       style.border
                     )}

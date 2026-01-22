@@ -1,6 +1,6 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react/internal'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -191,7 +191,7 @@ export default function PromptCachingGuidePage() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { PromptCacheManager } from '@clarity-chat/react/internal'
+                code={`import { PromptCacheManager } from '@clarity-chat/react'
 
 // Create a cache manager for Anthropic
 const cacheManager = new PromptCacheManager({
@@ -236,7 +236,7 @@ const messages = cacheManager.prepareMessagesAnthropic([
                 code={`import {
   createAnthropicCachedMessages,
   estimateCacheSavings,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // Create Anthropic-formatted messages with caching
 const messages = createAnthropicCachedMessages(
@@ -274,7 +274,7 @@ console.log(\`Monthly savings: $\${savings.monthlySavings.toFixed(2)}\`)
                 code={`import {
   calculateCacheBreakpoints,
   applyBreakpointsToMessages,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const messages = [
   { role: 'system', content: longSystemPrompt },      // 3000 tokens
@@ -340,7 +340,7 @@ const cachedMessages = applyBreakpointsToMessages(messages, breakpoints)`}
                 code={`import {
   createCacheWarmingRequests,
   calculateWarmingSchedule,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 // Define content to warm
 const warmingConfig = {
@@ -400,7 +400,7 @@ async function warmCaches() {
               </p>
 
               <EnhancedCodeBlock
-                code={`import { calculateTTLRefreshSchedule } from '@clarity-chat/react/internal'
+                code={`import { calculateTTLRefreshSchedule } from '@clarity-chat/react'
 
 // Track last cache hit timestamp
 let lastCacheHit = Date.now()

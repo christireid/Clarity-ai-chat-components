@@ -5,7 +5,7 @@ import {
   FlashingValue,
   useAnimatedValue,
   useValueChange,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 /**
  * **Animated Values**

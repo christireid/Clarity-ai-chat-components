@@ -33,6 +33,11 @@
       "require": "./dist/index.js"
     },
     "./styles.css": "./dist/styles.css",
+    "./glass-variants": {
+      "types": "./dist/lib/glass-variants.d.ts",
+      "import": "./dist/lib/glass-variants.js",
+      "require": "./dist/lib/glass-variants.js"
+    },
     "./components/icons": {
       "types": "./dist/components/icons.d.ts",
       "import": "./dist/components/icons.js",

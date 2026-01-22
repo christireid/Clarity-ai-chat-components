@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EnhancedCodeBlock } from '@clarity-chat/react/internal'
+import { EnhancedCodeBlock } from '@clarity-chat/react'
 
 const meta: Meta<typeof EnhancedCodeBlock> = {
   title: 'Components/DataDisplay/EnhancedCodeBlock',

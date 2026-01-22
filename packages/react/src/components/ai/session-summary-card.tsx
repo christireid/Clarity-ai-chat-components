@@ -128,7 +128,7 @@ export function SessionSummaryCard({
     >
       <Card
         className={cn(
-          'shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out',
+          'shadow-md hover:shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out',
           className
         )}
       >
@@ -201,7 +201,7 @@ export function SessionSummaryCard({
                     stiffness: 300,
                     delay: index * 0.05,
                   }}
-                  className="flex items-start gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+                  className="flex items-start gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-xs"
                 >
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     {index + 1}
@@ -219,7 +219,7 @@ export function SessionSummaryCard({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: durations.normal, delay: index * 0.05 }}
-                className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px transition-all duration-150 ease-out"
+                className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-xs hover:shadow-md hover:-translate-y-px transition-all duration-150 ease-out"
               >
                 <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {metric.label}

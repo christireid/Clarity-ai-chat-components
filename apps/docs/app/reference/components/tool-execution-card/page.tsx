@@ -4,7 +4,7 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ToolExecutionCard } from '@clarity-chat/react/internal'
+import { ToolExecutionCard } from '@clarity-chat/react'
 
 const toolExecutionCardProps: Prop[] = [
   {
@@ -87,7 +87,7 @@ export default function ToolExecutionCardPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react/internal'
+        code={`import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -95,7 +95,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { ToolExecutionCard } from '@clarity-chat/react/internal'
+        code={`import { ToolExecutionCard } from '@clarity-chat/react'
 
 function Example() {
   const tool = {
@@ -173,7 +173,7 @@ const error = {
       <h2 id="with-hook">With useToolExecution Hook</h2>
 
       <EnhancedCodeBlock
-        code={`import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react/internal'
+        code={`import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react'
 
 function Example() {
   const toolExecution = useToolExecution({

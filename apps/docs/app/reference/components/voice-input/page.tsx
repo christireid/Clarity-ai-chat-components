@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ToastProvider, VoiceInput } from '@clarity-chat/react/internal'
+import { ToastProvider, VoiceInput } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -197,7 +197,7 @@ export default function VoiceInputPage() {
             title="Voice Input Demo"
             description="Click the microphone to start speaking."
             code={`import { useState } from 'react'
-import { VoiceInput } from '@clarity-chat/react/internal'
+import { VoiceInput } from '@clarity-chat/react'
 
 function VoiceDemo() {
   const [transcript, setTranscript] = useState('')
@@ -230,7 +230,7 @@ function VoiceDemo() {
               Try configuring the VoiceInput component:
             </p>
             <CodePlayground
-              initialCode={`import { VoiceInput } from '@clarity-chat/react/internal'
+              initialCode={`import { VoiceInput } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -276,7 +276,7 @@ render(<Example />)`}
               </p>
               <EnhancedCodeBlock
                 language="tsx"
-                code={`import { VoiceInput } from '@clarity-chat/react/internal'
+                code={`import { VoiceInput } from '@clarity-chat/react'
 
 function Chat() {
   return (
@@ -304,7 +304,7 @@ function Chat() {
               </p>
               <EnhancedCodeBlock
                 language="tsx"
-                code={`import { VoiceInput } from '@clarity-chat/react/internal'
+                code={`import { VoiceInput } from '@clarity-chat/react'
 
 function Chat() {
   const [language, setLanguage] = useState('en-US')
@@ -336,7 +336,7 @@ function Chat() {
               </p>
               <EnhancedCodeBlock
                 language="tsx"
-                code={`import { VoiceInput } from '@clarity-chat/react/internal'
+                code={`import { VoiceInput } from '@clarity-chat/react'
 import { Mic, MicOff } from 'lucide-react'
 
 function Chat() {
@@ -400,7 +400,7 @@ function Chat() {
           </p>
           <EnhancedCodeBlock
             language="tsx"
-            code={`import { ChatInput, VoiceInput } from '@clarity-chat/react/internal'
+            code={`import { ChatInput, VoiceInput } from '@clarity-chat/react'
 
 function Chat() {
   const [input, setInput] = useState('')
