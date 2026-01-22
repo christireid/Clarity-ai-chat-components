@@ -183,3 +183,21 @@ export type {
   UseSchemaOptimizerConfig,
   SchemaOptimizationState,
 } from './use-schema-optimizer'
+
+// ============================================================================
+// ROI Calculator Hooks - Track return on investment
+// ============================================================================
+
+// ROI calculation and tracking
+export {
+  useROICalculator,
+  useQuickROI,
+  useMonthlySavings,
+  useModelComparison,
+  useBreakEven,
+  useROIDashboard,
+} from './use-roi-calculator'
+export type {
+  UseROICalculatorConfig,
+  ROICalculatorState,
+} from './use-roi-calculator'
