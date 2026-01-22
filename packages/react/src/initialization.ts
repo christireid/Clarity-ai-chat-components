@@ -1,6 +1,7 @@
 'use client'
 
-import { LicenseInfo } from '@clarity-chat/license'
+// NOTE: @clarity-chat/license package doesn't exist - commenting out
+// import { LicenseInfo } from '@clarity-chat/license'
 
 /**
  * Options for initializing Clarity Chat

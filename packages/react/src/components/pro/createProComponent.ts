@@ -6,7 +6,8 @@
  * @packageDocumentation
  */
 
-import { createLicenseWrapper } from '@clarity-chat/license'
+// NOTE: @clarity-chat/license package doesn't exist - commenting out
+// import { createLicenseWrapper } from '@clarity-chat/license'
 
 /**
  * Factory for creating Pro-licensed components.

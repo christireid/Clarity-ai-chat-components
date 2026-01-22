@@ -264,6 +264,9 @@ export type { InputProps } from './components/input'
 
 export { Label } from './components/label'
 
+export { Switch } from './components/switch'
+export type { SwitchProps } from './components/switch'
+
 export { ScrollArea } from './components/scroll-area'
 
 export { Textarea } from './components/textarea'

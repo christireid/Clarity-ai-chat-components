@@ -215,17 +215,18 @@ export type {
 // LICENSE TYPES
 // =============================================================================
 
-export type {
-  LicensePlan,
-  LicenseScope,
-  LicenseStatus,
-  LicenseStatusCode,
-  ClarityLicensePayload,
-  WithLicenseOptions,
-  WithLicenseStatusProps,
-  WatermarkProps,
-  WatermarkOverlayProps,
-  LicenseGateProps,
-  LicenseContextValue,
-  LicenseProviderProps,
-} from '@clarity-chat/license'
+// NOTE: @clarity-chat/license package doesn't exist - commenting out
+// export type {
+//   LicensePlan,
+//   LicenseScope,
+//   LicenseStatus,
+//   LicenseStatusCode,
+//   ClarityLicensePayload,
+//   WithLicenseOptions,
+//   WithLicenseStatusProps,
+//   WatermarkProps,
+//   WatermarkOverlayProps,
+//   LicenseGateProps,
+//   LicenseContextValue,
+//   LicenseProviderProps,
+// } from '@clarity-chat/license'

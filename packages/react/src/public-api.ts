@@ -312,23 +312,24 @@ export { ThemeProvider, useTheme, type ThemeProviderProps } from './theme'
 // LICENSE MANAGEMENT (Re-exported from @clarity-chat/license)
 // ============================================================================
 
-export {
-  // Core license utilities
-  LicenseInfo,
-  verifyLicense,
-  isLicenseValid,
-  // React hooks
-  useLicenseStatus,
-  useIsLicensed,
-  useHasPlan,
-  useLicenseInfo,
-  // Components
-  LicenseProvider,
-  LicenseGate,
-  Watermark,
-  // HOCs
-  withLicense,
-} from '@clarity-chat/license'
+// NOTE: @clarity-chat/license package doesn't exist - commenting out
+// export {
+//   // Core license utilities
+//   LicenseInfo,
+//   verifyLicense,
+//   isLicenseValid,
+//   // React hooks
+//   useLicenseStatus,
+//   useIsLicensed,
+//   useHasPlan,
+//   useLicenseInfo,
+//   // Components
+//   LicenseProvider,
+//   LicenseGate,
+//   Watermark,
+//   // HOCs
+//   withLicense,
+// } from '@clarity-chat/license'
 
 // License types are available from @clarity-chat/license directly
 // Consumers should import types as: import type { LicensePlan } from '@clarity-chat/license'
