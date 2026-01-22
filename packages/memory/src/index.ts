@@ -128,4 +128,6 @@ export type {
   MemoryChunk,
   DeletionResult,
   DeletionVerification,
+  DataExportResult,
+  DataExportOptions,
 } from './types'

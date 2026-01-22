@@ -712,6 +712,75 @@ export interface DeletionVerification {
   error?: string
 }
 
+/**
+ * Data export result - complete user data export (GDPR Article 20: Data Portability)
+ *
+ * Provides all personal data in a structured, machine-readable format.
+ * Required for GDPR Article 20 compliance.
+ */
+export interface DataExportResult {
+  /** User ID whose data was exported */
+  userId: string
+  /** Timestamp of export operation */
+  timestamp: Date
+  /** Export format version */
+  formatVersion: string
+  /** Exported data */
+  data: {
+    /** All memories belonging to user */
+    memories: MemoryItem[]
+    /** Consent history */
+    consentHistory?: Array<{
+      type: 'granted' | 'withdrawn'
+      purposes: string[]
+      timestamp: Date
+      version: string
+    }>
+    /** Audit trail (if requested) */
+    auditTrail?: Array<{
+      eventType: string
+      timestamp: Date
+      description: string
+      metadata: Record<string, unknown>
+    }>
+    /** User profile data */
+    profile?: Record<string, unknown>
+  }
+  /** Summary statistics */
+  summary: {
+    /** Total memories exported */
+    memoriesCount: number
+    /** Total embeddings exported */
+    embeddingsCount: number
+    /** Total data size (bytes) */
+    dataSizeBytes: number
+    /** Consent events count */
+    consentEventsCount: number
+    /** Audit logs count */
+    auditLogsCount: number
+  }
+  /** Export options used */
+  options: DataExportOptions
+}
+
+/**
+ * Data export options - configure what to include in export
+ */
+export interface DataExportOptions {
+  /** Include embeddings (can be large) */
+  includeEmbeddings?: boolean
+  /** Include consent history */
+  includeConsentHistory?: boolean
+  /** Include audit trail */
+  includeAuditTrail?: boolean
+  /** Include profile data */
+  includeProfile?: boolean
+  /** Export format */
+  format?: 'json' | 'csv'
+  /** Pretty print JSON (default: true) */
+  prettyPrint?: boolean
+}
+
 // ============================================================================
 // Type Aliases for Backward Compatibility
 // ============================================================================

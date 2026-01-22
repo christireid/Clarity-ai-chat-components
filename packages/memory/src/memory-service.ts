@@ -52,6 +52,10 @@ import {
   DEFAULT_RETENTION_POLICY,
   DEFAULT_MEMORY_LIMITS,
 } from './constants'
+import type {
+  DataExportResult,
+  DataExportOptions,
+} from './types'
 
 /**
  * Simple token counter utility
@@ -1115,6 +1119,212 @@ export class MemoryService {
         error: (error as Error).message,
       }
     }
+  }
+
+  /**
+   * Export all user data (GDPR Article 20: Data Portability)
+   *
+   * Provides complete user data in structured, machine-readable format.
+   * Implements GDPR Article 20 (Right to Data Portability).
+   *
+   * @param userId - User identifier
+   * @param options - Export options (what to include)
+   * @returns Complete data export
+   *
+   * @example
+   * ```typescript
+   * const export = await memoryService.exportUserData('user123', {
+   *   includeEmbeddings: false,     // Exclude large embeddings
+   *   includeConsentHistory: true,  // Include consent records
+   *   includeAuditTrail: true,      // Include audit logs
+   *   format: 'json',               // JSON format
+   * })
+   *
+   * // Save to file or send to user
+   * fs.writeFileSync('user_data.json', JSON.stringify(export, null, 2))
+   * ```
+   */
+  async exportUserData(
+    userId: string,
+    options: DataExportOptions = {}
+  ): Promise<DataExportResult> {
+    const timestamp = new Date()
+
+    // Default options
+    const opts: Required<DataExportOptions> = {
+      includeEmbeddings: options.includeEmbeddings ?? false, // Embeddings can be large
+      includeConsentHistory: options.includeConsentHistory ?? true,
+      includeAuditTrail: options.includeAuditTrail ?? true,
+      includeProfile: options.includeProfile ?? true,
+      format: options.format ?? 'json',
+      prettyPrint: options.prettyPrint ?? true,
+    }
+
+    if (this.config.debug) {
+      console.log(`[MemoryService] Starting data export for user: ${userId}`)
+    }
+
+    // 1. Export memories
+    const userMemories: MemoryItem[] = []
+    let embeddingsCount = 0
+
+    // From cache
+    for (const memory of this.cache.values()) {
+      if (memory.metadata?.userId === userId) {
+        const exportedMemory = { ...memory }
+
+        // Optionally remove embeddings (they're large)
+        if (!opts.includeEmbeddings && exportedMemory.embedding) {
+          delete exportedMemory.embedding
+        } else if (exportedMemory.embedding) {
+          embeddingsCount++
+        }
+
+        userMemories.push(exportedMemory)
+      }
+    }
+
+    // From vector store (if available)
+    if (this.vectorStore) {
+      try {
+        const storeMemories = await this.vectorStore.search('', {
+          userId,
+          limit: 10000,
+        })
+
+        for (const { memory } of storeMemories) {
+          // Check if not already in cache
+          if (!userMemories.find(m => m.id === memory.id)) {
+            const exportedMemory = { ...memory }
+
+            if (!opts.includeEmbeddings && exportedMemory.embedding) {
+              delete exportedMemory.embedding
+            } else if (exportedMemory.embedding) {
+              embeddingsCount++
+            }
+
+            userMemories.push(exportedMemory)
+          }
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export from vector store:', error)
+        }
+      }
+    }
+
+    // 2. Export consent history (if requested)
+    let consentHistory: DataExportResult['data']['consentHistory'] = undefined
+    if (opts.includeConsentHistory && this.consentManager) {
+      try {
+        const events = await this.consentManager.getConsentHistory(userId)
+        consentHistory = events.map(event => ({
+          type: event.type === 'granted' ? 'granted' : 'withdrawn',
+          purposes: event.purposes,
+          timestamp: event.timestamp,
+          version: event.version,
+        }))
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export consent history:', error)
+        }
+      }
+    }
+
+    // 3. Export audit trail (if requested)
+    let auditTrail: DataExportResult['data']['auditTrail'] = undefined
+    if (opts.includeAuditTrail) {
+      try {
+        const logs = await this.auditLogger.getUserAuditTrail(userId)
+        auditTrail = logs.map(log => ({
+          eventType: log.eventType,
+          timestamp: log.timestamp,
+          description: log.description,
+          metadata: log.metadata,
+        }))
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export audit trail:', error)
+        }
+      }
+    }
+
+    // 4. Export profile data (if requested)
+    let profile: Record<string, unknown> | undefined = undefined
+    if (opts.includeProfile) {
+      // Try to find profile-type memories
+      const profileMemories = userMemories.filter(m => m.type === 'profile')
+      if (profileMemories.length > 0) {
+        profile = profileMemories.reduce((acc, memory) => {
+          // Try to parse JSON content as profile data
+          try {
+            const parsed = JSON.parse(memory.content)
+            return { ...acc, ...parsed }
+          } catch {
+            acc[memory.id] = memory.content
+            return acc
+          }
+        }, {} as Record<string, unknown>)
+      }
+    }
+
+    // 5. Calculate summary
+    const jsonString = JSON.stringify({
+      memories: userMemories,
+      consentHistory,
+      auditTrail,
+      profile,
+    })
+    const dataSizeBytes = new Blob([jsonString]).size
+
+    const result: DataExportResult = {
+      userId,
+      timestamp,
+      formatVersion: '1.0.0',
+      data: {
+        memories: userMemories,
+        consentHistory,
+        auditTrail,
+        profile,
+      },
+      summary: {
+        memoriesCount: userMemories.length,
+        embeddingsCount,
+        dataSizeBytes,
+        consentEventsCount: consentHistory?.length || 0,
+        auditLogsCount: auditTrail?.length || 0,
+      },
+      options: opts,
+    }
+
+    // 6. Audit log: data export (GDPR Article 20)
+    await this.auditLogger.log({
+      eventType: 'user:data:exported',
+      severity: 'info',
+      description: `User data exported: ${userId}`,
+      metadata: {
+        userId,
+        purpose: 'gdpr_data_portability',
+        legalBasis: 'legal_obligation',
+        result: 'success',
+        memoriesCount: userMemories.length,
+        embeddingsCount,
+        dataSizeBytes,
+        includeEmbeddings: opts.includeEmbeddings,
+        includeConsentHistory: opts.includeConsentHistory,
+        includeAuditTrail: opts.includeAuditTrail,
+      },
+    })
+
+    if (this.config.debug) {
+      console.log(
+        `[MemoryService] Data export complete for user ${userId}:`,
+        `${result.summary.memoriesCount} memories, `,
+        `${result.summary.dataSizeBytes} bytes`
+      )
+    }
+
+    return result
   }
 
   /**
