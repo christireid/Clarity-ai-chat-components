@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Enhanced animations for 2025 design */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes text-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
 :root {
   /* Typography */
   --font-geist-sans: 'Geist Sans', system-ui, sans-serif;
