@@ -491,7 +491,6 @@ export {
 export {
   migrateToV1,
   createMigrationWrapper,
-  MigrationPresets,
   applyMigration,
   validateMigration,
   MigrationUtils,
@@ -564,6 +563,8 @@ export {
   applyHighContrastAdjustments,
   SkipLink,
   ScreenReaderOnly,
+  useDebouncedStreamingAnnouncements,
+  useStreamingFocusPreservation,
 } from './utils/accessibility-helpers'
 
 // Testing Helpers - Comprehensive testing toolkit
@@ -880,6 +881,11 @@ export { usePrevious } from './hooks/ui/use-previous'
 
 // Message operations
 export { useMessageOperations } from './hooks/message/use-message-operations'
+export {
+  useRegenerateMessage,
+  type UseRegenerateMessageOptions,
+  type UseRegenerateMessageReturn,
+} from './hooks/message/use-regenerate-message'
 
 // Token hooks
 export { useTokenBudgetMonitor } from './hooks/token/use-token-budget-monitor'
