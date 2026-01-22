@@ -21,6 +21,7 @@ import * as React from 'react'
 import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual'
 import type { Message } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
+import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
 
 // ============================================================================
 // Types
@@ -95,12 +96,65 @@ export function TanStackMessageList({
   onScrollAwayFromBottom,
   scrollThreshold = 100,
 }: TanStackMessageListProps) {
+  // Screen reader detection - render non-virtualized for accessibility
+  const isScreenReader = useScreenReaderDetection()
+
   const parentRef = React.useRef<HTMLDivElement>(null)
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
   const lastScrollTop = React.useRef(0)
   const [focusedIndex, setFocusedIndex] = React.useState(0)
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([])
+
+  // For screen readers: Render non-virtualized for full accessibility
+  // All messages remain in DOM for screen reader navigation
+  if (isScreenReader) {
+    // Check if any message is streaming
+    const isStreaming = React.useMemo(
+      () => messages.some((m) => m.status === 'streaming'),
+      [messages]
+    )
+
+    return (
+      <div
+        ref={parentRef}
+        className={cn('overflow-auto', className)}
+        style={{ height }}
+        role="log"
+        aria-label="Chat messages (screen reader mode)"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-busy={isStreaming}
+      >
+        {messages.map((message, index) => {
+          const isFocused = focusedIndex === index
+          return (
+            <div
+              key={message.id || `msg-${index}`}
+              ref={(el) => (itemRefs.current[index] = el)}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(index)}
+              style={{
+                outline: isFocused
+                  ? '2px solid var(--focus-ring-color, #0066cc)'
+                  : 'none',
+                outlineOffset: '2px',
+                marginBottom: `${gap}px`,
+              }}
+            >
+              {renderMessage(message, index)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   // Default key getter
   const itemKey = React.useCallback(

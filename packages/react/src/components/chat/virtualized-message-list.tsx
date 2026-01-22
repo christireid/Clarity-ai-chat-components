@@ -22,6 +22,7 @@ import { VariableSizeList as List } from 'react-window'
 import type { ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import type { Message } from '@clarity-chat/types'
+import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
 
 // Type assertions for react-window v1.8.11 with React 19
 // AutoSizer component type assertion for compatibility
@@ -237,6 +238,9 @@ export function VirtualizedMessageList({
   className,
   itemKey,
 }: VirtualizedMessageListProps) {
+  // Screen reader detection - render non-virtualized for accessibility
+  const isScreenReader = useScreenReaderDetection()
+
   const listRef = React.useRef<List>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const heightCacheRef = React.useRef(new MessageHeightCache(estimatedItemSize))
@@ -246,6 +250,54 @@ export function VirtualizedMessageList({
   const isNearBottomRef = React.useRef(true)
   const [scrollOffset, setScrollOffset] = React.useState(0)
   const [focusedIndex, setFocusedIndex] = React.useState(0)
+
+  // For screen readers: Render non-virtualized for full accessibility
+  // All messages remain in DOM for screen reader navigation
+  if (isScreenReader) {
+    // Check if any message is streaming
+    const isStreaming = React.useMemo(
+      () => messages.some((m) => m.status === 'streaming'),
+      [messages]
+    )
+
+    return (
+      <div
+        ref={containerRef}
+        className={className}
+        style={{ height: '100%', width: '100%', overflowY: 'auto' }}
+        role="log"
+        aria-label="Chat messages (screen reader mode)"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-busy={isStreaming}
+      >
+        {messages.map((message, index) => {
+          const isFocused = focusedIndex === index
+          return (
+            <div
+              key={message.id || `msg-${index}`}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(index)}
+              style={{
+                outline: isFocused
+                  ? '2px solid var(--focus-ring-color, #0066cc)'
+                  : 'none',
+                outlineOffset: '2px',
+              }}
+            >
+              {renderMessage(message, index)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   // Track if user is near bottom and preserve scroll position
   // React 19: Keep useCallback for stable ref (required by react-window)
