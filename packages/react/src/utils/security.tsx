@@ -9,6 +9,7 @@
  * - Input validation and sanitization
  */
 
+import * as React from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 
 // ============================================================================
@@ -77,11 +78,15 @@ export const DEFAULT_SECURITY_CONFIG: Required<SecurityConfig> = {
   cspDirectives: {
     'default-src': ["'self'"],
     'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-    'style-src': ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-    'font-src': ["'self'", "https://fonts.gstatic.com"],
-    'img-src': ["'self'", "data:", "https:", "blob:"],
-    'connect-src': ["'self'", "https://api.github.com", "https://*.clarity-chat.dev"],
-    'media-src': ["'self'", "https:", "blob:"],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'https://fonts.gstatic.com'],
+    'img-src': ["'self'", 'data:', 'https:', 'blob:'],
+    'connect-src': [
+      "'self'",
+      'https://api.github.com',
+      'https://*.clarity-chat.dev',
+    ],
+    'media-src': ["'self'", 'https:', 'blob:'],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
@@ -116,14 +121,48 @@ export function sanitizeHTML(
 
   const {
     ALLOWED_TAGS = [
-      'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'hr',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'a', 'img', 'span', 'div',
+      'p',
+      'br',
+      'strong',
+      'em',
+      'u',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'code',
+      'pre',
+      'hr',
+      'table',
+      'thead',
+      'tbody',
+      'tr',
+      'th',
+      'td',
+      'a',
+      'img',
+      'span',
+      'div',
     ],
     ALLOWED_ATTR = [
-      'href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel',
-      'colspan', 'rowspan', 'width', 'height',
+      'href',
+      'src',
+      'alt',
+      'title',
+      'class',
+      'id',
+      'target',
+      'rel',
+      'colspan',
+      'rowspan',
+      'width',
+      'height',
     ],
     ALLOW_DATA_ATTR = false,
     customRules,
@@ -170,9 +209,24 @@ export function sanitizeMarkdown(markdown: string): string {
   // Sanitize HTML within markdown
   sanitized = sanitizeHTML(sanitized, {
     ALLOWED_TAGS: [
-      'strong', 'em', 'u', 'code', 'pre', 'br', 'p',
-      'ul', 'ol', 'li', 'blockquote', 'hr',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'strong',
+      'em',
+      'u',
+      'code',
+      'pre',
+      'br',
+      'p',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'hr',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
     ],
   })
 
@@ -182,7 +236,10 @@ export function sanitizeMarkdown(markdown: string): string {
 /**
  * Validate and sanitize user input
  */
-export function sanitizeUserInput(input: string, type: 'text' | 'html' | 'markdown' = 'text'): string {
+export function sanitizeUserInput(
+  input: string,
+  type: 'text' | 'html' | 'markdown' = 'text'
+): string {
   if (!input || typeof input !== 'string') {
     return ''
   }
@@ -276,7 +333,10 @@ export function generateCSPHeader(
   directives: Record<string, string[]> = {},
   reportUri?: string
 ): string {
-  const mergedDirectives = { ...DEFAULT_SECURITY_CONFIG.cspDirectives, ...directives }
+  const mergedDirectives = {
+    ...DEFAULT_SECURITY_CONFIG.cspDirectives,
+    ...directives,
+  }
 
   const cspParts: string[] = []
 
@@ -318,8 +378,13 @@ export function validateCSPDirectives(directives: Record<string, string[]>): {
   }
 
   // Check for missing essential directives
-  const requiredDirectives = ['default-src', 'script-src', 'style-src', 'img-src']
-  requiredDirectives.forEach(directive => {
+  const requiredDirectives = [
+    'default-src',
+    'script-src',
+    'style-src',
+    'img-src',
+  ]
+  requiredDirectives.forEach((directive) => {
     if (!directives[directive] || directives[directive].length === 0) {
       errors.push(`Missing required CSP directive: ${directive}`)
     }
@@ -339,14 +404,18 @@ export function validateCSPDirectives(directives: Record<string, string[]>): {
 /**
  * Generate comprehensive security headers
  */
-export function generateSecurityHeaders(config: SecurityConfig = {}): SecurityHeaders {
+export function generateSecurityHeaders(
+  config: SecurityConfig = {}
+): SecurityHeaders {
   const headers: SecurityHeaders = {}
 
   const mergedConfig = { ...DEFAULT_SECURITY_CONFIG, ...config }
 
   // Content Security Policy
   if (mergedConfig.enableCSP) {
-    headers['Content-Security-Policy'] = generateCSPHeader(mergedConfig.cspDirectives)
+    headers['Content-Security-Policy'] = generateCSPHeader(
+      mergedConfig.cspDirectives
+    )
   }
 
   // XSS Protection
@@ -362,7 +431,8 @@ export function generateSecurityHeaders(config: SecurityConfig = {}): SecurityHe
 
   // HSTS
   if (mergedConfig.enableHSTS) {
-    headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+    headers['Strict-Transport-Security'] =
+      'max-age=31536000; includeSubDomains; preload'
   }
 
   // Referrer Policy
@@ -402,7 +472,7 @@ export function auditComponentSecurity(
 
   // Check for XSS patterns
   const xssPatterns = detectXSSPatterns(content)
-  xssPatterns.forEach(pattern => {
+  xssPatterns.forEach((pattern) => {
     vulnerabilities.push({
       type: 'xss',
       severity: pattern.severity,
@@ -415,7 +485,7 @@ export function auditComponentSecurity(
   // Check CSP configuration
   if (config.enableCSP) {
     const cspValidation = validateCSPDirectives(config.cspDirectives || {})
-    cspValidation.errors.forEach(error => {
+    cspValidation.errors.forEach((error) => {
       vulnerabilities.push({
         type: 'csp',
         severity: 'high',
@@ -424,7 +494,7 @@ export function auditComponentSecurity(
         location: componentName,
       })
     })
-    cspValidation.warnings.forEach(warning => {
+    cspValidation.warnings.forEach((warning) => {
       vulnerabilities.push({
         type: 'csp',
         severity: 'medium',
@@ -437,21 +507,29 @@ export function auditComponentSecurity(
 
   // Calculate security score
   const totalIssues = vulnerabilities.length
-  const highSeverityCount = vulnerabilities.filter(v => v.severity === 'high' || v.severity === 'critical').length
-  const mediumSeverityCount = vulnerabilities.filter(v => v.severity === 'medium').length
+  const highSeverityCount = vulnerabilities.filter(
+    (v) => v.severity === 'high' || v.severity === 'critical'
+  ).length
+  const mediumSeverityCount = vulnerabilities.filter(
+    (v) => v.severity === 'medium'
+  ).length
 
   // Scoring algorithm: start with 100, deduct points for issues
   let score = 100
-  score -= highSeverityCount * 25  // -25 for each high/critical issue
+  score -= highSeverityCount * 25 // -25 for each high/critical issue
   score -= mediumSeverityCount * 10 // -10 for each medium issue
-  score -= Math.max(0, totalIssues - highSeverityCount - mediumSeverityCount) * 5 // -5 for each low issue
+  score -=
+    Math.max(0, totalIssues - highSeverityCount - mediumSeverityCount) * 5 // -5 for each low issue
   score = Math.max(0, Math.min(100, score))
 
   return {
     componentName,
     vulnerabilities,
     score,
-    passed: vulnerabilities.filter(v => v.severity === 'high' || v.severity === 'critical').length === 0,
+    passed:
+      vulnerabilities.filter(
+        (v) => v.severity === 'high' || v.severity === 'critical'
+      ).length === 0,
   }
 }
 
@@ -478,7 +556,9 @@ export function createSecureContentWrapper(config: SecurityConfig = {}) {
       <div
         className={className}
         {...props}
-        dangerouslySetInnerHTML={sanitizedContent ? { __html: sanitizedContent } : undefined}
+        dangerouslySetInnerHTML={
+          sanitizedContent ? { __html: sanitizedContent } : undefined
+        }
       >
         {sanitizedContent ? null : children}
       </div>
@@ -501,12 +581,9 @@ export function useSecureContent(config: SecurityConfig = {}) {
     []
   )
 
-  const audit = React.useCallback(
-    (content: string) => {
-      return detectXSSPatterns(content)
-    },
-    []
-  )
+  const audit = React.useCallback((content: string) => {
+    return detectXSSPatterns(content)
+  }, [])
 
   return {
     sanitize,
@@ -522,7 +599,9 @@ export function useCSP(config: SecurityConfig = {}) {
   React.useEffect(() => {
     if (config.enableCSP && typeof document !== 'undefined') {
       const cspHeader = generateCSPHeader(config.cspDirectives)
-      const metaTag = document.querySelector('meta[http-equiv="Content-Security-Policy"]')
+      const metaTag = document.querySelector(
+        'meta[http-equiv="Content-Security-Policy"]'
+      )
 
       if (metaTag) {
         metaTag.setAttribute('content', cspHeader)
@@ -601,7 +680,9 @@ export class SecurityMonitor {
     details: any
     component?: string
   }> {
-    return type ? this.violations.filter(v => v.type === type) : this.violations
+    return type
+      ? this.violations.filter((v) => v.type === type)
+      : this.violations
   }
 
   /**
@@ -621,7 +702,7 @@ export class SecurityMonitor {
   } {
     const violationsByType: Record<string, number> = {}
 
-    this.violations.forEach(v => {
+    this.violations.forEach((v) => {
       violationsByType[v.type] = (violationsByType[v.type] || 0) + 1
     })
 

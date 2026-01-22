@@ -5,6 +5,7 @@
  * Integrates with testing suites and development workflow.
  */
 
+import * as React from 'react'
 import { ReactElement } from 'react'
 
 // ============================================================================
@@ -163,15 +164,17 @@ export async function testAccessibility(
   } catch (error) {
     console.error('Accessibility test failed:', error)
     return {
-      violations: [{
-        id: 'test-failure',
-        impact: 'critical',
-        description: 'Accessibility test failed to run',
-        help: 'Check that axe-core is properly loaded and the component is mountable',
-        helpUrl: 'https://github.com/dequelabs/axe-core',
-        nodes: [],
-        tags: ['test-failure'],
-      }],
+      violations: [
+        {
+          id: 'test-failure',
+          impact: 'critical',
+          description: 'Accessibility test failed to run',
+          help: 'Check that axe-core is properly loaded and the component is mountable',
+          helpUrl: 'https://github.com/dequelabs/axe-core',
+          nodes: [],
+          tags: ['test-failure'],
+        },
+      ],
       passes: [],
       incomplete: [],
       inapplicable: [],
@@ -192,12 +195,12 @@ export function assertNoAccessibilityViolations(
   allowedImpacts: Array<'minor' | 'moderate' | 'serious' | 'critical'> = []
 ): void {
   const violations = report.violations.filter(
-    v => !allowedImpacts.includes(v.impact)
+    (v) => !allowedImpacts.includes(v.impact)
   )
 
   if (violations.length > 0) {
     const message = violations
-      .map(v => `${v.impact.toUpperCase()}: ${v.description} (${v.id})`)
+      .map((v) => `${v.impact.toUpperCase()}: ${v.description} (${v.id})`)
       .join('\n')
 
     throw new Error(`Accessibility violations found:\n${message}`)
@@ -209,12 +212,12 @@ export function assertNoAccessibilityViolations(
  */
 export function assertWCAG2_1AACompliance(report: AccessibilityReport): void {
   const seriousViolations = report.violations.filter(
-    v => v.impact === 'serious' || v.impact === 'critical'
+    (v) => v.impact === 'serious' || v.impact === 'critical'
   )
 
   if (seriousViolations.length > 0) {
     const message = seriousViolations
-      .map(v => `${v.impact.toUpperCase()}: ${v.description}`)
+      .map((v) => `${v.impact.toUpperCase()}: ${v.description}`)
       .join('\n')
 
     throw new Error(`WCAG 2.1 AA violations found:\n${message}`)
@@ -229,12 +232,13 @@ export function checkColorContrast(report: AccessibilityReport): {
   summary: string
 } {
   const contrastViolations = report.violations.filter(
-    v => v.id === 'color-contrast'
+    (v) => v.id === 'color-contrast'
   )
 
-  const summary = contrastViolations.length === 0
-    ? '✅ No color contrast violations found'
-    : `❌ ${contrastViolations.length} color contrast violation(s) found`
+  const summary =
+    contrastViolations.length === 0
+      ? '✅ No color contrast violations found'
+      : `❌ ${contrastViolations.length} color contrast violation(s) found`
 
   return { violations: contrastViolations, summary }
 }
@@ -250,7 +254,7 @@ export function createAccessibilityMatcher() {
   return {
     toBeAccessible(received: AccessibilityReport) {
       const violations = received.violations.filter(
-        v => v.impact === 'serious' || v.impact === 'critical'
+        (v) => v.impact === 'serious' || v.impact === 'critical'
       )
 
       const pass = violations.length === 0
@@ -260,7 +264,9 @@ export function createAccessibilityMatcher() {
           pass
             ? 'Expected component to have accessibility violations, but it passed'
             : `Found ${violations.length} serious/critical accessibility violations:\n` +
-              violations.map(v => `  ${v.impact}: ${v.description}`).join('\n'),
+              violations
+                .map((v) => `  ${v.impact}: ${v.description}`)
+                .join('\n'),
         pass,
       }
     },
@@ -268,8 +274,8 @@ export function createAccessibilityMatcher() {
     toPassWCAG2_1AA(received: AccessibilityReport) {
       return {
         message: () => `Component should pass WCAG 2.1 AA standards`,
-        pass: received.violations.every(v =>
-          v.impact !== 'serious' && v.impact !== 'critical'
+        pass: received.violations.every(
+          (v) => v.impact !== 'serious' && v.impact !== 'critical'
         ),
       }
     },
@@ -291,24 +297,28 @@ export function logAccessibilityViolations(report: AccessibilityReport): void {
 
   console.group('🚨 Accessibility Violations Found')
 
-  const grouped = report.violations.reduce((acc, violation) => {
-    const key = violation.impact
-    if (!acc[key]) acc[key] = []
-    acc[key].push(violation)
-    return acc
-  }, {} as Record<string, AccessibilityViolation[]>)
+  const grouped = report.violations.reduce(
+    (acc, violation) => {
+      const key = violation.impact
+      if (!acc[key]) acc[key] = []
+      acc[key].push(violation)
+      return acc
+    },
+    {} as Record<string, AccessibilityViolation[]>
+  )
 
   Object.entries(grouped).forEach(([impact, violations]) => {
-    const emoji = {
-      minor: '⚠️',
-      moderate: '🟡',
-      serious: '🟠',
-      critical: '🔴',
-    }[impact as keyof typeof emoji] || '❓'
+    const emoji =
+      {
+        minor: '⚠️',
+        moderate: '🟡',
+        serious: '🟠',
+        critical: '🔴',
+      }[impact as keyof typeof emoji] || '❓'
 
     console.group(`${emoji} ${impact.toUpperCase()} (${violations.length})`)
 
-    violations.forEach(violation => {
+    violations.forEach((violation) => {
       console.log(`• ${violation.description}`)
       console.log(`  Help: ${violation.help}`)
       console.log(`  URL: ${violation.helpUrl}`)
@@ -321,18 +331,25 @@ export function logAccessibilityViolations(report: AccessibilityReport): void {
     console.groupEnd()
   })
 
-  console.log(`📊 Summary: ${report.violations.length} violations, ${report.passes.length} passes`)
+  console.log(
+    `📊 Summary: ${report.violations.length} violations, ${report.passes.length} passes`
+  )
   console.groupEnd()
 }
 
 /**
  * Generate accessibility report HTML
  */
-export function generateAccessibilityReportHTML(report: AccessibilityReport): string {
-  const violationsByImpact = report.violations.reduce((acc, v) => {
-    acc[v.impact] = (acc[v.impact] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+export function generateAccessibilityReportHTML(
+  report: AccessibilityReport
+): string {
+  const violationsByImpact = report.violations.reduce(
+    (acc, v) => {
+      acc[v.impact] = (acc[v.impact] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   return `
     <!DOCTYPE html>
@@ -354,20 +371,26 @@ export function generateAccessibilityReportHTML(report: AccessibilityReport): st
         <p><strong>Violations:</strong> ${report.violations.length}</p>
         <p><strong>Passes:</strong> ${report.passes.length}</p>
         <p><strong>Tested:</strong> ${new Date(report.timestamp).toLocaleString()}</p>
-        ${Object.entries(violationsByImpact).map(([impact, count]) =>
-          `<p><strong>${impact}:</strong> ${count}</p>`
-        ).join('')}
+        ${Object.entries(violationsByImpact)
+          .map(
+            ([impact, count]) => `<p><strong>${impact}:</strong> ${count}</p>`
+          )
+          .join('')}
       </div>
 
       <h2>Violations</h2>
-      ${report.violations.map(v => `
+      ${report.violations
+        .map(
+          (v) => `
         <div class="violation">
           <h3>${v.impact.toUpperCase()}: ${v.description}</h3>
           <p><strong>Help:</strong> ${v.help}</p>
           <p><strong>Tags:</strong> ${v.tags.join(', ')}</p>
           <p><a href="${v.helpUrl}" target="_blank">Learn more</a></p>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
 
       ${report.violations.length === 0 ? '<p>✅ No violations found!</p>' : ''}
     </body>
@@ -382,25 +405,30 @@ export function generateAccessibilityReportHTML(report: AccessibilityReport): st
 /**
  * React hook for testing component accessibility during development
  */
-export function useAccessibilityTesting(options: AccessibilityTestOptions = {}) {
+export function useAccessibilityTesting(
+  options: AccessibilityTestOptions = {}
+) {
   const [report, setReport] = React.useState<AccessibilityReport | null>(null)
   const [isTesting, setIsTesting] = React.useState(false)
 
-  const runTest = React.useCallback(async (component: ReactElement) => {
-    setIsTesting(true)
-    try {
-      const result = await testAccessibility(component, options)
-      setReport(result)
+  const runTest = React.useCallback(
+    async (component: ReactElement) => {
+      setIsTesting(true)
+      try {
+        const result = await testAccessibility(component, options)
+        setReport(result)
 
-      if (process.env.NODE_ENV === 'development') {
-        logAccessibilityViolations(result)
+        if (process.env.NODE_ENV === 'development') {
+          logAccessibilityViolations(result)
+        }
+
+        return result
+      } finally {
+        setIsTesting(false)
       }
-
-      return result
-    } finally {
-      setIsTesting(false)
-    }
-  }, [options])
+    },
+    [options]
+  )
 
   return {
     report,
@@ -434,36 +462,41 @@ export function withAccessibilityTesting(Story: any, context: any) {
       <Story {...context.args} />
 
       {report && report.violations.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          background: '#dc2626',
-          color: 'white',
-          padding: '10px',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          zIndex: 9999,
-        }} onClick={() => setShowReport(!showReport)}>
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            background: '#dc2626',
+            color: 'white',
+            padding: '10px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            zIndex: 9999,
+          }}
+          onClick={() => setShowReport(!showReport)}
+        >
           🚨 {report.violations.length} A11y Violations
         </div>
       )}
 
       {showReport && report && (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'white',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '20px',
-          maxWidth: '600px',
-          maxHeight: '80vh',
-          overflow: 'auto',
-          zIndex: 10000,
-        }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'white',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            padding: '20px',
+            maxWidth: '600px',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            zIndex: 10000,
+          }}
+        >
           <h3>Accessibility Report</h3>
           <button onClick={() => setShowReport(false)}>Close</button>
           <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
