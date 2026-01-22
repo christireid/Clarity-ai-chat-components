@@ -20,8 +20,8 @@
     "@storybook/builder-vite": "^10.1.4",
     "@storybook/react": "^10.1.4",
     "@storybook/react-vite": "^10.1.4",
-    "@storybook/test": "^10.1.2",
-    "@vueless/storybook-dark-mode": "^1.0.4",
+    "@storybook/test": "^8.6.15",
+    "@vueless/storybook-dark-mode": "^10.0.6",
     "chromatic": "^11.25.2",
     "serve": "^14.2.4"
   },

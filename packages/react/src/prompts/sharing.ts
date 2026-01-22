@@ -363,9 +363,10 @@ export class TemplateSyncManager {
     conflicts: number
   }> {
     // Upload local changes
-    const localChanges = localTemplates.filter(t =>
-      t.metadata?.lastModified && t.metadata.lastModified > this.lastSyncTime
-    )
+    const localChanges = localTemplates.filter(t => {
+      const lastModified = t.metadata?.lastModified as number | undefined
+      return lastModified && lastModified > this.lastSyncTime
+    })
 
     if (localChanges.length > 0) {
       await remoteService.uploadTemplates(localChanges)
@@ -401,8 +402,8 @@ export class TemplateSyncManager {
     for (const remoteTemplate of remote) {
       const localTemplate = local.find(t => t.id === remoteTemplate.id)
       if (localTemplate) {
-        const localModified = localTemplate.metadata?.lastModified || 0
-        const remoteModified = remoteTemplate.metadata?.lastModified || 0
+        const localModified = (localTemplate.metadata?.lastModified as number | undefined) || 0
+        const remoteModified = (remoteTemplate.metadata?.lastModified as number | undefined) || 0
 
         // Both modified since last sync
         if (localModified > this.lastSyncTime && remoteModified > this.lastSyncTime) {
