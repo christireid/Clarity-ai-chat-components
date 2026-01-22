@@ -45,6 +45,12 @@ import { AuditLogger } from './audit'
 import { DEFAULT_RETENTION_POLICY, DEFAULT_MEMORY_LIMITS } from './constants'
 import type { DataExportResult, DataExportOptions } from './types'
 import { ImportanceScorer } from './scoring/importance-scorer'
+import {
+  MemoryConsentError,
+  MemoryConfigError,
+  MemoryOperationError,
+  MemoryErrorCode,
+} from './errors'
 
 /**
  * Simple token counter utility
@@ -333,9 +339,11 @@ export class MemoryService {
                 'Configure consent.getUserId or include userId in metadata.'
             )
           }
-          throw new Error(
+          throw new MemoryConsentError(
             'Cannot add memory: User ID required for consent verification. ' +
-              'Include userId in metadata or configure consent.getUserId.'
+              'Include userId in metadata or configure consent.getUserId.',
+            MemoryErrorCode.MISSING_USER_ID,
+            { metadata }
           )
         }
 
@@ -492,9 +500,15 @@ export class MemoryService {
 
     // Check memory size limit
     if (content.length > limits.maxMemorySize) {
-      const error = new Error(
+      const error = new MemoryOperationError(
         `Memory content exceeds maximum size: ${content.length} > ${limits.maxMemorySize} characters. ` +
-          `Consider chunking or summarizing large content.`
+          `Consider chunking or summarizing large content.`,
+        MemoryErrorCode.MEMORY_TOO_LARGE,
+        {
+          contentLength: content.length,
+          maxSize: limits.maxMemorySize,
+          operation: 'addMemory',
+        }
       )
       if (this.config.debug) {
         console.error('[MemoryService]', error.message)
@@ -2897,7 +2911,11 @@ export class MemoryService {
    */
   async embed(text: string): Promise<number[]> {
     if (!this.embeddings) {
-      throw new Error('Embedding provider not configured')
+      throw new MemoryConfigError(
+        'Embedding provider not configured. ' +
+          'Configure embeddings in MemoryServiceConfig to use this method.',
+        { method: 'embed' }
+      )
     }
     return this.embeddings.embedText(text)
   }

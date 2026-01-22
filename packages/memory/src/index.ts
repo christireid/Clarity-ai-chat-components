@@ -56,6 +56,35 @@ export {
   type AuditLoggerConfig,
 } from './audit'
 
+// Error handling (typed errors with error codes)
+export {
+  MemoryError,
+  MemoryConfigError,
+  MemoryConsentError,
+  MemoryOperationError,
+  MemoryStorageError,
+  MemoryEmbeddingError,
+  MemoryQueryError,
+  MemoryToolError,
+  MemoryValidationError,
+  MemoryErrorCode,
+  isMemoryError,
+  isMemoryErrorType,
+  formatErrorForUser,
+  getErrorCode,
+} from './errors'
+
+// Configuration presets and profiles
+export {
+  ENVIRONMENT_PRESETS,
+  APPLICATION_PROFILES,
+  createConfig,
+  getPreset,
+  getProfile,
+  listPresets,
+  listProfiles,
+} from './config-presets'
+
 // Token optimization utilities re-exported for convenience
 // Note: Import directly from @clarity-chat/token-optimization for full API access
 export type {
