@@ -44,6 +44,7 @@ import {
 
 // Prompt optimization imports
 import { buildModelPrompt } from '../../prompt/core/builder'
+// debounce import removed as we use inline setTimeout for effect cleanup pattern
 import { MODEL_PRESETS } from '../../prompt/core/tokenizer'
 import type { ModelMetadata } from '../../prompt/core/tokenizer'
 
@@ -399,6 +400,16 @@ export function useClarityChat(
       }
 
       // Debounce optimization to avoid excessive processing during rapid updates
+      const debouncedOptimize = debounce(optimizeMessages, 500)
+      debouncedOptimize()
+      
+      // Cleanup not strictly necessary for simple debounce but good practice if we returned a cancel function
+      // For now, debounce wrapper creates a new timer each effect run if dependencies change
+      // Ideally we would memoize the debounced function, but we want it to run on dependency change.
+      // The previous setTimeout approach was actually correct for a simple effect-based debounce.
+      // Let's revert to inline setTimeout to avoid creating new function references or complex useMemo.
+      
+      // Actually, standard useEffect debounce pattern:
       const timeoutId = setTimeout(optimizeMessages, 500)
       return () => clearTimeout(timeoutId)
     }
