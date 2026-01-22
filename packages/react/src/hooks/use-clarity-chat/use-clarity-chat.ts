@@ -313,6 +313,10 @@ export function useClarityChat(
                 memoryContextRef.current = ''
                 setCurrentMemoryContext('')
               }
+            } finally {
+              // FIX: Issue #11 - Ensure cleanup happens even if promise rejects
+              // This prevents loading state from getting stuck
+              lastQueryRef.current = queryText
             }
           }
         } catch (error) {

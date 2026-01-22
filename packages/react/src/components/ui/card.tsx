@@ -1,5 +1,5 @@
-import React from 'react'
-import { cn } from '../../../utils/cn'
+import * as React from 'react'
+import { cn } from '@clarity-chat/primitives'
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -7,7 +7,10 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, ...props }, ref) => {
     return (
       <div
-        className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+        className={cn(
+          'rounded-lg border bg-card text-card-foreground shadow-sm',
+          className
+        )}
         ref={ref}
         {...props}
       />
@@ -39,7 +42,10 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, ...props }, ref) => {
     return (
       <h3
-        className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
+        className={cn(
+          'text-2xl font-semibold leading-none tracking-tight',
+          className
+        )}
         ref={ref}
         {...props}
       />
@@ -53,13 +59,7 @@ export interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, ...props }, ref) => {
-    return (
-      <div
-        className={cn('p-6 pt-0', className)}
-        ref={ref}
-        {...props}
-      />
-    )
+    return <div className={cn('p-6 pt-0', className)} ref={ref} {...props} />
   }
 )
 

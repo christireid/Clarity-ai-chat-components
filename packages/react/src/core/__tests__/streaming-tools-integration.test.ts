@@ -14,6 +14,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ToolOrchestrator } from '../tool-orchestrator'
 import type { ToolDefinition } from '../../types/tool-definition'
 import type { ToolInvocation } from '../../types/tool-invocation'
+import { safeEvaluate } from '../../utils/math/safe-evaluator'
 
 // =============================================================================
 // Mock Streaming Parser
@@ -103,7 +104,7 @@ function createCalculatorTool(): ToolDefinition {
     },
     execute: async (args) => {
       await new Promise((resolve) => setTimeout(resolve, 5))
-      return { result: eval(args.expression) }
+      return { result: safeEvaluate(args.expression) }
     },
   }
 }
@@ -157,7 +158,11 @@ describe('Streaming + Tools Integration', () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Let me check the weather' },
         { type: 'content', content: ' for you. ' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{"location"' },
         { type: 'tool_call_delta', argsJson: ': "San Francisco"}' },
         { type: 'tool_call_complete' }, // Stream should pause here
@@ -208,7 +213,11 @@ describe('Streaming + Tools Integration', () => {
 
     it('should handle partial tool calls during streaming', async () => {
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{' },
         { type: 'tool_call_delta', argsJson: '"location"' },
         { type: 'tool_call_delta', argsJson: ':' },
@@ -247,7 +256,11 @@ describe('Streaming + Tools Integration', () => {
     it('should execute tool while stream is paused', async () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Checking weather... ' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{"location":"Boston"}' },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'It is 72°F and sunny!' },
@@ -304,7 +317,11 @@ describe('Streaming + Tools Integration', () => {
 
     it('should update tool invocation state during execution', async () => {
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_delta', argsJson: '{"expression":"2+2"}' },
         { type: 'tool_call_complete' },
       ]
@@ -363,12 +380,20 @@ describe('Streaming + Tools Integration', () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Let me check two things. ' },
         // First tool call
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{"location":"NYC"}' },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'Weather done. ' },
         // Second tool call
-        { type: 'tool_call_start', toolCallId: 'call_2', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_2',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_delta', argsJson: '{"expression":"10*5"}' },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'All done!' },
@@ -433,10 +458,18 @@ describe('Streaming + Tools Integration', () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Executing tools in parallel... ' },
         // Start both tool calls
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{"location":"SF"}' },
         { type: 'tool_call_complete' },
-        { type: 'tool_call_start', toolCallId: 'call_2', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_2',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_delta', argsJson: '{"expression":"20+30"}' },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'Done!' },
@@ -503,7 +536,11 @@ describe('Streaming + Tools Integration', () => {
 
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Trying to execute tool... ' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'failing_tool' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'failing_tool',
+        },
         { type: 'tool_call_delta', argsJson: '{}' },
         { type: 'tool_call_complete' },
       ]
@@ -555,7 +592,11 @@ describe('Streaming + Tools Integration', () => {
       })
 
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'slow_tool' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'slow_tool',
+        },
         { type: 'tool_call_delta', argsJson: '{}' },
         { type: 'tool_call_complete' },
       ]
@@ -589,7 +630,11 @@ describe('Streaming + Tools Integration', () => {
 
     it('should handle malformed tool call JSON', () => {
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_delta', argsJson: '{"location":' }, // Incomplete
         { type: 'tool_call_delta', argsJson: '"NYC"' }, // Missing closing brace
         { type: 'tool_call_complete' },
@@ -619,7 +664,11 @@ describe('Streaming + Tools Integration', () => {
     it('should resume stream after tool execution', async () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Part 1. ' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_delta', argsJson: '{"expression":"5+5"}' },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'Part 2. ' },
@@ -655,7 +704,11 @@ describe('Streaming + Tools Integration', () => {
     it('should preserve message state across pause/resume', async () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Before tool. ' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'After tool.' },
       ]
@@ -719,7 +772,11 @@ describe('Streaming + Tools Integration', () => {
       const abortController = new AbortController()
 
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'slow_tool' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'slow_tool',
+        },
         { type: 'tool_call_complete' },
       ]
 
@@ -750,7 +807,11 @@ describe('Streaming + Tools Integration', () => {
     it('should allow stopping stream during tool execution', async () => {
       const chunks: StreamChunk[] = [
         { type: 'content', content: 'Starting...' },
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'get_weather' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'get_weather',
+        },
         { type: 'tool_call_complete' },
         { type: 'content', content: 'This should not appear' },
       ]
@@ -791,7 +852,11 @@ describe('Streaming + Tools Integration', () => {
       })
 
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_1', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_1',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_complete' },
       ]
 
@@ -813,7 +878,11 @@ describe('Streaming + Tools Integration', () => {
 
     it('should track call ID across stream pause/resume', async () => {
       const chunks: StreamChunk[] = [
-        { type: 'tool_call_start', toolCallId: 'call_abc123', toolName: 'calculator' },
+        {
+          type: 'tool_call_start',
+          toolCallId: 'call_abc123',
+          toolName: 'calculator',
+        },
         { type: 'tool_call_complete' },
       ]
 

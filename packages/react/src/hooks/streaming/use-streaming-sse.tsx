@@ -303,11 +303,13 @@ export function useStreamingSSE(
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
-  
+  const reconnectingRef = React.useRef(false) // FIX: Issue #5 - Prevent concurrent reconnections (from main)
+
   // STREAM-3: RAF Batching refs
   const rafRef = React.useRef<number | null>(null)
   const pendingEventsRef = React.useRef<SSEEvent[]>([])
   const pendingDataRef = React.useRef<string>('')
+  const MAX_DATA_SIZE = 10 * 1024 * 1024 // From main: 10MB data limit
 
   /**
    * Parse SSE event data
@@ -341,9 +343,23 @@ export function useStreamingSSE(
         lastEventIdRef.current = eventId
       }
 
-      // STREAM-3: Batch updates using RAF
-      pendingEventsRef.current.push(event)
-      pendingDataRef.current += eventData
+      // STREAM-3: Batch updates using RAF with bounds checking (merged from main)
+      if (pendingEventsRef.current.length < maxEventBufferSize) {
+        pendingEventsRef.current.push(event)
+      } else {
+        console.warn('[useStreamingSSE] Event buffer full, dropping event')
+        onEventBufferOverflow?.(1, maxEventBufferSize)
+      }
+
+      // Apply data size limit (from main)
+      const newData = pendingDataRef.current + eventData
+      if (newData.length <= MAX_DATA_SIZE) {
+        pendingDataRef.current = newData
+      } else {
+        console.warn(`[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`)
+        onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
+        pendingDataRef.current = newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
+      }
 
       onMessage?.(event)
 

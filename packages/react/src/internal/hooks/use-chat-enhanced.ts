@@ -626,6 +626,12 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           return assistantMessageId
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') {
+            // FIX: Issue #14 - Remove partial message on abort to prevent incomplete messages in history
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
             return null
           }
 
@@ -721,7 +727,31 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     ) => {
       event?.preventDefault()
 
-      if (!input.trim() || isLoading) return
+      // FIX: Issue #13 - Provide feedback when input is empty
+      if (!input.trim()) {
+        const error = new Error('Message cannot be empty')
+        onError?.(error)
+        return
+      }
+
+      // Check if already loading
+      if (isLoading) {
+        const error = new Error('Please wait for the current response to complete')
+        onError?.(error)
+        return
+      }
+
+      // FIX: Issue #21 - Credentials validation
+      // Ensure credentials are sent with cross-origin requests if mode is 'include'
+      if (api && api.startsWith('http') && !api.includes(window.location.origin) && credentials === 'include') {
+        // Just a warning in dev mode, but good practice to verify
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[useChat] Cross-origin request with credentials: include. ' +
+            'Ensure your server sets Access-Control-Allow-Credentials: true'
+          )
+        }
+      }
 
       const userMessage: CoreMessage = {
         role: 'user',
@@ -736,7 +766,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           // Error already handled in append
         })
     },
-    [input, isLoading, append]
+    [input, isLoading, append, onError]
   )
 
   // Cleanup on unmount

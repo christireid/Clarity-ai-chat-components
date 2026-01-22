@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React, { useState } from 'react'
+// Animation components are internal - import from internal exports
 import {
   FeedbackAnimation,
   SuccessCheckmark,
@@ -17,7 +18,7 @@ import {
   ScalePresence,
   StaggerContainer,
   AnimatedGrid,
-} from '@clarity-chat/react'
+} from '@clarity-chat/react/internal'
 import { useReducedMotion } from '@clarity-chat/primitives'
 
 /**

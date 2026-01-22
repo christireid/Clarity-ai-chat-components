@@ -400,7 +400,7 @@ export function VirtualizedMessageList({
         // Small delay to ensure DOM has updated with new messages
         setTimeout(() => {
           if (listRef.current) {
-            listRef.current.scrollToOffset(scrollOffset)
+            listRef.current.scrollTo(scrollOffset)
           }
         }, 0)
       }

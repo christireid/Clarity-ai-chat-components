@@ -1,0 +1,21 @@
+# Clarity Chat UI Documentation
+# https://clarity-chat.dev
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://clarity-chat.dev/sitemap.xml
+
+# Disallow private paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow search engines to crawl important files
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+
+# Crawl delay (be nice to servers)
+Crawl-delay: 1

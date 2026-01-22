@@ -456,12 +456,6 @@ export function ClarityChat({
         
         className={className}
         emptyState={emptyState}
-        autoScroll={processedProps.autoScroll}
-        theme={processedProps.theme}
-        // These props are not in the groups yet or custom to ChatWindow
-        showTokenCounter={processedProps.showTokenCounter}
-        showNetworkStatus={processedProps.showNetworkStatus}
-        // enableMessageOperations is handled by passing specific callbacks
       />
     </div>
   )

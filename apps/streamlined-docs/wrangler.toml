@@ -1,0 +1,30 @@
+name = "clarity-chat-docs"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = ".next"
+
+[site]
+bucket = ".next"
+
+[[env.production]]
+name = "clarity-chat-docs"
+route = "https://clarity-chat.dev/*"
+
+[[env.production.build]]
+command = "npm run build"
+cwd = ""
+watch_dir = "app"
+
+[build]
+command = "npm run build"
+cwd = ""
+
+[build.upload]
+format = "service-worker"
+
+[[build.upload.rules]]
+type = "Text"
+globs = ["**/*.html", "**/*.json", "**/*.js", "**/*.css"]
+
+[[build.upload.rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]

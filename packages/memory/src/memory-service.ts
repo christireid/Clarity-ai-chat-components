@@ -706,22 +706,31 @@ export class MemoryService {
   async flushBuffer(): Promise<void> {
     if (this.buffer.items.length === 0) return
 
+    // Capture items and clear buffer immediately to prevent race conditions
+    // where new items added during await would be lost
     const items = [...this.buffer.items]
-
-    // Update vector store
-    if (this.vectorStore) {
-      await this.updateVectorStore(items)
-    }
-
-    // Clear buffer
     this.buffer.items = []
     this.buffer.totalTokens = 0
 
-    this.emitEvent({
-      type: 'buffer:flushed',
-      timestamp: new Date(),
-      data: { count: items.length },
-    })
+    try {
+      // Update vector store
+      if (this.vectorStore) {
+        await this.updateVectorStore(items)
+      }
+
+      this.emitEvent({
+        type: 'buffer:flushed',
+        timestamp: new Date(),
+        data: { count: items.length },
+      })
+    } catch (error) {
+      // On failure, restore items to buffer (prepend to maintain partial order)
+      this.buffer.items = [...items, ...this.buffer.items]
+      // Re-calculate tokens (simplified)
+      this.buffer.totalTokens = this.buffer.items.reduce((sum, item) => sum + item.tokens, 0)
+      
+      throw error
+    }
   }
 
   /**

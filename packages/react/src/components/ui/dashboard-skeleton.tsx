@@ -247,13 +247,13 @@ export interface DashboardSkeletonProps {
 function Skeleton({
   className,
   animate = true,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement> & { animate?: boolean }) {
+  style,
+}: { className?: string; animate?: boolean; style?: React.CSSProperties }) {
   return (
     <BaseSkeleton
       variant={animate ? 'pulse' : 'none'}
       className={className}
-      {...props}
+      style={style}
     />
   )
 }

@@ -137,6 +137,25 @@ export class ToolOrchestrator {
       tools: config.tools ?? [],
     }
 
+    // SECURITY: Prevent autoApprove in production
+    if (this.config.autoApprove) {
+      const isProduction =
+        typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+
+      if (isProduction) {
+        throw new Error(
+          '[ToolOrchestrator] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+            'Tools must require explicit user approval. Set autoApprove: false.'
+        )
+      }
+
+      // Warn in non-production environments
+      console.warn(
+        '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+          'This should only be used in trusted development/testing environments.'
+      )
+    }
+
     this.registry = new ToolRegistry()
     this.lifecycle = new ToolLifecycleManager()
     this.executor = new ToolExecutor(this.lifecycle)
@@ -246,10 +265,14 @@ export class ToolOrchestrator {
         if (this.config.autoApprove) {
           this.lifecycle.approve(call.id, 'auto')
         } else {
-          // Throw error - approval must be done externally
-          throw new Error(
-            `Tool requires approval: ${toolName}. Call approve(callId) first.`
-          )
+          // Return pending status so caller knows to wait for approval
+          return {
+            callId: call.id,
+            toolName,
+            args,
+            status: 'pending_approval',
+            lifecycleRecord: this.lifecycle.getCall(call.id),
+          }
         }
       } else {
         // Auto-approved
@@ -264,13 +287,16 @@ export class ToolOrchestrator {
         timeout: options.timeout ?? this.config.defaultTimeout,
         signal: options.signal,
         skipValidation: options.skipValidation,
-        skipCache:
-          options.skipCache ?? !this.config.enableCaching,
+        skipCache: options.skipCache ?? !this.config.enableCaching,
         context: { callId: call.id, ...options.context },
       })
 
       // Complete lifecycle
-      this.lifecycle.complete(call.id, executionResult.result, executionResult.cached)
+      this.lifecycle.complete(
+        call.id,
+        executionResult.result,
+        executionResult.cached
+      )
 
       // Get updated call record
       const lifecycleRecord = this.lifecycle.getCall(call.id)
@@ -291,7 +317,10 @@ export class ToolOrchestrator {
       // Mark as failed in lifecycle
       if (err.message.includes('timeout')) {
         this.lifecycle.timeout(call.id, this.config.defaultTimeout)
-      } else if (err.message.includes('cancelled') || err.message.includes('aborted')) {
+      } else if (
+        err.message.includes('cancelled') ||
+        err.message.includes('aborted')
+      ) {
         this.lifecycle.cancel(call.id, err.message)
       } else {
         this.lifecycle.fail(call.id, err)
@@ -358,7 +387,18 @@ export class ToolOrchestrator {
       // Mark as executing
       this.lifecycle.markExecuting(callId)
 
-      // Execute
+      // FIX: TOOL-018 - Re-validate approval status atomically
+      const currentCall = this.lifecycle.getCall(callId)
+      if (
+        currentCall.status !== 'approved' &&
+        currentCall.status !== 'executing'
+      ) {
+        throw new Error(
+          `Tool execution rejected: status changed to ${currentCall.status} during approval validation`
+        )
+      }
+
+      // Now safe to execute
       const result = await this.executor.execute(tool, call.args, {
         context: call.context,
       })
