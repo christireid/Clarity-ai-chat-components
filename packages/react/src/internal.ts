@@ -117,7 +117,7 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
+// export * from './hooks/ui/use-mounted' // File doesn't exist
 export * from './hooks/ui/use-is-mounted'
 export * from './hooks/ui/use-merged-ref'
 export * from './hooks/ui/use-window-size'
@@ -135,7 +135,8 @@ export * from './hooks/dashboard'
 export * from './hooks/theme'
 
 // Re-export full theme system
-export * from './theme'
+// Note: Commented out to avoid conflicts with public-api exports
+// export * from './theme' // Conflicts: checkColorContrast already in public-api
 
 // Re-export components from additional domains
 export * from './components/ui'
@@ -181,7 +182,8 @@ export {
 } from './components/code'
 export * from './components/conversation'
 export * from './components/feedback'
-export * from './components/media'
+// Note: Commented out to avoid conflicts with public-api exports
+// export * from './components/media' // Conflicts: DocumentChunk, DocumentMetadata already in public-api
 export * from './components/search'
 export * from './components/navigation'
 export * from './components/theme-components'
@@ -197,7 +199,8 @@ export type {
 // PromptSuggestionsEnhanced - not yet implemented
 
 // Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
-export * from './accessibility/focus-management'
+// Note: Commented out to avoid conflicts with public-api exports
+// export * from './accessibility/focus-management' // Conflicts: SkipLink, getFocusableElements, useFocusManagement already in public-api
 export * from './accessibility/accessibility-automation'
 
 // Re-export types that are commonly needed
@@ -206,7 +209,7 @@ export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+// export { SecurityManager, securityManager, useSecurity } from './utils/security' // Module has no exported members
 
 // Re-export types from @clarity-chat/types for convenience
 export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
@@ -221,7 +224,8 @@ export type { ModelInfo, ToolCall } from './adapters/types'
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
-export * from './internal/index'
+// Note: Commented out to avoid conflicts with public-api exports
+// export * from './internal/index' // Conflicts: measurePerformance already in public-api
 
 // ============================================================================
 // AI CHAT HOOKS (Advanced)
@@ -246,7 +250,8 @@ export * from './hooks/resilience'
 // ============================================================================
 // ANALYTICS & OBSERVABILITY
 // ============================================================================
-export * from './analytics'
+// Note: Commented out to avoid conflicts with public-api exports
+// export * from './analytics' // Conflicts: AnalyticsConfig, AnalyticsEvent, AnalyticsProvider, useAnalytics, useInteractionTracking already in public-api
 export * from './observability'
 
 // ============================================================================
