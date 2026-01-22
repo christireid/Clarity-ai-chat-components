@@ -36,7 +36,9 @@ export class ToolValidationError extends Error {
     public field: string,
     message: string
   ) {
-    super(`[${toolName}] Parameter validation failed for '${field}': ${message}`)
+    super(
+      `[${toolName}] Parameter validation failed for '${field}': ${message}`
+    )
     this.name = 'ToolValidationError'
   }
 }
@@ -58,7 +60,11 @@ export function validateToolArguments(
   if (parameters.required) {
     for (const field of parameters.required) {
       if (!(field in args)) {
-        throw new ToolValidationError(tool.name, field, 'Required field is missing')
+        throw new ToolValidationError(
+          tool.name,
+          field,
+          'Required field is missing'
+        )
       }
     }
   }
@@ -143,7 +149,12 @@ function validateValue(
 /**
  * Validate string value
  */
-function validateString(toolName: string, field: string, value: string, schema: any): void {
+function validateString(
+  toolName: string,
+  field: string,
+  value: string,
+  schema: any
+): void {
   if (schema.minLength !== undefined && value.length < schema.minLength) {
     throw new ToolValidationError(
       toolName,
@@ -175,7 +186,12 @@ function validateString(toolName: string, field: string, value: string, schema: 
 /**
  * Validate number value
  */
-function validateNumber(toolName: string, field: string, value: number, schema: any): void {
+function validateNumber(
+  toolName: string,
+  field: string,
+  value: number,
+  schema: any
+): void {
   if (schema.type === 'integer' && !Number.isInteger(value)) {
     throw new ToolValidationError(toolName, field, 'Value must be an integer')
   }
@@ -196,7 +212,10 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     )
   }
 
-  if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) {
+  if (
+    schema.exclusiveMinimum !== undefined &&
+    value <= schema.exclusiveMinimum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
@@ -204,7 +223,10 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     )
   }
 
-  if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) {
+  if (
+    schema.exclusiveMaximum !== undefined &&
+    value >= schema.exclusiveMaximum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
@@ -249,7 +271,11 @@ function validateArray(
   if (schema.uniqueItems) {
     const unique = new Set(value.map((v) => JSON.stringify(v)))
     if (unique.size !== value.length) {
-      throw new ToolValidationError(toolName, field, 'Array items must be unique')
+      throw new ToolValidationError(
+        toolName,
+        field,
+        'Array items must be unique'
+      )
     }
   }
 
@@ -318,10 +344,13 @@ export class ToolResultCache {
     // Sort keys for consistent hashing
     const sortedArgs = Object.keys(args)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = args[key]
-        return acc
-      }, {} as Record<string, unknown>)
+      .reduce(
+        (acc, key) => {
+          acc[key] = args[key]
+          return acc
+        },
+        {} as Record<string, unknown>
+      )
 
     return `${toolName}:${JSON.stringify(sortedArgs)}`
   }
@@ -350,7 +379,12 @@ export class ToolResultCache {
   /**
    * Set cache entry
    */
-  set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number): void {
+  set(
+    toolName: string,
+    args: ToolArguments,
+    result: ToolResult,
+    ttl: number
+  ): void {
     const key = this.getCacheKey(toolName, args)
     this.cache.set(key, {
       result,
@@ -378,7 +412,10 @@ export class ToolResultCache {
   /**
    * Get cache statistics
    */
-  getStats(): { size: number; entries: Array<{ toolName: string; age: number }> } {
+  getStats(): {
+    size: number
+    entries: Array<{ toolName: string; age: number }>
+  } {
     const entries: Array<{ toolName: string; age: number }> = []
     const now = Date.now()
 
@@ -569,7 +606,11 @@ export class ToolExecutor {
       timeoutId = setTimeout(() => {
         if (!completed) {
           completed = true
-          reject(new Error(`Tool execution timeout after ${timeoutMs}ms: ${tool.name}`))
+          reject(
+            new Error(
+              `Tool execution timeout after ${timeoutMs}ms: ${tool.name}`
+            )
+          )
 
           // Call onTimeout hook
           if (tool.hooks?.onTimeout) {
@@ -646,4 +687,5 @@ export class ToolExecutor {
 // Exports
 // =============================================================================
 
-export type { ExecutionOptions, ExecutionResult }
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors

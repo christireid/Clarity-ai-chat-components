@@ -777,11 +777,5 @@ export function batchAnalyticsEvents(
 // DEFAULT EXPORT
 // ============================================================================
 
-export {
-  type AnalyticsEvent,
-  type ComponentUsageEvent,
-  type PerformanceEvent,
-  type ErrorEvent,
-  type UserJourneyEvent,
-  type AnalyticsConfig,
-}
+// Note: All types and functions are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors

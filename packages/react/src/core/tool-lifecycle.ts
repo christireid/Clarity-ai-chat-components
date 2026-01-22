@@ -81,7 +81,10 @@ const VALID_TRANSITIONS: Record<ToolCallStatus, ToolCallStatus[]> = {
 /**
  * Check if state transition is valid
  */
-export function isValidTransition(from: ToolCallStatus, to: ToolCallStatus): boolean {
+export function isValidTransition(
+  from: ToolCallStatus,
+  to: ToolCallStatus
+): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false
 }
 
@@ -301,9 +304,9 @@ export type ToolLifecycleEvent =
 /**
  * Event listener function
  */
-export type ToolLifecycleListener<E extends ToolLifecycleEvent = ToolLifecycleEvent> = (
-  event: E
-) => void | Promise<void>
+export type ToolLifecycleListener<
+  E extends ToolLifecycleEvent = ToolLifecycleEvent,
+> = (event: E) => void | Promise<void>
 
 /**
  * Event listener map
@@ -712,10 +715,5 @@ export const globalToolLifecycle = new ToolLifecycleManager()
 // Exports
 // =============================================================================
 
-export type {
-  ToolCallStatus,
-  ToolCallRecord,
-  ToolLifecycleEvent,
-  ToolLifecycleListener,
-  ToolLifecycleListeners,
-}
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors

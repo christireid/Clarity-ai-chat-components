@@ -264,13 +264,16 @@ export class ToolOrchestrator {
         timeout: options.timeout ?? this.config.defaultTimeout,
         signal: options.signal,
         skipValidation: options.skipValidation,
-        skipCache:
-          options.skipCache ?? !this.config.enableCaching,
+        skipCache: options.skipCache ?? !this.config.enableCaching,
         context: { callId: call.id, ...options.context },
       })
 
       // Complete lifecycle
-      this.lifecycle.complete(call.id, executionResult.result, executionResult.cached)
+      this.lifecycle.complete(
+        call.id,
+        executionResult.result,
+        executionResult.cached
+      )
 
       // Get updated call record
       const lifecycleRecord = this.lifecycle.getCall(call.id)
@@ -291,7 +294,10 @@ export class ToolOrchestrator {
       // Mark as failed in lifecycle
       if (err.message.includes('timeout')) {
         this.lifecycle.timeout(call.id, this.config.defaultTimeout)
-      } else if (err.message.includes('cancelled') || err.message.includes('aborted')) {
+      } else if (
+        err.message.includes('cancelled') ||
+        err.message.includes('aborted')
+      ) {
         this.lifecycle.cancel(call.id, err.message)
       } else {
         this.lifecycle.fail(call.id, err)
@@ -524,4 +530,5 @@ export const globalToolOrchestrator = new ToolOrchestrator()
 // Exports
 // =============================================================================
 
-export type { OrchestratorConfig, OrchestrationResult }
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors
