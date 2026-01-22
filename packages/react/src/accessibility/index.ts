@@ -29,3 +29,6 @@ export {
   type KeyboardShortcutsProviderProps,
   defaultShortcuts,
 } from './keyboard-shortcuts'
+
+// Live region announcer - screen reader announcements
+export * from './live-region-announcer'
