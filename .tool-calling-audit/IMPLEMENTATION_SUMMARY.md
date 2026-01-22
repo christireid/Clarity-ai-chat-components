@@ -1245,6 +1245,7 @@ sandboxing, minor test coverage)
 - [x] Cache management improvements
 - [x] Comprehensive documentation
 - [x] Test Coverage (adapters & utils)
+- [x] Error Message Improvements (DX-5) - Enhanced ToolValidationError with hints
 
 ### Optional Future Enhancements (P3)
 
@@ -1254,8 +1255,6 @@ sandboxing, minor test coverage)
    - Network access control
    - **Effort**: 1 week
    - **Priority**: Optional (current model acceptable if documented)
-
-2. **Error Message Improvements** (DX-5):
    - More descriptive error messages
    - Hints for common issues
    - **Effort**: 1 day

@@ -28,15 +28,47 @@ import type { ToolLifecycleManager } from './tool-lifecycle'
 // =============================================================================
 
 /**
+ * Validation error details
+ */
+export interface ToolValidationErrorDetails {
+  received?: unknown
+  expected?: string | string[]
+  hint?: string
+}
+
+/**
  * Validation error
  */
 export class ToolValidationError extends Error {
   constructor(
     public toolName: string,
     public field: string,
-    message: string
+    message: string,
+    public details?: ToolValidationErrorDetails
   ) {
-    super(`[${toolName}] Parameter validation failed for '${field}': ${message}`)
+    let formattedMessage = `[${toolName}] Parameter validation failed for '${field}': ${message}`
+
+    if (details?.expected) {
+      const expectedStr = Array.isArray(details.expected)
+        ? details.expected.join(' | ')
+        : details.expected
+      formattedMessage += `\n  Expected: ${expectedStr}`
+    }
+
+    if (details?.received !== undefined) {
+      try {
+        const receivedStr = JSON.stringify(details.received)
+        formattedMessage += `\n  Received: ${receivedStr}`
+      } catch {
+        formattedMessage += `\n  Received: [Unserializable]`
+      }
+    }
+
+    if (details?.hint) {
+      formattedMessage += `\n  Hint: ${details.hint}`
+    }
+
+    super(formattedMessage)
     this.name = 'ToolValidationError'
   }
 }
@@ -58,7 +90,14 @@ export function validateToolArguments(
   if (parameters.required) {
     for (const field of parameters.required) {
       if (!(field in args)) {
-        throw new ToolValidationError(tool.name, field, 'Required field is missing')
+        throw new ToolValidationError(
+          tool.name,
+          field,
+          'Required field is missing',
+          {
+            hint: `The parameter '${field}' is mandatory for this tool.`,
+          }
+        )
       }
     }
   }
@@ -73,7 +112,10 @@ export function validateToolArguments(
         throw new ToolValidationError(
           tool.name,
           key,
-          'Unknown field (additionalProperties: false)'
+          'Unknown field (additionalProperties: false)',
+          {
+            hint: 'This field is not defined in the tool schema and cannot be passed.',
+          }
         )
       }
       continue
@@ -98,7 +140,16 @@ function validateValue(
     if (schema.type === 'null' || schema.type?.includes('null')) {
       return
     }
-    throw new ToolValidationError(toolName, field, 'Value is null or undefined')
+    throw new ToolValidationError(
+      toolName,
+      field,
+      'Value is null or undefined',
+      {
+        received: value,
+        expected: schema.type,
+        hint: 'This field cannot be null or undefined.',
+      }
+    )
   }
 
   // Type check
@@ -106,11 +157,21 @@ function validateValue(
   const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type]
 
   if (!expectedTypes.includes(actualType)) {
-    throw new ToolValidationError(
-      toolName,
-      field,
-      `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`
-    )
+    // Special case for integer (which is number in JS)
+    if (actualType === 'number' && expectedTypes.includes('integer')) {
+      // Handled in type-specific validation
+    } else {
+      throw new ToolValidationError(
+        toolName,
+        field,
+        `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`,
+        {
+          received: actualType,
+          expected: expectedTypes,
+          hint: `Ensure the value matches one of the expected types.`,
+        }
+      )
+    }
   }
 
   // Type-specific validation
@@ -135,7 +196,12 @@ function validateValue(
     throw new ToolValidationError(
       toolName,
       field,
-      `Value must be one of: ${schema.enum.join(', ')}`
+      `Value must be one of: ${schema.enum.join(', ')}`,
+      {
+        received: value,
+        expected: schema.enum.join(', '),
+        hint: 'The value must exactly match one of the allowed options.',
+      }
     )
   }
 }
@@ -143,12 +209,22 @@ function validateValue(
 /**
  * Validate string value
  */
-function validateString(toolName: string, field: string, value: string, schema: any): void {
+function validateString(
+  toolName: string,
+  field: string,
+  value: string,
+  schema: any
+): void {
   if (schema.minLength !== undefined && value.length < schema.minLength) {
     throw new ToolValidationError(
       toolName,
       field,
-      `String length ${value.length} is less than minimum ${schema.minLength}`
+      `String length ${value.length} is less than minimum ${schema.minLength}`,
+      {
+        received: value.length,
+        expected: `>= ${schema.minLength}`,
+        hint: `The string is too short.`,
+      }
     )
   }
 
@@ -156,7 +232,12 @@ function validateString(toolName: string, field: string, value: string, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `String length ${value.length} exceeds maximum ${schema.maxLength}`
+      `String length ${value.length} exceeds maximum ${schema.maxLength}`,
+      {
+        received: value.length,
+        expected: `<= ${schema.maxLength}`,
+        hint: `The string is too long.`,
+      }
     )
   }
 
@@ -166,7 +247,12 @@ function validateString(toolName: string, field: string, value: string, schema: 
       throw new ToolValidationError(
         toolName,
         field,
-        `String does not match pattern: ${schema.pattern}`
+        `String does not match pattern: ${schema.pattern}`,
+        {
+          received: value,
+          expected: schema.pattern,
+          hint: 'The string format is invalid according to the regex pattern.',
+        }
       )
     }
   }
@@ -175,16 +261,29 @@ function validateString(toolName: string, field: string, value: string, schema: 
 /**
  * Validate number value
  */
-function validateNumber(toolName: string, field: string, value: number, schema: any): void {
+function validateNumber(
+  toolName: string,
+  field: string,
+  value: number,
+  schema: any
+): void {
   if (schema.type === 'integer' && !Number.isInteger(value)) {
-    throw new ToolValidationError(toolName, field, 'Value must be an integer')
+    throw new ToolValidationError(toolName, field, 'Value must be an integer', {
+      received: value,
+      expected: 'integer',
+      hint: 'Decimal values are not allowed.',
+    })
   }
 
   if (schema.minimum !== undefined && value < schema.minimum) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} is less than minimum ${schema.minimum}`
+      `Value ${value} is less than minimum ${schema.minimum}`,
+      {
+        received: value,
+        expected: `>= ${schema.minimum}`,
+      }
     )
   }
 
@@ -192,23 +291,41 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} exceeds maximum ${schema.maximum}`
+      `Value ${value} exceeds maximum ${schema.maximum}`,
+      {
+        received: value,
+        expected: `<= ${schema.maximum}`,
+      }
     )
   }
 
-  if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) {
+  if (
+    schema.exclusiveMinimum !== undefined &&
+    value <= schema.exclusiveMinimum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} must be greater than ${schema.exclusiveMinimum}`
+      `Value ${value} must be greater than ${schema.exclusiveMinimum}`,
+      {
+        received: value,
+        expected: `> ${schema.exclusiveMinimum}`,
+      }
     )
   }
 
-  if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) {
+  if (
+    schema.exclusiveMaximum !== undefined &&
+    value >= schema.exclusiveMaximum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} must be less than ${schema.exclusiveMaximum}`
+      `Value ${value} must be less than ${schema.exclusiveMaximum}`,
+      {
+        received: value,
+        expected: `< ${schema.exclusiveMaximum}`,
+      }
     )
   }
 
@@ -216,7 +333,11 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} is not a multiple of ${schema.multipleOf}`
+      `Value ${value} is not a multiple of ${schema.multipleOf}`,
+      {
+        received: value,
+        expected: `Multiple of ${schema.multipleOf}`,
+      }
     )
   }
 }
@@ -234,7 +355,11 @@ function validateArray(
     throw new ToolValidationError(
       toolName,
       field,
-      `Array length ${value.length} is less than minimum ${schema.minItems}`
+      `Array length ${value.length} is less than minimum ${schema.minItems}`,
+      {
+        received: value.length,
+        expected: `>= ${schema.minItems} items`,
+      }
     )
   }
 
@@ -242,14 +367,25 @@ function validateArray(
     throw new ToolValidationError(
       toolName,
       field,
-      `Array length ${value.length} exceeds maximum ${schema.maxItems}`
+      `Array length ${value.length} exceeds maximum ${schema.maxItems}`,
+      {
+        received: value.length,
+        expected: `<= ${schema.maxItems} items`,
+      }
     )
   }
 
   if (schema.uniqueItems) {
     const unique = new Set(value.map((v) => JSON.stringify(v)))
     if (unique.size !== value.length) {
-      throw new ToolValidationError(toolName, field, 'Array items must be unique')
+      throw new ToolValidationError(
+        toolName,
+        field,
+        'Array items must be unique',
+        {
+          hint: 'Duplicate items are not allowed in this array.',
+        }
+      )
     }
   }
 
@@ -276,7 +412,10 @@ function validateObject(
         throw new ToolValidationError(
           toolName,
           `${field}.${requiredField}`,
-          'Required field is missing'
+          'Required field is missing',
+          {
+            hint: `The nested object '${field}' requires property '${requiredField}'.`,
+          }
         )
       }
     }
@@ -301,10 +440,10 @@ function validateObject(
  */
 interface CacheEntry {
   result: ToolResult
-  timestamp: number        // When entry was created
-  lastAccessed: number     // When entry was last accessed (for LRU)
+  timestamp: number // When entry was created
+  lastAccessed: number // When entry was last accessed (for LRU)
   ttl: number
-  accessCount: number      // Number of times accessed
+  accessCount: number // Number of times accessed
 }
 
 /**
@@ -491,10 +630,13 @@ export class ToolResultCache {
       console.warn('Cache key generation failed, using fallback:', error)
       const sortedArgs = Object.keys(args)
         .sort()
-        .reduce((acc, key) => {
-          acc[key] = args[key]
-          return acc
-        }, {} as Record<string, unknown>)
+        .reduce(
+          (acc, key) => {
+            acc[key] = args[key]
+            return acc
+          },
+          {} as Record<string, unknown>
+        )
 
       return `${toolName}:${JSON.stringify(sortedArgs)}`
     }
@@ -531,7 +673,12 @@ export class ToolResultCache {
   /**
    * Set cache entry
    */
-  set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number): void {
+  set(
+    toolName: string,
+    args: ToolArguments,
+    result: ToolResult,
+    ttl: number
+  ): void {
     const key = this.getCacheKey(toolName, args)
     const now = Date.now()
 
@@ -665,7 +812,11 @@ class RateLimiter {
   /**
    * Get current rate limit stats
    */
-  getStats(): { currentRequests: number; maxRequests: number; windowMs: number } {
+  getStats(): {
+    currentRequests: number
+    maxRequests: number
+    windowMs: number
+  } {
     const now = Date.now()
     this.requests = this.requests.filter((time) => now - time < this.windowMs)
     return {
@@ -818,7 +969,9 @@ export class ToolExecutor {
   private cache: ToolResultCache
   private rateLimiter?: RateLimiter
   private concurrencyLimiter?: ConcurrencyLimiter
-  private config: Required<Omit<ExecutorConfig, 'cache'>> & { cache?: ToolResultCacheConfig }
+  private config: Required<Omit<ExecutorConfig, 'cache'>> & {
+    cache?: ToolResultCacheConfig
+  }
 
   constructor(
     private lifecycle?: ToolLifecycleManager,
@@ -977,7 +1130,11 @@ export class ToolExecutor {
       timeoutId = setTimeout(() => {
         if (!completed) {
           completed = true
-          reject(new Error(`Tool execution timeout after ${timeoutMs}ms: ${tool.name}`))
+          reject(
+            new Error(
+              `Tool execution timeout after ${timeoutMs}ms: ${tool.name}`
+            )
+          )
 
           // Call onTimeout hook
           if (tool.hooks?.onTimeout) {
@@ -1129,4 +1286,9 @@ export class ToolExecutor {
 // Exports
 // =============================================================================
 
-export type { ExecutionOptions, ExecutionResult, ExecutorConfig, ToolResultCacheConfig }
+export type {
+  ExecutionOptions,
+  ExecutionResult,
+  ExecutorConfig,
+  ToolResultCacheConfig,
+}
