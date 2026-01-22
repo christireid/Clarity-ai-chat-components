@@ -180,7 +180,7 @@ export function CopyButton({
                 opacity: [1, 1, 0],
               }}
               transition={{
-                duration: 0.6,
+                duration: durations.slower,
                 ease: 'easeOut',
               }}
             />
