@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { MemoryService } from '../memory-service'
+import { MemoryService } from '@clarity-chat/memory'
 import type { MemoryServiceConfig } from '../types'
 
 // Mock vector store
