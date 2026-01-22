@@ -45,6 +45,10 @@ import {
   type ConsentPurpose,
 } from './consent'
 import {
+  AuditLogger,
+  type AuditEventType,
+} from './audit'
+import {
   DEFAULT_RETENTION_POLICY,
   DEFAULT_MEMORY_LIMITS,
 } from './constants'
@@ -224,12 +228,14 @@ export class MemoryService {
   private decayManager?: DecayManager
   private decayInterval?: ReturnType<typeof setInterval>
   private consentManager?: ConsentManager
+  private auditLogger: AuditLogger
 
   constructor(
     config: MemoryServiceConfig,
     vectorStore?: VectorStore,
     embeddings?: EmbeddingProvider,
-    consentManager?: ConsentManager
+    consentManager?: ConsentManager,
+    auditLogger?: AuditLogger
   ) {
     this.config = config
     this.vectorStore = vectorStore
@@ -239,6 +245,9 @@ export class MemoryService {
     this.buffer = this.createBuffer()
     this.optimizer = createDefaultOptimizer(config.tokenOptimization)
     this.eventListeners = new Map()
+
+    // Initialize audit logger
+    this.auditLogger = auditLogger || new AuditLogger(vectorStore, config.audit)
 
     this.initialize()
   }
@@ -479,6 +488,22 @@ export class MemoryService {
       memory,
     })
 
+    // Audit log: memory creation
+    await this.auditLogger.log({
+      eventType: 'memory:created',
+      severity: 'info',
+      description: `Memory created: ${type} (${scope})`,
+      metadata: {
+        userId: metadata.userId as string | undefined,
+        memoryId: memory.id,
+        memoryType: type,
+        memoryScope: scope,
+        purpose: metadata.purpose as string | undefined || 'general',
+        legalBasis: this.consentManager ? 'consent' : 'legitimate_interest',
+        result: 'success',
+      },
+    })
+
     return memory
   }
 
@@ -553,6 +578,23 @@ export class MemoryService {
         if (this.config.debug) {
           console.error('Auto-decay failed:', error)
         }
+      })
+    }
+
+    // Audit log: data access (GDPR Article 15)
+    if (results.length > 0) {
+      await this.auditLogger.log({
+        eventType: 'memory:queried',
+        severity: 'info',
+        description: `Memory query executed: ${results.length} results`,
+        metadata: {
+          userId: query.metadata?.userId as string | undefined,
+          memoryType: query.types?.[0],
+          memoryScope: query.scopes?.[0],
+          purpose: 'retrieval',
+          result: 'success',
+          resultCount: results.length,
+        },
       })
     }
 
@@ -920,6 +962,26 @@ export class MemoryService {
       data: {
         userId,
         result,
+      },
+    })
+
+    // 8. Audit log: user data deletion (GDPR Article 17)
+    await this.auditLogger.log({
+      eventType: 'user:data:deleted',
+      severity: verification.passed ? 'info' : 'warning',
+      description: `User data deletion ${verification.passed ? 'completed' : 'completed with issues'}: ${userId}`,
+      metadata: {
+        userId,
+        purpose: 'gdpr_right_to_erasure',
+        legalBasis: 'legal_obligation',
+        result: verification.passed ? 'success' : 'partial',
+        memoriesDeleted,
+        embeddingsDeleted,
+        cacheEntriesDeleted,
+        bufferEntriesDeleted,
+        consentRecordsDeleted,
+        failedDeletions: failed.length,
+        verified: verification.passed,
       },
     })
 

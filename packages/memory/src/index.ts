@@ -44,6 +44,18 @@ export {
   type ConsentVerification,
 } from './consent'
 
+// Audit logging (GDPR Article 30 compliance)
+export {
+  AuditLogger,
+  type AuditEventType,
+  type AuditEventSeverity,
+  type AuditEventMetadata,
+  type AuditLogEntry,
+  type AuditLogQuery,
+  type AuditLogStats,
+  type AuditLoggerConfig,
+} from './audit'
+
 // Token optimization utilities re-exported for convenience
 // Note: Import directly from @clarity-chat/token-optimization for full API access
 export type {

@@ -578,6 +578,25 @@ export interface MemoryServiceConfig {
     getUserId?: (metadata: Record<string, unknown>) => string | undefined
   }
 
+  /**
+   * Audit logging configuration (GDPR Article 30 compliance)
+   *
+   * When enabled, all operations are logged for compliance demonstration.
+   * Implements GDPR Article 30 (Records of Processing Activities).
+   */
+  audit?: {
+    /** Enable audit logging (default: true) */
+    enabled?: boolean
+    /** Store logs persistently (default: true) */
+    persistent?: boolean
+    /** Log retention period in days (default: 365 for GDPR) */
+    retentionDays?: number
+    /** Include IP addresses in logs (default: false for privacy) */
+    includeIpAddresses?: boolean
+    /** Include user agents in logs (default: false for privacy) */
+    includeUserAgents?: boolean
+  }
+
   /** Enable debug logging */
   debug?: boolean
 
