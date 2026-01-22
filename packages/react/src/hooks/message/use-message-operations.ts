@@ -477,16 +477,34 @@ export function useMessageOperations(
       case 'edit':
       case 'regenerate':
         if (lastOperation.previousState) {
-          setMessages((prev) =>
-            prev.map((m) =>
+          // FIX: Issue #16 - Validate message exists before undo
+          setMessages((prev) => {
+            const messageExists = prev.some((m) => m.id === lastOperation.messageId)
+            if (!messageExists) {
+              console.warn(
+                `[undo] Cannot undo ${lastOperation.type}: message ${lastOperation.messageId} not found`
+              )
+              return prev
+            }
+            return prev.map((m) =>
               m.id === lastOperation.messageId ? lastOperation.previousState! : m
             )
-          )
+          })
         }
         break
       case 'delete':
         if (lastOperation.previousState) {
-          setMessages((prev) => [...prev, lastOperation.previousState!])
+          // FIX: Issue #16 - Check for duplicate IDs before restoring
+          setMessages((prev) => {
+            const isDuplicate = prev.some((m) => m.id === lastOperation.messageId)
+            if (isDuplicate) {
+              console.warn(
+                `[undo] Cannot undo delete: message ${lastOperation.messageId} already exists`
+              )
+              return prev
+            }
+            return [...prev, lastOperation.previousState!]
+          })
         }
         break
     }
@@ -509,7 +527,17 @@ export function useMessageOperations(
     switch (operation.type) {
       case 'add':
         if (operation.previousState) {
-          setMessages((prev) => [...prev, operation.previousState!])
+          // FIX: Issue #16 - Check for duplicate before adding
+          setMessages((prev) => {
+            const isDuplicate = prev.some((m) => m.id === operation.messageId)
+            if (isDuplicate) {
+              console.warn(
+                `[redo] Cannot redo add: message ${operation.messageId} already exists`
+              )
+              return prev
+            }
+            return [...prev, operation.previousState!]
+          })
         }
         break
       case 'delete':
@@ -518,11 +546,19 @@ export function useMessageOperations(
       case 'edit':
         // Restore the edited state
         if (operation.previousState) {
-          setMessages((prev) =>
-            prev.map((m) =>
+          // FIX: Issue #16 - Validate message exists before redo
+          setMessages((prev) => {
+            const messageExists = prev.some((m) => m.id === operation.messageId)
+            if (!messageExists) {
+              console.warn(
+                `[redo] Cannot redo edit: message ${operation.messageId} not found`
+              )
+              return prev
+            }
+            return prev.map((m) =>
               m.id === operation.messageId ? operation.previousState! : m
             )
-          )
+          })
         }
         break
       case 'regenerate':

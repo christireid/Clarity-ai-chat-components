@@ -106,6 +106,41 @@ export class ToolRegistry implements IToolRegistry {
   }
 
   /**
+   * Register or update a tool (allows overwriting with warning)
+   *
+   * FIX: TOOL-005 - Provide explicit method for updating tools
+   *
+   * @param tool - Tool definition to register or update
+   * @param options - Options for registration
+   */
+  registerOrUpdate(
+    tool: ToolDefinition,
+    options: { silent?: boolean } = {}
+  ): void {
+    // Validate tool definition
+    validateToolDefinition(tool)
+
+    // Check if tool already exists
+    const existing = this.tools.get(tool.name)
+    if (existing && !options.silent) {
+      console.warn(
+        `[ToolRegistry] Overwriting existing tool "${tool.name}". ` +
+          `Use unregister() first if this is intentional, or pass { silent: true } to suppress this warning.`
+      )
+    }
+
+    // Register/update tool
+    this.tools.set(tool.name, tool)
+
+    // Emit appropriate event
+    this.emit({
+      type: existing ? 'registered' : 'registered', // Could add 'updated' type in future
+      toolName: tool.name,
+      timestamp: Date.now(),
+    })
+  }
+
+  /**
    * Register multiple tools at once
    *
    * @param tools - Array of tools to register

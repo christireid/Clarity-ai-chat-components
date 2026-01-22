@@ -530,6 +530,12 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           return assistantMessageId
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') {
+            // FIX: Issue #14 - Remove partial message on abort to prevent incomplete messages in history
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
             return null
           }
 
