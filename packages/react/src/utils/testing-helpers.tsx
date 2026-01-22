@@ -150,7 +150,7 @@ export const createMockFetch = (responses: Record<string, any>) => {
 /**
  * Render ClarityChat with test-friendly defaults
  */
-export function renderChatWithDefaults(props: Partial<any> = {}) {
+export function renderChatWithDefaults(props: Partial<any> = {}): { props: any } {
   const defaultProps = {
     api: '/api/chat',
     onSendMessage: vi.fn(),
@@ -256,7 +256,7 @@ export function createMockChatState(initialMessages: any[] = []) {
 /**
  * Test hook for useClarityChat
  */
-export function createMockClarityChatHook(initialState?: Partial<any>) {
+export function createMockClarityChatHook(initialState?: Partial<any>): { hook: any, state: any, updateState: (updates: Partial<any>) => void } {
   const mockState = {
     messages: [],
     isLoading: false,

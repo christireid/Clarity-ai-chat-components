@@ -10,26 +10,34 @@
 import * as React from 'react'
 import {
   SyncManager,
+  useSyncManager,
+} from '../../utils/sync-manager'
+import type {
   SyncableData,
   SyncOptions,
-  useSyncManager,
   SyncResult,
 } from '../../utils/sync-manager'
-import type { Message } from '../../hooks/chat/use-chat-enhanced'
+import type { Message } from '@clarity-chat/types'
 
 // Convert messages to syncable format
 function messagesToSyncable(messages: Message[], conversationId: string): SyncableData {
+  const getLastModified = (m: any) => {
+    if (m.timestamp) return new Date(m.timestamp).getTime()
+    if (m.createdAt) return new Date(m.createdAt).getTime()
+    return 0
+  }
+
   return {
     id: `conversation_${conversationId}`,
-    lastModified: Math.max(...messages.map(m => m.timestamp || 0), 0),
+    lastModified: Math.max(...messages.map(getLastModified), 0),
     version: 1, // Would be incremented on changes
     data: {
       conversationId,
-      messages: messages.map(m => ({
+      messages: messages.map((m: any) => ({
         id: m.id,
         role: m.role,
         content: m.content,
-        timestamp: m.timestamp,
+        timestamp: getLastModified(m) || Date.now(),
         metadata: m.metadata,
       })),
     },
@@ -43,8 +51,12 @@ function syncableToMessages(syncable: SyncableData): Message[] {
     id: m.id,
     role: m.role,
     content: m.content,
-    timestamp: m.timestamp,
+    timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
     metadata: m.metadata,
+    status: 'sent', // Add default status
+    createdAt: m.timestamp ? new Date(m.timestamp) : new Date(), // Add default createdAt
+    updatedAt: m.timestamp ? new Date(m.timestamp) : new Date(), // Add default updatedAt
+    chatId: syncable.data.conversationId, // Add default chatId
   }))
 }
 
@@ -104,7 +116,17 @@ class ChatLocalStorage {
   private async getStoredMessages(): Promise<Message[]> {
     const key = `chat_sync_${this.conversationId}`
     const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : []
+    if (!stored) return []
+    
+    const parsed = JSON.parse(stored)
+    // Ensure all required fields are present
+    return parsed.map((m: any) => ({
+      ...m,
+      status: m.status || 'sent',
+      createdAt: m.createdAt ? new Date(m.createdAt) : new Date(m.timestamp || Date.now()),
+      updatedAt: m.updatedAt ? new Date(m.updatedAt) : new Date(m.timestamp || Date.now()),
+      chatId: m.chatId || this.conversationId,
+    }))
   }
 
   private async storeMessages(messages: Message[]): Promise<void> {
@@ -273,7 +295,7 @@ export function useChatSync(
     conversationId,
     apiEndpoint,
     authToken,
-    enableRealtime = false,
+    enableRealtime: shouldEnableRealtime = false,
     realtimeEndpoint,
     conflictStrategy = 'merge',
     onConflict,
@@ -298,7 +320,7 @@ export function useChatSync(
   // Use sync manager
   const { syncManager, status } = useSyncManager(localStorage, remoteStorage, {
     conflictStrategy,
-    enableRealtime,
+    enableRealtime: shouldEnableRealtime,
     syncInterval: 30000, // 30 seconds
     maxRetries: 3,
     onConflict: onConflict || (async (conflict) => {
@@ -347,14 +369,14 @@ export function useChatSync(
 
   // Start real-time sync if enabled
   React.useEffect(() => {
-    if (enableRealtime && realtimeEndpoint) {
+    if (shouldEnableRealtime && realtimeEndpoint) {
       syncManager.startRealtime(realtimeEndpoint)
     }
 
     return () => {
       syncManager.stopRealtime()
     }
-  }, [enableRealtime, realtimeEndpoint, syncManager])
+  }, [shouldEnableRealtime, realtimeEndpoint, syncManager])
 
   const syncNow = async (): Promise<SyncResult> => {
     setIsSyncing(true)

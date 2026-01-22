@@ -7,7 +7,7 @@
  * @module consent/consent-manager
  */
 
-import type { Store } from '../stores/types'
+import type { VectorStore as Store, VectorStoreMatch } from '../types'
 
 /**
  * Consent purpose types
@@ -168,9 +168,17 @@ export class ConsentManager {
           version: this.version,
         },
         scope: 'global', // Consent is global
-        timestamp: now,
+        // timestamp: now,
+        type: 'procedural',
+        confidence: 1.0,
+        priority: 'critical',
+        tokens: 0,
+        accessCount: 0,
+        lastAccessed: now,
+        createdAt: now,
+        updatedAt: now,
       },
-      'consent' // Use special 'consent' type
+      // 'consent'
     )
 
     // Update cache
@@ -236,14 +244,22 @@ export class ConsentManager {
         metadata: {
           type: 'consent_withdrawal',
           userId,
-          withdrawnPurposes,
+          withdrawnPurposes: withdrawPurposes,
           remainingPurposes,
           version: this.version,
         },
         scope: 'global',
-        timestamp: now,
+        // timestamp: now,
+        type: 'procedural',
+        confidence: 1.0,
+        priority: 'critical',
+        tokens: 0,
+        accessCount: 0,
+        lastAccessed: now,
+        createdAt: now,
+        updatedAt: now,
       },
-      'consent'
+      // 'consent'
     )
 
     // Update cache
@@ -337,20 +353,21 @@ export class ConsentManager {
     // Also fetch from persistent storage
     try {
       const records = await this.store.query({
-        filters: {
+        vector: [], // Audit logs don't use vectors for query
+        filter: {
           userId,
           type: { $in: ['consent', 'consent_withdrawal'] },
         },
-        limit: 100,
+        topK: 100,
       })
 
       // Parse stored events
-      const storedEvents: ConsentEvent[] = records.map(record => ({
-        userId: record.metadata.userId as string,
-        type: record.metadata.type === 'consent_withdrawal' ? ('withdrawn' as const) : ('granted' as const),
-        purposes: (record.metadata.purposes || []) as ConsentPurpose[],
-        timestamp: record.timestamp,
-        version: (record.metadata.version as string) || '1.0.0',
+      const storedEvents: ConsentEvent[] = records.map((record: VectorStoreMatch) => ({
+        userId: record.metadata?.userId as string,
+        type: record.metadata?.type === 'consent_withdrawal' ? ('withdrawn' as const) : ('granted' as const),
+        purposes: (record.metadata?.purposes || []) as ConsentPurpose[],
+        timestamp: new Date(record.metadata?.timestamp as string),
+        version: (record.metadata?.version as string) || '1.0.0',
       }))
 
       // Merge and deduplicate
@@ -383,20 +400,24 @@ export class ConsentManager {
     // Fetch from storage
     try {
       const records = await this.store.query({
-        filters: {
+        vector: [],
+        filter: {
           userId,
           type: 'consent',
         },
-        limit: 1,
-        sortBy: 'timestamp',
-        sortOrder: 'desc',
+        topK: 1,
+        // sortBy: 'timestamp', // VectorStoreQuery doesn't support sortBy
+        // sortOrder: 'desc',
       })
 
       if (records.length === 0) {
         return null
       }
 
-      const record = JSON.parse(records[0].content) as ConsentRecord
+      const content = records[0].metadata?.content as string
+      if (!content) return null
+      
+      const record = JSON.parse(content) as ConsentRecord
       record.grantedAt = new Date(record.grantedAt) // Parse date
       if (record.withdrawnAt) {
         record.withdrawnAt = new Date(record.withdrawnAt)

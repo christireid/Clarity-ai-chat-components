@@ -17,10 +17,10 @@ import type {
 
 // Re-export canonical types as primary exports
 export type {
-  CanonicalToolDefinition as ToolDefinition,
-  CanonicalToolParameters as ToolParameters,
-  CanonicalToolArguments as ToolArguments,
-  CanonicalToolResult as ToolResult,
+  CanonicalToolDefinition,
+  CanonicalToolParameters,
+  CanonicalToolArguments,
+  CanonicalToolResult,
 }
 
 // =============================================================================
