@@ -258,6 +258,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
   const messageIdRef = React.useRef<string | null>(null)
+  const rafRef = React.useRef<number | null>(null)
 
   // Track if component is mounted
   const mountedRef = React.useRef(true)
@@ -407,6 +408,23 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           let accumulatedContent = ''
           let currentMessage = { ...assistantMessage }
 
+          // Helper to schedule batched update
+          const scheduleUpdate = () => {
+            if (mountedRef.current && !rafRef.current) {
+              rafRef.current = requestAnimationFrame(() => {
+                rafRef.current = null
+                if (!mountedRef.current) return
+
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === assistantMessageId ? currentMessage : msg
+                  )
+                )
+                setData(currentMessage)
+              })
+            }
+          }
+
           while (true) {
             const { done, value } = await reader.read()
 
@@ -465,12 +483,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                         content: accumulatedContent,
                       }
                       currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
+                      scheduleUpdate()
                     }
                   }
                 } catch {
@@ -483,12 +496,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                         content: accumulatedContent,
                       }
                       currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
+                      scheduleUpdate()
                     }
                   }
                 }
@@ -501,15 +509,16 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     content: accumulatedContent,
                   }
                   currentAssistantMessageRef.current = currentMessage
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === assistantMessageId ? currentMessage : msg
-                    )
-                  )
-                  setData(currentMessage)
+                  scheduleUpdate()
                 }
               }
             }
+          }
+
+          // Cancel any pending update before finalization
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current)
+            rafRef.current = null
           }
 
           // Finalize message

@@ -303,6 +303,11 @@ export function useStreamingSSE(
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
+  
+  // STREAM-3: RAF Batching refs
+  const rafRef = React.useRef<number | null>(null)
+  const pendingEventsRef = React.useRef<SSEEvent[]>([])
+  const pendingDataRef = React.useRef<string>('')
 
   /**
    * Parse SSE event data
@@ -336,27 +341,48 @@ export function useStreamingSSE(
         lastEventIdRef.current = eventId
       }
 
-      // Bounded event buffer to prevent memory leaks
-      setEvents((prev) => {
-        const newEvents = [...prev, event]
-        // Keep only the last maxEventBufferSize events
-        if (newEvents.length > maxEventBufferSize) {
-          // DELIVERY-3: Notify about buffer overflow
-          const droppedCount = newEvents.length - maxEventBufferSize
-          onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
-          return newEvents.slice(-maxEventBufferSize)
-        }
-        return newEvents
-      })
-      setLastEvent(event)
-
-      // Note: `data` accumulates all event data. For long sessions, consider
-      // using only `lastEvent` or clearing data periodically with `reset()`
-      setData((prev) => prev + eventData)
+      // STREAM-3: Batch updates using RAF
+      pendingEventsRef.current.push(event)
+      pendingDataRef.current += eventData
 
       onMessage?.(event)
+
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null
+          
+          const newEventsBatch = pendingEventsRef.current
+          const newDataBatch = pendingDataRef.current
+          
+          if (newEventsBatch.length === 0) return
+
+          const lastEventInBatch = newEventsBatch[newEventsBatch.length - 1]
+
+          // Bounded event buffer to prevent memory leaks
+          setEvents((prev) => {
+            const newEvents = [...prev, ...newEventsBatch]
+            // Keep only the last maxEventBufferSize events
+            if (newEvents.length > maxEventBufferSize) {
+              // DELIVERY-3: Notify about buffer overflow
+              const droppedCount = newEvents.length - maxEventBufferSize
+              onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
+              return newEvents.slice(-maxEventBufferSize)
+            }
+            return newEvents
+          })
+          setLastEvent(lastEventInBatch)
+
+          // Note: `data` accumulates all event data. For long sessions, consider
+          // using only `lastEvent` or clearing data periodically with `reset()`
+          setData((prev) => prev + newDataBatch)
+          
+          // Clear buffers
+          pendingEventsRef.current = []
+          pendingDataRef.current = ''
+        })
+      }
     },
-    [parseEventData, onMessage]
+    [parseEventData, onMessage, maxEventBufferSize, onEventBufferOverflow]
   )
 
   /**
@@ -671,6 +697,14 @@ export function useStreamingSSE(
       clearTimeout(heartbeatTimeoutRef.current)
       heartbeatTimeoutRef.current = null
     }
+
+    // STREAM-3: Clear RAF and pending buffers
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    pendingEventsRef.current = []
+    pendingDataRef.current = ''
 
     setStatus('closed')
     setIsReconnecting(false)
