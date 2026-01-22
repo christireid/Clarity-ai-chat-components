@@ -209,7 +209,9 @@ async function callGeminiAPI(
         while (true) {
           // Check for abort during streaming
           if (signal?.aborted) {
-            reader.cancel()
+            reader.cancel().catch(() => {
+              // Ignore cancellation errors
+            })
             throw new DOMException('Request was cancelled', 'AbortError')
           }
 

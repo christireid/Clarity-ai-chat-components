@@ -112,7 +112,9 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
 
   const stopStreaming = React.useCallback(() => {
     if (readerRef.current) {
-      readerRef.current.cancel()
+      readerRef.current.cancel().catch(() => {
+        // Ignore cancellation errors
+      })
       readerRef.current = null
     }
     if (abortControllerRef.current) {

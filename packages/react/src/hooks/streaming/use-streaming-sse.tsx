@@ -683,7 +683,9 @@ export function useStreamingSSE(
 
     // Cancel reader
     if (readerRef.current) {
-      readerRef.current.cancel()
+      readerRef.current.cancel().catch(() => {
+        // Ignore cancellation errors
+      })
       readerRef.current = null
     }
 
