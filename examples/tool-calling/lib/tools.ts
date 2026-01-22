@@ -165,6 +165,10 @@ function simulateSearch(query: string, numResults = 3): ToolResult {
  * Safe mathematical expression evaluator
  * Supports: +, -, *, /, %, parentheses, and decimal numbers
  * Does NOT use eval() - implements a proper tokenizer and parser
+ *
+ * @deprecated Use safeEvaluate from '@clarity-chat/react/utils/math/safe-evaluator' instead.
+ * This version is kept for standalone example compatibility.
+ *
  * @exported for testing
  */
 export function safeEvaluate(expression: string): number {

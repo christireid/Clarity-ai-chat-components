@@ -184,23 +184,44 @@ export function reorderForAttention(
   const importanceScores: number[] = []
   for (let i = 0; i < messages.length; i++) {
     if (customImportance?.has(i)) {
-      importanceScores.push(customImportance.get(i)!)
+      const importance = customImportance.get(i)
+      if (importance !== undefined) {
+        importanceScores.push(importance)
+      } else {
+        // Fallback if importance is undefined despite has() returning true
+        const message = messages[i]
+        if (message) {
+          const score = calculateMessageImportance(message, {
+            totalMessages: messages.length,
+            messageIndex: i,
+            recencyWeight,
+          })
+          importanceScores.push(score)
+        }
+      }
     } else {
-      const score = calculateMessageImportance(messages[i]!, {
-        totalMessages: messages.length,
-        messageIndex: i,
-        recencyWeight,
-      })
-      importanceScores.push(score)
+      const message = messages[i]
+      if (message) {
+        const score = calculateMessageImportance(message, {
+          totalMessages: messages.length,
+          messageIndex: i,
+          recencyWeight,
+        })
+        importanceScores.push(score)
+      }
     }
   }
 
   // Create indexed messages for sorting
-  const indexedMessages = nonSystemMessages.map((msg, i) => ({
-    message: msg,
-    originalIndex: messages.indexOf(msg),
-    importance: importanceScores[messages.indexOf(msg)]!,
-  }))
+  const indexedMessages = nonSystemMessages.map((msg, i) => {
+    const originalIndex = messages.indexOf(msg)
+    const importance = importanceScores[originalIndex] ?? 0
+    return {
+      message: msg,
+      originalIndex,
+      importance,
+    }
+  })
 
   // Sort by importance (descending)
   const sorted = [...indexedMessages].sort(
@@ -243,7 +264,8 @@ export function reorderForAttention(
       const end: typeof indexedMessages = []
 
       for (let i = 0; i < sorted.length; i++) {
-        const msg = sorted[i]!
+        const msg = sorted[i]
+        if (!msg) continue
         if (i < Math.ceil(sorted.length / 3)) {
           // Top third -> beginning
           beginning.push(msg)
@@ -267,13 +289,15 @@ export function reorderForAttention(
       orderedNonSystem = indexedMessages
       // Position based on original location
       for (let i = 0; i < indexedMessages.length; i++) {
+        const indexedMsg = indexedMessages[i]
+        if (!indexedMsg) continue
         const third = indexedMessages.length / 3
         if (i < third) {
-          positions[indexedMessages[i]!.originalIndex] = 'beginning'
+          positions[indexedMsg.originalIndex] = 'beginning'
         } else if (i < 2 * third) {
-          positions[indexedMessages[i]!.originalIndex] = 'middle'
+          positions[indexedMsg.originalIndex] = 'middle'
         } else {
-          positions[indexedMessages[i]!.originalIndex] = 'end'
+          positions[indexedMsg.originalIndex] = 'end'
         }
       }
       break
@@ -305,10 +329,14 @@ export function reorderForAttention(
     messages: finalMessages,
     metadata: {
       originalIndices: finalMessages.map((m) => messages.indexOf(m)),
-      importanceScores: finalMessages.map(
-        (m) => importanceScores[messages.indexOf(m)]!
-      ),
-      positions: finalMessages.map((m) => positions[messages.indexOf(m)]!),
+      importanceScores: finalMessages.map((m) => {
+        const idx = messages.indexOf(m)
+        return importanceScores[idx] ?? 0
+      }),
+      positions: finalMessages.map((m) => {
+        const idx = messages.indexOf(m)
+        return positions[idx] ?? 'middle'
+      }),
     },
   }
 }

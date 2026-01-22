@@ -122,7 +122,7 @@ export function AnalyticsDashboard({
   return (
     <div
       className={cn(
-        'space-y-6 rounded-lg border border-border/50 bg-card/70 p-6 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm',
+        'space-y-6 rounded-lg border border-border/50 bg-card/70 p-6 shadow-xs backdrop-blur-sm',
         className
       )}
       role="region"
@@ -223,7 +223,7 @@ function MetricCard({
 
   return (
     <article
-      className="rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm"
+      className="rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-xs backdrop-blur-sm"
       aria-label={`${label}: ${value}, ${changeDescription}`}
     >
       <div className="flex items-center justify-between">
@@ -262,7 +262,7 @@ function PipelineSummary({
 
   return (
     <article
-      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-xs"
       aria-label={`Pipeline value: ${formatCurrency(value)}`}
     >
       <div className="flex items-center justify-between">
@@ -323,7 +323,7 @@ function WinRateSummary({
 
   return (
     <article
-      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-xs"
       aria-label={`Win rate: ${value.toFixed(1)}%`}
     >
       <h3 className="text-sm font-medium text-muted-foreground">Win Rate</h3>
@@ -373,7 +373,7 @@ function Leaderboard({ entries }: { entries?: AnalyticsLeaderboardEntry[] }) {
 
   return (
     <section
-      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-xs"
       aria-label="Top performers leaderboard"
     >
       <h3 className="text-sm font-semibold text-foreground">Top Performers</h3>
@@ -427,7 +427,7 @@ function ActivityList({ activities }: { activities?: AnalyticsActivity[] }) {
 
   return (
     <section
-      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-xs"
       aria-label="Recent activity feed"
     >
       <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
@@ -484,7 +484,7 @@ function InsightsPanel({
 
   return (
     <section
-      className="rounded-lg border border-primary/20 bg-primary/5 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      className="rounded-lg border border-primary/20 bg-primary/5 p-5 shadow-xs"
       aria-label="AI-generated insights"
     >
       <h3 className="text-sm font-semibold text-primary">

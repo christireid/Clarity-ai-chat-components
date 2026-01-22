@@ -6,6 +6,18 @@ export interface UseStreamingOptions {
   onChunk?: (chunk: string) => void
   onComplete?: (fullText: string) => void
   onError?: (error: Error) => void
+
+  /** STREAM-1: Streaming timeout in milliseconds (default: none) */
+  timeout?: number
+
+  /** STREAM-1: Called when streaming times out */
+  onTimeout?: () => void
+
+  /** STREAM-2: Maximum content length in characters (default: none, prevents memory exhaustion) */
+  maxContentLength?: number
+
+  /** STREAM-2: Called when content length limit is exceeded */
+  onContentLimitExceeded?: (currentLength: number, limit: number) => void
 }
 
 /**
@@ -74,23 +86,28 @@ export interface UseStreamingReturn {
  * ```
  */
 export function useStreaming(options: UseStreamingOptions = {}): UseStreamingReturn {
-  const { onChunk, onComplete, onError } = options
-  
+  const { onChunk, onComplete, onError, timeout, onTimeout, maxContentLength, onContentLimitExceeded } = options
+
   const [content, setContent] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(false)
   const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
   const abortControllerRef = React.useRef<AbortController | null>(null)
-  
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null) // STREAM-1: Timeout tracking
+
   // Store callbacks in refs to avoid recreating streaming function when callbacks change
   const onChunkRef = React.useRef(onChunk)
   const onCompleteRef = React.useRef(onComplete)
   const onErrorRef = React.useRef(onError)
-  
+  const onTimeoutRef = React.useRef(onTimeout) // STREAM-1: Timeout callback ref
+  const onContentLimitExceededRef = React.useRef(onContentLimitExceeded) // STREAM-2: Content limit callback ref
+
   React.useLayoutEffect(() => {
     onChunkRef.current = onChunk
     onCompleteRef.current = onComplete
     onErrorRef.current = onError
-  }, [onChunk, onComplete, onError])
+    onTimeoutRef.current = onTimeout
+    onContentLimitExceededRef.current = onContentLimitExceeded
+  }, [onChunk, onComplete, onError, onTimeout, onContentLimitExceeded])
 
   const stopStreaming = React.useCallback(() => {
     if (readerRef.current) {
@@ -100,6 +117,11 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+    }
+    // STREAM-1: Clear timeout on stop
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
     }
     setIsStreaming(false)
   }, [])
@@ -116,6 +138,18 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       const controller = new AbortController()
       abortControllerRef.current = controller
       const signal = options?.signal || controller.signal
+
+      // STREAM-1: Set up timeout if specified
+      if (timeout && timeout > 0) {
+        timeoutRef.current = setTimeout(() => {
+          controller.abort()
+          const timeoutError = new Error(
+            `Streaming timeout after ${timeout}ms`
+          )
+          onErrorRef.current?.(timeoutError)
+          onTimeoutRef.current?.()
+        }, timeout)
+      }
 
       try {
         const reader = stream.getReader()
@@ -138,13 +172,36 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
           const chunk = decoder.decode(value, { stream: true })
           fullText += chunk
 
+          // STREAM-2: Check content length limit
+          if (maxContentLength && maxContentLength > 0 && fullText.length > maxContentLength) {
+            onContentLimitExceededRef.current?.(fullText.length, maxContentLength)
+            const limitError = new Error(
+              `Content length limit exceeded: ${fullText.length} > ${maxContentLength}`
+            )
+            onErrorRef.current?.(limitError)
+            controller.abort()
+            break
+          }
+
           setContent(fullText)
           onChunkRef.current?.(chunk)
         }
 
+        // STREAM-1: Clear timeout on successful completion
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+
         onCompleteRef.current?.(fullText)
       } catch (err) {
-        // Don't call onError for abort
+        // STREAM-1: Clear timeout on error
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+
+        // Don't call onError for abort (already called by timeout handler or external abort)
         if (err instanceof Error && err.name !== 'AbortError') {
           onErrorRef.current?.(err)
         }
@@ -156,7 +213,7 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
         }
       }
     },
-    [stopStreaming] // Callbacks accessed via refs, so not in deps
+    [stopStreaming, timeout, maxContentLength] // STREAM-1, STREAM-2: timeout and maxContentLength in deps; callbacks accessed via refs
   )
 
   const reset = React.useCallback(() => {

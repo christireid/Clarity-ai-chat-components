@@ -109,7 +109,7 @@ export function HighlightedTextarea({
         {highlightedContent}
         {/* Placeholder when empty */}
         {!value && placeholder && (
-          <span className="text-muted-foreground/50">{placeholder}</span>
+          <span className="text-muted-foreground/70">{placeholder}</span>
         )}
       </div>
 

@@ -12,6 +12,7 @@
  */
 
 import type { ToolsConfig, ToolDefinition } from './types'
+import { safeEvaluate } from '../utils/math/safe-evaluator'
 
 // =============================================================================
 // Types
@@ -92,14 +93,9 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
     },
     execute: async (params) => {
       const { expression } = params as { expression: string }
-      // Simple safe expression evaluation
-      const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, '')
-      if (!sanitized) {
-        throw new Error('Invalid expression')
-      }
-      // Use Function instead of eval for slightly better isolation
-      const result = new Function(`return (${sanitized})`)()
-      return { expression: sanitized, result }
+      // SECURITY: Use safe recursive descent parser - no eval() or Function()
+      const result = safeEvaluate(expression)
+      return { expression, result }
     },
   },
   {
@@ -259,11 +255,22 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
     registry.set(tool.name, tool)
   }
 
+  // SECURITY: Default to requiring approval for tool execution
+  const autoApprove = config.autoApprove ?? false
+
+  // Warn in development when auto-approve is enabled
+  if (autoApprove && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+    console.warn(
+      '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+      'This should only be used in trusted environments. Set autoApprove: false to require explicit approval.'
+    )
+  }
+
   return {
     registry,
     pendingCalls: [],
     completedCalls: [],
-    autoApprove: config.autoApprove ?? true,
+    autoApprove,
     timeoutMs: config.timeoutMs || 30000,
     cache: new Map(),
     cacheTtlMs: 60000, // 1 minute cache
