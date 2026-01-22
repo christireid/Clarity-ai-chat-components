@@ -22,6 +22,12 @@ import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual'
 import type { Message } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
 import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
+import {
+  validateVirtualizationProps,
+  validateMessages,
+  validateFunctionProp,
+  validateNumberProp,
+} from '../../utils/config/runtime-validation'
 
 // ============================================================================
 // Types
@@ -101,6 +107,46 @@ export function TanStackMessageList({
   scrollThreshold = 100,
   maxMessages = 1000,
 }: TanStackMessageListProps) {
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate messages array
+    validateMessages(rawMessages, 'TanStackMessageList')
+
+    // Validate renderMessage function
+    validateFunctionProp(renderMessage, 'renderMessage', 'TanStackMessageList')
+
+    // Validate virtualization props
+    validateVirtualizationProps(
+      {
+        itemHeight: estimatedItemSize,
+        overscan: overscanCount,
+        threshold: scrollThreshold / 1000, // Convert to 0-1 range for validator
+        maxMessages,
+      },
+      'TanStackMessageList'
+    )
+
+    // Validate gap
+    if (gap !== undefined) {
+      validateNumberProp(gap, 'gap', 'TanStackMessageList', { min: 0 })
+    }
+
+    // Validate callbacks if provided
+    if (onScroll !== undefined) {
+      validateFunctionProp(onScroll, 'onScroll', 'TanStackMessageList')
+    }
+    if (getItemKey !== undefined) {
+      validateFunctionProp(getItemKey, 'getItemKey', 'TanStackMessageList')
+    }
+    if (onScrollAwayFromBottom !== undefined) {
+      validateFunctionProp(
+        onScrollAwayFromBottom,
+        'onScrollAwayFromBottom',
+        'TanStackMessageList'
+      )
+    }
+  }
+
   // VIRT-3: Apply message windowing
   const messages = React.useMemo(() => {
     if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages

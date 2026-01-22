@@ -39,6 +39,12 @@
 
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
+import {
+  validateApiEndpoint,
+  validateStreamingProps,
+  validateMessages,
+  validateCallbacks,
+} from '../../utils/config/runtime-validation'
 
 // Re-export MessageRole for modules that import from this file
 export type { MessageRole }
@@ -248,6 +254,42 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     keepLastMessageOnError = false,
     sendExtraMessageFields = false,
   } = options
+
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate API endpoint
+    if (api) {
+      validateApiEndpoint(api, 'useChat')
+    }
+
+    // Validate initial messages
+    if (initialMessages.length > 0) {
+      validateMessages(initialMessages, 'useChat')
+    }
+
+    // Validate streaming props
+    validateStreamingProps(
+      {
+        stream,
+        streamProtocol: streamProtocol as 'sse' | 'data' | 'webstream',
+        maxSteps,
+        keepLastMessageOnError,
+      },
+      'useChat'
+    )
+
+    // Validate callbacks
+    validateCallbacks(
+      {
+        onResponse,
+        onFinish,
+        onError,
+        onMessageAppend,
+        transform,
+      },
+      'useChat'
+    )
+  }
 
   const [messages, setMessages] = React.useState<CoreMessage[]>(initialMessages)
   const [input, setInput] = React.useState('')

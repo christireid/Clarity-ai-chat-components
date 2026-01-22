@@ -23,6 +23,11 @@ import type { ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import type { Message } from '@clarity-chat/types'
 import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
+import {
+  validateVirtualizationProps,
+  validateMessages,
+  validateFunctionProp,
+} from '../../utils/config/runtime-validation'
 
 // Type assertions for react-window v1.8.11 with React 19
 // AutoSizer component type assertion for compatibility
@@ -242,6 +247,35 @@ export function VirtualizedMessageList({
   itemKey,
   maxMessages = 1000,
 }: VirtualizedMessageListProps) {
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate messages array
+    validateMessages(rawMessages, 'VirtualizedMessageList')
+
+    // Validate renderMessage function
+    validateFunctionProp(renderMessage, 'renderMessage', 'VirtualizedMessageList')
+
+    // Validate virtualization props
+    validateVirtualizationProps(
+      {
+        itemHeight: estimatedItemSize,
+        overscan: overscanCount,
+        maxMessages,
+      },
+      'VirtualizedMessageList'
+    )
+
+    // Validate onScroll callback if provided
+    if (onScroll !== undefined) {
+      validateFunctionProp(onScroll, 'onScroll', 'VirtualizedMessageList')
+    }
+
+    // Validate itemKey callback if provided
+    if (itemKey !== undefined) {
+      validateFunctionProp(itemKey, 'itemKey', 'VirtualizedMessageList')
+    }
+  }
+
   // VIRT-3: Apply message windowing
   const messages = React.useMemo(() => {
     if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
