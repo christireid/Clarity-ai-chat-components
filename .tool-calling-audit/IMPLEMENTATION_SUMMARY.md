@@ -1255,10 +1255,6 @@ sandboxing, minor test coverage)
    - Network access control
    - **Effort**: 1 week
    - **Priority**: Optional (current model acceptable if documented)
-   - More descriptive error messages
-   - Hints for common issues
-   - **Effort**: 1 day
-   - **Priority**: Low
 
 ---
 
