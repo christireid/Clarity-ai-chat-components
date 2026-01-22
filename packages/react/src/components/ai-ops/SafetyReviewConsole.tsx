@@ -255,7 +255,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
     <>
       <Card
         className={cn(
-          'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+          'border-border/50 bg-background shadow-md',
           className
         )}
         aria-busy={isProcessing || isLoading}

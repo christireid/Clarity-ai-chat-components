@@ -59,15 +59,6 @@ export {
   type ClarityChatTokenStats,
 } from '../hooks/use-clarity-chat'
 
-// Composable hooks
-export {
-  useChatComposable,
-  useChatWithFeatures,
-  createChatHook,
-  ChatHookBuilder,
-  type ChatFeatures,
-} from '../hooks/use-chat-composable'
-
 // Chat window component
 export {
   ChatWindow,
@@ -90,16 +81,7 @@ export {
 // LOW-LEVEL: Primitives and Utilities
 // ============================================================================
 
-// Legacy chat hook (for backward compatibility)
-// Note: This is the original useChat from use-chat.ts
-export {
-  useChat as useChatLegacy,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from '../hooks/use-chat'
-
 // Enhanced chat hook (internal use, but exported for advanced users)
-// Note: This is useChat from use-chat-enhanced.ts
 export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,

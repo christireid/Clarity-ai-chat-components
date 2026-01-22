@@ -46,8 +46,8 @@ export interface AutoToonOptions {
  * // Send result.data to LLM
  * ```
  */
-export function autoOptimize(
-  data: any,
+export function autoOptimize<T = unknown>(
+  data: T,
   options: AutoToonOptions = {}
 ): ToonOptimizationResult {
   const {
@@ -122,7 +122,7 @@ export function autoOptimize(
 /**
  * Parse response that might be in TOON or JSON format
  */
-export function parseFlexible(response: string): any {
+export function parseFlexible<T = unknown>(response: string): T {
   // Try JSON first
   try {
     return JSON.parse(response)
@@ -140,8 +140,8 @@ export function parseFlexible(response: string): any {
 /**
  * Batch optimize multiple data items
  */
-export function batchOptimize(
-  items: any[],
+export function batchOptimize<T = unknown>(
+  items: T[],
   options: AutoToonOptions = {}
 ): {
   results: ToonOptimizationResult[]
@@ -165,8 +165,8 @@ export function batchOptimize(
 /**
  * Format data for LLM with automatic optimization
  */
-export function formatForLLM(
-  data: any,
+export function formatForLLM<T = unknown>(
+  data: T,
   options: AutoToonOptions = {}
 ): {
   formatted: string

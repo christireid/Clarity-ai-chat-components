@@ -361,8 +361,8 @@ export async function processStream(
       buffer += chunkText
       chunks++
 
-      // Process buffer by format
-      const lines = buffer.split('\n')
+      // Process buffer by format (handle both \n and \r\n line endings)
+      const lines = buffer.split(/\r?\n/)
       buffer = lines.pop() || '' // Keep incomplete line in buffer
 
       for (const line of lines) {

@@ -581,7 +581,7 @@ export function CommandPaletteEnhanced({
         {shortcuts.map((s, i) => (
           <React.Fragment key={i}>
             {i > 0 && (
-              <span className="text-muted-foreground/50 text-xs">or</span>
+              <span className="text-muted-foreground/70 text-xs">or</span>
             )}
             <Kbd shortcut={formatShortcutDisplay(s)} size="sm" />
           </React.Fragment>
@@ -654,7 +654,7 @@ export function CommandPaletteEnhanced({
                     </button>
                     {commandStack.map((cmd, i) => (
                       <React.Fragment key={cmd.id}>
-                        <span className="text-muted-foreground/50">/</span>
+                        <span className="text-muted-foreground/70">/</span>
                         <button
                           onClick={() =>
                             setCommandStack((prev) => prev.slice(0, i + 1))

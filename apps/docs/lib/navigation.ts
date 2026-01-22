@@ -87,6 +87,7 @@ export const learnNavigation: NavItem[] = [
     items: [
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
+      { title: '🔧 Tool Calling System', href: '/guides/tools' },
       { title: 'Token Optimization', href: '/guides/token-optimization' },
       { title: 'Prompt Caching', href: '/guides/prompt-caching' },
       { title: 'Prompts', href: '/guides/prompts' },
@@ -349,7 +350,6 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
       { title: 'useAssistant', href: '/reference/hooks/use-assistant' },
       { title: 'useCompletion', href: '/reference/hooks/use-completion' },
-      { title: 'useChat', href: '/reference/hooks/use-chat' },
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
       {

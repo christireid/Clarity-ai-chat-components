@@ -118,21 +118,25 @@ export class TokenBudgetValidator {
       });
     }
 
+    // Set default thresholds
+    const warningThreshold = config.warningThreshold ?? 0.8
+    const criticalThreshold = config.criticalThreshold ?? 0.95
+
     // Check warning threshold
-    if (projectedPercentage > config.warningThreshold!) {
+    if (projectedPercentage > warningThreshold) {
       violations.push({
         type: 'warning_threshold',
-        message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds warning threshold (${(config.warningThreshold! * 100).toFixed(1)}%)`,
+        message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds warning threshold (${(warningThreshold * 100).toFixed(1)}%)`,
         severity: 'warning',
         suggestedAction: 'Consider reducing text size or clearing budget'
       });
     }
 
     // Check critical threshold
-    if (projectedPercentage > config.criticalThreshold!) {
+    if (projectedPercentage > criticalThreshold) {
       violations.push({
         type: 'critical_threshold',
-        message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds critical threshold (${(config.criticalThreshold! * 100).toFixed(1)}%)`,
+        message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds critical threshold (${(criticalThreshold * 100).toFixed(1)}%)`,
         severity: 'critical',
         suggestedAction: 'Immediate action required to prevent budget exhaustion'
       });
@@ -219,8 +223,12 @@ export class TokenBudgetValidator {
       });
     }
 
+    // Set default thresholds
+    const warningThreshold = config.warningThreshold ?? 0.8
+    const criticalThreshold = config.criticalThreshold ?? 0.95
+
     // Check thresholds
-    if (projectedPercentage > config.warningThreshold!) {
+    if (projectedPercentage > warningThreshold) {
       violations.push({
         type: 'warning_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds warning threshold`,
@@ -229,7 +237,7 @@ export class TokenBudgetValidator {
       });
     }
 
-    if (projectedPercentage > config.criticalThreshold!) {
+    if (projectedPercentage > criticalThreshold) {
       violations.push({
         type: 'critical_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds critical threshold`,

@@ -63,7 +63,7 @@ export const LineNumbers = React.memo<LineNumbersProps>(function LineNumbers({
         // Border and background
         'border-r border-border/50 bg-muted/20',
         // Text color
-        'text-muted-foreground/50',
+        'text-muted-foreground/70',
         className
       )}
       style={{ minWidth }}
