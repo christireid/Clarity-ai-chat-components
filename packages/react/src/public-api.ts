@@ -508,7 +508,6 @@ export type {
   PromptsConfigHelper,
   ErrorHandlingConfigHelper,
   ChatErrorType,
-  ErrorHandlingConfigHelper as ErrorConfigHelper,
 } from './types/intellisense-helpers'
 
 // Component Composition - Easy component building
