@@ -114,4 +114,6 @@ export type {
   TokenOptimizationConfig,
   CompressedMemory,
   MemoryChunk,
+  DeletionResult,
+  DeletionVerification,
 } from './types'

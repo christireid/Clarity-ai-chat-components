@@ -573,6 +573,8 @@ export type MemoryEventType =
   | 'memory:expired'
   | 'buffer:flushed'
   | 'context:optimized'
+  | 'user:data:deleted' // User data deletion event (GDPR Article 17)
+  | 'user:data:deletion:verified' // Deletion verification event
 
 /**
  * Memory event
@@ -595,6 +597,65 @@ export interface MemoryEvent {
  * Memory event listener
  */
 export type MemoryEventListener = (event: MemoryEvent) => void | Promise<void>
+
+/**
+ * Deletion result - detailed breakdown of what was deleted
+ *
+ * Implements GDPR Article 17 (Right to Erasure) requirements:
+ * - Must delete all personal data
+ * - Must provide confirmation of deletion
+ * - Must verify deletion completeness
+ */
+export interface DeletionResult {
+  /** User ID whose data was deleted */
+  userId: string
+  /** Timestamp of deletion operation */
+  timestamp: Date
+  /** Detailed breakdown of deleted items */
+  deleted: {
+    /** Number of memories deleted */
+    memories: number
+    /** Number of embeddings deleted */
+    embeddings: number
+    /** Number of cache entries deleted */
+    cacheEntries: number
+    /** Number of buffer entries deleted */
+    bufferEntries: number
+    /** Number of consent records deleted */
+    consentRecords: number
+  }
+  /** Failed deletion attempts (IDs that couldn't be deleted) */
+  failed: string[]
+  /** Whether deletion was verified complete */
+  verified: boolean
+  /** Verification details */
+  verification?: DeletionVerification
+}
+
+/**
+ * Deletion verification - confirms no data remains
+ *
+ * GDPR Article 17 compliance: Must be able to demonstrate complete deletion
+ */
+export interface DeletionVerification {
+  /** User ID being verified */
+  userId: string
+  /** Timestamp of verification */
+  timestamp: Date
+  /** Whether verification passed (no data found) */
+  passed: boolean
+  /** Remaining data found (should be empty array if passed) */
+  remainingData: Array<{
+    /** Location where data was found */
+    location: 'cache' | 'buffer' | 'vectorStore' | 'consent'
+    /** Number of items found */
+    count: number
+    /** Sample IDs (up to 5) */
+    sampleIds: string[]
+  }>
+  /** Error message if verification failed */
+  error?: string
+}
 
 // ============================================================================
 // Type Aliases for Backward Compatibility
