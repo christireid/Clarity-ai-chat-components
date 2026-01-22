@@ -550,34 +550,44 @@ export function StreamingMessage({
 
   // Memoize rendered content
   const renderedContent = React.useMemo(() => {
-    const { parsed, remainder } = parsedContent
+    try {
+      const { parsed, remainder } = parsedContent
 
-    if (parsed) {
+      if (parsed) {
+        return (
+          <div className="space-y-2">
+            <pre className="bg-muted border rounded-lg p-3 overflow-x-auto text-sm">
+              <code className="text-foreground">
+                {JSON.stringify(parsed, null, 2)}
+              </code>
+            </pre>
+            {remainder && (
+              <div className="text-muted-foreground font-mono text-sm">
+                {remainder}
+                {isStreaming && <StreamingCursor />}
+              </div>
+            )}
+          </div>
+        )
+      }
+
       return (
-        <div className="space-y-2">
-          <pre className="bg-muted border rounded-lg p-3 overflow-x-auto text-sm">
-            <code className="text-foreground">
-              {JSON.stringify(parsed, null, 2)}
-            </code>
-          </pre>
-          {remainder && (
-            <div className="text-muted-foreground font-mono text-sm">
-              {remainder}
-              {isStreaming && <StreamingCursor />}
-            </div>
-          )}
+        <div className="prose prose-sm dark:prose-invert max-w-3xl mx-auto">
+          <p className="whitespace-pre-wrap text-foreground">
+            {displayedContent}
+            {isStreaming && <StreamingCursor />}
+          </p>
+        </div>
+      )
+    } catch (err) {
+      console.error('Error rendering streaming message content:', err)
+      return (
+        <div className="text-destructive text-sm p-2 border border-destructive/20 bg-destructive/5 rounded">
+          Error rendering content. Raw output:
+          <pre className="mt-2 whitespace-pre-wrap font-mono text-xs">{displayedContent}</pre>
         </div>
       )
     }
-
-    return (
-      <div className="prose prose-sm dark:prose-invert max-w-3xl mx-auto">
-        <p className="whitespace-pre-wrap text-foreground">
-          {displayedContent}
-          {isStreaming && <StreamingCursor />}
-        </p>
-      </div>
-    )
   }, [parsedContent, displayedContent, isStreaming])
 
   // Memoize callbacks to prevent unnecessary re-renders

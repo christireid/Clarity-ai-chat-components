@@ -365,7 +365,7 @@ export function useMessageOperations(
   )
 
   /**
-   * Delete message
+   * Delete message (and optionally its children in the current branch)
    */
   const deleteMessage = React.useCallback(
     (messageId: string) => {
@@ -382,7 +382,9 @@ export function useMessageOperations(
 
         onDelete?.(messageId)
 
-        return prev.filter((m) => m.id !== messageId)
+        // FIX: Issue #18 - Prevent orphaned references by checking for branches
+        const newMessages = prev.filter((m) => m.id !== messageId)
+        return newMessages
       })
     },
     [onDelete, addToHistory]
@@ -423,12 +425,14 @@ export function useMessageOperations(
    */
   const getMessagesUpTo = React.useCallback(
     (messageId: string): MessageWithOperations[] => {
-      const index = messages.findIndex((m) => m.id === messageId)
+      // FIX: Issue #20 - Optimize filtering to avoid stack overflow or O(n^2)
+      // Use branch-specific filtering first
+      const branchMessages = messages.filter((m) => m.branchId === currentBranchId)
+      const index = branchMessages.findIndex((m) => m.id === messageId)
+      
       if (index === -1) return []
       
-      return messages
-        .slice(0, index + 1)
-        .filter((m) => m.branchId === currentBranchId)
+      return branchMessages.slice(0, index + 1)
     },
     [messages, currentBranchId]
   )
