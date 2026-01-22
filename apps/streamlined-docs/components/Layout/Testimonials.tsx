@@ -1,0 +1,216 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { MessageSquare } from 'lucide-react'
+import Image from 'next/image'
+import { durations } from '@/lib/animations'
+
+interface Testimonial {
+  quote: string
+  author: string
+  role: string
+  company: string
+  avatar?: string
+}
+
+const testimonials: Testimonial[] = [
+  {
+    quote:
+      'Clarity Chat cut our development time by 60%. The components are polished, accessible, and just work out of the box.',
+    author: 'Sarah Chen',
+    role: 'Lead Developer',
+    company: 'TechCorp',
+  },
+  {
+    quote:
+      "Best React chat library I've used. The TypeScript support is excellent and the documentation is crystal clear.",
+    author: 'Marcus Rodriguez',
+    role: 'Senior Engineer',
+    company: 'StartupXYZ',
+  },
+  {
+    quote:
+      'The accessibility features are top-notch. Finally, a chat UI that works perfectly for all our users.',
+    author: 'Priya Patel',
+    role: 'Product Manager',
+    company: 'Enterprise Inc',
+  },
+  {
+    quote:
+      'Token optimization saved us $8K/month in API costs. The ROI was immediate and the integration took just 2 hours.',
+    author: 'David Kim',
+    role: 'CTO',
+    company: 'AI Solutions Ltd',
+  },
+  {
+    quote:
+      'Migrated from Vercel AI SDK in a weekend. The compare page made the decision easy - more features, same simplicity.',
+    author: 'Emily Watson',
+    role: 'Full Stack Developer',
+    company: 'InnovateTech',
+  },
+  {
+    quote:
+      "Our enterprise clients love the built-in RAG and security features. It's the complete package for production AI apps.",
+    author: 'James Morrison',
+    role: 'Solutions Architect',
+    company: 'GlobalBank',
+  },
+]
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+}
+
+const item = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 200,
+      damping: 20,
+    },
+  },
+}
+
+export function Testimonials() {
+  return (
+    <section className="py-24 relative overflow-hidden">
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] opacity-25 dark:opacity-15 pointer-events-none"
+        aria-hidden="true"
+      />
+      {/* Radial gradient accent */}
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.06)_0%,transparent_70%)] pointer-events-none"
+        aria-hidden="true"
+      />
+      <div className="container-docs relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-center mb-16"
+        >
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: durations.slow, delay: 0.1 }}
+            className="text-4xl font-bold mb-4 bg-gradient-to-r from-text-primary to-brand-500 bg-clip-text text-transparent"
+          >
+            Loved by Developers
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: durations.slow, delay: 0.2 }}
+            className="text-xl text-text-secondary max-w-2xl mx-auto"
+          >
+            Join thousands of developers building beautiful chat experiences
+          </motion.p>
+        </motion.div>
+
+        {/* Testimonials Grid */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              variants={item}
+              whileHover={{
+                scale: 1.02,
+                y: -4,
+                transition: { duration: durations.normal, ease: 'easeOut' },
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="group/card relative p-6 rounded-xl border border-border/50 bg-bg-primary transition-all overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_8px_rgba(99,102,241,0.08),0_8px_16px_rgba(99,102,241,0.06),0_0_40px_rgba(99,102,241,0.08)] dark:hover:shadow-[0_4px_8px_rgba(129,140,248,0.15),0_8px_16px_rgba(129,140,248,0.1),0_0_40px_rgba(129,140,248,0.12)]"
+            >
+              {/* Gradient border on hover */}
+              <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  padding: '1px',
+                  background: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.3) 50%, rgba(244,114,182,0.4) 100%)',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                }}
+                aria-hidden="true"
+              />
+              {/* MessageSquare Icon */}
+              <motion.div
+                initial={{ rotate: 0 }}
+                whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                transition={{ duration: durations.slow }}
+              >
+                <MessageSquare className="w-8 h-8 text-brand-500/20 mb-4" />
+              </motion.div>
+
+              {/* Quote */}
+              <p className="text-text-secondary mb-6 leading-relaxed relative z-10 italic">
+                "{testimonial.quote}"
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-3 relative z-10">
+                <motion.div
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow-md"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                >
+                  {testimonial.author
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </motion.div>
+                <div>
+                  <div className="font-semibold text-text-primary">
+                    {testimonial.author}
+                  </div>
+                  <div className="text-sm text-text-secondary">
+                    {testimonial.role} at {testimonial.company}
+                  </div>
+                </div>
+              </div>
+
+              {/* Animated Gradient Background */}
+              <motion.div
+                className="absolute inset-0 rounded-xl bg-gradient-to-br from-brand-500/5 to-purple-500/5 pointer-events-none"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: durations.moderate }}
+              />
+
+              {/* Subtle Glow on Hover */}
+              <motion.div
+                className="absolute -inset-0.5 rounded-xl bg-gradient-to-br from-brand-500/10 to-purple-500/10 blur-md pointer-events-none"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: durations.moderate }}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  )
+}
