@@ -124,7 +124,8 @@ export function useDebouncedCallbackWithControls<T extends (...args: any[]) => a
   const savedCallback = React.useRef(callback)
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  React.useEffect(() => {
+  // Use useLayoutEffect for synchronous callback ref updates (consistent with useDebouncedCallback)
+  React.useLayoutEffect(() => {
     savedCallback.current = callback
   }, [callback])
 

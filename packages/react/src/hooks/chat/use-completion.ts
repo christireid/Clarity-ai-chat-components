@@ -284,7 +284,7 @@ export function useCompletion(
     onProgress,
     stream = true,
     streamFormat = 'sse',
-    id: generateCompletionId = () => generateId(),
+    // Note: 'id' option is reserved for future use (custom completion ID)
     enableCache = false,
     cacheTTL = 300000, // 5 minutes
     maxCacheSize = 100,
