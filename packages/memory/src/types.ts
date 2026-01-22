@@ -245,7 +245,15 @@ export interface VectorStore {
     vectors: VectorStoreVector[],
     options?: VectorStoreUpsertOptions
   ): Promise<void>
-  delete(ids: string[], namespace?: string): Promise<void>
+  delete(ids: string | string[], namespace?: string): Promise<void>
+  
+  // Methods for compatibility with stores/base.ts and AuditLogger
+  add(memory: MemoryItem): Promise<void>
+  get(id: string): Promise<MemoryItem | null>
+  update(id: string, memory: MemoryItem): Promise<void>
+  search(query: string, options: any): Promise<Array<{ memory: MemoryItem; score: number }>>
+  getAll(options?: { types?: MemoryType[] }): Promise<MemoryItem[]>
+  close(): Promise<void>
 }
 
 /**

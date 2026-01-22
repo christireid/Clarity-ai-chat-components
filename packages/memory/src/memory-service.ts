@@ -46,7 +46,6 @@ import {
 } from './consent'
 import {
   AuditLogger,
-  type AuditEventType,
 } from './audit'
 import {
   DEFAULT_RETENTION_POLICY,
@@ -883,7 +882,6 @@ export class MemoryService {
     }
 
     // 2. Delete from buffer
-    const originalBufferSize = this.buffer.items.length
     this.buffer.items = this.buffer.items.filter(item => {
       if (item.metadata?.userId === userId) {
         bufferEntriesDeleted++
@@ -2054,21 +2052,21 @@ export class MemoryService {
   /**
    * @deprecated Use getRetentionForMemory instead
    */
-  private getRetentionForScope(scope: MemoryScope): number {
-    const policy = this.config.retentionPolicy || {}
-    switch (scope) {
-      case 'session':
-        return policy.session ?? DEFAULT_RETENTION_POLICY.session
-      case 'thread':
-        return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
-      case 'global':
-        return policy.global ?? DEFAULT_RETENTION_POLICY.global
-      case 'user':
-        return policy.user ?? DEFAULT_RETENTION_POLICY.user
-      default:
-        return DEFAULT_RETENTION_POLICY.session
-    }
-  }
+  // private getRetentionForScope(scope: MemoryScope): number {
+  //   const policy = this.config.retentionPolicy || {}
+  //   switch (scope) {
+  //     case 'session':
+  //       return policy.session ?? DEFAULT_RETENTION_POLICY.session
+  //     case 'thread':
+  //       return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
+  //     case 'global':
+  //       return policy.global ?? DEFAULT_RETENTION_POLICY.global
+  //     case 'user':
+  //       return policy.user ?? DEFAULT_RETENTION_POLICY.user
+  //     default:
+  //       return DEFAULT_RETENTION_POLICY.session
+  //   }
+  // }
 
   /**
    * Get optimizer

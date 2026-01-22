@@ -177,7 +177,6 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.any(String),
         expect.stringContaining('no retry callback registered')
       )
       consoleWarnSpy.mockRestore()
@@ -203,7 +202,6 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.any(String),
         expect.stringContaining('Cannot retry')
       )
       expect(retryCallback).not.toHaveBeenCalled()
@@ -243,7 +241,7 @@ describe('useStreamingError', () => {
         vi.advanceTimersByTime(2000)
       })
 
-      expect(onRetry).toHaveBeenCalledWith(1)
+      expect(onRetry).toHaveBeenCalledWith(1, undefined)
       expect(retryCallback).toHaveBeenCalledTimes(1)
 
       // Second retry - 2000ms * 2^1 = ~2000-2600ms
@@ -262,7 +260,7 @@ describe('useStreamingError', () => {
         vi.advanceTimersByTime(4000)
       })
 
-      expect(onRetry).toHaveBeenCalledWith(2)
+      expect(onRetry).toHaveBeenCalledWith(2, undefined)
       expect(retryCallback).toHaveBeenCalledTimes(2)
     })
 
@@ -553,7 +551,6 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.any(String),
         expect.stringContaining('circuit breaker is open')
       )
       expect(retryCallback).not.toHaveBeenCalled()
@@ -627,7 +624,6 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.any(String),
         expect.stringContaining('no partial content available')
       )
 
@@ -651,7 +647,6 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.any(String),
         expect.stringContaining('no retry callback registered')
       )
 

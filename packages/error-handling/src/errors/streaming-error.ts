@@ -192,5 +192,11 @@ export class StreamingError extends ClarityError {
  * Type guard for StreamingError
  */
 export function isStreamingError(error: unknown): error is StreamingError {
-  return error instanceof StreamingError
+  return (
+    error instanceof StreamingError ||
+    (error instanceof Error &&
+      'code' in error &&
+      'transport' in error &&
+      (error as any).name === 'StreamingError')
+  )
 }

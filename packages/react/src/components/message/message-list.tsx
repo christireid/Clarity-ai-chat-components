@@ -81,6 +81,8 @@ export interface MessageListProps {
   'aria-label'?: string
   /** ARIA live region behavior */
   'aria-live'?: 'polite' | 'assertive' | 'off'
+  /** Enable auto-scroll to bottom on new messages (default: true) */
+  autoScroll?: boolean
 }
 
 /**
@@ -141,6 +143,7 @@ export function MessageList({
   role = 'log',
   'aria-label': ariaLabel,
   'aria-live': ariaLive = 'polite',
+  autoScroll = true,
 }: MessageListProps) {
   // Runtime validation with actionable error messages
   if (!Array.isArray(messages)) {
@@ -162,6 +165,7 @@ export function MessageList({
     dependencies: [messages],
     behavior: 'smooth',
     threshold: 100,
+    enabled: autoScroll,
   })
 
   // Accessibility: Respect user's motion preferences

@@ -185,9 +185,12 @@ export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
+} from './components/code/CodeBlock'
+
+export {
   InlineCode,
   type InlineCodeProps,
-} from './components/code/CodeBlock'
+} from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -455,7 +458,7 @@ export {
   streamingChat,
   ChatBuilder,
   ChatPresets,
-} from './utils/quick-start.tsx'
+} from './utils/quick-start'
 
 // Development Helpers - DX utilities
 export {
@@ -473,7 +476,7 @@ export {
   SetupWizard,
   QuickSetup,
   interactiveSetup,
-} from './utils/setup-wizard.tsx'
+} from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -485,112 +488,9 @@ export {
   loadFeature,
   LazyComponents,
   LazyLoadPerformanceMonitor,
-} from './utils/lazy-loading.tsx'
+} from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
-export {
-  migrateToV1,
-  createMigrationWrapper,
-  MigrationPresets,
-  applyMigration,
-  validateMigration,
-  MigrationUtils,
-} from './utils/migration-helpers.tsx'
-
-// IntelliSense Helpers - Enhanced TypeScript DX
-export type {
-  ChatApiConfig,
-  ChatPreset,
-  MemoryConfigHelper,
-  StreamingConfigHelper,
-  RateLimitConfigHelper,
-  HeaderConfigHelper,
-  MessageActionsConfigHelper,
-  PromptsConfigHelper,
-  ErrorHandlingConfigHelper,
-  ChatErrorType,
-  ErrorHandlingConfigHelper as ErrorConfigHelper,
-} from './types/intellisense-helpers'
-
-// Component Composition - Easy component building
-export {
-  composeComponents,
-  withProps,
-  conditional,
-  Compositions,
-  createGridLayout,
-  FlexLayouts,
-  composeHooks,
-  transformProps,
-  withDefaults,
-  withVariants,
-  createContextProvider,
-} from './utils/component-composition'
-
-// Theme Helpers - Easy theming and customization
-export {
-  ThemePresets,
-  createThemeFromPalette,
-  createThemeFromCSSVariables,
-  mergeThemes,
-  createThemeVariant,
-  createThemeClasses,
-  applyThemeToCSS,
-  useTheme,
-  useResponsiveTheme,
-  usePersistentTheme,
-  ThemeProvider,
-  ThemeToggle,
-  ThemeSelector,
-} from './utils/theme-helpers'
-
-// Accessibility Helpers - Enhanced A11y support
-export {
-  createAccessibleButtonProps,
-  createAccessibleDialogProps,
-  createAccessibleListboxProps,
-  useKeyboardListNavigation,
-  useChatInputKeyboard,
-  announceToScreenReader,
-  useScreenReaderAnnouncements,
-  LiveRegion,
-  useFocusManagement,
-  isKeyboardAccessible,
-  getFocusableElements,
-  validateChatAccessibility,
-  useMotionPreferences,
-  createAccessibleMotionProps,
-  useHighContrastMode,
-  applyHighContrastAdjustments,
-  SkipLink,
-  ScreenReaderOnly,
-} from './utils/accessibility-helpers'
-
-// Testing Helpers - Comprehensive testing toolkit
-export {
-  mockChatAPI,
-  MockWebSocket,
-  MockLocalStorage,
-  createMockFetch,
-  renderChatWithDefaults,
-  createTestMessages,
-  createMockChatState,
-  createMockClarityChatHook,
-  asyncTestUtils,
-  domTestUtils,
-  a11yTestUtils,
-  performanceTestUtils,
-  e2eTestUtils,
-  testConfigs,
-  TestWrapper,
-  createTestComponent,
-  testDataFactories,
-  chatAssertions,
-  vi,
-  Mock,
-} from './utils/testing-helpers'
-
-// Migration Helpers - Easy migration from other libraries
 export {
   VercelAdapter,
   OpenAIAdapter,
@@ -897,7 +797,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
 // Security
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+export { SecurityManager, securityManager, useSecurity } from './utils/security-helpers'
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -949,8 +849,8 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-export { ApiTokenManager } from './components/enterprise/api-token-manager'
-export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
+// export { ApiTokenManager } from './components/enterprise/api-token-manager'
+// export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
 
 // ============================================================================
 // THEME COMPONENTS (Theme Preview & Testing)
@@ -976,7 +876,7 @@ export {
   getPerformanceSummary,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
-} from './utils/performance-monitoring.tsx'
+} from './utils/performance-monitoring'
 
 // Accessibility testing
 export {
@@ -991,7 +891,7 @@ export {
   type AccessibilityViolation,
   type AccessibilityReport,
   type AccessibilityTestOptions,
-} from './utils/accessibility-testing.tsx'
+} from './utils/accessibility-testing'
 
 // Visual regression testing
 export {
@@ -1028,7 +928,7 @@ export {
   type SanitizationOptions,
   type SecurityHeaders,
   type SecurityAuditResult,
-} from './utils/security'
+} from './utils/security-helpers'
 
 // Error boundaries
 export {
@@ -1070,4 +970,4 @@ export {
   type UserJourneyEvent,
   type AnalyticsConfig,
   type AnalyticsProviderProps,
-} from './utils/analytics.tsx'
+} from './utils/analytics'

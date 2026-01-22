@@ -384,7 +384,6 @@ describe('ErrorAnalyticsProvider', () => {
       })
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.any(String),
         '[ErrorAnalytics] Error recorded',
         expect.anything()
       )
