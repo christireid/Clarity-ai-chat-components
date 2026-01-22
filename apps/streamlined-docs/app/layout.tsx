@@ -42,6 +42,13 @@ const MobileBottomNav = dynamic(() =>
   }))
 )
 
+// Lazy load floating action button
+const FloatingActionButton = dynamic(() =>
+  import('@/components/Enhanced/FloatingActionButton').then((mod) => ({
+    default: mod.FloatingActionButton,
+  }))
+)
+
 // Font CSS classes using system font stacks (no external font loading required)
 const fontClasses = {
   sans: 'font-sans',
