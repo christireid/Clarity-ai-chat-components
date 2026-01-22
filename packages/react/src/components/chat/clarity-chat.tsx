@@ -49,6 +49,7 @@ import {
 } from '../../hooks/chat/use-clarity-chat'
 import { useRateLimitedChat } from '../../hooks/ai/use-rate-limited-chat'
 import { useChatEditor } from '../../hooks/chat/use-chat-editor'
+import { useMessageNormalization } from '../../hooks/chat/use-message-normalization'
 import { ChatWindow } from './chat-window'
 import { RequestQueueStatus } from '../ai/request-queue-status'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
@@ -73,7 +74,11 @@ export interface ClarityChatMessageActionsProps {
   /** Callback when a message is copied */
   onCopy?: (id: string, content: string) => void
   /** Callback when message feedback is provided */
-  onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+  onFeedback?: (
+    messageId: string,
+    type: 'up' | 'down',
+    comment?: string
+  ) => void
   /** Callback when a message is edited */
   onEdit?: (messageId: string) => void
   /** Callback when a message is regenerated */
@@ -282,21 +287,27 @@ export function ClarityChat({
       sessionTitle: header?.title ?? legacySessionTitle ?? '',
       sessionSubtitle: header?.subtitle ?? legacySessionSubtitle ?? '',
       headerActions: header?.actions ?? legacyHeaderActions,
-      showMessageCount: header?.showMessageCount ?? legacyShowMessageCount ?? false,
+      showMessageCount:
+        header?.showMessageCount ?? legacyShowMessageCount ?? false,
 
       // Message actions - grouped takes precedence
       onMessageCopy: messageActions?.onCopy ?? legacyOnMessageCopy,
       onMessageFeedback: messageActions?.onFeedback ?? legacyOnMessageFeedback,
       onEditMessage: messageActions?.onEdit ?? legacyOnEditMessage,
-      onRegenerateMessage: messageActions?.onRegenerate ?? legacyOnRegenerateMessage,
+      onRegenerateMessage:
+        messageActions?.onRegenerate ?? legacyOnRegenerateMessage,
       onDeleteMessage: messageActions?.onDelete ?? legacyOnDeleteMessage,
 
       // Rate limiting - grouped takes precedence
-      enableRateLimiting: rateLimiting?.enable ?? legacyEnableRateLimiting ?? false,
-      maxConcurrentRequests: rateLimiting?.maxConcurrentRequests ?? legacyMaxConcurrentRequests ?? 3,
+      enableRateLimiting:
+        rateLimiting?.enable ?? legacyEnableRateLimiting ?? false,
+      maxConcurrentRequests:
+        rateLimiting?.maxConcurrentRequests ?? legacyMaxConcurrentRequests ?? 3,
       maxQueueSize: rateLimiting?.maxQueueSize ?? legacyMaxQueueSize ?? 10,
-      showQueueStatus: rateLimiting?.showQueueStatus ?? legacyShowQueueStatus ?? false,
-      compactQueueStatus: rateLimiting?.compactQueueStatus ?? legacyCompactQueueStatus ?? false,
+      showQueueStatus:
+        rateLimiting?.showQueueStatus ?? legacyShowQueueStatus ?? false,
+      compactQueueStatus:
+        rateLimiting?.compactQueueStatus ?? legacyCompactQueueStatus ?? false,
       onRequestQueued: rateLimiting?.onRequestQueued ?? legacyOnRequestQueued,
       onRateLimited: rateLimiting?.onRateLimited ?? legacyOnRateLimited,
       onQueueFull: rateLimiting?.onQueueFull ?? legacyOnQueueFull,
@@ -312,16 +323,51 @@ export function ClarityChat({
       memoryStrategy,
       onError,
 
-      // Prompts (grouped)
-      prompts,
+      // Prompts (grouped) - convert simplified format to full PromptSuggestion format
+      prompts: prompts
+        ? {
+            ...prompts,
+            starterPrompts: prompts.starterPrompts?.map((p, i) => ({
+              id: `starter-${i}`,
+              text: p.text,
+              category: p.category,
+              type: 'starter' as const,
+            })),
+          }
+        : undefined,
     }
   }, [
-    header, messageActions, prompts, rateLimiting,
-    legacyShowHeader, legacySessionTitle, legacySessionSubtitle, legacyHeaderActions, legacyShowMessageCount,
-    legacyOnMessageCopy, legacyOnMessageFeedback, legacyOnEditMessage, legacyOnRegenerateMessage, legacyOnDeleteMessage,
-    legacyEnableRateLimiting, legacyMaxConcurrentRequests, legacyMaxQueueSize, legacyShowQueueStatus, legacyCompactQueueStatus,
-    legacyOnRequestQueued, legacyOnRateLimited, legacyOnQueueFull,
-    onExport, onClear, autoScroll, theme, showTokenCounter, showNetworkStatus, enableMessageOperations, memoryStrategy, onError
+    header,
+    messageActions,
+    prompts,
+    rateLimiting,
+    legacyShowHeader,
+    legacySessionTitle,
+    legacySessionSubtitle,
+    legacyHeaderActions,
+    legacyShowMessageCount,
+    legacyOnMessageCopy,
+    legacyOnMessageFeedback,
+    legacyOnEditMessage,
+    legacyOnRegenerateMessage,
+    legacyOnDeleteMessage,
+    legacyEnableRateLimiting,
+    legacyMaxConcurrentRequests,
+    legacyMaxQueueSize,
+    legacyShowQueueStatus,
+    legacyCompactQueueStatus,
+    legacyOnRequestQueued,
+    legacyOnRateLimited,
+    legacyOnQueueFull,
+    onExport,
+    onClear,
+    autoScroll,
+    theme,
+    showTokenCounter,
+    showNetworkStatus,
+    enableMessageOperations,
+    memoryStrategy,
+    onError,
   ])
   // Note: API validation is handled by useClarityChat hook via validateApiEndpoint()
   // which provides a ComponentError with helpful messaging and security checks
@@ -360,33 +406,40 @@ export function ClarityChat({
     onRegenerate: processedProps.onRegenerateMessage,
     onDelete: processedProps.onDeleteMessage,
     onClear: processedProps.onClear,
-    toast: toast ? {
-      info: toast.info,
-      error: toast.error,
-      success: toast.success
-    } : undefined
+    toast: toast
+      ? {
+          info: toast.info,
+          error: toast.error,
+          success: toast.success,
+        }
+      : undefined,
   })
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = useMessageNormalization(chat.messages)
 
-  const {
-    // ... other props
-    memoryErrorInfo
-  } = chat
+  // Get memoryErrorInfo if available (only present on UseClarityChatReturn, not RateLimitedChatReturn)
+  const memoryErrorInfo =
+    'memoryErrorInfo' in chat ? chat.memoryErrorInfo : null
 
   // Issue #7: Handle silent memory failures
   React.useEffect(() => {
-    if (memoryErrorInfo.memoryError) {
+    if (memoryErrorInfo?.memoryError) {
       const { memoryError, memoryErrorOperation } = memoryErrorInfo
       // Only show toast for user-initiated operations or critical failures
-      if (memoryErrorOperation === 'store' || memoryErrorOperation === 'query') {
-         console.warn(`[ClarityChat] Memory error (${memoryErrorOperation}):`, memoryError)
-         // We avoid showing error toasts for background memory operations to prevent user annoyance
-         // unless it's critical. For now, logging is sufficient as useClarityChat handles retry logic.
+      if (
+        memoryErrorOperation === 'store' ||
+        memoryErrorOperation === 'query'
+      ) {
+        console.warn(
+          `[ClarityChat] Memory error (${memoryErrorOperation}):`,
+          memoryError
+        )
+        // We avoid showing error toasts for background memory operations to prevent user annoyance
+        // unless it's critical. For now, logging is sufficient as useClarityChat handles retry logic.
       }
     }
-  }, [memoryErrorInfo.memoryError, memoryErrorInfo.memoryErrorOperation])
+  }, [memoryErrorInfo?.memoryError, memoryErrorInfo?.memoryErrorOperation])
 
   const handleSendMessage = React.useCallback(
     async (content: string) => {
@@ -411,49 +464,53 @@ export function ClarityChat({
   return (
     <div className="clarity-chat-container">
       {/* Request Queue Status */}
-      {processedProps.enableRateLimiting && processedProps.showQueueStatus && 'queueStatus' in chat && (
-        <RequestQueueStatus
-          queueStatus={chat.queueStatus}
-          isRateLimited={chat.isRateLimited}
-          rateLimitResetAt={chat.rateLimitResetAt}
-          compact={processedProps.compactQueueStatus}
-          onClearQueue={chat.clearQueue}
-        />
-      )}
+      {processedProps.enableRateLimiting &&
+        processedProps.showQueueStatus &&
+        'queueStatus' in chat && (
+          <RequestQueueStatus
+            queueStatus={chat.queueStatus}
+            isRateLimited={chat.isRateLimited}
+            rateLimitResetAt={chat.rateLimitResetAt}
+            compact={processedProps.compactQueueStatus}
+            onClearQueue={chat.clearQueue}
+          />
+        )}
 
       <ChatWindow
         messages={messages}
         isLoading={chat.isLoading || isRegenerating}
         onSendMessage={handleSendMessage}
         onStopGeneration={handleStopGeneration}
-        
         // Grouped props
         messageActions={{
           onCopy: processedProps.onMessageCopy,
           onFeedback: processedProps.onMessageFeedback,
           onEdit: processedProps.onEditMessage ? handleEditMessage : undefined,
-          onRegenerate: processedProps.onRegenerateMessage ? handleRegenerateMessage : undefined,
-          onDelete: processedProps.onDeleteMessage ? handleDeleteMessage : undefined,
-          onRetry: undefined // Legacy ClarityChat didn't expose onRetry directly but onMessageRetry legacy prop might be mapped
+          onRegenerate: processedProps.onRegenerateMessage
+            ? handleRegenerateMessage
+            : undefined,
+          onDelete: processedProps.onDeleteMessage
+            ? handleDeleteMessage
+            : undefined,
+          onRetry: undefined, // Legacy ClarityChat didn't expose onRetry directly but onMessageRetry legacy prop might be mapped
         }}
         editActions={{
           editingMessageId,
           onSaveEdit: handleSaveEdit,
-          onCancelEdit: handleCancelEdit
+          onCancelEdit: handleCancelEdit,
         }}
         header={{
           show: processedProps.showHeader,
           title: processedProps.sessionTitle,
           subtitle: processedProps.sessionSubtitle,
           actions: processedProps.headerActions,
-          showMessageCount: processedProps.showMessageCount
+          showMessageCount: processedProps.showMessageCount,
         }}
         actions={{
           onExport: processedProps.onExport,
-          onClear: processedProps.onClear ? handleClear : undefined
+          onClear: processedProps.onClear ? handleClear : undefined,
         }}
         prompts={processedProps.prompts}
-        
         className={className}
         emptyState={emptyState}
       />

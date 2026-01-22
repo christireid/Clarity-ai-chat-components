@@ -1,376 +1,235 @@
-# Canonical Decisions: Best-of Selection
+# Canonical Decisions: API Cohesion (POST-MERGE)
 
-**Date**: 2026-01-22
-**Decision Status**: ✅ COMPLETE (Simplified - No Duplicates Found)
+**Date**: 2026-01-22 **Branch**: `claude/merge-consolidate-dedup-3P0qa` **Status**: ✅ COMPLETE -
+After merging origin/main
 
 ---
 
 ## Executive Summary
 
-Since **ZERO DUPLICATES** were found in Phase 3 analysis, the canonical decision process is straightforward:
+After merging `origin/main` into this branch, the analysis identified some areas with overlapping
+implementations that could benefit from consolidation for 100% API cohesion. However, most
+identified "duplicates" are actually:
 
-**Universal Decision**: ✅ **Accept all changes from branch** `claude/ai-chat-core-features-v3jih`
+- Proper architectural layering (utilities vs core vs app)
+- Backward compatibility wrappers (explicitly intended)
+- Specialized implementations for different contexts
 
-All branch changes are enhancements, fixes, or additions that don't conflict with main. No competing implementations exist to choose between.
+### Actionable Items
 
----
-
-## Decision Matrix
-
-| Area | Main | Branch | Decision | Justification |
-|------|------|--------|----------|---------------|
-| **All Modified Files** | Basic/Vulnerable | Enhanced/Secure | ✅ Branch | Security fixes + enhancements |
-| **All New Files** | Doesn't exist | New | ✅ Branch | No conflict possible |
-| **All Tests** | Basic | Enhanced | ✅ Branch | Better coverage |
-| **All Documentation** | Partial | Comprehensive | ✅ Branch | Complete audit trail |
-
----
-
-## Detailed Decisions by Area
-
-### Area 1: Security Utilities
-
-#### Decision 1.1: `packages/react/src/utils/security/index.ts`
-**Canonical Version**: ✅ Branch (superset of main)
-- **Why**: Branch adds exports for sanitization module while preserving all main exports
-- **Migration**: None required (additive change)
-- **Risk**: None
-
-#### Decision 1.2: `packages/react/src/utils/security/safe-evaluate.ts`
-**Canonical Version**: ✅ Branch (security-hardened)
-- **Why**:
-  - Fixes TOOL-021 critical security vulnerability
-  - Disables unsafe eval by default (requires explicit opt-in)
-  - Comprehensive deprecation warnings
-  - Security-first approach
-- **Migration**: Users must add `unsafeEnableEvaluation: true` if using code evaluation
-- **Risk**: **Breaking change** (intentional for security) - documented in CHANGELOG
-- **Verification**: Check for usages of `safeEvaluate()` in codebase and examples
-
-#### Decision 1.3: `packages/react/src/utils/security/sanitization.ts`
-**Canonical Version**: ✅ Branch (new file)
-- **Why**:
-  - Fixes TOOL-022 (parameter sanitization)
-  - Critical security capability
-  - 12 sanitization functions covering SQL, shell, path, LDAP, XML, URL
-  - Comprehensive documentation
-- **Migration**: None required (new capability)
-- **Risk**: None
+| Area                           | Type               | Action Required                               |
+| ------------------------------ | ------------------ | --------------------------------------------- |
+| Security: enhanced-security.ts | True duplicate     | **CONSOLIDATE** - Import from sanitization.ts |
+| Token Counter: react wrapper   | Cache redundancy   | **KEEP** - Provides LRU cache at app layer    |
+| Tool System: tool-execution.ts | Different purpose  | **KEEP** - Utility patterns vs core execution |
+| Streaming: multiple hooks      | Proper layering    | **KEEP** - Core → Protocol → App layers       |
+| Message helpers: two files     | Different purposes | **KEEP** - Message ops vs config              |
 
 ---
 
-### Area 2: Tool Calling System
+## Decision 1: Security Sanitization
 
-#### Decision 2.1: `packages/react/src/core/tool-executor.ts`
-**Canonical Version**: ✅ Branch (enhanced)
-- **Why**:
-  - TOOL-001: Enhanced schema validation (oneOf, anyOf, format)
-  - TOOL-003: Unsafe regex protection
-  - TOOL-010: Cache key collision prevention
-  - TOOL-014: Structured error classification
-  - TOOL-017: Idempotency support
-- **Migration**: None required (backward compatible enhancements)
-- **Risk**: None
+### Status: **CONSOLIDATE**
 
-#### Decision 2.2: `packages/react/src/core/tool-registry.ts`
-**Canonical Version**: ✅ Branch (enhanced)
-- **Why**:
-  - TOOL-004: Memory leak prevention (max listener limits)
-  - TOOL-005: Silent overwrite warnings
-  - New methods: `registerOrUpdate()`, `setMaxListeners()`, `getListenerCount()`
-- **Migration**: None required (backward compatible)
-- **Risk**: None
+#### Canonical: `packages/react/src/utils/security/sanitization.ts`
 
-#### Decision 2.3: `packages/react/src/core/tool-orchestrator.ts`
-**Canonical Version**: ✅ Branch (security fix)
-- **Why**:
-  - TOOL-018: Approval race condition fix (atomic validation)
-  - Prevents TOCTOU vulnerabilities
-- **Migration**: None required (internal fix)
-- **Risk**: None
+**Duplicate in**: `packages/token-optimization/src/security/enhanced-security.ts`
 
-#### Decision 2.4: `packages/react/src/core/__tests__/tool-executor-enhanced.test.ts`
-**Canonical Version**: ✅ Branch (new tests)
-- **Why**: 154 new test cases for enhanced validation
-- **Migration**: None required
-- **Risk**: None
+**Overlap**:
+
+- Lines 677-681: SQL keyword removal duplicates `sanitization.ts`
+- Script tag removal duplicates `sanitization.ts`
+
+**Decision**: Update `enhanced-security.ts` to import and use `sanitization.ts` functions for
+SQL/script sanitization
+
+**Implementation**:
+
+```typescript
+// In enhanced-security.ts, replace:
+sanitized = sanitized.replace(
+  /\b(union|select|insert|update|delete|drop)\s+/gi,
+  '[SQL_KEYWORD_REMOVED]'
+)
+
+// With import from sanitization.ts:
+import { sanitizeSQL } from '@clarity-chat/react/utils/security/sanitization'
+// Then use sanitizeSQL() instead of inline regex
+```
+
+**Risk**: Low - Internal refactor only
 
 ---
 
-### Area 3: Streaming System
+## Decision 2: Token Counting
 
-#### Decision 3.1: `packages/react/src/hooks/streaming/use-streaming-sse.tsx`
-**Canonical Version**: ✅ Branch (stability fixes)
-- **Why**:
-  - Issue #5, #10: Reconnection guards and cleanup
-  - Issue #4, SEC-006: Buffer overflow protection (10MB limit)
-  - Heartbeat reset on reconnect
-- **Migration**: None required (internal fixes)
-- **Risk**: None
+### Status: **KEEP CURRENT STRUCTURE**
 
-#### Decision 3.2: `packages/react/src/hooks/streaming/use-streaming.ts`
-**Canonical Version**: ✅ Branch (timeout fix)
-- **Why**: Issue #15: Reader cancellation on timeout
-- **Migration**: None required
-- **Risk**: None
+#### Canonical: `@clarity-chat/token-optimization`
 
-#### Decision 3.3: `packages/react/src/hooks/streaming/use-streamable-ui.ts`
-**Canonical Version**: ✅ Branch (cleanup fix)
-- **Why**: Issue #8: Abort signal propagation
-- **Migration**: None required
-- **Risk**: None
+**Wrappers**:
 
-#### Decision 3.4: `packages/react/src/utils/streaming/streaming-helpers.ts`
-**Canonical Version**: ✅ Branch (error handling)
-- **Why**:
-  - Issue #9: Comprehensive chunk processing error handling
-  - Issue #17: Explicit final flush marking
-- **Migration**: None required
-- **Risk**: None
+1. `packages/memory/src/utils/token-counter.ts` - Backward compatibility wrapper
+2. `packages/react/src/utils/tokenization/accurate-counter.ts` - App-level wrapper with caching
+
+**Analysis**:
+
+- Memory wrapper is explicitly for backward compatibility (documented)
+- React wrapper adds LRU cache layer for app-level optimization
+- Both delegate to `@clarity-chat/token-optimization`
+
+**Decision**: KEEP current structure - this is proper layering:
+
+- Package level: Core implementation
+- Memory level: API compatibility
+- React level: App-level caching
+
+**Note**: Model configs in react wrapper could be removed if they're duplicated in
+token-optimization, but this is low priority.
 
 ---
 
-### Area 4: Chat Components
+## Decision 3: Tool Calling System
 
-#### Decision 4.1: `packages/react/src/components/chat/clarity-chat.tsx`
-**Canonical Version**: ✅ Branch (critical fixes)
-- **Why**:
-  - Issue #1, SEC-002: Edit race condition protection (mutex)
-  - Issue #6: Silent operation failures eliminated
-  - Issue #7: Duplicate message prevention
-- **Migration**: None required (internal fixes)
-- **Risk**: None
+### Status: **KEEP - PROPER LAYERING**
 
-#### Decision 4.2: `packages/react/src/components/message/clarity-tool-result.tsx`
-**Canonical Version**: ✅ Branch (XSS fix)
-- **Why**:
-  - SEC-004, TOOL-011: XSS prevention with DOMPurify
-  - HTML escaping for tool names
-  - Content sanitization for results
-- **Migration**: Ensure DOMPurify dependency is installed
-- **Risk**: **Requires new dependency** (dompurify)
+#### Layer Architecture:
 
-#### Decision 4.3: `packages/react/src/components/message/streaming-message.tsx`
-**Canonical Version**: ✅ Branch (error boundary)
-- **Why**: Issue #19: Error boundary protection
-- **Migration**: None required
-- **Risk**: None
+1. **Core**: `tool-executor.ts` - Low-level execution engine
+2. **Orchestration**: `tool-orchestrator.ts` - Manages execution flow
+3. **State**: `tools-engine.ts` - State management and approval flow
+4. **Utilities**: `tool-execution.ts` - Helper patterns (retry, fallback)
+5. **UI**: `tool-ui-registry.ts` - Component registry
+
+**Analysis**:
+
+- `tool-execution.ts` provides utility functions that work WITH the orchestrator
+- It's not a duplicate of `tool-executor.ts` - different abstraction level
+- Proper separation of concerns
+
+**Decision**: KEEP all files - this is correct architectural layering
+
+**Note**: Ensure `tools-engine.ts` properly delegates to `tool-executor.ts` for actual execution
+(verify this works correctly)
 
 ---
 
-### Area 5: Message Operations
+## Decision 4: Streaming
 
-#### Decision 5.1: `packages/react/src/hooks/message/use-message-operations.ts`
-**Canonical Version**: ✅ Branch (multiple fixes)
-- **Why**:
-  - Issue #2: Empty message validation
-  - Issue #3: Complete undo/redo
-  - Issue #16: Undo history validation
-  - Issue #18: Orphaned reference cleanup
-- **Migration**: None required (internal fixes)
-- **Risk**: None
+### Status: **KEEP - PROPER LAYERING**
 
----
+#### Layer Architecture:
 
-### Area 6: Memory Service
+1. **Core**: `use-streaming.ts` - Low-level primitive
+2. **Utilities**: `streaming-helpers.ts` - Shared parsing/format handling
+3. **Protocol-specific**: `use-streaming-sse.tsx`, `use-streaming-websocket.tsx`
+4. **App-specific**: `use-streaming-chat.ts`
 
-#### Decision 6.1: `packages/memory/src/memory-service.ts`
-**Canonical Version**: ✅ Branch (race fix)
-- **Why**: MEM-001: Memory service race condition fix
-- **Migration**: None required
-- **Risk**: None
+**Analysis**: This is textbook architectural layering:
+
+- Core primitives → Protocol handlers → App-level hooks
+
+**Decision**: KEEP all files - correct architecture
+
+**Minor improvement**: Verify SSE parsing in hooks uses `streaming-helpers.ts` utilities (not
+duplicated)
 
 ---
 
-### Area 7: Chat Hooks
+## Decision 5: Message Handling
 
-#### Decision 7.1: `packages/react/src/hooks/use-clarity-chat/use-clarity-chat.ts`
-**Canonical Version**: ✅ Branch (cleanup fix)
-- **Why**: Issue #11: Memory query promise cleanup
-- **Migration**: None required
-- **Risk**: None
+### Status: **KEEP - DIFFERENT PURPOSES**
 
-#### Decision 7.2: `packages/react/src/internal/hooks/use-chat-enhanced.ts`
-**Canonical Version**: ✅ Branch (multiple fixes)
-- **Why**:
-  - Issue #13: Empty message validation feedback
-  - Issue #14: Streaming assembly race condition
-  - Issue #21: Credential validation warnings
-- **Migration**: None required
-- **Risk**: None
+#### Files:
+
+1. `chat-helpers.ts` - Message creation, transformation, validation
+2. `clarity-chat-helpers.ts` - Configuration factory functions
+
+**Analysis**: These serve completely different purposes and should remain separate.
+
+**Decision**: KEEP both files - correct separation
 
 ---
 
-### Area 8: Internal APIs
+## Summary of Required Changes
 
-#### Decision 8.1: `packages/react/src/internal.ts`
-**Canonical Version**: ✅ Branch (warning added)
-- **Why**: API-003: Internal API instability warning
-- **Migration**: None required
-- **Risk**: None
+### High Priority (Security)
 
----
+1. **Update `enhanced-security.ts`**:
+   - Import sanitization functions from `sanitization.ts`
+   - Remove duplicate SQL/script sanitization code
+   - Keep ML threat detection and zero-trust features
 
-### Area 9: Documentation
+### Low Priority (Cleanup)
 
-#### Decision 9.1: `CHANGELOG.md`
-**Canonical Version**: ✅ Merge (combine both)
-- **Strategy**:
-  1. Keep v1.0.0 from main (2026-01-21)
-  2. Add v1.1.0 from branch (2026-01-22)
-  3. Chronological order preserved
-- **Why**: Both versions valid, different features, sequential dates
-- **Migration**: None required
-- **Risk**: None
+2. **Verify streaming hooks use shared utilities**:
+   - Check if SSE parsing is centralized in `streaming-helpers.ts`
+   - If duplicated, refactor to use shared implementation
 
-#### Decision 9.2: `docs/TOOL_SECURITY.md`
-**Canonical Version**: ✅ Branch (new file)
-- **Why**: Comprehensive tool security guide (711 lines)
-- **Migration**: Add to docs site navigation
-- **Risk**: None
+3. **Remove duplicate model configs** (if exists):
+   - Check if MODEL_CONFIGS in `react/tokenization/accurate-counter.ts` duplicates
+     token-optimization package
+   - If so, import from canonical source
 
-#### Decision 9.3: Sprint Reports
-**Canonical Version**: ✅ Branch (new files)
-- Files: `SPRINT_3_FINAL_COMPLETION.md`, `.ai-chat-audit/SPRINT_5_SANITIZATION.md`
-- **Why**: Audit documentation and completion reports
-- **Migration**: None required
-- **Risk**: None
+### No Action Required
 
----
-
-### Area 10: Audit Documentation
-
-#### Decision 10.1: `.ai-chat-audit/` directory
-**Canonical Version**: ✅ Branch (new directory)
-- **Why**: Complete audit trail (11 files, 3,886 lines)
-- **Contents**: Inventory, issues, decisions, plans, rubric, progress, reports
-- **Migration**: None required
-- **Risk**: None
-
----
-
-### Area 11: Dependencies
-
-#### Decision 11.1: `package.json`
-**Canonical Version**: ✅ Merge (add branch dependencies)
-- **Additions**:
-  - `dompurify`: ^3.3.1
-  - `@types/dompurify`: ^3.0.5
-- **Why**: Required for XSS protection in tool results
-- **Migration**: Run `npm install` after merge
-- **Risk**: Low (well-established library)
-
----
-
-## Migration Plan
-
-### Breaking Changes
-
-**Only ONE breaking change** (intentional for security):
-
-#### `safeEvaluate()` Function
-- **Before**: Works by default
-- **After**: Requires `unsafeEnableEvaluation: true` option
-- **Impact**: Code using `safeEvaluate()` will fail with security error
-- **Migration**:
-  ```typescript
-  // Before
-  const result = safeEvaluate(code)
-
-  // After
-  const result = safeEvaluate(code, { unsafeEnableEvaluation: true })
-  ```
-- **Verification Required**: Search codebase for `safeEvaluate` usages
-
-### Non-Breaking Changes
-
-All other changes are:
-- ✅ Backward compatible enhancements
-- ✅ New functions/methods (additive)
-- ✅ Internal fixes (transparent)
-- ✅ New files (no impact on existing code)
-
----
-
-## Verification Plan
-
-After merge, verify:
-
-1. **TypeScript Compilation**: `npm run typecheck`
-2. **Linting**: `npm run lint`
-3. **Unit Tests**: `npm run test`
-4. **Build**: `npm run build`
-5. **Storybook**: `npm run storybook:build` (if applicable)
-6. **Search for Breaking Changes**:
-   ```bash
-   grep -r "safeEvaluate" --include="*.ts" --include="*.tsx"
-   ```
+- Token counter wrappers (intentional layering)
+- Tool system files (proper architecture)
+- Message helpers (different purposes)
 
 ---
 
 ## Final API Surface
 
-### Security Module (`packages/react/src/utils/security/`)
+### Security Module
 
-**Exported Functions** (total: 20):
+- **Canonical**: `@clarity-chat/react/utils/security/sanitization` (comprehensive)
+- **HTML-specific**: `@clarity-chat/react/utils/security/sanitize-html`
+- **Code evaluation**: `@clarity-chat/react/utils/security/safe-evaluate`
+- **Enhanced ML**: `@clarity-chat/token-optimization/security/enhanced-security` (imports from
+  sanitization)
 
-From `safe-evaluate.ts` (3):
-- `safeEvaluate(code, options)` ⚠️ Breaking change (disabled by default)
-- `detectDangerousPatterns(code)`
-- `formatEvaluateResult(result)`
+### Token Counting
 
-From `sanitize-html.ts` (4):
-- `sanitizeCodeHtml(html)`
-- `escapeHtmlEntities(text)`
-- `createSafeCodeHtml(code, lang)`
-- `detectDangerousHtml(html)`
+- **Canonical**: `@clarity-chat/token-optimization`
+- **Memory compat**: `@clarity-chat/memory/utils/token-counter` (wrapper)
+- **React compat**: `@clarity-chat/react/utils/tokenization/accurate-counter` (cached wrapper)
 
-From `sanitization.ts` (12 - NEW):
-- `sanitizeSQL(input)`
-- `sanitizeSQLIdentifier(identifier, options)`
-- `sanitizeShellArg(input, options)`
-- `detectCommandInjection(input)`
-- `sanitizePath(inputPath, options)`
-- `sanitizeFilename(filename, options)`
-- `sanitizeLDAP(input)`
-- `sanitizeXML(input)`
-- `sanitizeURLParam(input, options)`
-- `isSafeInput(input, pattern)`
-- `truncateInput(input, maxLength, options)`
-- `sanitization` (default export)
+### Tool System
 
-**Types** (3):
-- `SafeEvaluateResult`
-- `SafeEvaluateOptions` (NEW)
+- **Executor**: `@clarity-chat/react/core/tool-executor`
+- **Orchestrator**: `@clarity-chat/react/core/tool-orchestrator`
+- **State engine**: `@clarity-chat/react/app-api/tools-engine`
+- **Utilities**: `@clarity-chat/react/utils/tool-execution`
+- **UI**: `@clarity-chat/react/agents/tool-ui-registry`
+
+### Streaming
+
+- **Core**: `@clarity-chat/react/hooks/streaming/use-streaming`
+- **Helpers**: `@clarity-chat/react/utils/streaming/streaming-helpers`
+- **SSE**: `@clarity-chat/react/hooks/streaming/use-streaming-sse`
+- **WebSocket**: `@clarity-chat/react/hooks/streaming/use-streaming-websocket`
+- **Chat**: `@clarity-chat/react/hooks/streaming/use-streaming-chat`
 
 ---
 
-## Deployment Checklist
+## Verification Checklist
 
-Before deploying merged code:
+After implementing changes:
 
-- [ ] Run full test suite
-- [ ] Check for `safeEvaluate` usages and update with opt-in flag
-- [ ] Verify DOMPurify is installed (`npm install`)
+- [ ] TypeScript compiles without errors
+- [ ] All tests pass
 - [ ] Build succeeds
-- [ ] Documentation site builds (if applicable)
-- [ ] Storybook builds (if applicable)
-- [ ] Update release notes with CHANGELOG v1.1.0 content
-- [ ] Tag release as v1.1.0
+- [ ] Security module has single source of truth for sanitization
+- [ ] No dead code or unused exports
+- [ ] Documentation matches implementation
 
 ---
 
 ## Conclusion
 
-**Canonical Decision**: ✅ **Accept ALL branch changes**
+**API Cohesion Status**: ~95% (one consolidation needed)
 
-**Rationale**:
-1. No duplicates exist
-2. All changes are enhancements or fixes
-3. Only one intentional breaking change (security fix)
-4. Comprehensive audit and testing completed
-5. Quality score improved: 68/100 → 98/100
+**Required action**: Update `enhanced-security.ts` to import from `sanitization.ts`
 
-**Confidence**: **HIGH** (100%)
-
-**Next Phase**: Create implementation plan for merge execution.
+**Everything else**: Proper architectural layering - no changes needed
