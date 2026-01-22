@@ -634,6 +634,18 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         return
       }
 
+      // FIX: Issue #21 - Credentials validation
+      // Ensure credentials are sent with cross-origin requests if mode is 'include'
+      if (api && api.startsWith('http') && !api.includes(window.location.origin) && credentials === 'include') {
+        // Just a warning in dev mode, but good practice to verify
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[useChat] Cross-origin request with credentials: include. ' +
+            'Ensure your server sets Access-Control-Allow-Credentials: true'
+          )
+        }
+      }
+
       const userMessage: CoreMessage = {
         role: 'user',
         content: input.trim(),

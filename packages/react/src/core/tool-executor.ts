@@ -20,6 +20,7 @@ import type {
   ToolArguments,
   ToolResult,
   ToolExecutionContext,
+  ToolParameterProperty,
 } from '../types/tool-definition'
 import type { ToolLifecycleManager } from './tool-lifecycle'
 
@@ -38,6 +39,29 @@ export class ToolValidationError extends Error {
   ) {
     super(`[${toolName}] Parameter validation failed for '${field}': ${message}`)
     this.name = 'ToolValidationError'
+  }
+}
+
+/**
+ * Tool Timeout Error
+ */
+export class ToolTimeoutError extends Error {
+  constructor(public toolName: string, public timeoutMs: number) {
+    super(`Tool execution timeout after ${timeoutMs}ms: ${toolName}`)
+    this.name = 'ToolTimeoutError'
+  }
+}
+
+/**
+ * Tool Execution Error
+ */
+export class ToolExecutionError extends Error {
+  constructor(public toolName: string, message: string, public originalError?: Error) {
+    super(`Tool execution failed: ${toolName} - ${message}`)
+    this.name = 'ToolExecutionError'
+    if (originalError) {
+      this.cause = originalError
+    }
   }
 }
 
@@ -91,47 +115,117 @@ function validateValue(
   toolName: string,
   field: string,
   value: unknown,
-  schema: any
+  schema: ToolParameterProperty
 ): void {
+  // 1. Validate composition (oneOf, anyOf, allOf, not)
+  // FIX: TOOL-001 - Incomplete schema validation
+  if (schema.oneOf) {
+    let matchCount = 0
+    for (const subSchema of schema.oneOf) {
+      try {
+        validateValue(toolName, field, value, subSchema)
+        matchCount++
+      } catch (e) {
+        // Ignore errors in sub-schemas
+      }
+    }
+    if (matchCount !== 1) {
+      throw new ToolValidationError(
+        toolName,
+        field,
+        `Value must match exactly one of the oneOf schemas (matched ${matchCount})`
+      )
+    }
+  }
+
+  if (schema.anyOf) {
+    let matched = false
+    for (const subSchema of schema.anyOf) {
+      try {
+        validateValue(toolName, field, value, subSchema)
+        matched = true
+        break
+      } catch (e) {
+        // Ignore errors
+      }
+    }
+    if (!matched) {
+      throw new ToolValidationError(
+        toolName,
+        field,
+        'Value must match at least one of the anyOf schemas'
+      )
+    }
+  }
+
+  if (schema.allOf) {
+    for (const subSchema of schema.allOf) {
+      validateValue(toolName, field, value, subSchema)
+    }
+  }
+
+  if (schema.not) {
+    try {
+      validateValue(toolName, field, value, schema.not)
+    } catch (e) {
+      // Success if it throws
+      return
+    }
+    throw new ToolValidationError(toolName, field, 'Value matches "not" schema')
+  }
+
   // Null check
   if (value === null || value === undefined) {
-    if (schema.type === 'null' || schema.type?.includes('null')) {
+    if (schema.type === 'null' || (Array.isArray(schema.type) && schema.type.includes('null'))) {
       return
     }
     throw new ToolValidationError(toolName, field, 'Value is null or undefined')
   }
 
   // Type check
-  const actualType = Array.isArray(value) ? 'array' : typeof value
-  const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type]
+  if (schema.type) {
+    const actualType = Array.isArray(value) ? 'array' : typeof value
+    // Handle 'integer' type which is 'number' in JS
+    const normalizedActualType = actualType === 'number' && Number.isInteger(value) ? 'integer' : actualType
+    
+    const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type]
 
-  if (!expectedTypes.includes(actualType)) {
-    throw new ToolValidationError(
-      toolName,
-      field,
-      `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`
-    )
-  }
+    // Allow 'number' to match 'integer' if it is an integer, or 'integer' to match 'number'
+    const isTypeMatch = expectedTypes.some(type => {
+      if (type === actualType) return true
+      if (type === 'integer' && normalizedActualType === 'integer') return true
+      if (type === 'number' && actualType === 'number') return true
+      return false
+    })
 
-  // Type-specific validation
-  switch (schema.type) {
-    case 'string':
-      validateString(toolName, field, value as string, schema)
-      break
-    case 'number':
-    case 'integer':
-      validateNumber(toolName, field, value as number, schema)
-      break
-    case 'array':
-      validateArray(toolName, field, value as unknown[], schema)
-      break
-    case 'object':
-      validateObject(toolName, field, value as Record<string, unknown>, schema)
-      break
+    if (!isTypeMatch) {
+      throw new ToolValidationError(
+        toolName,
+        field,
+        `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`
+      )
+    }
+
+    // Type-specific validation
+    switch (schema.type) {
+      case 'string':
+        validateString(toolName, field, value as string, schema)
+        break
+      case 'number':
+      case 'integer':
+        validateNumber(toolName, field, value as number, schema)
+        break
+      case 'array':
+        validateArray(toolName, field, value as unknown[], schema)
+        break
+      case 'object':
+        validateObject(toolName, field, value as Record<string, unknown>, schema)
+        break
+    }
   }
 
   // Enum validation
-  if (schema.enum && !schema.enum.includes(value)) {
+  if (schema.enum && !schema.enum.includes(value as any)) {
     throw new ToolValidationError(
       toolName,
       field,
@@ -143,7 +237,7 @@ function validateValue(
 /**
  * Validate string value
  */
-function validateString(toolName: string, field: string, value: string, schema: any): void {
+function validateString(toolName: string, field: string, value: string, schema: ToolParameterProperty): void {
   if (schema.minLength !== undefined && value.length < schema.minLength) {
     throw new ToolValidationError(
       toolName,
@@ -161,21 +255,79 @@ function validateString(toolName: string, field: string, value: string, schema: 
   }
 
   if (schema.pattern) {
-    const regex = new RegExp(schema.pattern)
-    if (!regex.test(value)) {
+    // FIX: TOOL-003 - Safe regex validation
+    // 1. Enforce length limit if pattern is present to mitigate ReDoS
+    const SAFE_REGEX_MAX_LENGTH = 10000
+    if (value.length > SAFE_REGEX_MAX_LENGTH) {
       throw new ToolValidationError(
         toolName,
         field,
-        `String does not match pattern: ${schema.pattern}`
+        `String length ${value.length} exceeds safety limit ${SAFE_REGEX_MAX_LENGTH} for regex validation`
       )
     }
+
+    try {
+      const regex = new RegExp(schema.pattern)
+      if (!regex.test(value)) {
+        throw new ToolValidationError(
+          toolName,
+          field,
+          `String does not match pattern: ${schema.pattern}`
+        )
+      }
+    } catch (e) {
+      if (e instanceof ToolValidationError) throw e
+      throw new ToolValidationError(
+        toolName,
+        field,
+        `Invalid regex pattern in schema: ${schema.pattern}`
+      )
+    }
+  }
+
+  // FIX: TOOL-001 - Format validation
+  if (schema.format) {
+    validateFormat(toolName, field, value, schema.format)
+  }
+}
+
+/**
+ * Validate string formats
+ */
+function validateFormat(toolName: string, field: string, value: string, format: string): void {
+  switch (format) {
+    case 'date-time':
+      if (isNaN(Date.parse(value))) {
+        throw new ToolValidationError(toolName, field, 'Invalid date-time format')
+      }
+      break
+    case 'email':
+      // Basic email regex
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        throw new ToolValidationError(toolName, field, 'Invalid email format')
+      }
+      break
+    case 'uri':
+    case 'url':
+      try {
+        new URL(value)
+      } catch {
+        throw new ToolValidationError(toolName, field, 'Invalid URI/URL format')
+      }
+      break
+    case 'ipv4':
+      if (!/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value)) {
+        throw new ToolValidationError(toolName, field, 'Invalid IPv4 format')
+      }
+      break
+    // Add other formats as needed
   }
 }
 
 /**
  * Validate number value
  */
-function validateNumber(toolName: string, field: string, value: number, schema: any): void {
+function validateNumber(toolName: string, field: string, value: number, schema: ToolParameterProperty): void {
   if (schema.type === 'integer' && !Number.isInteger(value)) {
     throw new ToolValidationError(toolName, field, 'Value must be an integer')
   }
@@ -228,7 +380,7 @@ function validateArray(
   toolName: string,
   field: string,
   value: unknown[],
-  schema: any
+  schema: ToolParameterProperty
 ): void {
   if (schema.minItems !== undefined && value.length < schema.minItems) {
     throw new ToolValidationError(
@@ -256,7 +408,7 @@ function validateArray(
   // Validate items
   if (schema.items) {
     value.forEach((item, index) => {
-      validateValue(toolName, `${field}[${index}]`, item, schema.items)
+      validateValue(toolName, `${field}[${index}]`, item, schema.items!)
     })
   }
 }
@@ -268,7 +420,7 @@ function validateObject(
   toolName: string,
   field: string,
   value: Record<string, unknown>,
-  schema: any
+  schema: ToolParameterProperty
 ): void {
   if (schema.required) {
     for (const requiredField of schema.required) {
@@ -306,6 +458,30 @@ interface CacheEntry {
 }
 
 /**
+ * Stable stringify for cache keys
+ * FIX: TOOL-010 - Cache key collisions / Misses due to property ordering
+ */
+function stableStringify(obj: unknown): string {
+  if (obj === null || typeof obj !== 'object') {
+    return JSON.stringify(obj)
+  }
+
+  if (Array.isArray(obj)) {
+    return `[${obj.map(stableStringify).join(',')}]`
+  }
+
+  const keys = Object.keys(obj as Record<string, unknown>).sort()
+  const parts = keys.map(key => {
+    const val = (obj as Record<string, unknown>)[key]
+    // Skip undefined values to match JSON.stringify behavior, but keep explicit nulls
+    if (val === undefined) return '' 
+    return `"${key}":${stableStringify(val)}`
+  }).filter(Boolean)
+
+  return `{${parts.join(',')}}`
+}
+
+/**
  * Tool result cache
  */
 export class ToolResultCache {
@@ -314,23 +490,21 @@ export class ToolResultCache {
   /**
    * Generate cache key
    */
-  private getCacheKey(toolName: string, args: ToolArguments): string {
-    // Sort keys for consistent hashing
-    const sortedArgs = Object.keys(args)
-      .sort()
-      .reduce((acc, key) => {
-        acc[key] = args[key]
-        return acc
-      }, {} as Record<string, unknown>)
-
-    return `${toolName}:${JSON.stringify(sortedArgs)}`
+  private getCacheKey(toolName: string, args: ToolArguments, idempotencyKey?: string): string {
+    // FIX: TOOL-010 - Use stable stringify for consistent keys
+    const stableArgs = stableStringify(args)
+    
+    // FIX: TOOL-017 - Include idempotency key if present
+    const idPart = idempotencyKey ? `:idemp:${idempotencyKey}` : ''
+    
+    return `${toolName}:${stableArgs}${idPart}`
   }
 
   /**
    * Get cached result
    */
-  get(toolName: string, args: ToolArguments): ToolResult | undefined {
-    const key = this.getCacheKey(toolName, args)
+  get(toolName: string, args: ToolArguments, idempotencyKey?: string): ToolResult | undefined {
+    const key = this.getCacheKey(toolName, args, idempotencyKey)
     const entry = this.cache.get(key)
 
     if (!entry) {
@@ -350,8 +524,8 @@ export class ToolResultCache {
   /**
    * Set cache entry
    */
-  set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number): void {
-    const key = this.getCacheKey(toolName, args)
+  set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number, idempotencyKey?: string): void {
+    const key = this.getCacheKey(toolName, args, idempotencyKey)
     this.cache.set(key, {
       result,
       timestamp: Date.now(),
@@ -419,6 +593,12 @@ export interface ExecutionOptions {
 
   /** Additional context */
   context?: Partial<ToolExecutionContext>
+
+  /** 
+   * Idempotency key for deduplication and caching
+   * FIX: TOOL-017 - Missing idempotency
+   */
+  idempotencyKey?: string
 }
 
 /**
@@ -490,12 +670,14 @@ export class ToolExecutor {
 
       // Check cache
       if (!options.skipCache && tool.cacheable) {
-        const cached = this.cache.get(tool.name, args)
+        const cached = this.cache.get(tool.name, args, options.idempotencyKey)
         if (cached !== undefined) {
           return {
             result: cached,
             duration: Date.now() - startTime,
             cached: true,
+            // FIX: TOOL-014 - No error on success
+            error: undefined,
           }
         }
       }
@@ -520,7 +702,7 @@ export class ToolExecutor {
       // Cache result
       if (tool.cacheable && !options.skipCache) {
         const ttl = tool.cacheTtl ?? 300000 // 5 minutes default
-        this.cache.set(tool.name, args, result, ttl)
+        this.cache.set(tool.name, args, result, ttl, options.idempotencyKey)
       }
 
       // Call onAfter hook
@@ -534,14 +716,25 @@ export class ToolExecutor {
         cached: false,
       }
     } catch (error) {
+      // FIX: TOOL-014 - Fragile error classification
       const err = error instanceof Error ? error : new Error(String(error))
+      
+      // Wrap generic errors in ToolExecutionError if they aren't already specific
+      const isSpecificError = 
+        err instanceof ToolValidationError || 
+        err instanceof ToolTimeoutError ||
+        err instanceof ToolExecutionError
+        
+      const finalError = isSpecificError 
+        ? err 
+        : new ToolExecutionError(tool.name, err.message, err)
 
       // Call onError hook
       if (tool.hooks?.onError) {
-        await tool.hooks.onError(err, args, context)
+        await tool.hooks.onError(finalError, args, context)
       }
 
-      throw err
+      throw finalError
     }
   }
 
@@ -569,11 +762,12 @@ export class ToolExecutor {
       timeoutId = setTimeout(() => {
         if (!completed) {
           completed = true
-          reject(new Error(`Tool execution timeout after ${timeoutMs}ms: ${tool.name}`))
+          // FIX: TOOL-014 - Specific error type
+          reject(new ToolTimeoutError(tool.name, timeoutMs))
 
           // Call onTimeout hook
           if (tool.hooks?.onTimeout) {
-            tool.hooks.onTimeout(args, context).catch((err) => {
+            Promise.resolve(tool.hooks.onTimeout(args, context)).catch((err) => {
               console.error('Error in onTimeout hook:', err)
             })
           }
@@ -589,7 +783,7 @@ export class ToolExecutor {
 
           // Call onCancel hook
           if (tool.hooks?.onCancel) {
-            tool.hooks.onCancel(args, context).catch((err) => {
+            Promise.resolve(tool.hooks.onCancel(args, context)).catch((err) => {
               console.error('Error in onCancel hook:', err)
             })
           }
