@@ -230,8 +230,14 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
-export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
+export {
+  OfflineChatSync,
+  useOfflineChat,
+} from './components/chat/offline-chat-sync'
+export {
+  ChatSyncStatus,
+  type ChatSyncStatusProps,
+} from './components/chat/chat-sync-status'
 export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
@@ -489,12 +495,12 @@ export {
 
 // Migration Helpers - Smooth API transitions
 export {
-  migrateToV1,
-  createMigrationWrapper,
+  // migrateToV1,
+  // createMigrationWrapper,
   MigrationPresets,
-  applyMigration,
-  validateMigration,
-  MigrationUtils,
+  // applyMigration,
+  // validateMigration,
+  // MigrationUtils,
 } from './utils/migration-helpers.tsx'
 
 // IntelliSense Helpers - Enhanced TypeScript DX
@@ -536,12 +542,12 @@ export {
   createThemeVariant,
   createThemeClasses,
   applyThemeToCSS,
-  useTheme,
-  useResponsiveTheme,
-  usePersistentTheme,
-  ThemeProvider,
-  ThemeToggle,
-  ThemeSelector,
+  // useTheme, // Exported from ./theme
+  // useResponsiveTheme, // Exported from ./theme
+  // usePersistentTheme, // Exported from ./theme
+  // ThemeProvider, // Exported from ./theme
+  // ThemeToggle, // Exported from ./theme
+  // ThemeSelector, // Exported from ./theme
 } from './utils/theme-helpers'
 
 // Accessibility Helpers - Enhanced A11y support
@@ -598,7 +604,7 @@ export {
   CustomAdapter,
   MigrationTracker,
   MigrationAnalyzer,
-  MigrationPresets,
+  // MigrationPresets, // Exported from ./utils/migration-helpers.tsx above
   generateMigrationReport,
   migrateQuick,
 } from './utils/migration-helpers'
@@ -734,7 +740,10 @@ export {
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
+export {
+  AdaptiveTokenOptimizer as TokenOptimizer,
+  adaptiveOptimizer,
+} from './utils/tokenization/adaptive-optimizer'
 export {
   TokenCostPreview,
   useTokenEstimate,
@@ -813,7 +822,10 @@ export { AdvancedChatInput } from './components/input/advanced-chat-input'
 export { FileUpload } from './components/input/file-upload'
 export { InlineVoiceInput } from './components/input/voice-input'
 export { StructuredInputBuilder } from './components/input/structured-input-builder'
-export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
+export {
+  DocumentIntegration,
+  useDocumentIntegration,
+} from './components/media/document-integration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
@@ -824,7 +836,10 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
-export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
+export {
+  CollaborativeEditor,
+  useCollaborativeSession,
+} from './components/ai/collaborative-editing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
@@ -897,7 +912,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
 // Security
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+// export { SecurityManager, securityManager, useSecurity } from './utils/security'
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -949,8 +964,8 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-export { ApiTokenManager } from './components/enterprise/api-token-manager'
-export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
+export { ApiTokenManager } from './components/enterprise/ApiTokenManager'
+export { AuthTenantDashboard } from './components/enterprise/AuthTenantDashboard'
 
 // ============================================================================
 // THEME COMPONENTS (Theme Preview & Testing)

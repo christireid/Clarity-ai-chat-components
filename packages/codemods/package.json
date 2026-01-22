@@ -28,6 +28,8 @@
     "@types/jscodeshift": "^0.11.6"
   },
   "devDependencies": {
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "@types/node": "^20.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
