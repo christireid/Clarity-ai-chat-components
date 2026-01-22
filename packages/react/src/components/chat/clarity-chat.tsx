@@ -601,28 +601,42 @@ export function ClarityChat({
         isLoading={chat.isLoading || isRegenerating}
         onSendMessage={handleSendMessage}
         onStopGeneration={handleStopGeneration}
-        onMessageCopy={processedProps.onMessageCopy}
-        onMessageFeedback={processedProps.onMessageFeedback}
-        onEditMessage={processedProps.onEditMessage ? handleEditMessage : undefined}
-        onRegenerateMessage={processedProps.onRegenerateMessage ? handleRegenerateMessage : undefined}
-        onDeleteMessage={processedProps.onDeleteMessage ? handleDeleteMessage : undefined}
-        editingMessageId={editingMessageId}
-        onSaveEdit={handleSaveEdit}
-        onCancelEdit={handleCancelEdit}
+        
+        // Grouped props
+        messageActions={{
+          onCopy: processedProps.onMessageCopy,
+          onFeedback: processedProps.onMessageFeedback,
+          onEdit: processedProps.onEditMessage ? handleEditMessage : undefined,
+          onRegenerate: processedProps.onRegenerateMessage ? handleRegenerateMessage : undefined,
+          onDelete: processedProps.onDeleteMessage ? handleDeleteMessage : undefined,
+          onRetry: undefined // Legacy ClarityChat didn't expose onRetry directly but onMessageRetry legacy prop might be mapped
+        }}
+        editActions={{
+          editingMessageId,
+          onSaveEdit: handleSaveEdit,
+          onCancelEdit: handleCancelEdit
+        }}
+        header={{
+          show: processedProps.showHeader,
+          title: processedProps.sessionTitle,
+          subtitle: processedProps.sessionSubtitle,
+          actions: processedProps.headerActions,
+          showMessageCount: processedProps.showMessageCount
+        }}
+        actions={{
+          onExport: processedProps.onExport,
+          onClear: processedProps.onClear ? handleClear : undefined
+        }}
+        prompts={processedProps.prompts}
+        
         className={className}
         emptyState={emptyState}
-        showHeader={processedProps.showHeader}
-        sessionTitle={processedProps.sessionTitle}
-        sessionSubtitle={processedProps.sessionSubtitle}
-        headerActions={processedProps.headerActions}
-        showMessageCount={processedProps.showMessageCount}
-        onExport={processedProps.onExport}
-        onClear={processedProps.onClear ? handleClear : undefined}
         autoScroll={processedProps.autoScroll}
         theme={processedProps.theme}
+        // These props are not in the groups yet or custom to ChatWindow
         showTokenCounter={processedProps.showTokenCounter}
         showNetworkStatus={processedProps.showNetworkStatus}
-        enableMessageOperations={processedProps.enableMessageOperations}
+        // enableMessageOperations is handled by passing specific callbacks
       />
     </div>
   )
