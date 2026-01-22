@@ -26,7 +26,7 @@ import {
 import type { CompressionResult as MarkdownCompressionResult } from './compression/markdown-compressor'
 import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 import type { SemanticCacheConfig } from './caching/advanced-semantic-cache'
-import { ProviderCachingManager } from './providers/prompt-caching'
+import { ProviderCachingFormatter } from './providers/prompt-caching'
 import type {
   ProviderCachingConfig,
   CacheableMessage,
@@ -344,9 +344,9 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
 
   const counter = new AccurateTokenCounter({ model })
 
-  // Initialize provider caching if enabled
+  // Initialize provider caching formatter if enabled
   const providerCaching = enableProviderCaching
-    ? new ProviderCachingManager(
+    ? new ProviderCachingFormatter(
         {
           enabled: true,
           provider: cachingProvider,
@@ -436,7 +436,7 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
             },
           ]
 
-          const providerResult = await providerCaching.applyCaching(messages)
+          const providerResult = await providerCaching.formatMessagesForCaching(messages)
 
           if (providerResult.cached) {
             providerCacheApplied = true

@@ -327,12 +327,16 @@ export type {
   TokenCountResult,
 } from './tokenizers/provider-native-counter'
 
-// Provider-Native Caching (Anthropic, OpenAI, Google) - 90% savings on cached tokens
+// Provider-Native Caching (Anthropic, OpenAI, Google)
+// ⚠️ Formats messages for provider caching. You must implement provider API calls.
 export {
   // Advanced API (full control)
+  ProviderCachingFormatter,
+  formatMessagesForProviderCaching,
+  parseOpenAICacheMetrics,
+  // Deprecated aliases (use ProviderCachingFormatter instead)
   ProviderCachingManager,
   applyProviderCaching,
-  parseOpenAICacheMetrics,
   // Simple API (recommended for most use cases)
   createProviderCache,
   quickCache,
