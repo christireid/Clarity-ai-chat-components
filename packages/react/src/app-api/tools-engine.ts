@@ -565,7 +565,7 @@ export async function executeToolCall(
           'denied'
         )
         return {
-          state: { ...state, auditLog: [...state.auditLog, auditEntry] },
+          state: { ...state, auditLog: [...(state.auditLog || []), auditEntry] },
           result: {
             success: false,
             error: 'Call not found or not approved',
@@ -627,7 +627,7 @@ export async function executeToolCall(
           ...state,
           pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
           completedCalls: [...state.completedCalls, completedCall],
-          auditLog: [...state.auditLog, auditEntry],
+          auditLog: [...(state.auditLog || []), auditEntry],
         },
         result: {
           success: true,
@@ -698,7 +698,7 @@ export async function executeToolCall(
         ),
         completedCalls: [...executingState.completedCalls, completedCall],
         cache: newCache,
-        auditLog: [...executingState.auditLog, auditEntry],
+        auditLog: [...(executingState.auditLog || []), auditEntry],
       },
       result: {
         success: true,
@@ -740,7 +740,7 @@ export async function executeToolCall(
           (c) => c.id !== callId
         ),
         completedCalls: [...executingState.completedCalls, failedCall],
-        auditLog: [...executingState.auditLog, auditEntry],
+        auditLog: [...(executingState.auditLog || []), auditEntry],
       },
       result: {
         success: false,
