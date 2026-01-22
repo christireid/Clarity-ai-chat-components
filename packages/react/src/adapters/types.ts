@@ -41,6 +41,8 @@ export interface ModelConfig {
   presencePenalty?: number
   /** Stop sequences */
   stop?: string[]
+  /** Tool definitions for function calling */
+  tools?: ToolDefinition[]
   /** Request timeout in milliseconds (default: 30000 for chat, 60000 for stream) */
   timeout?: number
   /** AbortSignal for request cancellation */
@@ -102,6 +104,51 @@ export interface ToolCall {
     /** Function arguments (JSON string) */
     arguments: string
   }
+}
+
+/**
+ * JSON Schema for function parameters
+ */
+export interface FunctionParameters {
+  /** Parameter type (usually "object") */
+  type: 'object' | 'string' | 'number' | 'boolean' | 'array'
+  /** Parameter properties */
+  properties?: Record<string, {
+    type: 'string' | 'number' | 'boolean' | 'array' | 'object'
+    description?: string
+    enum?: unknown[]
+    items?: unknown
+    [key: string]: unknown
+  }>
+  /** Required parameter names */
+  required?: string[]
+  /** Additional properties allowed */
+  additionalProperties?: boolean
+  /** Description */
+  description?: string
+  [key: string]: unknown
+}
+
+/**
+ * Function tool definition
+ */
+export interface FunctionDefinition {
+  /** Function name */
+  name: string
+  /** Function description */
+  description?: string
+  /** Function parameters (JSON Schema) */
+  parameters?: FunctionParameters
+}
+
+/**
+ * Tool definition for function calling
+ */
+export interface ToolDefinition {
+  /** Tool type */
+  type: 'function'
+  /** Function definition */
+  function: FunctionDefinition
 }
 
 export interface Citation {

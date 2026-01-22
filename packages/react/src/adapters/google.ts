@@ -11,7 +11,7 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter, FinishReason } from './types'
+import type { ModelAdapter, FinishReason, ToolDefinition, ToolCall } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import { validateApiKey, DEFAULT_TIMEOUTS } from './shared'
@@ -35,6 +35,46 @@ function normalizeFinishReason(
     default:
       return 'unknown'
   }
+}
+
+/**
+ * Convert our ToolDefinition format to Google's function declarations format
+ */
+function convertToolsToGoogleFormat(tools?: ToolDefinition[]) {
+  if (!tools || tools.length === 0) return undefined
+
+  return [
+    {
+      functionDeclarations: tools.map((tool) => ({
+        name: tool.function.name,
+        description: tool.function.description,
+        parameters: tool.function.parameters || {
+          type: 'object',
+          properties: {},
+        },
+      })),
+    },
+  ]
+}
+
+/**
+ * Parse Google function calls to our ToolCall format
+ */
+function parseFunctionCalls(
+  parts: Array<{ functionCall?: { name: string; args: unknown }; [key: string]: unknown }>
+): ToolCall[] {
+  return parts
+    .filter((part): part is { functionCall: { name: string; args: unknown } } =>
+      part.functionCall !== undefined
+    )
+    .map((part, index) => ({
+      id: `call_${index}_${part.functionCall.name}`,
+      type: 'function' as const,
+      function: {
+        name: part.functionCall.name,
+        arguments: JSON.stringify(part.functionCall.args),
+      },
+    }))
 }
 
 export const googleAdapter: ModelAdapter = {
@@ -71,6 +111,7 @@ export const googleAdapter: ModelAdapter = {
                     return { text: p.text || '' }
                   }),
           })),
+          tools: convertToolsToGoogleFormat(config.tools),
           generationConfig: {
             temperature: config.temperature,
             maxOutputTokens: config.maxTokens,
@@ -98,9 +139,21 @@ export const googleAdapter: ModelAdapter = {
 
     const data = await response.json()
 
+    const parts = data.candidates[0]?.content?.parts || []
+
+    // Extract text content from all text parts
+    const textContent = parts
+      .filter((part: { text?: string }) => part.text)
+      .map((part: { text: string }) => part.text)
+      .join('')
+
+    // Parse function calls
+    const functionCalls = parseFunctionCalls(parts)
+
     return {
       role: 'assistant',
-      content: data.candidates[0]?.content?.parts[0]?.text || '',
+      content: textContent,
+      toolCalls: functionCalls.length > 0 ? functionCalls : undefined,
       finishReason: normalizeFinishReason(data.candidates[0]?.finishReason),
     }
   },
@@ -136,6 +189,7 @@ export const googleAdapter: ModelAdapter = {
                     return { text: p.text || '' }
                   }),
           })),
+          tools: convertToolsToGoogleFormat(config.tools),
           generationConfig: {
             temperature: config.temperature,
             maxOutputTokens: config.maxTokens,
@@ -198,6 +252,7 @@ export const googleAdapter: ModelAdapter = {
 
             if (candidate?.content?.parts) {
               for (const part of candidate.content.parts) {
+                // Handle text content
                 if (part.text) {
                   yield {
                     type: 'token',
@@ -205,6 +260,17 @@ export const googleAdapter: ModelAdapter = {
                   }
 
                   config.streamOptions?.onToken?.(part.text)
+                }
+
+                // Handle function calls
+                if (part.functionCall) {
+                  const functionCalls = parseFunctionCalls([part])
+                  for (const toolCall of functionCalls) {
+                    yield {
+                      type: 'tool_call',
+                      toolCall,
+                    }
+                  }
                 }
               }
             }

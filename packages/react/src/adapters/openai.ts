@@ -8,7 +8,7 @@
  * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type { ModelAdapter, ToolCall, FinishReason } from './types'
+import type { ModelAdapter, ToolCall, FinishReason, ToolDefinition } from './types'
 import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
@@ -78,6 +78,7 @@ export const openAIAdapter: ModelAdapter = {
           frequency_penalty: config.frequencyPenalty,
           presence_penalty: config.presencePenalty,
           stop: config.stop,
+          tools: config.tools,
         }),
         timeout,
         signal: config.signal,
@@ -150,6 +151,7 @@ export const openAIAdapter: ModelAdapter = {
           temperature: config.temperature,
           max_tokens: config.maxTokens,
           stream: true,
+          tools: config.tools,
         }),
         timeout,
         signal: config.signal,
