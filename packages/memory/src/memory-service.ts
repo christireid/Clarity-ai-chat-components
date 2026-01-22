@@ -360,6 +360,121 @@ export class MemoryService {
       }
     }
 
+    // Check completion status for streaming messages
+    const completionStatus = metadata?.completionStatus as
+      | 'complete'
+      | 'aborted'
+      | 'error'
+      | undefined
+
+    if (completionStatus) {
+      // Skip aborted messages unless explicitly configured to store them
+      if (
+        completionStatus === 'aborted' &&
+        this.config.streaming?.storeAbortedMessages !== true
+      ) {
+        if (this.config.debug) {
+          console.log(
+            '[MemoryService] Skipping aborted message (storeAbortedMessages=false)'
+          )
+        }
+        // Return a placeholder memory item (not stored)
+        return {
+          id: this.generateId(),
+          type,
+          scope,
+          content,
+          embedding: [],
+          tokens: TokenCounter.count(content),
+          confidence: 0,
+          importance: 0,
+          priority: 'low',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastAccessed: new Date(),
+          accessCount: 0,
+          metadata: {
+            ...metadata,
+            autoCapture: false,
+            completionStatus: 'aborted',
+          },
+        } satisfies MemoryItem
+      }
+
+      // Skip error messages unless explicitly configured to store them
+      if (
+        completionStatus === 'error' &&
+        this.config.streaming?.storeErrorMessages !== true
+      ) {
+        if (this.config.debug) {
+          console.log(
+            '[MemoryService] Skipping error message (storeErrorMessages=false)',
+            metadata?.errorMessage
+          )
+        }
+        // Return a placeholder memory item (not stored)
+        return {
+          id: this.generateId(),
+          type,
+          scope,
+          content,
+          embedding: [],
+          tokens: TokenCounter.count(content),
+          confidence: 0,
+          importance: 0,
+          priority: 'low',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastAccessed: new Date(),
+          accessCount: 0,
+          metadata: {
+            ...metadata,
+            autoCapture: false,
+            completionStatus: 'error',
+          },
+        } satisfies MemoryItem
+      }
+    }
+
+    // Check for duplicates if deduplication is enabled (streaming context)
+    if (this.config.streaming?.deduplicate !== false) {
+      const threshold = this.config.streaming?.deduplicateThreshold ?? 0.95
+      const windowMs = this.config.streaming?.deduplicateWindow ?? 60000
+
+      const similarMemory = await this.findSimilarMemory(
+        content,
+        threshold,
+        windowMs
+      )
+
+      if (similarMemory) {
+        // Update existing memory instead of creating duplicate
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Deduplication: Updating existing memory ${similarMemory.id} ` +
+              `instead of creating duplicate`
+          )
+        }
+
+        const updated = await this.updateMemory(similarMemory.id, {
+          ...similarMemory,
+          content, // Update with new content
+          accessCount: similarMemory.accessCount + 1,
+          updatedAt: new Date(),
+          metadata: {
+            ...similarMemory.metadata,
+            ...metadata, // Merge new metadata
+            regenerationCount:
+              ((similarMemory.metadata.regenerationCount as
+                | number
+                | undefined) || 0) + 1,
+          },
+        })
+
+        return updated!
+      }
+    }
+
     // Get limits with defaults
     const limits = {
       maxMemories:
@@ -703,6 +818,113 @@ export class MemoryService {
       }
       return []
     }
+  }
+
+  /**
+   * Find similar memory within time window for deduplication
+   * Used to prevent duplicate memories from message regeneration
+   *
+   * @param content - Content to compare against
+   * @param threshold - Similarity threshold (0-1)
+   * @param windowMs - Time window in milliseconds
+   * @returns Most similar memory if above threshold, null otherwise
+   */
+  private async findSimilarMemory(
+    content: string,
+    threshold: number,
+    windowMs: number
+  ): Promise<MemoryItem | null> {
+    const now = Date.now()
+    const cutoffTime = new Date(now - windowMs)
+
+    let bestMatch: MemoryItem | null = null
+    let bestScore = 0
+
+    // Search through recent memories in cache
+    for (const memory of this.cache.values()) {
+      // Only check memories within time window
+      if (memory.createdAt < cutoffTime) continue
+
+      // Calculate text similarity
+      const similarity = this.calculateTextSimilarity(content, memory.content)
+
+      if (similarity > bestScore && similarity >= threshold) {
+        bestScore = similarity
+        bestMatch = memory
+      }
+    }
+
+    return bestMatch
+  }
+
+  /**
+   * Calculate text similarity between two strings
+   * Uses a combination of character overlap and word overlap
+   *
+   * @param text1 - First text
+   * @param text2 - Second text
+   * @returns Similarity score (0-1)
+   */
+  private calculateTextSimilarity(text1: string, text2: string): number {
+    // Normalize texts
+    const norm1 = text1.toLowerCase().trim()
+    const norm2 = text2.toLowerCase().trim()
+
+    // Exact match
+    if (norm1 === norm2) return 1.0
+
+    // Length-based early exit for very different texts
+    const lenRatio =
+      Math.min(norm1.length, norm2.length) /
+      Math.max(norm1.length, norm2.length)
+    if (lenRatio < 0.5) return 0 // Texts differ too much in length
+
+    // Calculate word-based Jaccard similarity
+    const words1 = new Set(norm1.split(/\s+/))
+    const words2 = new Set(norm2.split(/\s+/))
+    const intersection = new Set([...words1].filter((w) => words2.has(w)))
+    const union = new Set([...words1, ...words2])
+    const jaccardScore = intersection.size / union.size
+
+    // Calculate character-based similarity (common subsequence approach)
+    const maxLen = Math.max(norm1.length, norm2.length)
+    const commonChars = this.longestCommonSubsequenceLength(norm1, norm2)
+    const charScore = commonChars / maxLen
+
+    // Weighted combination (favor word similarity for deduplication)
+    return jaccardScore * 0.7 + charScore * 0.3
+  }
+
+  /**
+   * Calculate longest common subsequence length
+   * Dynamic programming approach for character-level similarity
+   *
+   * @param s1 - First string
+   * @param s2 - Second string
+   * @returns Length of longest common subsequence
+   */
+  private longestCommonSubsequenceLength(s1: string, s2: string): number {
+    const m = s1.length
+    const n = s2.length
+
+    // Use space-optimized DP (only need previous row)
+    let prev = new Array(n + 1).fill(0)
+    let curr = new Array(n + 1).fill(0)
+
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (s1[i - 1] === s2[j - 1]) {
+          curr[j] = prev[j - 1] + 1
+        } else {
+          curr[j] = Math.max(curr[j - 1], prev[j])
+        }
+      }
+      // Swap rows
+      ;[prev, curr] = [curr, prev]
+      curr.fill(0)
+    }
+
+    return prev[n]
   }
 
   /**
@@ -2316,6 +2538,249 @@ export class MemoryService {
     }
 
     return tracked
+  }
+
+  /**
+   * Capture a tool call and its result to memory
+   * Automatically handles token limits and summarization
+   *
+   * @param toolName - Name of the tool that was called
+   * @param params - Tool parameters
+   * @param result - Tool result/output
+   * @param options - Optional metadata and configuration
+   * @returns The created memory item, or null if filtered out
+   */
+  async captureToolCall(
+    toolName: string,
+    params: any,
+    result: any,
+    options?: {
+      toolType?: 'api' | 'database' | 'computation' | 'external' | 'utility'
+      metadata?: Record<string, any>
+      scope?: MemoryScope
+      priority?: MemoryPriority
+    }
+  ): Promise<MemoryItem | null> {
+    // Check if tool integration is enabled
+    if (!this.config.toolIntegration?.captureToolOutputs) {
+      if (this.config.debug) {
+        console.log(
+          '[MemoryService] Tool capture disabled (captureToolOutputs=false)'
+        )
+      }
+      return null
+    }
+
+    // Apply tool capture filter if configured
+    if (this.config.toolIntegration.toolCaptureFilter) {
+      if (!this.config.toolIntegration.toolCaptureFilter(toolName)) {
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Tool '${toolName}' filtered out by toolCaptureFilter`
+          )
+        }
+        return null
+      }
+    }
+
+    // Format tool call content
+    const paramsStr = JSON.stringify(params, null, 2)
+    const resultStr = JSON.stringify(result, null, 2)
+    let content = `Tool: ${toolName}\n\nParameters:\n${paramsStr}\n\nResult:\n${resultStr}`
+
+    // Check token limits and apply summarization if needed
+    const maxTokensPerTool = this.config.toolIntegration.maxTokensPerTool ?? 500
+    let tokens = TokenCounter.count(content)
+
+    if (tokens > maxTokensPerTool) {
+      if (this.config.toolIntegration.autoSummarize !== false) {
+        // Summarize large tool outputs
+        const summary = this.createSummary(resultStr, maxTokensPerTool - 100)
+        content = `Tool: ${toolName}\n\nParameters:\n${paramsStr}\n\nResult (summarized):\n${summary}`
+        tokens = TokenCounter.count(content)
+
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Tool output summarized: ${toolName} ` +
+              `(${TokenCounter.count(resultStr)} → ${TokenCounter.count(summary)} tokens)`
+          )
+        }
+      } else {
+        // Truncate without summarization
+        const maxChars = Math.floor(
+          (maxTokensPerTool / tokens) * content.length
+        )
+        content = content.substring(0, maxChars) + '... [truncated]'
+        tokens = TokenCounter.count(content)
+      }
+    }
+
+    // Check total tool memory budget
+    const maxTotalToolTokens =
+      this.config.toolIntegration.maxTotalToolTokens ?? 5000
+
+    // Calculate current tool memory tokens
+    const toolMemories = Array.from(this.cache.values()).filter(
+      (m) => m.metadata.toolName
+    )
+    const currentToolTokens = toolMemories.reduce((sum, m) => sum + m.tokens, 0)
+
+    // Evict oldest tool memories if budget exceeded
+    if (currentToolTokens + tokens > maxTotalToolTokens) {
+      const tokensToFree = currentToolTokens + tokens - maxTotalToolTokens
+      let freedTokens = 0
+
+      // Sort by age (oldest first)
+      const sortedToolMemories = [...toolMemories].sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      )
+
+      for (const memory of sortedToolMemories) {
+        if (freedTokens >= tokensToFree) break
+        await this.deleteMemory(memory.id)
+        freedTokens += memory.tokens
+      }
+
+      if (this.config.debug) {
+        console.log(
+          `[MemoryService] Tool memory budget enforced: Evicted ${sortedToolMemories.length} ` +
+            `memories to free ${freedTokens} tokens`
+        )
+      }
+    }
+
+    // Store tool memory
+    const memory = await this.addMemory(
+      content,
+      'episodic', // Tool calls are episodic events
+      options?.scope ?? 'thread',
+      {
+        toolName,
+        toolParams: params,
+        toolResult: result,
+        toolType: options?.toolType ?? 'external',
+        autoCapture: true,
+        ...options?.metadata,
+      },
+      {
+        priority: options?.priority ?? 'medium',
+        confidence: 0.9, // High confidence for tool results
+      }
+    )
+
+    return memory
+  }
+
+  /**
+   * Get tool call history for a specific tool or all tools
+   * Useful for analyzing patterns and providing context to LLM
+   *
+   * @param toolName - Optional tool name to filter by
+   * @param options - Query options (limit, timeRange, etc.)
+   * @returns Array of tool memories
+   */
+  async getToolHistory(
+    toolName?: string,
+    options?: {
+      limit?: number
+      timeRange?: { start?: Date; end?: Date }
+      scope?: MemoryScope
+      includeParams?: boolean
+      includeResults?: boolean
+    }
+  ): Promise<MemoryItem[]> {
+    const query: MemoryQuery = {
+      limit: options?.limit ?? 50,
+      timeRange: options?.timeRange,
+      scopes: options?.scope ? [options?.scope] : undefined,
+      metadata: toolName ? { toolName } : { toolName: { $exists: true } },
+    }
+
+    const results = await this.query(query)
+    return results.map((r) => r.memory)
+  }
+
+  /**
+   * Get tool context for a specific query
+   * Retrieves relevant tool call history to inform LLM responses
+   *
+   * @param query - Query string to find relevant tool context
+   * @param options - Query options
+   * @returns Formatted tool context string
+   */
+  async getToolContext(
+    query: string,
+    options?: {
+      limit?: number
+      toolNames?: string[]
+      maxTokens?: number
+    }
+  ): Promise<string> {
+    // Build metadata filter for specific tools if provided
+    const metadata = options?.toolNames
+      ? { toolName: { $in: options.toolNames } }
+      : { toolName: { $exists: true } }
+
+    const results = await this.query({
+      query,
+      limit: options?.limit ?? 10,
+      tokenBudget: options?.maxTokens,
+      metadata,
+    })
+
+    if (results.length === 0) {
+      return ''
+    }
+
+    // Format tool context
+    const toolContexts = results.map((r) => {
+      const memory = r.memory
+      return `[Tool: ${memory.metadata.toolName}]\n${memory.content}\n`
+    })
+
+    return `# Relevant Tool History\n\n${toolContexts.join('\n')}`
+  }
+
+  /**
+   * Replay tool call history as a timeline
+   * Useful for debugging and understanding tool usage patterns
+   *
+   * @param options - Filter and format options
+   * @returns Timeline of tool calls
+   */
+  async replayToolCalls(options?: {
+    toolNames?: string[]
+    timeRange?: { start?: Date; end?: Date }
+    limit?: number
+    format?: 'detailed' | 'summary'
+  }): Promise<
+    Array<{
+      timestamp: Date
+      toolName: string
+      params: any
+      result: any
+      memory: MemoryItem
+    }>
+  > {
+    const metadata = options?.toolNames
+      ? { toolName: { $in: options.toolNames } }
+      : { toolName: { $exists: true } }
+
+    const results = await this.query({
+      limit: options?.limit ?? 100,
+      timeRange: options?.timeRange,
+      metadata,
+    })
+
+    return results
+      .map((r) => ({
+        timestamp: r.memory.createdAt,
+        toolName: r.memory.metadata.toolName as string,
+        params: r.memory.metadata.toolParams,
+        result: r.memory.metadata.toolResult,
+        memory: r.memory,
+      }))
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
   }
 
   /**

@@ -61,6 +61,24 @@ export interface MemoryItem {
     threadId?: string
     /** Session ID */
     sessionId?: string
+    /** Message ID (for streaming messages) */
+    messageId?: string
+    /** Message role (for streaming messages) */
+    role?: 'user' | 'assistant' | 'system' | 'tool'
+    /** Completion status (for streaming messages) */
+    completionStatus?: 'complete' | 'aborted' | 'error'
+    /** Error message (if completionStatus is 'error') */
+    errorMessage?: string
+    /** Whether this was auto-captured */
+    autoCapture?: boolean
+    /** Tool name (for tool memories) */
+    toolName?: string
+    /** Tool parameters (for tool memories) */
+    toolParams?: any
+    /** Tool result (for tool memories) */
+    toolResult?: any
+    /** Tool type (for tool memories) */
+    toolType?: 'api' | 'database' | 'computation' | 'external' | 'utility'
     /** Custom metadata */
     [key: string]: any
   }
@@ -653,6 +671,44 @@ export interface MemoryServiceConfig {
       frequency?: number
       relevance?: number
     }
+  }
+
+  /**
+   * Streaming behavior configuration
+   *
+   * Controls how streaming messages are captured to memory
+   */
+  streaming?: {
+    /** Store aborted messages to memory (default: false) */
+    storeAbortedMessages?: boolean
+    /** Store error messages to memory (default: false) */
+    storeErrorMessages?: boolean
+    /** Enable deduplication for regenerated messages (default: true) */
+    deduplicate?: boolean
+    /** Similarity threshold for deduplication (default: 0.95) */
+    deduplicateThreshold?: number
+    /** Time window for deduplication in ms (default: 60000 = 1 minute) */
+    deduplicateWindow?: number
+  }
+
+  /**
+   * Tool integration configuration
+   *
+   * Controls automatic capture of tool calls and outputs
+   */
+  toolIntegration?: {
+    /** Automatically capture tool calls (default: false) */
+    captureToolCalls?: boolean
+    /** Automatically capture tool outputs (default: false) */
+    captureToolOutputs?: boolean
+    /** Filter which tools to capture (default: capture all) */
+    toolCaptureFilter?: (toolName: string) => boolean
+    /** Maximum tokens per tool memory (default: 500) */
+    maxTokensPerTool?: number
+    /** Maximum total tokens for tool memories (default: 5000) */
+    maxTotalToolTokens?: number
+    /** Auto-summarize large tool outputs (default: true) */
+    autoSummarize?: boolean
   }
 }
 
