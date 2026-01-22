@@ -161,12 +161,12 @@ export function useClarityChat(
         enrichedMessages = originalTransform(enrichedMessages)
       }
 
-      // Use state variable to ensure reactivity
-      if (memory?.enabled && currentMemoryContext) {
+      // Use ref to ensure fresh value during async operations (fixes race condition)
+      if (memory?.enabled && memoryContextRef.current) {
         enrichedMessages = [
           {
             role: 'system',
-            content: `Relevant context from memory:\n${currentMemoryContext}`,
+            content: `Relevant context from memory:\n${memoryContextRef.current}`,
           } as CoreMessage,
           ...enrichedMessages,
         ]
