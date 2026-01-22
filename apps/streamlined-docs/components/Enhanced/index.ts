@@ -24,3 +24,4 @@ export {
 export { Breadcrumbs, CollapsedBreadcrumbs } from './Breadcrumbs'
 export { InteractivePreview } from './InteractivePreview'
 export { VideoEmbed } from './VideoEmbed'
+export { LivePlayground, playgroundTemplates } from './LivePlayground'
