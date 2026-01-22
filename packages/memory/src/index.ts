@@ -35,6 +35,15 @@ export * from './types'
 // Memory service (framework-agnostic)
 export { MemoryService } from './memory-service'
 
+// Consent management (GDPR/CCPA compliance)
+export {
+  ConsentManager,
+  type ConsentPurpose,
+  type ConsentEvent,
+  type ConsentRecord,
+  type ConsentVerification,
+} from './consent'
+
 // Token optimization utilities re-exported for convenience
 // Note: Import directly from @clarity-chat/token-optimization for full API access
 export type {

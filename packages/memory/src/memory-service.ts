@@ -38,6 +38,10 @@ import {
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
+import {
+  ConsentManager,
+  type ConsentPurpose,
+} from './consent'
 
 /**
  * Simple token counter utility
@@ -213,15 +217,18 @@ export class MemoryService {
   private summarizationInterval?: ReturnType<typeof setInterval>
   private decayManager?: DecayManager
   private decayInterval?: ReturnType<typeof setInterval>
+  private consentManager?: ConsentManager
 
   constructor(
     config: MemoryServiceConfig,
     vectorStore?: VectorStore,
-    embeddings?: EmbeddingProvider
+    embeddings?: EmbeddingProvider,
+    consentManager?: ConsentManager
   ) {
     this.config = config
     this.vectorStore = vectorStore
     this.embeddings = embeddings
+    this.consentManager = consentManager
     this.cache = new Map()
     this.buffer = this.createBuffer()
     this.optimizer = createDefaultOptimizer(config.tokenOptimization)
@@ -291,6 +298,44 @@ export class MemoryService {
       embedding?: number[]
     } = {}
   ): Promise<MemoryItem> {
+    // Check consent if consent management is enabled
+    if (this.config.consent?.enabled && this.consentManager) {
+      const requireConsent = this.config.consent.requireConsentForWrites ?? true
+
+      if (requireConsent) {
+        // Extract user ID from metadata
+        const userId = this.config.consent.getUserId?.(metadata) || metadata.userId as string | undefined
+
+        if (!userId) {
+          if (this.config.debug) {
+            console.warn(
+              '[MemoryService] Consent check failed: No user ID found in metadata. ' +
+              'Configure consent.getUserId or include userId in metadata.'
+            )
+          }
+          throw new Error(
+            'Cannot add memory: User ID required for consent verification. ' +
+            'Include userId in metadata or configure consent.getUserId.'
+          )
+        }
+
+        // Determine consent purpose based on operation
+        const purpose: ConsentPurpose = type === 'episodic' || type === 'semantic'
+          ? 'message_storage'
+          : 'personalization'
+
+        // Check consent (will throw if not granted)
+        try {
+          await this.consentManager.requireConsent(userId, purpose)
+        } catch (error) {
+          if (this.config.debug) {
+            console.warn('[MemoryService] Memory write blocked:', (error as Error).message)
+          }
+          throw error
+        }
+      }
+    }
+
     const memory: MemoryItem = {
       id: this.generateId(),
       type,

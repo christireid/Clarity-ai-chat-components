@@ -525,6 +525,23 @@ export interface MemoryServiceConfig {
     policies?: Record<string, unknown>
   }
 
+  /**
+   * Consent management configuration (GDPR/CCPA compliance)
+   *
+   * When enabled, all memory writes require user consent.
+   * Implements GDPR Article 6 (lawful basis) and Article 7 (consent conditions).
+   */
+  consent?: {
+    /** Enable consent management (default: false for backwards compatibility) */
+    enabled: boolean
+    /** Require consent before any write operations (default: true) */
+    requireConsentForWrites?: boolean
+    /** Consent policy version (e.g., '1.0.0') */
+    version?: string
+    /** User ID extractor - extracts user ID from metadata */
+    getUserId?: (metadata: Record<string, unknown>) => string | undefined
+  }
+
   /** Enable debug logging */
   debug?: boolean
 
