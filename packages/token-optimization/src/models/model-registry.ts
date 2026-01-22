@@ -13,9 +13,12 @@
  */
 
 /**
- * Supported AI model identifiers
+ * Known AI model identifiers
+ *
+ * This type provides autocomplete for known models but also accepts any string
+ * to support custom model registration.
  */
-export type ModelId =
+export type KnownModelId =
   // OpenAI GPT-4 Family
   | 'gpt-4'
   | 'gpt-4-turbo'
@@ -58,6 +61,14 @@ export type ModelId =
   | 'mistral-large'
   | 'mistral-medium'
   | 'mistral-small'
+
+/**
+ * Supported AI model identifiers
+ *
+ * Accepts any string to support custom model registration, but provides
+ * autocomplete for known model IDs.
+ */
+export type ModelId = KnownModelId | (string & Record<never, never>)
 
 /**
  * Model provider
@@ -876,4 +887,257 @@ export function getModelConfig(id: ModelId): TokenModelConfig {
  */
 export function tryGetModelConfig(id: string): TokenModelConfig | undefined {
   return isValidModelId(id) ? MODEL_REGISTRY[id] : undefined
+}
+
+// =============================================================================
+// Model Registration API (for Custom Models)
+// =============================================================================
+
+/**
+ * Register a custom model in the registry
+ *
+ * This allows you to add support for:
+ * - Fine-tuned models
+ * - Private deployments
+ * - New provider models not yet in the built-in registry
+ * - Custom pricing for enterprise agreements
+ *
+ * @param id - Unique model identifier (e.g., 'my-gpt-4o-fine-tuned')
+ * @param config - Complete model configuration
+ *
+ * @example
+ * ```typescript
+ * // Register a fine-tuned GPT-4o model
+ * registerModel('my-gpt-4o-fine-tuned', {
+ *   displayName: 'My Fine-Tuned GPT-4o',
+ *   provider: 'openai',
+ *   encoding: 'o200k_base',
+ *   charsPerToken: 4,
+ *   contextWindow: 128000,
+ *   maxOutputTokens: 16384,
+ *   recommendedOutputReserve: 16384,
+ *   inputCostPer1M: 5.0,  // Custom enterprise pricing
+ *   outputCostPer1M: 15.0,
+ *   supportsCaching: true,
+ *   capabilities: {
+ *     vision: true,
+ *     functionCalling: true,
+ *     reasoning: false,
+ *     jsonMode: true,
+ *   },
+ * })
+ *
+ * // Now use it like any built-in model
+ * const counter = new TokenCounter({ model: 'my-gpt-4o-fine-tuned' })
+ * ```
+ *
+ * @throws {Error} If id is empty or invalid
+ */
+export function registerModel(
+  id: string,
+  config: Omit<TokenModelConfig, 'id'>
+): void {
+  // Validation
+  if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    throw new Error(
+      '[registerModel] Model ID must be a non-empty string. ' +
+      `Received: ${JSON.stringify(id)}`
+    )
+  }
+
+  const trimmedId = id.trim()
+
+  // Warn if overwriting existing model
+  if (trimmedId in MODEL_REGISTRY) {
+    console.warn(
+      `[registerModel] Model '${trimmedId}' already exists in registry. ` +
+      'Overwriting with new configuration. This may affect existing code.'
+    )
+  }
+
+  // Validate required fields
+  const requiredFields: (keyof TokenModelConfig)[] = [
+    'displayName',
+    'provider',
+    'encoding',
+    'charsPerToken',
+    'contextWindow',
+    'maxOutputTokens',
+    'recommendedOutputReserve',
+    'inputCostPer1M',
+    'outputCostPer1M',
+    'supportsCaching',
+    'capabilities',
+  ]
+
+  for (const field of requiredFields) {
+    if (!(field in config)) {
+      throw new Error(
+        `[registerModel] Missing required field '${field}' for model '${trimmedId}'. ` +
+        'See TokenModelConfig interface for required fields.'
+      )
+    }
+  }
+
+  // Register the model
+  ;(MODEL_REGISTRY as Record<string, TokenModelConfig>)[trimmedId] = config as TokenModelConfig
+}
+
+/**
+ * Create a custom model with sensible defaults
+ *
+ * This is a convenience wrapper around registerModel() that provides
+ * sensible defaults for common use cases.
+ *
+ * @param id - Unique model identifier
+ * @param config - Partial model configuration (missing fields get defaults)
+ *
+ * @example
+ * ```typescript
+ * // Register a custom model with minimal config
+ * createCustomModel('my-local-llama', {
+ *   displayName: 'My Local Llama 3',
+ *   provider: 'meta',
+ *   encoding: 'llama3',
+ *   contextWindow: 8192,
+ *   // Other fields get sensible defaults
+ * })
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Register a private Azure OpenAI deployment
+ * createCustomModel('azure-gpt-4o', {
+ *   displayName: 'Azure GPT-4o (Private)',
+ *   provider: 'openai',
+ *   encoding: 'o200k_base',
+ *   contextWindow: 128000,
+ *   inputCostPer1M: 2.0,  // Enterprise pricing
+ *   outputCostPer1M: 8.0,
+ *   supportsCaching: true,
+ * })
+ * ```
+ */
+export function createCustomModel(
+  id: string,
+  config: Partial<TokenModelConfig> & {
+    displayName: string
+    provider: ModelProvider
+    encoding: TokenizerEncoding
+  }
+): void {
+  const fullConfig: Omit<TokenModelConfig, 'id'> = {
+    // Required fields from user
+    displayName: config.displayName,
+    provider: config.provider,
+    encoding: config.encoding,
+
+    // Sensible defaults for optional fields
+    charsPerToken: config.charsPerToken ?? 4,
+    contextWindow: config.contextWindow ?? 4096,
+    maxOutputTokens: config.maxOutputTokens ?? 2048,
+    recommendedOutputReserve: config.recommendedOutputReserve ?? 2048,
+    inputCostPer1M: config.inputCostPer1M ?? 0,
+    outputCostPer1M: config.outputCostPer1M ?? 0,
+    cachedInputCostPer1M: config.cachedInputCostPer1M,
+    supportsCaching: config.supportsCaching ?? false,
+    capabilities: config.capabilities ?? {
+      vision: false,
+      functionCalling: false,
+      reasoning: false,
+      jsonMode: false,
+    },
+    releaseDate: config.releaseDate,
+    notes: config.notes,
+  }
+
+  registerModel(id, fullConfig)
+}
+
+/**
+ * Check if a model is a custom (user-registered) model
+ *
+ * @param id - Model identifier to check
+ * @returns true if model was registered via registerModel() or createCustomModel()
+ *
+ * @example
+ * ```typescript
+ * isCustomModel('gpt-4o')              // false (built-in)
+ * isCustomModel('my-fine-tuned-model') // true (if registered)
+ * ```
+ */
+export function isCustomModel(id: string): boolean {
+  if (!isValidModelId(id)) return false
+
+  const knownModels: KnownModelId[] = [
+    'gpt-4',
+    'gpt-4-turbo',
+    'gpt-4o',
+    'gpt-4o-mini',
+    'gpt-4.1',
+    'gpt-4.1-mini',
+    'gpt-4.1-nano',
+    'gpt-3.5-turbo',
+    'o1',
+    'o1-mini',
+    'o1-preview',
+    'o3-mini',
+    'claude-3-opus',
+    'claude-3-sonnet',
+    'claude-3-haiku',
+    'claude-3-5-sonnet',
+    'claude-3-5-haiku',
+    'claude-sonnet-4',
+    'claude-opus-4',
+    'gemini-pro',
+    'gemini-1.5-pro',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.0-pro',
+    'deepseek-chat',
+    'deepseek-coder',
+    'deepseek-r1',
+    'llama-3',
+    'llama-3.1',
+    'llama-3.2',
+    'llama-3.3',
+    'mistral-large',
+    'mistral-medium',
+    'mistral-small',
+  ]
+
+  return !knownModels.includes(id as KnownModelId)
+}
+
+/**
+ * Unregister a custom model from the registry
+ *
+ * ⚠️ WARNING: Only use this for custom models you registered.
+ * Attempting to unregister built-in models will fail with a warning.
+ *
+ * @param id - Model identifier to unregister
+ * @returns true if model was unregistered, false if it didn't exist or is built-in
+ *
+ * @example
+ * ```typescript
+ * unregisterModel('my-custom-model')  // true
+ * unregisterModel('gpt-4o')           // false (built-in, shows warning)
+ * unregisterModel('non-existent')     // false (doesn't exist)
+ * ```
+ */
+export function unregisterModel(id: string): boolean {
+  if (!isValidModelId(id)) {
+    return false
+  }
+
+  if (!isCustomModel(id)) {
+    console.warn(
+      `[unregisterModel] Cannot unregister built-in model '${id}'. ` +
+      'Only custom models registered via registerModel() can be unregistered.'
+    )
+    return false
+  }
+
+  delete (MODEL_REGISTRY as Record<string, TokenModelConfig>)[id]
+  return true
 }

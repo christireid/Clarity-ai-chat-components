@@ -80,9 +80,15 @@ export {
   isValidModelId,
   getModelConfig,
   tryGetModelConfig,
+  // Model Registration API (for custom models)
+  registerModel,
+  createCustomModel,
+  isCustomModel,
+  unregisterModel,
 } from './models/model-registry'
 export type {
   ModelId,
+  KnownModelId,
   ModelProvider,
   TokenizerEncoding,
   TokenModelConfig,
