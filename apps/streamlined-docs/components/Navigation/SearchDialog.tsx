@@ -45,16 +45,14 @@ import {
 } from '@/lib/animations'
 import { toast } from '@/lib/toast'
 
-// Quick navigation sections for the site
+// Quick navigation sections aligned with new IA
 const quickNavigation = [
-  { name: 'Token Optimization', href: '/guides/token-optimization', icon: Zap, highlight: true, description: 'Reduce costs by 90%' },
-  { name: 'Quick Start', href: '/learn/quick-start', icon: GraduationCap, description: 'Get up and running' },
-  { name: 'Components', href: '/reference/components', icon: Library, description: 'UI component reference' },
-  { name: 'Demos', href: '/demos', icon: Play, description: 'Interactive examples' },
-  { name: 'Examples', href: '/examples', icon: Code2, description: 'Code snippets' },
-  { name: 'Guides', href: '/guides', icon: MapIcon, description: 'In-depth tutorials' },
-  { name: 'Cookbook', href: '/cookbook', icon: ChefHat, description: 'Recipes & patterns' },
-  { name: 'Compare', href: '/compare', icon: GitCompare, description: 'vs other libraries' },
+  { name: 'Get Started', href: '/get-started', icon: GraduationCap, highlight: true, description: 'Quick start guide' },
+  { name: 'Components', href: '/explore', icon: Play, description: 'Interactive demos' },
+  { name: 'API Reference', href: '/api', icon: Library, description: 'Complete API docs' },
+  { name: 'Build Guides', href: '/build', icon: MapIcon, description: 'In-depth tutorials' },
+  { name: 'Playground', href: '/playground', icon: Code2, description: 'Try it live' },
+  { name: 'About', href: '/about', icon: BookOpen, description: 'Project information' },
 ]
 
 interface SearchDialogProps {
