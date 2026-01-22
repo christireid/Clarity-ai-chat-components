@@ -27,6 +27,7 @@ import type {
   ToolArguments,
   ToolResult,
 } from '../types/tool-definition'
+import { generateToolCallId } from '../utils/id-generator'
 
 // =============================================================================
 // Lifecycle Status
@@ -67,10 +68,10 @@ export type ToolCallStatus =
 const VALID_TRANSITIONS: Record<ToolCallStatus, ToolCallStatus[]> = {
   idle: ['requested'],
   requested: ['pending_approval', 'approved', 'executing', 'cached'],
-  pending_approval: ['approved', 'rejected', 'cancelled'],
+  pending_approval: ['approved', 'rejected', 'cancelled', 'failed'],
   approved: ['executing', 'cached', 'cancelled'],
   rejected: ['idle'], // Can request again
-  executing: ['completed', 'failed', 'timeout', 'cancelled'],
+  executing: ['completed', 'failed', 'timeout', 'cancelled', 'cached'],
   completed: ['idle'], // Can request again
   failed: ['idle'], // Can retry
   timeout: ['idle'], // Can retry
@@ -81,7 +82,10 @@ const VALID_TRANSITIONS: Record<ToolCallStatus, ToolCallStatus[]> = {
 /**
  * Check if state transition is valid
  */
-export function isValidTransition(from: ToolCallStatus, to: ToolCallStatus): boolean {
+export function isValidTransition(
+  from: ToolCallStatus,
+  to: ToolCallStatus
+): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false
 }
 
@@ -301,9 +305,9 @@ export type ToolLifecycleEvent =
 /**
  * Event listener function
  */
-export type ToolLifecycleListener<E extends ToolLifecycleEvent = ToolLifecycleEvent> = (
-  event: E
-) => void | Promise<void>
+export type ToolLifecycleListener<
+  E extends ToolLifecycleEvent = ToolLifecycleEvent,
+> = (event: E) => void | Promise<void>
 
 /**
  * Event listener map
@@ -324,17 +328,88 @@ export interface ToolLifecycleListeners {
 }
 
 // =============================================================================
+// Audit Logging
+// =============================================================================
+
+/**
+ * Audit log entry
+ */
+export interface AuditLogEntry {
+  /** Sequential entry ID */
+  entryId: string
+
+  /** Event that was logged */
+  event: ToolLifecycleEvent
+
+  /** When the entry was logged */
+  loggedAt: number
+
+  /** Session/user context */
+  context?: {
+    sessionId?: string
+    userId?: string
+    environment?: string
+  }
+}
+
+/**
+ * Audit log configuration
+ */
+export interface AuditLogConfig {
+  /** Enable audit logging */
+  enabled?: boolean
+
+  /** Maximum audit log entries to keep in memory (default: 1000) */
+  maxEntries?: number
+
+  /** Include sensitive data in audit logs (default: false) */
+  includeSensitiveData?: boolean
+
+  /** Custom audit log persister */
+  persister?: AuditLogPersister
+}
+
+/**
+ * Interface for custom audit log persistence
+ */
+export interface AuditLogPersister {
+  /** Persist an audit log entry */
+  persist(entry: AuditLogEntry): Promise<void> | void
+
+  /** Retrieve audit log entries */
+  retrieve?(filter?: AuditLogFilter): Promise<AuditLogEntry[]> | AuditLogEntry[]
+}
+
+/**
+ * Audit log filter
+ */
+export interface AuditLogFilter {
+  toolName?: string
+  status?: ToolCallStatus
+  startTime?: number
+  endTime?: number
+  sessionId?: string
+  userId?: string
+}
+
+// =============================================================================
 // Lifecycle Manager
 // =============================================================================
 
 /**
  * Tool lifecycle manager
  *
- * Manages state transitions and events for tool executions.
+ * Manages state transitions, events, and audit logging for tool executions.
  *
  * @example
  * ```typescript
- * const lifecycle = new ToolLifecycleManager()
+ * const lifecycle = new ToolLifecycleManager({
+ *   auditLog: {
+ *     enabled: true,
+ *     maxEntries: 1000,
+ *     includeSensitiveData: false
+ *   }
+ * })
  *
  * // Subscribe to events
  * lifecycle.on('tool_requested', (event) => {
@@ -353,11 +428,28 @@ export interface ToolLifecycleListeners {
  * lifecycle.approve(call.id)
  * lifecycle.markExecuting(call.id)
  * lifecycle.complete(call.id, weatherData)
+ *
+ * // Retrieve audit logs
+ * const logs = lifecycle.getAuditLogs({ toolName: 'get_weather' })
  * ```
  */
 export class ToolLifecycleManager {
   private calls = new Map<string, ToolCallRecord>()
   private listeners: ToolLifecycleListeners = {}
+  private auditLog: AuditLogEntry[] = []
+  private auditLogConfig: Required<Omit<AuditLogConfig, 'persister'>> & {
+    persister?: AuditLogPersister
+  }
+  private nextEntryId = 1
+
+  constructor(config?: { auditLog?: AuditLogConfig }) {
+    this.auditLogConfig = {
+      enabled: config?.auditLog?.enabled ?? false,
+      maxEntries: config?.auditLog?.maxEntries ?? 1000,
+      includeSensitiveData: config?.auditLog?.includeSensitiveData ?? false,
+      persister: config?.auditLog?.persister,
+    }
+  }
 
   /**
    * Create a new tool call
@@ -367,7 +459,7 @@ export class ToolLifecycleManager {
     args: ToolArguments,
     context?: Partial<ToolExecutionContext>
   ): ToolCallRecord {
-    const id = context?.callId ?? this.generateCallId()
+    const id = context?.callId ?? generateToolCallId('call')
     const now = Date.now()
 
     const call: ToolCallRecord = {
@@ -639,6 +731,11 @@ export class ToolLifecycleManager {
    * Emit lifecycle event
    */
   private emit(event: ToolLifecycleEvent): void {
+    // Log to audit log if enabled
+    if (this.auditLogConfig.enabled) {
+      this.logToAudit(event)
+    }
+
     // Emit to specific event listeners
     const specificListeners = this.listeners[event.type]
     if (specificListeners) {
@@ -665,6 +762,68 @@ export class ToolLifecycleManager {
   }
 
   /**
+   * Log event to audit log
+   */
+  private logToAudit(event: ToolLifecycleEvent): void {
+    const entry: AuditLogEntry = {
+      entryId: `audit_${this.nextEntryId++}`,
+      event: this.sanitizeEventForAudit(event),
+      loggedAt: Date.now(),
+      context: {
+        sessionId: event.call.context.sessionId,
+        userId: event.call.context.userId,
+      },
+    }
+
+    // Add to in-memory log
+    this.auditLog.push(entry)
+
+    // Trim if exceeds max entries (keep most recent)
+    if (this.auditLog.length > this.auditLogConfig.maxEntries) {
+      this.auditLog = this.auditLog.slice(-this.auditLogConfig.maxEntries)
+    }
+
+    // Persist if persister is configured
+    if (this.auditLogConfig.persister) {
+      try {
+        this.auditLogConfig.persister.persist(entry)
+      } catch (error) {
+        console.error('Error persisting audit log entry:', error)
+      }
+    }
+  }
+
+  /**
+   * Sanitize event for audit logging (remove sensitive data if configured)
+   */
+  private sanitizeEventForAudit(event: ToolLifecycleEvent): ToolLifecycleEvent {
+    if (this.auditLogConfig.includeSensitiveData) {
+      return event
+    }
+
+    // Create a sanitized copy
+    const sanitized = JSON.parse(JSON.stringify(event))
+
+    // Redact sensitive fields in args if they exist
+    if (sanitized.call?.args) {
+      const sensitiveKeys = [
+        'password',
+        'token',
+        'apiKey',
+        'secret',
+        'credential',
+      ]
+      for (const key of Object.keys(sanitized.call.args)) {
+        if (sensitiveKeys.some((sk) => key.toLowerCase().includes(sk))) {
+          sanitized.call.args[key] = '[REDACTED]'
+        }
+      }
+    }
+
+    return sanitized
+  }
+
+  /**
    * Transition call to new status
    */
   private transition(call: ToolCallRecord, newStatus: ToolCallStatus): void {
@@ -676,11 +835,115 @@ export class ToolLifecycleManager {
     call.status = newStatus
   }
 
+
   /**
-   * Generate unique call ID
+   * Get audit logs with optional filtering
    */
-  private generateCallId(): string {
-    return `call_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  getAuditLogs(filter?: AuditLogFilter): AuditLogEntry[] {
+    if (!this.auditLogConfig.enabled) {
+      return []
+    }
+
+    let logs = [...this.auditLog]
+
+    if (filter) {
+      logs = logs.filter((entry) => {
+        const call = entry.event.call
+
+        if (filter.toolName && call.toolName !== filter.toolName) {
+          return false
+        }
+
+        if (filter.status && call.status !== filter.status) {
+          return false
+        }
+
+        if (filter.startTime && entry.loggedAt < filter.startTime) {
+          return false
+        }
+
+        if (filter.endTime && entry.loggedAt > filter.endTime) {
+          return false
+        }
+
+        if (filter.sessionId && entry.context?.sessionId !== filter.sessionId) {
+          return false
+        }
+
+        if (filter.userId && entry.context?.userId !== filter.userId) {
+          return false
+        }
+
+        return true
+      })
+    }
+
+    return logs
+  }
+
+  /**
+   * Get audit log statistics
+   */
+  getAuditStats(): {
+    enabled: boolean
+    totalEntries: number
+    byEventType: Record<string, number>
+    byToolName: Record<string, number>
+    byStatus: Record<string, number>
+  } {
+    if (!this.auditLogConfig.enabled) {
+      return {
+        enabled: false,
+        totalEntries: 0,
+        byEventType: {},
+        byToolName: {},
+        byStatus: {},
+      }
+    }
+
+    const byEventType: Record<string, number> = {}
+    const byToolName: Record<string, number> = {}
+    const byStatus: Record<string, number> = {}
+
+    for (const entry of this.auditLog) {
+      byEventType[entry.event.type] = (byEventType[entry.event.type] || 0) + 1
+      byToolName[entry.event.call.toolName] =
+        (byToolName[entry.event.call.toolName] || 0) + 1
+      byStatus[entry.event.call.status] =
+        (byStatus[entry.event.call.status] || 0) + 1
+    }
+
+    return {
+      enabled: true,
+      totalEntries: this.auditLog.length,
+      byEventType,
+      byToolName,
+      byStatus,
+    }
+  }
+
+  /**
+   * Export audit logs to JSON
+   */
+  exportAuditLogs(filter?: AuditLogFilter): string {
+    const logs = this.getAuditLogs(filter)
+    return JSON.stringify(
+      {
+        exportedAt: new Date().toISOString(),
+        totalEntries: logs.length,
+        entries: logs,
+      },
+      null,
+      2
+    )
+  }
+
+  /**
+   * Clear audit logs
+   */
+  clearAuditLogs(): void {
+    this.auditLog = []
+    this.nextEntryId = 1
   }
 
   /**
@@ -718,4 +981,8 @@ export type {
   ToolLifecycleEvent,
   ToolLifecycleListener,
   ToolLifecycleListeners,
+  AuditLogEntry,
+  AuditLogConfig,
+  AuditLogPersister,
+  AuditLogFilter,
 }

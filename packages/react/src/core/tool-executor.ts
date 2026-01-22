@@ -22,10 +22,20 @@ import type {
   ToolExecutionContext,
 } from '../types/tool-definition'
 import type { ToolLifecycleManager } from './tool-lifecycle'
+import { generateToolCallId } from '../utils/id-generator'
 
 // =============================================================================
 // Validation
 // =============================================================================
+
+/**
+ * Validation error details
+ */
+export interface ToolValidationErrorDetails {
+  received?: unknown
+  expected?: string | string[]
+  hint?: string
+}
 
 /**
  * Validation error
@@ -34,9 +44,32 @@ export class ToolValidationError extends Error {
   constructor(
     public toolName: string,
     public field: string,
-    message: string
+    message: string,
+    public details?: ToolValidationErrorDetails
   ) {
-    super(`[${toolName}] Parameter validation failed for '${field}': ${message}`)
+    let formattedMessage = `[${toolName}] Parameter validation failed for '${field}': ${message}`
+
+    if (details?.expected) {
+      const expectedStr = Array.isArray(details.expected)
+        ? details.expected.join(' | ')
+        : details.expected
+      formattedMessage += `\n  Expected: ${expectedStr}`
+    }
+
+    if (details?.received !== undefined) {
+      try {
+        const receivedStr = JSON.stringify(details.received)
+        formattedMessage += `\n  Received: ${receivedStr}`
+      } catch {
+        formattedMessage += `\n  Received: [Unserializable]`
+      }
+    }
+
+    if (details?.hint) {
+      formattedMessage += `\n  Hint: ${details.hint}`
+    }
+
+    super(formattedMessage)
     this.name = 'ToolValidationError'
   }
 }
@@ -58,7 +91,14 @@ export function validateToolArguments(
   if (parameters.required) {
     for (const field of parameters.required) {
       if (!(field in args)) {
-        throw new ToolValidationError(tool.name, field, 'Required field is missing')
+        throw new ToolValidationError(
+          tool.name,
+          field,
+          'Required field is missing',
+          {
+            hint: `The parameter '${field}' is mandatory for this tool.`,
+          }
+        )
       }
     }
   }
@@ -73,7 +113,10 @@ export function validateToolArguments(
         throw new ToolValidationError(
           tool.name,
           key,
-          'Unknown field (additionalProperties: false)'
+          'Unknown field (additionalProperties: false)',
+          {
+            hint: 'This field is not defined in the tool schema and cannot be passed.',
+          }
         )
       }
       continue
@@ -98,7 +141,16 @@ function validateValue(
     if (schema.type === 'null' || schema.type?.includes('null')) {
       return
     }
-    throw new ToolValidationError(toolName, field, 'Value is null or undefined')
+    throw new ToolValidationError(
+      toolName,
+      field,
+      'Value is null or undefined',
+      {
+        received: value,
+        expected: schema.type,
+        hint: 'This field cannot be null or undefined.',
+      }
+    )
   }
 
   // Type check
@@ -106,11 +158,21 @@ function validateValue(
   const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type]
 
   if (!expectedTypes.includes(actualType)) {
-    throw new ToolValidationError(
-      toolName,
-      field,
-      `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`
-    )
+    // Special case for integer (which is number in JS)
+    if (actualType === 'number' && expectedTypes.includes('integer')) {
+      // Handled in type-specific validation
+    } else {
+      throw new ToolValidationError(
+        toolName,
+        field,
+        `Expected type ${expectedTypes.join(' | ')}, got ${actualType}`,
+        {
+          received: actualType,
+          expected: expectedTypes,
+          hint: `Ensure the value matches one of the expected types.`,
+        }
+      )
+    }
   }
 
   // Type-specific validation
@@ -135,7 +197,12 @@ function validateValue(
     throw new ToolValidationError(
       toolName,
       field,
-      `Value must be one of: ${schema.enum.join(', ')}`
+      `Value must be one of: ${schema.enum.join(', ')}`,
+      {
+        received: value,
+        expected: schema.enum.join(', '),
+        hint: 'The value must exactly match one of the allowed options.',
+      }
     )
   }
 }
@@ -143,12 +210,22 @@ function validateValue(
 /**
  * Validate string value
  */
-function validateString(toolName: string, field: string, value: string, schema: any): void {
+function validateString(
+  toolName: string,
+  field: string,
+  value: string,
+  schema: any
+): void {
   if (schema.minLength !== undefined && value.length < schema.minLength) {
     throw new ToolValidationError(
       toolName,
       field,
-      `String length ${value.length} is less than minimum ${schema.minLength}`
+      `String length ${value.length} is less than minimum ${schema.minLength}`,
+      {
+        received: value.length,
+        expected: `>= ${schema.minLength}`,
+        hint: `The string is too short.`,
+      }
     )
   }
 
@@ -156,7 +233,12 @@ function validateString(toolName: string, field: string, value: string, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `String length ${value.length} exceeds maximum ${schema.maxLength}`
+      `String length ${value.length} exceeds maximum ${schema.maxLength}`,
+      {
+        received: value.length,
+        expected: `<= ${schema.maxLength}`,
+        hint: `The string is too long.`,
+      }
     )
   }
 
@@ -166,7 +248,12 @@ function validateString(toolName: string, field: string, value: string, schema: 
       throw new ToolValidationError(
         toolName,
         field,
-        `String does not match pattern: ${schema.pattern}`
+        `String does not match pattern: ${schema.pattern}`,
+        {
+          received: value,
+          expected: schema.pattern,
+          hint: 'The string format is invalid according to the regex pattern.',
+        }
       )
     }
   }
@@ -175,16 +262,29 @@ function validateString(toolName: string, field: string, value: string, schema: 
 /**
  * Validate number value
  */
-function validateNumber(toolName: string, field: string, value: number, schema: any): void {
+function validateNumber(
+  toolName: string,
+  field: string,
+  value: number,
+  schema: any
+): void {
   if (schema.type === 'integer' && !Number.isInteger(value)) {
-    throw new ToolValidationError(toolName, field, 'Value must be an integer')
+    throw new ToolValidationError(toolName, field, 'Value must be an integer', {
+      received: value,
+      expected: 'integer',
+      hint: 'Decimal values are not allowed.',
+    })
   }
 
   if (schema.minimum !== undefined && value < schema.minimum) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} is less than minimum ${schema.minimum}`
+      `Value ${value} is less than minimum ${schema.minimum}`,
+      {
+        received: value,
+        expected: `>= ${schema.minimum}`,
+      }
     )
   }
 
@@ -192,23 +292,41 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} exceeds maximum ${schema.maximum}`
+      `Value ${value} exceeds maximum ${schema.maximum}`,
+      {
+        received: value,
+        expected: `<= ${schema.maximum}`,
+      }
     )
   }
 
-  if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) {
+  if (
+    schema.exclusiveMinimum !== undefined &&
+    value <= schema.exclusiveMinimum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} must be greater than ${schema.exclusiveMinimum}`
+      `Value ${value} must be greater than ${schema.exclusiveMinimum}`,
+      {
+        received: value,
+        expected: `> ${schema.exclusiveMinimum}`,
+      }
     )
   }
 
-  if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) {
+  if (
+    schema.exclusiveMaximum !== undefined &&
+    value >= schema.exclusiveMaximum
+  ) {
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} must be less than ${schema.exclusiveMaximum}`
+      `Value ${value} must be less than ${schema.exclusiveMaximum}`,
+      {
+        received: value,
+        expected: `< ${schema.exclusiveMaximum}`,
+      }
     )
   }
 
@@ -216,7 +334,11 @@ function validateNumber(toolName: string, field: string, value: number, schema: 
     throw new ToolValidationError(
       toolName,
       field,
-      `Value ${value} is not a multiple of ${schema.multipleOf}`
+      `Value ${value} is not a multiple of ${schema.multipleOf}`,
+      {
+        received: value,
+        expected: `Multiple of ${schema.multipleOf}`,
+      }
     )
   }
 }
@@ -234,7 +356,11 @@ function validateArray(
     throw new ToolValidationError(
       toolName,
       field,
-      `Array length ${value.length} is less than minimum ${schema.minItems}`
+      `Array length ${value.length} is less than minimum ${schema.minItems}`,
+      {
+        received: value.length,
+        expected: `>= ${schema.minItems} items`,
+      }
     )
   }
 
@@ -242,14 +368,25 @@ function validateArray(
     throw new ToolValidationError(
       toolName,
       field,
-      `Array length ${value.length} exceeds maximum ${schema.maxItems}`
+      `Array length ${value.length} exceeds maximum ${schema.maxItems}`,
+      {
+        received: value.length,
+        expected: `<= ${schema.maxItems} items`,
+      }
     )
   }
 
   if (schema.uniqueItems) {
     const unique = new Set(value.map((v) => JSON.stringify(v)))
     if (unique.size !== value.length) {
-      throw new ToolValidationError(toolName, field, 'Array items must be unique')
+      throw new ToolValidationError(
+        toolName,
+        field,
+        'Array items must be unique',
+        {
+          hint: 'Duplicate items are not allowed in this array.',
+        }
+      )
     }
   }
 
@@ -276,7 +413,10 @@ function validateObject(
         throw new ToolValidationError(
           toolName,
           `${field}.${requiredField}`,
-          'Required field is missing'
+          'Required field is missing',
+          {
+            hint: `The nested object '${field}' requires property '${requiredField}'.`,
+          }
         )
       }
     }
@@ -297,33 +437,210 @@ function validateObject(
 // =============================================================================
 
 /**
- * Cache entry
+ * Cache entry with LRU tracking
  */
 interface CacheEntry {
   result: ToolResult
-  timestamp: number
+  timestamp: number // When entry was created
+  lastAccessed: number // When entry was last accessed (for LRU)
   ttl: number
+  accessCount: number // Number of times accessed
 }
 
 /**
- * Tool result cache
+ * Tool result cache configuration
+ */
+export interface ToolResultCacheConfig {
+  /** Maximum cache size (number of entries, default: 1000) */
+  maxSize?: number
+
+  /** Enable periodic cleanup of expired entries (default: false) */
+  enablePeriodicCleanup?: boolean
+
+  /** Cleanup interval in milliseconds (default: 60000 = 1 minute) */
+  cleanupIntervalMs?: number
+}
+
+/**
+ * Tool result cache with LRU eviction
+ *
+ * **Features**:
+ * - LRU (Least Recently Used) eviction when maxSize is reached
+ * - TTL-based expiration
+ * - Optional periodic cleanup of expired entries
+ * - Cache hit/miss statistics
+ * - Per-tool cache clearing
+ *
+ * **Usage**:
+ * ```typescript
+ * const cache = new ToolResultCache({
+ *   maxSize: 1000,
+ *   enablePeriodicCleanup: true,
+ *   cleanupIntervalMs: 60000,
+ * })
+ * ```
  */
 export class ToolResultCache {
   private cache = new Map<string, CacheEntry>()
+  private hits = 0
+  private misses = 0
+  private evictions = 0
+  private maxSize: number
+  private cleanupIntervalMs: number
+  private cleanupTimer?: NodeJS.Timeout | number
+
+  constructor(config: ToolResultCacheConfig = {}) {
+    this.maxSize = config.maxSize ?? 1000
+    this.cleanupIntervalMs = config.cleanupIntervalMs ?? 60000
+
+    // Start periodic cleanup if enabled
+    if (config.enablePeriodicCleanup) {
+      this.startPeriodicCleanup()
+    }
+  }
 
   /**
-   * Generate cache key
+   * Start periodic cleanup of expired entries
+   */
+  private startPeriodicCleanup(): void {
+    this.cleanupTimer = setInterval(() => {
+      this.cleanupExpired()
+    }, this.cleanupIntervalMs)
+
+    // Unref timer in Node.js to allow process to exit
+    if (typeof this.cleanupTimer === 'object' && 'unref' in this.cleanupTimer) {
+      this.cleanupTimer.unref()
+    }
+  }
+
+  /**
+   * Stop periodic cleanup
+   */
+  stopPeriodicCleanup(): void {
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer as any)
+      this.cleanupTimer = undefined
+    }
+  }
+
+  /**
+   * Clean up expired entries
+   * @returns Number of entries removed
+   */
+  cleanupExpired(): number {
+    const now = Date.now()
+    let removed = 0
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (now - entry.timestamp > entry.ttl) {
+        this.cache.delete(key)
+        removed++
+      }
+    }
+
+    return removed
+  }
+
+  /**
+   * Evict least recently used entries to make room
+   * @param count Number of entries to evict
+   */
+  private evictLRU(count: number): void {
+    // Sort entries by lastAccessed (oldest first)
+    const entries = Array.from(this.cache.entries()).sort(
+      ([, a], [, b]) => a.lastAccessed - b.lastAccessed
+    )
+
+    // Remove oldest entries
+    for (let i = 0; i < Math.min(count, entries.length); i++) {
+      this.cache.delete(entries[i][0])
+      this.evictions++
+    }
+  }
+
+  /**
+   * Generate cache key with robust hashing
+   *
+   * Handles edge cases:
+   * - Circular references (uses [Circular] marker)
+   * - Functions (uses function signature)
+   * - Dates (uses ISO string)
+   * - RegExp (uses source)
+   * - Nested objects (recursive hash)
+   * - Arrays (preserves order)
+   * - Null/undefined (explicit markers)
+   *
+   * @param toolName - Tool name
+   * @param args - Tool arguments
+   * @returns Cache key string
    */
   private getCacheKey(toolName: string, args: ToolArguments): string {
-    // Sort keys for consistent hashing
-    const sortedArgs = Object.keys(args)
-      .sort()
-      .reduce((acc, key) => {
-        acc[key] = args[key]
-        return acc
-      }, {} as Record<string, unknown>)
+    const seen = new WeakSet()
 
-    return `${toolName}:${JSON.stringify(sortedArgs)}`
+    const hash = (value: unknown): string => {
+      // Handle primitives
+      if (value === null) return 'null'
+      if (value === undefined) return 'undefined'
+      if (typeof value === 'string') return `"${value}"`
+      if (typeof value === 'number') return String(value)
+      if (typeof value === 'boolean') return String(value)
+
+      // Handle functions
+      if (typeof value === 'function') {
+        return `function:${value.name || 'anonymous'}:${value.length}`
+      }
+
+      // Handle Date
+      if (value instanceof Date) {
+        return `date:${value.toISOString()}`
+      }
+
+      // Handle RegExp
+      if (value instanceof RegExp) {
+        return `regex:${value.source}:${value.flags}`
+      }
+
+      // Handle arrays
+      if (Array.isArray(value)) {
+        return `[${value.map(hash).join(',')}]`
+      }
+
+      // Handle objects
+      if (typeof value === 'object') {
+        // Check for circular references
+        if (seen.has(value as object)) {
+          return '[Circular]'
+        }
+        seen.add(value as object)
+
+        // Sort keys for consistent hashing
+        const keys = Object.keys(value).sort()
+        const pairs = keys.map((key) => `${key}:${hash((value as any)[key])}`)
+        return `{${pairs.join(',')}}`
+      }
+
+      // Fallback
+      return String(value)
+    }
+
+    try {
+      const argsHash = hash(args)
+      return `${toolName}:${argsHash}`
+    } catch (error) {
+      // Fallback to JSON.stringify if hashing fails
+      console.warn('Cache key generation failed, using fallback:', error)
+      const sortedArgs = Object.keys(args)
+        .sort()
+        .reduce(
+          (acc, key) => {
+            acc[key] = args[key]
+            return acc
+          },
+          {} as Record<string, unknown>
+        )
+
+      return `${toolName}:${JSON.stringify(sortedArgs)}`
+    }
   }
 
   /**
@@ -334,6 +651,7 @@ export class ToolResultCache {
     const entry = this.cache.get(key)
 
     if (!entry) {
+      this.misses++
       return undefined
     }
 
@@ -341,21 +659,43 @@ export class ToolResultCache {
     const now = Date.now()
     if (now - entry.timestamp > entry.ttl) {
       this.cache.delete(key)
+      this.misses++
       return undefined
     }
 
+    // Update LRU tracking
+    entry.lastAccessed = now
+    entry.accessCount++
+
+    this.hits++
     return entry.result
   }
 
   /**
    * Set cache entry
    */
-  set(toolName: string, args: ToolArguments, result: ToolResult, ttl: number): void {
+  set(
+    toolName: string,
+    args: ToolArguments,
+    result: ToolResult,
+    ttl: number
+  ): void {
     const key = this.getCacheKey(toolName, args)
+    const now = Date.now()
+
+    // Check if we need to evict entries to make room
+    if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
+      // Evict 10% of cache (or at least 1 entry)
+      const evictCount = Math.max(1, Math.floor(this.maxSize * 0.1))
+      this.evictLRU(evictCount)
+    }
+
     this.cache.set(key, {
       result,
-      timestamp: Date.now(),
+      timestamp: now,
+      lastAccessed: now,
       ttl,
+      accessCount: 0,
     })
   }
 
@@ -378,8 +718,27 @@ export class ToolResultCache {
   /**
    * Get cache statistics
    */
-  getStats(): { size: number; entries: Array<{ toolName: string; age: number }> } {
-    const entries: Array<{ toolName: string; age: number }> = []
+  getStats(): {
+    size: number
+    maxSize: number
+    hits: number
+    misses: number
+    evictions: number
+    hitRate: number
+    fillRate: number
+    entries: Array<{
+      toolName: string
+      age: number
+      lastAccessed: number
+      accessCount: number
+    }>
+  } {
+    const entries: Array<{
+      toolName: string
+      age: number
+      lastAccessed: number
+      accessCount: number
+    }> = []
     const now = Date.now()
 
     for (const [key, entry] of this.cache.entries()) {
@@ -387,14 +746,154 @@ export class ToolResultCache {
       entries.push({
         toolName,
         age: now - entry.timestamp,
+        lastAccessed: entry.lastAccessed,
+        accessCount: entry.accessCount,
       })
     }
 
+    const total = this.hits + this.misses
+    const hitRate = total > 0 ? this.hits / total : 0
+    const fillRate = this.maxSize > 0 ? this.cache.size / this.maxSize : 0
+
     return {
       size: this.cache.size,
+      maxSize: this.maxSize,
+      hits: this.hits,
+      misses: this.misses,
+      evictions: this.evictions,
+      hitRate,
+      fillRate,
       entries,
     }
   }
+
+  /**
+   * Destroy cache and stop periodic cleanup
+   */
+  destroy(): void {
+    this.stopPeriodicCleanup()
+    this.cache.clear()
+  }
+}
+
+// =============================================================================
+// Rate Limiting & Concurrency Control
+// =============================================================================
+
+/**
+ * Rate limiter for tool execution
+ */
+class RateLimiter {
+  private requests: number[] = []
+
+  constructor(
+    private maxRequests: number,
+    private windowMs: number
+  ) {}
+
+  /**
+   * Check if request is allowed
+   * @throws Error if rate limit exceeded
+   */
+  checkLimit(toolName: string): void {
+    const now = Date.now()
+    // Remove old requests outside the window
+    this.requests = this.requests.filter((time) => now - time < this.windowMs)
+
+    if (this.requests.length >= this.maxRequests) {
+      throw new Error(
+        `[${toolName}] Rate limit exceeded: ${this.maxRequests} requests per ${this.windowMs}ms`
+      )
+    }
+
+    // Record this request
+    this.requests.push(now)
+  }
+
+  /**
+   * Get current rate limit stats
+   */
+  getStats(): {
+    currentRequests: number
+    maxRequests: number
+    windowMs: number
+  } {
+    const now = Date.now()
+    this.requests = this.requests.filter((time) => now - time < this.windowMs)
+    return {
+      currentRequests: this.requests.length,
+      maxRequests: this.maxRequests,
+      windowMs: this.windowMs,
+    }
+  }
+}
+
+/**
+ * Concurrency limiter for tool execution
+ */
+class ConcurrencyLimiter {
+  private activeCount = 0
+  private waiting: Array<() => void> = []
+
+  constructor(private maxConcurrent: number) {}
+
+  /**
+   * Acquire a slot for execution
+   * @returns Release function to call when done
+   */
+  async acquire(toolName: string): Promise<() => void> {
+    if (this.activeCount >= this.maxConcurrent) {
+      // Wait for a slot to become available
+      await new Promise<void>((resolve) => {
+        this.waiting.push(resolve)
+      })
+    }
+
+    this.activeCount++
+
+    // Return release function
+    return () => {
+      this.activeCount--
+      const next = this.waiting.shift()
+      if (next) {
+        next()
+      }
+    }
+  }
+
+  /**
+   * Get current concurrency stats
+   */
+  getStats(): { active: number; waiting: number; maxConcurrent: number } {
+    return {
+      active: this.activeCount,
+      waiting: this.waiting.length,
+      maxConcurrent: this.maxConcurrent,
+    }
+  }
+}
+
+/**
+ * Executor configuration
+ */
+export interface ExecutorConfig {
+  /** Enable rate limiting */
+  enableRateLimit?: boolean
+
+  /** Maximum requests per window (default: 100) */
+  maxRequestsPerWindow?: number
+
+  /** Rate limit window in milliseconds (default: 60000 = 1 minute) */
+  rateLimitWindowMs?: number
+
+  /** Enable concurrency limiting */
+  enableConcurrencyLimit?: boolean
+
+  /** Maximum concurrent executions (default: 10) */
+  maxConcurrentExecutions?: number
+
+  /** Cache configuration */
+  cache?: ToolResultCacheConfig
 }
 
 // =============================================================================
@@ -416,6 +915,12 @@ export interface ExecutionOptions {
 
   /** Skip cache */
   skipCache?: boolean
+
+  /** Bypass rate limiting (use with caution) */
+  bypassRateLimit?: boolean
+
+  /** Bypass concurrency limit (use with caution) */
+  bypassConcurrencyLimit?: boolean
 
   /** Additional context */
   context?: Partial<ToolExecutionContext>
@@ -441,11 +946,17 @@ export interface ExecutionResult {
 /**
  * Tool Executor
  *
- * Executes tools with validation, timeout, and caching.
+ * Executes tools with validation, timeout, caching, rate limiting, and concurrency control.
  *
  * @example
  * ```typescript
- * const executor = new ToolExecutor(lifecycle)
+ * const executor = new ToolExecutor(lifecycle, {
+ *   enableRateLimit: true,
+ *   maxRequestsPerWindow: 100,
+ *   rateLimitWindowMs: 60000,
+ *   enableConcurrencyLimit: true,
+ *   maxConcurrentExecutions: 10
+ * })
  *
  * const result = await executor.execute(tool, args, {
  *   timeout: 5000,
@@ -456,9 +967,44 @@ export interface ExecutionResult {
  * ```
  */
 export class ToolExecutor {
-  private cache = new ToolResultCache()
+  private cache: ToolResultCache
+  private rateLimiter?: RateLimiter
+  private concurrencyLimiter?: ConcurrencyLimiter
+  private config: Required<Omit<ExecutorConfig, 'cache'>> & {
+    cache?: ToolResultCacheConfig
+  }
 
-  constructor(private lifecycle?: ToolLifecycleManager) {}
+  constructor(
+    private lifecycle?: ToolLifecycleManager,
+    config: ExecutorConfig = {}
+  ) {
+    this.config = {
+      enableRateLimit: config.enableRateLimit ?? false,
+      maxRequestsPerWindow: config.maxRequestsPerWindow ?? 100,
+      rateLimitWindowMs: config.rateLimitWindowMs ?? 60000,
+      enableConcurrencyLimit: config.enableConcurrencyLimit ?? false,
+      maxConcurrentExecutions: config.maxConcurrentExecutions ?? 10,
+      cache: config.cache,
+    }
+
+    // Initialize cache with configuration
+    this.cache = new ToolResultCache(this.config.cache)
+
+    // Initialize rate limiter if enabled
+    if (this.config.enableRateLimit) {
+      this.rateLimiter = new RateLimiter(
+        this.config.maxRequestsPerWindow,
+        this.config.rateLimitWindowMs
+      )
+    }
+
+    // Initialize concurrency limiter if enabled
+    if (this.config.enableConcurrencyLimit) {
+      this.concurrencyLimiter = new ConcurrencyLimiter(
+        this.config.maxConcurrentExecutions
+      )
+    }
+  }
 
   /**
    * Execute a tool
@@ -477,9 +1023,20 @@ export class ToolExecutor {
 
     // Create execution context
     const context: ToolExecutionContext = {
-      callId: this.generateCallId(),
+      callId: generateToolCallId('exec'),
       startedAt: startTime,
       ...options.context,
+    }
+
+    // Check rate limit
+    if (this.rateLimiter && !options.bypassRateLimit) {
+      this.rateLimiter.checkLimit(tool.name)
+    }
+
+    // Acquire concurrency slot
+    let releaseConcurrency: (() => void) | undefined
+    if (this.concurrencyLimiter && !options.bypassConcurrencyLimit) {
+      releaseConcurrency = await this.concurrencyLimiter.acquire(tool.name)
     }
 
     try {
@@ -492,6 +1049,8 @@ export class ToolExecutor {
       if (!options.skipCache && tool.cacheable) {
         const cached = this.cache.get(tool.name, args)
         if (cached !== undefined) {
+          // Release concurrency slot immediately for cache hits
+          releaseConcurrency?.()
           return {
             result: cached,
             duration: Date.now() - startTime,
@@ -542,6 +1101,9 @@ export class ToolExecutor {
       }
 
       throw err
+    } finally {
+      // Always release concurrency slot
+      releaseConcurrency?.()
     }
   }
 
@@ -569,7 +1131,11 @@ export class ToolExecutor {
       timeoutId = setTimeout(() => {
         if (!completed) {
           completed = true
-          reject(new Error(`Tool execution timeout after ${timeoutMs}ms: ${tool.name}`))
+          reject(
+            new Error(
+              `Tool execution timeout after ${timeoutMs}ms: ${tool.name}`
+            )
+          )
 
           // Call onTimeout hook
           if (tool.hooks?.onTimeout) {
@@ -635,15 +1201,89 @@ export class ToolExecutor {
   }
 
   /**
-   * Generate unique call ID
+   * Get rate limiting statistics
    */
-  private generateCallId(): string {
-    return `exec_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  getRateLimitStats() {
+    if (!this.rateLimiter) {
+      return { enabled: false }
+    }
+    return { enabled: true, ...this.rateLimiter.getStats() }
   }
+
+  /**
+   * Get concurrency statistics
+   */
+  getConcurrencyStats() {
+    if (!this.concurrencyLimiter) {
+      return { enabled: false }
+    }
+    return { enabled: true, ...this.concurrencyLimiter.getStats() }
+  }
+
+  /**
+   * Get comprehensive executor statistics
+   */
+  getStats() {
+    return {
+      cache: this.cache.getStats(),
+      rateLimit: this.getRateLimitStats(),
+      concurrency: this.getConcurrencyStats(),
+      config: this.config,
+    }
+  }
+
+  /**
+   * Clean up expired cache entries
+   *
+   * Removes all expired entries from the cache. This is useful for periodic
+   * maintenance when periodic cleanup is not enabled.
+   *
+   * @returns Number of entries removed
+   *
+   * @example
+   * ```typescript
+   * // Manually cleanup cache periodically
+   * setInterval(() => {
+   *   const removed = executor.cleanupCache()
+   *   console.log(`Cleaned up ${removed} expired cache entries`)
+   * }, 60000) // Every minute
+   * ```
+   */
+  cleanupCache(): number {
+    return this.cache.cleanupExpired()
+  }
+
+  /**
+   * Destroy executor and cleanup resources
+   *
+   * Stops periodic cleanup timers and clears caches. Call this when you're
+   * done with the executor to prevent memory leaks.
+   *
+   * @example
+   * ```typescript
+   * const executor = new ToolExecutor(lifecycle, {
+   *   cache: { enablePeriodicCleanup: true }
+   * })
+   *
+   * // Use executor...
+   *
+   * // Cleanup when done
+   * executor.destroy()
+   * ```
+   */
+  destroy(): void {
+    this.cache.destroy()
+  }
+
 }
 
 // =============================================================================
 // Exports
 // =============================================================================
 
-export type { ExecutionOptions, ExecutionResult }
+export type {
+  ExecutionOptions,
+  ExecutionResult,
+  ExecutorConfig,
+  ToolResultCacheConfig,
+}

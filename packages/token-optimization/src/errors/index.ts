@@ -464,7 +464,7 @@ export class HelpfulError extends TokenOptimizationError {
   readonly timestamp: string
 
   /** Original error that caused this error */
-  readonly cause?: Error
+  declare readonly cause?: Error
 
   constructor(options: {
     message: string
