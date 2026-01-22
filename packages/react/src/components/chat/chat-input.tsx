@@ -311,10 +311,6 @@ export function ChatInput({
   return (
     <motion.div
       id={id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: DURATION_SECONDS.moderate }}
-      viewport={{ once: true }}
       className={cn(
         glassVariants({
           intensity: 'strong',
