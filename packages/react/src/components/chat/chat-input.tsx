@@ -10,6 +10,10 @@ import {
   useRequestDeduplication,
   isDebouncedError,
 } from '../../hooks/resilience/use-request-deduplication'
+import {
+  validateStringProp,
+  validateFunctionProp,
+} from '../../utils/config/runtime-validation'
 import { DURATION_SECONDS } from '../../animations/constants'
 
 /** Button state for submit button */
@@ -153,33 +157,14 @@ export function ChatInput({
   id,
   'aria-label': ariaLabel,
 }: ChatInputProps) {
-  // Development-only runtime validation (removed from production for performance)
+  // Development-only runtime validation
   if (process.env.NODE_ENV === 'development') {
-    if (typeof value !== 'string') {
-      console.error(
-        'ChatInput: "value" prop must be a string.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
-    }
-
-    if (typeof onChange !== 'function') {
-      console.error(
-        'ChatInput: "onChange" prop must be a function.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
-    }
-
-    if (typeof onSubmit !== 'function') {
-      console.error(
-        'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
+    try {
+      validateStringProp(value, 'value', 'ChatInput')
+      validateFunctionProp(onChange, 'onChange', 'ChatInput')
+      validateFunctionProp(onSubmit, 'onSubmit', 'ChatInput')
+    } catch (error) {
+      console.error(error)
     }
   }
   const [isFocused, setIsFocused] = React.useState(false)
