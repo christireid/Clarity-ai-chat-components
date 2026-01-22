@@ -37,11 +37,11 @@
  * - `error`: Tool execution failed
  */
 export type ToolInvocationState =
-  | 'partial-call'  // Streaming: incomplete tool call
-  | 'call'          // Complete tool call, not yet executed
-  | 'executing'     // Currently executing
-  | 'result'        // Successfully completed
-  | 'error'         // Execution failed
+  | 'partial-call' // Streaming: incomplete tool call
+  | 'call' // Complete tool call, not yet executed
+  | 'executing' // Currently executing
+  | 'result' // Successfully completed
+  | 'error' // Execution failed
 
 // =============================================================================
 // Tool Invocation
@@ -145,7 +145,13 @@ export interface ToolCallError extends ToolInvocationBase {
   error: string
 
   /** Error code for programmatic handling */
-  errorCode?: 'validation' | 'timeout' | 'execution' | 'rejected' | 'cancelled' | 'unknown'
+  errorCode?:
+    | 'validation'
+    | 'timeout'
+    | 'execution'
+    | 'rejected'
+    | 'cancelled'
+    | 'unknown'
 
   /** Detailed error information (for debugging) */
   errorDetails?: unknown
@@ -292,14 +298,18 @@ export type ChatMessage =
 /**
  * Check if message is an assistant message
  */
-export function isAssistantMessage(message: ChatMessage): message is AssistantMessage {
+export function isAssistantMessage(
+  message: ChatMessage
+): message is AssistantMessage {
   return message.role === 'assistant'
 }
 
 /**
  * Check if message has tool invocations
  */
-export function hasToolInvocations(message: ChatMessage): message is AssistantMessage {
+export function hasToolInvocations(
+  message: ChatMessage
+): message is AssistantMessage {
   return (
     isAssistantMessage(message) &&
     Array.isArray(message.toolInvocations) &&
@@ -386,7 +396,9 @@ export function findToolInvocation(
   message: ChatMessage,
   toolCallId: string
 ): ToolInvocation | undefined {
-  return getToolInvocations(message).find((inv) => inv.toolCallId === toolCallId)
+  return getToolInvocations(message).find(
+    (inv) => inv.toolCallId === toolCallId
+  )
 }
 
 /**
@@ -397,11 +409,12 @@ export function countToolInvocationsByState(
 ): Record<ToolInvocationState, number> {
   const invocations = getToolInvocations(message)
   return {
-    'partial-call': invocations.filter((inv) => inv.state === 'partial-call').length,
-    'call': invocations.filter((inv) => inv.state === 'call').length,
-    'executing': invocations.filter((inv) => inv.state === 'executing').length,
-    'result': invocations.filter((inv) => inv.state === 'result').length,
-    'error': invocations.filter((inv) => inv.state === 'error').length,
+    'partial-call': invocations.filter((inv) => inv.state === 'partial-call')
+      .length,
+    call: invocations.filter((inv) => inv.state === 'call').length,
+    executing: invocations.filter((inv) => inv.state === 'executing').length,
+    result: invocations.filter((inv) => inv.state === 'result').length,
+    error: invocations.filter((inv) => inv.state === 'error').length,
   }
 }
 
@@ -412,7 +425,10 @@ export function countToolInvocationsByState(
 /**
  * Create a tool call from partial call
  */
-export function completeToolCall(partial: PartialToolCall, args: Record<string, unknown>): CompleteToolCall {
+export function completeToolCall(
+  partial: PartialToolCall,
+  args: Record<string, unknown>
+): CompleteToolCall {
   return {
     toolCallId: partial.toolCallId,
     toolName: partial.toolName,
@@ -487,7 +503,10 @@ export function failToolWithError(
     errorCode: options?.errorCode,
     errorDetails: options?.errorDetails,
     timestamp: invocation.timestamp,
-    executionStartedAt: 'executionStartedAt' in invocation ? invocation.executionStartedAt : undefined,
+    executionStartedAt:
+      'executionStartedAt' in invocation
+        ? invocation.executionStartedAt
+        : undefined,
     errorTimestamp: Date.now(),
     retryable: options?.retryable ?? false,
   }
@@ -500,7 +519,9 @@ export function failToolWithError(
 /**
  * Validate tool invocation structure
  */
-export function validateToolInvocation(obj: unknown): asserts obj is ToolInvocation {
+export function validateToolInvocation(
+  obj: unknown
+): asserts obj is ToolInvocation {
   if (typeof obj !== 'object' || obj === null) {
     throw new Error('Tool invocation must be an object')
   }
@@ -532,7 +553,9 @@ export function validateToolInvocation(obj: unknown): asserts obj is ToolInvocat
   }
 
   if (inv.state === 'error' && typeof inv.error !== 'string') {
-    throw new Error('Tool invocation in "error" state must have an error message')
+    throw new Error(
+      'Tool invocation in "error" state must have an error message'
+    )
   }
 }
 
@@ -540,19 +563,5 @@ export function validateToolInvocation(obj: unknown): asserts obj is ToolInvocat
 // Exports
 // =============================================================================
 
-export type {
-  ToolInvocationState,
-  ToolInvocationBase,
-  PartialToolCall,
-  CompleteToolCall,
-  ExecutingToolCall,
-  ToolCallResult,
-  ToolCallError,
-  ToolInvocation,
-  BaseMessage,
-  UserMessage,
-  SystemMessage,
-  AssistantMessage,
-  FunctionMessage,
-  ChatMessage,
-}
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors

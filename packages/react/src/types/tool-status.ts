@@ -35,7 +35,9 @@ import type { ToolInvocationState } from './tool-invocation'
  * - `cancelled` → `error`
  * - `cached` → `result`
  */
-export function lifecycleToInvocationState(status: ToolCallStatus): ToolInvocationState | null {
+export function lifecycleToInvocationState(
+  status: ToolCallStatus
+): ToolInvocationState | null {
   switch (status) {
     case 'idle':
       return null // Not in message
@@ -96,7 +98,13 @@ export function invocationToLifecycleStatus(
  * - `warning`: Cancelled or requires attention
  * - `info`: Cached result
  */
-export type ToolStatusVariant = 'pending' | 'executing' | 'success' | 'error' | 'warning' | 'info'
+export type ToolStatusVariant =
+  | 'pending'
+  | 'executing'
+  | 'success'
+  | 'error'
+  | 'warning'
+  | 'info'
 
 /**
  * Map lifecycle status to UI variant
@@ -126,7 +134,9 @@ export function lifecycleToVariant(status: ToolCallStatus): ToolStatusVariant {
 /**
  * Map invocation state to UI variant
  */
-export function invocationToVariant(state: ToolInvocationState): ToolStatusVariant {
+export function invocationToVariant(
+  state: ToolInvocationState
+): ToolStatusVariant {
   switch (state) {
     case 'partial-call':
     case 'call':
@@ -323,7 +333,9 @@ export function isActiveStatus(status: ToolCallStatus): boolean {
  */
 export function isPendingStatus(status: ToolCallStatus): boolean {
   return (
-    status === 'requested' || status === 'pending_approval' || status === 'approved'
+    status === 'requested' ||
+    status === 'pending_approval' ||
+    status === 'approved'
   )
 }
 
@@ -411,7 +423,9 @@ export function getUnifiedStatus(status: ToolCallStatus): UnifiedToolStatus {
  */
 export function getUnifiedStatusFromInvocation(
   state: ToolInvocationState
-): Omit<UnifiedToolStatus, 'lifecycle'> & { lifecycle: ToolCallStatus | ToolCallStatus[] } {
+): Omit<UnifiedToolStatus, 'lifecycle'> & {
+  lifecycle: ToolCallStatus | ToolCallStatus[]
+} {
   const lifecycle = invocationToLifecycleStatus(state)
   const variant = invocationToVariant(state)
 
@@ -439,22 +453,5 @@ export function getUnifiedStatusFromInvocation(
 // Exports
 // =============================================================================
 
-export type { ToolStatusVariant, UnifiedToolStatus }
-export {
-  lifecycleToInvocationState,
-  invocationToLifecycleStatus,
-  lifecycleToVariant,
-  invocationToVariant,
-  getLifecycleStatusLabel,
-  getInvocationStateLabel,
-  getLifecycleStatusIcon,
-  getInvocationStateIcon,
-  getVariantColors,
-  isTerminalStatus,
-  isActiveStatus,
-  isPendingStatus,
-  isSuccessStatus,
-  isErrorStatus,
-  getUnifiedStatus,
-  getUnifiedStatusFromInvocation,
-}
+// Note: All functions and types are already exported inline above
+// Re-exporting them here causes "Cannot redeclare exported variable" errors

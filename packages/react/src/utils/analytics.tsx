@@ -5,7 +5,8 @@
  * user interaction monitoring, and performance metrics collection.
  */
 
-import { errorReporter } from './error-boundary'
+import * as React from 'react'
+import { errorReporter } from '../components/ui/error-boundary'
 
 // ============================================================================
 // TYPES
@@ -320,7 +321,7 @@ class AnalyticsManager {
       if (typeof window !== 'undefined' && navigator.sendBeacon) {
         // Use sendBeacon for reliable delivery
         const blob = new Blob([JSON.stringify(event)], {
-          type: 'application/json'
+          type: 'application/json',
         })
         navigator.sendBeacon(this.config.endpoint, blob)
       } else {
@@ -348,7 +349,7 @@ class AnalyticsManager {
 
       if (typeof window !== 'undefined' && navigator.sendBeacon) {
         const blob = new Blob([JSON.stringify(payload)], {
-          type: 'application/json'
+          type: 'application/json',
         })
         navigator.sendBeacon(this.config.endpoint, blob)
       } else {
@@ -466,14 +467,26 @@ export function useAnalytics(componentName: string, trackUsage = true) {
   })
 
   const trackInteraction = React.useCallback(
-    (interactionType: string, element?: string, metadata?: Record<string, any>) => {
-      analyticsManager.trackInteraction(componentName, interactionType, element, metadata)
+    (
+      interactionType: string,
+      element?: string,
+      metadata?: Record<string, any>
+    ) => {
+      analyticsManager.trackInteraction(
+        componentName,
+        interactionType,
+        element,
+        metadata
+      )
     },
     [componentName]
   )
 
   const trackPerformance = React.useCallback(
-    (category: PerformanceEvent['category'], metadata: Partial<PerformanceEvent['metadata']>) => {
+    (
+      category: PerformanceEvent['category'],
+      metadata: Partial<PerformanceEvent['metadata']>
+    ) => {
       analyticsManager.trackPerformance(componentName, category, metadata)
     },
     [componentName]
@@ -521,28 +534,48 @@ export function useRenderPerformance(componentName: string, enabled = true) {
 export function useInteractionTracking(componentName: string) {
   const trackClick = React.useCallback(
     (element: string, metadata?: Record<string, any>) => {
-      analyticsManager.trackInteraction(componentName, 'click', element, metadata)
+      analyticsManager.trackInteraction(
+        componentName,
+        'click',
+        element,
+        metadata
+      )
     },
     [componentName]
   )
 
   const trackHover = React.useCallback(
     (element: string, metadata?: Record<string, any>) => {
-      analyticsManager.trackInteraction(componentName, 'hover', element, metadata)
+      analyticsManager.trackInteraction(
+        componentName,
+        'hover',
+        element,
+        metadata
+      )
     },
     [componentName]
   )
 
   const trackFocus = React.useCallback(
     (element: string, metadata?: Record<string, any>) => {
-      analyticsManager.trackInteraction(componentName, 'focus', element, metadata)
+      analyticsManager.trackInteraction(
+        componentName,
+        'focus',
+        element,
+        metadata
+      )
     },
     [componentName]
   )
 
   const trackScroll = React.useCallback(
     (element: string, metadata?: Record<string, any>) => {
-      analyticsManager.trackInteraction(componentName, 'scroll', element, metadata)
+      analyticsManager.trackInteraction(
+        componentName,
+        'scroll',
+        element,
+        metadata
+      )
     },
     [componentName]
   )
@@ -612,22 +645,27 @@ export interface AnalyticsProviderProps {
 /**
  * Analytics provider component
  */
-export function AnalyticsProvider({ children, config = {} }: AnalyticsProviderProps) {
-  const [currentConfig, setCurrentConfig] = React.useState<AnalyticsConfig>(() => ({
-    enabled: true,
-    endpoint: '/api/analytics',
-    batchEvents: true,
-    batchSize: 10,
-    flushInterval: 30000,
-    sampleRate: 1.0,
-    anonymize: false,
-    trackPerformance: true,
-    trackInteractions: true,
-    trackComponents: true,
-    onEvent: () => {},
-    onError: (error) => console.error('Analytics error:', error),
-    ...config,
-  }))
+export function AnalyticsProvider({
+  children,
+  config = {},
+}: AnalyticsProviderProps) {
+  const [currentConfig, setCurrentConfig] = React.useState<AnalyticsConfig>(
+    () => ({
+      enabled: true,
+      endpoint: '/api/analytics',
+      batchEvents: true,
+      batchSize: 10,
+      flushInterval: 30000,
+      sampleRate: 1.0,
+      anonymize: false,
+      trackPerformance: true,
+      trackInteractions: true,
+      trackComponents: true,
+      onEvent: () => {},
+      onError: (error) => console.error('Analytics error:', error),
+      ...config,
+    })
+  )
 
   React.useEffect(() => {
     analyticsManager.initialize(currentConfig)
@@ -635,13 +673,16 @@ export function AnalyticsProvider({ children, config = {} }: AnalyticsProviderPr
 
   React.useEffect(() => {
     analyticsManager.updateConfig(config)
-    setCurrentConfig(prev => ({ ...prev, ...config }))
+    setCurrentConfig((prev) => ({ ...prev, ...config }))
   }, [config])
 
-  const updateConfig = React.useCallback((newConfig: Partial<AnalyticsConfig>) => {
-    setCurrentConfig(prev => ({ ...prev, ...newConfig }))
-    analyticsManager.updateConfig(newConfig)
-  }, [])
+  const updateConfig = React.useCallback(
+    (newConfig: Partial<AnalyticsConfig>) => {
+      setCurrentConfig((prev) => ({ ...prev, ...newConfig }))
+      analyticsManager.updateConfig(newConfig)
+    },
+    []
+  )
 
   const contextValue = React.useMemo(
     () => ({
@@ -664,7 +705,9 @@ export function AnalyticsProvider({ children, config = {} }: AnalyticsProviderPr
 export function useAnalyticsContext() {
   const context = React.useContext(AnalyticsContext)
   if (!context) {
-    throw new Error('useAnalyticsContext must be used within an AnalyticsProvider')
+    throw new Error(
+      'useAnalyticsContext must be used within an AnalyticsProvider'
+    )
   }
   return context
 }
@@ -682,7 +725,12 @@ export function createEventHandler(
   element?: string
 ) {
   return (metadata?: Record<string, any>) => {
-    analyticsManager.trackInteraction(componentName, interactionType, element, metadata)
+    analyticsManager.trackInteraction(
+      componentName,
+      interactionType,
+      element,
+      metadata
+    )
   }
 }
 
@@ -719,8 +767,10 @@ export function measurePerformance<T>(
 /**
  * Batch analytics events
  */
-export function batchAnalyticsEvents(events: Omit<AnalyticsEvent, 'timestamp' | 'sessionId'>[]): void {
-  events.forEach(event => analyticsManager.trackEvent(event))
+export function batchAnalyticsEvents(
+  events: Omit<AnalyticsEvent, 'timestamp' | 'sessionId'>[]
+): void {
+  events.forEach((event) => analyticsManager.trackEvent(event))
 }
 
 // ============================================================================
