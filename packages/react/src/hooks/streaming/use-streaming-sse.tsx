@@ -303,7 +303,13 @@ export function useStreamingSSE(
   const shouldReconnectRef = React.useRef(false)
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
-  const reconnectingRef = React.useRef(false) // FIX: Issue #5 - Prevent concurrent reconnections
+  const reconnectingRef = React.useRef(false) // FIX: Issue #5 - Prevent concurrent reconnections (from main)
+
+  // STREAM-3: RAF Batching refs
+  const rafRef = React.useRef<number | null>(null)
+  const pendingEventsRef = React.useRef<SSEEvent[]>([])
+  const pendingDataRef = React.useRef<string>('')
+  const MAX_DATA_SIZE = 10 * 1024 * 1024 // From main: 10MB data limit
 
   /**
    * Parse SSE event data
@@ -337,40 +343,62 @@ export function useStreamingSSE(
         lastEventIdRef.current = eventId
       }
 
-      // Bounded event buffer to prevent memory leaks
-      setEvents((prev) => {
-        const newEvents = [...prev, event]
-        // Keep only the last maxEventBufferSize events
-        if (newEvents.length > maxEventBufferSize) {
-          // DELIVERY-3: Notify about buffer overflow
-          const droppedCount = newEvents.length - maxEventBufferSize
-          onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
-          return newEvents.slice(-maxEventBufferSize)
-        }
-        return newEvents
-      })
-      setLastEvent(event)
+      // STREAM-3: Batch updates using RAF with bounds checking (merged from main)
+      if (pendingEventsRef.current.length < maxEventBufferSize) {
+        pendingEventsRef.current.push(event)
+      } else {
+        console.warn('[useStreamingSSE] Event buffer full, dropping event')
+        onEventBufferOverflow?.(1, maxEventBufferSize)
+      }
 
-      // Note: `data` accumulates all event data. For long sessions, consider
-      // using only `lastEvent` or clearing data periodically with `reset()`
-      // FIX: Issue #4 - Apply size limit to prevent buffer overflow
-      const MAX_DATA_SIZE = 10 * 1024 * 1024 // 10MB limit
-
-      setData((prev) => {
-        const newData = prev + eventData
-        if (newData.length > MAX_DATA_SIZE) {
-          console.warn(
-            `[useStreamingSSE] Data buffer size limit (${MAX_DATA_SIZE} bytes) reached. Truncating to last 10MB.`
-          )
-          onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
-          return newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
-        }
-        return newData
-      })
+      // Apply data size limit (from main)
+      const newData = pendingDataRef.current + eventData
+      if (newData.length <= MAX_DATA_SIZE) {
+        pendingDataRef.current = newData
+      } else {
+        console.warn(`[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`)
+        onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
+        pendingDataRef.current = newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
+      }
 
       onMessage?.(event)
+
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null
+          
+          const newEventsBatch = pendingEventsRef.current
+          const newDataBatch = pendingDataRef.current
+          
+          if (newEventsBatch.length === 0) return
+
+          const lastEventInBatch = newEventsBatch[newEventsBatch.length - 1]
+
+          // Bounded event buffer to prevent memory leaks
+          setEvents((prev) => {
+            const newEvents = [...prev, ...newEventsBatch]
+            // Keep only the last maxEventBufferSize events
+            if (newEvents.length > maxEventBufferSize) {
+              // DELIVERY-3: Notify about buffer overflow
+              const droppedCount = newEvents.length - maxEventBufferSize
+              onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
+              return newEvents.slice(-maxEventBufferSize)
+            }
+            return newEvents
+          })
+          setLastEvent(lastEventInBatch)
+
+          // Note: `data` accumulates all event data. For long sessions, consider
+          // using only `lastEvent` or clearing data periodically with `reset()`
+          setData((prev) => prev + newDataBatch)
+          
+          // Clear buffers
+          pendingEventsRef.current = []
+          pendingDataRef.current = ''
+        })
+      }
     },
-    [parseEventData, onMessage]
+    [parseEventData, onMessage, maxEventBufferSize, onEventBufferOverflow]
   )
 
   /**
@@ -430,11 +458,6 @@ export function useStreamingSSE(
             `SSE connection timeout after ${connectionTimeout}ms`
           )
           logger.error('[useStreamingSSE] Connection timeout:', timeoutError)
-
-          // FIX: Issue #5 - Prevent reconnection cascade
-          shouldReconnectRef.current = false
-          reconnectingRef.current = false
-
           setError(timeoutError)
           setStatus('error')
           onError?.(timeoutError)
@@ -612,11 +635,8 @@ export function useStreamingSSE(
       if (
         autoReconnect &&
         shouldReconnectRef.current &&
-        !reconnectingRef.current && // FIX: Issue #5 - Check reconnection flag
         reconnectAttempt < maxReconnectAttempts
       ) {
-        reconnectingRef.current = true // FIX: Set flag before reconnecting
-
         const nextAttempt = reconnectAttempt + 1
         // Calculate delay with exponential backoff and additive jitter (±30%)
         // Jitter prevents "thundering herd" when many clients reconnect simultaneously
@@ -634,7 +654,6 @@ export function useStreamingSSE(
         onReconnecting?.(nextAttempt, delay)
 
         reconnectTimeoutRef.current = setTimeout(() => {
-          reconnectingRef.current = false // FIX: Clear flag before reconnecting
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {
@@ -680,7 +699,9 @@ export function useStreamingSSE(
 
     // Cancel reader
     if (readerRef.current) {
-      readerRef.current.cancel()
+      readerRef.current.cancel().catch(() => {
+        // Ignore cancellation errors
+      })
       readerRef.current = null
     }
 
@@ -695,6 +716,14 @@ export function useStreamingSSE(
       heartbeatTimeoutRef.current = null
     }
 
+    // STREAM-3: Clear RAF and pending buffers
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    pendingEventsRef.current = []
+    pendingDataRef.current = ''
+
     setStatus('closed')
     setIsReconnecting(false)
     onClose?.()
@@ -704,18 +733,8 @@ export function useStreamingSSE(
    * Reconnect (disconnect and connect)
    */
   const reconnect = React.useCallback(() => {
-    // FIX: Issue #10 - Reset reconnecting flag and shouldReconnect before reconnecting
-    // This prevents multiple concurrent reconnection attempts
-    reconnectingRef.current = false
-    shouldReconnectRef.current = false
-
     disconnect()
-
-    // FIX: Issue #10 - Wait slightly longer to ensure cleanup completes
-    setTimeout(() => {
-      shouldReconnectRef.current = true
-      connect()
-    }, 200) // Increased from 100ms to 200ms
+    setTimeout(() => connect(), 100)
   }, [disconnect, connect])
 
   /**

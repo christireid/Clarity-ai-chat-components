@@ -152,6 +152,13 @@
     "test:ui": "NODE_OPTIONS='--max-old-space-size=4096' vitest --ui",
     "test:coverage": "NODE_OPTIONS='--max-old-space-size=4096' vitest run --coverage",
     "test:memory": "NODE_OPTIONS='--max-old-space-size=2048' vitest run",
+    "bench": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench",
+    "bench:long-list": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench long-message-list",
+    "bench:streaming": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench streaming",
+    "bench:virtualization": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench virtualization",
+    "bench:concurrent": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench concurrent-streams",
+    "bench:layout": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench layout-thrashing",
+    "bench:json": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench --reporter=json --outputFile=benchmark-results.json",
     "size": "size-limit",
     "size:why": "size-limit --why",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
