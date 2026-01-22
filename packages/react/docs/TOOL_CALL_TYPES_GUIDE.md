@@ -1,26 +1,26 @@
 # Tool Call Types Guide
 
-**Version**: 1.0
-**Last Updated**: 2026-01-22
-**Status**: Production Ready
+**Version**: 1.0 **Last Updated**: 2026-01-22 **Status**: Production Ready
 
-This guide clarifies the three different tool call types in the Clarity Chat tool calling system and when to use each.
+This guide clarifies the three different tool call types in the Clarity Chat tool calling system and
+when to use each.
 
 ---
 
 ## Quick Reference
 
-| Type | Purpose | Layer | States | Property Names | Use When |
-|------|---------|-------|--------|----------------|----------|
-| **ToolInvocation** | Message/UI format | Presentation | 5 | `toolCallId`, `toolName`, `args` | Adding tool calls to chat messages |
-| **ToolsEngineCall** | Functional state | Application | 6 | `id`, `name`, `parameters` | Using ToolsEngine functional API |
-| **ToolCallRecord** | Lifecycle tracking | Internal | 11 | `id`, `toolName`, `args` | Using ToolLifecycleManager |
+| Type                | Purpose            | Layer        | States | Property Names                   | Use When                           |
+| ------------------- | ------------------ | ------------ | ------ | -------------------------------- | ---------------------------------- |
+| **ToolInvocation**  | Message/UI format  | Presentation | 5      | `toolCallId`, `toolName`, `args` | Adding tool calls to chat messages |
+| **ToolsEngineCall** | Functional state   | Application  | 6      | `id`, `name`, `parameters`       | Using ToolsEngine functional API   |
+| **ToolCallRecord**  | Lifecycle tracking | Internal     | 11     | `id`, `toolName`, `args`         | Using ToolLifecycleManager         |
 
 ---
 
 ## Overview
 
-The Clarity Chat tool calling system uses **three different types** to represent tool calls at different architectural layers:
+The Clarity Chat tool calling system uses **three different types** to represent tool calls at
+different architectural layers:
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -35,16 +35,20 @@ The Clarity Chat tool calling system uses **three different types** to represent
 └─────────────────────────────────────────────────┘
 ```
 
-These types serve **different purposes** and are **not interchangeable**, but **converter functions** are provided for interoperability.
+These types serve **different purposes** and are **not interchangeable**, but **converter
+functions** are provided for interoperability.
 
 ---
 
 ## 1. ToolInvocation (Presentation Layer)
 
 ### Purpose
-Canonical format for representing tool calls in **chat messages**. Used for UI rendering and conversation history.
+
+Canonical format for representing tool calls in **chat messages**. Used for UI rendering and
+conversation history.
 
 ### Location
+
 ```typescript
 import type {
   ToolInvocation,
@@ -56,29 +60,31 @@ import type {
 ```
 
 ### States (5 total)
+
 ```typescript
 type ToolInvocationState =
-  | 'partial-call'  // Streaming: incomplete arguments
-  | 'call'          // Complete tool call, awaiting execution
-  | 'executing'     // Currently executing
-  | 'result'        // Successfully completed
-  | 'error'         // Execution failed
+  | 'partial-call' // Streaming: incomplete arguments
+  | 'call' // Complete tool call, awaiting execution
+  | 'executing' // Currently executing
+  | 'result' // Successfully completed
+  | 'error' // Execution failed
 ```
 
 ### Structure
+
 ```typescript
 // Discriminated union - type-safe!
 type ToolInvocation =
-  | PartialToolCall     // state: 'partial-call'
-  | CompleteToolCall    // state: 'call'
-  | ExecutingToolCall   // state: 'executing'
-  | ToolCallResult      // state: 'result'
-  | ToolCallError       // state: 'error'
+  | PartialToolCall // state: 'partial-call'
+  | CompleteToolCall // state: 'call'
+  | ExecutingToolCall // state: 'executing'
+  | ToolCallResult // state: 'result'
+  | ToolCallError // state: 'error'
 
 // All variants have:
 interface ToolInvocationBase {
-  toolCallId: string    // ← Note: toolCallId
-  toolName: string      // ← Note: toolName
+  toolCallId: string // ← Note: toolCallId
+  toolName: string // ← Note: toolName
   state: ToolInvocationState
   timestamp?: number
 }
@@ -94,17 +100,21 @@ interface ToolCallResult extends ToolInvocationBase {
 ```
 
 ### When to Use
+
 ✅ **Use ToolInvocation when:**
+
 - Adding tool calls to `AssistantMessage.toolInvocations`
 - Rendering tool calls in the UI
 - Serializing conversation history
 - Working with streaming AI responses
 
 ❌ **Don't use for:**
+
 - Internal lifecycle tracking (use ToolCallRecord)
 - Functional state management (use ToolsEngineCall)
 
 ### Example
+
 ```typescript
 import type { AssistantMessage, ToolInvocation } from './types/tool-invocation'
 
@@ -126,6 +136,7 @@ const message: AssistantMessage = {
 ```
 
 ### Key Features
+
 - **Discriminated union**: TypeScript narrows type based on `state`
 - **Type-safe state transitions**: Helper functions ensure valid transitions
 - **Streaming-friendly**: Supports partial calls during streaming
@@ -136,9 +147,12 @@ const message: AssistantMessage = {
 ## 2. ToolsEngineCall (Application Layer)
 
 ### Purpose
-Functional/immutable state representation for **React applications**. Used with the ToolsEngine functional API.
+
+Functional/immutable state representation for **React applications**. Used with the ToolsEngine
+functional API.
 
 ### Location
+
 ```typescript
 import type { ToolsEngineCall } from './app-api/tools-engine'
 
@@ -147,22 +161,24 @@ import type { ToolsEngineCall } from './app-api/tools-engine'
 ```
 
 ### States (6 total)
+
 ```typescript
 type ToolsEngineCallStatus =
-  | 'pending'      // Awaiting approval
-  | 'approved'     // Approved, ready to execute
-  | 'executing'    // Currently executing
-  | 'completed'    // Successfully completed
-  | 'failed'       // Execution failed
-  | 'timeout'      // Execution timed out
+  | 'pending' // Awaiting approval
+  | 'approved' // Approved, ready to execute
+  | 'executing' // Currently executing
+  | 'completed' // Successfully completed
+  | 'failed' // Execution failed
+  | 'timeout' // Execution timed out
 ```
 
 ### Structure
+
 ```typescript
 interface ToolsEngineCall {
-  id: string                       // ← Note: id
-  name: string                     // ← Note: name (not toolName)
-  parameters: Record<string, unknown>  // ← Note: parameters (not args)
+  id: string // ← Note: id
+  name: string // ← Note: name (not toolName)
+  parameters: Record<string, unknown> // ← Note: parameters (not args)
   status: ToolsEngineCallStatus
   result?: unknown
   error?: string
@@ -172,17 +188,21 @@ interface ToolsEngineCall {
 ```
 
 ### When to Use
+
 ✅ **Use ToolsEngineCall when:**
+
 - Using the ToolsEngine functional API
 - Managing tool state in React components
 - Working with immutable state patterns
 - Need functional/pure operations
 
 ❌ **Don't use for:**
+
 - Chat messages (use ToolInvocation)
 - Full lifecycle tracking (use ToolCallRecord)
 
 ### Example
+
 ```typescript
 import {
   createToolsEngine,
@@ -213,6 +233,7 @@ const completedCall: ToolsEngineCall = state.completedCalls[0]
 ```
 
 ### Key Features
+
 - **Immutable updates**: All functions return new state
 - **React-friendly**: Works with useState/useReducer
 - **Simple structure**: Flat interface for easy serialization
@@ -224,36 +245,41 @@ const completedCall: ToolsEngineCall = state.completedCalls[0]
 ## 3. ToolCallRecord (Internal Layer)
 
 ### Purpose
-Comprehensive **lifecycle tracking** with events, audit logs, and rich metadata. Used by ToolLifecycleManager.
+
+Comprehensive **lifecycle tracking** with events, audit logs, and rich metadata. Used by
+ToolLifecycleManager.
 
 ### Location
+
 ```typescript
 import type { ToolCallRecord, ToolCallStatus } from './core/tool-lifecycle'
 import { ToolLifecycleManager } from './core/tool-lifecycle'
 ```
 
 ### States (11 total)
+
 ```typescript
 type ToolCallStatus =
-  | 'idle'              // No active call
-  | 'requested'         // LLM requested tool call
-  | 'pending_approval'  // Awaiting user approval
-  | 'approved'          // Approved, ready to execute
-  | 'rejected'          // User rejected
-  | 'executing'         // Currently executing
-  | 'completed'         // Successfully completed
-  | 'failed'            // Execution failed
-  | 'timeout'           // Execution timed out
-  | 'cancelled'         // Execution cancelled
-  | 'cached'            // Result from cache
+  | 'idle' // No active call
+  | 'requested' // LLM requested tool call
+  | 'pending_approval' // Awaiting user approval
+  | 'approved' // Approved, ready to execute
+  | 'rejected' // User rejected
+  | 'executing' // Currently executing
+  | 'completed' // Successfully completed
+  | 'failed' // Execution failed
+  | 'timeout' // Execution timed out
+  | 'cancelled' // Execution cancelled
+  | 'cached' // Result from cache
 ```
 
 ### Structure
+
 ```typescript
 interface ToolCallRecord {
   id: string
-  toolName: string                  // ← Note: toolName
-  args: ToolArguments              // ← Note: args
+  toolName: string // ← Note: toolName
+  args: ToolArguments // ← Note: args
   status: ToolCallStatus
   context: ToolExecutionContext
 
@@ -274,7 +300,7 @@ interface ToolCallRecord {
     details?: unknown
   }
   rejectionReason?: string
-  progress?: number              // 0-100
+  progress?: number // 0-100
   statusMessage?: string
   cached?: boolean
   duration?: number
@@ -283,7 +309,9 @@ interface ToolCallRecord {
 ```
 
 ### When to Use
+
 ✅ **Use ToolCallRecord when:**
+
 - Using ToolLifecycleManager for lifecycle tracking
 - Need event emission for monitoring
 - Need audit logging for compliance
@@ -291,10 +319,12 @@ interface ToolCallRecord {
 - Implementing approval workflows
 
 ❌ **Don't use for:**
+
 - Chat messages (use ToolInvocation)
 - Simple functional state (use ToolsEngineCall)
 
 ### Example
+
 ```typescript
 import { ToolLifecycleManager, type ToolCallRecord } from './core/tool-lifecycle'
 
@@ -336,6 +366,7 @@ const logs = lifecycle.getAuditLogs({
 ```
 
 ### Key Features
+
 - **11-state lifecycle**: Most comprehensive state tracking
 - **Event system**: Subscribe to all state transitions
 - **Audit logging**: Immutable audit trail with sensitive data redaction
@@ -399,57 +430,61 @@ function invocationToRecord(inv: ToolCallResult): Partial<ToolCallRecord> {
 
 ### Property Name Mapping
 
-| ToolsEngineCall | ToolCallRecord | ToolInvocation | Meaning |
-|-----------------|----------------|----------------|---------|
-| `id` | `id` | `toolCallId` | Unique call identifier |
-| `name` | `toolName` | `toolName` | Name of the tool |
-| `parameters` | `args` | `args` | Tool arguments |
-| `status` | `status` | `state` | Current status/state |
+| ToolsEngineCall | ToolCallRecord | ToolInvocation | Meaning                |
+| --------------- | -------------- | -------------- | ---------------------- |
+| `id`            | `id`           | `toolCallId`   | Unique call identifier |
+| `name`          | `toolName`     | `toolName`     | Name of the tool       |
+| `parameters`    | `args`         | `args`         | Tool arguments         |
+| `status`        | `status`       | `state`        | Current status/state   |
 
-**Note**: Property names differ due to historical evolution and different use cases. Converters handle these differences automatically.
+**Note**: Property names differ due to historical evolution and different use cases. Converters
+handle these differences automatically.
 
 ---
 
 ## State Mapping
 
 ### ToolsEngineCall → ToolCallRecord
+
 ```typescript
 const statusMap = {
-  'pending': 'pending_approval',
-  'approved': 'approved',
-  'executing': 'executing',
-  'completed': 'completed',
-  'failed': 'failed',
-  'timeout': 'timeout',
+  pending: 'pending_approval',
+  approved: 'approved',
+  executing: 'executing',
+  completed: 'completed',
+  failed: 'failed',
+  timeout: 'timeout',
 }
 ```
 
 ### ToolsEngineCall → ToolInvocation
+
 ```typescript
 const stateMap = {
-  'pending': 'call',
-  'approved': 'call',
-  'executing': 'executing',
-  'completed': 'result',
-  'failed': 'error',
-  'timeout': 'error',
+  pending: 'call',
+  approved: 'call',
+  executing: 'executing',
+  completed: 'result',
+  failed: 'error',
+  timeout: 'error',
 }
 ```
 
 ### ToolCallRecord → ToolInvocation
+
 ```typescript
 const stateMap = {
-  'idle': 'call',
-  'requested': 'call',
-  'pending_approval': 'call',
-  'approved': 'call',
-  'rejected': 'error',
-  'executing': 'executing',
-  'completed': 'result',
-  'failed': 'error',
-  'timeout': 'error',
-  'cancelled': 'error',
-  'cached': 'result',
+  idle: 'call',
+  requested: 'call',
+  pending_approval: 'call',
+  approved: 'call',
+  rejected: 'error',
+  executing: 'executing',
+  completed: 'result',
+  failed: 'error',
+  timeout: 'error',
+  cancelled: 'error',
+  cached: 'result',
 }
 ```
 
@@ -491,6 +526,7 @@ START: What are you doing?
 ## Common Pitfalls
 
 ### ❌ Mistake 1: Using wrong property names
+
 ```typescript
 // WRONG: Mixing property names
 const call: ToolInvocation = {
@@ -510,12 +546,13 @@ const call: ToolInvocation = {
 ```
 
 ### ❌ Mistake 2: Using wrong type for context
+
 ```typescript
 // WRONG: Using ToolsEngineCall in messages
 const message: AssistantMessage = {
   role: 'assistant',
   content: 'Done!',
-  toolInvocations: state.completedCalls,  // ❌ Wrong type!
+  toolInvocations: state.completedCalls, // ❌ Wrong type!
 }
 
 // CORRECT: Convert to ToolInvocation
@@ -524,19 +561,22 @@ import { toToolInvocation } from './app-api/tools-engine'
 const message: AssistantMessage = {
   role: 'assistant',
   content: 'Done!',
-  toolInvocations: state.completedCalls.map(toToolInvocation),  // ✅
+  toolInvocations: state.completedCalls.map(toToolInvocation), // ✅
 }
 ```
 
 ### ❌ Mistake 3: Assuming state names are consistent
+
 ```typescript
 // WRONG: Assuming status names match
-if (engineCall.status === 'result') {  // ❌ No 'result' status in ToolsEngineCall
+if (engineCall.status === 'result') {
+  // ❌ No 'result' status in ToolsEngineCall
   // ...
 }
 
 // CORRECT: Use correct status names
-if (engineCall.status === 'completed') {  // ✅
+if (engineCall.status === 'completed') {
+  // ✅
   // ...
 }
 ```
@@ -584,32 +624,38 @@ const tool: ToolDefinition = {
 ### Q: Why three different types?
 
 **A**: Each type serves a different architectural layer:
+
 - **ToolInvocation**: Presentation layer (messages, UI)
 - **ToolsEngineCall**: Application layer (React state)
 - **ToolCallRecord**: Internal layer (lifecycle, events)
 
-This separation follows the **Single Responsibility Principle** and prevents type pollution across layers.
+This separation follows the **Single Responsibility Principle** and prevents type pollution across
+layers.
 
 ### Q: Can I convert between types?
 
 **A**: Yes! Use the converter functions:
+
 - `toToolCallRecord()`: ToolsEngineCall → ToolCallRecord
 - `toToolInvocation()`: ToolsEngineCall → ToolInvocation
 
 ### Q: Which type should I use for my use case?
 
 **A**: Follow this rule:
+
 - **Message/UI**: ToolInvocation
 - **React state**: ToolsEngineCall
 - **Lifecycle/audit**: ToolCallRecord
 
 ### Q: Why don't property names match?
 
-**A**: Historical evolution. We maintain compatibility while providing converters. Future versions may align property names.
+**A**: Historical evolution. We maintain compatibility while providing converters. Future versions
+may align property names.
 
 ### Q: Is `ToolCall` deprecated?
 
-**A**: The name is deprecated (use `ToolsEngineCall`), but the type alias remains for backwards compatibility until v2.0.0.
+**A**: The name is deprecated (use `ToolsEngineCall`), but the type alias remains for backwards
+compatibility until v2.0.0.
 
 ### Q: How do I add tool calls to messages?
 
@@ -620,13 +666,15 @@ const message: AssistantMessage = {
   id: 'msg_123',
   role: 'assistant',
   content: 'Let me check...',
-  toolInvocations: [{
-    toolCallId: 'call_123',
-    toolName: 'get_weather',
-    state: 'result',
-    args: { location: 'SF' },
-    result: { temp: 72 },
-  }],
+  toolInvocations: [
+    {
+      toolCallId: 'call_123',
+      toolName: 'get_weather',
+      state: 'result',
+      args: { location: 'SF' },
+      result: { temp: 72 },
+    },
+  ],
 }
 ```
 
@@ -644,6 +692,4 @@ const message: AssistantMessage = {
 
 ---
 
-**Last Updated**: 2026-01-22
-**Version**: 1.0
-**Status**: Production Ready
+**Last Updated**: 2026-01-22 **Version**: 1.0 **Status**: Production Ready

@@ -412,8 +412,5 @@ export function toToolSystemError(
     })
   }
 
-  return new ToolSystemError(
-    String(error),
-    defaultCode
-  )
+  return new ToolSystemError(String(error), defaultCode)
 }

@@ -1,12 +1,27 @@
 /**
+ * ⚠️ DEPRECATED - SECURITY CRITICAL ⚠️
+ *
  * Safe Code Evaluation Utility
  *
- * Provides sandboxed evaluation of JavaScript expressions without using eval().
- * Blocks dangerous patterns and limits available globals.
+ * **THIS FEATURE IS DEPRECATED AND DISABLED BY DEFAULT DUE TO SECURITY RISKS**
  *
- * SECURITY NOTE: This is safer than eval() but NOT a complete sandbox.
- * For untrusted code execution, use Web Workers or iframes with sandbox attribute.
+ * While this implementation blocks common dangerous patterns, it uses `new Function()`
+ * which is inherently unsafe and can be bypassed through various techniques including:
+ * - Unicode escape sequences
+ * - Property access chains
+ * - Prototype pollution
+ * - Case variation bypasses
  *
+ * **SECURITY AUDIT FINDING**: CRITICAL - TOOL-021
+ * This code evaluation can be exploited for arbitrary code execution.
+ *
+ * **RECOMMENDED ALTERNATIVES**:
+ * 1. Use Web Workers for true sandboxing (browser)
+ * 2. Use vm2 module for Node.js environments
+ * 3. Use a dedicated expression parser/DSL (e.g., expr-eval, mathjs)
+ * 4. Remove this functionality entirely if not critical
+ *
+ * @deprecated Use Web Workers or vm2 for safe code execution
  * @module utils/safe-evaluate
  */
 
@@ -94,21 +109,69 @@ const MAX_CODE_LENGTH = 10000
 const MAX_EXECUTION_TIME = 1000
 
 /**
- * Safely evaluate a JavaScript expression
+ * Options for safe evaluation
+ */
+export interface SafeEvaluateOptions {
+  /**
+   * Explicitly acknowledge the security risks and enable evaluation.
+   *
+   * **WARNING**: Setting this to true acknowledges that you understand:
+   * 1. This is NOT secure sandboxing
+   * 2. Pattern blocking can be bypassed
+   * 3. Only use with fully trusted code
+   * 4. Never use with user-provided code
+   *
+   * @default false
+   */
+  unsafeEnableEvaluation?: boolean
+}
+
+/**
+ * ⚠️ DEPRECATED - Safely evaluate a JavaScript expression
+ *
+ * **THIS FUNCTION IS DISABLED BY DEFAULT FOR SECURITY**
+ *
+ * To use this function, you must explicitly set `unsafeEnableEvaluation: true`
+ * in the options, acknowledging the security risks.
  *
  * @param code - The code to evaluate (should be an expression, not statements)
+ * @param options - Options including security acknowledgment
  * @returns Result object with success status and result or error
+ *
+ * @deprecated Use Web Workers or vm2 module instead
  *
  * @example
  * ```ts
- * const result = safeEvaluate('2 + 2')
+ * // UNSAFE - Requires explicit opt-in
+ * const result = safeEvaluate('2 + 2', { unsafeEnableEvaluation: true })
  * // { success: true, result: 4 }
  *
- * const invalid = safeEvaluate('fetch("https://evil.com")')
- * // { success: false, error: 'Blocked: dangerous pattern detected (fetch)' }
+ * // Without opt-in, function is disabled
+ * const disabled = safeEvaluate('2 + 2')
+ * // { success: false, error: 'SECURITY: safe-evaluate is disabled by default...' }
  * ```
  */
-export function safeEvaluate(code: string): SafeEvaluateResult {
+export function safeEvaluate(
+  code: string,
+  options: SafeEvaluateOptions = {}
+): SafeEvaluateResult {
+  // SECURITY: Disabled by default - requires explicit opt-in
+  if (!options.unsafeEnableEvaluation) {
+    return {
+      success: false,
+      error:
+        'SECURITY: safe-evaluate is disabled by default due to security risks (TOOL-021). ' +
+        'Use Web Workers or vm2 for true sandboxing. ' +
+        'If you must use this with TRUSTED code only, set unsafeEnableEvaluation: true. ' +
+        'See https://github.com/[your-repo]/security/safe-evaluate.md for details.',
+    }
+  }
+
+  // Log warning when this dangerous function is used
+  console.warn(
+    '[SECURITY WARNING] safe-evaluate is being used despite known security risks. ' +
+      'This should only be used with fully trusted code. Issue: TOOL-021'
+  )
   // Input validation
   if (typeof code !== 'string') {
     return { success: false, error: 'Code must be a string' }

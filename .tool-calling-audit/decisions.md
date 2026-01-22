@@ -1,7 +1,6 @@
 # Phase 0: Orientation & Boundaries - Decisions Log
 
-**Date**: 2026-01-22
-**Phase**: Phase 0 Complete → Phase 1 Starting
+**Date**: 2026-01-22 **Phase**: Phase 0 Complete → Phase 1 Starting
 
 ---
 
@@ -10,6 +9,7 @@
 ### Execution Environments Identified
 
 #### **SERVER-SIDE EXECUTION**
+
 - Tool Registry (`core/tool-registry.ts`)
 - Tool Executor (`core/tool-executor.ts`)
 - Tool Lifecycle Manager (`core/tool-lifecycle.ts`)
@@ -21,6 +21,7 @@
 **Boundary**: All tool execution, validation, and state management happens server-side for security.
 
 #### **CLIENT-SIDE EXECUTION**
+
 - UI Components (`components/message/tool-invocation-card.tsx`, etc.)
 - React Hooks (`hooks/chat/use-clarity-chat-with-tools.ts`)
 - Tool UI Registry (`agents/tool-ui-registry.ts`)
@@ -33,8 +34,11 @@
 ## COMPETING PATTERNS IDENTIFIED (4 CRITICAL)
 
 ### 1. Multiple Tool Registries
-### 2. Multiple Execution Patterns  
+
+### 2. Multiple Execution Patterns
+
 ### 3. Multiple Type Definitions
+
 ### 4. Multiple Approval Mechanisms
 
 **Decision Required**: Consolidate or clearly document usage patterns

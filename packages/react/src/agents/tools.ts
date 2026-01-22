@@ -34,7 +34,12 @@ function safeEvaluateMath(expression: string): number {
       i++
       continue
     }
-    if (/\d/.test(char) || (char === '.' && i + 1 < expression.length && /\d/.test(expression.charAt(i + 1)))) {
+    if (
+      /\d/.test(char) ||
+      (char === '.' &&
+        i + 1 < expression.length &&
+        /\d/.test(expression.charAt(i + 1)))
+    ) {
       let num = ''
       let hasDecimal = false
       while (i < expression.length) {
@@ -67,7 +72,10 @@ function safeEvaluateMath(expression: string): number {
 
   function parseAddSub(): number {
     let left = parseMulDiv()
-    while (pos < tokens.length && (tokens[pos] === '+' || tokens[pos] === '-')) {
+    while (
+      pos < tokens.length &&
+      (tokens[pos] === '+' || tokens[pos] === '-')
+    ) {
       const op = tokens[pos++]
       const right = parseMulDiv()
       left = op === '+' ? left + right : left - right
@@ -77,7 +85,10 @@ function safeEvaluateMath(expression: string): number {
 
   function parseMulDiv(): number {
     let left = parseUnary()
-    while (pos < tokens.length && (tokens[pos] === '*' || tokens[pos] === '/')) {
+    while (
+      pos < tokens.length &&
+      (tokens[pos] === '*' || tokens[pos] === '/')
+    ) {
       const op = tokens[pos++]
       const right = parseUnary()
       if (op === '/' && right === 0) throw new Error('Division by zero')
@@ -133,13 +144,15 @@ function safeEvaluateMath(expression: string): number {
  */
 export const calculatorTool: Tool = {
   name: 'calculator',
-  description: 'Perform basic mathematical calculations. Supports +, -, *, /, parentheses, and negative numbers.',
+  description:
+    'Perform basic mathematical calculations. Supports +, -, *, /, parentheses, and negative numbers.',
   parameters: {
     type: 'object',
     properties: {
       expression: {
         type: 'string',
-        description: 'The mathematical expression to evaluate (e.g., "2 + 2", "(10 - 5) * 2", "-3 + 4")',
+        description:
+          'The mathematical expression to evaluate (e.g., "2 + 2", "(10 - 5) * 2", "-3 + 4")',
       },
     },
     required: ['expression'],
@@ -162,7 +175,8 @@ export const calculatorTool: Tool = {
  */
 export const webSearchTool: Tool = {
   name: 'web_search',
-  description: 'Search the web for information. Returns relevant results with titles, snippets, and URLs.',
+  description:
+    'Search the web for information. Returns relevant results with titles, snippets, and URLs.',
   parameters: {
     type: 'object',
     properties: {
@@ -204,7 +218,8 @@ export const webSearchTool: Tool = {
  */
 export const databaseQueryTool: Tool = {
   name: 'database_query',
-  description: 'Query a database using SQL. Returns results as an array of objects.',
+  description:
+    'Query a database using SQL. Returns results as an array of objects.',
   parameters: {
     type: 'object',
     properties: {
@@ -269,7 +284,8 @@ export const fileReadTool: Tool = {
  */
 export const apiCallTool: Tool = {
   name: 'api_call',
-  description: 'Make an HTTP API request. Supports GET, POST, PUT, DELETE methods.',
+  description:
+    'Make an HTTP API request. Supports GET, POST, PUT, DELETE methods.',
   parameters: {
     type: 'object',
     properties: {
@@ -323,7 +339,8 @@ export const apiCallTool: Tool = {
  */
 export const codeExecutionTool: Tool = {
   name: 'code_execution',
-  description: 'Execute code in a sandboxed environment. Supports JavaScript/TypeScript.',
+  description:
+    'Execute code in a sandboxed environment. Supports JavaScript/TypeScript.',
   parameters: {
     type: 'object',
     properties: {
@@ -396,16 +413,16 @@ export class ToolRegistry {
     // Emit deprecation warning
     console.warn(
       '[DEPRECATION WARNING] ToolRegistry from agents/tools.ts is deprecated.\n' +
-      'Please migrate to the canonical ToolRegistry from core/tool-registry.ts:\n' +
-      '  import { ToolRegistry } from \'./core/tool-registry\'\n' +
-      'This legacy class will be removed in a future version.'
+        'Please migrate to the canonical ToolRegistry from core/tool-registry.ts:\n' +
+        "  import { ToolRegistry } from './core/tool-registry'\n" +
+        'This legacy class will be removed in a future version.'
     )
 
     if (initialTools) {
-      initialTools.forEach(t => this.register(t))
+      initialTools.forEach((t) => this.register(t))
     }
   }
-  
+
   /**
    * Register a tool
    *
@@ -448,7 +465,7 @@ export class ToolRegistry {
    * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   getByCategory(category: string): Tool[] {
-    return this.getAll().filter(t => t.category === category)
+    return this.getAll().filter((t) => t.category === category)
   }
 
   /**
@@ -457,7 +474,7 @@ export class ToolRegistry {
    * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   getByTag(tag: string): Tool[] {
-    return this.getAll().filter(t => t.tags?.includes(tag))
+    return this.getAll().filter((t) => t.tags?.includes(tag))
   }
 
   /**
@@ -467,11 +484,11 @@ export class ToolRegistry {
    */
   search(query: string): Tool[] {
     const lowerQuery = query.toLowerCase()
-    return this.getAll().filter(t =>
-      t.name.toLowerCase().includes(lowerQuery) ||
-      t.description.toLowerCase().includes(lowerQuery) ||
-      t.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+    return this.getAll().filter(
+      (t) =>
+        t.name.toLowerCase().includes(lowerQuery) ||
+        t.description.toLowerCase().includes(lowerQuery) ||
+        t.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
     )
   }
 }
-

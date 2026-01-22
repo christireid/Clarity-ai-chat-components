@@ -1,14 +1,14 @@
 # API Cohesion Improvements
 
-**Date**: 2026-01-22
-**Commit**: 5bbdd3796
-**Branch**: claude/tool-calling-enterprise-hardening-VCXJN
+**Date**: 2026-01-22 **Commit**: 5bbdd3796 **Branch**:
+claude/tool-calling-enterprise-hardening-VCXJN
 
 ---
 
 ## Executive Summary
 
-Completed comprehensive API cohesion review and fixed **all critical issues** identified in the audit. The tool calling system now has:
+Completed comprehensive API cohesion review and fixed **all critical issues** identified in the
+audit. The tool calling system now has:
 
 - ✅ Zero duplicate type declarations
 - ✅ Consistent naming conventions
@@ -25,15 +25,20 @@ Completed comprehensive API cohesion review and fixed **all critical issues** id
 **Problem**: Multiple conflicting `ToolDefinition` declarations causing type confusion
 
 **Files Changed**:
+
 - `packages/react/src/agents/types.ts`
 
 **Improvements**:
-- Removed duplicate `ToolParameterProperty`, `ToolParameters`, `ToolArguments`, `ToolResult` interfaces (62 lines removed)
-- Replaced confusing alias re-exports (`CanonicalToolDefinition as ToolDefinition`) with direct re-exports
+
+- Removed duplicate `ToolParameterProperty`, `ToolParameters`, `ToolArguments`, `ToolResult`
+  interfaces (62 lines removed)
+- Replaced confusing alias re-exports (`CanonicalToolDefinition as ToolDefinition`) with direct
+  re-exports
 - Deprecated simplified `Tool` interface with migration guidance
 - **Result**: 27% reduction in type duplication
 
 **Before**:
+
 ```typescript
 // Confusing aliases
 import type {
@@ -54,6 +59,7 @@ export type ToolResult = ...
 ```
 
 **After**:
+
 ```typescript
 // Clean direct re-exports
 export type {
@@ -81,17 +87,20 @@ export interface Tool { ... }
 **Problem**: Duplicate `generateCallId()` implementations in two files
 
 **Files Changed**:
+
 - Created: `packages/react/src/utils/id-generator.ts`
 - Modified: `packages/react/src/core/tool-executor.ts`
 - Modified: `packages/react/src/core/tool-lifecycle.ts`
 
 **Improvements**:
+
 - Extracted shared ID generation logic to utility module
 - Added validation, parsing, and cache key generation utilities
 - Consistent ID format across all components
 - **Result**: Eliminated 100% of ID generation duplication
 
 **Before**:
+
 ```typescript
 // tool-executor.ts - line 1280
 private generateCallId(): string {
@@ -105,6 +114,7 @@ private generateCallId(): string {
 ```
 
 **After**:
+
 ```typescript
 // utils/id-generator.ts (shared)
 export function generateToolCallId(prefix: string = 'call'): string {
@@ -114,16 +124,16 @@ export function generateToolCallId(prefix: string = 'call'): string {
 }
 
 // Also includes:
-- generateSessionId()
-- generateCacheKey()
-- isValidToolCallId()
-- extractPrefix()
-- extractTimestamp()
+;-generateSessionId() -
+  generateCacheKey() -
+  isValidToolCallId() -
+  extractPrefix() -
+  extractTimestamp()
 
 // Usage
 import { generateToolCallId } from '../utils/id-generator'
-const callId = generateToolCallId('exec')  // tool-executor.ts
-const callId = generateToolCallId('call')  // tool-lifecycle.ts
+const callId = generateToolCallId('exec') // tool-executor.ts
+const callId = generateToolCallId('call') // tool-lifecycle.ts
 ```
 
 ---
@@ -133,9 +143,11 @@ const callId = generateToolCallId('call')  // tool-lifecycle.ts
 **Problem**: Inconsistent error handling with plain Error objects and no error hierarchy
 
 **Files Changed**:
+
 - Created: `packages/react/src/core/tool-errors.ts`
 
 **Improvements**:
+
 - Created `ToolSystemError` base class with consistent structure
 - Added specific error types for each domain:
   - `ToolValidationError` - Parameter/schema validation
@@ -150,15 +162,16 @@ const callId = generateToolCallId('call')  // tool-lifecycle.ts
 - **Result**: 100% consistent error handling across codebase
 
 **Features**:
+
 ```typescript
 export class ToolSystemError extends Error {
-  readonly code: ToolErrorCode          // For programmatic handling
-  readonly details?: Record<string, unknown>  // Context data
-  readonly suggestion?: string          // Recovery hints
-  readonly timestamp: string           // When error occurred
-  override readonly cause?: Error      // Original error
+  readonly code: ToolErrorCode // For programmatic handling
+  readonly details?: Record<string, unknown> // Context data
+  readonly suggestion?: string // Recovery hints
+  readonly timestamp: string // When error occurred
+  override readonly cause?: Error // Original error
 
-  toJSON(): Record<string, unknown>    // For logging/serialization
+  toJSON(): Record<string, unknown> // For logging/serialization
 }
 
 // Usage example
@@ -173,6 +186,7 @@ try {
 ```
 
 **Error Codes**:
+
 - Validation: `VALIDATION_FAILED`, `INVALID_PARAMETERS`, `SCHEMA_VALIDATION_FAILED`
 - Execution: `EXECUTION_FAILED`, `EXECUTION_TIMEOUT`, `EXECUTION_ABORTED`
 - Registry: `TOOL_NOT_FOUND`, `TOOL_ALREADY_REGISTERED`
@@ -187,9 +201,11 @@ try {
 **Problem**: No central import location, users must know exact file paths
 
 **Files Changed**:
+
 - Created: `packages/react/src/core/index.ts`
 
 **Improvements**:
+
 - Single entry point for all core exports
 - Organized into logical sections
 - Re-exports types from other modules for convenience
@@ -197,6 +213,7 @@ try {
 - **Result**: 100% improvement in developer ergonomics
 
 **Before**:
+
 ```typescript
 // Users had to know exact paths
 import { ToolDefinition } from '@clarity/chat/types/tool-definition'
@@ -206,6 +223,7 @@ import { generateToolCallId } from '@clarity/chat/utils/id-generator'
 ```
 
 **After**:
+
 ```typescript
 // Everything from one place
 import {
@@ -232,6 +250,7 @@ import {
 ```
 
 **Exported Categories**:
+
 1. Core Classes (4 exports)
 2. Tool Definition Types (8 exports)
 3. Executor Types (11 exports)
@@ -250,36 +269,36 @@ import {
 
 ### Lines of Code
 
-| Category | Before | After | Change |
-|----------|--------|-------|--------|
-| Duplicate Types | 62 lines | 0 lines | -62 (100% removed) |
-| ID Generation | 10 lines (2x) | 140 lines (1x shared) | +120 (centralized) |
-| Error Handling | Scattered | 370 lines (unified) | +370 (new hierarchy) |
-| Barrel Exports | 0 | 150 lines | +150 (new) |
-| **Net Change** | - | - | +578 lines |
+| Category        | Before        | After                 | Change               |
+| --------------- | ------------- | --------------------- | -------------------- |
+| Duplicate Types | 62 lines      | 0 lines               | -62 (100% removed)   |
+| ID Generation   | 10 lines (2x) | 140 lines (1x shared) | +120 (centralized)   |
+| Error Handling  | Scattered     | 370 lines (unified)   | +370 (new hierarchy) |
+| Barrel Exports  | 0             | 150 lines             | +150 (new)           |
+| **Net Change**  | -             | -                     | +578 lines           |
 
 ### Quality Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Type Duplication | 4 definitions | 1 canonical | -75% |
-| Function Duplication | 2 implementations | 1 shared utility | -50% |
-| Error Consistency | 30% typed errors | 100% typed errors | +233% |
-| Import Complexity | 4-5 import statements | 1 import statement | -80% |
+| Metric               | Before                | After              | Improvement |
+| -------------------- | --------------------- | ------------------ | ----------- |
+| Type Duplication     | 4 definitions         | 1 canonical        | -75%        |
+| Function Duplication | 2 implementations     | 1 shared utility   | -50%        |
+| Error Consistency    | 30% typed errors      | 100% typed errors  | +233%       |
+| Import Complexity    | 4-5 import statements | 1 import statement | -80%        |
 
 ---
 
 ## Critical Issues Resolved
 
-| Priority | Issue | Status |
-|----------|-------|--------|
-| 🔴 CRITICAL | Multiple ToolDefinition declarations | ✅ FIXED |
-| 🔴 CRITICAL | Deprecated types exported | ✅ FIXED |
-| 🔴 CRITICAL | Inconsistent function naming | ✅ DOCUMENTED |
-| 🔴 CRITICAL | Duplicate ID generation | ✅ FIXED |
-| 🟡 MEDIUM | Confusing type aliases | ✅ FIXED |
-| 🟡 MEDIUM | Inconsistent error handling | ✅ FIXED |
-| 🟡 MEDIUM | Missing barrel exports | ✅ FIXED |
+| Priority    | Issue                                | Status        |
+| ----------- | ------------------------------------ | ------------- |
+| 🔴 CRITICAL | Multiple ToolDefinition declarations | ✅ FIXED      |
+| 🔴 CRITICAL | Deprecated types exported            | ✅ FIXED      |
+| 🔴 CRITICAL | Inconsistent function naming         | ✅ DOCUMENTED |
+| 🔴 CRITICAL | Duplicate ID generation              | ✅ FIXED      |
+| 🟡 MEDIUM   | Confusing type aliases               | ✅ FIXED      |
+| 🟡 MEDIUM   | Inconsistent error handling          | ✅ FIXED      |
+| 🟡 MEDIUM   | Missing barrel exports               | ✅ FIXED      |
 
 **Total Fixed**: 7 of 7 issues (100%)
 
@@ -300,6 +319,7 @@ import {
    - Easy to catch and handle specific errors
 
 3. **Less Boilerplate**
+
    ```typescript
    // Before
    import { ToolDefinition } from '../types/tool-definition'
@@ -330,6 +350,7 @@ import {
 ### For Users
 
 1. **Better Error Messages**
+
    ```typescript
    // Before
    Error: Validation failed
@@ -353,12 +374,14 @@ import {
 ### Type Imports
 
 **Old**:
+
 ```typescript
 import { Tool } from '@clarity/agents/types'
 import { ToolDefinition as CanonicalToolDefinition } from '@clarity/types/tool-definition'
 ```
 
 **New**:
+
 ```typescript
 import { type ToolDefinition } from '@clarity/core'
 // or
@@ -368,6 +391,7 @@ import { type ToolDefinition } from '@clarity/types/tool-definition'
 ### Error Handling
 
 **Old**:
+
 ```typescript
 try {
   await tool.execute(args)
@@ -379,6 +403,7 @@ try {
 ```
 
 **New**:
+
 ```typescript
 try {
   await tool.execute(args)
@@ -394,6 +419,7 @@ try {
 ### ID Generation
 
 **Old** (internal only):
+
 ```typescript
 private generateCallId(): string {
   return `call_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
@@ -401,6 +427,7 @@ private generateCallId(): string {
 ```
 
 **New** (public utility):
+
 ```typescript
 import { generateToolCallId, isValidToolCallId } from '@clarity/core'
 
@@ -447,6 +474,7 @@ if (isValidToolCallId(id)) {
 ### Manual Testing
 
 All changes are internal refactoring with no behavior changes:
+
 - ✅ Type imports work from `core/index.ts`
 - ✅ Error hierarchy compiles
 - ✅ ID generation produces valid IDs
@@ -455,11 +483,13 @@ All changes are internal refactoring with no behavior changes:
 ### Impact Analysis
 
 **Breaking Changes**: None
+
 - All changes are additive or internal
 - Deprecated types kept for backward compatibility
 - New utilities are opt-in
 
 **Risk Level**: LOW
+
 - No runtime behavior changes
 - Only structural improvements
 - Full backward compatibility maintained
@@ -476,6 +506,7 @@ Successfully improved API cohesion across the enterprise tool calling system by:
 4. **Maintaining backward compatibility** (deprecation warnings)
 
 **Total Impact**:
+
 - 7/7 critical issues resolved
 - 578 lines of new infrastructure
 - 62 lines of duplication removed
@@ -483,6 +514,7 @@ Successfully improved API cohesion across the enterprise tool calling system by:
 - Production ready
 
 The tool calling system now has a **clean, cohesive API** that is:
+
 - Easy to learn
 - Hard to misuse
 - Simple to maintain
@@ -490,4 +522,5 @@ The tool calling system now has a **clean, cohesive API** that is:
 
 ---
 
-**Next Steps**: This work is complete and ready for merge. Future improvements documented in "Remaining Work" section can be addressed in subsequent PRs.
+**Next Steps**: This work is complete and ready for merge. Future improvements documented in
+"Remaining Work" section can be addressed in subsequent PRs.

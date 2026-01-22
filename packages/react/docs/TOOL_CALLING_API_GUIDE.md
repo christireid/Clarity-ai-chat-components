@@ -2,7 +2,8 @@
 
 **Decision Tree for Choosing the Right API**
 
-This guide helps you choose the right tool calling API for your use case in Clarity AI Chat Components.
+This guide helps you choose the right tool calling API for your use case in Clarity AI Chat
+Components.
 
 ---
 
@@ -32,23 +33,23 @@ START: What do you need?
 
 ## API Comparison Table
 
-| Feature | ToolOrchestrator | ToolsEngine | ToolExecutor | ToolRegistry |
-|---------|-----------------|-------------|--------------|--------------|
-| **Use Case** | Full-featured OOP | React state management | Low-level execution | Registry only |
-| **Lifecycle Tracking** | ✅ Yes | ❌ No | ❌ No | ❌ No |
-| **Event System** | ✅ Yes | ❌ No | ❌ No | ✅ Yes |
-| **Approval Flow** | ✅ Yes | ✅ Yes | ❌ No | ❌ No |
-| **Validation** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Caching** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-| **Rate Limiting** | ✅ Yes | ❌ No | ✅ Yes | ❌ No |
-| **Concurrency Control** | ✅ Yes | ❌ No | ✅ Yes | ❌ No |
-| **Audit Logging** | ✅ Yes | ❌ No | ❌ No | ❌ No |
-| **Timeout Protection** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-| **Tool Discovery** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes |
-| **Immutable State** | ❌ No | ✅ Yes | ❌ No | ❌ No |
-| **TypeScript Inference** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Complexity** | Medium | Low | Low | Very Low |
-| **Status** | ✅ Recommended | ✅ Stable | ✅ Stable | ⚠️ Deprecated (agents/tools.ts) |
+| Feature                  | ToolOrchestrator  | ToolsEngine            | ToolExecutor        | ToolRegistry                    |
+| ------------------------ | ----------------- | ---------------------- | ------------------- | ------------------------------- |
+| **Use Case**             | Full-featured OOP | React state management | Low-level execution | Registry only                   |
+| **Lifecycle Tracking**   | ✅ Yes            | ❌ No                  | ❌ No               | ❌ No                           |
+| **Event System**         | ✅ Yes            | ❌ No                  | ❌ No               | ✅ Yes                          |
+| **Approval Flow**        | ✅ Yes            | ✅ Yes                 | ❌ No               | ❌ No                           |
+| **Validation**           | ✅ Yes            | ✅ Yes                 | ✅ Yes              | ✅ Yes                          |
+| **Caching**              | ✅ Yes            | ✅ Yes                 | ✅ Yes              | ❌ No                           |
+| **Rate Limiting**        | ✅ Yes            | ❌ No                  | ✅ Yes              | ❌ No                           |
+| **Concurrency Control**  | ✅ Yes            | ❌ No                  | ✅ Yes              | ❌ No                           |
+| **Audit Logging**        | ✅ Yes            | ❌ No                  | ❌ No               | ❌ No                           |
+| **Timeout Protection**   | ✅ Yes            | ✅ Yes                 | ✅ Yes              | ❌ No                           |
+| **Tool Discovery**       | ✅ Yes            | ✅ Yes                 | ❌ No               | ✅ Yes                          |
+| **Immutable State**      | ❌ No             | ✅ Yes                 | ❌ No               | ❌ No                           |
+| **TypeScript Inference** | ⭐⭐⭐⭐          | ⭐⭐⭐                 | ⭐⭐⭐⭐            | ⭐⭐⭐⭐⭐                      |
+| **Complexity**           | Medium            | Low                    | Low                 | Very Low                        |
+| **Status**               | ✅ Recommended    | ✅ Stable              | ✅ Stable           | ⚠️ Deprecated (agents/tools.ts) |
 
 ---
 
@@ -57,6 +58,7 @@ START: What do you need?
 ### 1. ToolOrchestrator - Full-Featured Application
 
 **When to use:**
+
 - You need complete tool lifecycle management
 - You want event-driven architecture
 - You need approval flows for sensitive tools
@@ -94,6 +96,7 @@ const auditLogs = orchestrator.lifecycle.exportAuditLogs()
 ```
 
 **Key Features:**
+
 - ✅ Registry + Executor + Lifecycle in one unified API
 - ✅ Comprehensive event system
 - ✅ Built-in approval flow
@@ -106,6 +109,7 @@ const auditLogs = orchestrator.lifecycle.exportAuditLogs()
 ### 2. ToolsEngine - React State Management
 
 **When to use:**
+
 - You're using React with functional/immutable state patterns
 - You want to store tool state in React state (useState, useReducer)
 - You prefer functional programming over OOP
@@ -143,6 +147,7 @@ function MyComponent() {
 ```
 
 **Key Features:**
+
 - ✅ Immutable state updates (perfect for React)
 - ✅ No external state management required
 - ✅ Functional API
@@ -155,6 +160,7 @@ function MyComponent() {
 ### 3. ToolExecutor - Low-Level Execution
 
 **When to use:**
+
 - You only need tool execution, not registry or lifecycle
 - You're building a custom tool system
 - You want maximum control
@@ -175,12 +181,16 @@ const executor = new ToolExecutor(undefined, {
 })
 
 // Execute tool directly
-const result = await executor.execute(weatherTool, {
-  location: 'Boston',
-}, {
-  timeout: 5000,
-  signal: abortController.signal,
-})
+const result = await executor.execute(
+  weatherTool,
+  {
+    location: 'Boston',
+  },
+  {
+    timeout: 5000,
+    signal: abortController.signal,
+  }
+)
 
 // Check stats
 const stats = executor.getStats()
@@ -189,6 +199,7 @@ console.log(`Rate limit: ${stats.rateLimit.currentRequests}/${stats.rateLimit.ma
 ```
 
 **Key Features:**
+
 - ✅ Lightweight execution engine
 - ✅ Validation, timeout, caching
 - ✅ Rate limiting and concurrency control
@@ -202,6 +213,7 @@ console.log(`Rate limit: ${stats.rateLimit.currentRequests}/${stats.rateLimit.ma
 ### 4. ToolRegistry - Tool Management Only
 
 **When to use:**
+
 - You only need to register and discover tools
 - You're building a custom execution system
 - You want type-safe tool definitions
@@ -235,6 +247,7 @@ if (tool) {
 ```
 
 **Key Features:**
+
 - ✅ Type-safe tool registration
 - ✅ Validation on registration
 - ✅ Event emission (tool_registered, tool_unregistered)
@@ -265,6 +278,7 @@ globalToolRegistry.registerMany([tool1, tool2])
 ```
 
 **Benefits of migration:**
+
 - ✅ JSON Schema validation
 - ✅ Event system
 - ✅ Namespace support
@@ -309,9 +323,7 @@ const lifecycle = new ToolLifecycleManager({
 // ✅ GOOD for simple React state management
 import { createToolsEngine } from '@clarity/app-api/tools-engine'
 
-const [tools, setTools] = useState(() =>
-  createToolsEngine({ autoApprove: false })
-)
+const [tools, setTools] = useState(() => createToolsEngine({ autoApprove: false }))
 ```
 
 ### 3. Never Use autoApprove in Production
@@ -561,6 +573,7 @@ const executor = new ToolExecutor(lifecycle, {
 6. Set appropriate timeouts
 
 For more details, see the source files:
+
 - `packages/react/src/core/tool-orchestrator.ts`
 - `packages/react/src/core/tool-executor.ts`
 - `packages/react/src/core/tool-registry.ts`

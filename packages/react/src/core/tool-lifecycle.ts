@@ -835,7 +835,6 @@ export class ToolLifecycleManager {
     call.status = newStatus
   }
 
-
   /**
    * Get audit logs with optional filtering
    */

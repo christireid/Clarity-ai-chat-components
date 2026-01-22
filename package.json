@@ -185,6 +185,7 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
+    "dompurify": "^3.3.1",
     "tsx": "^4.21.0"
   }
 }

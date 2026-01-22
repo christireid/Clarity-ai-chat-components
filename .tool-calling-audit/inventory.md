@@ -2,9 +2,10 @@
 
 **Date**: 2026-01-22  
 **Phase**: Phase 1 - Full Indexing  
-**Status**: IN PROGRESS  
+**Status**: IN PROGRESS
 
-This document provides a complete catalog of all tool-calling related code in the Clarity Chat repository.
+This document provides a complete catalog of all tool-calling related code in the Clarity Chat
+repository.
 
 ---
 
@@ -33,18 +34,21 @@ This document provides a complete catalog of all tool-calling related code in th
 **Execution Context**: Isomorphic (client + server)
 
 **Exports**:
+
 - `ToolParameterProperty` - JSON Schema property definition
 - `ToolParameters` - JSON Schema for tool parameters
 - `ToolArguments<T>` - Type-safe tool arguments
 - `ToolResult<T>` - Tool execution result
 - `ToolExecutionContext` - Execution context (callId, timestamps, userId, sessionId)
-- `ToolLifecycleHooks<TArgs, TResult>` - Lifecycle hooks (onBefore, onAfter, onError, onTimeout, onCancel)
+- `ToolLifecycleHooks<TArgs, TResult>` - Lifecycle hooks (onBefore, onAfter, onError, onTimeout,
+  onCancel)
 - `ToolDefinition<TArgs, TResult>` - **CANONICAL TOOL FORMAT**
 - `IToolRegistry` - Tool registry interface
 - `isToolDefinition(obj)` - Type guard
 - `validateToolDefinition(tool)` - Validation with assertions
 
 **Key Features**:
+
 - Generic type parameters for type safety
 - JSON Schema validation support (Draft 7 subset)
 - Security-first defaults (requiresApproval: true, cacheable: false)
@@ -54,7 +58,8 @@ This document provides a complete catalog of all tool-calling related code in th
 
 **Dependencies**: None (foundation type)
 
-**Consumers**: 
+**Consumers**:
+
 - All core modules (registry, executor, lifecycle, orchestrator)
 - Adapters
 - All tool implementations
@@ -64,6 +69,7 @@ This document provides a complete catalog of all tool-calling related code in th
 **Docs Coverage**: Inline JSDoc extensive
 
 **Security Assumptions**:
+
 - Tool implementations are trusted code
 - Tool registration happens server-side
 - Parameter validation enforced before execution
@@ -77,6 +83,7 @@ This document provides a complete catalog of all tool-calling related code in th
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - `ToolInvocationState` - State machine (5 states)
   - `partial-call` - Streaming in progress
   - `call` - Complete, awaiting execution
@@ -93,6 +100,7 @@ This document provides a complete catalog of all tool-calling related code in th
 - Type guards and utility functions (15+)
 
 **State Transitions**:
+
 ```
 partial-call → call
 call → executing → result
@@ -100,16 +108,19 @@ call → executing → result
 ```
 
 **Key Features**:
+
 - Discriminated union for type-safe state handling
 - Rich error information (errorCode, errorDetails, retryable)
 - Progress tracking for long-running tools
 - Duration and timing information
 - Cache indication
 
-**Dependencies**: 
+**Dependencies**:
+
 - `../core/tool-lifecycle` (for type imports)
 
 **Consumers**:
+
 - UI components
 - Message rendering
 - Streaming handlers
@@ -128,6 +139,7 @@ call → executing → result
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - `lifecycleToInvocationState()` - Map 11 lifecycle states → 5 invocation states
 - `invocationToLifecycleStatus()` - Reverse mapping (lossy)
 - `ToolStatusVariant` - UI variants (pending, executing, success, error, warning, info)
@@ -142,16 +154,19 @@ call → executing → result
 - `getUnifiedStatusFromInvocation()` - Get all status info from invocation
 
 **Key Features**:
+
 - Three-way status mapping (11:5:6 mapping)
 - Comprehensive UI theming (colors, icons, labels)
 - Dark mode support in color classes
 - Type-safe status predicates
 
 **Dependencies**:
+
 - `../core/tool-lifecycle` (ToolCallStatus)
 - `./tool-invocation` (ToolInvocationState)
 
 **Consumers**:
+
 - UI components (ToolInvocationCard, etc.)
 - Status displays
 - Color/styling logic
@@ -169,6 +184,7 @@ call → executing → result
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - `WeatherToolResult`
 - `SearchToolResult`
 - `CalculatorToolResult`
@@ -186,6 +202,7 @@ call → executing → result
 - `validateToolResult()` - Validate result structure
 
 **Key Features**:
+
 - Standard result shapes for common tools
 - Type guards for runtime checking
 - Safe argument parsing
@@ -193,6 +210,7 @@ call → executing → result
 **Dependencies**: None
 
 **Consumers**:
+
 - UI components for tool results
 - Tool result validators
 
@@ -211,6 +229,7 @@ call → executing → result
 **Execution Context**: Server-side (security boundary)
 
 **Exports**:
+
 - `RegistryEventType` - Event types (registered, unregistered, cleared)
 - `RegistryEvent` - Event object
 - `RegistryListener` - Event listener type
@@ -234,6 +253,7 @@ call → executing → result
 - `globalToolRegistry` - Global singleton instance
 
 **Key Features**:
+
 - Validation on registration (uses validateToolDefinition)
 - Name conflict detection
 - Weighted fuzzy search (exact name > name contains > description > tags)
@@ -242,9 +262,11 @@ call → executing → result
 - Statistics (getStats)
 
 **Dependencies**:
+
 - `../types/tool-definition` (ToolDefinition, IToolRegistry, validateToolDefinition)
 
 **Consumers**:
+
 - ToolOrchestrator
 - Tools engine
 - Application code
@@ -254,6 +276,7 @@ call → executing → result
 **Docs Coverage**: Excellent inline JSDoc + examples
 
 **Security Assumptions**:
+
 - Only trusted application code can register tools
 - Validation prevents malformed tools
 - No runtime code injection via tool definitions
@@ -267,6 +290,7 @@ call → executing → result
 **Execution Context**: Server-side (security boundary)
 
 **Exports**:
+
 - `ToolValidationError` - Custom error class
 - `validateToolArguments(tool, args)` - JSON Schema validation
   - Type validation (string, number, integer, boolean, array, object)
@@ -295,6 +319,7 @@ call → executing → result
   - `clearCache(toolName?)` - Clear cache
 
 **Execution Flow**:
+
 1. Validate arguments against JSON Schema
 2. Check cache (if cacheable)
 3. Call `onBefore` hook
@@ -304,6 +329,7 @@ call → executing → result
 7. Return ExecutionResult
 
 **Key Features**:
+
 - Comprehensive JSON Schema validation
 - Timeout protection with AbortSignal
 - Result caching (cache key: toolName + sorted args JSON)
@@ -311,10 +337,12 @@ call → executing → result
 - Detailed error messages
 
 **Dependencies**:
+
 - `../types/tool-definition` (ToolDefinition, ToolArguments, etc.)
 - `./tool-lifecycle` (ToolLifecycleManager - optional)
 
 **Consumers**:
+
 - ToolOrchestrator
 - Direct executor usage
 
@@ -323,6 +351,7 @@ call → executing → result
 **Docs Coverage**: Good inline JSDoc
 
 **Security Assumptions**:
+
 - Arguments validated before execution
 - Tool implementation is trusted
 - Timeout prevents DoS
@@ -337,6 +366,7 @@ call → executing → result
 **Execution Context**: Server-side
 
 **Exports**:
+
 - `ToolCallStatus` - **11 lifecycle states**
   - `idle` - No active call
   - `requested` - LLM requested, not processed
@@ -391,6 +421,7 @@ call → executing → result
 - `globalToolLifecycle` - Global singleton
 
 **State Machine**:
+
 ```
 idle → requested → pending_approval → approved → executing → completed
                                     ↓                       ↓
@@ -400,6 +431,7 @@ idle → requested → pending_approval → approved → executing → completed
 ```
 
 **Key Features**:
+
 - Explicit state machine with validation
 - Rich event system (11 event types)
 - Complete audit trail (all timestamps)
@@ -408,9 +440,11 @@ idle → requested → pending_approval → approved → executing → completed
 - Retry support (retryCount)
 
 **Dependencies**:
+
 - `../types/tool-definition` (ToolDefinition, ToolExecutionContext, etc.)
 
 **Consumers**:
+
 - ToolOrchestrator
 - ToolExecutor
 - UI components (for status display)
@@ -420,6 +454,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Docs Coverage**: Excellent inline JSDoc + examples
 
 **Security Assumptions**:
+
 - State transitions enforced
 - Approval flow cannot be bypassed (validation)
 - All events logged for auditability
@@ -433,6 +468,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Server-side
 
 **Exports**:
+
 - `OrchestratorConfig` - Configuration
   - autoApprove (default: false)
   - defaultTimeout (default: 30000ms)
@@ -482,6 +518,7 @@ idle → requested → pending_approval → approved → executing → completed
 - `globalToolOrchestrator` - Global singleton
 
 **Execution Flow (executeTool)**:
+
 1. Lookup tool in registry
 2. Create lifecycle record (status: requested)
 3. Determine if approval needed
@@ -495,6 +532,7 @@ idle → requested → pending_approval → approved → executing → completed
 8. On error: mark as failed/timeout/cancelled, return error
 
 **Key Features**:
+
 - Unified API (register, execute, monitor)
 - Automatic lifecycle management
 - Approval flow integration
@@ -502,12 +540,14 @@ idle → requested → pending_approval → approved → executing → completed
 - Error handling with lifecycle states
 
 **Dependencies**:
+
 - `./tool-registry` (ToolRegistry)
 - `./tool-executor` (ToolExecutor)
 - `./tool-lifecycle` (ToolLifecycleManager)
 - `../types/tool-definition` (ToolDefinition)
 
 **Consumers**:
+
 - Application code (high-level API)
 - API routes
 
@@ -516,6 +556,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Docs Coverage**: Excellent inline JSDoc + examples
 
 **Security Assumptions**:
+
 - Default autoApprove: false (security-first)
 - Approval flow enforced by lifecycle
 - Tool execution isolated in executor
@@ -531,6 +572,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - **OpenAI Format**:
   - `OpenAIFunction` - OpenAI function calling format
   - `OpenAIToolCall` - OpenAI tool call format (in response)
@@ -555,12 +597,14 @@ idle → requested → pending_approval → approved → executing → completed
   - `getOpenAICompatibilityWarnings(tool)` - Get compatibility warnings
 
 **Format Detection Logic**:
+
 - OpenAI: `type === 'function' && has function object`
 - Canonical: `has execute && execute.length === 2`
 - Legacy Agent: `has execute && has category/tags`
 - Legacy Engine: `has execute && execute.length === 1`
 
 **Key Features**:
+
 - Bidirectional conversion (Canonical ↔ OpenAI)
 - Auto-detection of format
 - Backward compatibility with legacy formats
@@ -568,13 +612,17 @@ idle → requested → pending_approval → approved → executing → completed
 - Warning system for lossy conversions
 
 **Conversion Warnings**:
+
 - Lifecycle hooks not preserved in OpenAI format
-- Properties lost: requiresApproval, cacheable, cacheTtl, timeout, parallelizable, category, tags, icon, color, metadata
+- Properties lost: requiresApproval, cacheable, cacheTtl, timeout, parallelizable, category, tags,
+  icon, color, metadata
 
 **Dependencies**:
+
 - `../types/tool-definition` (ToolDefinition, etc.)
 
 **Consumers**:
+
 - Model adapters (OpenAI, Anthropic, Google)
 - Migration scripts
 - Tool registration code
@@ -584,6 +632,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Docs Coverage**: Good inline JSDoc + examples
 
 **Security Assumptions**:
+
 - Format conversion doesn't introduce vulnerabilities
 - OpenAI function names validated (1-64 chars, alphanumeric + underscore/hyphen)
 
@@ -598,11 +647,12 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Mixed (calculatorTool: client-safe, others: server-only)
 
 **Exports**:
+
 - **Built-in Tools**:
   - `calculatorTool` - Safe math evaluator
     - Uses safeEvaluate (recursive descent parser)
     - NO eval() - code injection safe
-    - Supports: +, -, *, /, (), unary minus
+    - Supports: +, -, \*, /, (), unary minus
     - DoS protection: max 1000 chars, max 100 depth
   - `webSearchTool` - Mock search (requires real implementation)
   - `databaseQueryTool` - Mock DB query (requiresApproval: true)
@@ -620,6 +670,7 @@ idle → requested → pending_approval → approved → executing → completed
   - `search(query)` - Simple search (name, description, tags)
 
 **⚠️ COMPETING PATTERN DETECTED**:
+
 - This file contains a **LEGACY ToolRegistry** class
 - Different from `core/tool-registry.ts` (canonical registry)
 - Simpler implementation (no validation, events, namespacing)
@@ -627,6 +678,7 @@ idle → requested → pending_approval → approved → executing → completed
 - **RECOMMENDATION**: Deprecate this, migrate to core/ToolRegistry
 
 **Security Analysis**:
+
 - calculatorTool: **SAFE** (uses safe evaluator, not eval())
 - apiCallTool: **REQUIRES APPROVAL** (correct)
 - databaseQueryTool: **REQUIRES APPROVAL** (correct)
@@ -634,10 +686,12 @@ idle → requested → pending_approval → approved → executing → completed
 - codeExecutionTool: **REQUIRES APPROVAL** (correct, currently throws - not implemented)
 
 **Dependencies**:
+
 - `./types` (Tool type)
 - `../utils/math/safe-evaluator` (safeEvaluate)
 
 **Consumers**:
+
 - Application code (can use built-in tools)
 - Legacy code using old ToolRegistry
 
@@ -646,6 +700,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Docs Coverage**: Inline JSDoc
 
 **Security Assumptions**:
+
 - calculatorTool is safe for auto-approval
 - Other tools require approval (correct)
 - Mock implementations are placeholders
@@ -659,6 +714,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `ToolComponentProps<TData>` - Props for tool result components
   - data: TData (tool result)
   - messages: CoreMessage[] (conversation context)
@@ -673,14 +729,17 @@ idle → requested → pending_approval → approved → executing → completed
 - `getRegistryStats(registry)` - Get statistics
 
 **Key Features**:
+
 - Type-safe registry creation
 - Runtime validation
 - Display name warnings
 
 **Dependencies**:
+
 - `../hooks/chat/use-chat-enhanced` (CoreMessage type)
 
 **Consumers**:
+
 - ClarityToolResult component
 - useClarityChatWithTools hook
 - UI rendering code
@@ -700,6 +759,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Server-side (client directive: 'use client')
 
 **Exports**:
+
 - **Types**:
   - `ToolCall` - Tool call state
     - id, name, parameters
@@ -755,6 +815,7 @@ idle → requested → pending_approval → approved → executing → completed
   - `clearToolCache(state)` - Clear cache
 
 **⚠️ COMPETING PATTERN DETECTED**:
+
 - Different execution model from ToolOrchestrator
 - Functional/immutable state management
 - Different ToolCall type from ToolCallRecord
@@ -762,6 +823,7 @@ idle → requested → pending_approval → approved → executing → completed
 - **PATTERN**: Functional state (tools-engine) vs OOP state (orchestrator)
 
 **Key Features**:
+
 - Immutable state updates
 - Built-in safe tools
 - Parameter validation
@@ -770,6 +832,7 @@ idle → requested → pending_approval → approved → executing → completed
 - Auto-approval support (with dev warning)
 
 **Security Analysis**:
+
 - Default autoApprove: false ✓
 - Dev warning when autoApprove: true ✓
 - Parameter validation ✓
@@ -777,10 +840,12 @@ idle → requested → pending_approval → approved → executing → completed
 - Timeout protection ✓
 
 **Dependencies**:
+
 - `./types` (ToolsConfig, ToolDefinition)
 - `../utils/math/safe-evaluator` (safeEvaluate)
 
 **Consumers**:
+
 - API routes using functional state pattern
 - Application code preferring immutable state
 
@@ -789,6 +854,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Docs Coverage**: Inline JSDoc
 
 **Security Assumptions**:
+
 - Tool execution happens server-side
 - Built-in tools are safe
 - autoApprove only used in trusted environments
@@ -804,6 +870,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `useClarityChatWithTools(options)` - Main hook
   - Parameters:
     - api: string (API endpoint)
@@ -816,17 +883,20 @@ idle → requested → pending_approval → approved → executing → completed
     - getToolResultsForMessage: (messageId) => ExtractedToolResult[]
 
 **Key Features**:
+
 - Automatically extracts tool results from messages
 - Integrates with tool UI registry
 - Builds on useClarityChat
 - Provides filtered access to tool results
 
 **Dependencies**:
+
 - `../hooks/chat/use-clarity-chat` (or similar)
 - `../agents/tool-ui-registry` (ToolComponentRegistry)
 - `../utils/tools/tool-result-extractor` (extraction logic)
 
 **Consumers**:
+
 - React applications using tools
 - Chat UIs with tool display
 
@@ -845,6 +915,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `ToolInvocationCard` - React component
   - Props:
     - toolCall: ToolInvocation (tool call data)
@@ -863,17 +934,20 @@ idle → requested → pending_approval → approved → executing → completed
     - Progress indicator
 
 **Key Features**:
+
 - Complete approval workflow UI
 - Status visualization
 - Expandable details
 - Error handling UI
 
 **Dependencies**:
+
 - `../../types/tool-invocation` (ToolInvocation)
 - `../../types/tool-status` (ToolStatusVariant, status helpers)
 - UI primitives (Button, Card, Badge, etc.)
 
 **Consumers**:
+
 - Chat message rendering
 - Tool execution UIs
 
@@ -890,6 +964,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `ClarityToolResult` - React component
   - Props:
     - registry: ToolComponentRegistry (UI component map)
@@ -902,15 +977,18 @@ idle → requested → pending_approval → approved → executing → completed
     - Falls back to default JSON display
 
 **Key Features**:
+
 - Custom tool result rendering
 - Registry-based component lookup
 - Fallback to default display
 
 **Dependencies**:
+
 - `../../agents/tool-ui-registry` (ToolComponentRegistry, ToolComponentProps)
 - `../../types/tool-invocation` (or similar)
 
 **Consumers**:
+
 - Chat message rendering
 - Tool result display
 
@@ -927,6 +1005,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `ToolExecutionCard` - React component (alternative to ToolInvocationCard)
 
 **Dependencies**: (need to read file)
@@ -946,6 +1025,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Client-side
 
 **Exports**:
+
 - `ToolApprovalDialog` - React component
   - Shows tool name, description, arguments
   - Approve/reject buttons
@@ -970,6 +1050,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Server-side
 
 **Exports**:
+
 - `executeWithRetry(orchestrator, toolName, args, options)` - Retry with exponential backoff
   - maxRetries: 3
   - initialDelay: 1000ms
@@ -982,19 +1063,23 @@ idle → requested → pending_approval → approved → executing → completed
   - level: 'info'
   - logArgs: true
   - logResults: false
-- `executeWithAll(orchestrator, toolName, args, options)` - Combined (retry + fallback + timeout + logging)
+- `executeWithAll(orchestrator, toolName, args, options)` - Combined (retry + fallback + timeout +
+  logging)
 - `executeBatch(orchestrator, calls)` - Batch execution
 
 **Key Features**:
+
 - Composable execution patterns
 - Exponential backoff
 - Fallback chains
 - Logging integration
 
 **Dependencies**:
+
 - `../core/tool-orchestrator` (ToolOrchestrator)
 
 **Consumers**:
+
 - Application code for complex execution patterns
 
 **Test Coverage**: Unknown
@@ -1010,6 +1095,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Server-side
 
 **Exports**:
+
 - Performance monitoring utilities
 - Metrics collection
 
@@ -1030,6 +1116,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - `groupToolResultsByToolName(toolResults)` - Group by tool name
 - `groupToolResultsByMessage(toolResults)` - Group by message
 - `getLatestToolResult(toolResults, toolName)` - Get latest result for tool
@@ -1039,14 +1126,17 @@ idle → requested → pending_approval → approved → executing → completed
 - `formatToolCall(toolCall)` - Format tool call for display
 
 **Key Features**:
+
 - Grouping and filtering
 - Call counting
 - Argument parsing
 
 **Dependencies**:
+
 - Tool invocation types
 
 **Consumers**:
+
 - UI components
 - Analytics
 - useClarityChatWithTools
@@ -1064,20 +1154,24 @@ idle → requested → pending_approval → approved → executing → completed
 **Execution Context**: Isomorphic
 
 **Exports**:
+
 - `ExtractedToolResult` - Extracted result type
 - `extractToolResults(messages, registry)` - Extract all tool results
 - `extractToolResultsFromMessage(message, registry)` - Extract from single message
 
 **Key Features**:
+
 - Message parsing
 - Result extraction
 - Registry integration
 
 **Dependencies**:
+
 - Tool invocation types
 - Tool UI registry
 
 **Consumers**:
+
 - useClarityChatWithTools
 - Message processors
 
@@ -1092,7 +1186,7 @@ idle → requested → pending_approval → approved → executing → completed
 ### 9.1 Core Tests
 
 - `packages/react/src/core/__tests__/tool-registry.test.ts` ✓ EXISTS
-- `packages/react/src/core/__tests__/tool-executor.test.ts` ✓ EXISTS  
+- `packages/react/src/core/__tests__/tool-executor.test.ts` ✓ EXISTS
 - `packages/react/src/core/__tests__/tool-lifecycle.test.ts` ✓ EXISTS
 - `packages/react/src/core/__tests__/tool-orchestrator.test.ts` ✓ EXISTS
 - `packages/react/src/core/__tests__/streaming-tools-integration.test.ts` ✓ EXISTS
@@ -1112,6 +1206,7 @@ idle → requested → pending_approval → approved → executing → completed
 - `apps/docs/app/examples/tool-calling-showcase/__tests__/hooks.test.ts` ✓ EXISTS
 
 **Test Coverage Summary**:
+
 - Core: ✓ EXCELLENT (registry, executor, lifecycle, orchestrator, e2e)
 - Adapters: ? (need to verify)
 - Agents: ✓ (tools.test.ts)
@@ -1153,6 +1248,7 @@ idle → requested → pending_approval → approved → executing → completed
 **Location**: `apps/docs/app/examples/tool-calling-showcase/`
 
 **Structure**:
+
 - `page.tsx` - Main showcase page
 - `api/chat/route.ts` - API route with tool execution
 - `components/` - UI components
@@ -1186,8 +1282,9 @@ idle → requested → pending_approval → approved → executing → completed
 ### Total Files Cataloged: 40+
 
 ### File Categories:
+
 - **Type System**: 4 files
-- **Core Engine**: 4 files  
+- **Core Engine**: 4 files
 - **Adapters**: 1 file
 - **Agent Layer**: 2 files
 - **App API**: 1 file
@@ -1199,11 +1296,13 @@ idle → requested → pending_approval → approved → executing → completed
 - **Examples**: 20+ files
 
 ### Execution Context Breakdown:
+
 - **Server-only**: 10 files (core engine, tools-engine, built-in tools)
 - **Client-only**: 10 files (components, hooks, UI registry)
 - **Isomorphic**: 10 files (types, adapters, utilities)
 
 ### Test Coverage:
+
 - **Core Engine**: ✓ EXCELLENT
 - **Agents**: ✓ GOOD
 - **Components**: ✓ PARTIAL
@@ -1212,6 +1311,7 @@ idle → requested → pending_approval → approved → executing → completed
 - **Adapters**: ? UNKNOWN
 
 ### Documentation Coverage:
+
 - **Inline JSDoc**: ✓ EXCELLENT (all core files)
 - **Guides**: ✓ EXISTS (4 guides)
 - **Reference**: ✓ EXISTS (4 reference docs)
@@ -1223,14 +1323,17 @@ idle → requested → pending_approval → approved → executing → completed
 ## COMPETING PATTERNS IDENTIFIED
 
 ### 1. Multiple Tool Registries
+
 - **Core**: `packages/react/src/core/tool-registry.ts` (NEW, comprehensive)
 - **Legacy**: `packages/react/src/agents/tools.ts` (OLD, simple Map-based)
 
 ### 2. Multiple Execution Patterns
+
 - **Orchestrator**: `packages/react/src/core/tool-orchestrator.ts` (OOP, lifecycle-integrated)
 - **Tools Engine**: `packages/react/src/app-api/tools-engine.ts` (Functional, immutable state)
 
 ### 3. Multiple Tool Call Types
+
 - **ToolCallRecord**: In `tool-lifecycle.ts` (11 states, rich audit trail)
 - **ToolCall**: In `tools-engine.ts` (6 states, simpler)
 
@@ -1243,4 +1346,3 @@ idle → requested → pending_approval → approved → executing → completed
 3. ✅ Verify test coverage for each module
 4. ✅ Verify docs accuracy
 5. ⏭️ Begin Phase 2: Correctness Audit
-

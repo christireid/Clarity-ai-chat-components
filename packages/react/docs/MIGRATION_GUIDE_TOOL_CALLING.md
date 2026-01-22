@@ -2,7 +2,8 @@
 
 **Step-by-step guide for migrating from legacy tool calling patterns to canonical implementations**
 
-This guide helps you migrate your existing tool calling code to the new, enterprise-grade APIs introduced in the latest version.
+This guide helps you migrate your existing tool calling code to the new, enterprise-grade APIs
+introduced in the latest version.
 
 ---
 
@@ -36,14 +37,14 @@ The tool calling system has been enhanced with enterprise-grade features:
 
 ### Migration Priority
 
-| Priority | Migration Path | Risk | Effort | Timeline |
-|----------|---------------|------|--------|----------|
-| 🔴 **P0** | autoApprove in Production | High | 5 min | Immediate |
-| 🔴 **P0** | Test Property Names | Low | 15 min | Before tests |
-| 🟡 **P1** | Legacy ToolRegistry | Low | 1-2 hours | Week 1 |
-| 🟡 **P1** | ToolOrchestrator Adoption | Medium | 2-4 hours | Week 2 |
-| 🟢 **P2** | Rate Limiting | Low | 30 min | Week 3 |
-| 🟢 **P2** | Audit Logging | Low | 30 min | Week 3 |
+| Priority  | Migration Path            | Risk   | Effort    | Timeline     |
+| --------- | ------------------------- | ------ | --------- | ------------ |
+| 🔴 **P0** | autoApprove in Production | High   | 5 min     | Immediate    |
+| 🔴 **P0** | Test Property Names       | Low    | 15 min    | Before tests |
+| 🟡 **P1** | Legacy ToolRegistry       | Low    | 1-2 hours | Week 1       |
+| 🟡 **P1** | ToolOrchestrator Adoption | Medium | 2-4 hours | Week 2       |
+| 🟢 **P2** | Rate Limiting             | Low    | 30 min    | Week 3       |
+| 🟢 **P2** | Audit Logging             | Low    | 30 min    | Week 3       |
 
 ### Compatibility
 
@@ -113,13 +114,17 @@ import type { ToolCall } from './app-api/tools-engine'
 import type { ToolsEngineCall } from './app-api/tools-engine'
 ```
 
-**Why**: Clarifies that this type is specific to ToolsEngine, not a generic tool call type. Reduces confusion with:
+**Why**: Clarifies that this type is specific to ToolsEngine, not a generic tool call type. Reduces
+confusion with:
+
 - `ToolCallRecord` (lifecycle tracking)
 - `ToolInvocation` (message format)
 
-**Migration**: Update imports to use `ToolsEngineCall`. The old name still works via type alias but will be removed in v2.0.0.
+**Migration**: Update imports to use `ToolsEngineCall`. The old name still works via type alias but
+will be removed in v2.0.0.
 
-**See also**: [Tool Call Types Guide](./TOOL_CALL_TYPES_GUIDE.md) for detailed comparison of all three types.
+**See also**: [Tool Call Types Guide](./TOOL_CALL_TYPES_GUIDE.md) for detailed comparison of all
+three types.
 
 ---
 
@@ -159,6 +164,7 @@ const mathTools = registry.search('calculate')
 ### Migration Steps
 
 1. **Update import**:
+
    ```typescript
    // Change this:
    import { ToolRegistry } from './agents/tools'
@@ -168,6 +174,7 @@ const mathTools = registry.search('calculate')
    ```
 
 2. **Update instantiation**:
+
    ```typescript
    // Change this:
    const registry = new ToolRegistry(tools)
@@ -275,6 +282,7 @@ const stats = orchestrator.getStats()
 ### Migration Steps
 
 1. **Replace imports**:
+
    ```typescript
    // Remove:
    import { ToolExecutor } from './core/tool-executor'
@@ -285,6 +293,7 @@ const stats = orchestrator.getStats()
    ```
 
 2. **Replace instantiation**:
+
    ```typescript
    // Remove:
    const registry = new ToolRegistry()
@@ -298,6 +307,7 @@ const stats = orchestrator.getStats()
    ```
 
 3. **Update execution calls**:
+
    ```typescript
    // Change this:
    const tool = registry.get(name)
@@ -308,6 +318,7 @@ const stats = orchestrator.getStats()
    ```
 
 4. **Add lifecycle monitoring** (optional but recommended):
+
    ```typescript
    orchestrator.lifecycle.on('tool_completed', (event) => {
      metrics.record('tool_duration', event.duration, {
@@ -334,15 +345,15 @@ const stats = orchestrator.getStats()
 
 ### Side-by-Side Comparison
 
-| Feature | Direct Executor | ToolOrchestrator |
-|---------|----------------|------------------|
-| Registration | Manual | Built-in |
-| Lifecycle | Manual | Automatic |
-| Events | No | Yes (11 types) |
-| Approval Flow | Manual | Built-in |
-| Statistics | Manual | Built-in |
-| Caching | Manual | Built-in |
-| Code | More | Less |
+| Feature       | Direct Executor | ToolOrchestrator |
+| ------------- | --------------- | ---------------- |
+| Registration  | Manual          | Built-in         |
+| Lifecycle     | Manual          | Automatic        |
+| Events        | No              | Yes (11 types)   |
+| Approval Flow | Manual          | Built-in         |
+| Statistics    | Manual          | Built-in         |
+| Caching       | Manual          | Built-in         |
+| Code          | More            | Less             |
 
 ### Testing
 
@@ -390,7 +401,7 @@ const [pendingCalls, setPendingCalls] = useState<ToolCall[]>([])
 
 const executeTool = async (name: string, args: any) => {
   // Manual validation
-  const tool = tools.find(t => t.name === name)
+  const tool = tools.find((t) => t.name === name)
   if (!tool) throw new Error('Not found')
 
   // Manual approval tracking
@@ -400,12 +411,12 @@ const executeTool = async (name: string, args: any) => {
   // Manual execution
   try {
     const result = await tool.execute(args)
-    setPendingCalls(pending => pending.filter(c => c.id !== call.id))
+    setPendingCalls((pending) => pending.filter((c) => c.id !== call.id))
     return result
   } catch (error) {
     // Manual error handling
-    setPendingCalls(pending =>
-      pending.map(c => c.id === call.id ? { ...c, status: 'failed' } : c)
+    setPendingCalls((pending) =>
+      pending.map((c) => (c.id === call.id ? { ...c, status: 'failed' } : c))
     )
     throw error
   }
@@ -436,6 +447,7 @@ const handleExecuteTool = async (name: string, args: any) => {
 ### Migration Steps
 
 1. **Add import**:
+
    ```typescript
    import {
      createToolsEngine,
@@ -447,6 +459,7 @@ const handleExecuteTool = async (name: string, args: any) => {
    ```
 
 2. **Initialize state**:
+
    ```typescript
    const [toolsState, setToolsState] = useState(() =>
      createToolsEngine({
@@ -458,6 +471,7 @@ const handleExecuteTool = async (name: string, args: any) => {
    ```
 
 3. **Replace execution logic**:
+
    ```typescript
    // Remove all manual state management
    // Replace with:
@@ -474,6 +488,7 @@ const handleExecuteTool = async (name: string, args: any) => {
    ```
 
 4. **Add approval flow** (if needed):
+
    ```typescript
    const handleApprove = (callId: string) => {
      setToolsState(approveToolCall(toolsState, callId))
@@ -495,6 +510,7 @@ const handleExecuteTool = async (name: string, args: any) => {
 ### Example: Complete Component Migration
 
 **Before:**
+
 ```typescript
 function ToolExecutor() {
   const [tools, setTools] = useState<Tool[]>([])
@@ -529,6 +545,7 @@ function ToolExecutor() {
 ```
 
 **After:**
+
 ```typescript
 import { createToolsEngine, executeTool } from '@clarity/app-api/tools-engine'
 
@@ -595,11 +612,13 @@ const orchestrator = new ToolOrchestrator({
 ### Migration Steps
 
 1. **Find all autoApprove: true**:
+
    ```bash
    grep -r "autoApprove: true" src/
    ```
 
 2. **Update production configs**:
+
    ```typescript
    // Option 1: Environment-aware
    autoApprove: process.env.NODE_ENV !== 'production'
@@ -612,6 +631,7 @@ const orchestrator = new ToolOrchestrator({
    ```
 
 3. **Implement approval UI**:
+
    ```typescript
    orchestrator.lifecycle.on('tool_pending_approval', (event) => {
      showApprovalDialog({
@@ -624,6 +644,7 @@ const orchestrator = new ToolOrchestrator({
    ```
 
 4. **Test both modes**:
+
    ```typescript
    // Dev: autoApprove works
    process.env.NODE_ENV = 'development'
@@ -632,9 +653,9 @@ const orchestrator = new ToolOrchestrator({
 
    // Prod: autoApprove blocked
    process.env.NODE_ENV = 'production'
-   expect(() =>
-     new ToolOrchestrator({ autoApprove: true })
-   ).toThrow('autoApprove cannot be enabled in production')
+   expect(() => new ToolOrchestrator({ autoApprove: true })).toThrow(
+     'autoApprove cannot be enabled in production'
+   )
    ```
 
 ### Timeline
@@ -660,7 +681,8 @@ function createTestTool(): ToolDefinition {
     name: 'test_tool',
     description: 'Test tool',
     parameters: { type: 'object', properties: {} },
-    handler: async (args) => { // WRONG
+    handler: async (args) => {
+      // WRONG
       return { success: true }
     },
   }
@@ -676,7 +698,8 @@ function createTestTool(): ToolDefinition {
     name: 'test_tool',
     description: 'Test tool',
     parameters: { type: 'object', properties: {} },
-    execute: async (args) => { // CORRECT
+    execute: async (args) => {
+      // CORRECT
       return { success: true }
     },
   }
@@ -686,11 +709,13 @@ function createTestTool(): ToolDefinition {
 ### Migration Steps
 
 1. **Find all occurrences**:
+
    ```bash
    grep -r "handler: async" src/**/*.test.ts
    ```
 
 2. **Replace in test files**:
+
    ```bash
    # Using sed (Unix/Mac)
    find src -name "*.test.ts" -exec sed -i '' 's/handler: async/execute: async/g' {} +
@@ -722,13 +747,15 @@ You're using the `ToolCall` type from `tools-engine.ts`.
 
 ### Context
 
-The tool calling system has three different types for representing tool calls at different architectural layers:
+The tool calling system has three different types for representing tool calls at different
+architectural layers:
 
 1. **ToolInvocation** (types/tool-invocation.ts) - Message/UI layer (5 states)
 2. **ToolsEngineCall** (app-api/tools-engine.ts) - Functional state management (6 states)
 3. **ToolCallRecord** (core/tool-lifecycle.ts) - Lifecycle tracking (11 states)
 
-The old `ToolCall` name in tools-engine.ts was ambiguous. It's now explicitly named `ToolsEngineCall`.
+The old `ToolCall` name in tools-engine.ts was ambiguous. It's now explicitly named
+`ToolsEngineCall`.
 
 ### Before (Deprecated)
 
@@ -755,12 +782,14 @@ function processCall(call: ToolsEngineCall) {
 ### Migration Steps
 
 1. **Update imports**:
+
    ```bash
    # Find all uses of ToolCall from tools-engine
    grep -r "import.*ToolCall.*from.*tools-engine" src/
    ```
 
 2. **Replace type references**:
+
    ```typescript
    // Find: import type { ToolCall } from './app-api/tools-engine'
    // Replace: import type { ToolsEngineCall } from './app-api/tools-engine'
@@ -773,6 +802,7 @@ function processCall(call: ToolsEngineCall) {
    ```
 
 3. **Verify no other ToolCall types are affected**:
+
    ```typescript
    // These are DIFFERENT types and should NOT be changed:
    import type { ToolCallRecord } from './core/tool-lifecycle' // ← Keep as-is
@@ -780,6 +810,7 @@ function processCall(call: ToolsEngineCall) {
    ```
 
 4. **Update function signatures**:
+
    ```typescript
    // Before:
    function handleCall(call: ToolCall): void {
@@ -818,11 +849,11 @@ const message: AssistantMessage = {
 
 ### Understanding the Three Types
 
-| Type | Purpose | When to Use |
-|------|---------|-------------|
-| **ToolInvocation** | Chat message format | Adding tool calls to `AssistantMessage.toolInvocations` |
-| **ToolsEngineCall** | Functional state | Using ToolsEngine API, React state management |
-| **ToolCallRecord** | Lifecycle tracking | Using ToolLifecycleManager, events, audit logs |
+| Type                | Purpose             | When to Use                                             |
+| ------------------- | ------------------- | ------------------------------------------------------- |
+| **ToolInvocation**  | Chat message format | Adding tool calls to `AssistantMessage.toolInvocations` |
+| **ToolsEngineCall** | Functional state    | Using ToolsEngine API, React state management           |
+| **ToolCallRecord**  | Lifecycle tracking  | Using ToolLifecycleManager, events, audit logs          |
 
 **See**: [Tool Call Types Guide](./TOOL_CALL_TYPES_GUIDE.md) for detailed comparison and examples.
 
@@ -934,11 +965,13 @@ orchestrator.lifecycle.on('tool_timeout', (event) => {
 ### If Migration Fails
 
 1. **Revert code changes**:
+
    ```bash
    git revert <commit-hash>
    ```
 
 2. **Legacy APIs still work**:
+
    ```typescript
    // Old code continues to function (with warnings)
    import { ToolRegistry } from './agents/tools'

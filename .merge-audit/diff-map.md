@@ -1,287 +1,343 @@
-# Diff Map - Main vs Branch
+# Diff Map: Main vs Branch Detailed Comparison
 
 **Date**: 2026-01-22
-**Comparison**: main (`7ed57c479`) vs branch (`103acebb1`)
+**Purpose**: Identify duplicates, conflicts, divergences, and missing elements
 
 ---
 
-## File-by-File Comparison
+## Area 1: Security Utilities
 
-### AREA 3: Core Tool System
+### File: `packages/react/src/utils/security/index.ts`
 
-#### `tool-executor.ts`
-- **Main**: 649 lines
-- **Branch**: 1,294 lines (+645, +99%)
-- **Type**: **ENHANCEMENT** (not duplicate, same exports, more features)
-- **Conflicts**: None (backward compatible)
-- **Action**: **Accept branch version** (superset of main)
+**Status**: DIVERGED (enhancements in branch)
 
-#### `tool-lifecycle.ts`
-- **Main**: 721 lines
-- **Branch**: 993 lines (+272, +38%)
-- **Type**: **ENHANCEMENT** (not duplicate, same exports, more features)
-- **Conflicts**: None (backward compatible)
-- **Action**: **Accept branch version** (superset of main)
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Exports | Basic (safe-evaluate, sanitize-html) | Enhanced + sanitization module | Branch adds 12 new exports |
+| Documentation | Minimal | Comprehensive security focus | Branch has better docs |
+| **Decision** | ❌ | ✅ | Use branch version - superset of main |
 
-#### `tool-orchestrator.ts`
-- **Main**: 527 lines
-- **Branch**: 556 lines (+29, +6%)
-- **Type**: **ENHANCEMENT** (minor improvements)
-- **Conflicts**: None (backward compatible)
-- **Action**: **Accept branch version** (superset of main)
+### File: `packages/react/src/utils/security/safe-evaluate.ts`
 
-#### `tool-registry.ts`
-- **Main**: 486 lines
-- **Branch**: 490 lines (+4, +1%)
-- **Type**: **ENHANCEMENT** (adds validation integration)
-- **Conflicts**: None (backward compatible)
-- **Action**: **Accept branch version** (superset of main)
+**Status**: CONFLICT (major security fix in branch)
 
-#### `tool-implementation-validator.ts`
-- **Main**: Does not exist
-- **Branch**: 429 lines (NEW)
-- **Type**: **NEW FILE**
-- **Conflicts**: None
-- **Action**: **Accept branch version**
+| Aspect | Main (218 lines) | Branch (281 lines) | Analysis |
+|--------|------------------|---------------------|----------|
+| Default behavior | Enabled by default | **Disabled by default** | Branch fixes TOOL-021 |
+| Security | ❌ Vulnerable | ✅ Secure | Branch requires explicit opt-in |
+| Options interface | Basic | `SafeEvaluateOptions` with acknowledgment | Branch more explicit |
+| Warnings | None | Comprehensive deprecation warnings | Branch has security awareness |
+| Documentation | Basic | Extensive with alternatives | Branch guides developers |
+| **Decision** | ❌ UNSAFE | ✅ SECURE | **MUST use branch version** |
 
----
+**Impact**: Breaking change - users must opt-in explicitly if using code evaluation
 
-### AREA 6: App API Layer
+### File: `packages/react/src/utils/security/sanitization.ts`
 
-#### `tools-engine.ts`
-- **Main**: 627 lines
-- **Branch**: 830 lines (+203, +32%)
-- **Type**: **ENHANCEMENT** (type unification, better DX)
-- **Conflicts**: None (backward compatible via migration helpers)
-- **Action**: **Accept branch version** (superset of main)
+**Status**: NEW in branch (doesn't exist in main)
+
+| Aspect | Main | Branch |Analysis |
+|--------|------|--------|---------|
+| Exists | ❌ No | ✅ Yes (602 lines) | Critical security addition |
+| SQL sanitization | ❌ None | ✅ 2 functions | TOOL-022 fix |
+| Command sanitization | ❌ None | ✅ 2 functions | TOOL-022 fix |
+| Path sanitization | ❌ None | ✅ 2 functions | TOOL-022 fix |
+| Other sanitization | ❌ None | ✅ 3 functions (LDAP, XML, URL) | TOOL-022 fix |
+| Utilities | ❌ None | ✅ 2 functions | TOOL-022 fix |
+| **Decision** | N/A | ✅ | **MUST add from branch** |
+
+**Impact**: New capability - no conflict, pure addition
 
 ---
 
-### AREA 4: Tool Utilities
+## Area 2: Tool Calling System
 
-#### `tool-execution.ts`
-- **Main**: 548 lines
-- **Branch**: 771 lines (+223, +41%)
-- **Type**: **ENHANCEMENT** (batch deduplication, better options)
-- **Conflicts**: None (backward compatible)
-- **Action**: **Accept branch version** (superset of main)
+### File: `packages/react/src/core/tool-executor.ts`
 
-#### `tool-helpers.ts`
-- **Main**: Does not exist
-- **Branch**: 654 lines (NEW)
-- **Type**: **NEW FILE**
-- **Conflicts**: None
-- **Action**: **Accept branch version**
+**Status**: DIVERGED (major enhancements in branch)
 
-#### `tool-performance.ts`
-- **Main**: 562 lines
-- **Branch**: 562 lines (unchanged)
-- **Type**: **IDENTICAL**
-- **Conflicts**: None
-- **Action**: **Keep unchanged** (or accept branch, same result)
+| Aspect | Main (649 lines) | Branch (843 lines) | Analysis |
+|--------|------------------|---------------------|----------|
+| Schema validation | Basic | Enhanced (oneOf, anyOf, format) | Branch has TOOL-001 fix |
+| Regex safety | None | 10k limit + try-catch | Branch has TOOL-003 fix |
+| Cache keys | Simple | Stable stringify | Branch has TOOL-010 fix |
+| Error classification | Basic | Structured classes | Branch has TOOL-014 fix |
+| Idempotency | ❌ None | ✅ Support | Branch has TOOL-017 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
----
+**Impact**: No breaking changes, pure enhancements
 
-### AREA 7: Agents
+### File: `packages/react/src/core/tool-registry.ts`
 
-#### `tools.ts`
-- **Main**: Unknown (need to check)
-- **Branch**: Modified (+58 lines, deprecation warnings)
-- **Type**: **ENHANCEMENT** (adds deprecation warnings)
-- **Conflicts**: Need to verify main's state
-- **Action**: **Accept branch version** (adds deprecation, backward compatible)
+**Status**: DIVERGED (enhancements in branch)
 
----
+| Aspect | Main (486 lines) | Branch (574 lines) | Analysis |
+|--------|------------------|---------------------|----------|
+| Listener limits | ❌ None (leak risk) | ✅ Max 100 with warnings | Branch has TOOL-004 fix |
+| Overwrite handling | Silent | Warnings | Branch has TOOL-005 fix |
+| `registerOrUpdate()` | ❌ None | ✅ New method | Branch addition |
+| `setMaxListeners()` | ❌ None | ✅ New method | Branch addition |
+| `getListenerCount()` | ❌ None | ✅ New method | Branch addition |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
-### AREA 2: Documentation
+**Impact**: No breaking changes, pure enhancements
 
-All 6 documentation files:
-- **Main**: Do not exist
-- **Branch**: All NEW (4,213 lines total)
-- **Type**: **NEW FILES**
-- **Conflicts**: None
-- **Action**: **Accept all branch versions**
+### File: `packages/react/src/core/tool-orchestrator.ts`
 
----
+**Status**: MINOR DIVERGENCE (small fix in branch)
 
-### AREA 5: Test Coverage
+| Aspect | Main (527 lines) | Branch (538 lines) | Analysis |
+|--------|------------------|---------------------|----------|
+| Approval validation | Basic | Atomic re-validation | Branch has TOOL-018 fix |
+| Race condition | ❌ Vulnerable | ✅ Protected | Branch prevents TOCTOU |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
-All 5 new test files:
-- **Main**: Do not exist
-- **Branch**: All NEW (2,676 lines total)
-- **Type**: **NEW FILES**
-- **Conflicts**: None
-- **Action**: **Accept all branch versions**
+**Impact**: Security fix, no API changes
 
-Modified test files:
-- `tool-system-e2e.test.ts`: Enhanced (+101 lines)
-- `streaming-tools-integration.test.ts`: Minor fix (+3 lines)
-- **Action**: **Accept branch versions**
+### File: `packages/react/src/core/__tests__/tool-executor-enhanced.test.ts`
+
+**Status**: NEW in branch
+
+**Decision**: ✅ Add from branch (154 new test cases)
 
 ---
 
-### AREA 1: Audit Infrastructure
+## Area 3: Streaming System
 
-All `.tool-calling-audit/*` files:
-- **Main**: Do not exist
-- **Branch**: All NEW (5,450 lines total)
-- **Type**: **NEW FILES** (branch-specific documentation)
-- **Conflicts**: None
-- **Action**: **Accept all branch versions**
+### File: `packages/react/src/hooks/streaming/use-streaming-sse.tsx`
 
----
+**Status**: DIVERGED (critical fixes in branch)
 
-### AREA 9: Package Configuration
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Reconnection guards | Basic | Enhanced with flag resets | Branch has Issue #5, #10 fixes |
+| Buffer limits | ❌ None | ✅ 10MB hard limit | Branch has Issue #4, SEC-006 fix |
+| Cleanup | Basic | Comprehensive | Branch prevents cascades |
+| Heartbeat reset | No explicit | Explicit reset | Branch more robust |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
-#### `package.json` (root)
-- **Main**: Unknown state
-- **Branch**: +1 line
-- **Type**: **MINOR MODIFICATION**
-- **Conflicts**: Possible (need to check)
-- **Action**: **Merge carefully**
+**Impact**: Security and stability fixes, no API changes
 
-#### `packages/react/package.json`
-- **Main**: Unknown version
-- **Branch**: Version bumped (+2 lines)
-- **Type**: **VERSION BUMP**
-- **Conflicts**: Possible if main also bumped version
-- **Action**: **Accept branch version** (or resolve version conflict)
+### File: `packages/react/src/hooks/streaming/use-streaming.ts`
 
-#### `packages/codemods/package.json`
-- **Main**: Unknown state
-- **Branch**: +4 lines
-- **Type**: **MINOR MODIFICATION**
-- **Conflicts**: Possible
-- **Action**: **Merge carefully**
+**Status**: MINOR DIVERGENCE
 
-#### `apps/storybook/package.json`
-- **Main**: Unknown state
-- **Branch**: +6 lines
-- **Type**: **MINOR MODIFICATION**
-- **Conflicts**: Possible
-- **Action**: **Merge carefully**
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Timeout handling | Basic | Reader cancellation | Branch has Issue #15 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
-#### `pnpm-lock.yaml`
-- **Main**: State at main HEAD
-- **Branch**: Major update (+2,508 lines)
-- **Type**: **LOCK FILE UPDATE**
-- **Conflicts**: **HIGH PROBABILITY**
-- **Action**: **Regenerate after merge** (standard practice)
+### File: `packages/react/src/hooks/streaming/use-streamable-ui.ts`
+
+**Status**: MINOR DIVERGENCE
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Iterator cleanup | Basic | Explicit `iterator.return()` | Branch has Issue #8 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
+
+### File: `packages/react/src/utils/streaming/streaming-helpers.ts`
+
+**Status**: DIVERGED
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Error handling | Basic | Comprehensive try-catch | Branch has Issue #9 fix |
+| Final flush | Implicit | Explicit SSE done marking | Branch has Issue #17 fix |
+| Debug logging | Minimal | Enhanced | Branch better debugging |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
 ---
 
-### AREA 10: Changelog & Versioning
+## Area 4: Chat Components
 
-#### `packages/react/CHANGELOG.md`
-- **Main**: Unknown state
-- **Branch**: +115 lines (added entries)
-- **Type**: **CHANGELOG UPDATE**
-- **Conflicts**: Possible if main has new entries
-- **Action**: **Merge both sets of entries** (chronological order)
+### File: `packages/react/src/components/chat/clarity-chat.tsx`
 
-#### `.changeset/tool-calling-hardening.md`
-- **Main**: Does not exist
-- **Branch**: NEW (7 lines)
-- **Type**: **NEW FILE**
-- **Conflicts**: None
-- **Action**: **Accept branch version**
+**Status**: CONFLICT (critical fixes in branch)
 
----
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Edit race protection | ❌ None | ✅ Mutex lock | Branch has Issue #1, SEC-002 fix |
+| Error handling | Silent returns | Throws errors | Branch has Issue #6 fix |
+| Message validation | None | User-only edit assertion | Branch has Issue #7 fix |
+| **Decision** | ❌ UNSAFE | ✅ SAFE | **MUST use branch version** |
 
-### AREA 11: Config & Utilities
+**Impact**: Critical security fixes, no API changes
 
-#### `packages/utils/src/config-manager.ts`
-- **Main**: Unknown state
-- **Branch**: +10 lines
-- **Type**: **MINOR MODIFICATION**
-- **Conflicts**: Need to check
-- **Action**: **Accept branch version** (likely safe)
+### File: `packages/react/src/components/message/clarity-tool-result.tsx`
 
----
+**Status**: CONFLICT (XSS fix in branch)
 
-### AREA 12: Benchmarking
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| XSS protection | ❌ None | ✅ DOMPurify | Branch has SEC-004, TOOL-011 fix |
+| HTML escaping | None | `escapeHtml()` for names | Branch secure |
+| Result sanitization | None | `sanitize()` for content | Branch secure |
+| **Decision** | ❌ VULNERABLE | ✅ PROTECTED | **MUST use branch version** |
 
-#### `tools/scripts/benchmark.js`
-- **Main**: Unknown state
-- **Branch**: +124 lines (major update)
-- **Type**: **ENHANCEMENT**
-- **Conflicts**: Need to check
-- **Action**: **Accept branch version** (improvements)
+**Impact**: Critical security fix, requires DOMPurify dependency
 
----
+### File: `packages/react/src/components/message/streaming-message.tsx`
 
-### AREA 8: UI Components
+**Status**: DIVERGED
 
-#### `chat-input.tsx`
-- **Main**: Unknown state
-- **Branch**: +2 lines
-- **Type**: **MINOR FIX**
-- **Conflicts**: Low probability
-- **Action**: **Accept branch version**
-
-#### `copy-button.tsx`
-- **Main**: Unknown state
-- **Branch**: +2 lines
-- **Type**: **MINOR FIX**
-- **Conflicts**: Low probability
-- **Action**: **Accept branch version**
-
-#### `ui/__tests__/skeleton.test.tsx`
-- **Main**: Unknown state
-- **Branch**: +67 lines
-- **Type**: **TEST ENHANCEMENT**
-- **Conflicts**: Need to check
-- **Action**: **Accept branch version**
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Error boundary | ❌ None | ✅ Try-catch in useMemo | Branch has Issue #19 fix |
+| Crash protection | No | Yes | Branch more resilient |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
 ---
 
-## Summary by Type
+## Area 5: Message Operations
 
-### NEW FILES (17 files, 13,422 lines)
-All can be added without conflicts:
-- tool-implementation-validator.ts + test (1,108 lines)
-- tool-helpers.ts + test (1,078 lines)
-- 6 documentation guides (4,213 lines)
-- 5 new test files (2,676 lines)
-- 14 audit infrastructure files (5,450 lines)
-- 1 changeset file (7 lines)
+### File: `packages/react/src/hooks/message/use-message-operations.ts`
 
-### ENHANCEMENTS (8 files, 1,372 lines added)
-All are backward-compatible supersets:
-- tool-executor.ts (+645 lines)
-- tool-lifecycle.ts (+272 lines)
-- tool-execution.ts (+223 lines)
-- tools-engine.ts (+203 lines)
-- tool-orchestrator.ts (+29 lines)
+**Status**: DIVERGED (multiple fixes in branch)
 
-### MINOR MODIFICATIONS (10 files, <200 lines)
-Need careful merge:
-- package.json files (4 files)
-- Component files (3 files)
-- Config files (2 files)
-- Benchmark script (1 file)
-
-### HIGH-CONFLICT RISK (2 files)
-- pnpm-lock.yaml (regenerate after merge)
-- CHANGELOG.md (merge entries)
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Empty validation | ❌ None | ✅ Content check | Branch has Issue #2 fix |
+| Undo/redo completeness | Incomplete | Complete (edit/regenerate) | Branch has Issue #3 fix |
+| History validation | None | Message existence check | Branch has Issue #16 fix |
+| Orphan cleanup | Basic | Enhanced | Branch has Issue #18 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
 ---
 
-## Conflict Probability Assessment
+## Area 6: Memory Service
 
-- **ZERO CONFLICT**: 34 files (NEW files)
-- **LOW CONFLICT**: 8 files (Enhancements are supersets)
-- **MEDIUM CONFLICT**: 5 files (Minor modifications)
-- **HIGH CONFLICT**: 2 files (Lock file, changelog)
+### File: `packages/memory/src/memory-service.ts`
 
-**Overall Risk**: **LOW** - Most changes are additions or enhancements
+**Status**: DIVERGED (race condition fix)
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| flushBuffer race | ❌ Vulnerable | ✅ Synchronous clear | Branch has MEM-001 fix |
+| Data loss prevention | No | Yes | Branch more reliable |
+| **Decision** | ❌ | ✅ | **Use branch version** |
 
 ---
 
-## Next Steps
+## Area 7: Chat Hooks
 
-Phase 4 will make canonical decisions for:
-1. Package version resolution strategy
-2. Changelog merge strategy
-3. Lock file regeneration strategy
-4. Verification of backward compatibility claims
+### File: `packages/react/src/hooks/use-clarity-chat/use-clarity-chat.ts`
+
+**Status**: MINOR DIVERGENCE
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Query cleanup | Basic try-catch | Finally block | Branch has Issue #11 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
+
+### File: `packages/react/src/internal/hooks/use-chat-enhanced.ts`
+
+**Status**: DIVERGED
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Empty message feedback | Silent | onError callbacks | Branch has Issue #13 fix |
+| Abort handling | Basic | Cleanup partial messages | Branch has Issue #14 fix |
+| CORS warnings | None | Development warnings | Branch has Issue #21 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
+
+---
+
+## Area 8: Internal APIs
+
+### File: `packages/react/src/internal.ts`
+
+**Status**: DIVERGED (warning added)
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Instability warning | None | Runtime console.warn | Branch has API-003 fix |
+| **Decision** | ❌ | ✅ | **Use branch version** |
+
+---
+
+## Area 9: Documentation
+
+### File: `CHANGELOG.md`
+
+**Status**: CONFLICT (different versions)
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| Latest version | v1.0.0 (2026-01-21) | v1.0.0 + v1.1.0 (2026-01-22) | Branch adds new version |
+| v1.0.0 content | API consolidation | Same | No conflict |
+| v1.1.0 content | ❌ Doesn't exist | ✅ Security hardening (387 lines) | Branch addition |
+| Audit documentation | None | Complete | Branch comprehensive |
+| **Decision** | Partial | ✅ Complete | **Merge branch v1.1.0 into main** |
+
+**Impact**: Additive change, v1.0.0 preserved, v1.1.0 added
+
+### File: `docs/TOOL_SECURITY.md`
+
+**Status**: NEW in branch (711 lines)
+
+**Decision**: ✅ Add from branch - critical security documentation
+
+### Files: Sprint Reports
+
+**Status**: NEW in branch
+- `SPRINT_3_FINAL_COMPLETION.md`
+- `.ai-chat-audit/SPRINT_5_SANITIZATION.md`
+
+**Decision**: ✅ Add from branch - audit documentation
+
+---
+
+## Area 10: Audit Documentation
+
+### Directory: `.ai-chat-audit/`
+
+**Status**: NEW in branch (11 files, 3,886 lines)
+
+**Decision**: ✅ Add entire directory from branch - complete audit trail
+
+---
+
+## Area 11: Dependencies
+
+### File: `package.json`
+
+**Status**: DIVERGED (additions in branch)
+
+| Aspect | Main | Branch | Analysis |
+|--------|------|--------|----------|
+| dompurify | ❌ Missing | ✅ ^3.3.1 | Required for XSS protection |
+| @types/dompurify | ❌ Missing | ✅ ^3.0.5 | TypeScript types |
+| **Decision** | ❌ | ✅ | **Merge dependencies from branch** |
+
+**Impact**: Two new dependencies, required for security
+
+---
+
+## Summary of Conflicts and Decisions
+
+### Critical Conflicts (Must Use Branch):
+1. ✅ `safe-evaluate.ts` - Security fix (disabled by default)
+2. ✅ `clarity-tool-result.tsx` - XSS fix (DOMPurify)
+3. ✅ `clarity-chat.tsx` - Race condition fix (mutex)
+
+### Major Enhancements (Use Branch):
+4. ✅ `sanitization.ts` - NEW file (TOOL-022)
+5. ✅ `tool-executor.ts` - Enhanced validation
+6. ✅ `tool-registry.ts` - Memory leak prevention
+7. ✅ All streaming files - Stability fixes
+
+### Documentation (Merge from Branch):
+8. ✅ CHANGELOG.md - Add v1.1.0
+9. ✅ `docs/TOOL_SECURITY.md` - NEW
+10. ✅ `.ai-chat-audit/` - NEW directory
+
+### No Conflicts (Pure Additions):
+- All branch enhancements are supersets of main
+- No competing implementations
+- No API breaking changes (except safe-evaluate security fix)
+
+### Verdict:
+**ZERO DUPLICATES DETECTED**
+
+All branch changes are enhancements, fixes, or additions to main. There are NO competing implementations to reconcile. The merge strategy is straightforward: **accept all changes from branch**.

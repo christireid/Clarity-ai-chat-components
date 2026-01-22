@@ -120,9 +120,11 @@ const orchestrator = new ToolOrchestrator({
 
 ### What is Tool Calling?
 
-Tool calling allows AI models to **call functions** in your code based on natural language conversations.
+Tool calling allows AI models to **call functions** in your code based on natural language
+conversations.
 
 **Example conversation**:
+
 ```
 User: "What's the weather in Paris?"
 AI: [Calls get_weather tool with { city: 'Paris' }]
@@ -190,8 +192,8 @@ const calculatorTool: ToolDefinition = {
 
   // Optional: metadata
   requiresApproval: false, // Simple read-only operation
-  cacheable: true,         // Cache results for same expression
-  timeout: 5000,           // Max 5 seconds
+  cacheable: true, // Cache results for same expression
+  timeout: 5000, // Max 5 seconds
 }
 ```
 
@@ -232,7 +234,7 @@ const calculatorTool: ToolDefinition = {
       // Return user-friendly error
       throw new Error(
         `Failed to evaluate "${args.expression}": ${error.message}. ` +
-        `Please check the expression and try again.`
+          `Please check the expression and try again.`
       )
     }
   },
@@ -265,7 +267,7 @@ const githubTool: ToolDefinition = {
     }
 
     const response = await fetch(url.toString(), {
-      headers: { 'Accept': 'application/vnd.github+json' },
+      headers: { Accept: 'application/vnd.github+json' },
     })
 
     if (!response.ok) {
@@ -285,8 +287,8 @@ const githubTool: ToolDefinition = {
     }
   },
   requiresApproval: false, // Public read-only API
-  cacheable: true,         // Cache search results
-  timeout: 10000,          // 10 second timeout
+  cacheable: true, // Cache search results
+  timeout: 10000, // 10 second timeout
 }
 ```
 
@@ -326,7 +328,7 @@ const databaseTool: ToolDefinition = {
     return { users, total: users.length }
   },
   requiresApproval: true, // Sensitive operation!
-  cacheable: false,       // Don't cache user data
+  cacheable: false, // Don't cache user data
   timeout: 5000,
 }
 ```
@@ -401,9 +403,8 @@ const exportTool: ToolDefinition = {
       updateProgress()
     }
 
-    const exported = args.format === 'csv'
-      ? convertToCSV(results)
-      : JSON.stringify(results, null, 2)
+    const exported =
+      args.format === 'csv' ? convertToCSV(results) : JSON.stringify(results, null, 2)
 
     return {
       format: args.format,
@@ -436,7 +437,8 @@ Before deploying to production, ensure:
 
 ### 2. Read the Guides
 
-- **[Tool Calling API Guide](./TOOL_CALLING_API_GUIDE.md)**: Which API to use (ToolOrchestrator vs ToolsEngine vs ToolExecutor)
+- **[Tool Calling API Guide](./TOOL_CALLING_API_GUIDE.md)**: Which API to use (ToolOrchestrator vs
+  ToolsEngine vs ToolExecutor)
 - **[Tool Security Guide](./TOOL_SECURITY_GUIDE.md)**: Security best practices and threat model
 - **[Tool Call Types Guide](./TOOL_CALL_TYPES_GUIDE.md)**: Understanding the three tool call types
 - **[Migration Guide](./MIGRATION_GUIDE_TOOL_CALLING.md)**: Migrating from legacy patterns
@@ -444,17 +446,19 @@ Before deploying to production, ensure:
 ### 3. Enable Advanced Features
 
 #### Rate Limiting
+
 ```typescript
 import { ToolExecutor } from '@clarity/core/tool-executor'
 
 const executor = new ToolExecutor(lifecycle, {
   enableRateLimit: true,
-  maxRequestsPerWindow: 100,    // 100 requests
-  rateLimitWindowMs: 60000,      // per minute
+  maxRequestsPerWindow: 100, // 100 requests
+  rateLimitWindowMs: 60000, // per minute
 })
 ```
 
 #### Audit Logging
+
 ```typescript
 import { ToolLifecycleManager } from '@clarity/core/tool-lifecycle'
 
@@ -474,12 +478,13 @@ const logs = lifecycle.exportAuditLogs({
 ```
 
 #### Caching with LRU
+
 ```typescript
 const executor = new ToolExecutor(lifecycle, {
   cache: {
-    maxSize: 1000,              // Max 1000 entries
+    maxSize: 1000, // Max 1000 entries
     enablePeriodicCleanup: true, // Auto-cleanup
-    cleanupIntervalMs: 60000,    // Every minute
+    cleanupIntervalMs: 60000, // Every minute
   },
 })
 ```
@@ -516,9 +521,9 @@ const myTool: ToolDefinition = {
     // Return results
     return { success: true }
   },
-  requiresApproval: true,  // For sensitive operations
-  cacheable: false,        // Whether to cache results
-  timeout: 5000,          // Max execution time (ms)
+  requiresApproval: true, // For sensitive operations
+  cacheable: false, // Whether to cache results
+  timeout: 5000, // Max execution time (ms)
 }
 ```
 
@@ -529,9 +534,9 @@ import { ToolOrchestrator } from '@clarity/core/tool-orchestrator'
 
 const orchestrator = new ToolOrchestrator({
   tools: [tool1, tool2],
-  autoApprove: false,      // NEVER true in production
-  requireApproval: true,   // Require approval by default
-  timeout: 30000,         // Global timeout
+  autoApprove: false, // NEVER true in production
+  requireApproval: true, // Require approval by default
+  timeout: 30000, // Global timeout
 })
 
 // Subscribe to events
@@ -554,27 +559,35 @@ const result = await orchestrator.executeTool('tool_name', { param: 'value' })
 ### Common Issues
 
 **Issue**: Tool not found
+
 ```
 Error: Tool not found: my_tool
 ```
+
 **Solution**: Ensure tool is registered and name matches exactly.
 
 **Issue**: Validation error
+
 ```
 Error: Parameter validation failed: param1 is required
 ```
+
 **Solution**: Check parameters match the JSON schema.
 
 **Issue**: Timeout
+
 ```
 Error: Tool execution timed out after 5000ms
 ```
+
 **Solution**: Increase timeout or optimize tool execution.
 
 **Issue**: autoApprove blocked in production
+
 ```
 Error: autoApprove cannot be enabled in production
 ```
+
 **Solution**: Set `autoApprove: false` and implement approval flow.
 
 ---
@@ -592,7 +605,8 @@ See the `examples/` directory for complete working examples:
 
 ---
 
-**Ready to build?** Start with the [5-Minute Quick Start](#5-minute-quick-start) and refer to the [guides](./TOOL_CALLING_API_GUIDE.md) as needed.
+**Ready to build?** Start with the [5-Minute Quick Start](#5-minute-quick-start) and refer to the
+[guides](./TOOL_CALLING_API_GUIDE.md) as needed.
 
 **Questions?** Check the [troubleshooting section](#troubleshooting) or file an issue on GitHub.
 

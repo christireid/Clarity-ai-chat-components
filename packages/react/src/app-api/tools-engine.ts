@@ -51,12 +51,12 @@ export interface ToolsEngineCall {
 
   /** Current execution status */
   status:
-    | 'pending'      // Awaiting approval
-    | 'approved'     // Approved, ready to execute
-    | 'executing'    // Currently executing
-    | 'completed'    // Successfully completed
-    | 'failed'       // Execution failed
-    | 'timeout'      // Execution timed out
+    | 'pending' // Awaiting approval
+    | 'approved' // Approved, ready to execute
+    | 'executing' // Currently executing
+    | 'completed' // Successfully completed
+    | 'failed' // Execution failed
+    | 'timeout' // Execution timed out
 
   /** Execution result (if completed) */
   result?: unknown
@@ -321,20 +321,19 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
   // SECURITY: Prevent autoApprove in production
   if (autoApprove) {
     const isProduction =
-      typeof process !== 'undefined' &&
-      process.env?.NODE_ENV === 'production'
+      typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
 
     if (isProduction) {
       throw new Error(
         '[Clarity Chat] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
-        'Tools must require explicit user approval. Set autoApprove: false.'
+          'Tools must require explicit user approval. Set autoApprove: false.'
       )
     }
 
     // Warn in non-production environments
     console.warn(
       '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-      'This should only be used in trusted development/testing environments.'
+        'This should only be used in trusted development/testing environments.'
     )
   }
 
@@ -735,7 +734,10 @@ export function toToolCallRecord(call: ToolsEngineCall): {
   }
 } {
   // Map ToolsEngineCall status to ToolCallStatus
-  const statusMap: Record<ToolsEngineCall['status'], import('../core/tool-lifecycle').ToolCallStatus> = {
+  const statusMap: Record<
+    ToolsEngineCall['status'],
+    import('../core/tool-lifecycle').ToolCallStatus
+  > = {
     pending: 'pending_approval',
     approved: 'approved',
     executing: 'executing',
@@ -782,7 +784,9 @@ export function toToolCallRecord(call: ToolsEngineCall): {
  * }
  * ```
  */
-export function toToolInvocation(call: ToolsEngineCall): import('../types/tool-invocation').ToolInvocation {
+export function toToolInvocation(
+  call: ToolsEngineCall
+): import('../types/tool-invocation').ToolInvocation {
   // Map ToolsEngineCall status to ToolInvocation state
   if (call.status === 'completed' && call.result !== undefined) {
     return {
@@ -793,7 +797,10 @@ export function toToolInvocation(call: ToolsEngineCall): import('../types/tool-i
       result: call.result,
       executionStartedAt: call.startTime,
       executionCompletedAt: call.endTime,
-      duration: call.startTime && call.endTime ? call.endTime - call.startTime : undefined,
+      duration:
+        call.startTime && call.endTime
+          ? call.endTime - call.startTime
+          : undefined,
     }
   }
 
