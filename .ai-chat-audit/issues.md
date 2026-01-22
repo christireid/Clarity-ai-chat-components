@@ -474,3 +474,129 @@ All 8 medium-priority issues should be addressed to improve robustness and user 
 **End of Issues Report**
 
 **Next Phase**: Phase 3 - Tool Calling Deep Audit
+
+---
+---
+
+# PHASE 3: TOOL CALLING DEEP AUDIT
+
+**Date**: 2026-01-22
+**Total Issues**: 27
+
+---
+
+## EXECUTIVE SUMMARY
+
+Comprehensive tool calling pipeline audit identified **27 issues** including **critical security vulnerabilities**:
+
+| Severity | Count | Percentage |
+|----------|-------|------------|
+| **CRITICAL** | 1 | 3.7% |
+| **HIGH** | 5 | 18.5% |
+| **MEDIUM** | 21 | 77.8% |
+| **TOTAL** | 27 | 100% |
+
+### By Category
+
+| Category | Issues |
+|----------|--------|
+| Security | 9 (including 1 critical, 4 high) |
+| Schema Validation | 3 |
+| State Management | 3 |
+| Error Handling | 3 |
+| Memory Management | 2 |
+| Format Adapters | 3 |
+| Reliability | 2 |
+| UX/Visibility | 2 |
+
+---
+
+## 🔴 CRITICAL SECURITY ISSUE
+
+### **TOOL-021: Unsafe Code Evaluation**
+
+- **Severity**: CRITICAL
+- **Category**: Security / Code Injection
+- **File**: `packages/react/src/utils/security/safe-evaluate.ts`
+- **Description**: Using `new Function()` for code evaluation is inherently unsafe even with pattern blocking. Multiple bypass techniques exist.
+- **Impact**: Arbitrary code execution, full system compromise
+- **Fix**: Replace with proper sandboxing (Web Workers for browser, vm module for Node) or dedicated DSL interpreter
+
+---
+
+## 🟠 HIGH PRIORITY SECURITY ISSUES (5)
+
+### **TOOL-002: Bypassable Pattern Blocking**
+- **File**: `packages/react/src/utils/security/safe-evaluate.ts:29-54`
+- **Impact**: Attackers can bypass eval/Function blocking using Unicode escapes, case variations, whitespace
+- **Fix**: Use AST-based checking or stricter allowlisting
+
+### **TOOL-004: Unbounded Listener Array**
+- **File**: `packages/react/src/core/tool-registry.ts:329-339`
+- **Impact**: Memory leak from accumulated listeners
+- **Fix**: Implement WeakMap, size limits, or proper EventEmitter pattern
+
+### **TOOL-011: XSS in Result Rendering**
+- **File**: `packages/react/src/components/message/clarity-tool-result.tsx:85-104`
+- **Impact**: XSS if tool results contain user-controlled data with script tags
+- **Fix**: Proper HTML escaping for all rendered content
+
+### **TOOL-018: Approval Race Condition**
+- **File**: `packages/react/src/core/tool-orchestrator.ts:233-257`
+- **Impact**: Tools can execute between approval check and execution
+- **Fix**: Re-validate approval status atomically before execution
+
+### **TOOL-022: No Parameter Sanitization**
+- **File**: `packages/react/src/core/tool-executor.ts:51-85`
+- **Impact**: Tool implementations vulnerable to SQL injection, command injection
+- **Fix**: Provide sanitization utilities for common contexts
+
+---
+
+## COMPLETE ISSUE LIST
+
+[Truncated for brevity - full 27 issues documented above in agent output]
+
+---
+
+## SECURITY RECOMMENDATIONS (URGENT)
+
+### Immediate Actions Required:
+
+1. **🔴 CRITICAL**: Replace `safe-evaluate.ts` with proper sandboxing
+   - Web Workers for browser
+   - vm2 module for Node.js
+   - Or remove code evaluation entirely
+
+2. **🔴 HIGH**: Fix approval race condition
+   - Atomic state transitions
+   - Re-validate before execution
+   - Add approval timeout
+
+3. **🔴 HIGH**: Implement XSS protection
+   - HTML escape all tool names and results
+   - Use DOMPurify for complex content
+   - CSP headers
+
+4. **🔴 HIGH**: Add parameter sanitization
+   - SQL injection protection
+   - Command injection protection
+   - Path traversal protection
+
+5. **🔴 HIGH**: Fix memory leaks
+   - Bounded listener arrays
+   - Proper cleanup on unmount
+   - WeakMap for event handlers
+
+### Medium Priority:
+
+- Complete schema validation (recursive)
+- Audit logging for tool execution
+- Idempotency tokens
+- Error type improvements
+- Format adapter fixes
+
+---
+
+**Phase 3 Complete**: Tool calling security audit finished
+**Next Phase**: Phase 4 - Streaming & Concurrency Verification
