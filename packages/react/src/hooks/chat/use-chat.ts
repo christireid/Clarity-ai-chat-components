@@ -86,7 +86,7 @@ let hasWarnedUseChat = false
 
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
   // Log deprecation warning once in development
-  if (process.env.NODE_ENV === 'development' && !hasWarnedUseChat) {
+  if (process.env['NODE_ENV'] === 'development' && !hasWarnedUseChat) {
     hasWarnedUseChat = true
     console.warn(
       '[Clarity] useChat is deprecated. Use useClarityChat instead. See migration guide: https://docs.clarity-chat.dev/migration'

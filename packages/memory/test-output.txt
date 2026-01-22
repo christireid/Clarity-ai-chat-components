@@ -1,0 +1,59 @@
+
+> @clarity-chat/memory@0.1.0 test
+> vitest run --passWithNoTests memory-service-sync.test.ts -t should rollback cache changes when vector store update fails
+
+
+[1m[46m RUN [49m[22m [36mv4.0.15 [39m[90m/Users/christireid/Dev/Clarity-ai-chat-components/packages/memory[39m
+
+[90mstdout[2m | src/__tests__/memory-service-sync.test.ts[2m > [22m[2mMemoryService - Cache-Vector Store Sync[2m > [22m[2mupdateMemory() rollback[2m > [22m[2mshould rollback cache changes when vector store update fails
+[22m[39m[TEST] Memory added: mem_1769089640813_dbkn46se2 hasEmbedding: [33mtrue[39m
+[TEST] Mock before configuration, call count: [33m0[39m
+[TEST] Mock configured to reject, about to call updateMemory
+
+[90mstderr[2m | src/__tests__/memory-service-sync.test.ts[2m > [22m[2mMemoryService - Cache-Vector Store Sync[2m > [22m[2mupdateMemory() rollback[2m > [22m[2mshould rollback cache changes when vector store update fails
+[22m[39mFailed to update vector store: Error: Vector store connection failed
+    at [90m/Users/christireid/Dev/Clarity-ai-chat-components/packages/memory/[39msrc/__tests__/memory-service-sync.test.ts:69:40
+    at file:///Users/christireid/Dev/Clarity-ai-chat-components/node_modules/[4m.pnpm[24m/@vitest+runner@4.0.15/node_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstdout[2m | src/__tests__/memory-service-sync.test.ts[2m > [22m[2mMemoryService - Cache-Vector Store Sync[2m > [22m[2mupdateMemory() rollback[2m > [22m[2mshould rollback cache changes when vector store update fails
+[22m[39m[TEST] updateMemory succeeded (WRONG): updated content
+
+ [31m❯[39m src/__tests__/memory-service-sync.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m9 skipped[39m[2m)[22m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should rollback cache changes when vector store update fails[39m[32m 4[2mms[22m[39m
+       [2m[90m↓[39m[22m should commit changes when vector store update succeeds
+       [2m[90m↓[39m[22m should preserve original memory during multiple failed updates
+       [2m[90m↓[39m[22m should rollback cache deletion when vector store delete fails
+       [2m[90m↓[39m[22m should commit deletion when vector store delete succeeds
+       [2m[90m↓[39m[22m should preserve memory during multiple failed deletions
+       [2m[90m↓[39m[22m should preserve buffer when vector store flush fails
+       [2m[90m↓[39m[22m should clear buffer only after successful vector store flush
+       [2m[90m↓[39m[22m should maintain cache-vector store consistency across operations
+       [2m[90m↓[39m[22m should handle mixed success/failure scenarios correctly
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/__tests__/memory-service-sync.test.ts[2m > [22mMemoryService - Cache-Vector Store Sync[2m > [22mupdateMemory() rollback[2m > [22mshould rollback cache changes when vector store update fails
+[31m[1mAssertionError[22m: expected null to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m src/__tests__/memory-service-sync.test.ts:[2m85:21[22m[39m
+    [90m 83| [39m      }
+    [90m 84| [39m
+    [90m 85| [39m      [34mexpect[39m(error)[33m.[39m[34mtoBeTruthy[39m()
+    [90m   | [39m                    [31m^[39m
+    [90m 86| [39m      [34mexpect[39m(error[33m.[39mmessage)[33m.[39m[34mtoContain[39m([32m'vector store sync failed'[39m)
+    [90m 87| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m9 skipped[39m[90m (10)[39m
+[2m   Start at [22m 08:47:20
+[2m   Duration [22m 286ms[2m (transform 126ms, setup 0ms, import 159ms, tests 4ms, environment 0ms)[22m
+

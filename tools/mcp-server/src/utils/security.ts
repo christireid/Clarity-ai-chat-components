@@ -119,3 +119,141 @@ export function validateProjectPath(projectPath: string): string {
 
   return sanitized
 }
+
+/**
+ * Mask sensitive data (API keys, tokens, passwords, etc.)
+ *
+ * @param value - The sensitive string to mask
+ * @param visibleChars - Number of characters to show at start and end (default: 4)
+ * @returns Masked string showing only first and last N characters
+ *
+ * @example
+ * maskSensitive('sk-1234567890abcdef') // => 'sk-1********cdef'
+ * maskSensitive('short', 2) // => 'sh***rt'
+ */
+export function maskSensitive(value: string, visibleChars: number = 4): string {
+  if (value.length <= visibleChars * 2) {
+    return '*'.repeat(value.length)
+  }
+
+  const start = value.slice(0, visibleChars)
+  const end = value.slice(-visibleChars)
+  const middle = '*'.repeat(Math.max(8, value.length - visibleChars * 2))
+
+  return `${start}${middle}${end}`
+}
+
+/**
+ * List of sensitive keys to redact in logs
+ * Includes API keys, tokens, passwords, and PII fields
+ */
+const SENSITIVE_KEYS = [
+  'apikey',
+  'api_key',
+  'apitoken',
+  'api_token',
+  'token',
+  'password',
+  'passwd',
+  'pwd',
+  'secret',
+  'auth',
+  'authorization',
+  'bearer',
+  'key',
+  'credential',
+  'credentials',
+  'private',
+  'privatekey',
+  'private_key',
+  'access_token',
+  'accesstoken',
+  'refresh_token',
+  'refreshtoken',
+  'session',
+  'sessionid',
+  'session_id',
+  'cookie',
+  'jwt',
+  'email', // PII
+  'phone', // PII
+  'telephone', // PII
+  'ssn', // PII
+  'social_security', // PII
+  'address', // PII
+  'credit_card', // PII
+  'creditcard', // PII
+  'card_number', // PII
+  'cvv', // PII
+  'pin', // PII
+]
+
+/**
+ * Check if a key name appears to be sensitive
+ *
+ * Uses fuzzy matching to catch variations like 'apiKey', 'api_key', 'API-KEY'
+ */
+function isSensitiveKey(key: string): boolean {
+  const normalizedKey = key.toLowerCase().replace(/[_-]/g, '')
+  return SENSITIVE_KEYS.some((sensitiveKey) =>
+    normalizedKey.includes(sensitiveKey.toLowerCase().replace(/[_-]/g, ''))
+  )
+}
+
+/**
+ * Sanitize arguments/metadata for logging by masking sensitive values
+ *
+ * Recursively traverses objects to find and mask sensitive fields based on key names.
+ * Prevents accidental exposure of API keys, tokens, passwords, and PII in logs.
+ *
+ * @param args - Object containing potentially sensitive data
+ * @returns Sanitized object safe for logging
+ *
+ * @example
+ * sanitizeForLogging({
+ *   username: 'john',
+ *   apiKey: 'sk-1234567890abcdef',
+ *   config: { token: 'secret123' }
+ * })
+ * // => {
+ * //   username: 'john',
+ * //   apiKey: 'sk-1********cdef',
+ * //   config: { token: 'secr********et123' }
+ * // }
+ */
+export function sanitizeForLogging(
+  args: Record<string, unknown>
+): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {}
+
+  for (const [key, value] of Object.entries(args)) {
+    if (isSensitiveKey(key)) {
+      // Mask sensitive values
+      if (typeof value === 'string') {
+        sanitized[key] = maskSensitive(value)
+      } else if (value !== null && value !== undefined) {
+        sanitized[key] = '[REDACTED]'
+      } else {
+        sanitized[key] = value
+      }
+    } else if (
+      value !== null &&
+      typeof value === 'object' &&
+      !Array.isArray(value)
+    ) {
+      // Recursively sanitize nested objects
+      sanitized[key] = sanitizeForLogging(value as Record<string, unknown>)
+    } else if (Array.isArray(value)) {
+      // Sanitize arrays
+      sanitized[key] = value.map((item) =>
+        item !== null && typeof item === 'object' && !Array.isArray(item)
+          ? sanitizeForLogging(item as Record<string, unknown>)
+          : item
+      )
+    } else {
+      sanitized[key] = value
+    }
+  }
+
+  return sanitized
+}

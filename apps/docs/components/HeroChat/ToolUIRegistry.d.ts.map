@@ -1,1 +1,0 @@
-{"version":3,"file":"ToolUIRegistry.d.ts","sourceRoot":"","sources":["ToolUIRegistry.tsx"],"names":[],"mappings":"AAUA,UAAU,cAAc;IACtB,EAAE,EAAE,MAAM,CAAA;IACV,IAAI,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,CAAA;CAC9B;AAED,UAAU,mBAAmB;IAC3B,UAAU,EAAE,cAAc,CAAA;CAC3B;AAED;;;;;GAKG;AACH,wBAAgB,cAAc,CAAC,EAAE,UAAU,EAAE,EAAE,mBAAmB,2CAqHjE"}

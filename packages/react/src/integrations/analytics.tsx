@@ -132,7 +132,7 @@ export function AnalyticsProvider({
     // Skip in development if configured
     if (
       posthogConfig.disableInDev !== false &&
-      process.env.NODE_ENV === 'development'
+      process.env['NODE_ENV'] === 'development'
     ) {
       setIsReady(true)
       return

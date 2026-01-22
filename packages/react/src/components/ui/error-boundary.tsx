@@ -86,7 +86,7 @@ class ErrorReporter {
     }
 
     // Log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.error('Error Boundary caught an error:', fullReport)
     }
 
@@ -623,7 +623,7 @@ export function ReportableErrorBoundary({
  * Development-only error overlay
  */
 export function ErrorOverlay({ error, errorInfo }: { error: Error; errorInfo?: React.ErrorInfo }) {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env['NODE_ENV'] !== 'development') {
     return null
   }
 

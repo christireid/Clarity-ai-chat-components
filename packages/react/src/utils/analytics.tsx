@@ -5,7 +5,8 @@
  * user interaction monitoring, and performance metrics collection.
  */
 
-import { errorReporter } from './error-boundary'
+import React from 'react'
+import { errorReporter } from '../components/ui/error-boundary'
 
 // ============================================================================
 // TYPES

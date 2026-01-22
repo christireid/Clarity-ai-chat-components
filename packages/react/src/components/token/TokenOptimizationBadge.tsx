@@ -17,7 +17,7 @@ export {
 } from '@clarity-chat/token-optimization/react'
 
 // Runtime warning in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env['NODE_ENV'] === 'development') {
   console.warn(
     '[Deprecation] TokenOptimizationBadge: Import from @clarity-chat/token-optimization. ' +
       'This re-export will be removed in v3.0.0'

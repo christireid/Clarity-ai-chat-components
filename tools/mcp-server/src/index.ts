@@ -56,6 +56,7 @@ import {
   createRateLimitError,
 } from './utils/rate-limiter.js'
 import { stopCacheCleanup } from './utils/cache.js'
+import { sanitizeForLogging } from './utils/security.js'
 
 // =============================================================================
 // Server Configuration
@@ -194,10 +195,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   logger.setRequestId(requestId)
 
   try {
-    // Emit event for monitoring
+    // Emit event for monitoring (sanitize args to prevent PII exposure)
     serverEvents.emit('tool:called', {
       name,
-      args: args || {},
+      args: sanitizeForLogging(args || {}),
       requestId,
     })
 
@@ -468,9 +469,10 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   logger.setRequestId(requestId)
 
   try {
+    // Emit event for monitoring (sanitize args to prevent PII exposure)
     serverEvents.emit('prompt:get', {
       name,
-      args: args || {},
+      args: sanitizeForLogging(args || {}) as Record<string, string>,
       requestId,
     })
 

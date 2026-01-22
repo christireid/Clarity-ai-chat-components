@@ -11,6 +11,7 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import { logger } from '../utils/logger.js'
 import { ValidationError, NotFoundError } from '../utils/errors.js'
 import { pluginRegistry } from '../plugins/index.js'
+import { sanitizeForLogging } from '../utils/security.js'
 import {
   getServerHealth,
   getDiagnostics,
@@ -416,7 +417,10 @@ export async function handleEnhancedToolCall(
   name: string,
   args: Record<string, unknown>
 ): Promise<unknown> {
-  logger.debug('Enhanced tool call received', { tool: name, args })
+  logger.debug('Enhanced tool call received', {
+    tool: name,
+    args: sanitizeForLogging(args),
+  })
 
   switch (name) {
     case 'clarity_health':

@@ -17,7 +17,7 @@ export interface EnvValidationOptions {
   throwOnError?: boolean
   /** Log warnings to console */
   logWarnings?: boolean
-  /** Environment to check (defaults to process.env.NODE_ENV) */
+  /** Environment to check (defaults to process.env['NODE_ENV']) */
   environment?: 'development' | 'production' | 'test'
 }
 

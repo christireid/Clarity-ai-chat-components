@@ -211,7 +211,7 @@ export class TypeScriptDeclarationValidator extends EventEmitter {
    * Analyze memory constraints for TypeScript declarations
    */
   private analyzeMemoryConstraints(): void {
-    const isDevMode = process.env.NODE_ENV === 'development'
+    const isDevMode = process.env['NODE_ENV'] === 'development'
     const currentMemory = process.memoryUsage().heapUsed / 1024 / 1024 // MB
     const memoryLimit = this.config.memoryLimit
     const declarationGeneration =

@@ -5,7 +5,7 @@
  * Integrates with testing suites and development workflow.
  */
 
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 
 // ============================================================================
 // TYPES
@@ -392,7 +392,7 @@ export function useAccessibilityTesting(options: AccessibilityTestOptions = {}) 
       const result = await testAccessibility(component, options)
       setReport(result)
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         logAccessibilityViolations(result)
       }
 

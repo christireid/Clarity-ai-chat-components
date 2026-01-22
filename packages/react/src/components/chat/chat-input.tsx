@@ -154,7 +154,7 @@ export function ChatInput({
   'aria-label': ariaLabel,
 }: ChatInputProps) {
   // Development-only runtime validation (removed from production for performance)
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     if (typeof value !== 'string') {
       console.error(
         'ChatInput: "value" prop must be a string.\n\n' +

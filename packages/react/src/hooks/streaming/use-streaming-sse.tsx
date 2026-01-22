@@ -18,6 +18,44 @@ export type SSEStatus =
   | 'closed'
 
 /**
+ * Valid SSE state transitions
+ *
+ * Maps current state to allowed next states.
+ * Any transition not in this map is considered invalid.
+ */
+const VALID_STATE_TRANSITIONS: Record<SSEStatus, SSEStatus[]> = {
+  idle: ['connecting'],
+  connecting: ['connected', 'error', 'closed'],
+  connected: ['streaming', 'error', 'closed'],
+  streaming: ['closed', 'error', 'connecting'],
+  error: ['connecting', 'closed', 'idle'],
+  closed: ['connecting', 'idle'],
+}
+
+/**
+ * Validate state transition
+ *
+ * Checks if transitioning from currentState to nextState is valid.
+ * Logs warning for invalid transitions in production.
+ *
+ * @param currentState - Current SSE status
+ * @param nextState - Desired next status
+ * @returns true if transition is valid, false otherwise
+ */
+function isValidTransition(
+  currentState: SSEStatus,
+  nextState: SSEStatus
+): boolean {
+  // Same state is always valid (idempotent)
+  if (currentState === nextState) {
+    return true
+  }
+
+  const allowedTransitions = VALID_STATE_TRANSITIONS[currentState]
+  return allowedTransitions.includes(nextState)
+}
+
+/**
  * Event type for SSE messages
  */
 export interface SSEEvent {
@@ -271,6 +309,33 @@ export function useStreamingSSE(
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
 
+  /**
+   * Validated state setter
+   *
+   * Wraps setStatus with state transition validation.
+   * Logs warnings for invalid transitions but allows them (defensive).
+   */
+  const setStatusSafe = React.useCallback(
+    (nextStatus: SSEStatus) => {
+      const currentStatus = status
+      const valid = isValidTransition(currentStatus, nextStatus)
+
+      if (!valid) {
+        logger.warn(
+          `[useStreamingSSE] Invalid state transition: ${currentStatus} → ${nextStatus}`,
+          {
+            currentStatus,
+            nextStatus,
+            allowedTransitions: VALID_STATE_TRANSITIONS[currentStatus],
+          }
+        )
+      }
+
+      setStatus(nextStatus)
+    },
+    [status]
+  )
+
   // Refs
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const readerRef =
@@ -280,6 +345,7 @@ export function useStreamingSSE(
   const heartbeatTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const reconnectDelayRef = React.useRef(initialReconnectDelay)
   const shouldReconnectRef = React.useRef(false)
+  const isDisconnectingRef = React.useRef(false)
 
   /**
    * Parse SSE event data
@@ -326,6 +392,11 @@ export function useStreamingSSE(
    * Reset heartbeat timer
    */
   const resetHeartbeat = React.useCallback(() => {
+    // Don't create new timeouts if disconnecting
+    if (isDisconnectingRef.current) {
+      return
+    }
+
     if (heartbeatTimeoutRef.current) {
       clearTimeout(heartbeatTimeoutRef.current)
     }
@@ -354,10 +425,23 @@ export function useStreamingSSE(
       return
     }
 
+    // Defense-in-depth: Clear any existing timeouts to prevent accumulation
+    // This handles edge cases where connect() is called without proper cleanup
+    if (heartbeatTimeoutRef.current) {
+      clearTimeout(heartbeatTimeoutRef.current)
+      heartbeatTimeoutRef.current = null
+    }
+
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current)
+      reconnectTimeoutRef.current = null
+    }
+
     try {
-      setStatus('connecting')
+      setStatusSafe('connecting')
       setError(undefined)
       shouldReconnectRef.current = true
+      isDisconnectingRef.current = false // Reset disconnect flag on new connection
 
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
@@ -399,7 +483,7 @@ export function useStreamingSSE(
         throw new Error('Response body is null')
       }
 
-      setStatus('connected')
+      setStatusSafe('connected')
       setReconnectAttempt(0)
       setIsReconnecting(false)
       reconnectDelayRef.current = initialReconnectDelay
@@ -418,13 +502,18 @@ export function useStreamingSSE(
       let currentEventData = ''
       let currentEventId = ''
 
-      setStatus('streaming')
+      setStatusSafe('streaming')
 
       while (true) {
         const { done, value } = await reader.read()
 
+        // Check if disconnect was called while waiting for read()
+        if (isDisconnectingRef.current) {
+          break
+        }
+
         if (done) {
-          setStatus('closed')
+          setStatusSafe('closed')
           onClose?.()
           break
         }
@@ -486,14 +575,14 @@ export function useStreamingSSE(
 
       // Ignore abort errors
       if (error.name === 'AbortError') {
-        setStatus('closed')
+        setStatusSafe('closed')
         onClose?.()
         return
       }
 
       logger.error('[useStreamingSSE] Connection error:', error)
       setError(error)
-      setStatus('error')
+      setStatusSafe('error')
       onError?.(error)
 
       // Attempt reconnection
@@ -516,6 +605,30 @@ export function useStreamingSSE(
         setReconnectAttempt(nextAttempt)
         setIsReconnecting(true)
         onReconnecting?.(nextAttempt, delay)
+
+        // CRITICAL: Clear ALL existing timeouts before scheduling reconnection
+        // This prevents timeout accumulation over many reconnection cycles
+        // Without this, old heartbeat timeouts accumulate (100+ reconnects = 100+ zombie timeouts)
+        if (heartbeatTimeoutRef.current) {
+          clearTimeout(heartbeatTimeoutRef.current)
+          heartbeatTimeoutRef.current = null
+        }
+
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current)
+          reconnectTimeoutRef.current = null
+        }
+
+        // Cancel any ongoing request/reader to prevent race conditions
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort()
+          abortControllerRef.current = null
+        }
+
+        if (readerRef.current) {
+          readerRef.current.cancel()
+          readerRef.current = null
+        }
 
         reconnectTimeoutRef.current = setTimeout(() => {
           connect()
@@ -547,12 +660,15 @@ export function useStreamingSSE(
     onMaxReconnectAttemptsReached,
     processEvent,
     resetHeartbeat,
+    setStatusSafe,
   ])
 
   /**
    * Disconnect from SSE endpoint
    */
   const disconnect = React.useCallback(() => {
+    // Set flag FIRST to prevent race with in-flight reader.read()
+    isDisconnectingRef.current = true
     shouldReconnectRef.current = false
 
     // Cancel ongoing request
@@ -561,7 +677,7 @@ export function useStreamingSSE(
       abortControllerRef.current = null
     }
 
-    // Cancel reader
+    // Cancel reader (this will cause pending read() to reject)
     if (readerRef.current) {
       readerRef.current.cancel()
       readerRef.current = null
@@ -578,10 +694,10 @@ export function useStreamingSSE(
       heartbeatTimeoutRef.current = null
     }
 
-    setStatus('closed')
+    setStatusSafe('closed')
     setIsReconnecting(false)
     onClose?.()
-  }, [onClose])
+  }, [onClose, setStatusSafe])
 
   /**
    * Reconnect (disconnect and connect)

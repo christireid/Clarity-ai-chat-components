@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { flushSync } from 'react-dom'
 
 /**
  * Message with operations metadata
@@ -121,6 +122,236 @@ function generateId(): string {
 }
 
 /**
+ * Reducer state
+ */
+interface OperationsState {
+  messages: MessageWithOperations[]
+  history: MessageOperation[]
+  redoStack: MessageOperation[]
+  currentBranchId: string
+}
+
+/**
+ * Reducer actions
+ */
+type OperationsAction =
+  | { type: 'ADD_MESSAGE'; payload: MessageWithOperations }
+  | { type: 'EDIT_MESSAGE'; payload: { id: string; content: string } }
+  | { type: 'START_EDITING'; payload: string }
+  | { type: 'CANCEL_EDITING'; payload: string }
+  | { type: 'DELETE_MESSAGE'; payload: string }
+  | { type: 'UNDO' }
+  | { type: 'REDO' }
+  | { type: 'BRANCH_CONVERSATION'; payload: { messageId: string; branchId: string } }
+  | { type: 'SWITCH_BRANCH'; payload: string }
+  | { type: 'CLEAR' }
+
+/**
+ * Reducer for message operations (handles all state transitions atomically)
+ */
+function operationsReducer(
+  state: OperationsState,
+  action: OperationsAction
+): OperationsState {
+  switch (action.type) {
+    case 'ADD_MESSAGE': {
+      const operation: MessageOperation = {
+        type: 'add',
+        messageId: action.payload.id,
+        timestamp: Date.now(),
+        previousState: action.payload,
+      }
+
+      return {
+        ...state,
+        messages: [...state.messages, action.payload],
+        history: [...state.history, operation],
+        redoStack: [], // Clear redo stack on new operation
+      }
+    }
+
+    case 'EDIT_MESSAGE': {
+      const index = state.messages.findIndex((m) => m.id === action.payload.id)
+      if (index === -1) return state
+
+      const oldMessage = state.messages[index]
+      if (!oldMessage) return state
+
+      const updatedMessage: MessageWithOperations = {
+        ...oldMessage,
+        content: action.payload.content,
+        originalContent: oldMessage.originalContent || oldMessage.content,
+        version: (oldMessage.version || 0) + 1,
+        isEditing: false,
+      }
+
+      const newMessages = [...state.messages]
+      newMessages[index] = updatedMessage
+
+      const operation: MessageOperation = {
+        type: 'edit',
+        messageId: action.payload.id,
+        timestamp: Date.now(),
+        previousState: oldMessage,
+      }
+
+      return {
+        ...state,
+        messages: newMessages,
+        history: [...state.history, operation],
+        redoStack: [],
+      }
+    }
+
+    case 'START_EDITING': {
+      return {
+        ...state,
+        messages: state.messages.map((m) =>
+          m.id === action.payload ? { ...m, isEditing: true } : m
+        ),
+      }
+    }
+
+    case 'CANCEL_EDITING': {
+      return {
+        ...state,
+        messages: state.messages.map((m) =>
+          m.id === action.payload ? { ...m, isEditing: false } : m
+        ),
+      }
+    }
+
+    case 'DELETE_MESSAGE': {
+      const message = state.messages.find((m) => m.id === action.payload)
+      if (!message) return state
+
+      const operation: MessageOperation = {
+        type: 'delete',
+        messageId: action.payload,
+        timestamp: Date.now(),
+        previousState: message,
+      }
+
+      return {
+        ...state,
+        messages: state.messages.filter((m) => m.id !== action.payload),
+        history: [...state.history, operation],
+        redoStack: [],
+      }
+    }
+
+    case 'UNDO': {
+      if (state.history.length === 0) return state
+
+      const lastOperation = state.history[state.history.length - 1]
+      if (!lastOperation) return state
+
+      let newMessages = state.messages
+
+      // Reverse the operation
+      switch (lastOperation.type) {
+        case 'add':
+          newMessages = newMessages.filter((m) => m.id !== lastOperation.messageId)
+          break
+        case 'edit':
+        case 'regenerate':
+          if (lastOperation.previousState) {
+            newMessages = newMessages.map((m) =>
+              m.id === lastOperation.messageId ? lastOperation.previousState! : m
+            )
+          }
+          break
+        case 'delete':
+          if (lastOperation.previousState) {
+            newMessages = [...newMessages, lastOperation.previousState]
+          }
+          break
+      }
+
+      return {
+        ...state,
+        messages: newMessages,
+        history: state.history.slice(0, -1),
+        redoStack: [...state.redoStack, lastOperation],
+      }
+    }
+
+    case 'REDO': {
+      if (state.redoStack.length === 0) return state
+
+      const operation = state.redoStack[state.redoStack.length - 1]
+      if (!operation) return state
+
+      let newMessages = state.messages
+
+      // Re-apply the operation
+      switch (operation.type) {
+        case 'add':
+          if (operation.previousState) {
+            newMessages = [...newMessages, operation.previousState]
+          }
+          break
+        case 'edit':
+        case 'regenerate':
+          if (operation.previousState) {
+            newMessages = newMessages.map((m) =>
+              m.id === operation.messageId ? operation.previousState! : m
+            )
+          }
+          break
+        case 'delete':
+          newMessages = newMessages.filter((m) => m.id !== operation.messageId)
+          break
+      }
+
+      return {
+        ...state,
+        messages: newMessages,
+        history: [...state.history, operation],
+        redoStack: state.redoStack.slice(0, -1),
+      }
+    }
+
+    case 'BRANCH_CONVERSATION': {
+      const index = state.messages.findIndex((m) => m.id === action.payload.messageId)
+      if (index === -1) return state
+
+      // Create copies of messages for new branch
+      const branchedMessages = state.messages.slice(0, index + 1).map((msg) => ({
+        ...msg,
+        branchId: action.payload.branchId,
+        parentId: msg.id === action.payload.messageId ? msg.parentId : msg.id,
+      }))
+
+      return {
+        ...state,
+        messages: [...state.messages, ...branchedMessages],
+        currentBranchId: action.payload.branchId,
+      }
+    }
+
+    case 'SWITCH_BRANCH': {
+      return {
+        ...state,
+        currentBranchId: action.payload,
+      }
+    }
+
+    case 'CLEAR': {
+      return {
+        messages: [],
+        history: [],
+        redoStack: [],
+        currentBranchId: 'main',
+      }
+    }
+
+    default:
+      return state
+  }
+}
+
+/**
  * Production-ready Message Operations hook for advanced chat features.
  * 
  * **Features:**
@@ -214,40 +445,21 @@ export function useMessageOperations(
     onDelete,
   } = options
 
-  const [messages, setMessages] = React.useState<MessageWithOperations[]>(
-    initialMessages.map((msg) => ({
+  // Use reducer for atomic state updates (prevents race conditions)
+  const [state, dispatch] = React.useReducer(operationsReducer, {
+    messages: initialMessages.map((msg) => ({
       ...msg,
       id: msg.id || generateId(),
       timestamp: msg.timestamp || Date.now(),
       branchId: msg.branchId || 'main',
-    }))
-  )
+    })),
+    history: [],
+    redoStack: [],
+    currentBranchId: 'main',
+  })
 
-  const [currentBranchId, setCurrentBranchId] = React.useState('main')
-  const [history, setHistory] = React.useState<MessageOperation[]>([])
-  const [redoStack, setRedoStack] = React.useState<MessageOperation[]>([])
-
-  const canUndo = history.length > 0
-  const canRedo = redoStack.length > 0
-
-  /**
-   * Add operation to history
-   */
-  const addToHistory = React.useCallback(
-    (operation: MessageOperation) => {
-      setHistory((prev) => {
-        const newHistory = [...prev, operation]
-        // Limit history size
-        if (newHistory.length > maxHistorySize) {
-          return newHistory.slice(-maxHistorySize)
-        }
-        return newHistory
-      })
-      // Clear redo stack when new operation is performed
-      setRedoStack([])
-    },
-    [maxHistorySize]
-  )
+  const canUndo = state.history.length > 0
+  const canRedo = state.redoStack.length > 0
 
   /**
    * Add new message
@@ -259,20 +471,14 @@ export function useMessageOperations(
         ...message,
         id,
         timestamp: Date.now(),
-        branchId: message.branchId || currentBranchId,
+        branchId: message.branchId || state.currentBranchId,
       }
 
-      setMessages((prev) => [...prev, newMessage])
-      addToHistory({
-        type: 'add',
-        messageId: id,
-        timestamp: Date.now(),
-        previousState: newMessage, // Store the message for redo
-      })
+      dispatch({ type: 'ADD_MESSAGE', payload: newMessage })
 
       return id
     },
-    [currentBranchId, addToHistory]
+    [state.currentBranchId]
   )
 
   /**
@@ -280,59 +486,24 @@ export function useMessageOperations(
    */
   const editMessage = React.useCallback(
     (messageId: string, newContent: string) => {
-      setMessages((prev) => {
-        const index = prev.findIndex((m) => m.id === messageId)
-        if (index === -1) return prev
-
-        const oldMessage = prev[index]
-        if (!oldMessage) return prev
-
-        const updatedMessage: MessageWithOperations = {
-          ...oldMessage,
-          content: newContent,
-          originalContent: oldMessage.originalContent || oldMessage.content,
-          version: (oldMessage.version || 0) + 1,
-          isEditing: false,
-        }
-
-        const newMessages = [...prev]
-        newMessages[index] = updatedMessage
-
-        addToHistory({
-          type: 'edit',
-          messageId,
-          timestamp: Date.now(),
-          previousState: oldMessage,
-        })
-
-        onEdit?.(messageId, newContent)
-
-        return newMessages
-      })
+      dispatch({ type: 'EDIT_MESSAGE', payload: { id: messageId, content: newContent } })
+      onEdit?.(messageId, newContent)
     },
-    [onEdit, addToHistory]
+    [onEdit]
   )
 
   /**
    * Start editing mode
    */
   const startEditing = React.useCallback((messageId: string) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId ? { ...m, isEditing: true } : m
-      )
-    )
+    dispatch({ type: 'START_EDITING', payload: messageId })
   }, [])
 
   /**
    * Cancel editing mode
    */
   const cancelEditing = React.useCallback((messageId: string) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId ? { ...m, isEditing: false } : m
-      )
-    )
+    dispatch({ type: 'CANCEL_EDITING', payload: messageId })
   }, [])
 
   /**
@@ -340,19 +511,14 @@ export function useMessageOperations(
    */
   const regenerateMessage = React.useCallback(
     (messageId: string) => {
-      const message = messages.find((m) => m.id === messageId)
+      const message = state.messages.find((m) => m.id === messageId)
       if (!message) return
 
-      addToHistory({
-        type: 'regenerate',
-        messageId,
-        timestamp: Date.now(),
-        previousState: message,
-      })
-
+      // Regenerate doesn't change state directly, just triggers callback
+      // The actual new message will be added via addMessage
       onRegenerate?.(messageId)
     },
-    [messages, onRegenerate, addToHistory]
+    [state.messages, onRegenerate]
   )
 
   /**
@@ -360,23 +526,10 @@ export function useMessageOperations(
    */
   const deleteMessage = React.useCallback(
     (messageId: string) => {
-      setMessages((prev) => {
-        const message = prev.find((m) => m.id === messageId)
-        if (message) {
-          addToHistory({
-            type: 'delete',
-            messageId,
-            timestamp: Date.now(),
-            previousState: message,
-          })
-        }
-
-        onDelete?.(messageId)
-
-        return prev.filter((m) => m.id !== messageId)
-      })
+      dispatch({ type: 'DELETE_MESSAGE', payload: messageId })
+      onDelete?.(messageId)
     },
-    [onDelete, addToHistory]
+    [onDelete]
   )
 
   /**
@@ -385,23 +538,8 @@ export function useMessageOperations(
   const branchConversation = React.useCallback(
     (messageId: string): string => {
       const branchId = `branch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
-      
-      setMessages((prev) => {
-        // Get all messages up to and including the branch point
-        const index = prev.findIndex((m) => m.id === messageId)
-        if (index === -1) return prev
 
-        // Create copies of messages for new branch
-        const branchedMessages = prev.slice(0, index + 1).map((msg) => ({
-          ...msg,
-          branchId,
-          parentId: msg.id === messageId ? msg.parentId : msg.id,
-        }))
-
-        return [...prev, ...branchedMessages]
-      })
-
-      setCurrentBranchId(branchId)
+      dispatch({ type: 'BRANCH_CONVERSATION', payload: { messageId, branchId } })
       onBranch?.(branchId, messageId)
 
       return branchId
@@ -414,14 +552,14 @@ export function useMessageOperations(
    */
   const getMessagesUpTo = React.useCallback(
     (messageId: string): MessageWithOperations[] => {
-      const index = messages.findIndex((m) => m.id === messageId)
+      const index = state.messages.findIndex((m) => m.id === messageId)
       if (index === -1) return []
-      
-      return messages
+
+      return state.messages
         .slice(0, index + 1)
-        .filter((m) => m.branchId === currentBranchId)
+        .filter((m) => m.branchId === state.currentBranchId)
     },
-    [messages, currentBranchId]
+    [state.messages, state.currentBranchId]
   )
 
   /**
@@ -429,8 +567,8 @@ export function useMessageOperations(
    */
   const getBranches = React.useCallback((): Map<string, MessageWithOperations[]> => {
     const branches = new Map<string, MessageWithOperations[]>()
-    
-    messages.forEach((msg) => {
+
+    state.messages.forEach((msg) => {
       const branchId = msg.branchId || 'main'
       if (!branches.has(branchId)) {
         branches.set(branchId, [])
@@ -439,87 +577,42 @@ export function useMessageOperations(
     })
 
     return branches
-  }, [messages])
+  }, [state.messages])
 
   /**
    * Switch to different branch
    */
   const switchToBranch = React.useCallback((branchId: string) => {
-    setCurrentBranchId(branchId)
+    dispatch({ type: 'SWITCH_BRANCH', payload: branchId })
   }, [])
 
   /**
-   * Undo last operation
+   * Undo last operation (race-condition free with reducer + flushSync)
    */
   const undo = React.useCallback(() => {
-    if (history.length === 0) return
-
-    const lastOperation = history[history.length - 1]
-    if (!lastOperation) return
-
-    setHistory((prev) => prev.slice(0, -1))
-    setRedoStack((prev) => [...prev, lastOperation])
-
-    // Reverse the operation
-    switch (lastOperation.type) {
-      case 'add':
-        setMessages((prev) => prev.filter((m) => m.id !== lastOperation.messageId))
-        break
-      case 'edit':
-      case 'regenerate':
-        if (lastOperation.previousState) {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === lastOperation.messageId ? lastOperation.previousState! : m
-            )
-          )
-        }
-        break
-      case 'delete':
-        if (lastOperation.previousState) {
-          setMessages((prev) => [...prev, lastOperation.previousState!])
-        }
-        break
-    }
-  }, [history])
+    flushSync(() => {
+      dispatch({ type: 'UNDO' })
+    })
+  }, [])
 
   /**
-   * Redo last undone operation
+   * Redo last undone operation (race-condition free with reducer + flushSync)
    */
   const redo = React.useCallback(() => {
-    if (redoStack.length === 0) return
-
-    const operation = redoStack[redoStack.length - 1]
-    if (!operation) return
-
-    setRedoStack((prev) => prev.slice(0, -1))
-    setHistory((prev) => [...prev, operation])
-
-    // Re-apply the operation
-    switch (operation.type) {
-      case 'add':
-        if (operation.previousState) {
-          setMessages((prev) => [...prev, operation.previousState!])
-        }
-        break
-      case 'delete':
-        setMessages((prev) => prev.filter((m) => m.id !== operation.messageId))
-        break
-    }
-  }, [redoStack])
+    flushSync(() => {
+      dispatch({ type: 'REDO' })
+    })
+  }, [])
 
   /**
    * Clear all messages
    */
   const clear = React.useCallback(() => {
-    setMessages([])
-    setHistory([])
-    setRedoStack([])
-    setCurrentBranchId('main')
+    dispatch({ type: 'CLEAR' })
   }, [])
 
   return {
-    messages: messages.filter((m) => m.branchId === currentBranchId),
+    messages: state.messages.filter((m) => m.branchId === state.currentBranchId),
     addMessage,
     editMessage,
     startEditing,
@@ -534,7 +627,7 @@ export function useMessageOperations(
     redo,
     canUndo,
     canRedo,
-    currentBranchId,
+    currentBranchId: state.currentBranchId,
     clear,
   }
 }

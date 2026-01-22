@@ -536,10 +536,10 @@ export {
   createThemeVariant,
   createThemeClasses,
   applyThemeToCSS,
-  useTheme,
+  // useTheme, // Duplicate - exported from './theme'
   useResponsiveTheme,
   usePersistentTheme,
-  ThemeProvider,
+  // ThemeProvider, // Duplicate - exported from './theme'
   ThemeToggle,
   ThemeSelector,
 } from './utils/theme-helpers'

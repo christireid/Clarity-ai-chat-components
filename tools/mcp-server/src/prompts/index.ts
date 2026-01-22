@@ -8,6 +8,7 @@ import { Prompt } from '@modelcontextprotocol/sdk/types.js'
 import { logger } from '../utils/logger.js'
 import { NotFoundError } from '../utils/errors.js'
 import { validateRequired, validateString } from '../utils/validation.js'
+import { sanitizeForLogging } from '../utils/security.js'
 
 /**
  * Available prompts
@@ -181,7 +182,10 @@ export async function handlePromptGet(
   name: string,
   args: Record<string, string>
 ): Promise<string> {
-  logger.debug('Generating prompt', { prompt: name, args })
+  logger.debug('Generating prompt', {
+    prompt: name,
+    args: sanitizeForLogging(args),
+  })
 
   try {
     switch (name) {

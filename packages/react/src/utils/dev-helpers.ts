@@ -24,7 +24,7 @@ export function validateSetup(): { issues: string[]; suggestions: string[] } {
   const suggestions: string[] = []
 
   // Check if running in development
-  const isDev = process.env.NODE_ENV === 'development'
+  const isDev = process.env['NODE_ENV'] === 'development'
   if (!isDev) return { issues, suggestions }
 
   // Check for common issues
@@ -48,7 +48,7 @@ export function validateSetup(): { issues: string[]; suggestions: string[] } {
  * Quick setup check that runs in development mode
  */
 export function runDevSetupCheck(): void {
-  if (process.env.NODE_ENV !== 'development') return
+  if (process.env['NODE_ENV'] !== 'development') return
 
   const { issues, suggestions } = validateSetup()
 
@@ -135,25 +135,25 @@ export function createConfig(
  */
 export const devLog = {
   info: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.log(`🔍 Clarity Chat: ${message}`, ...args)
     }
   },
 
   warn: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.warn(`⚠️  Clarity Chat: ${message}`, ...args)
     }
   },
 
   error: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.error(`❌ Clarity Chat: ${message}`, ...args)
     }
   },
 
   debug: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.debug(`🐛 Clarity Chat: ${message}`, ...args)
     }
   },
@@ -246,7 +246,7 @@ export class DevPerformanceMonitor {
   private lastRender = Date.now()
 
   trackRender(component: string): void {
-    if (process.env.NODE_ENV !== 'development') return
+    if (process.env['NODE_ENV'] !== 'development') return
 
     this.renders++
     const now = Date.now()
@@ -271,7 +271,7 @@ export class DevPerformanceMonitor {
 // =============================================================================
 
 // Auto-run setup check in development
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined' && process.env['NODE_ENV'] === 'development') {
   // Run after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', runDevSetupCheck)

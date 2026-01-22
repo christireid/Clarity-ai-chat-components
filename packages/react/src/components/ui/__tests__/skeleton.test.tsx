@@ -53,8 +53,35 @@ describe('Zero-Dependency Skeleton Components', () => {
   it('renders without animation when variant is none', () => {
     const { container } = render(<Skeleton variant="none" />)
     const skeleton = container.firstChild
-    
+
     expect(skeleton).not.toHaveClass('skeleton-pulse')
     expect(skeleton).not.toHaveClass('skeleton-shimmer')
+  })
+
+  it('respects prefers-reduced-motion preference', () => {
+    // Mock the useReducedMotion hook to return true
+    const matchMediaMock = vi.fn().mockImplementation((query) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: matchMediaMock,
+    })
+
+    const { container } = render(<Skeleton variant="shimmer" />)
+    const skeleton = container.firstChild
+
+    // With reduced motion, should not have animation
+    // The component sets variant to 'none' when prefersReducedMotion is true
+    expect(skeleton).not.toHaveClass('skeleton-shimmer')
+    expect(skeleton).not.toHaveClass('skeleton-pulse')
   })
 })

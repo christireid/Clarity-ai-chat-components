@@ -1144,7 +1144,7 @@ export const SmartSkeleton: React.FC<SmartSkeletonProps> = ({
   return (
     <div className="smart-skeleton-container">
       {children}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env['NODE_ENV'] === 'development' && (
         <div className="fixed bottom-4 right-4 bg-black/80 text-white text-xs p-2 rounded">
           <div>Predicted: {predictedDuration}ms</div>
           <div>Actual: {actualDuration}ms</div>

@@ -5,6 +5,7 @@
  * offline support, and real-time updates.
  */
 
+import React from 'react'
 import { logger } from './logger'
 
 export interface SyncableData {

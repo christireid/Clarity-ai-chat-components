@@ -137,18 +137,18 @@ describe('create-theme', () => {
   })
 
   describe('invalid preset warnings', () => {
-    const originalEnv = process.env.NODE_ENV
+    const originalEnv = process.env['NODE_ENV']
     let consoleWarnSpy: ReturnType<typeof vi.spyOn>
 
     beforeEach(() => {
       consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       // Set to development to enable warnings
-      process.env.NODE_ENV = 'development'
+      process.env['NODE_ENV'] = 'development'
     })
 
     afterEach(() => {
       consoleWarnSpy.mockRestore()
-      process.env.NODE_ENV = originalEnv
+      process.env['NODE_ENV'] = originalEnv
     })
 
     it('should warn when createTheme uses an invalid preset name', () => {
@@ -186,7 +186,7 @@ describe('create-theme', () => {
     })
 
     it('should not warn in production mode', () => {
-      process.env.NODE_ENV = 'production'
+      process.env['NODE_ENV'] = 'production'
 
       createTheme({ extends: 'invalid-preset' as any })
 

@@ -11,7 +11,7 @@ interface Logger {
   error: (message: string, ...args: unknown[]) => void
 }
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env['NODE_ENV'] === 'development'
 
 function createLogger(namespace: string): Logger {
   const prefix = `[${namespace}]`

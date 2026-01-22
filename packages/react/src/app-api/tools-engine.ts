@@ -59,6 +59,7 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'get_current_time',
     description: 'Get the current date and time',
+    deterministic: false, // Time changes on each call
     parameters: {
       type: 'object',
       properties: {
@@ -105,6 +106,7 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'generate_uuid',
     description: 'Generate a unique identifier',
+    deterministic: false, // Generates random/unique IDs each call
     parameters: {
       type: 'object',
       properties: {
@@ -430,29 +432,32 @@ export async function executeToolCall(
     }
   }
 
-  // Check cache
-  const cacheKey = generateCacheKey(call.name, call.parameters)
-  const cached = state.cache.get(cacheKey)
-  if (cached && Date.now() - cached.timestamp < state.cacheTtlMs) {
-    const completedCall: ToolCall = {
-      ...call,
-      status: 'completed',
-      result: cached.result,
-      startTime: Date.now(),
-      endTime: Date.now(),
-    }
-
-    return {
-      state: {
-        ...state,
-        pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
-        completedCalls: [...state.completedCalls, completedCall],
-      },
-      result: {
-        success: true,
+  // Check cache (skip for non-deterministic tools)
+  const isDeterministic = tool.deterministic !== false // Default to true if not specified
+  if (isDeterministic) {
+    const cacheKey = generateCacheKey(call.name, call.parameters)
+    const cached = state.cache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < state.cacheTtlMs) {
+      const completedCall: ToolCall = {
+        ...call,
+        status: 'completed',
         result: cached.result,
-        executionTimeMs: 0,
-      },
+        startTime: Date.now(),
+        endTime: Date.now(),
+      }
+
+      return {
+        state: {
+          ...state,
+          pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
+          completedCalls: [...state.completedCalls, completedCall],
+        },
+        result: {
+          success: true,
+          result: cached.result,
+          executionTimeMs: 0,
+        },
+      }
     }
   }
 
@@ -480,9 +485,13 @@ export async function executeToolCall(
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
 
-    // Cache the result
-    const newCache = new Map(state.cache)
-    newCache.set(cacheKey, { result, timestamp: Date.now() })
+    // Cache the result (only for deterministic tools)
+    let newCache = state.cache
+    if (isDeterministic) {
+      newCache = new Map(state.cache)
+      const cacheKey = generateCacheKey(call.name, call.parameters)
+      newCache.set(cacheKey, { result, timestamp: Date.now() })
+    }
 
     const completedCall: ToolCall = {
       ...call,

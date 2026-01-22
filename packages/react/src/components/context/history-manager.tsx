@@ -489,7 +489,7 @@ export function HistoryManager({
 
   // Warn about duplicate IDs in development
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       const ids = messages.map((m) => m.id)
       const uniqueIds = new Set(ids)
       if (uniqueIds.size !== ids.length) {

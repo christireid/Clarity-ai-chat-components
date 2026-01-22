@@ -336,7 +336,7 @@ export function useMarkdownFeatures(content: string) {
 export const EnhancedMarkdownRenderer = (props: EnhancedMarkdownRendererProps) => (
   <ContentErrorBoundary
     componentName="EnhancedMarkdownRenderer"
-    showErrorDetails={process.env.NODE_ENV === 'development'}
+    showErrorDetails={process.env['NODE_ENV'] === 'development'}
   >
     <EnhancedMarkdownRendererComponent {...props} />
   </ContentErrorBoundary>

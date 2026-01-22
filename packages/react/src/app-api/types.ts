@@ -124,6 +124,12 @@ export interface ToolDefinition {
   execute: (params: unknown) => Promise<unknown>
   /** Optional custom UI renderer */
   renderer?: React.ComponentType<{ result: unknown }>
+  /**
+   * Whether this tool is deterministic (same inputs always produce same outputs).
+   * Non-deterministic tools (e.g., get_current_time, generate_uuid, random) will not be cached.
+   * @default true
+   */
+  deterministic?: boolean
 }
 
 /**
