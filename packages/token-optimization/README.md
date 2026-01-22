@@ -84,9 +84,9 @@ const { model, cost, reason } = router.route(prompt)
 console.log(`Use ${model} - ${reason}`)
 ```
 
-### Provider-Native Caching (90% Savings!)*
+### Provider-Native Caching (Up to 90% Cost Reduction Possible)*
 
-<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
+<sub>*Based on provider prompt caching pricing specifications. Requires provider API implementation. Actual savings depend on cache hit rates and usage patterns. See documentation for details.</sub>
 
 Leverage built-in caching from Anthropic, OpenAI, and Google:
 
