@@ -19,7 +19,7 @@ import {
   ExportDialog,
   ErrorBoundary,
 } from '@clarity-chat/react'
-import { useMessageOperations } from '@clarity-chat/react/internal'
+import { useMessageOperations } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 

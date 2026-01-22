@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ContextVisualizer } from '@clarity-chat/react/internal'
+import { ContextVisualizer } from '@clarity-chat/react'
 
 const meta: Meta<typeof ContextVisualizer> = {
   title: 'Advanced/Memory/ContextVisualizer',

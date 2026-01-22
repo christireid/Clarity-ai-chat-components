@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { cn, glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
 
 export interface OptimizationMetrics {
   /** Total tokens processed */
@@ -108,7 +109,7 @@ export function TokenOptimizationDashboard({
   if (isLoading) {
     return (
       <div
-        className={`p-6 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        className={`p-6 bg-card rounded-lg border border-border/50 shadow-xs ${className}`}
         role="status"
         aria-label="Loading Token Optimization Dashboard"
         aria-busy="true"
@@ -139,7 +140,7 @@ export function TokenOptimizationDashboard({
     const errorMessage = error instanceof Error ? error.message : String(error)
     return (
       <div
-        className={`p-6 bg-card rounded-lg border border-destructive/30 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        className={`p-6 bg-card rounded-lg border border-destructive/30 shadow-xs ${className}`}
         role="alert"
         aria-live="assertive"
       >
@@ -173,7 +174,7 @@ export function TokenOptimizationDashboard({
 
   return (
     <div
-      className={`p-6 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+      className={`p-6 bg-card rounded-lg border border-border/50 shadow-xs ${className}`}
       onClick={onClick}
       role="region"
       aria-label="Token Optimization Dashboard"
@@ -206,8 +207,19 @@ export function TokenOptimizationDashboard({
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Total Tokens Saved */}
-        <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+        {/* Total Tokens Saved - Green gradient for success */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('success'),
+              border: 'light',
+              animated: 'glow',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-success">
             {formatNumber(displayMetrics.tokensSaved)}
           </div>
@@ -217,8 +229,19 @@ export function TokenOptimizationDashboard({
           </div>
         </div>
 
-        {/* Cost Saved */}
-        <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+        {/* Cost Saved - Analytics blue gradient */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('analytics'),
+              border: 'light',
+              animated: 'glow',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-primary">
             {formatCost(displayMetrics.costSaved)}
           </div>
@@ -228,8 +251,18 @@ export function TokenOptimizationDashboard({
           </div>
         </div>
 
-        {/* Total Processed */}
-        <div className="p-4 bg-muted border border-border rounded-lg">
+        {/* Total Processed - Highlight pink gradient */}
+        <div
+          className={cn(
+            glassVariants({
+              intensity: 'medium',
+              gradient: getSemanticGradient('highlight'),
+              border: 'light',
+              hover: 'glow',
+            }),
+            'p-4 rounded-lg'
+          )}
+        >
           <div className="text-2xl font-bold text-foreground">
             {formatNumber(displayMetrics.totalTokens)}
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { TypingIndicator } from '@clarity-chat/react/internal'
+import { TypingIndicator } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'

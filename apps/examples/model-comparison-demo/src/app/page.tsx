@@ -4,7 +4,7 @@ import { useState } from 'react'
 import {
   ModelSelector,
   StreamingTextRenderer as StreamingMessage,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 import {
   useStreamingChat,
   type ChatMessage,

@@ -51,7 +51,7 @@ export default function UseCalendarIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with calendar systems:</p>
         <CodePlayground
-          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react'
 
 function CalendarManager() {
   const {
@@ -88,7 +88,7 @@ function CalendarManager() {
         <h2>Create Events</h2>
         <p>Create calendar events:</p>
         <CodePlayground
-          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react'
 
 function EventCreator() {
   const { createEvent } = useCalendarIntegration()
@@ -105,7 +105,7 @@ function EventCreator() {
         { email: 'bob@example.com', name: 'Bob' },
       ],
     })
-    logger.debug('Event created:', event.id)
+    console.log('Event created:', event.id)
   }
 
   return <button onClick={handleCreate}>Create Event</button>
@@ -117,7 +117,7 @@ function EventCreator() {
         <h2>Check Availability</h2>
         <p>Check availability for scheduling:</p>
         <CodePlayground
-          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react'
 
 function AvailabilityChecker() {
   const { checkAvailability } = useCalendarIntegration()
@@ -130,7 +130,7 @@ function AvailabilityChecker() {
     
     const freeSlots = slots.filter(slot => slot.status === 'free')
     if (freeSlots.length > 0) {
-      logger.debug('Available slots:', freeSlots)
+      console.log('Available slots:', freeSlots)
     }
   }
 
@@ -143,14 +143,14 @@ function AvailabilityChecker() {
         <h2>Convert Action Items to Events</h2>
         <p>Convert action items from conversations to calendar events:</p>
         <CodePlayground
-          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { useCalendarIntegration } from '@clarity-chat/react'
 
 function ActionItemConverter({ actionItems }: { actionItems: ActionItem[] }) {
   const { convertActionToEvent } = useCalendarIntegration()
 
   const handleConvert = async (actionItem: ActionItem) => {
     const event = await convertActionToEvent(actionItem)
-    logger.debug('Event created from action item:', event.id)
+    console.log('Event created from action item:', event.id)
   }
 
   return (

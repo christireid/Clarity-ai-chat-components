@@ -169,17 +169,19 @@ export class EnhancedSecurityManager {
       this.dashboard.recordEvent(dashboardEvent, result.processingTime)
 
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Fail-safe response with detailed error information
       console.error(`[SECURITY ERROR] Request ${requestId} failed:`, error)
 
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error'
       const result = {
         approved: false,
         reason: 'Security validation failed - system error',
         riskLevel: 'high' as const,
         processingTime: Date.now() - startTime,
         requestId,
-        error: this.sanitizeErrorMessage(error.message),
+        error: this.sanitizeErrorMessage(errorMessage),
         recommendations: [
           'Retry the request with different input',
           'Contact support if the issue persists',

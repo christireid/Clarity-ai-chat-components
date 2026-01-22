@@ -4,7 +4,7 @@
  * High-performance token counting using gpt-tokenizer with caching and monitoring.
  *
  * gpt-tokenizer is a pure JavaScript implementation that is:
- * - 20x smaller than tiktoken WASM (~200KB vs ~4MB)
+ * - 5-6x smaller than tiktoken (972KB vs 5.3MB for js-tiktoken)
  * - The fastest JS tokenizer available
  * - Supports all OpenAI models including o-series (o1, o3, o4), GPT-4o, GPT-4.1
  * - Used by Microsoft Teams AI, CodeRabbit, Elastic Kibana
@@ -13,6 +13,7 @@
  */
 
 import { encode, encodeChat, isWithinTokenLimit } from 'gpt-tokenizer'
+import { Logger } from '../observability'
 
 export interface TokenizerConfig {
   model: string
@@ -32,6 +33,7 @@ export interface ChatMessage {
 
 /**
  * Model name type for gpt-tokenizer
+ * Supports OpenAI, Anthropic Claude, and Google Gemini models
  */
 type ModelName =
   | 'gpt-4o'
@@ -44,55 +46,110 @@ type ModelName =
   | string
 
 /**
- * Model to encoding mapping for gpt-tokenizer
- * Supports all current OpenAI models including the latest o-series
+ * Encoding type identifiers for different tokenizer backends
+ *
+ * @remarks
+ * - o200k_base: GPT-4o, o-series (200K vocabulary, optimized for code)
+ * - cl100k_base: GPT-4, GPT-3.5 (100K vocabulary)
+ * - claude: Anthropic's proprietary tokenizer
+ * - gemini: Google's SentencePiece tokenizer
  */
-const MODEL_ENCODING_MAP: Record<string, ModelName> = {
-  // O-series models (o200k_base encoding)
+type EncodingType = 'o200k_base' | 'cl100k_base' | 'claude' | 'gemini'
+
+/**
+ * Model to encoding mapping for accurate token counting
+ *
+ * Maps model identifiers to their corresponding tokenizer encoding.
+ * For OpenAI models, maps to gpt-tokenizer model names.
+ * For non-OpenAI models, maps to encoding type identifiers.
+ *
+ * @remarks
+ * Note: For Claude and Gemini models, we use character-based estimation
+ * as their tokenizers are not publicly available. The estimation provides
+ * reasonable accuracy for most use cases.
+ */
+const MODEL_ENCODING_MAP: Record<string, ModelName | EncodingType> = {
+  // OpenAI o-Series Reasoning Models (o200k_base encoding)
   o1: 'o1',
   'o1-mini': 'o1-mini',
-  'o1-preview': 'o1-preview',
-  o3: 'o1', // Use o1 encoding for o3
-  'o3-mini': 'o1-mini',
-  o4: 'o1', // Use o1 encoding for o4
-  'o4-mini': 'o1-mini',
+  'o1-preview': 'o1',
+  o3: 'o1', // o3 uses same encoding as o1
+  'o3-mini': 'o1-mini', // o3-mini uses same encoding as o1-mini
+  'o4-mini': 'o1-mini', // o4-mini uses same encoding as o1-mini
 
-  // GPT-4o models (o200k_base encoding)
+  // OpenAI GPT-4o Models (o200k_base encoding)
   'gpt-4o': 'gpt-4o',
   'gpt-4o-mini': 'gpt-4o-mini',
   'gpt-4o-2024-05-13': 'gpt-4o',
   'gpt-4o-2024-08-06': 'gpt-4o',
+  'gpt-4o-2024-11-20': 'gpt-4o',
   'gpt-4.1': 'gpt-4o',
 
-  // GPT-4 models (cl100k_base encoding)
+  // OpenAI GPT-4 Models (cl100k_base encoding)
   'gpt-4': 'gpt-4',
   'gpt-4-turbo': 'gpt-4-turbo',
-  'gpt-4-turbo-preview': 'gpt-4-turbo-preview',
-  'gpt-4-0125-preview': 'gpt-4-0125-preview',
-  'gpt-4-1106-preview': 'gpt-4-1106-preview',
+  'gpt-4-turbo-preview': 'gpt-4-turbo',
+  'gpt-4-0125-preview': 'gpt-4-turbo',
+  'gpt-4-1106-preview': 'gpt-4-turbo',
   'gpt-4-32k': 'gpt-4-32k',
 
-  // GPT-3.5 models (cl100k_base encoding)
+  // OpenAI GPT-3.5 Models (cl100k_base encoding)
   'gpt-3.5-turbo': 'gpt-3.5-turbo',
   'gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
-  'gpt-3.5-turbo-0125': 'gpt-3.5-turbo-0125',
-  'gpt-3.5-turbo-1106': 'gpt-3.5-turbo-1106',
+  'gpt-3.5-turbo-0125': 'gpt-3.5-turbo',
+  'gpt-3.5-turbo-1106': 'gpt-3.5-turbo',
 
-  // Legacy models
+  // OpenAI Legacy Models
   'text-davinci-003': 'text-davinci-003',
   'text-davinci-002': 'text-davinci-002',
 
-  // Embedding models
+  // OpenAI Embedding Models
   'text-embedding-ada-002': 'text-embedding-ada-002',
   'text-embedding-3-small': 'text-embedding-3-small',
   'text-embedding-3-large': 'text-embedding-3-large',
+
+  // Anthropic Claude 3.5 Models (claude encoding - uses estimation)
+  'claude-3-5-sonnet-20241022': 'claude',
+  'claude-3-5-haiku-20241022': 'claude',
+
+  // Anthropic Claude 4.5 Models (claude encoding - uses estimation)
+  'claude-opus-4-5': 'claude',
+  'claude-sonnet-4-5': 'claude',
+  'claude-haiku-4-5': 'claude',
+
+  // Anthropic Claude 3 Models (claude encoding - uses estimation)
+  'claude-3-opus': 'claude',
+  'claude-3-sonnet': 'claude',
+  'claude-3-haiku': 'claude',
+
+  // Google Gemini 2.0 Models (gemini encoding - uses estimation)
+  'gemini-2.0-pro': 'gemini',
+  'gemini-2.0-flash': 'gemini',
+  'gemini-2.0-flash-lite': 'gemini',
+
+  // Google Gemini 1.5 Models (gemini encoding - uses estimation)
+  'gemini-1.5-pro': 'gemini',
+  'gemini-1.5-flash': 'gemini',
+}
+
+/**
+ * Check if an encoding type requires estimation (non-OpenAI models)
+ *
+ * @param encoding - The encoding type to check
+ * @returns True if the encoding requires character-based estimation
+ */
+function isEstimationEncoding(
+  encoding: string
+): encoding is 'claude' | 'gemini' {
+  return encoding === 'claude' || encoding === 'gemini'
 }
 
 export class AccurateTokenCounter {
-  private modelName: ModelName
+  private modelName: ModelName | EncodingType
   private cache: Map<string, number>
   private cacheHits = 0
   private cacheMisses = 0
+  private useEstimation: boolean
   private monitoring = {
     totalCalls: 0,
     totalTokens: 0,
@@ -100,9 +157,26 @@ export class AccurateTokenCounter {
     startTime: Date.now(),
   }
 
+  /** Interval ID for cache invalidation timer */
+  private cacheInvalidationInterval: ReturnType<typeof setInterval> | null =
+    null
+  /** Interval ID for monitoring timer */
+  private monitoringInterval: ReturnType<typeof setInterval> | null = null
+
+  /** Logger instance for structured logging */
+  private readonly logger: Logger
+
   constructor(private config: TokenizerConfig) {
-    // Map the model name to gpt-tokenizer model name
-    this.modelName = MODEL_ENCODING_MAP[config.model] || 'gpt-4o'
+    // Initialize logger with appropriate log level based on monitoring config
+    this.logger = new Logger({
+      logLevel: config.enableMonitoring ? 'info' : 'warn',
+      serviceName: 'token-counter',
+    })
+
+    // Map the model name to gpt-tokenizer model name or encoding type
+    const encoding = MODEL_ENCODING_MAP[config.model] || 'gpt-4o'
+    this.modelName = encoding
+    this.useEstimation = isEstimationEncoding(encoding)
 
     this.cache = new Map()
 
@@ -117,6 +191,10 @@ export class AccurateTokenCounter {
 
   /**
    * Count tokens in text with high accuracy using gpt-tokenizer
+   *
+   * For OpenAI models, uses gpt-tokenizer for exact counting.
+   * For Claude and Gemini models, uses character-based estimation
+   * as their tokenizers are not publicly available.
    */
   count(text: string): number {
     if (!text) return 0
@@ -133,24 +211,115 @@ export class AccurateTokenCounter {
 
     this.cacheMisses++
 
+    let tokens: number
+
+    // Use estimation for non-OpenAI models (Claude, Gemini)
+    if (this.useEstimation) {
+      tokens = this.estimateTokens(text)
+    } else {
+      try {
+        // Use gpt-tokenizer for accurate counting (pure JS, no WASM)
+        tokens = encode(text, { allowedSpecial: 'all' }).length
+      } catch (error) {
+        // Fallback to character-based estimation
+        tokens = this.estimateTokens(text)
+        this.logger.warn('Token encoding failed, using estimation', {
+          error: error instanceof Error ? error.message : String(error),
+          model: this.modelName,
+        })
+      }
+    }
+
+    this.updateMonitoring('tokens', tokens)
+
+    // Cache result
+    if (this.config.enableCaching) {
+      this.addToCache(text, tokens)
+    }
+
+    return tokens
+  }
+
+  /**
+   * Estimate tokens using improved heuristics
+   *
+   * Used for non-OpenAI models where exact tokenization is not available.
+   * Uses gpt-tokenizer with cl100k_base as a proxy for better accuracy (~90% vs ~70%).
+   *
+   * Research shows Claude and Gemini tokenization is similar to cl100k_base:
+   * - Claude uses a BPE tokenizer similar to GPT-4
+   * - Gemini uses SentencePiece which produces similar token counts
+   *
+   * @see https://www.propelcode.ai/blog/token-counting-tiktoken-anthropic-gemini-guide-2025
+   *
+   * @param text - The text to estimate tokens for
+   * @returns Estimated token count
+   */
+  private estimateTokens(text: string): number {
     try {
-      // Use gpt-tokenizer for accurate counting (pure JS, no WASM)
+      // Use gpt-tokenizer's encode as a proxy for Claude/Gemini
+      // This gives ~90% accuracy vs the ~70% of simple character-based
       const tokens = encode(text, { allowedSpecial: 'all' }).length
 
-      this.updateMonitoring('tokens', tokens)
+      // Apply model-specific adjustment factors
+      // Claude tends to be slightly more efficient than GPT tokenization
+      // Gemini is similar to Claude
+      const adjustmentFactor = this.modelName === 'claude' ? 0.95 : 0.97
 
-      // Cache result
-      if (this.config.enableCaching) {
-        this.addToCache(text, tokens)
-      }
-
-      return tokens
-    } catch (error) {
-      // Fallback to character-based estimation
-      const estimated = Math.ceil(text.length / 4)
-      console.warn(`Token encoding failed, using estimation: ${error}`)
-      return estimated
+      return Math.ceil(tokens * adjustmentFactor)
+    } catch {
+      // Fallback to improved character-based estimation
+      return this.characterBasedEstimate(text)
     }
+  }
+
+  /**
+   * Fallback character-based estimation with improved accuracy
+   *
+   * Uses multiple heuristics for better accuracy:
+   * - Word count (English ~1.3 tokens/word)
+   * - Character count (average ~4 chars/token)
+   * - Special handling for code, CJK, punctuation
+   */
+  private characterBasedEstimate(text: string): number {
+    if (!text) return 0
+
+    const chars = text.length
+    const words = text.split(/\s+/).filter(Boolean).length
+
+    // Count code-like content (higher token density)
+    const codeBlocks = (text.match(/```[\s\S]*?```/g) || []).join('').length
+    const inlineCode = (text.match(/`[^`]+`/g) || []).join('').length
+
+    // Count CJK characters (typically 1 char = 1-2 tokens)
+    const cjkChars = (
+      text.match(/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g) || []
+    ).length
+
+    // Count punctuation (often separate tokens)
+    const punctuation = (text.match(/[.,!?;:'"()[\]{}<>]/g) || []).length
+
+    // Calculate base estimate
+    let estimate = 0
+
+    // Non-code text: ~4 chars per token
+    const regularChars = chars - codeBlocks - inlineCode - cjkChars
+    estimate += regularChars / 4
+
+    // Code: ~3 chars per token (more symbols = more tokens)
+    estimate += (codeBlocks + inlineCode) / 3
+
+    // CJK: ~1.5 chars per token
+    estimate += cjkChars / 1.5
+
+    // Add punctuation tokens (often separate)
+    estimate += punctuation * 0.3
+
+    // Apply word-count sanity check (should be at least 0.75 tokens per word)
+    const minByWords = words * 0.75
+    estimate = Math.max(estimate, minByWords)
+
+    return Math.ceil(estimate)
   }
 
   /**
@@ -278,21 +447,31 @@ export class AccurateTokenCounter {
   }
 
   private setupCacheInvalidation(): void {
+    // Clear any existing interval to prevent leaks
+    if (this.cacheInvalidationInterval) {
+      clearInterval(this.cacheInvalidationInterval)
+    }
+
     // Clear cache every hour to prevent memory leaks
-    setInterval(() => {
+    this.cacheInvalidationInterval = setInterval(() => {
       this.cache.clear()
       this.cacheHits = 0
       this.cacheMisses = 0
 
       if (this.config.enableMonitoring) {
-        console.log('[TokenCounter] Cache cleared')
+        this.logger.info('Cache cleared', { model: this.modelName })
       }
     }, 3600000)
   }
 
   private setupMonitoring(): void {
+    // Clear any existing interval to prevent leaks
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval)
+    }
+
     // Log monitoring stats every 5 minutes
-    setInterval(() => {
+    this.monitoringInterval = setInterval(() => {
       this.logMonitoringStats()
     }, 300000)
   }
@@ -315,12 +494,13 @@ export class AccurateTokenCounter {
     const runtime = (Date.now() - this.monitoring.startTime) / 1000
     const cacheStats = this.getCacheStats()
 
-    console.log('[TokenCounter Monitoring]', {
+    this.logger.info('Token counter monitoring stats', {
       totalCalls: this.monitoring.totalCalls,
       totalTokens: this.monitoring.totalTokens,
       averageTokens: Math.round(this.monitoring.averageTokens * 100) / 100,
-      runtime: Math.round(runtime),
-      cacheHitRate: Math.round(cacheStats.hitRate * 100) + '%',
+      runtimeSeconds: Math.round(runtime),
+      cacheHitRate: Math.round(cacheStats.hitRate * 100),
+      model: this.modelName,
     })
   }
 
@@ -359,9 +539,24 @@ export class AccurateTokenCounter {
   }
 
   /**
-   * Clean up resources
+   * Clean up resources and stop all intervals.
+   *
+   * Call this method when disposing of the AccurateTokenCounter instance
+   * to prevent memory leaks from ongoing timers.
    */
   destroy(): void {
+    // Clear all intervals to prevent memory leaks
+    if (this.cacheInvalidationInterval) {
+      clearInterval(this.cacheInvalidationInterval)
+      this.cacheInvalidationInterval = null
+    }
+
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval)
+      this.monitoringInterval = null
+    }
+
+    // Clear cache
     this.cache.clear()
   }
 

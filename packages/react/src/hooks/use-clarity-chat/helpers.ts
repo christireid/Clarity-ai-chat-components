@@ -114,18 +114,19 @@ export function validateApiEndpoint(
   api: string | undefined
 ): asserts api is string {
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
-    throw new ComponentError({
-      code: 'MISSING_PROP',
-      component: 'useClarityChat',
-      message:
-        '"api" option is required. Please provide your API endpoint URL.',
-      expected: 'string (e.g., "/api/chat" or "https://api.example.com/chat")',
-      example:
-        'const chat = useClarityChat({ api: "/api/chat" })\n\n' +
-        '// Or with full URL\n' +
-        'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
-      docsPath: '/hooks/use-clarity-chat#api',
-    })
+  throw new ComponentError({
+    code: 'MISSING_PROP',
+    component: 'useClarityChat',
+    message:
+      '"api" option is required. Please provide your API endpoint URL.',
+    expected: 'string (e.g., "/api/chat" or "https://api.example.com/chat")',
+    example:
+      'const chat = useClarityChat({ api: "/api/chat" })\n\n' +
+      '// Or with full URL\n' +
+      'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
+    docsPath: '/hooks/use-clarity-chat#api',
+    suggestion: 'Quick fix: useClarityChat({ api: "/api/chat" }) - replace with your actual API endpoint',
+  })
   }
 
   // Security Check: Detect if user accidentally passed an API key

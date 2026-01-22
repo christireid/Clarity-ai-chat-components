@@ -212,7 +212,6 @@ export {
 // These maintain backward compatibility while using the new TokenCounter internally
 export {
   estimateTokens,
-  estimateTokensByProvider,
   estimateMessagesTokens,
 } from './estimator'
 export {

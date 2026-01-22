@@ -317,7 +317,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
                             </Badge>
                           ))}
                           {token.scopes.length === 0 && (
-                            <span className="text-muted-foreground/50">
+                            <span className="text-muted-foreground/70">
                               No scopes
                             </span>
                           )}
@@ -331,7 +331,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
                               'mt-0.5 text-[11px]',
                               isExpiringSoon
                                 ? 'text-warning'
-                                : 'text-muted-foreground/50'
+                                : 'text-muted-foreground/70'
                             )}
                           >
                             Expires: {token.expiresAt}
@@ -340,7 +340,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
                       </td>
                       <td className="px-2 py-3 text-xs text-muted-foreground/70 tabular-nums">
                         {token.lastUsed ?? (
-                          <span className="text-muted-foreground/50">
+                          <span className="text-muted-foreground/70">
                             Never
                           </span>
                         )}

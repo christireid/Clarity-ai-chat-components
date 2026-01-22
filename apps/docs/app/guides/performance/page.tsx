@@ -56,7 +56,7 @@ export default function PerformanceGuidePage() {
   VirtualizedMessageList,
   ChatWindow,
   useChat,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 export function LargeThreadPage() {
   const chat = useChat({ id: 'enterprise-escalation', api: '/api/chat/escalate' })
@@ -98,7 +98,7 @@ export function LargeThreadPage() {
   PerformanceDashboard,
   useRenderPerformance,
   TokenCounter,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function ChatWithMetrics() {
   const chatPerf = useRenderPerformance('ChatWindow')
@@ -176,7 +176,7 @@ npm run size`}
   getTracer,
   AnalyticsProvider,
   createGoogleAnalyticsProvider,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 const gaProvider = createGoogleAnalyticsProvider(process.env.NEXT_PUBLIC_GA_ID!)
 const tracer = getTracer({ sampleRate: 0.2 })

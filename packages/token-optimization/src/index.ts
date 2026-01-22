@@ -1,13 +1,119 @@
 /**
- * Token Optimization Package - Enhanced Implementation
+ * Token Optimization Package
  *
- * This package provides advanced token optimization capabilities including:
- * - Enhanced security with comprehensive threat protection
- * - Quality gates with 85% minimum quality preservation
- * - Cost-aware optimization with budget management
- * - Advanced semantic caching with 90%+ cost reduction
- * - Dynamic compression with quality preservation
+ * The simplest way to count and optimize LLM tokens.
+ *
+ * @example Quick Start (React)
+ * ```tsx
+ * import { useTokenCount } from '@clarity-chat/token-optimization'
+ *
+ * function MyComponent() {
+ *   const { count } = useTokenCount(text)
+ *   return <span>{count} tokens</span>
+ * }
+ * ```
+ *
+ * @example Quick Start (Node.js)
+ * ```typescript
+ * import { countTokens, DEFAULTS } from '@clarity-chat/token-optimization'
+ *
+ * const count = countTokens('Hello world') // Uses gpt-4o by default
+ * console.log(`${count} tokens using ${DEFAULTS.model}`)
+ * ```
+ *
+ * @example With Model Router
+ * ```typescript
+ * const router = ModelRouter.default()
+ * // or with builder:
+ * const router = ModelRouter.builder()
+ *   .useOpenAIModels()
+ *   .withStrategy('cost-optimized')
+ *   .build()
+ * ```
+ *
+ * @packageDocumentation
  */
+
+// ============================================================================
+// Sensible Defaults (Start Here!)
+// ============================================================================
+
+export {
+  // Core defaults
+  DEFAULT_MODEL,
+  DEFAULT_DEBOUNCE_MS,
+  DEFAULT_MAX_CACHE_SIZE,
+  DEFAULT_CACHE_TTL_MS,
+  DEFAULT_SIMILARITY_THRESHOLD,
+  // Component defaults
+  DEFAULT_TOKEN_COUNTER_OPTIONS,
+  DEFAULT_COUNT_OPTIONS,
+  DEFAULT_COMPRESSION_OPTIONS,
+  DEFAULT_LLMLINGUA_OPTIONS,
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_TIERED_CACHE_BY_PRESET,
+  DEFAULT_ROUTING_CONFIG,
+  DEFAULT_FALLBACK_MODEL,
+  DEFAULT_SECURITY_CONFIG,
+  DEFAULT_BUDGET_OPTIONS,
+  // Hook defaults
+  DEFAULT_USE_TOKEN_COUNT_OPTIONS,
+  DEFAULT_USE_TOKEN_BUDGET_OPTIONS,
+  DEFAULT_USE_TOKEN_OPTIMIZATION_OPTIONS,
+  // Presets
+  PRESETS,
+  // All-in-one defaults object
+  DEFAULTS,
+} from './defaults'
+export type { PresetName } from './defaults'
+
+// ============================================================================
+// Model Registry & Pricing (Single Source of Truth)
+// ============================================================================
+
+export {
+  MODEL_REGISTRY,
+  getAllModelIds,
+  getModelsByProvider,
+  getModelsWithCapability,
+  getModelsWithMinContextWindow,
+  isValidModelId,
+  getModelConfig,
+  tryGetModelConfig,
+} from './models/model-registry'
+export type {
+  ModelId,
+  ModelProvider,
+  TokenizerEncoding,
+  TokenModelConfig,
+} from './models/model-registry'
+
+export {
+  MODEL_PRICING,
+  calculateCost,
+  calculateCacheSavings,
+  estimateConversationCost,
+  compareModelCosts,
+  recommendModel,
+  getModelPricing,
+  modelSupportsCaching,
+  getModelsWithCaching,
+} from './models/model-pricing'
+export type {
+  PricingProvider,
+  ModelPricing,
+  CostCalculation,
+} from './models/model-pricing'
+
+// Token Estimation Utilities
+export {
+  estimateTokens,
+  countConversationTokens,
+  estimateMessagesTokens,
+  getCharsPerToken,
+  shouldUseAsyncEstimation,
+  estimateTokensDebug,
+} from './utils/token-estimation'
 
 // Security exports (Node.js only - uses events module via security-dashboard)
 // export { EnhancedSecurityManager } from './security/enhanced-security'
@@ -75,6 +181,21 @@ export type {
   ResourceRequirements,
 } from './cost/cost-aware-optimizer'
 
+// Analytics exports - Real-time cost tracking and savings calculation
+export {
+  calculateCost as calculateRequestCost,
+  getSavingsPercentage,
+  CostTracker,
+  compareModelCosts as compareModelCostsDetailed,
+  estimatePotentialSavings,
+} from './analytics/cost-calculator'
+export type {
+  TokenUsage as AnalyticsTokenUsage,
+  CostBreakdown,
+  CostTracking,
+  SavingsReport,
+} from './analytics/cost-calculator'
+
 // Caching exports
 export { AdvancedSemanticCache } from './caching/advanced-semantic-cache'
 export type {
@@ -86,20 +207,105 @@ export type {
   CacheStats,
 } from './caching/advanced-semantic-cache'
 
-// Compression exports
-export { DynamicCompressionEngine } from './compression/dynamic-compression'
+// Compression exports - New real compression strategies (recommended)
+export {
+  LLMLinguaCompressor,
+  createLLMLinguaCompressor,
+  compressWithLLMLingua,
+  ExtractiveCompressor,
+  createExtractiveCompressor,
+  compressExtractively,
+  AdaptiveCompressor,
+  createAdaptiveCompressor,
+  compressAdaptively,
+  recommendStrategy,
+  normalizeWhitespace,
+  normalizeWhitespaceBatch,
+  // Memory compression strategies (migrated from memory package)
+  MemoryExtractStrategy,
+  createMemoryExtractStrategy,
+  compressWithMemoryExtract,
+  MemorySummarizeStrategy,
+  createMemorySummarizeStrategy,
+  compressWithMemorySummarize,
+  MemoryAdaptiveStrategy,
+  createMemoryAdaptiveStrategy,
+  compressWithMemoryAdaptive,
+} from './compression'
+
 export type {
+  // LLMLingua types
+  LLMLinguaOptions,
+  LLMLinguaResult,
+  LLMLinguaQualityMetrics,
+  LLMLinguaDebugInfo,
+  // Extractive types
+  ExtractiveOptions,
+  ExtractiveResult,
+  ExtractiveQualityMetrics,
+  ExtractiveDebugInfo,
+  ScoredSentence,
+  // Adaptive types
+  AdaptiveOptions,
+  AdaptiveResult,
+  AdaptiveQualityMetrics,
+  AdaptiveDebugInfo,
+  ContentAnalysis,
+  ContentType,
+  LanguageFeatures,
+  CompressionStrategyType,
+  // Common types
+  CommonQualityMetrics,
+  CommonCompressionResult,
+  StrategyRecommendation,
+  // Normalization types
+  NormalizationConfig,
+  NormalizationResult,
+  // Memory compression types (migrated from memory package)
+  MemoryContent,
+  MemoryExtractResult,
+  MemoryExtractOptions,
+  LLMSummarizer,
+  Summarizer,
+  MemorySummarizeResult,
+  MemorySummarizeOptions,
+  MemoryAdaptiveResult,
+  MemoryAdaptiveOptions,
+  MemoryTruncateResult,
+  MemoryNoCompressionResult,
+  // Legacy compression types (deprecated - for backward compatibility)
   DynamicCompressionConfig,
-  CompressionStrategy,
-  CompressionResult,
+  QualityMetrics,
   CompressionContext,
-  QualityMetrics as CompressionQualityMetrics,
-} from './compression/dynamic-compression'
+} from './compression'
 
 // Token counting exports (legacy compatibility)
-export { TokenCounter } from './legacy-compatibility'
+export {
+  TokenCounter,
+  ContextOptimizer,
+  MemoryCompressor,
+  SemanticChunker,
+  TokenBudgetManager as LegacyTokenBudgetManager,
+  countTokens,
+  countTokensBatch,
+  truncateToTokens,
+} from './legacy-compatibility'
 
-// Tokenizers - using gpt-tokenizer (20x smaller than tiktoken WASM)
+// Memory Token Budget Manager (migrated from memory package)
+export {
+  MemoryTokenBudgetManager,
+  createMemoryTokenBudgetManager,
+  MemoryBudgetPresets,
+} from './budget/memory-budget'
+export type {
+  MemoryBudgetType,
+  MemoryTokenAllocation,
+  MemoryTokenBudgetConfig,
+  MemoryTokenBreakdown,
+  MemoryBudgetContext,
+} from './budget/memory-budget'
+
+// Tokenizers - using gpt-tokenizer (5-6x smaller than tiktoken)
 export { AccurateTokenCounter } from './tokenizers/accurate-counter'
 export type {
   TokenizerConfig,
@@ -111,6 +317,47 @@ export type {
 
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
 
+// Provider-Native Token Counting - 100% accurate counting using provider APIs
+export {
+  ProviderNativeCounter,
+  providerNativeCount,
+} from './tokenizers/provider-native-counter'
+export type {
+  ProviderNativeCounterConfig,
+  TokenCountResult,
+} from './tokenizers/provider-native-counter'
+
+// Provider-Native Caching (Anthropic, OpenAI, Google) - 90% savings on cached tokens
+export {
+  // Advanced API (full control)
+  ProviderCachingManager,
+  applyProviderCaching,
+  parseOpenAICacheMetrics,
+  // Simple API (recommended for most use cases)
+  createProviderCache,
+  quickCache,
+  anthropicCache,
+  openaiCache,
+  googleCache,
+  estimateCacheSavings,
+} from './providers'
+export type {
+  CachingProvider,
+  AnthropicCacheControl,
+  AnthropicContentBlock,
+  AnthropicMessage,
+  OpenAICacheConfig,
+  OpenAIUsageMetadata,
+  GeminiCacheConfig,
+  GeminiCachedContent,
+  GeminiCachingMode,
+  ProviderCacheMetadata,
+  ProviderCachingResult,
+  ProviderCachingConfig,
+  CacheableMessage,
+} from './providers/types'
+export type { SimpleProviderCachingConfig } from './providers/simple-caching'
+
 // Text chunking - using llm-splitter (100x smaller than LangChain)
 export { TextChunker, ChunkingStrategy } from './chunking/text-chunker'
 export type {
@@ -118,3 +365,306 @@ export type {
   TextChunk,
   ChunkingResult,
 } from './chunking/text-chunker'
+
+// TOON (Token-Oriented Object Notation) format
+export {
+  ToonOptimizer,
+  TOONParseError,
+  encodeToon,
+  decodeToon,
+  validateToon,
+} from './formats/toon-optimizer'
+export type {
+  ToonConfig,
+  TOONSchema,
+  TOONSchemaField,
+  ValidationResult as TOONValidationResult,
+  ValidationError as TOONValidationError,
+  SavingsEstimate,
+  SavingsInfo,
+} from './formats/toon-optimizer'
+
+// Markdown Optimization - Strip/compress markdown for token reduction
+export {
+  MarkdownOptimizer,
+  stripMarkdown,
+  compressMarkdown,
+} from './formats/markdown-optimizer'
+export type {
+  MarkdownCompressOptions,
+  CodeBlock,
+  SavingsEstimate as MarkdownSavingsEstimate,
+} from './formats/markdown-optimizer'
+
+// HTML Optimization - Convert HTML to text/markdown for token reduction
+export {
+  HTMLOptimizer,
+  htmlToText,
+  htmlToMarkdown,
+} from './formats/html-optimizer'
+export type { HTMLToTextOptions } from './formats/html-optimizer'
+
+// Tiered Cache System
+export { ExactCache } from './cache/exact-cache'
+export type {
+  ExactCacheConfig,
+  ExactCacheResult,
+  ExactCacheStats,
+} from './cache/exact-cache'
+
+export { SmartCache } from './cache/smart-cache'
+export type {
+  SmartCacheConfig,
+  SmartCacheResult,
+  SmartCacheStats,
+} from './cache/smart-cache'
+
+export { TieredCache } from './cache/tiered-cache'
+export type {
+  TieredCacheConfig,
+  TieredCacheResult,
+  CacheStats as TieredCacheStats,
+  TierStats,
+  PrefetchItem,
+} from './cache/tiered-cache'
+
+// Markdown Compression
+export {
+  MarkdownCompressor,
+  CompressionLevel,
+} from './compression/markdown-compressor'
+export type {
+  MarkdownCompressorConfig,
+  CompressionResult as MarkdownCompressionResult,
+} from './compression/markdown-compressor'
+
+// Routing - Complexity Analysis & Model Selection
+export {
+  ComplexityAnalyzer,
+  ComplexityLevel,
+} from './routing/complexity-analyzer'
+export type {
+  ComplexityAnalyzerConfig,
+  ComplexityResult,
+  ComplexityFactors,
+  ComplexityWeights,
+} from './routing/complexity-analyzer'
+
+export {
+  ModelRouter,
+  ModelRouterBuilder,
+  RoutingStrategy,
+} from './routing/model-router'
+export type {
+  ModelRouterConfig,
+  ModelConfig,
+  ModelTier,
+  RoutingOptions,
+  RoutingResult,
+  RouterStats,
+} from './routing/model-router'
+
+// React Hooks
+export {
+  // Simple hooks (recommended starting point)
+  useTokenCount,
+  // Full-featured hooks
+  useTieredCache,
+  useModelRouter,
+  useOptimizationPipeline,
+  // Token budget monitoring
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  isValidBudgetMonitorModel,
+  estimateTokenCost,
+} from './hooks'
+export type {
+  // Simple hook types
+  UseTokenCountOptions,
+  UseTokenCountReturn,
+  // Full-featured hook types
+  UseTieredCacheConfig,
+  UseTieredCacheReturn,
+  UseModelRouterConfig,
+  UseModelRouterReturn,
+  OptimizationPipelineConfig,
+  PipelineResult,
+  PipelineStats,
+  UseOptimizationPipelineReturn,
+  // Token budget monitoring types
+  TokenUsageStatus,
+  TokenUsage,
+  TrimResult,
+  BudgetMessage,
+  TokenBudgetConfig,
+  TokenBudgetMonitorReturn,
+  BudgetMonitorModel,
+  TokenCostEstimate,
+  ModelName, // Backward compatibility
+} from './hooks'
+
+// React Components
+export { TokenBudgetBar, useTokenBudget } from './components'
+export type {
+  BudgetStatus as TokenBudgetStatus,
+  TokenBudgetTheme,
+  TokenBudgetBarProps,
+  UseTokenBudgetConfig,
+  UseTokenBudgetReturn,
+} from './components'
+
+// Token Cost Preview (React)
+export { TokenCostPreview, useTokenEstimate } from './react'
+export type {
+  TokenCostPreviewProps,
+  UseTokenEstimateOptions,
+  TokenEstimate,
+} from './react'
+
+// Token Usage Meter (React) - Animated + Static versions
+export {
+  TokenUsageMeter,
+  TokenUsageMeterStatic,
+  MODEL_PRICING_PRESETS,
+} from './react'
+export type {
+  TokenUsage as TokenMeterUsage,
+  ModelPricing as TokenMeterPricing,
+  TokenUsageMeterProps,
+  TokenUsageStatic as TokenMeterUsageStatic,
+  ModelPricingStatic as TokenMeterPricingStatic,
+  TokenUsageMeterStaticProps,
+} from './react'
+
+// Token Optimization Components (React) - Badge, Panel, Dashboard
+export {
+  TokenOptimizationBadge,
+  TokenOptimizationPanel,
+  TokenOptimizationDashboard,
+  createEmptyStats,
+} from './react'
+export type {
+  TokenOptimizationBadgeProps,
+  TokenOptimizationPanelProps,
+  TokenOptimizationDashboardProps,
+  OptimizationMetrics,
+  TokenOptimizationStats,
+} from './react'
+
+// Accessibility - WCAG 2.1 AA compliant utilities
+export {
+  // Screen reader announcements
+  announce,
+  announceTokenUsage,
+  announceCost,
+  announceCompression,
+  announceThresholdCrossing,
+  cleanupAnnouncer,
+  // React hooks for accessibility
+  useTokenAnnouncer,
+  useTokenKeyboardShortcuts,
+  usePrefersReducedMotion,
+  usePrefersHighContrast,
+  // Accessible components
+  AccessibleTokenDisplay,
+  MemoizedAccessibleTokenDisplay,
+  useTokenDisplayState,
+} from './accessibility'
+export type {
+  AnnouncementPriority,
+  TokenAnnouncerOptions,
+  UseTokenAnnouncerReturn,
+  KeyboardShortcutOptions,
+  ReducedMotionOptions,
+  AccessibleTokenDisplayProps,
+  TokenDisplayState,
+} from './accessibility'
+
+// ============================================================================
+// Production & Enterprise Readiness Features
+// ============================================================================
+
+// Error Handling System
+export {
+  // Base errors
+  TokenOptimizationError,
+  TokenErrorCode,
+  // Helpful errors with suggestions and docs links
+  HelpfulError,
+  UnsupportedModelError,
+  TokenBudgetExceededError,
+  ValidationError,
+  CacheError,
+  CompressionError,
+  QualityThresholdError,
+  SecurityViolationError,
+  // Factory function
+  createError,
+  // Utilities
+  isRecoverable,
+  withRetry,
+  withTimeout,
+  wrapError,
+} from './errors'
+export type { RetryOptions } from './errors'
+
+// Health Check System
+export {
+  HealthChecker,
+  createHealthEndpoint,
+  createLivenessCheck,
+  createReadinessCheck,
+} from './health'
+export type {
+  HealthStatus,
+  ComponentHealth,
+  HealthMetrics,
+  HealthCheckerConfig,
+} from './health'
+
+// Observability System
+export {
+  Logger,
+  MetricsCollector,
+  Tracer,
+  createObservability,
+} from './observability'
+export type {
+  ObservabilityConfig,
+  MetricsHandler,
+  LogHandler,
+  TraceHandler,
+  Span,
+  MetricsSnapshot,
+  LogLevel,
+} from './observability'
+
+// Resilience - Circuit Breaker
+export {
+  CircuitBreaker,
+  CircuitBreakerRegistry,
+  createCircuitBreaker,
+} from './resilience/circuit-breaker'
+export type {
+  CircuitBreakerConfig,
+  CircuitBreakerStats,
+  CircuitState,
+} from './resilience/circuit-breaker'
+
+// ============================================================================
+// Simplified API (Recommended Entry Point)
+// ============================================================================
+
+// Factory for non-React usage
+export { createOptimizer, OptimizerPresets } from './factory'
+export type { OptimizerConfig, OptimizerPreset, Optimizer } from './factory'
+
+// Unified React hook (recommended)
+export { useTokenOptimization } from './hooks/use-token-optimization'
+export type {
+  UseTokenOptimizationConfig,
+  UseTokenOptimizationReturn,
+  TokenOptimizationPreset,
+} from './hooks/use-token-optimization'

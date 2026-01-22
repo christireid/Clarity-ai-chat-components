@@ -90,18 +90,18 @@ export default function DocumentIntegrationPage() {
         <h2>Basic Usage</h2>
         <p>Integrate with document platforms:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
 function DocumentSelector() {
   return (
     <DocumentIntegration
       platforms={['google-docs', 'notion', 'confluence']}
       onDocumentSelect={(document) => {
-        logger.debug('Selected document:', document.metadata.title)
+        console.log('Selected document:', document.metadata.title)
         // Use document content for RAG
       }}
       onContentExtract={(content) => {
-        logger.debug('Extracted content:', content.text)
+        console.log('Extracted content:', content.text)
         // Process content chunks
       }}
     />
@@ -114,7 +114,7 @@ function DocumentSelector() {
         <h2>Custom Fetch Functions</h2>
         <p>Provide custom fetch and list functions:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
 function CustomIntegration() {
   return (
@@ -138,7 +138,7 @@ function CustomIntegration() {
         <h2>Document Export</h2>
         <p>Export documents in various formats:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
 function WithExport() {
   return (
@@ -161,7 +161,7 @@ function WithExport() {
         <h2>Multi-Select</h2>
         <p>Enable multi-select for multiple documents:</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
 function MultiSelectDocs() {
   return (
@@ -181,7 +181,7 @@ function MultiSelectDocs() {
         <h2>RAG Integration</h2>
         <p>Use documents for RAG (Retrieval-Augmented Generation):</p>
         <CodePlayground
-          initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react/internal'
+          initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react'
 
 function RAGIntegration() {
   const { extractChunks } = useDocumentIntegration()

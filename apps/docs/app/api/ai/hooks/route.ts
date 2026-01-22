@@ -15,6 +15,10 @@ import { getLogger } from '@/lib/logging'
 
 const logger = getLogger('ai-hooks-api')
 
+// Ensure route is dynamic
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * AI-Optimized Hooks API
  *
@@ -1561,13 +1565,21 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Hooks API] Error:', error)
+    // Log error for debugging
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    console.error('[AI Hooks API] Error:', errorMessage)
+    if (errorStack) {
+      console.error('[AI Hooks API] Stack:', errorStack)
+    }
 
+    // Return proper JSON error response
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',
       'An unexpected error occurred while fetching hooks',
       '/api/ai/hooks',
-      error instanceof Error ? error.message : undefined
+      process.env.NODE_ENV === 'development' ? errorMessage : undefined
     )
 
     return NextResponse.json(errorResponse, {

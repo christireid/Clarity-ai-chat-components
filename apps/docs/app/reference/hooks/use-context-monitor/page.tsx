@@ -71,7 +71,7 @@ export default function UseContextMonitorPage() {
         <h2>Basic Usage</h2>
         <p>Monitor context utilization:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ContextMonitor({ messages }: { messages: Message[] }) {
@@ -101,7 +101,7 @@ function ContextMonitor({ messages }: { messages: Message[] }) {
         <h2>Efficiency Metrics</h2>
         <p>Track information density, recency, and relevance:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
 function EfficiencyMetrics({ messages }: { messages: Message[] }) {
   const { utilization } = useContextMonitor(messages, {
@@ -126,16 +126,16 @@ function EfficiencyMetrics({ messages }: { messages: Message[] }) {
         <h2>Optimization Recommendations</h2>
         <p>Get intelligent recommendations for context optimization:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
 function WithRecommendations({ messages }: { messages: Message[] }) {
   const { recommendations } = useContextMonitor(messages, {
     maxTokens: 128000,
     enableRecommendations: true,
     onRecommendation: (rec) => {
-      logger.debug(\`Recommendation: \${rec.description}\`)
-      logger.debug(\`Estimated savings: \${rec.estimatedSavings} tokens\`)
-      logger.debug(\`Action: \${rec.action}\`)
+      console.log(\`Recommendation: \${rec.description}\`)
+      console.log(\`Estimated savings: \${rec.estimatedSavings} tokens\`)
+      console.log(\`Action: \${rec.action}\`)
     },
   })
 
@@ -158,7 +158,7 @@ function WithRecommendations({ messages }: { messages: Message[] }) {
         <h2>Context Warnings</h2>
         <p>Handle context warnings with callbacks:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
 function WithWarnings({ messages }: { messages: Message[] }) {
   const { warnings } = useContextMonitor(messages, {
@@ -168,10 +168,10 @@ function WithWarnings({ messages }: { messages: Message[] }) {
         console.error(warning.message)
         // Show critical alert
       } else if (warning.level === 'warning') {
-        logger.warn(warning.message)
+        console.warn(warning.message)
         // Show warning notification
       }
-      logger.debug('Recommendation:', warning.recommendation)
+      console.log('Recommendation:', warning.recommendation)
     },
   })
 
@@ -193,7 +193,7 @@ function WithWarnings({ messages }: { messages: Message[] }) {
         <h2>Context Breakdown</h2>
         <p>Analyze token usage by category:</p>
         <CodePlayground
-          initialCode={`import { useContextMonitor } from '@clarity-chat/react/internal'
+          initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
 function Breakdown({ messages }: { messages: Message[] }) {
   const { utilization } = useContextMonitor(messages, {
@@ -305,7 +305,7 @@ function Breakdown({ messages }: { messages: Message[] }) {
           </li>
           <li>
             <a href="/reference/hooks/use-token-optimization-enhanced">
-              useTokenOptimizationEnhanced
+              useTokenOptimization
             </a>{' '}
             - Token optimization
           </li>

@@ -260,7 +260,7 @@ function MessageOptimizedInner({
         {/* Content */}
         <div
           className={cn(
-            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+            !isUser && 'prose prose-sm dark:prose-invert max-w-3xl mx-auto',
             isUser &&
               'bg-primary text-primary-foreground px-4 py-2 rounded-lg inline-block'
           )}

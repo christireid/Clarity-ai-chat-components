@@ -7,8 +7,8 @@
  * **Migration:**
  * ```tsx
  * // Before (deprecated)
- * import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
- * const optimization = useTokenOptimizationEnhanced({ ... })
+ * import { useTokenOptimization } from '@clarity-chat/react'
+ * const optimization = useTokenOptimization({ ... })
  *
  * // After (recommended in v3)
  * import { useTokenOptimization } from '@clarity-chat/react'
@@ -100,7 +100,7 @@ function getPresetConfig(preset) {
  * @example
  * ```tsx
  * // Using a preset for quick setup
- * const optimizer = useTokenOptimizationEnhanced({ preset: 'balanced' })
+ * const optimizer = useTokenOptimization({ preset: 'balanced' })
  *
  * // Or customize individual options
  * const {
@@ -112,7 +112,7 @@ function getPresetConfig(preset) {
  *   getPrefill,
  *   stats,
  *   resetStats
- * } = useTokenOptimizationEnhanced({
+ * } = useTokenOptimization({
  *   model: 'claude-3-5-sonnet',
  *   enableToon: true,
  *   enablePromptCaching: true,
@@ -139,7 +139,7 @@ function getPresetConfig(preset) {
  * console.log(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
  * ```
  */
-export function useTokenOptimizationEnhanced(options = {}) {
+export function useTokenOptimization(options = {}) {
     // Apply presets
     const presetConfig = getPresetConfig(options.preset);
     const { model = 'gpt-4o', enableToon = presetConfig.enableToon ?? true, toonMinSavings = 20, enableAccurateTokenization = true, enablePromptCaching = presetConfig.enablePromptCaching ?? false, cachingProvider = 'auto', enableSemanticCaching = presetConfig.enableSemanticCaching ?? false, similarityThreshold = 0.85, persistCache = false, enablePromptCompression = presetConfig.enablePromptCompression ?? true, compressionLevel = presetConfig.compressionLevel ?? 'balanced', compressionConfig = {}, enableCostTracking = true, budget, onBudgetExceeded, enableStats = true, 

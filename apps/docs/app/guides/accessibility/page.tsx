@@ -41,6 +41,8 @@ export default function AccessibilityGuidePage() {
           <li>
             ✅ Touch target sizing (≥ 44&nbsp;px) and motion preference support
           </li>
+          <li>✅ Automated accessibility testing with axe-core integration</li>
+          <li>✅ Real-time accessibility violation detection in Storybook</li>
         </ul>
         <Callout type="success" title="Certified coverage">
           Review the full audit in <code>ACCESSIBILITY_CERTIFICATION.md</code>.
@@ -61,7 +63,7 @@ export default function AccessibilityGuidePage() {
   KeyboardShortcutsProvider,
   useKeyboardShortcut,
   defaultShortcuts,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function AppShortcuts({ children }: { children: React.ReactNode }) {
   useKeyboardShortcut(['Ctrl+Enter', 'Cmd+Enter'], () => sendMessage(), {
@@ -70,7 +72,7 @@ function AppShortcuts({ children }: { children: React.ReactNode }) {
     category: 'Chat',
   })
 
-  useKeyboardShortcut(['?'], () => logger.debug('Help shown'), {
+  useKeyboardShortcut(['?'], () => console.log('Help shown'), {
     id: 'help',
     description: 'Show keyboard shortcuts',
     category: 'General',
@@ -110,7 +112,7 @@ export function AppShell() {
   useFocusTrap,
   useRovingTabIndex,
   useFocusVisible,
-} from '@clarity-chat/react/internal'
+} from '@clarity-chat/react'
 
 function CommandPalette({ onClose }: { onClose: () => void }) {
   const dialogRef = useFocusTrap<HTMLDivElement>()
@@ -163,7 +165,7 @@ function CommandPalette({ onClose }: { onClose: () => void }) {
         </p>
         <CodeBlock
           language="tsx"
-          code={`import { ScreenReaderAnnouncement } from '@clarity-chat/react/internal'
+          code={`import { ScreenReaderAnnouncement } from '@clarity-chat/react'
 
 function StreamingStatus({ step }: { step: string }) {
   return (
@@ -193,12 +195,67 @@ function ErrorBanner({ message }: { message: string }) {
       </section>
 
       <section className="docs-section">
-        <h2>Testing &amp; Regression Checks</h2>
+        <h2>Automated Accessibility Testing</h2>
+        <p>
+          Clarity Chat includes comprehensive automated accessibility testing tools
+          that integrate with your development workflow and CI/CD pipeline.
+        </p>
+
+        <h3>Storybook Integration</h3>
+        <p>
+          Every component in Storybook automatically includes accessibility testing:
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`// Accessibility violations appear as notifications in Storybook
+// Click to view detailed reports with remediation suggestions
+<Story>
+  <MyComponent />
+</Story>`}
+        />
+
+        <h3>Programmatic Testing</h3>
+        <CodeBlock
+          language="tsx"
+          code={`import { testAccessibility, assertWCAG2_1AACompliance } from '@clarity-chat/react'
+
+function MyTest() {
+  const component = <MyAccessibleComponent />
+
+  it('should pass WCAG 2.1 AA', async () => {
+    const report = await testAccessibility(component)
+    assertWCAG2_1AACompliance(report)
+  })
+}`}
+        />
+
+        <h3>Color Contrast Validation</h3>
+        <CodeBlock
+          language="tsx"
+          code={`import { checkColorContrast } from '@clarity-chat/react'
+
+const report = await testAccessibility(component)
+const contrastResults = checkColorContrast(report)
+
+if (contrastResults.violations.length > 0) {
+  console.warn('Color contrast violations found:', contrastResults.violations)
+}`}
+        />
+
+        <h2>Continuous Integration</h2>
         <p>
           Automation keeps you compliant as the product evolves. Run the
           following in CI:
         </p>
         <ul>
+          <li>
+            <code>pnpm security:audit</code> – Automated accessibility and security
+            vulnerability scanning
+          </li>
+          <li>
+            <code>pnpm test:visual</code> – Chromatic visual regression testing
+            with accessibility checks
+          </li>
           <li>
             <code>npm run lint</code> – catches missing ARIA, invalid roles, and
             low-level issues

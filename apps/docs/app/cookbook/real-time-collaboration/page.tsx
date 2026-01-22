@@ -48,7 +48,7 @@ export default function RealTimeCollaborationRecipePage() {
         </p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
-import { CollaborativeEditor } from '@clarity-chat/react/internal'
+import { CollaborativeEditor } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function CollaborativeChat({ messageId }: { messageId: string }) {
@@ -189,7 +189,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
         <h2>Complete Example</h2>
         <p>Complete collaborative chat implementation:</p>
         <CodePlayground
-          initialCode={`import { CollaborativeEditor, useCollaborativeSession } from '@clarity-chat/react/internal'
+          initialCode={`import { CollaborativeEditor, useCollaborativeSession } from '@clarity-chat/react'
 import { useEffect, useRef } from 'react'
 
 function CollaborativeChatApp({ messageId }: { messageId: string }) {

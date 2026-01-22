@@ -272,7 +272,7 @@ const TREE_DATA: ClarityTreeItem[] = [
             description: 'Track usage',
           },
           {
-            label: 'useTokenOptimizationEnhanced',
+            label: 'useTokenOptimization',
             type: 'hook',
             icon: 'symbol-method',
             description: 'Optimize tokens',

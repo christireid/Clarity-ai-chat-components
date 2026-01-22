@@ -6,8 +6,8 @@
  */
 
 import * as React from 'react'
-import { type TokenOptimizationStats } from '../../hooks/token/use-token-optimization'
-import { cn } from '@clarity-chat/primitives'
+import type { TokenOptimizationStats } from '../../hooks/clarity-tokens/use-token-optimization-stats'
+import { cn, glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
 
 export interface TokenOptimizationBadgeProps {
   /** Statistics to display */
@@ -68,7 +68,15 @@ export function TokenOptimizationBadge({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2.5 rounded-full border border-border/40 bg-muted/60 shadow-sm px-3 py-1.5',
+        glassVariants({
+          intensity: 'subtle',
+          gradient: getSemanticGradient('success'),
+          border: 'medium',
+          animated: 'glow',
+          hover: 'glow',
+        }),
+        'inline-flex items-center gap-2.5 rounded-full',
+        'animate-in fade-in slide-in-from-top-2 duration-300',
         sizeClasses[size],
         className
       )}

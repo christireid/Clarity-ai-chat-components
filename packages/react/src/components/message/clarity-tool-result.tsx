@@ -92,7 +92,7 @@ function DefaultToolResult({
   return (
     <Card className="mt-2">
       <CardHeader>
-        <div className="text-sm font-semibold">Tool: {toolCall.name}</div>
+        <h4 className="text-sm font-semibold">Tool: {toolCall.name}</h4>
       </CardHeader>
       <CardContent>
         <pre className="text-xs overflow-auto max-h-64 bg-muted p-2 rounded">

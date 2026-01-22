@@ -23,65 +23,65 @@ export const PARTICLE_COUNTS = {
 // PHYSICS CONFIG
 // =============================================================================
 
-/** Physics constants for particle movement */
+/** Physics constants for particle movement - Enhanced for spectacular effect */
 export const PHYSICS = {
-  /** Base speed multiplier for particle drift */
-  baseSpeed: 0.0003,
-  /** Noise frequency for organic movement */
-  noiseFrequency: 0.0008,
-  /** Noise amplitude for position offset */
-  noiseAmplitude: 0.15,
-  /** Mouse repulsion radius in world units */
-  repulsionRadius: 2.5,
-  /** Default repulsion strength (0-1) */
-  repulsionStrength: 0.5,
+  /** Base speed multiplier for particle drift - Slightly faster */
+  baseSpeed: 0.0004,
+  /** Noise frequency for organic movement - More dynamic */
+  noiseFrequency: 0.001,
+  /** Noise amplitude for position offset - More fluid */
+  noiseAmplitude: 0.2,
+  /** Mouse repulsion radius in world units - Larger for more impact */
+  repulsionRadius: 3.5,
+  /** Default repulsion strength (0-1) - Stronger reaction */
+  repulsionStrength: 0.7,
   /** Easing factor for smooth repulsion (lower = smoother) */
-  repulsionEasing: 0.08,
+  repulsionEasing: 0.1,
   /** How quickly particles return to original position */
-  returnForce: 0.02,
-  /** Maximum displacement from original position */
-  maxDisplacement: 3.0,
+  returnForce: 0.025,
+  /** Maximum displacement from original position - More dramatic */
+  maxDisplacement: 4.0,
 } as const
 
 // =============================================================================
 // VISUAL CONFIG
 // =============================================================================
 
-/** Visual configuration for particle rendering */
+/** Visual configuration for particle rendering - Premium luxury feel */
 export const VISUALS = {
-  /** Base particle size in world units */
-  particleSize: 0.08,
-  /** Size variation range (multiplier) */
-  sizeVariation: 0.5,
+  /** Base particle size in world units - Slightly larger */
+  particleSize: 0.1,
+  /** Size variation range (multiplier) - More variety */
+  sizeVariation: 0.6,
   /** Minimum z-depth (back of scene) */
   depthMin: -5,
   /** Maximum z-depth (front of scene) */
   depthMax: 2,
   /** Depth-based size attenuation factor */
   depthAttenuation: 0.15,
-  /** Particle opacity range */
-  opacityMin: 0.3,
-  opacityMax: 0.9,
-  /** Particle glow intensity (inner glow) */
-  glowIntensity: 0.6,
+  /** Particle opacity range - Brighter */
+  opacityMin: 0.4,
+  opacityMax: 1.0,
+  /** Particle glow intensity (inner glow) - Enhanced glow */
+  glowIntensity: 0.8,
 } as const
 
 // =============================================================================
 // BLOOM/POST-PROCESSING CONFIG
 // =============================================================================
 
-/** Post-processing bloom effect settings */
+/** Post-processing bloom effect settings - Premium Luxury Glow */
 export const BLOOM = {
-  /** Bloom intensity for dark mode (0-3) */
-  intensityDark: 1.5,
+  /** Bloom intensity for dark mode (0-3) - Boosted for luxury feel */
+  intensityDark: 2.2,
   /** Bloom intensity for light mode (0-3) */
-  intensityLight: 0.8,
-  /** Bloom luminance threshold */
-  luminanceThreshold: 0.2,
-  /** Bloom smoothing factor */
-  luminanceSmoothing: 0.9,
+  intensityLight: 1.2,
+  /** Bloom luminance threshold - Lower for more glow */
+  luminanceThreshold: 0.15,
+  /** Bloom smoothing factor - Higher for smoother glow */
+  luminanceSmoothing: 0.95,
   /** Bloom radius (blur spread) */
-  radius: 0.8,
+  radius: 1.0,
   /** Number of mipmap levels for bloom */
   mipmapBlur: true,
 } as const
@@ -90,23 +90,23 @@ export const BLOOM = {
 // COLORS
 // =============================================================================
 
-/** Theme-aware particle colors */
+/** Theme-aware particle colors - Premium Indigo to Pink Palette */
 export const COLORS = {
   dark: {
-    /** Primary particle color (cyan) */
-    primary: '#60a5fa',
-    /** Secondary particle color (purple) */
-    secondary: '#a78bfa',
-    /** Tertiary color for variation */
-    tertiary: '#38bdf8',
+    /** Primary particle color (premium indigo) */
+    primary: '#818cf8',
+    /** Secondary particle color (vibrant pink) */
+    secondary: '#f472b6',
+    /** Tertiary color for variation (purple) */
+    tertiary: '#c084fc',
   },
   light: {
-    /** Primary particle color (deep blue) */
-    primary: '#3b82f6',
-    /** Secondary particle color (indigo) */
-    secondary: '#8b5cf6',
-    /** Tertiary color for variation */
-    tertiary: '#0ea5e9',
+    /** Primary particle color (deep indigo) */
+    primary: '#6366f1',
+    /** Secondary particle color (rose pink) */
+    secondary: '#ec4899',
+    /** Tertiary color for variation (purple) */
+    tertiary: '#a855f7',
   },
 } as const
 

@@ -4,16 +4,27 @@
  * Basic token counting without external dependencies for testing
  */
 
+/**
+ * Configuration for SimpleTokenCounter
+ */
+export interface SimpleTokenCounterConfig {
+  model: string
+  cacheSize: number
+  enableCaching: boolean
+  enableMonitoring: boolean
+}
+
 export class SimpleTokenCounter {
   private static readonly AVG_CHARS_PER_TOKEN = 4
   private cache: Map<string, number> = new Map()
   private hits = 0
   private misses = 0
   private totalCalls = 0
+  private config: SimpleTokenCounterConfig
 
   constructor(
     private enableCaching = true,
-    private config: any = {}
+    config: Partial<SimpleTokenCounterConfig> = {}
   ) {
     this.config = {
       model: 'gpt-4',

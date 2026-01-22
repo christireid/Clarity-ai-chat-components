@@ -6,8 +6,8 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
-import type { ChainOfThoughtStep } from '@clarity-chat/react/internal'
+import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
+import type { ChainOfThoughtStep } from '@clarity-chat/react'
 
 // Demo component
 function ChainOfThoughtDemo() {
@@ -192,7 +192,7 @@ export default function ChainOfThoughtPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
+        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -207,7 +207,7 @@ import '@clarity-chat/react/styles.css'`}
       <ComponentPreview
         title="Basic Chain of Thought"
         description="Simple reasoning visualization with multiple steps"
-        code={`import { ChainOfThought } from '@clarity-chat/react/internal'
+        code={`import { ChainOfThought } from '@clarity-chat/react'
 
 function Example() {
   const steps = [
@@ -252,7 +252,7 @@ function Example() {
       </p>
 
       <EnhancedCodeBlock
-        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react/internal'
+        code={`import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
 
 function Example() {
   const { steps, addStep, updateStep, isProcessing } = useChainOfThought()

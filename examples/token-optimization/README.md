@@ -132,10 +132,10 @@ function countTokens(text: string): number {
 ### Using with Clarity Chat
 
 ```typescript
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+import { useTokenOptimization } from '@clarity-chat/react'
 
 function MyComponent() {
-  const { optimizeData, optimizePrompt, prepareMessages, stats } = useTokenOptimizationEnhanced({
+  const { optimizeData, optimizePrompt, prepareMessages, stats } = useTokenOptimization({
     model: 'gpt-4o-mini',
     enableToon: true,
     enablePromptCaching: true,

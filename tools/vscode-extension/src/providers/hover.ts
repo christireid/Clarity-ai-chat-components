@@ -448,12 +448,12 @@ clearMemory()`,
 })`,
     docs: 'https://docs.claritychat.dev/hooks/use-token-budget-monitor',
   },
-  useTokenOptimizationEnhanced: {
-    name: 'useTokenOptimizationEnhanced',
+  useTokenOptimization: {
+    name: 'useTokenOptimization',
     type: 'hook',
     description: 'Advanced token optimization with multiple strategies.',
     returns: '{ optimizedMessages, compressionRatio, suggestedActions }',
-    example: `const { optimizedMessages } = useTokenOptimizationEnhanced({
+    example: `const { optimizedMessages } = useTokenOptimization({
   messages,
   targetTokens: 2000,
   strategies: ['truncate', 'summarize', 'prioritize'],

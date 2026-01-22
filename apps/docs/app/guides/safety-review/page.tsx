@@ -45,7 +45,7 @@ export default function SafetyReviewPage() {
         <h2>PII Detection</h2>
         <p>Detect personally identifiable information:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function PIIDetection({ content }: { content: string }) {
   const highlights = detectPII(content)
@@ -92,7 +92,7 @@ function detectPII(content: string) {
         <h2>Prompt Injection Prevention</h2>
         <p>Prevent prompt injection attacks:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function PromptInjectionDetection({ content }: { content: string }) {
   const highlights = detectPromptInjection(content)
@@ -103,7 +103,7 @@ function PromptInjectionDetection({ content }: { content: string }) {
       highlights={highlights}
       onReject={() => {
         // Reject unsafe content
-        logger.debug('Content rejected due to prompt injection')
+        console.log('Content rejected due to prompt injection')
       }}
     />
   )
@@ -147,7 +147,7 @@ function detectPromptInjection(content: string) {
       content={content}
       highlights={highlights}
       onReject={() => {
-        logger.debug('Content rejected due to jailbreak attempt')
+        console.log('Content rejected due to jailbreak attempt')
       }}
     />
   )
@@ -183,7 +183,7 @@ function detectJailbreak(content: string) {
         <h2>Content Moderation</h2>
         <p>Moderate content for safety:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function ContentModeration({ content }: { content: string }) {
   const highlights = moderateContent(content)
@@ -193,10 +193,10 @@ function ContentModeration({ content }: { content: string }) {
       content={content}
       highlights={highlights}
       onApprove={() => {
-        logger.debug('Content approved')
+        console.log('Content approved')
       }}
       onReject={() => {
-        logger.debug('Content rejected')
+        console.log('Content rejected')
       }}
       onRedact={(highlight) => {
         return redactContent(content, highlight)
@@ -222,7 +222,7 @@ async function moderateContent(content: string) {
         <h2>Complete Safety Review</h2>
         <p>Complete safety review workflow:</p>
         <CodePlayground
-          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react/internal'
+          initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
 function CompleteSafetyReview({ content }: { content: string }) {
   const [highlights, setHighlights] = useState([])

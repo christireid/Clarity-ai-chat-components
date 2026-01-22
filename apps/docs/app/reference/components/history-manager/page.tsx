@@ -102,7 +102,7 @@ export default function HistoryManagerPage() {
         <h2>Basic Usage</h2>
         <p>Manage conversation history with token tracking:</p>
         <CodePlayground
-          initialCode={`import { HistoryManager, type HistoryMessage } from '@clarity-chat/react/internal'
+          initialCode={`import { HistoryManager, type HistoryMessage } from '@clarity-chat/react'
 
 function ChatWithHistory() {
   const [messages, setMessages] = React.useState<HistoryMessage[]>([
@@ -132,7 +132,7 @@ render(<ChatWithHistory />)`}
         <h2>Token Tracking</h2>
         <p>Visualize token usage with color-coded indicators:</p>
         <CodePlayground
-          initialCode={`import { HistoryManager } from '@clarity-chat/react/internal'
+          initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
 function TokenTracking() {
   return (
@@ -154,7 +154,7 @@ function TokenTracking() {
         <h2>Bulk Operations</h2>
         <p>Enable bulk delete and pruning operations:</p>
         <CodePlayground
-          initialCode={`import { HistoryManager } from '@clarity-chat/react/internal'
+          initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
 function BulkOperations() {
   return (
@@ -165,7 +165,7 @@ function BulkOperations() {
       allowBulkDelete={true}
       allowIndividualDelete={true}
       onPrune={(prunedCount, tokensSaved) => {
-        logger.debug(\`Pruned \${prunedCount} messages, saved \${tokensSaved} tokens\`)
+        console.log(\`Pruned \${prunedCount} messages, saved \${tokensSaved} tokens\`)
       }}
     />
   )
@@ -177,7 +177,7 @@ function BulkOperations() {
         <h2>Compact Mode</h2>
         <p>Use compact mode for smaller displays:</p>
         <CodePlayground
-          initialCode={`import { HistoryManager } from '@clarity-chat/react/internal'
+          initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
 function CompactHistory() {
   return (
@@ -197,7 +197,7 @@ function CompactHistory() {
         <h2>Token Thresholds</h2>
         <p>Configure warning and critical thresholds:</p>
         <CodePlayground
-          initialCode={`import { HistoryManager } from '@clarity-chat/react/internal'
+          initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
 function ThresholdHistory() {
   return (

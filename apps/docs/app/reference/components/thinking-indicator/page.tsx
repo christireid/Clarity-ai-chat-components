@@ -33,7 +33,7 @@ export default function ThinkingIndicatorPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Usage</h2>
         <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { ThinkingIndicator } from '@clarity-chat/react/internal'
+          <code>{`import { ThinkingIndicator } from '@clarity-chat/react'
 import type { AIStatus } from '@clarity-chat/types'
 
 function ChatMessages() {

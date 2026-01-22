@@ -45,12 +45,6 @@ export { FeedbackDialog } from './feedback-dialog'
 
 // Markdown & Code
 export { MarkdownCodeBlock } from './markdown-code-block'
-export {
-  MessageMarkdownRenderer,
-  useMarkdownComponents,
-  useMarkdownPlugins,
-  type MessageMarkdownRendererProps,
-} from './markdown-renderer'
 
 // Animations
 export { ConfettiAnimation } from './confetti-animation'

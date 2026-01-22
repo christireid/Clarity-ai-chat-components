@@ -80,6 +80,13 @@ export {
   type UseClarityChatWithToolsReturn,
 } from './hooks/chat/use-clarity-chat-with-tools'
 
+// Chat synchronization hook - cross-device sync with conflict resolution
+export {
+  useChatSync,
+  type ChatSyncOptions,
+  type ChatSyncReturn,
+} from './hooks/chat/use-chat-sync'
+
 // ============================================================================
 // AI COMPONENTS (Citations, Suggestions, Markdown, etc.)
 // ============================================================================
@@ -102,11 +109,7 @@ export {
   type UseSourceCitationReturn,
 } from './components/ai/source-citation'
 
-export {
-  MarkdownRendererEnhanced,
-  type MarkdownRendererProps,
-} from './components/ai/markdown-renderer-enhanced'
-
+// Primary markdown renderer (unified API with LaTeX, Mermaid, syntax highlighting)
 export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
 
 // Chain of Thought - AI reasoning visualization
@@ -174,11 +177,16 @@ export {
   type UseToolExecutionReturn,
 } from './components/ai/tool-execution-card'
 
+// Tool UI Registry
+export { createToolUIRegistry } from './agents/tool-ui-registry'
+
 // Code blocks
 export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
+  InlineCode,
+  type InlineCodeProps,
 } from './components/code/CodeBlock'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
@@ -222,7 +230,9 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export { default as MessageList } from './components/chat/virtualized-message-list'
+export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
+export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
+export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
   AutoTanStackMessageList,
@@ -237,6 +247,7 @@ export {
 export { StreamingMessage } from './components/message/streaming-message'
 export { ThinkingIndicator } from './components/message/thinking-indicator'
 export { TypingIndicator } from './components/message/typing-indicator'
+export { ClarityToolResult } from './components/message/clarity-tool-result'
 
 // FlowToken Integration (optional - requires 'flowtoken' peer dependency)
 export {
@@ -382,6 +393,8 @@ export {
   MessageSearch,
   MessageSearchWithSuspense,
 } from './components/search/message-search'
+export { SemanticMessageSearch } from './components/search/advanced-message-search-semantic'
+export { AdvancedMessageSearch } from './components/search/advanced-message-search'
 
 // Prompts and Suggestions
 export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
@@ -422,19 +435,7 @@ export { EmptyChatState } from './components/ui/empty-state'
 // ADDITIONAL HOOKS (For DocsAssistant and similar use cases)
 // ============================================================================
 
-// Toast notifications
-export {
-  useToast,
-  ToastProvider,
-  ToastContainer,
-  type ToastContextValue,
-  type ToastProviderProps,
-  type ToastType,
-  type ToastPosition,
-  type Toast,
-} from './components/ui/toast'
-
-// Sonner-based toast (alternative, more feature-rich)
+// Toast notifications (Sonner-based - modern, feature-rich)
 export {
   ClarityToaster,
   toast,
@@ -445,6 +446,162 @@ export {
 
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
+
+// Quick Start Helpers - Ultra-simple APIs
+export {
+  chat,
+  chatWithMemory,
+  enterpriseChat,
+  streamingChat,
+  ChatBuilder,
+  ChatPresets,
+} from './utils/quick-start.tsx'
+
+// Development Helpers - DX utilities
+export {
+  validateSetup,
+  ConfigPresets,
+  createConfig,
+  devLog,
+  QuickStartTemplates,
+  showQuickStart,
+  DevPerformanceMonitor,
+} from './utils/dev-helpers'
+
+// Setup Wizard - Interactive configuration
+export {
+  SetupWizard,
+  QuickSetup,
+  interactiveSetup,
+} from './utils/setup-wizard.tsx'
+
+// Lazy Loading - Performance optimizations
+export {
+  createLazyComponent,
+  createLazyComponentWithBoundary,
+  preloadComponent,
+  loadWhen,
+  FeatureFlags,
+  loadFeature,
+  LazyComponents,
+  LazyLoadPerformanceMonitor,
+} from './utils/lazy-loading.tsx'
+
+// Migration Helpers - Smooth API transitions
+export {
+  migrateToV1,
+  createMigrationWrapper,
+  MigrationPresets,
+  applyMigration,
+  validateMigration,
+  MigrationUtils,
+} from './utils/migration-helpers.tsx'
+
+// IntelliSense Helpers - Enhanced TypeScript DX
+export type {
+  ChatApiConfig,
+  ChatPreset,
+  MemoryConfigHelper,
+  StreamingConfigHelper,
+  RateLimitConfigHelper,
+  HeaderConfigHelper,
+  MessageActionsConfigHelper,
+  PromptsConfigHelper,
+  ErrorHandlingConfigHelper,
+  ChatErrorType,
+  ErrorHandlingConfigHelper as ErrorConfigHelper,
+} from './types/intellisense-helpers'
+
+// Component Composition - Easy component building
+export {
+  composeComponents,
+  withProps,
+  conditional,
+  Compositions,
+  createGridLayout,
+  FlexLayouts,
+  composeHooks,
+  transformProps,
+  withDefaults,
+  withVariants,
+  createContextProvider,
+} from './utils/component-composition'
+
+// Theme Helpers - Easy theming and customization
+export {
+  ThemePresets,
+  createThemeFromPalette,
+  createThemeFromCSSVariables,
+  mergeThemes,
+  createThemeVariant,
+  createThemeClasses,
+  applyThemeToCSS,
+  useTheme,
+  useResponsiveTheme,
+  usePersistentTheme,
+  ThemeProvider,
+  ThemeToggle,
+  ThemeSelector,
+} from './utils/theme-helpers'
+
+// Accessibility Helpers - Enhanced A11y support
+export {
+  createAccessibleButtonProps,
+  createAccessibleDialogProps,
+  createAccessibleListboxProps,
+  useKeyboardListNavigation,
+  useChatInputKeyboard,
+  announceToScreenReader,
+  useScreenReaderAnnouncements,
+  LiveRegion,
+  useFocusManagement,
+  isKeyboardAccessible,
+  getFocusableElements,
+  validateChatAccessibility,
+  useMotionPreferences,
+  createAccessibleMotionProps,
+  useHighContrastMode,
+  applyHighContrastAdjustments,
+  SkipLink,
+  ScreenReaderOnly,
+} from './utils/accessibility-helpers'
+
+// Testing Helpers - Comprehensive testing toolkit
+export {
+  mockChatAPI,
+  MockWebSocket,
+  MockLocalStorage,
+  createMockFetch,
+  renderChatWithDefaults,
+  createTestMessages,
+  createMockChatState,
+  createMockClarityChatHook,
+  asyncTestUtils,
+  domTestUtils,
+  a11yTestUtils,
+  performanceTestUtils,
+  e2eTestUtils,
+  testConfigs,
+  TestWrapper,
+  createTestComponent,
+  testDataFactories,
+  chatAssertions,
+  vi,
+  Mock,
+} from './utils/testing-helpers'
+
+// Migration Helpers - Easy migration from other libraries
+export {
+  VercelAdapter,
+  OpenAIAdapter,
+  ChatbotKitAdapter,
+  CustomAdapter,
+  MigrationTracker,
+  MigrationAnalyzer,
+  MigrationPresets,
+  generateMigrationReport,
+  migrateQuick,
+} from './utils/migration-helpers'
 
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
@@ -468,8 +625,7 @@ export { useThrottledCallback } from './hooks/ui/use-throttle'
 // Token tracking
 export { useTokenTracker } from './hooks/token/use-token-tracker'
 
-// Streaming
-export { useStreaming } from './hooks/streaming/use-streaming'
+// Streaming hooks are exported below
 export {
   useSmoothedText,
   smoothingPresets,
@@ -559,3 +715,359 @@ export {
   type ChatEmptyStateProps,
   type ChatLoadingIndicatorProps,
 } from './primitives/chat'
+
+// ============================================================================
+// UNIFIED APP API (Modern, feature-complete)
+// ============================================================================
+
+export {
+  ClarityChatApp,
+  useClarityChatApp,
+  type ClarityChatAppProps,
+  type UseClarityChatAppReturn,
+} from './app-api'
+
+// ============================================================================
+// TOKEN OPTIMIZATION COMPONENTS (Advanced Analytics)
+// ============================================================================
+
+export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
+export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
+export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
+export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  // Note: TokenEstimate type intentionally omitted to avoid conflict with app-api/token-engine.ts
+  // Import directly from '@clarity-chat/token-optimization/react' if needed
+} from './components/token/TokenCostPreview'
+export {
+  TokenUsageMeter,
+  MODEL_PRICING_PRESETS,
+  type TokenUsage,
+  type ModelPricing,
+  type TokenUsageMeterProps,
+} from './components/token/token-usage-meter'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token/token-budget-bar'
+
+// ============================================================================
+// DASHBOARD & ANALYTICS COMPONENTS
+// ============================================================================
+
+export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
+export { PerformanceDashboard } from './components/dashboards/performance-dashboard'
+export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
+export { UsageDashboard } from './components/dashboards/usage-dashboard'
+export { ABTestingDashboard } from './components/dashboards/ab-testing-dashboard'
+export { ConversationAnalyticsDashboard } from './components/dashboards/conversation-analytics-dashboard'
+
+// ============================================================================
+// MESSAGE COMPONENTS (Advanced Features)
+// ============================================================================
+
+export { Message } from './components/message/message'
+export { MessageMetadata } from './components/message/message-metadata'
+export { StreamBlock } from './components/message/stream-block'
+export { StreamCancellation } from './components/message/stream-cancellation'
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+export { MessageList as MessageListComponent } from './components/message/message-list'
+export { ToolInvocationCard } from './components/message/tool-invocation-card'
+export { MessageOptimized } from './components/message/message-optimized'
+
+// ============================================================================
+// CONTEXT & MEMORY COMPONENTS
+// ============================================================================
+
+export { ContextManager } from './components/context/context-manager'
+export { ContextCard } from './components/context/context-card'
+export { ContextVisualizer } from './components/context/context-visualizer'
+export { MemoryInspector } from './components/context/memory-inspector'
+export { ProjectSidebar } from './components/context/project-sidebar'
+export { SettingsPanel } from './components/context/settings-panel'
+
+// ============================================================================
+// ADVANCED AI COMPONENTS
+// ============================================================================
+
+export { PersonaPanel } from './components/ai/persona-panel'
+export { AgentRunFeed } from './components/ai/agent-run-feed'
+export { SessionSummaryCard } from './components/ai/session-summary-card'
+export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
+export { SafetyStatusCard } from './components/ai/safety-status-card'
+export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
+export { AuditLogViewer } from './components/ai/audit-log-viewer'
+export { PromptLibrary } from './components/prompt/prompt-library'
+export { ModelSelector } from './components/ai/model-selector'
+export { createAgent } from './agents'
+
+// ============================================================================
+// ADVANCED INPUT COMPONENTS
+// ============================================================================
+
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+export { FileUpload } from './components/input/file-upload'
+export { InlineVoiceInput } from './components/input/voice-input'
+export { StructuredInputBuilder } from './components/input/structured-input-builder'
+export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
+
+// ============================================================================
+// CONVERSATION & NAVIGATION
+// ============================================================================
+
+export { ConversationList } from './components/conversation/conversation-list'
+export { ConversationTimeline } from './components/conversation/conversation-timeline'
+export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+export { ContextMenu } from './components/navigation'
+export { CommandPalette } from './components/navigation/command-palette'
+export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
+
+// ============================================================================
+// MEDIA & DOCUMENTS
+// ============================================================================
+
+export { DocumentViewer } from './components/media/document-viewer'
+export { MultiModalPreview } from './components/media/multi-modal-preview'
+export { BatchExportDialog } from './components/media/batch-export-dialog'
+
+// ============================================================================
+// FEEDBACK & RETRY COMPONENTS
+// ============================================================================
+
+export { RetryButton } from './components/feedback/retry-button'
+export {
+  ConsoleAlertHandler,
+  useConsoleAlerts,
+  type ConsoleAlert,
+  type ConsoleAlertHandlerProps,
+} from './components/feedback/console-alert-handler'
+
+// ============================================================================
+// UI PRIMITIVES (Tabs and Layout)
+// ============================================================================
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs'
+export { Progress } from './components/ui/progress'
+export { Draggable, DropZone } from './components/ui/draggable'
+
+// ============================================================================
+// ADVANCED HOOKS (Additional commonly-used hooks)
+// ============================================================================
+
+// Chat hooks (advanced)
+export { useAssistant } from './hooks/chat/use-assistant'
+export { useCompletion } from './hooks/chat/use-completion'
+// Note: useTyping hook was removed - use useRealisticTyping instead
+export { useRealisticTyping } from './hooks/input/use-realistic-typing'
+
+// Streaming hooks
+export { useStreamingSSE } from './hooks/streaming/use-streaming-sse'
+export { useStreamingWebSocket } from './hooks/streaming/use-streaming-websocket'
+export { useStreamableUI } from './hooks/streaming/use-streamable-ui'
+export { useStreaming } from './hooks/streaming/use-streaming'
+export { useStreamingChat } from './hooks/streaming/use-streaming-chat'
+
+// Utility hooks
+export { useDebounce } from './hooks/ui/use-debounce'
+export { useWindowSize } from './hooks/ui/use-window-size'
+export { usePrevious } from './hooks/ui/use-previous'
+// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
+// export { useAnimatedValue, AnimatedNumber } from './hooks/ui/use-animated-value'
+
+// Message operations
+export { useMessageOperations } from './hooks/message/use-message-operations'
+
+// Token hooks
+export { useTokenBudgetMonitor } from './hooks/token/use-token-budget-monitor'
+
+// Storage hooks
+export { useIndexedDB } from './hooks/storage/use-indexed-db'
+
+// Performance hooks
+export { useSmartCache } from './hooks/performance/use-smart-cache'
+
+// Context hooks
+export { useContextMonitor } from './hooks/context/use-context-monitor'
+
+// Keyboard navigation
+export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
+
+// Security
+export { SecurityManager, securityManager, useSecurity } from './utils/security'
+
+// Memory & Storage utilities
+export { createMemoryStore } from './memory/create-memory-store'
+
+// Engine creators
+export { createRAGEngine } from './app-api/rag-engine'
+export { createToolsEngine } from './app-api/tools-engine'
+
+// ============================================================================
+// ANIMATION COMPONENTS (UI Feedback & Presence)
+// ============================================================================
+
+// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
+// Feedback Animations - Visual feedback components for user actions
+// export {
+//   FeedbackAnimation,
+//   SuccessCheckmark,
+//   ErrorShake,
+//   PulseAttention,
+//   RippleEffect,
+//   ConfettiEffect,
+//   GlowEffect,
+//   BounceIn,
+//   SlideNotification,
+// } from './components/ui/feedback-animation'
+
+// Animated Lists & Presence - List animations and mount/unmount transitions
+// export {
+//   AnimatedList,
+//   AnimatedListItem,
+//   FadePresence,
+//   SlidePresence,
+//   ScalePresence,
+//   StaggerContainer,
+//   AnimatedGrid,
+// } from './components/ui/animated-list'
+
+// ============================================================================
+// AI OPERATIONS COMPONENTS (Prompt Testing & Safety)
+// ============================================================================
+
+// AI Operations - Prompt testing and safety review tools
+export {
+  PromptTestHarness,
+  EvaluationDashboard,
+  SafetyReviewConsole,
+} from './components/ai-ops'
+
+// Enterprise Components
+export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
+export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
+export { ApiTokenManager } from './components/enterprise/api-token-manager'
+export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
+
+// ============================================================================
+// THEME COMPONENTS (Theme Preview & Testing)
+// ============================================================================
+
+// Theme Components - Visual theme preview and contrast testing tools
+// TEMPORARILY COMMENTED OUT TO FIX STORYBOOK BUILD
+// export { ThemeContrastChecker } from './components/theme-components/theme-contrast-checker'
+// export { ThemePreview } from './components/theme-components/theme-preview'
+// export {
+//   ThemePreviewGrid,
+//   ThemePreviewThumbnail,
+// } from './components/theme-components/theme-preview-thumbnail'
+
+// ============================================================================
+// UTILITIES (Performance & Accessibility Testing)
+// ============================================================================
+
+// Performance monitoring
+export {
+  usePerformanceTracking,
+  logPerformanceMetrics,
+  getPerformanceSummary,
+  type UsePerformanceTrackingOptions,
+  type PerformanceMetrics,
+} from './utils/performance-monitoring.tsx'
+
+// Accessibility testing
+export {
+  testAccessibility,
+  assertNoAccessibilityViolations,
+  assertWCAG2_1AACompliance,
+  checkColorContrast,
+  logAccessibilityViolations,
+  generateAccessibilityReportHTML,
+  useAccessibilityTesting,
+  withAccessibilityTesting,
+  type AccessibilityViolation,
+  type AccessibilityReport,
+  type AccessibilityTestOptions,
+} from './utils/accessibility-testing.tsx'
+
+// Visual regression testing
+export {
+  VisualRegressionTester,
+  STANDARD_VIEWPORTS,
+  STANDARD_THEMES,
+  createVisualTestParameters,
+  configureChromaticStory,
+  generateScreenshotName,
+  prepareForVisualTesting,
+  generateVisualRegressionReportHTML,
+  exportVisualTestResults,
+  type VisualTestOptions,
+  type VisualTestResult,
+  type VisualRegressionReport,
+} from './utils/visual-regression'
+
+// Security utilities
+export {
+  sanitizeHTML,
+  sanitizeMarkdown,
+  sanitizeUserInput,
+  detectXSSPatterns,
+  generateCSPHeader,
+  validateCSPDirectives,
+  generateSecurityHeaders,
+  auditComponentSecurity,
+  createSecureContentWrapper,
+  useSecureContent,
+  useCSP,
+  securityMonitor,
+  DEFAULT_SECURITY_CONFIG,
+  type SecurityConfig,
+  type SanitizationOptions,
+  type SecurityHeaders,
+  type SecurityAuditResult,
+} from './utils/security'
+
+// Error boundaries
+export {
+  ContentErrorBoundary,
+  InlineContentErrorBoundary,
+  MediaErrorBoundary,
+  AsyncContentErrorBoundary,
+  BaseErrorBoundary,
+  ContentErrorFallback,
+  InlineErrorFallback,
+  EmptyStateErrorFallback,
+  ResilientErrorBoundary,
+  ReportableErrorBoundary,
+  withErrorBoundary,
+  useErrorHandler,
+  useAsyncErrorHandler,
+  errorReporter,
+  type ErrorBoundaryProps,
+  type ErrorFallbackProps,
+  type ErrorReport,
+} from './components/ui/error-boundary'
+
+// Analytics and usage tracking
+export {
+  analyticsManager,
+  AnalyticsProvider,
+  useAnalytics,
+  useAnalyticsContext,
+  useRenderPerformance,
+  useInteractionTracking,
+  useInteractionLatency,
+  createEventHandler,
+  measurePerformance,
+  batchAnalyticsEvents,
+  type AnalyticsEvent,
+  type ComponentUsageEvent,
+  type PerformanceEvent,
+  type ErrorEvent,
+  type UserJourneyEvent,
+  type AnalyticsConfig,
+  type AnalyticsProviderProps,
+} from './utils/analytics.tsx'

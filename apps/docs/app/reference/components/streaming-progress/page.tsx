@@ -93,7 +93,7 @@ export default function StreamingProgressPage() {
       <h2 id="import">Import</h2>
 
       <EnhancedCodeBlock
-        code={`import { StreamStatusProgress } from '@clarity-chat/react/internal'
+        code={`import { StreamStatusProgress } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
       />
@@ -101,7 +101,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="basic-usage">Basic Usage</h2>
 
       <EnhancedCodeBlock
-        code={`import { StreamStatusProgress } from '@clarity-chat/react/internal'
+        code={`import { StreamStatusProgress } from '@clarity-chat/react'
 
 function Example() {
   return (
@@ -189,7 +189,7 @@ function Example() {
       </p>
 
       <EnhancedCodeBlock
-        code={`import { StreamStatusProgressWithFields } from '@clarity-chat/react/internal'
+        code={`import { StreamStatusProgressWithFields } from '@clarity-chat/react'
 
 function Example() {
   const fieldStatus = new Map([

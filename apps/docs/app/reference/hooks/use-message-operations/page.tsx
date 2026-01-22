@@ -154,7 +154,7 @@ export default function UseMessageOperationsPage() {
 
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          code={`import { useMessageOperations } from '@clarity-chat/react'
 
 function Chat() {
   const {
@@ -196,7 +196,7 @@ function Chat() {
           Experiment with useMessageOperations:
         </p>
         <CodePlayground
-          initialCode={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          initialCode={`import { useMessageOperations } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function Example() {
@@ -245,7 +245,7 @@ function Example() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Message Editing</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          code={`import { useMessageOperations } from '@clarity-chat/react'
 
 function EditableChat() {
   const {
@@ -286,7 +286,7 @@ function EditableChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          code={`import { useMessageOperations } from '@clarity-chat/react'
 
 function BranchingChat() {
   const {
@@ -298,7 +298,7 @@ function BranchingChat() {
 
   const handleBranch = (messageId: string) => {
     const branchId = branchConversation(messageId)
-    logger.debug('Created branch:', branchId)
+    console.log('Created branch:', branchId)
   }
 
   const branches = getBranches()
@@ -329,7 +329,7 @@ function BranchingChat() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Undo/Redo</h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          code={`import { useMessageOperations } from '@clarity-chat/react'
 
 function UndoableChat() {
   const {
@@ -366,7 +366,7 @@ function UndoableChat() {
         </h3>
         <EnhancedCodeBlock
           language="tsx"
-          code={`import { useMessageOperations } from '@clarity-chat/react/internal'
+          code={`import { useMessageOperations } from '@clarity-chat/react'
 
 function RegeneratableChat() {
   const {
