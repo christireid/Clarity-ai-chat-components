@@ -89,8 +89,8 @@ export function usePerformanceTracking({
   metadata = {},
   config = {},
 }: UsePerformanceTrackingOptions) {
-  const renderStartRef = useRef<number>()
-  const memoryStartRef = useRef<number>()
+  const renderStartRef = useRef<number | undefined>(undefined)
+  const memoryStartRef = useRef<number | undefined>(undefined)
   const configRef = useRef({ ...DEFAULT_CONFIG, ...config })
 
   const startTracking = useCallback(() => {
@@ -160,7 +160,7 @@ function logPerformanceMetrics(metrics: PerformanceMetrics) {
 
   const status = isSlow || hasMemoryLeak ? '🔴' : renderTime > 8 ? '🟡' : '🟢'
 
-  console.group(`%c${status} Performance: ${component}`, getLogStyle(isSlow || hasMemoryLeak))
+  console.group(`%c${status} Performance: ${component}`, getLogStyle(Boolean(isSlow || hasMemoryLeak)))
 
   console.log(`Render time: ${renderTime.toFixed(2)}ms`)
 
@@ -315,7 +315,7 @@ export function getPerformanceSummary(): {
 /**
  * Higher-order component for performance tracking
  */
-export function withPerformanceTracking<P extends object>(
+export function withComponentPerformanceTracking<P extends object>(
   Component: React.ComponentType<P>,
   componentName: string
 ) {
@@ -325,7 +325,7 @@ export function withPerformanceTracking<P extends object>(
     return <Component {...props} />
   }
 
-  WrappedComponent.displayName = `withPerformanceTracking(${componentName})`
+  WrappedComponent.displayName = `withComponentPerformanceTracking(${componentName})`
 
   return WrappedComponent
 }

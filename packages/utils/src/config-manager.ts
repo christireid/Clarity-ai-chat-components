@@ -25,11 +25,11 @@
 import { StrictValidation } from './typescript-strict.js'
 import { isString, isNumber, isBoolean, isObject } from './validation/index.js'
 
-export type ConfigSchema<T = any> = {
+export type ConfigSchema<T extends Record<string, unknown>> = {
   [K in keyof T]: ConfigFieldSchema<T[K]>
 }
 
-export interface ConfigFieldSchema<T = any> {
+export interface ConfigFieldSchema<T> {
   type: 'string' | 'number' | 'boolean' | 'object' | 'array'
   required?: boolean
   default?: T
@@ -41,7 +41,7 @@ export interface ConfigFieldSchema<T = any> {
   transform?: (value: unknown) => T
 }
 
-export interface ConfigManager<T = any> {
+export interface ConfigManager<T extends Record<string, unknown>> {
   validate(config: unknown): StrictValidation<T>
   getDefaults(): Partial<T>
   merge(partial: Partial<T>): T
@@ -51,14 +51,14 @@ export interface ConfigManager<T = any> {
 /**
  * Create a configuration manager
  */
-export function createConfigManager<T extends Record<string, any>>(
+export function createConfigManager<T extends Record<string, unknown>>(
   schema: ConfigSchema<T>
 ): ConfigManager<T> {
   const validateField = (
     key: string,
-    fieldSchema: ConfigFieldSchema,
+    fieldSchema: ConfigFieldSchema<unknown>,
     value: unknown
-  ): { success: boolean; errors: string[]; data?: any } => {
+  ): { success: boolean; errors: string[]; data?: unknown } => {
     const errors: string[] = []
     let processedValue = value
 
@@ -168,16 +168,17 @@ export function createConfigManager<T extends Record<string, any>>(
     }
 
     const errors: string[] = []
-    const result: any = {}
+    const result: Partial<T> = {}
 
     for (const [key, fieldSchema] of Object.entries(schema)) {
-      const value = (config as any)[key]
+      const value = config[key as keyof typeof config]
       const fieldResult = validateField(key, fieldSchema, value)
 
       if (!fieldResult.success) {
         errors.push(...fieldResult.errors)
       } else if (fieldResult.data !== undefined) {
-        result[key] = fieldResult.data
+        // Type assertion is safe here because we validated the field
+        result[key as keyof T] = fieldResult.data as T[keyof T]
       }
     }
 
@@ -192,17 +193,17 @@ export function createConfigManager<T extends Record<string, any>>(
       return { success: false, errors }
     }
 
-    return { success: true, data: result } as any
+    return { success: true, data: result as T }
   }
 
   const getDefaults = (): Partial<T> => {
-    const defaults: any = {}
+    const defaults: Partial<T> = {}
     for (const [key, fieldSchema] of Object.entries(schema)) {
       if (fieldSchema.default !== undefined) {
-        defaults[key] = fieldSchema.default
+        defaults[key as keyof T] = fieldSchema.default as T[keyof T]
       }
     }
-    return defaults as any
+    return defaults
   }
 
   const merge = (partial: Partial<T>): T => {
@@ -238,18 +239,20 @@ export function createSimpleConfig<T extends Record<string, any>>(
 /**
  * Validate configuration with detailed error messages
  */
-export function validateConfig<T>(
+export function validateConfig<T extends Record<string, unknown>>(
   config: unknown,
   schema: ConfigSchema<T>
 ): StrictValidation<T> {
-  return createConfigManager(schema).validate(config) as StrictValidation<T>
+  return createConfigManager(schema).validate(config)
 }
 
 /**
  * Get default values from a configuration schema
  */
-export function getConfigDefaults<T>(schema: ConfigSchema<T>): Partial<T> {
-  return createConfigManager(schema).getDefaults() as Partial<T>
+export function getConfigDefaults<T extends Record<string, unknown>>(
+  schema: ConfigSchema<T>
+): Partial<T> {
+  return createConfigManager(schema).getDefaults()
 }
 
 /**

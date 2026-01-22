@@ -1,8 +1,8 @@
 {
   "name": "@clarity-chat/react",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, rate limiting, cross-device sync, template marketplace, enterprise-ready",
+  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, production-ready RAG (PDF/DOCX loaders, reranking, evaluation), rate limiting, cross-device sync, template marketplace, enterprise-ready",
   "keywords": [
     "react",
     "chat",
@@ -25,7 +25,16 @@
     "templates",
     "marketplace",
     "conflict-resolution",
-    "offline-support"
+    "offline-support",
+    "rag",
+    "retrieval-augmented-generation",
+    "vector-search",
+    "embeddings",
+    "document-loaders",
+    "reranking",
+    "evaluation",
+    "pdf-loader",
+    "docx-loader"
   ],
   "homepage": "https://clarity-chat.dev",
   "bugs": {
@@ -152,7 +161,10 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "flowtoken": "^1.0.0",
-    "mermaid": "^11.0.0"
+    "mermaid": "^11.0.0",
+    "pdfjs-dist": "^3.0.0 || ^4.0.0",
+    "mammoth": "^1.0.0",
+    "cohere-ai": "^7.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
@@ -162,6 +174,15 @@
       "optional": true
     },
     "mermaid": {
+      "optional": true
+    },
+    "pdfjs-dist": {
+      "optional": true
+    },
+    "mammoth": {
+      "optional": true
+    },
+    "cohere-ai": {
       "optional": true
     }
   },

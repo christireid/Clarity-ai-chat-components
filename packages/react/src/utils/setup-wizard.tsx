@@ -60,7 +60,7 @@ export class SetupWizard extends React.Component<
     this.props.onComplete(this.state.config)
   }
 
-  render() {
+  override render() {
     const { step, config } = this.state
 
     return (
@@ -97,11 +97,11 @@ export class SetupWizard extends React.Component<
  * Quick setup utility for common configurations
  */
 export class QuickSetup {
-  static basic(api: string): JSX.Element {
+  static basic(api: string): React.ReactElement {
     return <ClarityChat api={api} />
   }
 
-  static withMemory(api: string): JSX.Element {
+  static withMemory(api: string): React.ReactElement {
     return (
       <ClarityChat
         api={api}
@@ -110,19 +110,19 @@ export class QuickSetup {
     )
   }
 
-  static enterprise(api: string): JSX.Element {
+  static enterprise(api: string): React.ReactElement {
     return (
       <ClarityChat
         api={api}
         memory={{ enabled: true, strategy: 'vector-store' }}
         promptOptimization={{ enabled: true }}
-        rateLimiting={{ enabled: true }}
+        rateLimiting={{ enable: true }}
         header={{ show: true, title: 'Enterprise Assistant' }}
       />
     )
   }
 
-  static streaming(api: string): JSX.Element {
+  static streaming(api: string): React.ReactElement {
     return (
       <ClarityChat
         api={api}
@@ -155,7 +155,7 @@ export function interactiveSetup(): void {
 
   const config = {
     api,
-    features: { memory, streaming, enterprise },
+    features: { memory, streaming, rateLimiting: true, enterprise },
     ui: { header: true, prompts: true, darkMode: false }
   }
 

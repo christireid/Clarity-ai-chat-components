@@ -109,7 +109,7 @@ export function TokenOptimizationDashboard({
   if (isLoading) {
     return (
       <div
-        className={`p-6 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        className={`p-6 bg-card rounded-lg border border-border/50 shadow-xs ${className}`}
         role="status"
         aria-label="Loading Token Optimization Dashboard"
         aria-busy="true"
@@ -140,7 +140,7 @@ export function TokenOptimizationDashboard({
     const errorMessage = error instanceof Error ? error.message : String(error)
     return (
       <div
-        className={`p-6 bg-card rounded-lg border border-destructive/30 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        className={`p-6 bg-card rounded-lg border border-destructive/30 shadow-xs ${className}`}
         role="alert"
         aria-live="assertive"
       >
@@ -174,17 +174,7 @@ export function TokenOptimizationDashboard({
 
   return (
     <div
-      className={cn(
-        glassVariants({
-          intensity: 'strong',
-          gradient: getSemanticGradient('premium'),
-          border: 'medium',
-          animated: 'gradient',
-          hover: onClick ? 'lift' : 'none',
-        }),
-        'p-6 rounded-xl',
-        className
-      )}
+      className={`p-6 bg-card rounded-lg border border-border/50 shadow-xs ${className}`}
       onClick={onClick}
       role="region"
       aria-label="Token Optimization Dashboard"

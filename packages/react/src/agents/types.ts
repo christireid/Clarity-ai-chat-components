@@ -1,40 +1,35 @@
 /**
  * Agent Orchestration Types
- * 
+ *
  * Framework for building agentic AI systems with tool calling, planning,
  * and multi-step execution.
+ *
+ * NOTE: Tool definition types have been moved to '../types/tool-definition'
+ * These types are kept for backward compatibility but are deprecated.
  */
 
-/** JSON Schema property types for tool parameters */
-export interface ToolParameterProperty {
-  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
-  description?: string
-  enum?: (string | number | boolean)[]
-  default?: unknown
-  items?: ToolParameterProperty
-  properties?: Record<string, ToolParameterProperty>
-  required?: string[]
-  minimum?: number
-  maximum?: number
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-}
+// Re-export canonical types without confusing aliases
+export type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
+} from '../types/tool-definition'
 
-/** JSON Schema for tool parameters */
-export interface ToolParameters {
-  type: 'object'
-  properties: Record<string, ToolParameterProperty>
-  required?: string[]
-  additionalProperties?: boolean
-}
-
-/** Arguments passed to tool execution */
-export type ToolArguments = Record<string, string | number | boolean | string[] | number[] | Record<string, unknown>>
-
-/** Result from tool execution */
-export type ToolResult = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined
-
+/**
+ * @deprecated Use ToolDefinition from '../types/tool-definition' instead
+ *
+ * This simplified Tool interface is missing critical fields like:
+ * - displayName, cacheable, cacheTtl, timeout, parallelizable
+ * - hooks (lifecycle callbacks)
+ * - execute function doesn't receive ToolExecutionContext
+ *
+ * Migrate to ToolDefinition for full feature support and security.
+ */
 export interface Tool {
   /** Tool name */
   name: string

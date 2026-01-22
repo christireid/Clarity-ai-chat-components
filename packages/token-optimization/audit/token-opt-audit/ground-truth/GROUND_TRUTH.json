@@ -1,0 +1,147 @@
+{
+  "package_name": "@clarity-chat/token-optimization",
+  "version": "1.0.0",
+  "description": "Count and optimize LLM tokens with 90% cost savings",
+  
+  "main_exports": {
+    "path": ".",
+    "exports": [
+      "DEFAULT_MODEL",
+      "DEFAULTS",
+      "PRESETS",
+      "MODEL_REGISTRY",
+      "MODEL_PRICING",
+      "countTokens",
+      "countTokensBatch",
+      "truncateToTokens",
+      "AccurateTokenCounter",
+      "SimpleTokenCounter",
+      "ProviderNativeCounter",
+      "createOptimizer",
+      "useTokenOptimization",
+      "TieredCache",
+      "ExactCache",
+      "SmartCache",
+      "AdvancedSemanticCache",
+      "ModelRouter",
+      "ComplexityAnalyzer",
+      "MarkdownOptimizer",
+      "HTMLOptimizer",
+      "ToonOptimizer",
+      "TextChunker",
+      "QualityGate",
+      "CostAwareOptimizer",
+      "CircuitBreaker",
+      "HealthChecker",
+      "Logger",
+      "MetricsCollector"
+    ]
+  },
+  
+  "react_exports": {
+    "path": "./react",
+    "exports": [
+      "useTokenCount",
+      "useTokenOptimization",
+      "useTieredCache",
+      "useModelRouter",
+      "useOptimizationPipeline",
+      "useTokenBudgetMonitor",
+      "TokenBudgetBar",
+      "TokenCostPreview",
+      "TokenUsageMeter",
+      "TokenUsageMeterStatic",
+      "TokenOptimizationBadge",
+      "TokenOptimizationPanel",
+      "TokenOptimizationDashboard"
+    ]
+  },
+  
+  "compression_exports": {
+    "path": "./compression",
+    "exports": [
+      "LLMLinguaCompressor",
+      "ExtractiveCompressor",
+      "AdaptiveCompressor",
+      "MemoryExtractStrategy",
+      "MemorySummarizeStrategy",
+      "MemoryAdaptiveStrategy"
+    ]
+  },
+  
+  "cache_exports": {
+    "path": "./cache",
+    "exports": [
+      "ExactCache",
+      "SmartCache",
+      "TieredCache"
+    ]
+  },
+  
+  "providers": {
+    "supported": ["openai", "anthropic", "google"],
+    "models": [
+      "gpt-4o",
+      "gpt-4o-mini",
+      "gpt-4",
+      "claude-3-5-sonnet",
+      "claude-3-5-haiku",
+      "claude-opus-4",
+      "gemini-pro",
+      "gemini-flash"
+    ]
+  },
+  
+  "features": {
+    "provider_native_caching": {
+      "available": true,
+      "exports": [
+        "ProviderCachingManager",
+        "createProviderCache",
+        "quickCache",
+        "anthropicCache",
+        "openaiCache",
+        "googleCache"
+      ]
+    },
+    "token_counting": {
+      "accurate": true,
+      "supports_multimodal": false,
+      "supports_streaming": false
+    },
+    "caching": {
+      "tiers": ["exact", "smart", "semantic"],
+      "configurable": true
+    },
+    "compression": {
+      "strategies": ["llmlingua", "extractive", "adaptive", "memory"],
+      "configurable": true
+    },
+    "routing": {
+      "complexity_based": true,
+      "cascading": false,
+      "quality_assessment": false
+    },
+    "budget_management": {
+      "available": true,
+      "hierarchical": true,
+      "scopes": ["global", "user", "session", "request"]
+    },
+    "react_hooks": {
+      "available": true,
+      "ssr_compatible": true
+    },
+    "observability": {
+      "logging": true,
+      "metrics": true,
+      "tracing": true,
+      "opentelemetry": false
+    }
+  },
+  
+  "deprecated_exports": [],
+  
+  "breaking_changes": {
+    "from_0x": "Package renamed from @clarity/token-optimization to @clarity-chat/token-optimization"
+  }
+}

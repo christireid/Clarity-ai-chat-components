@@ -43,4 +43,6 @@
 export * from './types'
 export * from './text-splitter'
 export * from './loaders'
+export * from './pdf-loader'
+export * from './docx-loader'
 

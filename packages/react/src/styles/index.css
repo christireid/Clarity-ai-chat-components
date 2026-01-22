@@ -396,6 +396,63 @@ body {
 }
 
 /* Responsive Design */
+
+/* Responsive Typography Scaling */
+/* Mobile-first approach with fluid typography */
+:root {
+  /* Base font size scales from 14px on mobile to 16px on desktop */
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+/* Heading scale adjusts proportionally across breakpoints */
+h1, .text-4xl, .text-5xl, .text-6xl {
+  font-size: clamp(1.75rem, 4vw + 0.5rem, 3rem);
+}
+
+h2, .text-3xl {
+  font-size: clamp(1.5rem, 3vw + 0.5rem, 2.25rem);
+}
+
+h3, .text-2xl {
+  font-size: clamp(1.25rem, 2.5vw + 0.5rem, 1.875rem);
+}
+
+h4, .text-xl {
+  font-size: clamp(1.125rem, 2vw + 0.25rem, 1.5rem);
+}
+
+h5, .text-lg {
+  font-size: clamp(1rem, 1.5vw + 0.25rem, 1.25rem);
+}
+
+/* Body text maintains readability across all sizes */
+body, .text-base {
+  font-size: clamp(0.875rem, 1.25vw + 0.25rem, 1rem);
+  line-height: 1.6;
+}
+
+.text-sm {
+  font-size: clamp(0.8125rem, 1vw + 0.125rem, 0.875rem);
+}
+
+.text-xs {
+  font-size: clamp(0.75rem, 0.875vw + 0.125rem, 0.8125rem);
+}
+
+/* Ensure text remains readable at 200% zoom (WCAG 2.1 Success Criterion 1.4.4) */
+@media (min-width: 1px) {
+  * {
+    max-width: 100%;
+  }
+
+  /* Prevent text overflow at high zoom levels */
+  p, li, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
 @media (max-width: 640px) {
   .clarity-message-content {
     max-width: 85%;
@@ -403,6 +460,48 @@ body {
 
   .clarity-chat-input {
     padding: var(--spacing-sm);
+  }
+
+  /* Increase touch target sizes on mobile */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce spacing on small screens */
+  .space-y-4 > * + * {
+    margin-top: 0.75rem;
+  }
+}
+
+/* Tablet breakpoint */
+@media (min-width: 641px) and (max-width: 1024px) {
+  :root {
+    font-size: 15px;
+  }
+}
+
+/* Desktop breakpoint */
+@media (min-width: 1025px) {
+  :root {
+    font-size: 16px;
+  }
+
+  /* Slightly increase line height for better readability on large screens */
+  body, .text-base {
+    line-height: 1.65;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1536px) {
+  :root {
+    font-size: 17px;
+  }
+
+  /* Cap maximum text width for optimal reading */
+  .prose, article, .clarity-message-content {
+    max-width: 75ch;
   }
 }
 
@@ -1168,5 +1267,84 @@ body {
   .motion-safe\:will-change-opacity,
   .motion-safe\:will-change-transform-opacity {
     will-change: auto;
+  }
+}
+
+/* ============================================================================
+   Shadow Utility Classes - Design Token Standardization
+   ============================================================================ */
+
+/* Standard elevation shadows using design tokens */
+.shadow-xs {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.shadow-DEFAULT {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+/* Design system specific shadows */
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-medium {
+  box-shadow: var(--shadow-medium);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-DEFAULT,
+  .shadow-md {
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+  }
+
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* Forced colors mode support (Windows High Contrast) */
+@media (forced-colors: active) {
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-DEFAULT,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl,
+  .shadow-soft,
+  .shadow-medium,
+  .shadow-elevated {
+    box-shadow: none;
+    border: 1px solid CanvasText;
   }
 }

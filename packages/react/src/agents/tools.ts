@@ -5,6 +5,7 @@
  */
 
 import type { Tool } from './types'
+import { safeEvaluate } from '../utils/math/safe-evaluator'
 
 // ============================================================================
 // SAFE MATH EXPRESSION EVALUATOR
@@ -14,6 +15,8 @@ import type { Tool } from './types'
  * Safe math expression evaluator using a recursive descent parser.
  * Supports: numbers, +, -, *, /, parentheses, unary minus
  * Does NOT use eval() - completely safe from code injection.
+ *
+ * @deprecated Use safeEvaluate from '../utils/math/safe-evaluator' instead
  */
 function safeEvaluateMath(expression: string): number {
   const tokens: string[] = []
@@ -146,8 +149,8 @@ export const calculatorTool: Tool = {
     if (typeof expression !== 'string') {
       throw new Error('Expression must be a string')
     }
-    // Use safe math evaluator - no eval() or code injection risk
-    const result = safeEvaluateMath(expression)
+    // SECURITY: Use safe math evaluator - no eval() or code injection risk
+    const result = safeEvaluate(expression)
     return { result, expression }
   },
   category: 'utility',
@@ -363,11 +366,41 @@ export const builtInTools: Tool[] = [
 
 /**
  * Tool registry for managing tools
+ *
+ * @deprecated This legacy ToolRegistry is deprecated and will be removed in a future version.
+ * Please migrate to the canonical ToolRegistry from '@clarity/core/tool-registry':
+ *
+ * ```typescript
+ * // Old (deprecated):
+ * import { ToolRegistry } from '@clarity/agents/tools'
+ *
+ * // New (recommended):
+ * import { ToolRegistry } from '@clarity/core/tool-registry'
+ * // or use the global instance:
+ * import { globalToolRegistry } from '@clarity/core/tool-registry'
+ * ```
+ *
+ * Migration benefits:
+ * - Comprehensive JSON Schema validation
+ * - Event system for lifecycle tracking
+ * - Namespace support for tool organization
+ * - Better TypeScript inference
+ * - Consistent with ToolOrchestrator API
+ *
+ * @see packages/react/src/core/tool-registry.ts for the canonical implementation
  */
 export class ToolRegistry {
   private tools = new Map<string, Tool>()
-  
+
   constructor(initialTools?: Tool[]) {
+    // Emit deprecation warning
+    console.warn(
+      '[DEPRECATION WARNING] ToolRegistry from agents/tools.ts is deprecated.\n' +
+      'Please migrate to the canonical ToolRegistry from core/tool-registry.ts:\n' +
+      '  import { ToolRegistry } from \'./core/tool-registry\'\n' +
+      'This legacy class will be removed in a future version.'
+    )
+
     if (initialTools) {
       initialTools.forEach(t => this.register(t))
     }
@@ -375,48 +408,62 @@ export class ToolRegistry {
   
   /**
    * Register a tool
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   register(tool: Tool): void {
     this.tools.set(tool.name, tool)
   }
-  
+
   /**
    * Unregister a tool
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   unregister(name: string): boolean {
     return this.tools.delete(name)
   }
-  
+
   /**
    * Get a tool by name
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   get(name: string): Tool | undefined {
     return this.tools.get(name)
   }
-  
+
   /**
    * Get all tools
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   getAll(): Tool[] {
     return Array.from(this.tools.values())
   }
-  
+
   /**
    * Get tools by category
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   getByCategory(category: string): Tool[] {
     return this.getAll().filter(t => t.category === category)
   }
-  
+
   /**
    * Get tools by tag
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   getByTag(tag: string): Tool[] {
     return this.getAll().filter(t => t.tags?.includes(tag))
   }
-  
+
   /**
    * Search tools by query
+   *
+   * @deprecated Use canonical ToolRegistry from core/tool-registry.ts instead
    */
   search(query: string): Tool[] {
     const lowerQuery = query.toLowerCase()

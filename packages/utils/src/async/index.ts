@@ -283,9 +283,15 @@ export function sleep(ms: number): Promise<void> {
 /**
  * Execute promises with concurrency limit
  *
+ * **Error Handling:** Uses fail-fast behavior. If any task fails, the entire
+ * pool operation rejects immediately with that error. Successful tasks will
+ * still complete in the background. If you need to collect both successes and
+ * failures, wrap tasks in try-catch and return result objects instead.
+ *
  * @param tasks - Array of task functions that return promises
  * @param concurrency - Maximum concurrent tasks (default: 5)
  * @returns Array of results in order
+ * @throws Error from first failing task
  *
  * @example
  * ```ts
@@ -293,6 +299,20 @@ export function sleep(ms: number): Promise<void> {
  * const results = await pool(
  *   urls.map(url => () => fetch(url)),
  *   3 // Max 3 concurrent requests
+ * )
+ * ```
+ *
+ * @example Error handling with result objects
+ * ```ts
+ * const results = await pool(
+ *   urls.map(url => async () => {
+ *     try {
+ *       return { success: true, data: await fetch(url) }
+ *     } catch (error) {
+ *       return { success: false, error }
+ *     }
+ *   }),
+ *   3
  * )
  * ```
  */

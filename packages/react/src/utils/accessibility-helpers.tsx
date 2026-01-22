@@ -492,7 +492,9 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
   ]
 
   const elements = container.querySelectorAll(focusableSelectors.join(', '))
-  return Array.from(elements).filter(isKeyboardAccessible) as HTMLElement[]
+  return Array.from(elements).filter((el): el is HTMLElement =>
+    el instanceof HTMLElement && isKeyboardAccessible(el)
+  )
 }
 
 /**

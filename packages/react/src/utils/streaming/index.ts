@@ -23,3 +23,18 @@ export {
 } from './streaming-optimizer'
 
 export * from './streaming-parser'
+
+export {
+  MessageDeduplicator,
+  useMessageDeduplicator,
+  type DeduplicatableMessage,
+  type MessageDeduplicatorOptions,
+} from './message-deduplicator'
+
+export {
+  SequenceValidator,
+  useSequenceValidator,
+  type SequencedMessage,
+  type SequenceValidationResult,
+  type SequenceValidatorOptions,
+} from './sequence-validator'

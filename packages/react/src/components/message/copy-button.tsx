@@ -119,6 +119,8 @@ export function CopyButton({
 
   // Track copy status for screen reader announcement
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null)
+  // Track celebration animation
+  const [showCelebration, setShowCelebration] = React.useState(false)
 
   // Clear status after announcement
   React.useEffect(() => {
@@ -128,6 +130,16 @@ export function CopyButton({
     }
     return undefined
   }, [statusMessage])
+
+  // Celebration effect on successful copy
+  React.useEffect(() => {
+    if (copied && !prefersReducedMotion) {
+      setShowCelebration(true)
+      const timer = setTimeout(() => setShowCelebration(false), 600)
+      return () => clearTimeout(timer)
+    }
+    return undefined
+  }, [copied, prefersReducedMotion])
 
   // Enhanced copy handler with status announcement
   const handleCopyWithAnnouncement = React.useCallback(async () => {
@@ -147,12 +159,35 @@ export function CopyButton({
       onClick={handleCopyWithAnnouncement}
       aria-label={copied ? copiedText : copyText}
       className={cn(
-        'transition-all duration-200',
+        'relative transition-all duration-200',
         copied && 'text-success bg-success/10',
         props.className
       )}
       {...props}
     >
+      {/* Celebration particles */}
+      {showCelebration && (
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute top-1/2 left-1/2 w-1 h-1 bg-success rounded-full"
+              initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
+              animate={{
+                scale: [0, 1, 0],
+                x: [0, Math.cos((i * Math.PI) / 3) * 20],
+                y: [0, Math.sin((i * Math.PI) / 3) * 20],
+                opacity: [1, 1, 0],
+              }}
+              transition={{
+                duration: durations.slower,
+                ease: 'easeOut',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       <AnimatePresence mode="wait" initial={false}>
         {copied ? (
           <motion.div

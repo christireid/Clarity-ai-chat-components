@@ -41,6 +41,8 @@ export interface RerankResponse {
   results: RerankResult[]
   /** Model used */
   model?: string
+  /** Error message if reranking failed */
+  error?: string
   /** Metadata */
   metadata?: Record<string, any>
 }

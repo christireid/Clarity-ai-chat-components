@@ -376,7 +376,7 @@ export function useRateLimitStatus(options: {
       // Try a dummy validation to check rate limit
       const result = await validateInput('', { userId: options.userId })
       setIsLimited(!result.allowed && result.reason === 'rate_limit_exceeded')
-      setRemaining(-1) // TODO: Extract remaining from result
+      setRemaining(result.rateLimitRemaining ?? -1)
     } catch {
       // Ignore errors
     }

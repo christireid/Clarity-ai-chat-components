@@ -47,7 +47,7 @@ function formatTimestamp(value: Date | string, timezone?: string) {
   })
 }
 
-export function AuditLogViewer({
+export const AuditLogViewer = React.memo(function AuditLogViewer({
   logs,
   className,
   timezone,
@@ -71,7 +71,7 @@ export function AuditLogViewer({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border/50 bg-card shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        'rounded-lg border border-border/50 bg-card shadow-xs',
         className
       )}
     >
@@ -163,4 +163,6 @@ export function AuditLogViewer({
       </div>
     </div>
   )
-}
+})
+
+AuditLogViewer.displayName = 'AuditLogViewer'

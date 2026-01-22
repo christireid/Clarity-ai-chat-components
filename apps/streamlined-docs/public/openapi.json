@@ -1,0 +1,617 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Clarity Chat AI Documentation API",
+    "description": "API endpoints for AI systems to discover and understand Clarity Chat components, hooks, and documentation. Optimized for RAG (Retrieval-Augmented Generation) and AI assistant integrations.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Clarity Chat Team",
+      "url": "https://clarity-chat.dev",
+      "email": "support@clarity-chat.dev"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://clarity-chat.dev",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Components",
+      "description": "React component documentation"
+    },
+    {
+      "name": "Hooks",
+      "description": "React hooks documentation"
+    },
+    {
+      "name": "Search",
+      "description": "Documentation search"
+    },
+    {
+      "name": "Health",
+      "description": "API health and status"
+    }
+  ],
+  "paths": {
+    "/api/ai/components": {
+      "get": {
+        "tags": ["Components"],
+        "summary": "List all components",
+        "description": "Returns a complete catalog of all Clarity Chat React components with their props, examples, and accessibility information.",
+        "operationId": "listComponents",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "tags": ["Components"],
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "No content"
+          }
+        }
+      }
+    },
+    "/api/ai/components/{name}": {
+      "get": {
+        "tags": ["Components"],
+        "summary": "Get component by name",
+        "description": "Returns detailed information about a specific component.",
+        "operationId": "getComponent",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Component name (case-insensitive)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Component not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/hooks": {
+      "get": {
+        "tags": ["Hooks"],
+        "summary": "List all hooks",
+        "description": "Returns a complete catalog of all Clarity Chat React hooks with their parameters, return values, and usage examples.",
+        "operationId": "listHooks",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HooksResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "tags": ["Hooks"],
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "No content"
+          }
+        }
+      }
+    },
+    "/api/ai/hooks/{name}": {
+      "get": {
+        "tags": ["Hooks"],
+        "summary": "Get hook by name",
+        "description": "Returns detailed information about a specific hook.",
+        "operationId": "getHook",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Hook name (case-insensitive)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HookDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Hook not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/search": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search documentation",
+        "description": "Search across all documentation with filtering and pagination support.",
+        "operationId": "searchDocs",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "description": "Search query"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "component",
+                "hook",
+                "guide",
+                "example",
+                "cookbook",
+                "concept",
+                "deployment",
+                "integration"
+              ]
+            },
+            "description": "Filter by content type"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by category"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "description": "Results per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "tags": ["Search"],
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "No content"
+          }
+        }
+      }
+    },
+    "/api/ai/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Returns API health status and statistics.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ComponentsResponse": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "apiVersion": { "type": "string" },
+          "description": { "type": "string" },
+          "totalComponents": { "type": "integer" },
+          "categories": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "lastUpdated": { "type": "string", "format": "date-time" },
+          "components": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Component" }
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "installation": { "type": "string" },
+              "basicImport": { "type": "string" },
+              "documentation": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Component": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "props": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Prop" }
+          },
+          "importPath": { "type": "string" },
+          "docsUrl": { "type": "string" },
+          "examples": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "relatedComponents": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "accessibility": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "version": { "type": "string" }
+        }
+      },
+      "ComponentDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Component" },
+          {
+            "type": "object",
+            "properties": {
+              "apiVersion": { "type": "string" },
+              "packageVersion": { "type": "string" },
+              "lastUpdated": { "type": "string", "format": "date-time" },
+              "links": {
+                "type": "object",
+                "properties": {
+                  "self": { "type": "string" },
+                  "documentation": { "type": "string" },
+                  "allComponents": { "type": "string" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Prop": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "default": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "HooksResponse": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "apiVersion": { "type": "string" },
+          "description": { "type": "string" },
+          "totalHooks": { "type": "integer" },
+          "categories": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "lastUpdated": { "type": "string", "format": "date-time" },
+          "hooks": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Hook" }
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "installation": { "type": "string" },
+              "basicImport": { "type": "string" },
+              "documentation": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Hook": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "signature": { "type": "string" },
+          "parameters": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Parameter" }
+          },
+          "returns": { "$ref": "#/components/schemas/ReturnType" },
+          "importPath": { "type": "string" },
+          "docsUrl": { "type": "string" },
+          "examples": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "relatedHooks": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "version": { "type": "string" }
+        }
+      },
+      "HookDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Hook" },
+          {
+            "type": "object",
+            "properties": {
+              "apiVersion": { "type": "string" },
+              "packageVersion": { "type": "string" },
+              "lastUpdated": { "type": "string", "format": "date-time" },
+              "links": {
+                "type": "object",
+                "properties": {
+                  "self": { "type": "string" },
+                  "documentation": { "type": "string" },
+                  "allHooks": { "type": "string" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Parameter": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "description": { "type": "string" }
+        }
+      },
+      "ReturnType": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "apiVersion": { "type": "string" },
+          "query": { "type": "string", "nullable": true },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "nullable": true },
+              "category": { "type": "string", "nullable": true }
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "integer" },
+              "limit": { "type": "integer" },
+              "totalResults": { "type": "integer" },
+              "totalPages": { "type": "integer" },
+              "hasNextPage": { "type": "boolean" },
+              "hasPrevPage": { "type": "boolean" }
+            }
+          },
+          "totalResults": { "type": "integer" },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SearchResult" }
+          },
+          "availableTypes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "availableCategories": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "type": { "type": "string" },
+          "href": { "type": "string" },
+          "fullUrl": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "keywords": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "lastUpdated": { "type": "string", "format": "date-time" }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"]
+          },
+          "version": { "type": "string" },
+          "apiVersion": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "uptime": { "type": "integer" },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "components": { "type": "integer" },
+              "hooks": { "type": "integer" },
+              "searchItems": { "type": "integer" }
+            }
+          },
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": { "type": "string" },
+                "status": {
+                  "type": "string",
+                  "enum": ["available", "unavailable"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "details": { "type": "string" }
+            }
+          },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "path": { "type": "string" }
+        }
+      }
+    }
+  }
+}

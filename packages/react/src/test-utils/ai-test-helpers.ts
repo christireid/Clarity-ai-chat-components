@@ -5,7 +5,8 @@
  */
 
 import { vi } from 'vitest'
-import type { Message, CoreMessage } from '@clarity-chat/types'
+import type { Message } from '@clarity-chat/types'
+import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
 
 /**
  * Create a mock streaming response
@@ -38,11 +39,15 @@ export function createMockStreamingResponse(
  * Create mock messages for testing
  */
 export function createMockMessages(count = 3): Message[] {
+  const now = new Date()
   return Array.from({ length: count }, (_, i) => ({
     id: `msg-${i}`,
+    chatId: 'test-chat',
     role: i % 2 === 0 ? ('user' as const) : ('assistant' as const),
     content: `Message ${i}`,
-    timestamp: new Date(Date.now() - (count - i) * 60000),
+    status: 'sent' as const,
+    createdAt: new Date(now.getTime() - (count - i) * 60000),
+    updatedAt: new Date(now.getTime() - (count - i) * 60000),
   }))
 }
 
@@ -60,7 +65,7 @@ export function createMockCoreMessages(count = 3): CoreMessage[] {
 /**
  * Mock useClarityChat hook
  */
-export function createMockUseClarityChat(overrides: Partial<any> = {}) {
+export function createMockUseClarityChat(overrides: Partial<Record<string, unknown>> = {}): Record<string, unknown> {
   return {
     messages: [],
     isLoading: false,
@@ -78,7 +83,7 @@ export function createMockUseClarityChat(overrides: Partial<any> = {}) {
 /**
  * Mock useStreamingSSE hook
  */
-export function createMockUseStreamingSSE(overrides: Partial<any> = {}) {
+export function createMockUseStreamingSSE(overrides: Partial<Record<string, unknown>> = {}): Record<string, unknown> {
   return {
     status: 'idle' as const,
     events: [],
@@ -98,7 +103,7 @@ export function createMockUseStreamingSSE(overrides: Partial<any> = {}) {
 /**
  * Mock useTokenCounter hook
  */
-export function createMockUseTokenCounter(overrides: Partial<any> = {}) {
+export function createMockUseTokenCounter(overrides: Partial<Record<string, unknown>> = {}): Record<string, unknown> {
   return {
     tokenCount: 0,
     streamTokenCount: 0,
