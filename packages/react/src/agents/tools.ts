@@ -5,6 +5,7 @@
  */
 
 import type { Tool } from './types'
+import { safeEvaluate } from '../utils/math/safe-evaluator'
 
 // ============================================================================
 // SAFE MATH EXPRESSION EVALUATOR
@@ -14,6 +15,8 @@ import type { Tool } from './types'
  * Safe math expression evaluator using a recursive descent parser.
  * Supports: numbers, +, -, *, /, parentheses, unary minus
  * Does NOT use eval() - completely safe from code injection.
+ *
+ * @deprecated Use safeEvaluate from '../utils/math/safe-evaluator' instead
  */
 function safeEvaluateMath(expression: string): number {
   const tokens: string[] = []
@@ -146,8 +149,8 @@ export const calculatorTool: Tool = {
     if (typeof expression !== 'string') {
       throw new Error('Expression must be a string')
     }
-    // Use safe math evaluator - no eval() or code injection risk
-    const result = safeEvaluateMath(expression)
+    // SECURITY: Use safe math evaluator - no eval() or code injection risk
+    const result = safeEvaluate(expression)
     return { result, expression }
   },
   category: 'utility',

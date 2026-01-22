@@ -87,6 +87,7 @@ export const learnNavigation: NavItem[] = [
     items: [
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
+      { title: '🔧 Tool Calling System', href: '/guides/tools' },
       { title: 'Token Optimization', href: '/guides/token-optimization' },
       { title: 'Prompt Caching', href: '/guides/prompt-caching' },
       { title: 'Prompts', href: '/guides/prompts' },
