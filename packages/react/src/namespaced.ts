@@ -42,12 +42,13 @@ import {
   type PromptSuggestion,
 } from './components/prompt/prompt-suggestions'
 
+// NOTE: use-chat-unified is excluded in tsconfig.json and doesn't exist
 // Import hooks - use alias to avoid duplicate identifier
-import {
-  useClarityChat as useSimpleChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// import {
+//   useClarityChat as useSimpleChat,
+//   type UseChatOptions,
+//   type UseChatReturn,
+// } from './hooks/chat/use-chat-unified'
 import {
   useClarityChat,
   type UseClarityChatOptions,

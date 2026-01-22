@@ -52,11 +52,12 @@ export { Message, type MessageProps } from './components/message/message'
 // CORE HOOKS - Essential chat state management
 // ============================================================================
 
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// NOTE: use-chat-unified is excluded in tsconfig.json and doesn't exist
+// export {
+//   useChat,
+//   type UseChatOptions,
+//   type UseChatReturn,
+// } from './hooks/chat/use-chat-unified'
 export {
   useClarityChat,
   type UseClarityChatOptions,

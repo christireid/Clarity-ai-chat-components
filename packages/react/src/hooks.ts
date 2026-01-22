@@ -73,11 +73,12 @@ export {
  * Unified chat hook with enhanced features.
  * Use this for more control over chat behavior.
  */
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// NOTE: use-chat-unified is excluded in tsconfig.json and doesn't exist
+// export {
+//   useChat,
+//   type UseChatOptions,
+//   type UseChatReturn,
+// } from './hooks/chat/use-chat-unified'
 
 /**
  * Hook for generating structured JSON objects with AI.

@@ -57,10 +57,11 @@ export type {
   ClarityChatTokenStats,
 } from './hooks/chat/use-clarity-chat'
 
-export type {
-  UseChatOptions,
-  UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// NOTE: use-chat-unified is excluded in tsconfig.json and doesn't exist
+// export type {
+//   UseChatOptions,
+//   UseChatReturn,
+// } from './hooks/chat/use-chat-unified'
 
 export type {
   UseClarityObjectOptions,

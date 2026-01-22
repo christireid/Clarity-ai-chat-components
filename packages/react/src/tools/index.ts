@@ -54,7 +54,10 @@ export {
 // React Components (Optional - only if using React)
 // =============================================================================
 
-export { ToolApprovalDialog, type ToolApprovalDialogProps } from '../components/tool-approval/ToolApprovalDialog'
+export {
+  ToolApprovalDialog,
+  type ToolApprovalDialogProps,
+} from '../components/tool-approval/ToolApprovalDialog'
 
 // =============================================================================
 // Types
@@ -77,8 +80,8 @@ export type {
 export type {
   OrchestrationResult,
   OrchestratorConfig,
-  OrchestratorStats,
-  CacheStats,
+  // OrchestratorStats, // NOTE: Type doesn't exist in tool-orchestrator
+  // CacheStats, // NOTE: Type doesn't exist in tool-orchestrator
 } from '../core/tool-orchestrator'
 
 export type { ExecutionResult, ValidationError } from '../core/tool-executor'
@@ -100,7 +103,11 @@ export type { ExecutionResult, ValidationError } from '../core/tool-executor'
  * })
  * ```
  */
-export function createToolOrchestrator(config?: import('../core/tool-orchestrator').OrchestratorConfig) {
-  const { ToolOrchestrator: Orchestrator } = require('../core/tool-orchestrator')
+export function createToolOrchestrator(
+  config?: import('../core/tool-orchestrator').OrchestratorConfig
+) {
+  const {
+    ToolOrchestrator: Orchestrator,
+  } = require('../core/tool-orchestrator')
   return new Orchestrator(config)
 }
