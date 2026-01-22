@@ -137,6 +137,26 @@ export class ToolOrchestrator {
       tools: config.tools ?? [],
     }
 
+    // SECURITY: Prevent autoApprove in production
+    if (this.config.autoApprove) {
+      const isProduction =
+        typeof process !== 'undefined' &&
+        process.env?.NODE_ENV === 'production'
+
+      if (isProduction) {
+        throw new Error(
+          '[ToolOrchestrator] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+          'Tools must require explicit user approval. Set autoApprove: false.'
+        )
+      }
+
+      // Warn in non-production environments
+      console.warn(
+        '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+        'This should only be used in trusted development/testing environments.'
+      )
+    }
+
     this.registry = new ToolRegistry()
     this.lifecycle = new ToolLifecycleManager()
     this.executor = new ToolExecutor(this.lifecycle)

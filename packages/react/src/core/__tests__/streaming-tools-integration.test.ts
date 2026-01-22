@@ -14,6 +14,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ToolOrchestrator } from '../tool-orchestrator'
 import type { ToolDefinition } from '../../types/tool-definition'
 import type { ToolInvocation } from '../../types/tool-invocation'
+import { safeEvaluate } from '../../utils/math/safe-evaluator'
 
 // =============================================================================
 // Mock Streaming Parser
@@ -103,7 +104,7 @@ function createCalculatorTool(): ToolDefinition {
     },
     execute: async (args) => {
       await new Promise((resolve) => setTimeout(resolve, 5))
-      return { result: eval(args.expression) }
+      return { result: safeEvaluate(args.expression) }
     },
   }
 }

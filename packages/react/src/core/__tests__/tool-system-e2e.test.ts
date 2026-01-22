@@ -40,7 +40,7 @@ function createWeatherTool(): ToolDefinition {
       },
       required: ['location'],
     },
-    handler: async ({ location, units = 'celsius' }) => {
+    execute: async ({ location, units = 'celsius' }) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 10))
 
@@ -77,7 +77,7 @@ function createCalculatorTool(): ToolDefinition {
       },
       required: ['operation', 'a', 'b'],
     },
-    handler: async ({ operation, a, b }) => {
+    execute: async ({ operation, a, b }) => {
       await new Promise((resolve) => setTimeout(resolve, 5))
 
       switch (operation) {
@@ -112,7 +112,7 @@ function createDatabaseTool(): ToolDefinition {
       },
       required: ['query'],
     },
-    handler: async ({ query }) => {
+    execute: async ({ query }) => {
       await new Promise((resolve) => setTimeout(resolve, 15))
       return {
         rows: [
@@ -136,7 +136,7 @@ function createFailingTool(): ToolDefinition {
       type: 'object',
       properties: {},
     },
-    handler: async () => {
+    execute: async () => {
       await new Promise((resolve) => setTimeout(resolve, 5))
       throw new Error('Tool execution failed')
     },
@@ -400,7 +400,7 @@ describe('E2E: Error Handling', () => {
       name: 'slow_tool',
       description: 'A tool that takes too long',
       parameters: { type: 'object', properties: {} },
-      handler: async () => {
+      execute: async () => {
         await new Promise((resolve) => setTimeout(resolve, 200))
         return { done: true }
       },

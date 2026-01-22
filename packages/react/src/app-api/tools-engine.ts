@@ -258,11 +258,23 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
   // SECURITY: Default to requiring approval for tool execution
   const autoApprove = config.autoApprove ?? false
 
-  // Warn in development when auto-approve is enabled
-  if (autoApprove && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+  // SECURITY: Prevent autoApprove in production
+  if (autoApprove) {
+    const isProduction =
+      typeof process !== 'undefined' &&
+      process.env?.NODE_ENV === 'production'
+
+    if (isProduction) {
+      throw new Error(
+        '[Clarity Chat] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+        'Tools must require explicit user approval. Set autoApprove: false.'
+      )
+    }
+
+    // Warn in non-production environments
     console.warn(
       '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-      'This should only be used in trusted environments. Set autoApprove: false to require explicit approval.'
+      'This should only be used in trusted development/testing environments.'
     )
   }
 

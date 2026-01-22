@@ -310,6 +310,8 @@ interface CacheEntry {
  */
 export class ToolResultCache {
   private cache = new Map<string, CacheEntry>()
+  private hits = 0
+  private misses = 0
 
   /**
    * Generate cache key
@@ -334,6 +336,7 @@ export class ToolResultCache {
     const entry = this.cache.get(key)
 
     if (!entry) {
+      this.misses++
       return undefined
     }
 
@@ -341,9 +344,11 @@ export class ToolResultCache {
     const now = Date.now()
     if (now - entry.timestamp > entry.ttl) {
       this.cache.delete(key)
+      this.misses++
       return undefined
     }
 
+    this.hits++
     return entry.result
   }
 
@@ -378,7 +383,13 @@ export class ToolResultCache {
   /**
    * Get cache statistics
    */
-  getStats(): { size: number; entries: Array<{ toolName: string; age: number }> } {
+  getStats(): {
+    size: number
+    hits: number
+    misses: number
+    hitRate: number
+    entries: Array<{ toolName: string; age: number }>
+  } {
     const entries: Array<{ toolName: string; age: number }> = []
     const now = Date.now()
 
@@ -390,11 +401,130 @@ export class ToolResultCache {
       })
     }
 
+    const total = this.hits + this.misses
+    const hitRate = total > 0 ? this.hits / total : 0
+
     return {
       size: this.cache.size,
+      hits: this.hits,
+      misses: this.misses,
+      hitRate,
       entries,
     }
   }
+}
+
+// =============================================================================
+// Rate Limiting & Concurrency Control
+// =============================================================================
+
+/**
+ * Rate limiter for tool execution
+ */
+class RateLimiter {
+  private requests: number[] = []
+
+  constructor(
+    private maxRequests: number,
+    private windowMs: number
+  ) {}
+
+  /**
+   * Check if request is allowed
+   * @throws Error if rate limit exceeded
+   */
+  checkLimit(toolName: string): void {
+    const now = Date.now()
+    // Remove old requests outside the window
+    this.requests = this.requests.filter((time) => now - time < this.windowMs)
+
+    if (this.requests.length >= this.maxRequests) {
+      throw new Error(
+        `[${toolName}] Rate limit exceeded: ${this.maxRequests} requests per ${this.windowMs}ms`
+      )
+    }
+
+    // Record this request
+    this.requests.push(now)
+  }
+
+  /**
+   * Get current rate limit stats
+   */
+  getStats(): { currentRequests: number; maxRequests: number; windowMs: number } {
+    const now = Date.now()
+    this.requests = this.requests.filter((time) => now - time < this.windowMs)
+    return {
+      currentRequests: this.requests.length,
+      maxRequests: this.maxRequests,
+      windowMs: this.windowMs,
+    }
+  }
+}
+
+/**
+ * Concurrency limiter for tool execution
+ */
+class ConcurrencyLimiter {
+  private activeCount = 0
+  private waiting: Array<() => void> = []
+
+  constructor(private maxConcurrent: number) {}
+
+  /**
+   * Acquire a slot for execution
+   * @returns Release function to call when done
+   */
+  async acquire(toolName: string): Promise<() => void> {
+    if (this.activeCount >= this.maxConcurrent) {
+      // Wait for a slot to become available
+      await new Promise<void>((resolve) => {
+        this.waiting.push(resolve)
+      })
+    }
+
+    this.activeCount++
+
+    // Return release function
+    return () => {
+      this.activeCount--
+      const next = this.waiting.shift()
+      if (next) {
+        next()
+      }
+    }
+  }
+
+  /**
+   * Get current concurrency stats
+   */
+  getStats(): { active: number; waiting: number; maxConcurrent: number } {
+    return {
+      active: this.activeCount,
+      waiting: this.waiting.length,
+      maxConcurrent: this.maxConcurrent,
+    }
+  }
+}
+
+/**
+ * Executor configuration
+ */
+export interface ExecutorConfig {
+  /** Enable rate limiting */
+  enableRateLimit?: boolean
+
+  /** Maximum requests per window (default: 100) */
+  maxRequestsPerWindow?: number
+
+  /** Rate limit window in milliseconds (default: 60000 = 1 minute) */
+  rateLimitWindowMs?: number
+
+  /** Enable concurrency limiting */
+  enableConcurrencyLimit?: boolean
+
+  /** Maximum concurrent executions (default: 10) */
+  maxConcurrentExecutions?: number
 }
 
 // =============================================================================
@@ -416,6 +546,12 @@ export interface ExecutionOptions {
 
   /** Skip cache */
   skipCache?: boolean
+
+  /** Bypass rate limiting (use with caution) */
+  bypassRateLimit?: boolean
+
+  /** Bypass concurrency limit (use with caution) */
+  bypassConcurrencyLimit?: boolean
 
   /** Additional context */
   context?: Partial<ToolExecutionContext>
@@ -441,11 +577,17 @@ export interface ExecutionResult {
 /**
  * Tool Executor
  *
- * Executes tools with validation, timeout, and caching.
+ * Executes tools with validation, timeout, caching, rate limiting, and concurrency control.
  *
  * @example
  * ```typescript
- * const executor = new ToolExecutor(lifecycle)
+ * const executor = new ToolExecutor(lifecycle, {
+ *   enableRateLimit: true,
+ *   maxRequestsPerWindow: 100,
+ *   rateLimitWindowMs: 60000,
+ *   enableConcurrencyLimit: true,
+ *   maxConcurrentExecutions: 10
+ * })
  *
  * const result = await executor.execute(tool, args, {
  *   timeout: 5000,
@@ -457,8 +599,37 @@ export interface ExecutionResult {
  */
 export class ToolExecutor {
   private cache = new ToolResultCache()
+  private rateLimiter?: RateLimiter
+  private concurrencyLimiter?: ConcurrencyLimiter
+  private config: Required<ExecutorConfig>
 
-  constructor(private lifecycle?: ToolLifecycleManager) {}
+  constructor(
+    private lifecycle?: ToolLifecycleManager,
+    config: ExecutorConfig = {}
+  ) {
+    this.config = {
+      enableRateLimit: config.enableRateLimit ?? false,
+      maxRequestsPerWindow: config.maxRequestsPerWindow ?? 100,
+      rateLimitWindowMs: config.rateLimitWindowMs ?? 60000,
+      enableConcurrencyLimit: config.enableConcurrencyLimit ?? false,
+      maxConcurrentExecutions: config.maxConcurrentExecutions ?? 10,
+    }
+
+    // Initialize rate limiter if enabled
+    if (this.config.enableRateLimit) {
+      this.rateLimiter = new RateLimiter(
+        this.config.maxRequestsPerWindow,
+        this.config.rateLimitWindowMs
+      )
+    }
+
+    // Initialize concurrency limiter if enabled
+    if (this.config.enableConcurrencyLimit) {
+      this.concurrencyLimiter = new ConcurrencyLimiter(
+        this.config.maxConcurrentExecutions
+      )
+    }
+  }
 
   /**
    * Execute a tool
@@ -482,6 +653,17 @@ export class ToolExecutor {
       ...options.context,
     }
 
+    // Check rate limit
+    if (this.rateLimiter && !options.bypassRateLimit) {
+      this.rateLimiter.checkLimit(tool.name)
+    }
+
+    // Acquire concurrency slot
+    let releaseConcurrency: (() => void) | undefined
+    if (this.concurrencyLimiter && !options.bypassConcurrencyLimit) {
+      releaseConcurrency = await this.concurrencyLimiter.acquire(tool.name)
+    }
+
     try {
       // Validate arguments
       if (!options.skipValidation) {
@@ -492,6 +674,8 @@ export class ToolExecutor {
       if (!options.skipCache && tool.cacheable) {
         const cached = this.cache.get(tool.name, args)
         if (cached !== undefined) {
+          // Release concurrency slot immediately for cache hits
+          releaseConcurrency?.()
           return {
             result: cached,
             duration: Date.now() - startTime,
@@ -542,6 +726,9 @@ export class ToolExecutor {
       }
 
       throw err
+    } finally {
+      // Always release concurrency slot
+      releaseConcurrency?.()
     }
   }
 
@@ -635,6 +822,38 @@ export class ToolExecutor {
   }
 
   /**
+   * Get rate limiting statistics
+   */
+  getRateLimitStats() {
+    if (!this.rateLimiter) {
+      return { enabled: false }
+    }
+    return { enabled: true, ...this.rateLimiter.getStats() }
+  }
+
+  /**
+   * Get concurrency statistics
+   */
+  getConcurrencyStats() {
+    if (!this.concurrencyLimiter) {
+      return { enabled: false }
+    }
+    return { enabled: true, ...this.concurrencyLimiter.getStats() }
+  }
+
+  /**
+   * Get comprehensive executor statistics
+   */
+  getStats() {
+    return {
+      cache: this.cache.getStats(),
+      rateLimit: this.getRateLimitStats(),
+      concurrency: this.getConcurrencyStats(),
+      config: this.config,
+    }
+  }
+
+  /**
    * Generate unique call ID
    */
   private generateCallId(): string {
@@ -646,4 +865,4 @@ export class ToolExecutor {
 // Exports
 // =============================================================================
 
-export type { ExecutionOptions, ExecutionResult }
+export type { ExecutionOptions, ExecutionResult, ExecutorConfig }
