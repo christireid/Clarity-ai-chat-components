@@ -257,7 +257,13 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
+  const messagesRef = React.useRef<CoreMessage[]>(messages)
   const messageIdRef = React.useRef<string | null>(null)
+
+  // Keep messagesRef in sync with messages state to avoid stale closures
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
 
   // Track if component is mounted
   const mountedRef = React.useRef(true)
@@ -582,10 +588,13 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     async (options?: {
       data?: Record<string, any>
     }): Promise<string | null> => {
+      // Use ref to get current messages (avoid stale closure)
+      const currentMessages = messagesRef.current
+
       // Find last user message (manual implementation for ES2022 compatibility)
       let lastUserMessageIndex = -1
-      for (let i = messages.length - 1; i >= 0; i--) {
-        if (messages[i]?.role === 'user') {
+      for (let i = currentMessages.length - 1; i >= 0; i--) {
+        if (currentMessages[i]?.role === 'user') {
           lastUserMessageIndex = i
           break
         }
@@ -593,7 +602,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       if (lastUserMessageIndex === -1) return null
 
       // Remove messages after last user message
-      const messagesUpToUser = messages.slice(0, lastUserMessageIndex + 1)
+      const messagesUpToUser = currentMessages.slice(
+        0,
+        lastUserMessageIndex + 1
+      )
       setMessages(messagesUpToUser)
 
       // Trigger new assistant response
@@ -601,7 +613,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       if (!lastUserMessage) return null
       return append(lastUserMessage, options)
     },
-    [messages, append]
+    [append]
   )
 
   /**

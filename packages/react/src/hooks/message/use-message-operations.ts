@@ -41,19 +41,19 @@ export interface MessageOperation {
 export interface UseMessageOperationsOptions {
   /** Initial messages */
   initialMessages?: MessageWithOperations[]
-  
+
   /** Maximum undo history size (default: 50) */
   maxHistorySize?: number
-  
+
   /** Callback when message is edited */
   onEdit?: (messageId: string, newContent: string) => void
-  
+
   /** Callback when message is regenerated */
   onRegenerate?: (messageId: string) => void
-  
+
   /** Callback when conversation is branched */
   onBranch?: (branchId: string, parentMessageId: string) => void
-  
+
   /** Callback when message is deleted */
   onDelete?: (messageId: string) => void
 }
@@ -64,52 +64,57 @@ export interface UseMessageOperationsOptions {
 export interface UseMessageOperationsReturn {
   /** All messages */
   messages: MessageWithOperations[]
-  
+
   /** Add new message */
-  addMessage: (message: Omit<MessageWithOperations, 'id' | 'timestamp'>) => string
-  
+  addMessage: (
+    message: Omit<MessageWithOperations, 'id' | 'timestamp'>
+  ) => string
+
   /** Edit message content */
   editMessage: (messageId: string, newContent: string) => void
-  
+
+  /** Rollback failed edit operation */
+  rollbackEdit: (messageId: string) => void
+
   /** Start editing mode for message */
   startEditing: (messageId: string) => void
-  
+
   /** Cancel editing mode */
   cancelEditing: (messageId: string) => void
-  
+
   /** Regenerate assistant message */
   regenerateMessage: (messageId: string) => void
-  
+
   /** Delete message */
   deleteMessage: (messageId: string) => void
-  
+
   /** Branch conversation from message */
   branchConversation: (messageId: string) => string
-  
+
   /** Get messages up to specific point */
   getMessagesUpTo: (messageId: string) => MessageWithOperations[]
-  
+
   /** Get all branches */
   getBranches: () => Map<string, MessageWithOperations[]>
-  
+
   /** Switch to different branch */
   switchToBranch: (branchId: string) => void
-  
+
   /** Undo last operation */
   undo: () => void
-  
+
   /** Redo last undone operation */
   redo: () => void
-  
+
   /** Whether can undo */
   canUndo: boolean
-  
+
   /** Whether can redo */
   canRedo: boolean
-  
+
   /** Current branch ID */
   currentBranchId: string
-  
+
   /** Clear all messages */
   clear: () => void
 }
@@ -137,12 +142,16 @@ interface OperationsState {
 type OperationsAction =
   | { type: 'ADD_MESSAGE'; payload: MessageWithOperations }
   | { type: 'EDIT_MESSAGE'; payload: { id: string; content: string } }
+  | { type: 'ROLLBACK_EDIT'; payload: string } // Rollback failed edit by message ID
   | { type: 'START_EDITING'; payload: string }
   | { type: 'CANCEL_EDITING'; payload: string }
   | { type: 'DELETE_MESSAGE'; payload: string }
   | { type: 'UNDO' }
   | { type: 'REDO' }
-  | { type: 'BRANCH_CONVERSATION'; payload: { messageId: string; branchId: string } }
+  | {
+      type: 'BRANCH_CONVERSATION'
+      payload: { messageId: string; branchId: string }
+    }
   | { type: 'SWITCH_BRANCH'; payload: string }
   | { type: 'CLEAR' }
 
@@ -203,6 +212,36 @@ function operationsReducer(
       }
     }
 
+    case 'ROLLBACK_EDIT': {
+      // Find the last edit operation for this message
+      const lastEditIndex = state.history.findLastIndex(
+        (op) => op.type === 'edit' && op.messageId === action.payload
+      )
+
+      if (lastEditIndex === -1) return state
+
+      const lastEdit = state.history[lastEditIndex]
+      if (!lastEdit || !lastEdit.previousState) return state
+
+      // Restore the message to its previous state
+      const restoredMessages = state.messages.map((m) =>
+        m.id === action.payload ? lastEdit.previousState! : m
+      )
+
+      // Remove the failed edit from history
+      const newHistory = [
+        ...state.history.slice(0, lastEditIndex),
+        ...state.history.slice(lastEditIndex + 1),
+      ]
+
+      return {
+        ...state,
+        messages: restoredMessages,
+        history: newHistory,
+        redoStack: [], // Clear redo stack on rollback
+      }
+    }
+
     case 'START_EDITING': {
       return {
         ...state,
@@ -251,13 +290,17 @@ function operationsReducer(
       // Reverse the operation
       switch (lastOperation.type) {
         case 'add':
-          newMessages = newMessages.filter((m) => m.id !== lastOperation.messageId)
+          newMessages = newMessages.filter(
+            (m) => m.id !== lastOperation.messageId
+          )
           break
         case 'edit':
         case 'regenerate':
           if (lastOperation.previousState) {
             newMessages = newMessages.map((m) =>
-              m.id === lastOperation.messageId ? lastOperation.previousState! : m
+              m.id === lastOperation.messageId
+                ? lastOperation.previousState!
+                : m
             )
           }
           break
@@ -313,15 +356,20 @@ function operationsReducer(
     }
 
     case 'BRANCH_CONVERSATION': {
-      const index = state.messages.findIndex((m) => m.id === action.payload.messageId)
+      const index = state.messages.findIndex(
+        (m) => m.id === action.payload.messageId
+      )
       if (index === -1) return state
 
       // Create copies of messages for new branch
-      const branchedMessages = state.messages.slice(0, index + 1).map((msg) => ({
-        ...msg,
-        branchId: action.payload.branchId,
-        parentId: msg.id === action.payload.messageId ? msg.parentId : msg.id,
-      }))
+      // Preserve original parentId to maintain message chain (avoid self-references)
+      const branchedMessages = state.messages
+        .slice(0, index + 1)
+        .map((msg) => ({
+          ...msg,
+          branchId: action.payload.branchId,
+          parentId: msg.parentId, // Keep original parent relationship
+        }))
 
       return {
         ...state,
@@ -353,7 +401,7 @@ function operationsReducer(
 
 /**
  * Production-ready Message Operations hook for advanced chat features.
- * 
+ *
  * **Features:**
  * - Message editing with version history
  * - Message regeneration (resend to AI)
@@ -362,14 +410,14 @@ function operationsReducer(
  * - Message deletion
  * - Branch switching
  * - Context preservation
- * 
+ *
  * **Use Cases:**
  * - Allow users to edit their messages
  * - Regenerate AI responses with same context
  * - Create alternative conversation paths
  * - Undo mistakes
  * - Delete unwanted messages
- * 
+ *
  * @example
  * ```tsx
  * // Basic message operations
@@ -385,21 +433,21 @@ function operationsReducer(
  *     console.log('Message edited:', id, content)
  *   },
  * })
- * 
+ *
  * // Add messages
  * const msgId = addMessage({
  *   role: 'user',
  *   content: 'Hello!',
  * })
- * 
+ *
  * // Edit message
  * editMessage(msgId, 'Hi there!')
- * 
+ *
  * // Undo if needed
  * if (canUndo) {
  *   undo()
  * }
- * 
+ *
  * // Regenerate AI response
  * const {
  *   regenerateMessage,
@@ -411,7 +459,7 @@ function operationsReducer(
  *     // Replace old message with new response
  *   },
  * })
- * 
+ *
  * // Branch conversation
  * const {
  *   branchConversation,
@@ -422,13 +470,13 @@ function operationsReducer(
  *     console.log('Created branch:', branchId)
  *   },
  * })
- * 
+ *
  * // Create branch from message
  * const branchId = branchConversation(messageId)
- * 
+ *
  * // List all branches
  * const branches = getBranches()
- * 
+ *
  * // Switch between branches
  * switchToBranch(branchId)
  * ```
@@ -486,11 +534,22 @@ export function useMessageOperations(
    */
   const editMessage = React.useCallback(
     (messageId: string, newContent: string) => {
-      dispatch({ type: 'EDIT_MESSAGE', payload: { id: messageId, content: newContent } })
+      dispatch({
+        type: 'EDIT_MESSAGE',
+        payload: { id: messageId, content: newContent },
+      })
       onEdit?.(messageId, newContent)
     },
     [onEdit]
   )
+
+  /**
+   * Rollback failed edit operation
+   * Call this if onEdit callback fails to restore message to previous state
+   */
+  const rollbackEdit = React.useCallback((messageId: string) => {
+    dispatch({ type: 'ROLLBACK_EDIT', payload: messageId })
+  }, [])
 
   /**
    * Start editing mode
@@ -539,7 +598,10 @@ export function useMessageOperations(
     (messageId: string): string => {
       const branchId = `branch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
 
-      dispatch({ type: 'BRANCH_CONVERSATION', payload: { messageId, branchId } })
+      dispatch({
+        type: 'BRANCH_CONVERSATION',
+        payload: { messageId, branchId },
+      })
       onBranch?.(branchId, messageId)
 
       return branchId
@@ -565,7 +627,10 @@ export function useMessageOperations(
   /**
    * Get all branches
    */
-  const getBranches = React.useCallback((): Map<string, MessageWithOperations[]> => {
+  const getBranches = React.useCallback((): Map<
+    string,
+    MessageWithOperations[]
+  > => {
     const branches = new Map<string, MessageWithOperations[]>()
 
     state.messages.forEach((msg) => {
@@ -612,9 +677,12 @@ export function useMessageOperations(
   }, [])
 
   return {
-    messages: state.messages.filter((m) => m.branchId === state.currentBranchId),
+    messages: state.messages.filter(
+      (m) => m.branchId === state.currentBranchId
+    ),
     addMessage,
     editMessage,
+    rollbackEdit,
     startEditing,
     cancelEditing,
     regenerateMessage,

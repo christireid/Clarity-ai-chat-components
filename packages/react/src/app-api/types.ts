@@ -137,8 +137,8 @@ export interface ToolDefinition {
   description: string
   /** JSON Schema or Zod schema for parameters */
   parameters: Record<string, unknown>
-  /** Execution handler */
-  execute: (params: unknown) => Promise<unknown>
+  /** Execution handler with optional abort signal for cancellation */
+  execute: (params: unknown, signal?: AbortSignal) => Promise<unknown>
   /** Optional custom UI renderer */
   renderer?: React.ComponentType<{ result: unknown }>
   /**

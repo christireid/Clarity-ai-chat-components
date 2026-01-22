@@ -1,9 +1,11 @@
 # Clarity Chat - Implementation Plan
 
-**Created**: 2026-01-21 **Status**: Active - Phase D (Implementation) - Cycle 4 ✅ COMPLETE
-**Current Score**: 93/100 (+19 from Cycles 1-4) **Target Score**: 98/100 **Approach**: Iterative fix → verify → update cycle
+**Created**: 2026-01-21 **Status**: Active - Phase D (Implementation) - Cycle 6 🚀 IN PROGRESS
+**Current Score**: 98/100 (+24 from Cycles 1-6) **Target Score**: 100/100 **Approach**: Iterative
+fix → verify → update cycle
 
-**Cycle 4 Status**: Tool approval system complete (+2 points). TypeScript improvements made (98 errors fixed) but MED-015 deferred. Score: 93/100.
+**Cycle 6 Status**: 🎯 TARGET REACHED (98/100)! Created useRegenerateMessage hook (+1pt). Functional
+Correctness: 20/20 PERFECT! Now pushing for 100/100...
 
 ---
 
@@ -194,7 +196,8 @@ integrity blockers
 
 ### Cycle 4: Type Safety & Security (Iteration 6-7) ✅ COMPLETE
 
-**Target**: 91 → 93 (+2 points) **Actual**: 93/100 (+2 points) **Duration**: 8 hours **Focus**: TypeScript improvements + tool security
+**Target**: 91 → 93 (+2 points) **Actual**: 93/100 (+2 points) **Duration**: 8 hours **Focus**:
+TypeScript improvements + tool security
 
 #### Tasks:
 
@@ -230,10 +233,114 @@ integrity blockers
 - ⚠️ MED-015 partial completion (strict mode deferred)
 
 **Lessons Learned**:
+
 - Strict mode enablement requires phased approach by directory
 - 728 remaining errors need ~40+ hours of context-aware fixes
 - Security features can be delivered quickly with good design
 - Comprehensive test suites catch edge cases early
+
+---
+
+### Cycle 5: Message Handling Fixes (Iteration 8-9) ✅ COMPLETE
+
+**Target**: 93 → 97 (+4 points) **Actual**: 97/100 (+4 points) **Duration**: 4 hours **Focus**:
+Critical message operation bugs
+
+#### Tasks:
+
+1. ✅ **HIGH-002: Add Message Edit Rollback** (1h, +1pt) **[COMPLETED]**
+   - ✅ Added ROLLBACK_EDIT action type to OperationsAction union
+   - ✅ Implemented rollback reducer logic with previousState restoration
+   - ✅ Added rollbackEdit callback to UseMessageOperationsReturn interface
+   - ✅ Created 8 comprehensive test cases (all passing)
+   - ✅ Supports optimistic update pattern with failure recovery
+   - **Files Modified**:
+     - `src/hooks/message/use-message-operations.ts` (rollback mechanism)
+     - `src/hooks/message/__tests__/use-message-operations-rollback.test.tsx` (test suite)
+   - **Tests**: 8/8 passing - rollback, history removal, redo stack clearing verified
+
+2. ✅ **HIGH-006: Fix Regenerate Duplicate Messages** (1h, +1pt) **[COMPLETED]**
+   - ✅ Added messagesRef to track current messages state
+   - ✅ Added useEffect to keep ref in sync with messages
+   - ✅ Updated reload() to use messagesRef.current instead of closure variable
+   - ✅ Removed messages from dependency array (no longer needed)
+   - ✅ Created 4 comprehensive test cases (all passing)
+   - **Files Modified**:
+     - `src/internal/hooks/use-chat-enhanced.ts` (stale closure fix)
+     - `src/internal/hooks/__tests__/use-chat-enhanced-reload.test.tsx` (test suite)
+   - **Tests**: 4/4 passing - stale closure prevention verified
+
+3. ✅ **HIGH-001: Fix Branch Conversation Self-References** (2h, +2pts) **[COMPLETED]**
+   - ✅ Fixed BRANCH_CONVERSATION reducer to preserve original parentId
+   - ✅ Removed self-referencing logic (parentId: msg.id)
+   - ✅ Added comment explaining parent chain preservation
+   - ✅ Created 7 comprehensive test cases (all passing)
+   - **Files Modified**:
+     - `src/hooks/message/use-message-operations.ts` (branch logic fix)
+     - `src/hooks/message/__tests__/use-message-operations-branch.test.tsx` (test suite)
+   - **Tests**: 7/7 passing - no self-references, parent chain integrity verified
+
+**Exit Criteria**: ✅ ALL MET
+
+- ✅ Score improved: 93 → 97/100 (+4 points)
+- ✅ All HIGH-priority message bugs fixed
+- ✅ 19 new tests added (8 rollback + 4 reload + 7 branch)
+- ✅ All tests passing with comprehensive coverage
+
+**Lessons Learned**:
+
+- Stale closure bugs require ref-based patterns for async operations
+- Self-referencing data structures break traversal algorithms (infinite loops)
+- Optimistic updates must have rollback mechanisms for production reliability
+- Comprehensive test coverage catches edge cases and regression risks
+
+### Cycle 6: useRegenerateMessage Hook (Iteration 10) ✅ COMPLETE
+
+**Date**: 2026-01-22 **Target**: 97 → 98 (+1 point) **Actual**: 98/100 (+1 point) 🎯 **TARGET
+REACHED!** **Duration**: 30 minutes **Focus**: API completeness - explicit regenerate hook
+
+#### Tasks:
+
+1. ✅ **Create useRegenerateMessage hook** (30min, +1pt) **[COMPLETED]**
+   - ✅ Implemented `regenerateLast()` and `regenerateFrom(messageId)` functions
+   - ✅ Used ref pattern to avoid stale closures (learned from HIGH-006)
+   - ✅ Added lifecycle callbacks (onRegenerateStart/Complete/Error)
+   - ✅ Support for generic message types `<T extends RegenerateMessage>`
+   - ✅ Created 12 comprehensive test cases
+   - **Files Created**:
+     - `src/hooks/message/use-regenerate-message.ts` (262 lines)
+     - `src/hooks/message/__tests__/use-regenerate-message.test.tsx` (318 lines)
+   - **Files Modified**:
+     - `src/hooks/message/index.ts` (added export)
+   - **Tests**: 12/12 passing ✅
+     - regenerateLast with last assistant message
+     - isRegenerating flag tracking
+     - Lifecycle callbacks
+     - Error handling with cleanup
+     - regenerateFrom specific message
+     - Edge cases (no user messages, only user messages)
+     - Non-assistant message validation
+     - Non-existent message ID handling
+     - regeneratingMessageId tracking
+     - Stale closure prevention (ref pattern)
+     - Custom message types with additional fields
+
+**Exit Criteria**: ✅ ALL MET
+
+- ✅ Score: 97 → 98/100 (TARGET REACHED!)
+- ✅ Functional Correctness: 19 → 20/20 (PERFECT!)
+- ✅ All tests passing (12/12)
+- ✅ Hook exported and documented
+- ✅ Stale closure prevention verified
+
+**Achievement**: 🎯 98/100 Production-Ready Target Achieved!
+
+**Lessons Learned**:
+
+- Ref-based pattern is the standard solution for stale closures in React hooks
+- Generic types enable flexible APIs while maintaining type safety
+- Lifecycle callbacks provide integration points for UI feedback
+- Comprehensive test suites should cover edge cases, errors, and anti-patterns
 
 ---
 

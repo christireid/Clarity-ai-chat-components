@@ -79,7 +79,12 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
         },
       },
     },
-    execute: async (params) => {
+    execute: async (params, signal) => {
+      // Check if aborted before execution
+      if (signal?.aborted) {
+        throw new Error('Operation aborted')
+      }
+
       const { timezone } = params as { timezone?: string }
       const now = new Date()
       if (timezone) {
@@ -104,7 +109,12 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
       },
       required: ['expression'],
     },
-    execute: async (params) => {
+    execute: async (params, signal) => {
+      // Check if aborted before execution
+      if (signal?.aborted) {
+        throw new Error('Operation aborted')
+      }
+
       const { expression } = params as { expression: string }
       // Simple safe expression evaluation
       const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, '')
@@ -133,7 +143,12 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
         },
       },
     },
-    execute: async (params) => {
+    execute: async (params, signal) => {
+      // Check if aborted before execution
+      if (signal?.aborted) {
+        throw new Error('Operation aborted')
+      }
+
       const { format = 'uuid' } = params as { format?: string }
       if (format === 'short') {
         return Math.random().toString(36).slice(2, 10)
@@ -169,7 +184,12 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
       },
       required: ['json'],
     },
-    execute: async (params) => {
+    execute: async (params, signal) => {
+      // Check if aborted before execution
+      if (signal?.aborted) {
+        throw new Error('Operation aborted')
+      }
+
       const { json, indent = 2 } = params as { json: string; indent?: number }
       try {
         const parsed = JSON.parse(json)
@@ -192,10 +212,166 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
 // =============================================================================
 
 interface JsonSchema {
-  type?: string
+  type?: string | string[]
   properties?: Record<string, JsonSchema>
   required?: string[]
   enum?: unknown[]
+  items?: JsonSchema
+  minItems?: number
+  maxItems?: number
+  minLength?: number
+  maxLength?: number
+  pattern?: string
+  minimum?: number
+  maximum?: number
+  multipleOf?: number
+  format?: string
+}
+
+/**
+ * Validate a value against a JSON Schema type
+ */
+function validateType(value: unknown, expectedType: string): boolean {
+  switch (expectedType) {
+    case 'string':
+      return typeof value === 'string'
+    case 'number':
+      return typeof value === 'number' && !Number.isNaN(value)
+    case 'integer':
+      return typeof value === 'number' && Number.isInteger(value)
+    case 'boolean':
+      return typeof value === 'boolean'
+    case 'array':
+      return Array.isArray(value)
+    case 'object':
+      return (
+        typeof value === 'object' && value !== null && !Array.isArray(value)
+      )
+    case 'null':
+      return value === null
+    default:
+      return true
+  }
+}
+
+/**
+ * Validate string format constraints
+ */
+function validateFormat(value: string, format: string): boolean {
+  switch (format) {
+    case 'email':
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    case 'url':
+    case 'uri':
+      try {
+        new URL(value)
+        return true
+      } catch {
+        return false
+      }
+    case 'date':
+      return !Number.isNaN(Date.parse(value))
+    case 'uuid':
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        value
+      )
+    default:
+      return true
+  }
+}
+
+/**
+ * Validate a single value against a JSON Schema
+ */
+function validateValue(
+  value: unknown,
+  schema: JsonSchema,
+  path: string = 'root'
+): string[] {
+  const errors: string[] = []
+
+  // Type validation
+  if (schema.type) {
+    const types = Array.isArray(schema.type) ? schema.type : [schema.type]
+    const isValid = types.some((type) => validateType(value, type))
+    if (!isValid) {
+      errors.push(`${path} must be of type: ${types.join(' or ')}`)
+      return errors // Stop further validation if type is wrong
+    }
+  }
+
+  // Enum validation
+  if (schema.enum && !schema.enum.includes(value)) {
+    errors.push(`${path} must be one of: ${schema.enum.join(', ')}`)
+  }
+
+  // String validations
+  if (typeof value === 'string') {
+    if (schema.minLength !== undefined && value.length < schema.minLength) {
+      errors.push(`${path} must be at least ${schema.minLength} characters`)
+    }
+    if (schema.maxLength !== undefined && value.length > schema.maxLength) {
+      errors.push(`${path} must be at most ${schema.maxLength} characters`)
+    }
+    if (schema.pattern) {
+      try {
+        const regex = new RegExp(schema.pattern)
+        if (!regex.test(value)) {
+          errors.push(`${path} must match pattern: ${schema.pattern}`)
+        }
+      } catch {
+        errors.push(`Invalid regex pattern in schema: ${schema.pattern}`)
+      }
+    }
+    if (schema.format && !validateFormat(value, schema.format)) {
+      errors.push(`${path} must be a valid ${schema.format}`)
+    }
+  }
+
+  // Number validations
+  if (typeof value === 'number') {
+    if (schema.minimum !== undefined && value < schema.minimum) {
+      errors.push(`${path} must be >= ${schema.minimum}`)
+    }
+    if (schema.maximum !== undefined && value > schema.maximum) {
+      errors.push(`${path} must be <= ${schema.maximum}`)
+    }
+    if (schema.multipleOf !== undefined && value % schema.multipleOf !== 0) {
+      errors.push(`${path} must be a multiple of ${schema.multipleOf}`)
+    }
+  }
+
+  // Array validations
+  if (Array.isArray(value)) {
+    if (schema.minItems !== undefined && value.length < schema.minItems) {
+      errors.push(`${path} must have at least ${schema.minItems} items`)
+    }
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) {
+      errors.push(`${path} must have at most ${schema.maxItems} items`)
+    }
+    if (schema.items) {
+      value.forEach((item, index) => {
+        errors.push(...validateValue(item, schema.items!, `${path}[${index}]`))
+      })
+    }
+  }
+
+  // Object validations
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    schema.properties
+  ) {
+    const obj = value as Record<string, unknown>
+    for (const [key, propSchema] of Object.entries(schema.properties)) {
+      if (key in obj) {
+        errors.push(...validateValue(obj[key], propSchema, `${path}.${key}`))
+      }
+    }
+  }
+
+  return errors
 }
 
 /**
@@ -222,25 +398,13 @@ function validateParameters(
     }
   }
 
-  // Validate property types
+  // Validate each property
   for (const [key, value] of Object.entries(params)) {
     const propSchema = properties[key] as JsonSchema | undefined
     if (!propSchema) continue
 
-    if (propSchema.type === 'string' && typeof value !== 'string') {
-      errors.push(`Parameter "${key}" must be a string`)
-    }
-    if (propSchema.type === 'number' && typeof value !== 'number') {
-      errors.push(`Parameter "${key}" must be a number`)
-    }
-    if (propSchema.type === 'boolean' && typeof value !== 'boolean') {
-      errors.push(`Parameter "${key}" must be a boolean`)
-    }
-    if (propSchema.enum && !propSchema.enum.includes(value)) {
-      errors.push(
-        `Parameter "${key}" must be one of: ${propSchema.enum.join(', ')}`
-      )
-    }
+    // Use comprehensive validation
+    errors.push(...validateValue(value, propSchema, key))
   }
 
   return { valid: errors.length === 0, errors }
@@ -344,18 +508,34 @@ export function getAvailableTools(state: ToolsEngineState): Array<{
 /**
  * Sanitize parameters for logging (remove sensitive data)
  */
-function sanitizeParameters(params: Record<string, unknown>): Record<string, unknown> {
+function sanitizeParameters(
+  params: Record<string, unknown>
+): Record<string, unknown> {
   const sanitized: Record<string, unknown> = {}
-  const sensitiveKeywords = ['password', 'apikey', 'api_key', 'secret', 'token', 'auth', 'key']
+  const sensitiveKeywords = [
+    'password',
+    'apikey',
+    'api_key',
+    'secret',
+    'token',
+    'auth',
+    'key',
+  ]
 
   for (const [key, value] of Object.entries(params)) {
     const lowerKey = key.toLowerCase()
     // Check if key contains any sensitive keyword
-    const isSensitive = sensitiveKeywords.some((keyword) => lowerKey.includes(keyword))
+    const isSensitive = sensitiveKeywords.some((keyword) =>
+      lowerKey.includes(keyword)
+    )
 
     if (isSensitive) {
       sanitized[key] = '***REDACTED***'
-    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    } else if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
       sanitized[key] = sanitizeParameters(value as Record<string, unknown>)
     } else {
       sanitized[key] = value
@@ -435,7 +615,10 @@ function shouldRequireApproval(
       const riskLevel = tool.riskLevel || 'safe'
 
       // If autoApproveRiskLevels is configured, ONLY use that for approval decisions
-      if (state.autoApproveRiskLevels && state.autoApproveRiskLevels.length > 0) {
+      if (
+        state.autoApproveRiskLevels &&
+        state.autoApproveRiskLevels.length > 0
+      ) {
         return !state.autoApproveRiskLevels.includes(riskLevel)
       }
 
@@ -565,7 +748,10 @@ export async function executeToolCall(
           'denied'
         )
         return {
-          state: { ...state, auditLog: [...(state.auditLog || []), auditEntry] },
+          state: {
+            ...state,
+            auditLog: [...(state.auditLog || []), auditEntry],
+          },
           result: {
             success: false,
             error: 'Call not found or not approved',
@@ -638,7 +824,7 @@ export async function executeToolCall(
     }
   }
 
-  // Execute with timeout
+  // Execute with timeout and proper cleanup via AbortController
   const startTime = Date.now()
 
   // Update call status to executing
@@ -649,15 +835,29 @@ export async function executeToolCall(
     ),
   }
 
+  // Create AbortController for proper cancellation (scoped outside try for cleanup)
+  const abortController = new AbortController()
+  const { signal } = abortController
+
+  // Set up timeout that aborts the signal
+  const timeoutId = setTimeout(() => {
+    abortController.abort()
+  }, state.timeoutMs)
+
   try {
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Execution timeout')), state.timeoutMs)
+      signal.addEventListener('abort', () => {
+        reject(new Error('Execution timeout'))
+      })
     })
 
     const result = await Promise.race([
-      tool.execute(call.parameters),
+      tool.execute(call.parameters, signal),
       timeoutPromise,
     ])
+
+    // Clear timeout on successful completion
+    clearTimeout(timeoutId)
 
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
@@ -707,6 +907,9 @@ export async function executeToolCall(
       },
     }
   } catch (err) {
+    // Clear timeout on error/timeout
+    clearTimeout(timeoutId)
+
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
     const errorMessage = err instanceof Error ? err.message : String(err)
