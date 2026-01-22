@@ -22,6 +22,7 @@ import type {
   ToolExecutionContext,
 } from '../types/tool-definition'
 import type { ToolLifecycleManager } from './tool-lifecycle'
+import { generateToolCallId } from '../utils/id-generator'
 
 // =============================================================================
 // Validation
@@ -1022,7 +1023,7 @@ export class ToolExecutor {
 
     // Create execution context
     const context: ToolExecutionContext = {
-      callId: this.generateCallId(),
+      callId: generateToolCallId('exec'),
       startedAt: startTime,
       ...options.context,
     }
@@ -1274,12 +1275,6 @@ export class ToolExecutor {
     this.cache.destroy()
   }
 
-  /**
-   * Generate unique call ID
-   */
-  private generateCallId(): string {
-    return `exec_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-  }
 }
 
 // =============================================================================

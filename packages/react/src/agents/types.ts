@@ -8,59 +8,28 @@
  * These types are kept for backward compatibility but are deprecated.
  */
 
-import type {
-  ToolDefinition as CanonicalToolDefinition,
-  ToolParameters as CanonicalToolParameters,
-  ToolArguments as CanonicalToolArguments,
-  ToolResult as CanonicalToolResult,
+// Re-export canonical types without confusing aliases
+export type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
 } from '../types/tool-definition'
 
-// Re-export canonical types as primary exports
-export type {
-  CanonicalToolDefinition as ToolDefinition,
-  CanonicalToolParameters as ToolParameters,
-  CanonicalToolArguments as ToolArguments,
-  CanonicalToolResult as ToolResult,
-}
-
-// =============================================================================
-// DEPRECATED: Legacy Types (kept for backward compatibility)
-// =============================================================================
-
 /**
- * @deprecated Use ToolParameterProperty from '../types/tool-definition' instead
+ * @deprecated Use ToolDefinition from '../types/tool-definition' instead
  *
- * JSON Schema property types for tool parameters
+ * This simplified Tool interface is missing critical fields like:
+ * - displayName, cacheable, cacheTtl, timeout, parallelizable
+ * - hooks (lifecycle callbacks)
+ * - execute function doesn't receive ToolExecutionContext
+ *
+ * Migrate to ToolDefinition for full feature support and security.
  */
-export interface ToolParameterProperty {
-  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
-  description?: string
-  enum?: (string | number | boolean)[]
-  default?: unknown
-  items?: ToolParameterProperty
-  properties?: Record<string, ToolParameterProperty>
-  required?: string[]
-  minimum?: number
-  maximum?: number
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-}
-
-/** JSON Schema for tool parameters */
-export interface ToolParameters {
-  type: 'object'
-  properties: Record<string, ToolParameterProperty>
-  required?: string[]
-  additionalProperties?: boolean
-}
-
-/** Arguments passed to tool execution */
-export type ToolArguments = Record<string, string | number | boolean | string[] | number[] | Record<string, unknown>>
-
-/** Result from tool execution */
-export type ToolResult = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined
-
 export interface Tool {
   /** Tool name */
   name: string

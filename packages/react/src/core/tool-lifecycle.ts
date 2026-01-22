@@ -27,6 +27,7 @@ import type {
   ToolArguments,
   ToolResult,
 } from '../types/tool-definition'
+import { generateToolCallId } from '../utils/id-generator'
 
 // =============================================================================
 // Lifecycle Status
@@ -458,7 +459,7 @@ export class ToolLifecycleManager {
     args: ToolArguments,
     context?: Partial<ToolExecutionContext>
   ): ToolCallRecord {
-    const id = context?.callId ?? this.generateCallId()
+    const id = context?.callId ?? generateToolCallId('call')
     const now = Date.now()
 
     const call: ToolCallRecord = {
@@ -834,12 +835,6 @@ export class ToolLifecycleManager {
     call.status = newStatus
   }
 
-  /**
-   * Generate unique call ID
-   */
-  private generateCallId(): string {
-    return `call_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-  }
 
   /**
    * Get audit logs with optional filtering
