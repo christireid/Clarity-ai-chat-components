@@ -332,9 +332,22 @@ export interface CacheableMessage {
 }
 
 /**
- * Token counter interface for estimating cache benefit
+ * Token counting provider interface for cache optimization
+ *
+ * This interface defines a pluggable token counter that can be used
+ * by caching strategies to estimate token savings.
+ *
+ * @remarks
+ * Renamed from TokenCounter to avoid confusion with token counter classes.
+ * Use AccurateTokenCounter, FastTokenCounter, or implement this interface.
  */
-export interface TokenCounter {
+export interface TokenCountingProvider {
   count(text: string): number
   countBatch?(texts: string[]): number | number[] | Promise<number[]>
 }
+
+/**
+ * @deprecated Use TokenCountingProvider instead
+ * Backward compatibility alias. Will be removed in v3.0.0
+ */
+export type TokenCounter = TokenCountingProvider

@@ -286,12 +286,18 @@ export type {
 } from './compression'
 
 // Token counting exports (legacy compatibility)
+// New canonical names
 export {
-  TokenCounter,
+  LegacyTokenCounter,
+  TokenBudgetManager as LegacyTokenBudgetManager,
+} from './legacy-compatibility'
+
+// Deprecated - for backward compatibility only
+export {
+  TokenCounter, // @deprecated - use LegacyTokenCounter, AccurateTokenCounter, or FastTokenCounter
   ContextOptimizer,
   MemoryCompressor,
   SemanticChunker,
-  TokenBudgetManager as LegacyTokenBudgetManager,
   countTokens,
   countTokensBatch,
   truncateToTokens,
@@ -321,6 +327,13 @@ export type {
   ChatMessage,
 } from './tokenizers/accurate-counter'
 
+// Fast token counter (new canonical name)
+export {
+  FastTokenCounter,
+  type FastTokenCounterConfig,
+} from './tokenizers/fast-counter'
+
+// Deprecated - use FastTokenCounter
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
 
 // Provider-Native Token Counting - 100% accurate counting using provider APIs
@@ -365,6 +378,9 @@ export type {
   ProviderCachingResult,
   ProviderCachingConfig,
   CacheableMessage,
+  // Token counting provider interface
+  TokenCountingProvider,
+  TokenCounter, // @deprecated - use TokenCountingProvider
 } from './providers/types'
 export type { SimpleProviderCachingConfig } from './providers/simple-caching'
 

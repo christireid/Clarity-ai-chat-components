@@ -101,9 +101,17 @@ export interface ConversationChunk {
 }
 
 /**
- * Legacy TokenCounter - maintains backward compatibility
+ * Legacy Token Counter - maintains backward compatibility with old memory package API
+ *
+ * @deprecated This class is provided for backward compatibility only.
+ * New code should use:
+ * - AccurateTokenCounter for accurate counting
+ * - FastTokenCounter for quick estimation
+ * - countTokens() function for simple use cases
+ *
+ * This class will be removed in v3.0.0
  */
-export class TokenCounter {
+export class LegacyTokenCounter {
   private static counter: AccurateTokenCounter
 
   private static getCounter(): AccurateTokenCounter {
@@ -147,6 +155,12 @@ export class TokenCounter {
       .filter((s) => s.length > 0)
   }
 }
+
+/**
+ * @deprecated Use LegacyTokenCounter instead, or migrate to AccurateTokenCounter/FastTokenCounter
+ * Backward compatibility alias. Will be removed in v3.0.0
+ */
+export const TokenCounter = LegacyTokenCounter
 
 /**
  * Legacy TokenBudgetManager - maintains backward compatibility
