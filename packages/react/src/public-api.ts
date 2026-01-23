@@ -216,6 +216,8 @@ export {
   CODE_THEMES,
   DEFAULT_DARK_THEME,
   DEFAULT_LIGHT_THEME,
+  NIGHT_OWL_MONACO_THEME,
+  NIGHT_OWL_COLORS,
   type CodeThemeName,
   type CodeThemeDefinition,
 } from './components/code/themes'
@@ -473,6 +475,19 @@ export {
   type ToastOptions,
   type PromiseToastOptions,
 } from './components/ui/sonner-toast'
+
+// Toast notifications (Context-based provider)
+export {
+  ToastProvider,
+  useToast,
+  ToastContainer,
+  ToastItem,
+  type ToastProviderProps,
+  type ToastContextValue,
+  type Toast,
+  type ToastType,
+  type ToastPosition,
+} from './components/ui/toast'
 
 // Keyboard shortcuts
 export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
@@ -1041,6 +1056,16 @@ export {
   type SecurityHeaders,
   type SecurityAuditResult,
 } from './utils/security-helpers'
+
+// Security Manager - core security infrastructure
+export {
+  SecurityManager,
+  type SecurityConfig as SecurityManagerConfig,
+  type SecurityResult,
+  type SecurityContext,
+  type SecurityMetrics,
+  type SecurityEvent,
+} from './security/security-manager'
 
 // Error boundaries
 export {

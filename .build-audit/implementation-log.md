@@ -54,6 +54,80 @@ twice. **Fix**: Removed duplicate import line. **Verification**: Build passes.
 causing "storybook: not found". **Fix**: Added `storybook` to devDependencies. **Verification**:
 Partial - CLI found but ESM/CJS issue remains.
 
+### Fix 9: Missing React Package Exports
+
+**Files**:
+
+- `packages/react/src/public-api.ts`
+
+**Issue**: Several exports were missing from the public API causing docs apps to fail:
+
+- `ToastProvider`, `useToast` - needed for context-based toast notifications
+- `SecurityManager` - needed for security playground
+- `NIGHT_OWL_MONACO_THEME` - needed for code editor theming
+
+**Fix**: Added missing exports to public-api.ts:
+
+- Toast context exports from `./components/ui/toast`
+- SecurityManager and types from `./security/security-manager`
+- NIGHT_OWL_MONACO_THEME from `./components/code/themes`
+
+**Verification**: Both docs apps now build successfully.
+
+### Fix 10: Docs AI SDK Import Path
+
+**Files**:
+
+- `apps/docs/package.json`
+- `apps/docs/app/examples/tool-calling-showcase/hooks/useAIToolOrchestration.ts`
+
+**Issue**: AI SDK v4 changed the import path for React hooks. Import from `ai/react` was failing.
+
+**Fix**:
+
+- Added `@ai-sdk/react@^3.0.51` to dependencies
+- Updated import to use `@ai-sdk/react` instead of `ai/react`
+
+**Verification**: Docs build succeeds.
+
+### Fix 11: Security Playground API Update
+
+**File**: `apps/docs/app/playground/security/page.tsx`
+
+**Issue**: Used non-existent `validateChatInput` method on SecurityManager.
+
+**Fix**: Updated to use async `validateInput` method with proper result mapping.
+
+**Verification**: Security playground builds and functions correctly.
+
+### Fix 12: Streamlined-Docs Server Component Issues
+
+**Files**:
+
+- `apps/streamlined-docs/app/layout.tsx`
+- `apps/streamlined-docs/app/api/page.tsx`
+- `apps/streamlined-docs/app/playground/page.tsx`
+- `apps/streamlined-docs/app/explore/themes/page.tsx`
+- `apps/streamlined-docs/lib/utils.ts`
+- `apps/streamlined-docs/components/Enhanced/FloatingActionButton.tsx`
+- `apps/streamlined-docs/components/UI/AIAssistantButton.tsx` (created)
+- `apps/streamlined-docs/components/UI/TemplateButton.tsx` (created)
+
+**Issues**:
+
+1. Event handlers passed from Server Components to Client Components
+2. `cn()` function from primitives marked as client-only
+3. Corrupted quotes in themes page
+
+**Fixes**:
+
+1. Moved event handlers into FloatingActionButton's default behavior
+2. Created AIAssistantButton and TemplateButton client components
+3. Rewrote themes page with proper quotes
+4. Created local `cn()` implementation for server component compatibility
+
+**Verification**: streamlined-docs builds successfully.
+
 ---
 
 ## Pending Issues
