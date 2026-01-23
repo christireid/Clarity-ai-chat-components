@@ -154,7 +154,7 @@ export type {
   TokenBudget,
   TokenOptimizationResult,
   TokenEngineState,
-  TokenEstimate,
+  AppTokenEstimate,
 } from './token-engine'
 
 // Types

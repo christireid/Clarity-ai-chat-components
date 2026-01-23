@@ -505,7 +505,8 @@ export type {
   UseOptimizationPipelineReturn,
   // Token budget monitoring types
   TokenUsageStatus,
-  TokenUsage,
+  TokenBudgetUsage,
+  TokenUsage, // @deprecated - use TokenBudgetUsage for budget tracking, or analytics/TokenUsage for API metrics
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,

@@ -61,7 +61,8 @@ export {
 } from './use-token-budget-monitor'
 export type {
   TokenUsageStatus,
-  TokenUsage,
+  TokenBudgetUsage,
+  TokenUsage, // @deprecated - use TokenBudgetUsage
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,

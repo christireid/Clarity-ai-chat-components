@@ -295,6 +295,14 @@ export {
 // TOKEN OPTIMIZATION
 // ============================================================================
 
+// Core token optimization types (single source of truth from token-optimization package)
+export type {
+  TokenUsage,
+  TokenEstimate,
+  ModelPricing,
+  TokenBudgetUsage,
+} from '@clarity-chat/token-optimization'
+
 export {
   TokenBudgetProvider,
   useTokenBudget,
@@ -741,14 +749,12 @@ export {
   useTokenEstimate,
   type TokenCostPreviewProps,
   type UseTokenEstimateOptions,
-  // Note: TokenEstimate type intentionally omitted to avoid conflict with app-api/token-engine.ts
-  // Import directly from '@clarity-chat/token-optimization/react' if needed
+  // TokenEstimate type is exported above from @clarity-chat/token-optimization
 } from './components/token/TokenCostPreview'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
+  // TokenUsage and ModelPricing types are exported above from @clarity-chat/token-optimization
   type TokenUsageMeterProps,
 } from './components/token/token-usage-meter'
 export {
