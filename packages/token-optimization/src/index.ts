@@ -91,7 +91,9 @@ export type {
   KnownModelId,
   ModelProvider,
   TokenizerEncoding,
-  TokenModelConfig,
+  ModelRegistryConfig,
+  // Deprecated - use ModelRegistryConfig
+  ModelRegistryConfig as TokenModelConfig,
 } from './models/model-registry'
 
 export {
@@ -483,11 +485,13 @@ export {
 } from './routing/model-router'
 export type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   ModelTier,
   RoutingOptions,
   RoutingResult,
   RouterStats,
+  // Deprecated - use ModelRoutingConfig
+  ModelRoutingConfig as ModelConfig,
 } from './routing/model-router'
 
 // React Hooks

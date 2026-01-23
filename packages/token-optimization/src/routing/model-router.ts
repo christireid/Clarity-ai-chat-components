@@ -28,9 +28,13 @@ export enum RoutingStrategy {
 }
 
 /**
- * Configuration for a model
+ * Configuration for model routing decisions
+ *
+ * Defines cost, capabilities, and constraints for routing prompts to models.
+ * Renamed from ModelConfig to ModelRoutingConfig to clarify purpose and avoid
+ * collision with ModelRegistryConfig in models/model-registry.ts.
  */
-export interface ModelConfig {
+export interface ModelRoutingConfig {
   /** Unique model identifier */
   id: string
   /** Model tier classification */
@@ -72,7 +76,7 @@ export interface RoutingOptions {
  */
 export interface RoutingResult {
   /** Selected model configuration */
-  selectedModel: ModelConfig | undefined
+  selectedModel: ModelRoutingConfig | undefined
   /** Routing strategy used */
   strategy: RoutingStrategy
   /** Complexity analysis result */
@@ -108,7 +112,7 @@ export interface RouterStats {
  */
 export interface ModelRouterConfig {
   /** Available models */
-  models: ModelConfig[]
+  models: ModelRoutingConfig[]
   /** Default routing strategy */
   defaultStrategy?: RoutingStrategy
   /** Custom complexity analyzer */
@@ -159,14 +163,14 @@ export interface ModelRouterConfig {
  * ```
  */
 export class ModelRouterBuilder {
-  private models: ModelConfig[] = []
+  private models: ModelRoutingConfig[] = []
   private strategy: RoutingStrategy = RoutingStrategy.CostOptimized
   private analyzer?: ComplexityAnalyzer
 
   /**
    * Add a model with full configuration
    */
-  addModel(config: ModelConfig): this
+  addModel(config: ModelRoutingConfig): this
   /**
    * Add a model with common defaults
    */
@@ -180,7 +184,7 @@ export class ModelRouterBuilder {
     capabilities?: string[]
   ): this
   addModel(
-    configOrId: ModelConfig | string,
+    configOrId: ModelRoutingConfig | string,
     tier?: ModelTier,
     inputCostPer1M?: number,
     outputCostPer1M?: number,
@@ -373,6 +377,8 @@ export class ModelRouterBuilder {
  *     { id: 'gpt-4o', tier: 'medium', inputCostPer1M: 2.5, outputCostPer1M: 10, contextWindow: 128000, maxOutput: 16384, capabilities: ['chat', 'vision'] }
  *   ]
  * })
+ *
+ * Note: Uses ModelRoutingConfig type (not ModelRegistryConfig from models/)
  * ```
  *
  * @example With Options
@@ -417,7 +423,7 @@ export class ModelRouter {
       .build()
   }
 
-  private models: ModelConfig[]
+  private models: ModelRoutingConfig[]
   private defaultStrategy: RoutingStrategy
   private complexityAnalyzer: ComplexityAnalyzer
   private stats: {
@@ -576,7 +582,7 @@ export class ModelRouter {
   /**
    * Filter models based on options
    */
-  private filterModels(options: RoutingOptions): ModelConfig[] {
+  private filterModels(options: RoutingOptions): ModelRoutingConfig[] {
     let candidates = [...this.models]
 
     if (options.allowedModels?.length) {
@@ -598,7 +604,7 @@ export class ModelRouter {
    * Select the best model based on strategy and complexity
    */
   private selectModel(
-    candidates: ModelConfig[],
+    candidates: ModelRoutingConfig[],
     complexity: ComplexityResult,
     strategy: RoutingStrategy
   ): ModelConfig | undefined {
@@ -620,7 +626,7 @@ export class ModelRouter {
    * Cost-optimized selection: cheapest model that meets complexity requirements
    */
   private selectCostOptimized(
-    candidates: ModelConfig[],
+    candidates: ModelRoutingConfig[],
     complexity: ComplexityResult
   ): ModelConfig | undefined {
     const targetTier = this.getTierForComplexity(complexity.level)
@@ -648,8 +654,8 @@ export class ModelRouter {
    * Quality-first selection: best model available
    */
   private selectQualityFirst(
-    candidates: ModelConfig[]
-  ): ModelConfig | undefined {
+    candidates: ModelRoutingConfig[]
+  ): ModelRoutingConfig | undefined {
     const tierOrder: ModelTier[] = ['premium', 'large', 'medium', 'small']
 
     for (const tier of tierOrder) {
@@ -664,7 +670,7 @@ export class ModelRouter {
    * Balanced selection: consider both cost and quality
    */
   private selectBalanced(
-    candidates: ModelConfig[],
+    candidates: ModelRoutingConfig[],
     complexity: ComplexityResult
   ): ModelConfig | undefined {
     // Bump up one tier from cost-optimized for better quality
@@ -711,7 +717,7 @@ export class ModelRouter {
    * Update routing statistics
    */
   private updateStats(
-    model: ModelConfig | undefined,
+    model: ModelRoutingConfig | undefined,
     complexity: ComplexityResult,
     estimatedCost?: number
   ): void {

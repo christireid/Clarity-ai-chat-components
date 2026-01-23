@@ -96,10 +96,13 @@ export type TokenizerEncoding =
   | 'mistral' // Mistral models
 
 /**
- * Complete model configuration for tokenization
- * Note: Named TokenModelConfig to avoid collision with ModelConfig in routing/model-router.ts
+ * Complete model configuration for tokenization, pricing, and budget monitoring
+ *
+ * This is the single source of truth for model-specific parameters.
+ * Named ModelRegistryConfig to clarify purpose and avoid collision with
+ * ModelRoutingConfig in routing/model-router.ts.
  */
-export interface TokenModelConfig {
+export interface ModelRegistryConfig {
   /** Model display name */
   displayName: string
   /** Provider */
@@ -145,7 +148,7 @@ export interface TokenModelConfig {
  * This is the single source of truth for all model configurations.
  * Other modules should derive their configurations from this registry.
  */
-export const MODEL_REGISTRY: Record<ModelId, TokenModelConfig> = {
+export const MODEL_REGISTRY: Record<ModelId, ModelRegistryConfig> = {
   // ===========================================================================
   // OpenAI GPT-4 Family
   // ===========================================================================
@@ -854,7 +857,7 @@ export function getModelsByProvider(provider: ModelProvider): ModelId[] {
  * Get models with a specific capability
  */
 export function getModelsWithCapability(
-  capability: keyof TokenModelConfig['capabilities']
+  capability: keyof ModelRegistryConfig['capabilities']
 ): ModelId[] {
   return getAllModelIds().filter(
     (id) => MODEL_REGISTRY[id].capabilities[capability]
@@ -882,7 +885,7 @@ export function isValidModelId(id: string): id is ModelId {
  *
  * @throws {UnsupportedModelError} If the model ID is not in the registry
  */
-export function getModelConfig(id: ModelId): TokenModelConfig {
+export function getModelConfig(id: ModelId): ModelRegistryConfig {
   if (!isValidModelId(id)) {
     throw new UnsupportedModelError(id, getAllModelIds())
   }
@@ -892,7 +895,7 @@ export function getModelConfig(id: ModelId): TokenModelConfig {
 /**
  * Get model config or undefined if not found
  */
-export function tryGetModelConfig(id: string): TokenModelConfig | undefined {
+export function tryGetModelConfig(id: string): ModelRegistryConfig | undefined {
   return isValidModelId(id) ? MODEL_REGISTRY[id] : undefined
 }
 
@@ -942,7 +945,7 @@ export function tryGetModelConfig(id: string): TokenModelConfig | undefined {
  */
 export function registerModel(
   id: string,
-  config: Omit<TokenModelConfig, 'id'>
+  config: Omit<ModelRegistryConfig, 'id'>
 ): void {
   // Validation
   if (!id || typeof id !== 'string' || id.trim().length === 0) {
@@ -963,7 +966,7 @@ export function registerModel(
   }
 
   // Validate required fields
-  const requiredFields: (keyof TokenModelConfig)[] = [
+  const requiredFields: (keyof ModelRegistryConfig)[] = [
     'displayName',
     'provider',
     'encoding',
@@ -981,14 +984,14 @@ export function registerModel(
     if (!(field in config)) {
       throw new Error(
         `[registerModel] Missing required field '${field}' for model '${trimmedId}'. ` +
-          'See TokenModelConfig interface for required fields.'
+          'See ModelRegistryConfig interface for required fields.'
       )
     }
   }
 
   // Register the model
-  ;(MODEL_REGISTRY as Record<string, TokenModelConfig>)[trimmedId] =
-    config as TokenModelConfig
+  ;(MODEL_REGISTRY as Record<string, ModelRegistryConfig>)[trimmedId] =
+    config as ModelRegistryConfig
 }
 
 /**
@@ -1028,13 +1031,13 @@ export function registerModel(
  */
 export function createCustomModel(
   id: string,
-  config: Partial<TokenModelConfig> & {
+  config: Partial<ModelRegistryConfig> & {
     displayName: string
     provider: ModelProvider
     encoding: TokenizerEncoding
   }
 ): void {
-  const fullConfig: Omit<TokenModelConfig, 'id'> = {
+  const fullConfig: Omit<ModelRegistryConfig, 'id'> = {
     // Required fields from user
     displayName: config.displayName,
     provider: config.provider,
@@ -1146,6 +1149,6 @@ export function unregisterModel(id: string): boolean {
     return false
   }
 
-  delete (MODEL_REGISTRY as Record<string, TokenModelConfig>)[id]
+  delete (MODEL_REGISTRY as Record<string, ModelRegistryConfig>)[id]
   return true
 }

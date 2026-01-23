@@ -455,4 +455,4 @@ export function useOptimizationPipeline(
 
 // Re-export types and enums for convenience
 export { CompressionLevel, RoutingStrategy }
-export type { ModelConfig, RoutingOptions, CacheStats, RouterStats }
+export type { ModelRoutingConfig, RoutingOptions, CacheStats, RouterStats }

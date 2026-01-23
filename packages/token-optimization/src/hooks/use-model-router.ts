@@ -200,4 +200,4 @@ export function useModelRouter(
 
 // Re-export types and enums for convenience
 export { RoutingStrategy }
-export type { ModelConfig, RoutingOptions, RoutingResult, RouterStats }
+export type { ModelRoutingConfig, RoutingOptions, RoutingResult, RouterStats }
