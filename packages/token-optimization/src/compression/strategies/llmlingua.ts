@@ -34,6 +34,8 @@ export interface LLMLinguaOptions {
   preserveWords?: string[]
   /** Enable debug logging */
   debug?: boolean
+  /** Maximum recursion depth for quality retries (default: 5, max: 20) */
+  maxRecursionDepth?: number
 }
 
 /**
@@ -326,11 +328,13 @@ const MAX_RECURSION_DEPTH = 5
 export class LLMLinguaCompressor {
   private readonly stopWords: Set<string>
   private readonly instructionMarkers: Set<string>
+  private readonly maxRecursionDepth: number
 
   /**
    * Create a new LLMLingua compressor
    *
    * @param defaultOptions - Default options for all compressions
+   * @throws {Error} If maxRecursionDepth is not between 0 and 20
    */
   constructor(private readonly defaultOptions: Partial<LLMLinguaOptions> = {}) {
     this.stopWords = new Set([
@@ -340,6 +344,14 @@ export class LLMLinguaCompressor {
     this.instructionMarkers = new Set(
       INSTRUCTION_MARKERS.map((m) => m.toLowerCase())
     )
+    this.maxRecursionDepth = defaultOptions.maxRecursionDepth ?? 5
+
+    // Validate maxRecursionDepth
+    if (this.maxRecursionDepth < 0 || this.maxRecursionDepth > 20) {
+      throw new Error(
+        `maxRecursionDepth must be between 0 and 20, got ${this.maxRecursionDepth}`
+      )
+    }
   }
 
   /**
@@ -421,7 +433,7 @@ export class LLMLinguaCompressor {
       const higherRatio = Math.min(1.0, ratio + 0.1)
 
       // Check if we can recurse (not at max depth and ratio can be increased)
-      if (higherRatio < 1.0 && _recursionDepth < MAX_RECURSION_DEPTH) {
+      if (higherRatio < 1.0 && _recursionDepth < this.maxRecursionDepth) {
         return this.compress(
           text,
           higherRatio,
@@ -429,14 +441,14 @@ export class LLMLinguaCompressor {
             ...opts,
             minQuality: opts.minQuality,
           },
-          _recursionDepth + 1  // Track recursion depth
+          _recursionDepth + 1 // Track recursion depth
         )
       } else {
         // Can't meet quality threshold - save warning to add to result
         qualityWarning =
           higherRatio >= 1.0
             ? `Quality threshold (${opts.minQuality}) could not be met at maximum compression ratio (1.0). Actual quality: ${quality.overallQuality.toFixed(3)}`
-            : `Max recursion depth (${MAX_RECURSION_DEPTH}) reached while trying to meet quality threshold. Actual quality: ${quality.overallQuality.toFixed(3)}`
+            : `Max recursion depth (${this.maxRecursionDepth}) reached while trying to meet quality threshold. Actual quality: ${quality.overallQuality.toFixed(3)}`
       }
     }
 
