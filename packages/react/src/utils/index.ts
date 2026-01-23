@@ -54,7 +54,7 @@ export * from './search'
 // Tokenization (explicit exports to avoid conflicts with optimization)
 export {
   // Core token counting
-  TokenCounter,
+  type TokenCounter,
   validateTokenBudget,
   createTokenBudget,
   tokenBudgetValidator,
@@ -69,12 +69,6 @@ export {
   autoFixTokenMigration,
   manualMigrateTokens,
   tokenMigrationAssistant,
-  // Text compression (renamed to avoid conflicts)
-  compressText,
-  compressForBudget,
-  compressForRatio,
-  compressSemanticOnly,
-  compressMultiStrategy,
   // Adaptive optimization
   AdaptiveTokenOptimizer,
   adaptiveOptimizer,
@@ -145,9 +139,6 @@ export type {
   MigrationRule,
   MigrationAnalysis,
   MigrationResult,
-  CompressionStrategy,
-  CompressionConfig,
-  CompressionResult as TokenCompressionResult,
   ModelEfficiencyProfile,
   ContextProfile,
   ConversationState,

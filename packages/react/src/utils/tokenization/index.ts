@@ -1,5 +1,5 @@
 // Main exports for the tokenization utilities
-export { TokenCounter } from '@clarity-chat/token-optimization'
+export type { TokenCounter } from '@clarity-chat/token-optimization'
 
 // Token budget validation
 export {
@@ -35,18 +35,6 @@ export {
   type MigrationAnalysis,
   type MigrationResult,
 } from './migration-assistant'
-
-// Text compression and preprocessing
-export {
-  compressText,
-  compressForBudget,
-  compressForRatio,
-  compressSemanticOnly,
-  compressMultiStrategy,
-  type CompressionStrategy,
-  type CompressionConfig,
-  type CompressionResult,
-} from './text-compression'
 
 // Adaptive optimization
 export {
