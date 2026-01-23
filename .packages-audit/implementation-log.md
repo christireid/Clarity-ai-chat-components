@@ -144,11 +144,59 @@ rg "DynamicCompressionEngine" packages/ --type ts
 
 ---
 
+### ✅ Task 5: Cache APIs Consolidation (COMPLETED)
+
+**Date:** 2026-01-23 (evening) **duplicateApisRemaining:** 126 → 123 (3 true duplicates eliminated)
+
+**Initial Audit Finding:** ~30 "duplicates" identified
+
+**Actual Analysis:** Only 3 TRUE duplicates found after thorough investigation:
+
+- Most cache files were legitimate implementations (embeddings/cache, kv-cache-prompt-builder,
+  structured-output-cache, cache-manager)
+- React cache hooks were legitimate wrappers adding React-specific features
+
+#### 5.1 Files Deleted (3 total, ~1,996 lines removed)
+
+**TRUE DUPLICATES:**
+
+- ✅ `react/utils/tokenization/intelligent-caching.ts` (1,023 lines) - Duplicated TieredCache, never
+  actually used
+- ✅ `react/utils/optimization/semantic-cache-persistent.ts` + test (793 lines) - Duplicated
+  SmartCache with IndexedDB
+- ✅ `memory/utils/cache.ts` (180 lines) - Duplicated utils/cache LRUCache, not exported
+
+**Total:** 1,996 lines of duplicate code removed
+
+#### 5.2 Canonical Implementations Established
+
+**Simple Caching:** `/packages/utils/src/cache/` (LRUCache, TTLCache, memoize) **Advanced Caching:**
+`/packages/token-optimization/src/cache/` (ExactCache, SmartCache, TieredCache)
+
+#### 5.3 Legitimate Implementations KEPT
+
+- ✅ embeddings/cache.ts - Domain-specific for embedding vectors
+- ✅ kv-cache-prompt-builder.ts - KV cache optimization (unique)
+- ✅ structured-output-cache.ts - Schema warming (unique)
+- ✅ cache-manager.ts - LLM API coordinator (unique)
+- ✅ React cache hooks - Legitimate wrappers (useSmartCache, useResponseCache, useSemanticCache,
+  useEmbeddingCache)
+
+#### 5.4 Consumers Updated
+
+- ✅ memory/embeddings/openai-provider.ts - Updated to use @clarity-chat/utils
+- ✅ memory/utils/index.ts - Removed deleted cache export
+- ✅ Fixed unused imports in optimization-middleware and response-optimization
+
+**Status:** ✅ Complete
+
+---
+
 ## In Progress
 
-### ⏳ Task 5: Cache APIs Consolidation
+### ⏳ Task 6: Error Boundary Consolidation
 
-Starting next: Consolidate cache APIs (~30 duplicates)
+Starting next: Consolidate error boundaries (~7 duplicates)
 
 ---
 
@@ -198,7 +246,6 @@ eliminated)
 
 ## Pending
 
-- Task 5: Consolidate Cache APIs (30 duplicates)
 - Task 6: Consolidate Error Boundaries (7 duplicates)
 - Task 7: Consolidate Loggers (8 duplicates)
 - Task 8: Consolidate Validation Errors (9 duplicates)
@@ -211,10 +258,10 @@ eliminated)
 
 ## Metrics
 
-| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | Target  |
-| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------- |
-| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | 7       |
-| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
-| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | ~10,000 |
-| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 3       |
-| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | After Task 5 | Target  |
+| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------- |
+| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | **123**      | 7       |
+| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | **13,342**   | ~10,000 |
+| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 13           | 3       |
+| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
