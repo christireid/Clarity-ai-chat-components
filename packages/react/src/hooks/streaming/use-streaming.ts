@@ -93,6 +93,7 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
   const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null) // STREAM-1: Timeout tracking
+  const rafRef = React.useRef<number | null>(null) // STREAM-3: RAF batching
 
   // Store callbacks in refs to avoid recreating streaming function when callbacks change
   const onChunkRef = React.useRef(onChunk)
@@ -111,12 +112,19 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
 
   const stopStreaming = React.useCallback(() => {
     if (readerRef.current) {
-      readerRef.current.cancel()
+      readerRef.current.cancel().catch(() => {
+        // Ignore cancellation errors
+      })
       readerRef.current = null
     }
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+    }
+    // STREAM-3: Clear RAF on stop
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
     }
     // STREAM-1: Clear timeout on stop
     if (timeoutRef.current) {
@@ -142,6 +150,12 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       // STREAM-1: Set up timeout if specified
       if (timeout && timeout > 0) {
         timeoutRef.current = setTimeout(() => {
+          // FIX: Issue #15 - Cancel reader to prevent stuck streams
+          if (readerRef.current) {
+            readerRef.current.cancel().catch(() => {
+              // Ignore cancel errors during timeout
+            })
+          }
           controller.abort()
           const timeoutError = new Error(
             `Streaming timeout after ${timeout}ms`
@@ -183,9 +197,23 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
             break
           }
 
-          setContent(fullText)
+          // STREAM-3: Batched update using RAF
+          if (!rafRef.current) {
+            rafRef.current = requestAnimationFrame(() => {
+              setContent(fullText)
+              rafRef.current = null
+            })
+          }
+          
           onChunkRef.current?.(chunk)
         }
+
+        // STREAM-3: Clear RAF and ensure final content is set
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+        }
+        setContent(fullText)
 
         // STREAM-1: Clear timeout on successful completion
         if (timeoutRef.current) {

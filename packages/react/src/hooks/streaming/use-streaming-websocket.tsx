@@ -289,6 +289,10 @@ export function useStreamingWebSocket(
   const lastPongRef = React.useRef<number>(Date.now())
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
+  
+  // STREAM-3: RAF Batching refs
+  const rafRef = React.useRef<number | null>(null)
+  const pendingMessagesRef = React.useRef<WebSocketMessage[]>([])
 
   /**
    * Parse message data
@@ -476,21 +480,10 @@ export function useStreamingWebSocket(
           timestamp: Date.now(),
         }
 
-        // Bounded message buffer to prevent memory leaks
-        setMessages((prev) => {
-          const newMessages = [...prev, message]
-          // Keep only the last maxMessageBufferSize messages
-          if (newMessages.length > maxMessageBufferSize) {
-            // DELIVERY-3: Notify about buffer overflow
-            const droppedCount = newMessages.length - maxMessageBufferSize
-            onMessageBufferOverflow?.(droppedCount, maxMessageBufferSize)
-            return newMessages.slice(-maxMessageBufferSize)
-          }
-          return newMessages
-        })
-        setLastMessage(message)
-
-        // DELIVERY-5: Send acknowledgment if enabled and message has ID
+        // STREAM-3: Batch updates using RAF
+        pendingMessagesRef.current.push(message)
+        
+        // Immediate side effects
         if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
           const messageId = message.data.id as string
           try {
@@ -504,8 +497,37 @@ export function useStreamingWebSocket(
             logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
           }
         }
-
+        
         onMessage?.(message)
+
+        if (!rafRef.current) {
+          rafRef.current = requestAnimationFrame(() => {
+            rafRef.current = null
+            
+            const newMessagesBatch = pendingMessagesRef.current
+            
+            if (newMessagesBatch.length === 0) return
+
+            const lastMessageInBatch = newMessagesBatch[newMessagesBatch.length - 1]
+
+            // Bounded message buffer to prevent memory leaks
+            setMessages((prev) => {
+              const newMessages = [...prev, ...newMessagesBatch]
+              // Keep only the last maxMessageBufferSize messages
+              if (newMessages.length > maxMessageBufferSize) {
+                // DELIVERY-3: Notify about buffer overflow
+                const droppedCount = newMessages.length - maxMessageBufferSize
+                onMessageBufferOverflow?.(droppedCount, maxMessageBufferSize)
+                return newMessages.slice(-maxMessageBufferSize)
+              }
+              return newMessages
+            })
+            setLastMessage(lastMessageInBatch)
+            
+            // Clear buffer
+            pendingMessagesRef.current = []
+          })
+        }
       })
 
       // Handle errors
@@ -611,6 +633,13 @@ export function useStreamingWebSocket(
         clearTimeout(reconnectTimeoutRef.current)
         reconnectTimeoutRef.current = null
       }
+
+      // STREAM-3: Clear RAF and pending buffer
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      pendingMessagesRef.current = []
 
       // Close WebSocket
       if (wsRef.current) {

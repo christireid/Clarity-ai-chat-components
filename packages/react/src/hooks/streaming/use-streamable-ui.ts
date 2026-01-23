@@ -250,6 +250,12 @@ export function useStreamableUI<T>(
 
       return () => {
         cancelled = true
+        // FIX: Issue #8 - Propagate abort signal to iterator immediately on cleanup
+        if (typeof iterator.return === 'function') {
+          iterator.return().catch(() => {
+            // Ignore errors from iterator.return during cleanup
+          })
+        }
       }
     }
 

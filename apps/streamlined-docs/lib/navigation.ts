@@ -1,0 +1,586 @@
+import type { NavItem } from '@/components/Navigation/Sidebar'
+
+export const demosNavigation: NavItem[] = [
+  {
+    title: 'Interactive Demos',
+    items: [
+      { title: '🚀 All Demos', href: '/demos' },
+      { title: '⚡ Zero to Chat', href: '/demos/zero-to-chat' },
+      { title: '🔄 Provider Hot-Swap', href: '/demos/provider-hotswap' },
+      { title: '▶️ Streaming States', href: '/demos/streaming-states' },
+      { title: '📊 Token Visualizer', href: '/demos/token-visualizer' },
+      { title: '🧠 Memory & Context', href: '/demos/memory-context' },
+      {
+        title: '🎨 Customization Playground',
+        href: '/demos/customization-playground',
+      },
+      { title: '🔧 Tool Calling / Agents', href: '/demos/tool-calling' },
+      { title: '♿ Accessibility Audit', href: '/demos/accessibility-audit' },
+      { title: '📦 Bundle Comparison', href: '/demos/bundle-comparison' },
+      {
+        title: '🏢 Enterprise Production',
+        href: '/demos/enterprise-production',
+      },
+    ],
+  },
+]
+
+export const learnNavigation: NavItem[] = [
+  {
+    title: 'Getting Started',
+    items: [
+      { title: 'Quick Start', href: '/learn/quick-start' },
+      { title: 'Installation', href: '/learn/installation' },
+      { title: 'Tutorial', href: '/learn/tutorial' },
+      { title: '🎮 Interactive Playground', href: '/playground' },
+      { title: 'Playground Guide', href: '/playground/guide' },
+      { title: "🆕 What's New", href: '/learn/whats-new' },
+      { title: '⚡ Why Clarity?', href: '/learn/why-clarity' },
+    ],
+  },
+  {
+    title: 'Tutorials',
+    items: [
+      {
+        title: 'Building Your First Chatbot',
+        href: '/learn/tutorials/building-first-chatbot',
+      },
+      { title: 'Adding RAG', href: '/learn/tutorials/adding-rag' },
+    ],
+  },
+  {
+    title: 'Core Concepts',
+    items: [
+      { title: 'Components', href: '/learn/concepts/components' },
+      { title: 'Hooks', href: '/learn/concepts/hooks' },
+      { title: 'Theming', href: '/learn/concepts/theming' },
+      { title: 'Animations', href: '/learn/concepts/animations' },
+    ],
+  },
+  {
+    title: 'Basic Guides',
+    items: [
+      { title: 'Components', href: '/guides/components' },
+      { title: 'Hooks', href: '/guides/hooks' },
+      { title: 'Theming', href: '/guides/theming' },
+      { title: 'Customization', href: '/guides/customization' },
+      { title: 'Messages', href: '/guides/messages' },
+      { title: 'Common Patterns', href: '/learn/guides/common-patterns' },
+    ],
+  },
+  {
+    title: 'Intermediate Guides',
+    items: [
+      { title: 'Streaming', href: '/guides/streaming' },
+      { title: 'Memory', href: '/guides/memory' },
+      { title: 'Error Handling', href: '/guides/error-handling' },
+      { title: 'File Upload', href: '/guides/file-upload' },
+      { title: 'State Management', href: '/guides/state-management' },
+      { title: 'Accessibility', href: '/guides/accessibility' },
+      { title: 'Performance', href: '/guides/performance' },
+      { title: 'Bundle Size', href: '/learn/guides/bundle-size' },
+      { title: 'Testing', href: '/learn/guides/testing' },
+    ],
+  },
+  {
+    title: 'Advanced Guides',
+    items: [
+      { title: 'RAG', href: '/guides/rag' },
+      { title: 'Agents', href: '/guides/agents' },
+      { title: '🔧 Tool Calling System', href: '/guides/tools' },
+      { title: 'Token Optimization', href: '/guides/token-optimization' },
+      { title: 'Prompt Caching', href: '/guides/prompt-caching' },
+      { title: 'Prompts', href: '/guides/prompts' },
+      { title: 'Model Adapters', href: '/guides/model-adapters' },
+      { title: 'Plugins', href: '/guides/plugins' },
+      { title: 'Webhooks', href: '/guides/webhooks' },
+      { title: 'Observability', href: '/guides/observability' },
+      { title: 'Vector Stores', href: '/guides/vector-stores' },
+      { title: 'Reranking', href: '/guides/reranking' },
+    ],
+  },
+  {
+    title: 'Enterprise Guides',
+    items: [
+      { title: 'RBAC', href: '/guides/rbac' },
+      { title: 'Multi-Tenancy', href: '/guides/multi-tenancy' },
+      { title: 'SSO Configuration', href: '/guides/sso-configuration' },
+      { title: 'Audit Logging', href: '/guides/audit-logging' },
+      { title: 'Usage Quotas', href: '/guides/usage-quotas' },
+      { title: 'Safety', href: '/guides/safety' },
+      { title: 'Security', href: '/guides/security' },
+    ],
+  },
+  {
+    title: 'Deployment',
+    items: [
+      { title: 'Deploy to Vercel', href: '/learn/deployment/vercel' },
+      { title: 'Deploy to AWS', href: '/learn/deployment/aws' },
+      { title: 'Docker Deployment', href: '/learn/deployment/docker' },
+    ],
+  },
+  {
+    title: 'Migration',
+    items: [
+      {
+        title: 'From Vercel AI SDK',
+        href: '/learn/migration/from-vercel-ai-sdk',
+      },
+    ],
+  },
+  {
+    title: 'Advanced',
+    items: [{ title: 'Architecture', href: '/learn/architecture' }],
+  },
+  {
+    title: 'Help',
+    items: [
+      { title: 'FAQ', href: '/learn/faq' },
+      { title: 'Troubleshooting', href: '/learn/troubleshooting' },
+    ],
+  },
+]
+
+export const referenceNavigation: NavItem[] = [
+  {
+    title: 'Core Components',
+    items: [
+      { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
+      {
+        title: 'ClarityChatPresets',
+        href: '/reference/components/clarity-chat-presets',
+      },
+      { title: 'ChatRecipes', href: '/reference/components/chat-recipes' },
+      { title: 'ChatLayout', href: '/reference/components/chat-layout' },
+      { title: 'ChatWindow', href: '/reference/components/chat-window' },
+      { title: 'Message', href: '/reference/components/message' },
+      { title: 'MessageList', href: '/reference/components/message-list' },
+      { title: 'ChatInput', href: '/reference/components/chat-input' },
+      {
+        title: 'TypingIndicator',
+        href: '/reference/components/typing-indicator',
+      },
+    ],
+  },
+  {
+    title: 'Providers',
+    items: [
+      {
+        title: 'MemoryProvider',
+        href: '/reference/components/memory-provider',
+      },
+    ],
+  },
+  {
+    title: 'Interactive Components',
+    items: [
+      {
+        title: 'CommandPalette',
+        href: '/reference/components/command-palette',
+      },
+      { title: 'ContextMenu', href: '/reference/components/context-menu' },
+      { title: 'Draggable', href: '/reference/components/draggable' },
+      { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
+      {
+        title: 'AdvancedMessageSearch',
+        href: '/reference/components/advanced-message-search',
+      },
+      { title: 'RetryButton', href: '/reference/components/retry-button' },
+      { title: 'VoiceInput', href: '/reference/components/voice-input' },
+      { title: 'FileUpload', href: '/reference/components/file-upload' },
+      {
+        title: 'StructuredInputBuilder',
+        href: '/reference/components/structured-input-builder',
+      },
+    ],
+  },
+  {
+    title: 'Streaming Components',
+    items: [
+      {
+        title: 'StreamingMessage',
+        href: '/reference/components/streaming-message',
+      },
+      {
+        title: 'VirtualizedMessageList',
+        href: '/reference/components/virtualized-message-list',
+      },
+      {
+        title: 'StreamingTextRenderer',
+        href: '/reference/components/streaming-text-renderer',
+      },
+      { title: 'StreamBlock', href: '/reference/components/stream-block' },
+      {
+        title: 'StreamCancellation',
+        href: '/reference/components/stream-cancellation',
+      },
+    ],
+  },
+  {
+    title: 'AI Components',
+    items: [
+      {
+        title: 'ChainOfThought',
+        href: '/reference/components/chain-of-thought',
+      },
+      { title: 'ThinkingBar', href: '/reference/components/thinking-bar' },
+      {
+        title: 'ToolExecutionCard',
+        href: '/reference/components/tool-execution-card',
+      },
+      {
+        title: 'StreamingProgress',
+        href: '/reference/components/streaming-progress',
+      },
+      { title: 'TextShimmer', href: '/reference/components/text-shimmer' },
+      {
+        title: 'SourceCitation',
+        href: '/reference/components/source-citation',
+      },
+      {
+        title: 'PromptContainer',
+        href: '/reference/components/prompt-container',
+      },
+      {
+        title: 'SuggestionCards',
+        href: '/reference/components/suggestion-cards',
+      },
+    ],
+  },
+  {
+    title: 'UI Elements',
+    items: [
+      { title: 'Avatar', href: '/reference/components/avatar' },
+      { title: 'Button', href: '/reference/components/button' },
+      { title: 'Badge', href: '/reference/components/badge' },
+      { title: 'CodeBlock', href: '/reference/components/code-block' },
+      { title: 'Tooltip', href: '/reference/components/tooltip' },
+      { title: 'Modal', href: '/reference/components/modal' },
+      { title: 'NetworkStatus', href: '/reference/components/network-status' },
+      { title: 'PromptLibrary', href: '/reference/components/prompt-library' },
+      {
+        title: 'PromptSuggestions',
+        href: '/reference/components/prompt-suggestions',
+      },
+      {
+        title: 'ToolInvocationCard',
+        href: '/reference/components/tool-invocation-card',
+      },
+    ],
+  },
+  {
+    title: 'Token Optimization',
+    items: [
+      {
+        title: 'TokenOptimizationBadge',
+        href: '/reference/components/token-optimization-badge',
+      },
+      {
+        title: 'TokenOptimizationPanel',
+        href: '/reference/components/token-optimization-panel',
+      },
+      {
+        title: 'TokenOptimizationDashboard',
+        href: '/reference/components/token-optimization-dashboard',
+      },
+    ],
+  },
+  {
+    title: 'Dashboards & Analytics',
+    items: [
+      {
+        title: 'UsageDashboard',
+        href: '/reference/components/usage-dashboard',
+      },
+      {
+        title: 'PerformanceDashboard',
+        href: '/reference/components/performance-dashboard',
+      },
+      {
+        title: 'PerformanceAnalyticsDashboard',
+        href: '/reference/components/performance-analytics-dashboard',
+      },
+      {
+        title: 'ConversationAnalyticsDashboard',
+        href: '/reference/components/conversation-analytics-dashboard',
+      },
+      {
+        title: 'ABTestingDashboard',
+        href: '/reference/components/ab-testing-dashboard',
+      },
+      {
+        title: 'ProjectSidebar',
+        href: '/reference/components/project-sidebar',
+      },
+    ],
+  },
+  {
+    title: 'Enterprise Components',
+    items: [
+      {
+        title: 'AuthTenantDashboard',
+        href: '/reference/components/auth-tenant-dashboard',
+      },
+      {
+        title: 'ApiTokenManager',
+        href: '/reference/components/api-token-manager',
+      },
+      {
+        title: 'SeatInviteDialog',
+        href: '/reference/components/seat-invite-dialog',
+      },
+      {
+        title: 'SSOConfigWizard',
+        href: '/reference/components/sso-config-wizard',
+      },
+    ],
+  },
+  {
+    title: 'Hooks',
+    items: [
+      { title: '🧭 Hook Selector', href: '/reference/hooks/selector' },
+      { title: '⚖️ Compare Hooks', href: '/reference/hooks/compare' },
+      { title: '🔗 Hook Graph', href: '/reference/hooks/graph' },
+      { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
+      {
+        title: 'useClarityChatWithTools',
+        href: '/reference/hooks/use-clarity-chat-with-tools',
+      },
+      { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
+      { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
+      { title: 'useAssistant', href: '/reference/hooks/use-assistant' },
+      { title: 'useCompletion', href: '/reference/hooks/use-completion' },
+      { title: 'useMessages', href: '/reference/hooks/use-messages' },
+      { title: 'useTyping', href: '/reference/hooks/use-typing' },
+      {
+        title: 'useKeyboardShortcuts',
+        href: '/reference/hooks/use-keyboard-shortcuts',
+      },
+      {
+        title: 'useCommandPalette',
+        href: '/reference/hooks/use-command-palette',
+      },
+      { title: 'useUndoRedo', href: '/reference/hooks/use-undo-redo' },
+      { title: 'useHaptic', href: '/reference/hooks/use-haptic' },
+      { title: 'useTheme', href: '/reference/hooks/use-theme' },
+      { title: 'useDesignTokens', href: '/reference/hooks/use-design-tokens' },
+      {
+        title: 'useTokenOptimization',
+        href: '/reference/hooks/use-token-optimization',
+      },
+      { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
+      { title: 'usePerformance', href: '/reference/hooks/use-performance' },
+      { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
+      { title: 'useSmartCache', href: '/reference/hooks/use-smart-cache' },
+      { title: 'useStreamingSSE', href: '/reference/hooks/use-streaming-sse' },
+      {
+        title: 'useStreamingWebSocket',
+        href: '/reference/hooks/use-streaming-websocket',
+      },
+      { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
+      {
+        title: 'useMessageOperations',
+        href: '/reference/hooks/use-message-operations',
+      },
+      {
+        title: 'useDashboardData',
+        href: '/reference/hooks/use-dashboard-data',
+      },
+      {
+        title: 'useCircuitBreaker',
+        href: '/reference/hooks/use-circuit-breaker',
+      },
+      {
+        title: 'useRetryWithBackoff',
+        href: '/reference/hooks/use-retry-with-backoff',
+      },
+      {
+        title: 'useRequestDeduplication',
+        href: '/reference/hooks/use-request-deduplication',
+      },
+    ],
+  },
+  {
+    title: 'Memory & Context',
+    items: [
+      {
+        title: 'useMemoryContext',
+        href: '/reference/hooks/use-memory-context',
+      },
+      { title: 'useIndexedDB', href: '/reference/hooks/use-indexed-db' },
+      { title: 'useEmbeddings', href: '/reference/hooks/use-embeddings' },
+    ],
+  },
+  {
+    title: 'Enterprise AI',
+    items: [
+      { title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' },
+      { title: 'useAgent', href: '/reference/hooks/use-agent' },
+      { title: 'useVectorStore', href: '/reference/hooks/use-vector-store' },
+    ],
+  },
+  {
+    title: 'API',
+    items: [
+      { title: '📋 Quick Reference', href: '/reference/quick-reference' },
+      { title: '🖨️ Printable Cheat Sheet', href: '/reference/cheat-sheet' },
+      { title: 'Types', href: '/reference/api/types' },
+      { title: 'Utilities', href: '/reference/utilities' },
+      {
+        title: 'createMemoryStore',
+        href: '/reference/utilities/create-memory-store',
+      },
+      {
+        title: 'Performance Monitoring',
+        href: '/reference/utilities/performance-monitoring',
+      },
+      {
+        title: 'Accessibility Testing',
+        href: '/reference/utilities/accessibility-testing',
+      },
+      {
+        title: 'Security Utilities',
+        href: '/reference/utilities/security',
+      },
+      {
+        title: 'Analytics & Tracking',
+        href: '/reference/utilities/analytics',
+      },
+      {
+        title: 'Quick Start Helpers',
+        href: '/reference/utilities/quick-start-helpers',
+      },
+      {
+        title: 'Development Helpers',
+        href: '/reference/utilities/dev-helpers',
+      },
+      {
+        title: 'Setup Wizard',
+        href: '/reference/utilities/setup-wizard',
+      },
+      {
+        title: 'Lazy Loading',
+        href: '/reference/utilities/lazy-loading',
+      },
+      {
+        title: 'IntelliSense Helpers',
+        href: '/reference/utilities/intellisense-helpers',
+      },
+      {
+        title: 'Testing Helpers',
+        href: '/reference/utilities/testing-helpers',
+      },
+      {
+        title: 'Migration Helpers',
+        href: '/reference/utilities/migration-helpers',
+      },
+      { title: 'Configuration', href: '/reference/api/configuration' },
+    ],
+  },
+]
+
+export const cookbookNavigation: NavItem[] = [
+  {
+    title: 'Getting Started',
+    items: [
+      { title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' },
+      { title: 'Memory Integration', href: '/cookbook/memory-integration' },
+      { title: 'Streaming Setup', href: '/cookbook/streaming-setup' },
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
+      { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Voice Input', href: '/cookbook/voice-input' },
+      {
+        title: 'Custom Tool Integration',
+        href: '/cookbook/custom-tool-integration',
+      },
+      {
+        title: 'OpenAI Streaming Chat',
+        href: '/cookbook/openai-streaming-chat',
+      },
+      { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
+      {
+        title: 'Backend Integration Patterns',
+        href: '/cookbook/backend-integration-patterns',
+      },
+      { title: 'Custom Theming', href: '/cookbook/custom-theming' },
+    ],
+  },
+  {
+    title: 'Advanced Patterns',
+    items: [
+      {
+        title: 'Streaming with Memory',
+        href: '/cookbook/streaming-with-memory',
+      },
+      { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
+      { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Voice Input', href: '/cookbook/voice-input' },
+      {
+        title: 'Custom Tool Integration',
+        href: '/cookbook/custom-tool-integration',
+      },
+      { title: 'Agent with Tools', href: '/cookbook/agent-with-tools' },
+      {
+        title: 'Advanced Agent Workflow',
+        href: '/cookbook/advanced-agent-workflow',
+      },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
+      { title: 'Authentication', href: '/cookbook/authentication' },
+      { title: 'Analytics Tracking', href: '/cookbook/analytics-tracking' },
+      {
+        title: 'Production Monitoring',
+        href: '/cookbook/production-monitoring',
+      },
+    ],
+  },
+  {
+    title: 'Enterprise',
+    items: [
+      { title: 'Enterprise SSO Setup', href: '/cookbook/enterprise-sso-setup' },
+    ],
+  },
+]
+
+export const examplesNavigation: NavItem[] = [
+  {
+    title: 'Featured',
+    items: [
+      {
+        title: '🌟 Tool Calling Showcase',
+        href: '/examples/tool-calling-showcase',
+      },
+    ],
+  },
+  {
+    title: 'Basic',
+    items: [
+      { title: 'Simple Chat', href: '/examples/simple-chat' },
+      { title: 'Themed Chat', href: '/examples/themed-chat' },
+      { title: 'Custom Styling', href: '/examples/custom-styling' },
+    ],
+  },
+  {
+    title: 'Advanced',
+    items: [
+      { title: 'Multi-user Chat', href: '/examples/multi-user' },
+      { title: 'File Sharing', href: '/examples/file-sharing' },
+      { title: 'Real-time Updates', href: '/examples/realtime' },
+      { title: 'Custom Commands', href: '/examples/custom-commands' },
+      { title: 'Token Optimization', href: '/examples/token-optimization' },
+    ],
+  },
+  {
+    title: 'Patterns',
+    items: [
+      { title: 'Command Palette', href: '/examples/command-palette' },
+      { title: 'Drag & Drop', href: '/examples/drag-drop' },
+      { title: 'Context Menus', href: '/examples/context-menus' },
+      { title: 'Keyboard Shortcuts', href: '/examples/keyboard-shortcuts' },
+    ],
+  },
+]

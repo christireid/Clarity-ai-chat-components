@@ -21,6 +21,13 @@ import * as React from 'react'
 import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual'
 import type { Message } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
+import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
+import {
+  validateVirtualizationProps,
+  validateMessages,
+  validateFunctionProp,
+  validateNumberProp,
+} from '../../utils/config/runtime-validation'
 
 // ============================================================================
 // Types
@@ -33,10 +40,13 @@ export interface TanStackMessageListProps {
   /** Render function for each message */
   renderMessage: (message: Message, index: number) => React.ReactNode
 
-  /** Estimated height of each message in pixels */
+  /** Estimated height of each message in pixels (default: 150) */
   estimatedItemSize?: number
 
-  /** Number of items to render outside of the visible area */
+  /**
+   * Number of items to render outside of the visible area (default: 5)
+   * Note: Higher than VirtualizedMessageList (3) due to TanStack's better dynamic height measurement
+   */
   overscanCount?: number
 
   /** Auto-scroll to bottom when new messages arrive */
@@ -65,6 +75,9 @@ export interface TanStackMessageListProps {
 
   /** Threshold in pixels for "near bottom" detection */
   scrollThreshold?: number
+
+  /** VIRT-3: Maximum number of messages to render (windowing) */
+  maxMessages?: number
 }
 
 // ============================================================================
@@ -79,9 +92,10 @@ export interface TanStackMessageListProps {
  * - Smooth scrolling support
  * - Auto-scroll to bottom
  * - Efficient re-renders with React 19 patterns
+ * - VIRT-3: Built-in message windowing for memory safety
  */
 export function TanStackMessageList({
-  messages,
+  messages: rawMessages,
   renderMessage,
   estimatedItemSize = 150,
   overscanCount = 5,
@@ -94,11 +108,113 @@ export function TanStackMessageList({
   getItemKey,
   onScrollAwayFromBottom,
   scrollThreshold = 100,
+  maxMessages = 1000,
 }: TanStackMessageListProps) {
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate messages array
+    validateMessages(rawMessages, 'TanStackMessageList')
+
+    // Validate renderMessage function
+    validateFunctionProp(renderMessage, 'renderMessage', 'TanStackMessageList')
+
+    // Validate virtualization props
+    validateVirtualizationProps(
+      {
+        itemHeight: estimatedItemSize,
+        overscan: overscanCount,
+        threshold: scrollThreshold / 1000, // Convert to 0-1 range for validator
+        maxMessages,
+      },
+      'TanStackMessageList'
+    )
+
+    // Validate gap
+    if (gap !== undefined) {
+      validateNumberProp(gap, 'gap', 'TanStackMessageList', { min: 0 })
+    }
+
+    // Validate callbacks if provided
+    if (onScroll !== undefined) {
+      validateFunctionProp(onScroll, 'onScroll', 'TanStackMessageList')
+    }
+    if (getItemKey !== undefined) {
+      validateFunctionProp(getItemKey, 'getItemKey', 'TanStackMessageList')
+    }
+    if (onScrollAwayFromBottom !== undefined) {
+      validateFunctionProp(
+        onScrollAwayFromBottom,
+        'onScrollAwayFromBottom',
+        'TanStackMessageList'
+      )
+    }
+  }
+
+  // VIRT-3: Apply message windowing
+  const messages = React.useMemo(() => {
+    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
+    return rawMessages.slice(rawMessages.length - maxMessages)
+  }, [rawMessages, maxMessages])
+
+  // Screen reader detection - render non-virtualized for accessibility
+  const isScreenReader = useScreenReaderDetection()
+
   const parentRef = React.useRef<HTMLDivElement>(null)
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
   const lastScrollTop = React.useRef(0)
+  const [focusedIndex, setFocusedIndex] = React.useState(0)
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([])
+
+  // For screen readers: Render non-virtualized for full accessibility
+  // All messages remain in DOM for screen reader navigation
+  if (isScreenReader) {
+    // Check if any message is streaming
+    const isStreaming = React.useMemo(
+      () => messages.some((m) => m.status === 'streaming'),
+      [messages]
+    )
+
+    return (
+      <div
+        ref={parentRef}
+        className={cn('overflow-auto', className)}
+        style={{ height }}
+        role="log"
+        aria-label="Chat messages (screen reader mode)"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-busy={isStreaming}
+      >
+        {messages.map((message, index) => {
+          const isFocused = focusedIndex === index
+          return (
+            <div
+              key={message.id || `msg-${index}`}
+              ref={(el) => (itemRefs.current[index] = el)}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(index)}
+              style={{
+                outline: isFocused
+                  ? '2px solid var(--focus-ring-color, #0066cc)'
+                  : 'none',
+                outlineOffset: '2px',
+                marginBottom: `${gap}px`,
+              }}
+            >
+              {renderMessage(message, index)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   // Default key getter
   const itemKey = React.useCallback(
@@ -159,6 +275,63 @@ export function TanStackMessageList({
     previousMessagesLength.current = messages.length
   }, [messages.length, autoScrollToBottom, smoothScroll, virtualizer])
 
+  // Keyboard navigation handler
+  React.useEffect(() => {
+    const parent = parentRef.current
+    if (!parent) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { key } = e
+      let newIndex = focusedIndex
+
+      switch (key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 1, messages.length - 1)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 1, 0)
+          break
+        case 'Home':
+          e.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newIndex = messages.length - 1
+          break
+        case 'PageDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 10, messages.length - 1)
+          break
+        case 'PageUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 10, 0)
+          break
+        default:
+          return
+      }
+
+      if (newIndex !== focusedIndex) {
+        setFocusedIndex(newIndex)
+        // Scroll to the newly focused item
+        virtualizer.scrollToIndex(newIndex, {
+          align: 'center',
+          behavior: smoothScroll ? 'smooth' : 'auto',
+        })
+        // Focus the element
+        const el = itemRefs.current[newIndex]
+        if (el) {
+          el.focus()
+        }
+      }
+    }
+
+    parent.addEventListener('keydown', handleKeyDown)
+    return () => parent.removeEventListener('keydown', handleKeyDown)
+  }, [focusedIndex, messages.length, virtualizer, smoothScroll])
+
   // Check if any message is streaming
   const isStreaming = React.useMemo(
     () => messages.some((m) => m.status === 'streaming'),
@@ -191,17 +364,32 @@ export function TanStackMessageList({
           const message = messages[virtualItem.index]
           if (!message) return null
 
+          const isFocused = focusedIndex === virtualItem.index
+
           return (
             <div
               key={virtualItem.key}
               data-index={virtualItem.index}
-              ref={virtualizer.measureElement}
+              ref={(el) => {
+                virtualizer.measureElement(el)
+                itemRefs.current[virtualItem.index] = el
+              }}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${virtualItem.index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={virtualItem.index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(virtualItem.index)}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
                 transform: `translateY(${virtualItem.start}px)`,
+                outline: isFocused ? '2px solid var(--focus-ring-color, #0066cc)' : 'none',
+                outlineOffset: '2px',
               }}
             >
               {renderMessage(message, virtualItem.index)}
@@ -220,7 +408,10 @@ TanStackMessageList.displayName = 'TanStackMessageList'
 // ============================================================================
 
 export interface AutoTanStackMessageListProps extends TanStackMessageListProps {
-  /** Threshold for enabling virtualization (message count) */
+  /**
+   * Threshold for enabling virtualization (message count, default: 50)
+   * Note: Lower than VirtualizedMessageList (100) due to TanStack's lower overhead
+   */
   virtualizationThreshold?: number
 }
 

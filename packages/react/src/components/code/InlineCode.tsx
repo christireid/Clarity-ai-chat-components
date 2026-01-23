@@ -46,7 +46,7 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
       await navigator.clipboard.writeText(codeText)
       setCopied(true)
       onCopy?.()
-      trackInteraction('copy', { content: codeText })
+      trackInteraction('copy', 'code', { content: codeText })
 
       // Reset copied state after 2 seconds
       setTimeout(() => setCopied(false), 2000)
@@ -71,11 +71,9 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
         // Use CSS custom properties for Night Owl colors
         '[background-color:var(--night-owl-bg)] [color:var(--night-owl-fg)] [border-color:var(--night-owl-border)]',
         // Interactive states (only when copy is enabled)
-        enableCopy && [
-          'cursor-pointer transition-colors duration-200',
-          'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
-        ],
+        enableCopy && 'cursor-pointer transition-colors duration-200',
+        enableCopy && 'hover:[background-color:var(--night-owl-bg-secondary)] hover:[border-color:var(--night-owl-border)]',
+        enableCopy && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50',
         className
       )}
       onClick={enableCopy ? handleClick : undefined}

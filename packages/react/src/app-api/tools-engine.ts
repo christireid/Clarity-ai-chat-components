@@ -18,22 +18,64 @@ import { safeEvaluate } from '../utils/math/safe-evaluator'
 // Types
 // =============================================================================
 
-export interface ToolCall {
+/**
+ * ToolsEngine call state
+ *
+ * **IMPORTANT**: This type is specific to the ToolsEngine functional API.
+ * It represents the immutable state for React/functional components.
+ *
+ * **When to use**:
+ * - When using the ToolsEngine functional API (createToolsEngine, executeToolCall, etc.)
+ * - For React state management with immutable updates
+ * - For functional/pure component architectures
+ *
+ * **Related types** (use for different purposes):
+ * - `ToolCallRecord` (core/tool-lifecycle.ts): Full lifecycle tracking with 11 states
+ * - `ToolInvocation` (types/tool-invocation.ts): Message format for chat UI (5 states)
+ *
+ * **Property Alignment**: Uses `name` and `parameters` for backwards compatibility,
+ * but converters are provided to align with `toolName` and `args` used elsewhere.
+ *
+ * @see {@link toToolCallRecord} for conversion to ToolCallRecord
+ * @see {@link ToolCallRecord} for full lifecycle tracking
+ */
+export interface ToolsEngineCall {
+  /** Unique call identifier */
   id: string
+
+  /** Tool name */
   name: string
+
+  /** Tool parameters/arguments */
   parameters: Record<string, unknown>
+
+  /** Current execution status */
   status:
-    | 'pending'
-    | 'approved'
-    | 'executing'
-    | 'completed'
-    | 'failed'
-    | 'timeout'
+    | 'pending' // Awaiting approval
+    | 'approved' // Approved, ready to execute
+    | 'executing' // Currently executing
+    | 'completed' // Successfully completed
+    | 'failed' // Execution failed
+    | 'timeout' // Execution timed out
+
+  /** Execution result (if completed) */
   result?: unknown
+
+  /** Error message (if failed) */
   error?: string
+
+  /** Execution start timestamp */
   startTime?: number
+
+  /** Execution end timestamp */
   endTime?: number
 }
+
+/**
+ * @deprecated Use ToolsEngineCall instead. This alias is provided for backwards compatibility.
+ * Will be removed in v2.0.0.
+ */
+export type ToolCall = ToolsEngineCall
 
 export interface ToolExecutionResult {
   success: boolean
@@ -42,13 +84,31 @@ export interface ToolExecutionResult {
   executionTimeMs: number
 }
 
+/**
+ * ToolsEngine state container
+ *
+ * Immutable state object for functional/React-based tool management.
+ */
 export interface ToolsEngineState {
+  /** Tool registry (map of tool name to definition) */
   registry: Map<string, ToolDefinition>
-  pendingCalls: ToolCall[]
-  completedCalls: ToolCall[]
+
+  /** Pending tool calls (awaiting approval or execution) */
+  pendingCalls: ToolsEngineCall[]
+
+  /** Completed tool calls (completed, failed, or timeout) */
+  completedCalls: ToolsEngineCall[]
+
+  /** Auto-approve tools without user confirmation (NEVER use in production) */
   autoApprove: boolean
+
+  /** Tool execution timeout in milliseconds */
   timeoutMs: number
+
+  /** Result cache */
   cache: Map<string, { result: unknown; timestamp: number }>
+
+  /** Cache TTL in milliseconds */
   cacheTtlMs: number
 }
 
@@ -258,11 +318,22 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
   // SECURITY: Default to requiring approval for tool execution
   const autoApprove = config.autoApprove ?? false
 
-  // Warn in development when auto-approve is enabled
-  if (autoApprove && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+  // SECURITY: Prevent autoApprove in production
+  if (autoApprove) {
+    const isProduction =
+      typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+
+    if (isProduction) {
+      throw new Error(
+        '[Clarity Chat] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+          'Tools must require explicit user approval. Set autoApprove: false.'
+      )
+    }
+
+    // Warn in non-production environments
     console.warn(
       '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-      'This should only be used in trusted environments. Set autoApprove: false to require explicit approval.'
+        'This should only be used in trusted development/testing environments.'
     )
   }
 
@@ -323,11 +394,11 @@ export function createToolCall(
   state: ToolsEngineState,
   name: string,
   parameters: Record<string, unknown>
-): { state: ToolsEngineState; call: ToolCall } {
+): { state: ToolsEngineState; call: ToolsEngineCall } {
   const tool = state.registry.get(name)
 
   if (!tool) {
-    const call: ToolCall = {
+    const call: ToolsEngineCall = {
       id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name,
       parameters,
@@ -343,7 +414,7 @@ export function createToolCall(
   // Validate parameters
   const validation = validateParameters(parameters, tool.parameters)
   if (!validation.valid) {
-    const call: ToolCall = {
+    const call: ToolsEngineCall = {
       id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name,
       parameters,
@@ -356,7 +427,7 @@ export function createToolCall(
     }
   }
 
-  const call: ToolCall = {
+  const call: ToolsEngineCall = {
     id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
     name,
     parameters,
@@ -393,7 +464,7 @@ export function rejectToolCall(
   const call = state.pendingCalls.find((c) => c.id === callId)
   if (!call) return state
 
-  const rejectedCall: ToolCall = {
+  const rejectedCall: ToolsEngineCall = {
     ...call,
     status: 'failed',
     error: `Rejected: ${reason}`,
@@ -441,7 +512,7 @@ export async function executeToolCall(
   const cacheKey = generateCacheKey(call.name, call.parameters)
   const cached = state.cache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < state.cacheTtlMs) {
-    const completedCall: ToolCall = {
+    const completedCall: ToolsEngineCall = {
       ...call,
       status: 'completed',
       result: cached.result,
@@ -491,7 +562,7 @@ export async function executeToolCall(
     const newCache = new Map(state.cache)
     newCache.set(cacheKey, { result, timestamp: Date.now() })
 
-    const completedCall: ToolCall = {
+    const completedCall: ToolsEngineCall = {
       ...call,
       status: 'completed',
       result,
@@ -519,7 +590,7 @@ export async function executeToolCall(
     const executionTimeMs = endTime - startTime
     const errorMessage = err instanceof Error ? err.message : String(err)
 
-    const failedCall: ToolCall = {
+    const failedCall: ToolsEngineCall = {
       ...call,
       status: errorMessage === 'Execution timeout' ? 'timeout' : 'failed',
       error: errorMessage,
@@ -624,4 +695,143 @@ export function clearToolHistory(state: ToolsEngineState): ToolsEngineState {
  */
 export function clearToolCache(state: ToolsEngineState): ToolsEngineState {
   return { ...state, cache: new Map() }
+}
+
+// =============================================================================
+// Type Converters (Interoperability with Other Tool Calling APIs)
+// =============================================================================
+
+/**
+ * Convert ToolsEngineCall to ToolCallRecord format (for lifecycle tracking)
+ *
+ * **Use case**: When integrating ToolsEngine with ToolLifecycleManager
+ *
+ * @param call - ToolsEngineCall to convert
+ * @returns ToolCallRecord compatible object
+ *
+ * @example
+ * ```typescript
+ * import { ToolLifecycleManager } from '../core/tool-lifecycle'
+ *
+ * const engineCall = createToolCall(state, 'get_weather', { location: 'SF' })
+ * const lifecycleRecord = toToolCallRecord(engineCall.call)
+ * lifecycle.trackCall(lifecycleRecord)
+ * ```
+ */
+export function toToolCallRecord(call: ToolsEngineCall): {
+  id: string
+  toolName: string
+  args: Record<string, unknown>
+  status: import('../core/tool-lifecycle').ToolCallStatus
+  timestamps: {
+    requested?: number
+    executionStarted?: number
+    executionEnded?: number
+  }
+  result?: unknown
+  error?: {
+    message: string
+  }
+} {
+  // Map ToolsEngineCall status to ToolCallStatus
+  const statusMap: Record<
+    ToolsEngineCall['status'],
+    import('../core/tool-lifecycle').ToolCallStatus
+  > = {
+    pending: 'pending_approval',
+    approved: 'approved',
+    executing: 'executing',
+    completed: 'completed',
+    failed: 'failed',
+    timeout: 'timeout',
+  }
+
+  return {
+    id: call.id,
+    toolName: call.name, // name → toolName
+    args: call.parameters, // parameters → args
+    status: statusMap[call.status],
+    timestamps: {
+      requested: call.startTime,
+      executionStarted: call.startTime,
+      executionEnded: call.endTime,
+    },
+    result: call.result,
+    error: call.error ? { message: call.error } : undefined,
+  }
+}
+
+/**
+ * Convert ToolsEngineCall to ToolInvocation format (for message/UI layer)
+ *
+ * **Use case**: When adding tool calls to chat messages
+ *
+ * @param call - ToolsEngineCall to convert
+ * @returns ToolInvocation compatible object
+ *
+ * @example
+ * ```typescript
+ * import type { AssistantMessage } from '../types/tool-invocation'
+ *
+ * const engineCall = createToolCall(state, 'calculator', { expression: '2+2' })
+ * const invocation = toToolInvocation(engineCall.call)
+ *
+ * const message: AssistantMessage = {
+ *   id: 'msg_123',
+ *   role: 'assistant',
+ *   content: 'Let me calculate that...',
+ *   toolInvocations: [invocation]
+ * }
+ * ```
+ */
+export function toToolInvocation(
+  call: ToolsEngineCall
+): import('../types/tool-invocation').ToolInvocation {
+  // Map ToolsEngineCall status to ToolInvocation state
+  if (call.status === 'completed' && call.result !== undefined) {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'result',
+      args: call.parameters,
+      result: call.result,
+      executionStartedAt: call.startTime,
+      executionCompletedAt: call.endTime,
+      duration:
+        call.startTime && call.endTime
+          ? call.endTime - call.startTime
+          : undefined,
+    }
+  }
+
+  if (call.status === 'failed' || call.status === 'timeout') {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'error',
+      args: call.parameters,
+      error: call.error ?? 'Unknown error',
+      errorCode: call.status === 'timeout' ? 'timeout' : 'execution',
+      executionStartedAt: call.startTime,
+      errorTimestamp: call.endTime,
+    }
+  }
+
+  if (call.status === 'executing') {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'executing',
+      args: call.parameters,
+      executionStartedAt: call.startTime,
+    }
+  }
+
+  // pending or approved
+  return {
+    toolCallId: call.id,
+    toolName: call.name,
+    state: 'call',
+    args: call.parameters,
+  }
 }

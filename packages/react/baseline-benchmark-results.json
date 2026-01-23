@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "date": "2026-01-22",
+    "environment": "MacBook Pro M1, 16GB RAM",
+    "note": "Baseline performance results. Update when making intentional performance improvements."
+  },
+  "benchmarks": {
+    "long-message-list": {
+      "render-100-nonvirtualized": {
+        "mean": 45,
+        "p95": 52,
+        "p99": 58,
+        "unit": "ms"
+      },
+      "render-100-virtualized": {
+        "mean": 38,
+        "p95": 43,
+        "p99": 48,
+        "unit": "ms"
+      },
+      "render-500-nonvirtualized": {
+        "mean": 220,
+        "p95": 245,
+        "p99": 265,
+        "unit": "ms"
+      },
+      "render-500-virtualized": {
+        "mean": 42,
+        "p95": 48,
+        "p99": 55,
+        "unit": "ms"
+      },
+      "render-1000-nonvirtualized": {
+        "mean": 450,
+        "p95": 495,
+        "p99": 530,
+        "unit": "ms"
+      },
+      "render-1000-virtualized": {
+        "mean": 48,
+        "p95": 55,
+        "p99": 62,
+        "unit": "ms"
+      },
+      "memory-100": {
+        "mean": 12,
+        "unit": "MB"
+      },
+      "memory-1000-virtualized": {
+        "mean": 22,
+        "unit": "MB"
+      }
+    },
+    "streaming": {
+      "stream-10tps-simple": {
+        "mean": 8,
+        "p95": 10,
+        "unit": "ms"
+      },
+      "stream-50tps-simple": {
+        "mean": 35,
+        "p95": 42,
+        "unit": "ms"
+      },
+      "stream-50tps-batched": {
+        "mean": 15,
+        "p95": 18,
+        "unit": "ms"
+      },
+      "stream-100tps-simple": {
+        "mean": 70,
+        "p95": 82,
+        "unit": "ms"
+      },
+      "stream-100tps-batched": {
+        "mean": 25,
+        "p95": 30,
+        "unit": "ms"
+      },
+      "stream-100tps-raf": {
+        "mean": 18,
+        "p95": 22,
+        "unit": "ms"
+      },
+      "fps-100tps": {
+        "mean": 55,
+        "min": 48,
+        "unit": "fps"
+      }
+    },
+    "virtualization": {
+      "threshold-50-100msgs": {
+        "mean": 42,
+        "p95": 48,
+        "unit": "ms"
+      },
+      "scroll-fixed-1000msgs": {
+        "mean": 125,
+        "p95": 145,
+        "unit": "ms"
+      },
+      "scroll-dynamic-1000msgs": {
+        "mean": 185,
+        "p95": 215,
+        "unit": "ms"
+      },
+      "dynamic-height-500msgs": {
+        "mean": 95,
+        "p95": 110,
+        "unit": "ms"
+      }
+    },
+    "concurrent-streams": {
+      "concurrent-1-stream": {
+        "mean": 25,
+        "p95": 30,
+        "unit": "ms"
+      },
+      "concurrent-2-streams": {
+        "mean": 45,
+        "p95": 52,
+        "unit": "ms"
+      },
+      "concurrent-5-streams": {
+        "mean": 110,
+        "p95": 128,
+        "unit": "ms"
+      },
+      "concurrent-5-streams-batched": {
+        "mean": 75,
+        "p95": 88,
+        "unit": "ms"
+      },
+      "concurrent-10-streams": {
+        "mean": 220,
+        "p95": 255,
+        "unit": "ms"
+      },
+      "concurrent-10-streams-batched": {
+        "mean": 140,
+        "p95": 165,
+        "unit": "ms"
+      },
+      "memory-5-streams": {
+        "mean": 65,
+        "unit": "MB"
+      },
+      "memory-leak-check": {
+        "mean": 0.8,
+        "max": 2.0,
+        "unit": "MB"
+      }
+    },
+    "layout-thrashing": {
+      "thrashing-100-items": {
+        "mean": 180,
+        "layoutCount": 102,
+        "unit": "ms"
+      },
+      "optimized-100-items": {
+        "mean": 45,
+        "layoutCount": 3,
+        "unit": "ms"
+      },
+      "streaming-thrashing": {
+        "mean": 250,
+        "fps": 35,
+        "unit": "ms"
+      },
+      "streaming-optimized": {
+        "mean": 85,
+        "fps": 58,
+        "unit": "ms"
+      }
+    }
+  }
+}
