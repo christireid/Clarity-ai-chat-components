@@ -234,7 +234,7 @@ export function loadFeature<T extends React.ComponentType<any>>(
  */
 function checkFeatureEnabled(feature: keyof typeof FeatureFlags): boolean {
   // Development mode: enable all features
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     return true
   }
 

@@ -87,7 +87,7 @@ class ErrorReporter {
     }
 
     // Log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.error('Error Boundary caught an error:', fullReport)
     }
 
@@ -310,7 +310,7 @@ export class BaseErrorBoundary extends React.Component<
           stack: error.stack,
         },
         errorInfo: {
-          componentStack: errorInfo.componentStack ?? '',
+          componentStack: errorInfo.componentStack || '',
         },
       })
     }
@@ -486,7 +486,7 @@ export function useErrorHandler(componentName?: string) {
             stack: error.stack,
           },
           errorInfo: {
-            componentStack: errorInfo.componentStack ?? '',
+            componentStack: errorInfo.componentStack || '',
           },
         })
       }
@@ -540,7 +540,7 @@ export function useAsyncErrorHandler(componentName?: string) {
       return (...args: T): Promise<R> => {
         return asyncFn(...args).catch((error) => {
           handleAsyncError(error)
-          throw error // Re-throw to maintain Promise<R> type
+          throw error // Rethrow to maintain Promise<R> type
         })
       }
     },
@@ -661,7 +661,7 @@ export function ErrorOverlay({
   error: Error
   errorInfo?: React.ErrorInfo
 }) {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env['NODE_ENV'] !== 'development') {
     return null
   }
 

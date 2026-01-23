@@ -529,7 +529,6 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
 export * from './hooks/ui/use-is-mounted'
 export {
   useMergedRef,
@@ -634,8 +633,8 @@ export type {
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
 
-// Security utilities
-export { SecurityMonitor, securityMonitor } from './utils/security'
+// Security utilities (available exports only - see ./utils/security/index.ts)
+// Removed: SecurityMonitor, securityMonitor (not exported from security module)
 
 // Testing utilities (for test files only)
 export {

@@ -513,6 +513,18 @@ export function ClarityChat({
         prompts={processedProps.prompts}
         className={className}
         emptyState={emptyState}
+        showHeader={processedProps.showHeader}
+        sessionTitle={processedProps.sessionTitle}
+        sessionSubtitle={processedProps.sessionSubtitle}
+        headerActions={processedProps.headerActions}
+        showMessageCount={processedProps.showMessageCount}
+        onExport={processedProps.onExport}
+        onClear={processedProps.onClear ? handleClear : undefined}
+        autoScroll={processedProps.autoScroll}
+        theme={processedProps.theme}
+        showTokenCounter={processedProps.showTokenCounter}
+        showNetworkStatus={processedProps.showNetworkStatus}
+        enableMessageOperations={processedProps.enableMessageOperations}
       />
     </div>
   )

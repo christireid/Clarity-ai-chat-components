@@ -30,6 +30,7 @@ export function useRippleEffect({ enabled, onRipple }: UseRippleEffectOptions = 
 
   const addRipple = React.useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
+      // console.log('addRipple called', { enabled, isRippling: isRipplingRef.current })
       if (!enabled || isRipplingRef.current) return
 
       const button = e.currentTarget

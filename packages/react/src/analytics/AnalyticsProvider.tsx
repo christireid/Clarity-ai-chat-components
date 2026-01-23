@@ -67,7 +67,7 @@ export interface AnalyticsProviderProps {
  * <AnalyticsProvider
  *   config={{
  *     enabled: true,
- *     debug: process.env.NODE_ENV === 'development',
+ *     debug: process.env['NODE_ENV'] === 'development',
  *     providers: [googleAnalyticsProvider],
  *     autoTrackPageViews: true,
  *     autoTrackErrors: true,

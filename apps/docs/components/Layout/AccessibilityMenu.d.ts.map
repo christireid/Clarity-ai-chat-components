@@ -1,1 +1,0 @@
-{"version":3,"file":"AccessibilityMenu.d.ts","sourceRoot":"","sources":["AccessibilityMenu.tsx"],"names":[],"mappings":"AAOA,UAAU,sBAAsB;IAC9B,MAAM,EAAE,OAAO,CAAA;IACf,OAAO,EAAE,MAAM,IAAI,CAAA;CACpB;AAED,wBAAgB,iBAAiB,CAAC,EAAE,MAAM,EAAE,OAAO,EAAE,EAAE,sBAAsB,2CA+L5E;AAED,wBAAgB,mBAAmB,CAAC,EAAE,OAAO,EAAE,EAAE;IAAE,OAAO,EAAE,MAAM,IAAI,CAAA;CAAE,2CAWvE"}

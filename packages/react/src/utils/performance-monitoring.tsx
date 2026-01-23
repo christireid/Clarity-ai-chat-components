@@ -54,9 +54,9 @@ export interface UsePerformanceTrackingOptions {
 // ============================================================================
 
 const DEFAULT_CONFIG: PerformanceConfig = {
-  enabled: process.env.NODE_ENV === 'development',
-  logToConsole: process.env.NODE_ENV === 'development',
-  sendToAnalytics: process.env.NODE_ENV === 'production',
+  enabled: process.env['NODE_ENV'] === 'development',
+  logToConsole: process.env['NODE_ENV'] === 'development',
+  sendToAnalytics: process.env['NODE_ENV'] === 'production',
   thresholds: {
     slowRender: 16, // 60fps threshold
     memoryLeak: 1024 * 1024, // 1MB
@@ -147,7 +147,7 @@ export function usePerformanceTracking({
 /**
  * Log performance metrics with appropriate formatting
  */
-function logPerformanceMetrics(metrics: PerformanceMetrics) {
+export function logPerformanceMetrics(metrics: PerformanceMetrics) {
   const config = DEFAULT_CONFIG
 
   if (!config.logToConsole) return

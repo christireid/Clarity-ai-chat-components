@@ -107,8 +107,8 @@ describe('Hook Performance Benchmarks', () => {
         await import('../keyboard/use-keyboard-shortcuts')
       renderHook(() =>
         useKeyboardShortcuts([
-          { key: 'k', metaKey: true, handler: () => {} },
-          { key: 'Escape', handler: () => {} },
+          { key: 'mod+k', callback: () => {} },
+          { key: 'Escape', callback: () => {} },
         ])
       )
     })

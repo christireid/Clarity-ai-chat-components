@@ -12,6 +12,7 @@ import {
   useClarityChat,
   type UseClarityChatOptions,
 } from '../chat/use-clarity-chat'
+import type { CoreMessage } from '../use-clarity-chat/types'
 import { useRequestQueue, type QueuedRequest } from '../../utils/request-queue'
 import { ProviderError } from '../../utils/error-handling/provider-error'
 
@@ -35,13 +36,12 @@ export interface RateLimitedChatOptions extends UseClarityChatOptions {
 export interface RateLimitedChatReturn {
   /** Chat functionality */
   messages: any[]
+  setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
   append: (message: any) => Promise<string | null>
   isLoading: boolean
   error: Error | undefined
   stop: () => void
   reload: () => void
-  /** Set messages directly */
-  setMessages: React.Dispatch<React.SetStateAction<any[]>>
 
   /** Queue status */
   queueStatus: {
@@ -147,12 +147,12 @@ export function useRateLimitedChat(
   return {
     // Chat functionality
     messages: chat.messages,
+    setMessages: chat.setMessages,
     append: appendWithQueue,
     isLoading: chat.isLoading,
     error: chat.error,
     stop: chat.stop,
     reload: chat.reload,
-    setMessages: chat.setMessages,
 
     // Queue status
     queueStatus: queue.getStatus(),

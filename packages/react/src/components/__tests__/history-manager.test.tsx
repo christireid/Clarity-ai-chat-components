@@ -404,10 +404,10 @@ describe('HistoryManager', () => {
 
     it('should warn about duplicate IDs in development', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      const originalEnv = process.env.NODE_ENV
+      const originalEnv = process.env['NODE_ENV']
 
       // Set to development mode
-      process.env.NODE_ENV = 'development'
+      process.env['NODE_ENV'] = 'development'
 
       const messagesWithDuplicates: HistoryMessage[] = [
         { id: 'dup-1', role: 'user', content: 'First' },
@@ -431,7 +431,7 @@ describe('HistoryManager', () => {
       )
 
       consoleSpy.mockRestore()
-      process.env.NODE_ENV = originalEnv
+      process.env['NODE_ENV'] = originalEnv
     })
   })
 })

@@ -40,19 +40,19 @@ export interface MessageOperation {
 export interface UseMessageOperationsOptions {
   /** Initial messages */
   initialMessages?: MessageWithOperations[]
-  
+
   /** Maximum undo history size (default: 50) */
   maxHistorySize?: number
-  
+
   /** Callback when message is edited */
   onEdit?: (messageId: string, newContent: string) => void
-  
+
   /** Callback when message is regenerated */
   onRegenerate?: (messageId: string) => void
-  
+
   /** Callback when conversation is branched */
   onBranch?: (branchId: string, parentMessageId: string) => void
-  
+
   /** Callback when message is deleted */
   onDelete?: (messageId: string) => void
 }
@@ -63,52 +63,54 @@ export interface UseMessageOperationsOptions {
 export interface UseMessageOperationsReturn {
   /** All messages */
   messages: MessageWithOperations[]
-  
+
   /** Add new message */
-  addMessage: (message: Omit<MessageWithOperations, 'id' | 'timestamp'>) => string
-  
+  addMessage: (
+    message: Omit<MessageWithOperations, 'id' | 'timestamp'>
+  ) => string
+
   /** Edit message content */
   editMessage: (messageId: string, newContent: string) => void
-  
+
   /** Start editing mode for message */
   startEditing: (messageId: string) => void
-  
+
   /** Cancel editing mode */
   cancelEditing: (messageId: string) => void
-  
+
   /** Regenerate assistant message */
   regenerateMessage: (messageId: string) => void
-  
+
   /** Delete message */
   deleteMessage: (messageId: string) => void
-  
+
   /** Branch conversation from message */
   branchConversation: (messageId: string) => string
-  
+
   /** Get messages up to specific point */
   getMessagesUpTo: (messageId: string) => MessageWithOperations[]
-  
+
   /** Get all branches */
   getBranches: () => Map<string, MessageWithOperations[]>
-  
+
   /** Switch to different branch */
   switchToBranch: (branchId: string) => void
-  
+
   /** Undo last operation */
   undo: () => void
-  
+
   /** Redo last undone operation */
   redo: () => void
-  
+
   /** Whether can undo */
   canUndo: boolean
-  
+
   /** Whether can redo */
   canRedo: boolean
-  
+
   /** Current branch ID */
   currentBranchId: string
-  
+
   /** Clear all messages */
   clear: () => void
 }
@@ -122,7 +124,7 @@ function generateId(): string {
 
 /**
  * Production-ready Message Operations hook for advanced chat features.
- * 
+ *
  * **Features:**
  * - Message editing with version history
  * - Message regeneration (resend to AI)
@@ -131,14 +133,14 @@ function generateId(): string {
  * - Message deletion
  * - Branch switching
  * - Context preservation
- * 
+ *
  * **Use Cases:**
  * - Allow users to edit their messages
  * - Regenerate AI responses with same context
  * - Create alternative conversation paths
  * - Undo mistakes
  * - Delete unwanted messages
- * 
+ *
  * @example
  * ```tsx
  * // Basic message operations
@@ -154,21 +156,21 @@ function generateId(): string {
  *     console.log('Message edited:', id, content)
  *   },
  * })
- * 
+ *
  * // Add messages
  * const msgId = addMessage({
  *   role: 'user',
  *   content: 'Hello!',
  * })
- * 
+ *
  * // Edit message
  * editMessage(msgId, 'Hi there!')
- * 
+ *
  * // Undo if needed
  * if (canUndo) {
  *   undo()
  * }
- * 
+ *
  * // Regenerate AI response
  * const {
  *   regenerateMessage,
@@ -180,7 +182,7 @@ function generateId(): string {
  *     // Replace old message with new response
  *   },
  * })
- * 
+ *
  * // Branch conversation
  * const {
  *   branchConversation,
@@ -191,13 +193,13 @@ function generateId(): string {
  *     console.log('Created branch:', branchId)
  *   },
  * })
- * 
+ *
  * // Create branch from message
  * const branchId = branchConversation(messageId)
- * 
+ *
  * // List all branches
  * const branches = getBranches()
- * 
+ *
  * // Switch between branches
  * switchToBranch(branchId)
  * ```
@@ -327,9 +329,7 @@ export function useMessageOperations(
    */
   const startEditing = React.useCallback((messageId: string) => {
     setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId ? { ...m, isEditing: true } : m
-      )
+      prev.map((m) => (m.id === messageId ? { ...m, isEditing: true } : m))
     )
   }, [])
 
@@ -338,9 +338,7 @@ export function useMessageOperations(
    */
   const cancelEditing = React.useCallback((messageId: string) => {
     setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId ? { ...m, isEditing: false } : m
-      )
+      prev.map((m) => (m.id === messageId ? { ...m, isEditing: false } : m))
     )
   }, [])
 
@@ -396,7 +394,7 @@ export function useMessageOperations(
   const branchConversation = React.useCallback(
     (messageId: string): string => {
       const branchId = `branch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
-      
+
       setMessages((prev) => {
         // Get all messages up to and including the branch point
         const index = prev.findIndex((m) => m.id === messageId)
@@ -427,11 +425,13 @@ export function useMessageOperations(
     (messageId: string): MessageWithOperations[] => {
       // FIX: Issue #20 - Optimize filtering to avoid stack overflow or O(n^2)
       // Use branch-specific filtering first
-      const branchMessages = messages.filter((m) => m.branchId === currentBranchId)
+      const branchMessages = messages.filter(
+        (m) => m.branchId === currentBranchId
+      )
       const index = branchMessages.findIndex((m) => m.id === messageId)
-      
+
       if (index === -1) return []
-      
+
       return branchMessages.slice(0, index + 1)
     },
     [messages, currentBranchId]
@@ -440,9 +440,12 @@ export function useMessageOperations(
   /**
    * Get all branches
    */
-  const getBranches = React.useCallback((): Map<string, MessageWithOperations[]> => {
+  const getBranches = React.useCallback((): Map<
+    string,
+    MessageWithOperations[]
+  > => {
     const branches = new Map<string, MessageWithOperations[]>()
-    
+
     messages.forEach((msg) => {
       const branchId = msg.branchId || 'main'
       if (!branches.has(branchId)) {
@@ -476,14 +479,18 @@ export function useMessageOperations(
     // Reverse the operation
     switch (lastOperation.type) {
       case 'add':
-        setMessages((prev) => prev.filter((m) => m.id !== lastOperation.messageId))
+        setMessages((prev) =>
+          prev.filter((m) => m.id !== lastOperation.messageId)
+        )
         break
       case 'edit':
       case 'regenerate':
         if (lastOperation.previousState) {
           // FIX: Issue #16 - Validate message exists before undo
           setMessages((prev) => {
-            const messageExists = prev.some((m) => m.id === lastOperation.messageId)
+            const messageExists = prev.some(
+              (m) => m.id === lastOperation.messageId
+            )
             if (!messageExists) {
               console.warn(
                 `[undo] Cannot undo ${lastOperation.type}: message ${lastOperation.messageId} not found`
@@ -491,7 +498,9 @@ export function useMessageOperations(
               return prev
             }
             return prev.map((m) =>
-              m.id === lastOperation.messageId ? lastOperation.previousState! : m
+              m.id === lastOperation.messageId
+                ? lastOperation.previousState!
+                : m
             )
           })
         }
@@ -500,7 +509,9 @@ export function useMessageOperations(
         if (lastOperation.previousState) {
           // FIX: Issue #16 - Check for duplicate IDs before restoring
           setMessages((prev) => {
-            const isDuplicate = prev.some((m) => m.id === lastOperation.messageId)
+            const isDuplicate = prev.some(
+              (m) => m.id === lastOperation.messageId
+            )
             if (isDuplicate) {
               console.warn(
                 `[undo] Cannot undo delete: message ${lastOperation.messageId} already exists`
@@ -569,7 +580,9 @@ export function useMessageOperations(
         // Restore the regenerated messages
         if (operation.previousState) {
           // previousState should contain the full message array after regeneration
-          setMessages(operation.previousState as MessageWithOperations[])
+          setMessages(
+            operation.previousState as unknown as MessageWithOperations[]
+          )
         }
         break
     }

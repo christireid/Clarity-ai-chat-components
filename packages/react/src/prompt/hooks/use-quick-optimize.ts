@@ -123,7 +123,7 @@ export function useQuickOptimize(
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
       // Only log in development
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         logger.logger.error('[useQuickOptimize] Optimization failed:', error)
       }
       // Fallback to original messages

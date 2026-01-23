@@ -21,7 +21,7 @@
  */
 
 import * as React from 'react'
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type {
   ToolComponentRegistry,

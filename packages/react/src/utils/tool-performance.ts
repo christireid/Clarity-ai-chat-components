@@ -167,7 +167,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: event.call.cached || false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'completed',
       })
     })
@@ -177,9 +177,9 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'failed',
-        error: event.error.message,
+        error: (event as any).error?.message || 'Unknown error',
       }
 
       this.recordMetric(metric)
@@ -191,7 +191,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'timeout',
         error: 'Execution timeout',
       }
@@ -205,7 +205,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'cancelled',
       })
     })
@@ -285,7 +285,9 @@ export class ToolPerformanceMonitor {
 
     // Calculate overall stats
     const totalExecutions = this.metrics.length
-    const successfulExecutions = this.metrics.filter((m) => m.status === 'completed').length
+    const successfulExecutions = this.metrics.filter(
+      (m) => m.status === 'completed'
+    ).length
     const failedExecutions = totalExecutions - successfulExecutions
 
     const avgDuration =
@@ -295,28 +297,36 @@ export class ToolPerformanceMonitor {
 
     // Find slowest/fastest/most used tools
     const toolStats = Object.entries(byTool)
-    const slowestTool =
+    const slowestTool: { name: string; avgDuration: number } | null =
       toolStats.length > 0
-        ? toolStats.reduce((slowest, [name, stats]) =>
-            stats.avgDuration > (slowest?.avgDuration ?? 0)
-              ? { name, avgDuration: stats.avgDuration }
-              : slowest
+        ? toolStats.reduce<{ name: string; avgDuration: number } | null>(
+            (slowest, [name, stats]) =>
+              !slowest || stats.avgDuration > slowest.avgDuration
+                ? { name, avgDuration: stats.avgDuration }
+                : slowest,
+            null
           )
         : null
 
-    const fastestTool =
+    const fastestTool: { name: string; avgDuration: number } | null =
       toolStats.length > 0
-        ? toolStats.reduce((fastest, [name, stats]) =>
-            stats.avgDuration < (fastest?.avgDuration ?? Infinity)
-              ? { name, avgDuration: stats.avgDuration }
-              : fastest
+        ? toolStats.reduce<{ name: string; avgDuration: number } | null>(
+            (fastest, [name, stats]) =>
+              !fastest || stats.avgDuration < fastest.avgDuration
+                ? { name, avgDuration: stats.avgDuration }
+                : fastest,
+            null
           )
         : null
 
-    const mostUsedTool =
+    const mostUsedTool: { name: string; count: number } | null =
       toolStats.length > 0
-        ? toolStats.reduce((mostUsed, [name, stats]) =>
-            stats.count > (mostUsed?.count ?? 0) ? { name, count: stats.count } : mostUsed
+        ? toolStats.reduce<{ name: string; count: number } | null>(
+            (mostUsed, [name, stats]) =>
+              !mostUsed || stats.count > mostUsed.count
+                ? { name, count: stats.count }
+                : mostUsed,
+            null
           )
         : null
 
@@ -395,7 +405,10 @@ export class ToolPerformanceMonitor {
   /**
    * Calculate statistics for a set of metrics
    */
-  private calculateStats(toolName: string, metrics: PerformanceMetric[]): PerformanceStats {
+  private calculateStats(
+    toolName: string,
+    metrics: PerformanceMetric[]
+  ): PerformanceStats {
     const count = metrics.length
     const successCount = metrics.filter((m) => m.status === 'completed').length
     const failureCount = count - successCount
@@ -431,7 +444,10 @@ export class ToolPerformanceMonitor {
   /**
    * Calculate percentile from sorted array
    */
-  private calculatePercentile(sortedValues: number[], percentile: number): number {
+  private calculatePercentile(
+    sortedValues: number[],
+    percentile: number
+  ): number {
     if (sortedValues.length === 0) return 0
 
     const index = Math.ceil((percentile / 100) * sortedValues.length) - 1
@@ -498,8 +514,12 @@ export function formatPerformanceReport(report: PerformanceReport): string {
     lines.push(`  Success Rate: ${(stats.successRate * 100).toFixed(1)}%`)
     lines.push(`  Cache Hit Rate: ${(stats.cacheHitRate * 100).toFixed(1)}%`)
     lines.push(`  Avg Duration: ${stats.avgDuration.toFixed(2)}ms`)
-    lines.push(`  Min/Max: ${stats.minDuration.toFixed(2)}ms / ${stats.maxDuration.toFixed(2)}ms`)
-    lines.push(`  P95/P99: ${stats.p95Duration.toFixed(2)}ms / ${stats.p99Duration.toFixed(2)}ms`)
+    lines.push(
+      `  Min/Max: ${stats.minDuration.toFixed(2)}ms / ${stats.maxDuration.toFixed(2)}ms`
+    )
+    lines.push(
+      `  P95/P99: ${stats.p95Duration.toFixed(2)}ms / ${stats.p99Duration.toFixed(2)}ms`
+    )
   }
 
   // Slow queries
@@ -558,5 +578,7 @@ export function compareReports(
     })
   }
 
-  return comparisons.sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+  return comparisons.sort(
+    (a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent)
+  )
 }

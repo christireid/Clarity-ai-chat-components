@@ -15,6 +15,7 @@ import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
 import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
 import { MessageHeader } from './message-header'
+import { formatRelativeTime } from '../../internal/helpers'
 
 export interface MessageProps {
   message: MessageType
@@ -233,6 +234,7 @@ export function Message({
         duration: ANIMATION_DURATION.normal / 1000,
         ease: EASING_FRAMER.out,
       }}
+      viewport={{ once: true }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onFocus={() => setIsFocusWithin(true)}
@@ -263,6 +265,7 @@ export function Message({
             damping: 25,
             delay: 0.1,
           }}
+          viewport={{ once: true }}
         >
           <Avatar
             alt={isUser ? 'User' : 'AI Assistant'}
@@ -285,9 +288,13 @@ export function Message({
         {/* Header - only show on group start */}
         {isGroupStart && (
           <MessageHeader
-            role={message.role}
-            timestamp={message.createdAt}
-            status={message.status}
+            role={message.role === 'system' ? 'assistant' : message.role}
+            timestamp={message.createdAt.getTime()}
+            status={
+              message.status === 'pending'
+                ? 'sending'
+                : (message.status as 'sending' | 'sent' | 'error' | 'streaming')
+            }
             showTimestamp={showTimestamp}
             isHovered={isHovered}
           />

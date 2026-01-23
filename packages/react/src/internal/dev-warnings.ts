@@ -87,7 +87,7 @@ const CATEGORY_PREFIXES: Record<WarningCategory, string> = {
  * ```
  */
 export function warn(options: WarningOptions): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   const {
     category,
@@ -138,7 +138,7 @@ export function devWarning(
   component: string,
   message: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
   if (!condition) return
 
   const warningKey = `${component}:${message}`
@@ -169,7 +169,7 @@ export function deprecatedProp(
   component: string,
   removeVersion = '2.0'
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
   if (!(oldProp in props)) return
 
   warn({
@@ -199,7 +199,7 @@ export function deprecatedComponent(
   newComponent: string,
   removeVersion = '2.0'
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   warn({
     category: 'deprecation',
@@ -226,7 +226,7 @@ export function missingProviderWarning(
   component: string,
   provider: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   warn({
     category: 'misuse',
@@ -258,7 +258,7 @@ export function performanceWarning(
   issue: string,
   suggestion: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   warn({
     category: 'performance',
@@ -283,7 +283,7 @@ export function inlineFunctionWarning(
   component: string,
   propName: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   warn({
     category: 'performance',
@@ -322,7 +322,7 @@ export function accessibilityWarning(
   issue: string,
   fix: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
 
   warn({
     category: 'accessibility',
@@ -359,7 +359,7 @@ export function validateProp(
   expected: string,
   received: unknown
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
   if (condition) return
 
   const receivedType =
@@ -407,7 +407,7 @@ export function requireProp(
   component: string,
   propName: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
   if (value !== undefined && value !== null) return
 
   warn({
@@ -437,7 +437,7 @@ export function validateEnumProp<T extends string>(
   component: string,
   propName: string
 ): void {
-  if (process.env.NODE_ENV === 'production') return
+  if (process.env['NODE_ENV'] === 'production') return
   if (value === undefined) return
   if (allowedValues.includes(value)) return
 

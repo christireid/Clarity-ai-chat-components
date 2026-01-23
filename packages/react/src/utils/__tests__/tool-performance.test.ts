@@ -64,11 +64,7 @@ describe('ToolPerformanceMonitor', () => {
   beforeEach(() => {
     orchestrator = new ToolOrchestrator({
       autoApprove: true,
-      tools: [
-        createFastTool(10),
-        createSlowTool(50),
-        createFailingTool(),
-      ],
+      tools: [createFastTool(10), createSlowTool(50), createFailingTool()],
     })
   })
 
@@ -94,7 +90,9 @@ describe('ToolPerformanceMonitor', () => {
 
     try {
       await orchestrator.executeTool('failing_tool', {})
-    } catch {}
+    } catch {
+      // Expected to fail - we're testing error tracking
+    }
 
     const stats = monitor.getToolStats('failing_tool')
 
@@ -164,7 +162,9 @@ describe('ToolPerformanceMonitor', () => {
 
     try {
       await orchestrator.executeTool('failing_tool', {})
-    } catch {}
+    } catch {
+      // Expected to fail - we're testing error tracking
+    }
 
     const report = monitor.getReport()
 
@@ -411,7 +411,9 @@ describe('compareReports', () => {
 
     expect(comparisons).toHaveLength(1)
     expect(comparisons[0].toolName).toBe('fast_tool')
-    expect(comparisons[0].currentDuration).toBeGreaterThan(comparisons[0].baselineDuration)
+    expect(comparisons[0].currentDuration).toBeGreaterThan(
+      comparisons[0].baselineDuration
+    )
     expect(comparisons[0].change).toBeGreaterThan(0)
     expect(comparisons[0].changePercent).toBeGreaterThan(0)
   })

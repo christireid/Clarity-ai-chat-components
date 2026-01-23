@@ -81,8 +81,8 @@ export interface MessageListProps {
   'aria-label'?: string
   /** ARIA live region behavior */
   'aria-live'?: 'polite' | 'assertive' | 'off'
-  /** Maximum number of messages to render (windowing) to prevent memory issues */
-  maxMessages?: number
+  /** Enable auto-scroll to bottom on new messages (default: true) */
+  autoScroll?: boolean
 }
 
 /**
@@ -108,7 +108,6 @@ export interface MessageListProps {
  * @param props.onMessageRetry - Callback to retry a message
  * @param props.isLoading - Show loading skeleton (default: false)
  * @param props.emptyState - Custom empty state content
- * @param props.maxMessages - Maximum messages to render (default: 1000)
  * @returns Message list component
  *
  * @example
@@ -122,7 +121,7 @@ export interface MessageListProps {
  * ```
  */
 export function MessageList({
-  messages: rawMessages,
+  messages,
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
@@ -144,14 +143,8 @@ export function MessageList({
   role = 'log',
   'aria-label': ariaLabel,
   'aria-live': ariaLive = 'polite',
-  maxMessages = 1000,
+  autoScroll = true,
 }: MessageListProps) {
-  // Apply message windowing for memory safety
-  const messages = React.useMemo(() => {
-    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
-    return rawMessages.slice(rawMessages.length - maxMessages)
-  }, [rawMessages, maxMessages])
-
   // Runtime validation with actionable error messages
   if (!Array.isArray(messages)) {
     throw new ClarityError(
@@ -172,6 +165,7 @@ export function MessageList({
     dependencies: [messages],
     behavior: 'smooth',
     threshold: 100,
+    enabled: autoScroll,
   })
 
   // Accessibility: Respect user's motion preferences

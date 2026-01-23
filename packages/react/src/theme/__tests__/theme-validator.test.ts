@@ -332,14 +332,14 @@ describe('assertValidTheme', () => {
 })
 
 describe('validateThemeWithWarnings', () => {
-  const originalEnv = process.env.NODE_ENV
+  const originalEnv = process.env['NODE_ENV']
 
   beforeEach(() => {
-    process.env.NODE_ENV = 'development'
+    process.env['NODE_ENV'] = 'development'
   })
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv
+    process.env['NODE_ENV'] = originalEnv
   })
 
   it('should return true for valid themes', () => {

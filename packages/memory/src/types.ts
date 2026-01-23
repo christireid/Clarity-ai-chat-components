@@ -61,6 +61,24 @@ export interface MemoryItem {
     threadId?: string
     /** Session ID */
     sessionId?: string
+    /** Message ID (for streaming messages) */
+    messageId?: string
+    /** Message role (for streaming messages) */
+    role?: 'user' | 'assistant' | 'system' | 'tool'
+    /** Completion status (for streaming messages) */
+    completionStatus?: 'complete' | 'aborted' | 'error'
+    /** Error message (if completionStatus is 'error') */
+    errorMessage?: string
+    /** Whether this was auto-captured */
+    autoCapture?: boolean
+    /** Tool name (for tool memories) */
+    toolName?: string
+    /** Tool parameters (for tool memories) */
+    toolParams?: any
+    /** Tool result (for tool memories) */
+    toolResult?: any
+    /** Tool type (for tool memories) */
+    toolType?: 'api' | 'database' | 'computation' | 'external' | 'utility'
     /** Custom metadata */
     [key: string]: any
   }
@@ -156,6 +174,9 @@ export interface MemoryQuery {
 
   /** Include embeddings in results */
   includeEmbeddings?: boolean
+
+  /** Track access (updates accessCount and lastAccessed) - default: false for pure reads */
+  trackAccess?: boolean
 }
 
 /**
@@ -245,7 +266,18 @@ export interface VectorStore {
     vectors: VectorStoreVector[],
     options?: VectorStoreUpsertOptions
   ): Promise<void>
-  delete(ids: string[], namespace?: string): Promise<void>
+  delete(ids: string | string[], namespace?: string): Promise<void>
+
+  // Methods for compatibility with stores/base.ts and AuditLogger
+  add(memory: MemoryItem): Promise<void>
+  get(id: string): Promise<MemoryItem | null>
+  update(id: string, memory: MemoryItem): Promise<void>
+  search(
+    query: string,
+    options: any
+  ): Promise<Array<{ memory: MemoryItem; score: number }>>
+  getAll(options?: { types?: MemoryType[] }): Promise<MemoryItem[]>
+  close(): Promise<void>
 }
 
 /**
@@ -499,18 +531,54 @@ export interface MemoryServiceConfig {
   /** Cleanup interval (ms) */
   cleanupInterval?: number
 
-  /** Memory retention policy */
-  retentionPolicy: {
+  /**
+   * Memory retention policy - TTLs for automatic deletion
+   *
+   * Defaults (GDPR-compliant retention limits):
+   * - episodic: 30 days (2592000 seconds)
+   * - semantic: 90 days (7776000 seconds)
+   * - procedural: 60 days (5184000 seconds)
+   * - short-term: Session only (0 seconds)
+   * - profile: 1 year (31536000 seconds)
+   */
+  retentionPolicy?: {
+    /** Episodic memory TTL (seconds) */
+    episodic?: number
+    /** Semantic memory TTL (seconds) */
+    semantic?: number
+    /** Procedural memory TTL (seconds) */
+    procedural?: number
     /** Short-term memory TTL (seconds) */
-    shortTerm: number
+    shortTerm?: number
     /** Session memory TTL (seconds) */
-    session: number
+    session?: number
     /** Thread memory TTL (seconds) */
-    thread: number
+    thread?: number
     /** Global memory TTL (seconds, 0 = never expires) */
-    global: number
+    global?: number
     /** User-scoped memory TTL (seconds, 0 = never expires) */
     user?: number
+    /** Profile memory TTL (seconds) */
+    profile?: number
+  }
+
+  /**
+   * Memory size limits to prevent unbounded growth
+   *
+   * Defaults:
+   * - maxMemories: 1000 (LRU eviction when exceeded)
+   * - maxTotalTokens: 100,000 (approx 400KB of text)
+   * - maxMemorySize: 10,000 characters per memory
+   */
+  limits?: {
+    /** Maximum number of memories to store (default: 1000) */
+    maxMemories?: number
+    /** Maximum total tokens across all memories (default: 100,000) */
+    maxTotalTokens?: number
+    /** Maximum size of single memory in characters (default: 10,000) */
+    maxMemorySize?: number
+    /** Warn when approaching limits (default: 0.9 = 90%) */
+    warnThreshold?: number
   }
 
   /** Decay manager configuration for intelligent memory forgetting */
@@ -523,6 +591,42 @@ export interface MemoryServiceConfig {
     decayInterval?: number
     /** Custom decay policies by type/scope (see DecayManagerConfig) */
     policies?: Record<string, unknown>
+  }
+
+  /**
+   * Consent management configuration (GDPR/CCPA compliance)
+   *
+   * When enabled, all memory writes require user consent.
+   * Implements GDPR Article 6 (lawful basis) and Article 7 (consent conditions).
+   */
+  consent?: {
+    /** Enable consent management (default: false for backwards compatibility) */
+    enabled: boolean
+    /** Require consent before any write operations (default: true) */
+    requireConsentForWrites?: boolean
+    /** Consent policy version (e.g., '1.0.0') */
+    version?: string
+    /** User ID extractor - extracts user ID from metadata */
+    getUserId?: (metadata: Record<string, unknown>) => string | undefined
+  }
+
+  /**
+   * Audit logging configuration (GDPR Article 30 compliance)
+   *
+   * When enabled, all operations are logged for compliance demonstration.
+   * Implements GDPR Article 30 (Records of Processing Activities).
+   */
+  audit?: {
+    /** Enable audit logging (default: true) */
+    enabled?: boolean
+    /** Store logs persistently (default: true) */
+    persistent?: boolean
+    /** Log retention period in days (default: 365 for GDPR) */
+    retentionDays?: number
+    /** Include IP addresses in logs (default: false for privacy) */
+    includeIpAddresses?: boolean
+    /** Include user agents in logs (default: false for privacy) */
+    includeUserAgents?: boolean
   }
 
   /** Enable debug logging */
@@ -542,6 +646,70 @@ export interface MemoryServiceConfig {
 
   /** Token budget configuration */
   tokenBudget?: TokenBudgetConfig
+
+  /**
+   * Importance scoring configuration
+   *
+   * When enabled, uses multi-factor scoring for intelligent retrieval:
+   * - Base importance (user-defined or default)
+   * - Recency (exponential decay)
+   * - Access frequency
+   * - Semantic relevance (when query provided)
+   * - Scope boost (user-scoped memories prioritized)
+   */
+  importanceScoring?: {
+    /** Enable importance-based re-ranking (default: false) */
+    enabled?: boolean
+    /** Half-life for recency decay in days (default: 7) */
+    recencyHalfLife?: number
+    /** Maximum accesses for frequency normalization (default: 10) */
+    maxFrequencyAccesses?: number
+    /** Weight configuration for scoring components */
+    weights?: {
+      base?: number
+      recency?: number
+      frequency?: number
+      relevance?: number
+    }
+  }
+
+  /**
+   * Streaming behavior configuration
+   *
+   * Controls how streaming messages are captured to memory
+   */
+  streaming?: {
+    /** Store aborted messages to memory (default: false) */
+    storeAbortedMessages?: boolean
+    /** Store error messages to memory (default: false) */
+    storeErrorMessages?: boolean
+    /** Enable deduplication for regenerated messages (default: true) */
+    deduplicate?: boolean
+    /** Similarity threshold for deduplication (default: 0.95) */
+    deduplicateThreshold?: number
+    /** Time window for deduplication in ms (default: 60000 = 1 minute) */
+    deduplicateWindow?: number
+  }
+
+  /**
+   * Tool integration configuration
+   *
+   * Controls automatic capture of tool calls and outputs
+   */
+  toolIntegration?: {
+    /** Automatically capture tool calls (default: false) */
+    captureToolCalls?: boolean
+    /** Automatically capture tool outputs (default: false) */
+    captureToolOutputs?: boolean
+    /** Filter which tools to capture (default: capture all) */
+    toolCaptureFilter?: (toolName: string) => boolean
+    /** Maximum tokens per tool memory (default: 500) */
+    maxTokensPerTool?: number
+    /** Maximum total tokens for tool memories (default: 5000) */
+    maxTotalToolTokens?: number
+    /** Auto-summarize large tool outputs (default: true) */
+    autoSummarize?: boolean
+  }
 }
 
 /**
@@ -556,6 +724,8 @@ export type MemoryEventType =
   | 'memory:expired'
   | 'buffer:flushed'
   | 'context:optimized'
+  | 'user:data:deleted' // User data deletion event (GDPR Article 17)
+  | 'user:data:deletion:verified' // Deletion verification event
 
 /**
  * Memory event
@@ -578,6 +748,134 @@ export interface MemoryEvent {
  * Memory event listener
  */
 export type MemoryEventListener = (event: MemoryEvent) => void | Promise<void>
+
+/**
+ * Deletion result - detailed breakdown of what was deleted
+ *
+ * Implements GDPR Article 17 (Right to Erasure) requirements:
+ * - Must delete all personal data
+ * - Must provide confirmation of deletion
+ * - Must verify deletion completeness
+ */
+export interface DeletionResult {
+  /** User ID whose data was deleted */
+  userId: string
+  /** Timestamp of deletion operation */
+  timestamp: Date
+  /** Detailed breakdown of deleted items */
+  deleted: {
+    /** Number of memories deleted */
+    memories: number
+    /** Number of embeddings deleted */
+    embeddings: number
+    /** Number of cache entries deleted */
+    cacheEntries: number
+    /** Number of buffer entries deleted */
+    bufferEntries: number
+    /** Number of consent records deleted */
+    consentRecords: number
+  }
+  /** Failed deletion attempts (IDs that couldn't be deleted) */
+  failed: string[]
+  /** Whether deletion was verified complete */
+  verified: boolean
+  /** Verification details */
+  verification?: DeletionVerification
+}
+
+/**
+ * Deletion verification - confirms no data remains
+ *
+ * GDPR Article 17 compliance: Must be able to demonstrate complete deletion
+ */
+export interface DeletionVerification {
+  /** User ID being verified */
+  userId: string
+  /** Timestamp of verification */
+  timestamp: Date
+  /** Whether verification passed (no data found) */
+  passed: boolean
+  /** Remaining data found (should be empty array if passed) */
+  remainingData: Array<{
+    /** Location where data was found */
+    location: 'cache' | 'buffer' | 'vectorStore' | 'consent'
+    /** Number of items found */
+    count: number
+    /** Sample IDs (up to 5) */
+    sampleIds: string[]
+  }>
+  /** Error message if verification failed */
+  error?: string
+}
+
+/**
+ * Data export result - complete user data export (GDPR Article 20: Data Portability)
+ *
+ * Provides all personal data in a structured, machine-readable format.
+ * Required for GDPR Article 20 compliance.
+ */
+export interface DataExportResult {
+  /** User ID whose data was exported */
+  userId: string
+  /** Timestamp of export operation */
+  timestamp: Date
+  /** Export format version */
+  formatVersion: string
+  /** Exported data */
+  data: {
+    /** All memories belonging to user */
+    memories: MemoryItem[]
+    /** Consent history */
+    consentHistory?: Array<{
+      type: 'granted' | 'withdrawn'
+      purposes: string[]
+      timestamp: Date
+      version: string
+    }>
+    /** Audit trail (if requested) */
+    auditTrail?: Array<{
+      eventType: string
+      timestamp: Date
+      description: string
+      metadata: Record<string, unknown>
+    }>
+    /** User profile data */
+    profile?: Record<string, unknown>
+  }
+  /** Summary statistics */
+  summary: {
+    /** Total memories exported */
+    memoriesCount: number
+    /** Total embeddings exported */
+    embeddingsCount: number
+    /** Total data size (bytes) */
+    dataSizeBytes: number
+    /** Consent events count */
+    consentEventsCount: number
+    /** Audit logs count */
+    auditLogsCount: number
+  }
+  /** Export options used */
+  options: DataExportOptions
+}
+
+/**
+ * Data export options - configure what to include in export
+ */
+export interface DataExportOptions {
+  /** Include embeddings (can be large) */
+  includeEmbeddings?: boolean
+  /** Include consent history */
+  includeConsentHistory?: boolean
+  /** Include audit trail */
+  includeAuditTrail?: boolean
+  /** Include profile data */
+  includeProfile?: boolean
+  /** Export format */
+  format?: 'json' | 'csv'
+  /** Pretty print JSON (default: true) */
+  prettyPrint?: boolean
+}
 
 // ============================================================================
 // Type Aliases for Backward Compatibility

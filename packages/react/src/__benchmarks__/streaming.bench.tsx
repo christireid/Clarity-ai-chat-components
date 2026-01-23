@@ -11,7 +11,10 @@ import { describe, bench, beforeEach, afterEach } from 'vitest'
 import { render, cleanup, act } from '@testing-library/react'
 import * as React from 'react'
 import { PerformanceProfiler } from '../utils/profiling/performance-profiler'
-import { createDeviceSimulator, DEVICE_PROFILES } from '../utils/profiling/device-simulation'
+import {
+  createDeviceSimulator,
+  DEVICE_PROFILES,
+} from '../utils/profiling/device-simulation'
 
 // Mock streaming text generator
 async function* streamText(
@@ -23,16 +26,35 @@ async function* streamText(
 
   for (const word of words) {
     yield word + ' '
-    await new Promise(resolve => setTimeout(resolve, delayMs))
+    await new Promise((resolve) => setTimeout(resolve, delayMs))
   }
 }
 
 // Generate long text for streaming
 function generateLongText(wordCount: number): string {
   const words = [
-    'The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog',
-    'while', 'exploring', 'various', 'concepts', 'in', 'artificial', 'intelligence',
-    'and', 'machine', 'learning', 'with', 'advanced', 'algorithms',
+    'The',
+    'quick',
+    'brown',
+    'fox',
+    'jumps',
+    'over',
+    'the',
+    'lazy',
+    'dog',
+    'while',
+    'exploring',
+    'various',
+    'concepts',
+    'in',
+    'artificial',
+    'intelligence',
+    'and',
+    'machine',
+    'learning',
+    'with',
+    'advanced',
+    'algorithms',
   ]
 
   return Array(wordCount)
@@ -47,7 +69,10 @@ interface SimpleStreamingProps {
   tokensPerSecond: number
 }
 
-const SimpleStreaming: React.FC<SimpleStreamingProps> = ({ text, tokensPerSecond }) => {
+const SimpleStreaming: React.FC<SimpleStreamingProps> = ({
+  text,
+  tokensPerSecond,
+}) => {
   const [displayedText, setDisplayedText] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(true)
 
@@ -59,7 +84,7 @@ const SimpleStreaming: React.FC<SimpleStreamingProps> = ({ text, tokensPerSecond
         if (!mounted) break
 
         // Immediate update - no batching
-        setDisplayedText(prev => prev + chunk)
+        setDisplayedText((prev) => prev + chunk)
       }
       setIsStreaming(false)
     }
@@ -107,7 +132,7 @@ const BatchedStreaming: React.FC<BatchedStreamingProps> = ({
         batchCount++
 
         if (batchCount >= batchSize) {
-          setDisplayedText(prev => prev + batch)
+          setDisplayedText((prev) => prev + batch)
           batch = ''
           batchCount = 0
         }
@@ -115,7 +140,7 @@ const BatchedStreaming: React.FC<BatchedStreamingProps> = ({
 
       // Flush remaining batch
       if (batch && mounted) {
-        setDisplayedText(prev => prev + batch)
+        setDisplayedText((prev) => prev + batch)
       }
 
       setIsStreaming(false)
@@ -142,18 +167,21 @@ interface RAFStreamingProps {
   tokensPerSecond: number
 }
 
-const RAFStreaming: React.FC<RAFStreamingProps> = ({ text, tokensPerSecond }) => {
+const RAFStreaming: React.FC<RAFStreamingProps> = ({
+  text,
+  tokensPerSecond,
+}) => {
   const [displayedText, setDisplayedText] = React.useState('')
   const [isStreaming, setIsStreaming] = React.useState(true)
   const pendingTextRef = React.useRef('')
-  const rafIdRef = React.useRef<number>()
+  const rafIdRef = React.useRef<number | undefined>(undefined)
 
   React.useEffect(() => {
     let mounted = true
 
     const flushPending = () => {
       if (pendingTextRef.current) {
-        setDisplayedText(prev => prev + pendingTextRef.current)
+        setDisplayedText((prev) => prev + pendingTextRef.current)
         pendingTextRef.current = ''
       }
 
@@ -172,7 +200,7 @@ const RAFStreaming: React.FC<RAFStreamingProps> = ({ text, tokensPerSecond }) =>
 
       // Final flush
       if (pendingTextRef.current && mounted) {
-        setDisplayedText(prev => prev + pendingTextRef.current)
+        setDisplayedText((prev) => prev + pendingTextRef.current)
       }
 
       setIsStreaming(false)
@@ -216,7 +244,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={10} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -228,7 +256,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={50} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -240,7 +268,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={100} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -252,7 +280,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={200} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -265,8 +293,10 @@ describe('Streaming Performance Benchmarks', () => {
       const endRender = profiler.measureRender('BatchedStreaming-50tps-batch5')
 
       await act(async () => {
-        render(<BatchedStreaming text={text} tokensPerSecond={50} batchSize={5} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        render(
+          <BatchedStreaming text={text} tokensPerSecond={50} batchSize={5} />
+        )
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -274,11 +304,15 @@ describe('Streaming Performance Benchmarks', () => {
 
     bench('Stream at 100 tokens/sec (batch size 10)', async () => {
       const text = generateLongText(100)
-      const endRender = profiler.measureRender('BatchedStreaming-100tps-batch10')
+      const endRender = profiler.measureRender(
+        'BatchedStreaming-100tps-batch10'
+      )
 
       await act(async () => {
-        render(<BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        render(
+          <BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />
+        )
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -286,11 +320,15 @@ describe('Streaming Performance Benchmarks', () => {
 
     bench('Stream at 200 tokens/sec (batch size 20)', async () => {
       const text = generateLongText(100)
-      const endRender = profiler.measureRender('BatchedStreaming-200tps-batch20')
+      const endRender = profiler.measureRender(
+        'BatchedStreaming-200tps-batch20'
+      )
 
       await act(async () => {
-        render(<BatchedStreaming text={text} tokensPerSecond={200} batchSize={20} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        render(
+          <BatchedStreaming text={text} tokensPerSecond={200} batchSize={20} />
+        )
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -304,7 +342,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<RAFStreaming text={text} tokensPerSecond={50} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -316,7 +354,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<RAFStreaming text={text} tokensPerSecond={100} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -328,7 +366,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<RAFStreaming text={text} tokensPerSecond={200} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       endRender()
@@ -342,7 +380,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={100} />)
-        await new Promise(resolve => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
       })
 
       const snapshot2 = profiler.captureMemorySnapshot()
@@ -358,15 +396,19 @@ describe('Streaming Performance Benchmarks', () => {
       const snapshot1 = profiler.captureMemorySnapshot()
 
       await act(async () => {
-        render(<BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />)
-        await new Promise(resolve => setTimeout(resolve, 5000))
+        render(
+          <BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />
+        )
+        await new Promise((resolve) => setTimeout(resolve, 5000))
       })
 
       const snapshot2 = profiler.captureMemorySnapshot()
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
 
       if (delta > 10) {
-        console.warn(`High memory accumulation (batched): ${delta.toFixed(2)}MB`)
+        console.warn(
+          `High memory accumulation (batched): ${delta.toFixed(2)}MB`
+        )
       }
     })
   })
@@ -383,7 +425,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<SimpleStreaming text={text} tokensPerSecond={100} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       profiler.stopFPSTracking()
@@ -400,7 +442,7 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         render(<RAFStreaming text={text} tokensPerSecond={100} />)
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
       })
 
       profiler.stopFPSTracking()
@@ -418,7 +460,7 @@ describe('Streaming Performance Benchmarks', () => {
       await act(async () => {
         await simulator.getCPUThrottler().throttledExecute(async () => {
           render(<SimpleStreaming text={text} tokensPerSecond={50} />)
-          await new Promise(resolve => setTimeout(resolve, 2000))
+          await new Promise((resolve) => setTimeout(resolve, 2000))
         })
       })
 
@@ -435,8 +477,10 @@ describe('Streaming Performance Benchmarks', () => {
 
       await act(async () => {
         await simulator.getCPUThrottler().throttledExecute(async () => {
-          render(<BatchedStreaming text={text} tokensPerSecond={50} batchSize={5} />)
-          await new Promise(resolve => setTimeout(resolve, 2000))
+          render(
+            <BatchedStreaming text={text} tokensPerSecond={50} batchSize={5} />
+          )
+          await new Promise((resolve) => setTimeout(resolve, 2000))
         })
       })
 
@@ -453,8 +497,10 @@ describe('Streaming Performance Benchmarks', () => {
       const snapshot1 = profiler.captureMemorySnapshot()
 
       await act(async () => {
-        render(<BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />)
-        await new Promise(resolve => setTimeout(resolve, 10000))
+        render(
+          <BatchedStreaming text={text} tokensPerSecond={100} batchSize={10} />
+        )
+        await new Promise((resolve) => setTimeout(resolve, 10000))
       })
 
       const snapshot2 = profiler.captureMemorySnapshot()

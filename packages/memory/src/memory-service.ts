@@ -555,6 +555,9 @@ export class MemoryService {
     const memory = this.cache.get(id)
     if (!memory) return null
 
+    // CRITICAL: Store original state for rollback
+    const originalMemory = { ...memory }
+
     const updated = {
       ...memory,
       ...updates,
@@ -577,11 +580,29 @@ export class MemoryService {
       }
     }
 
+    // Update cache first (optimistic update)
     this.cache.set(id, updated)
 
-    // Update in vector store
+    // Update in vector store - ROLLBACK on error
     if (this.vectorStore && updated.embedding) {
-      await this.updateVectorStore([updated])
+      try {
+        await this.updateVectorStore([updated])
+      } catch (error) {
+        // ROLLBACK: Restore original state in cache
+        this.cache.set(id, originalMemory)
+
+        if (this.config.debug) {
+          console.error(
+            'Vector store update failed, rolled back cache changes:',
+            error
+          )
+        }
+
+        // Re-throw to notify caller of failure
+        throw new Error(
+          `Failed to update memory ${id}: vector store sync failed. Cache rolled back.`
+        )
+      }
     }
 
     this.emitEvent({
@@ -600,9 +621,13 @@ export class MemoryService {
     const memory = this.cache.get(id)
     if (!memory) return false
 
+    // CRITICAL: Store original state for rollback
+    const originalMemory = { ...memory }
+
+    // Delete from cache first (optimistic delete)
     this.cache.delete(id)
 
-    // Delete from vector store
+    // Delete from vector store - ROLLBACK on error
     if (this.vectorStore) {
       try {
         await this.vectorStore.delete(
@@ -610,9 +635,20 @@ export class MemoryService {
           this.config.persistence.vectorStoreNamespace
         )
       } catch (error) {
+        // ROLLBACK: Restore item in cache
+        this.cache.set(id, originalMemory)
+
         if (this.config.debug) {
-          console.error('Failed to delete from vector store:', error)
+          console.error(
+            'Vector store delete failed, rolled back cache deletion:',
+            error
+          )
         }
+
+        // Re-throw to notify caller of failure
+        throw new Error(
+          `Failed to delete memory ${id}: vector store sync failed. Cache rolled back.`
+        )
       }
     }
 
@@ -706,31 +742,33 @@ export class MemoryService {
   async flushBuffer(): Promise<void> {
     if (this.buffer.items.length === 0) return
 
-    // Capture items and clear buffer immediately to prevent race conditions
-    // where new items added during await would be lost
     const items = [...this.buffer.items]
+
+    // Update vector store - if fails, buffer is NOT cleared
+    if (this.vectorStore) {
+      try {
+        await this.updateVectorStore(items)
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to flush buffer to vector store:', error)
+        }
+        // DO NOT clear buffer if vector store update failed
+        // Buffer will be retried on next flush attempt
+        throw new Error(
+          'Buffer flush failed: vector store sync error. Buffer preserved for retry.'
+        )
+      }
+    }
+
+    // ONLY clear buffer if vector store update succeeded (or no vector store)
     this.buffer.items = []
     this.buffer.totalTokens = 0
 
-    try {
-      // Update vector store
-      if (this.vectorStore) {
-        await this.updateVectorStore(items)
-      }
-
-      this.emitEvent({
-        type: 'buffer:flushed',
-        timestamp: new Date(),
-        data: { count: items.length },
-      })
-    } catch (error) {
-      // On failure, restore items to buffer (prepend to maintain partial order)
-      this.buffer.items = [...items, ...this.buffer.items]
-      // Re-calculate tokens (simplified)
-      this.buffer.totalTokens = this.buffer.items.reduce((sum, item) => sum + item.tokens, 0)
-      
-      throw error
-    }
+    this.emitEvent({
+      type: 'buffer:flushed',
+      timestamp: new Date(),
+      data: { count: items.length },
+    })
   }
 
   /**
@@ -764,6 +802,9 @@ export class MemoryService {
       if (this.config.debug) {
         console.error('Failed to update vector store:', error)
       }
+      // CRITICAL: Re-throw error to allow caller to handle sync failures
+      // Without this, updateMemory() and deleteMemory() silently diverge from vector store
+      throw error
     }
   }
 
@@ -1304,13 +1345,15 @@ export class MemoryService {
 
   private getRetentionForScope(scope: MemoryScope): number {
     const policy = this.config.retentionPolicy
+    if (!policy) return 0
+
     switch (scope) {
       case 'session':
-        return policy.session
+        return policy.session ?? 0
       case 'thread':
-        return policy.thread
+        return policy.thread ?? 0
       case 'global':
-        return policy.global
+        return policy.global ?? 0
       case 'user':
         return policy.user ?? 0
       default:

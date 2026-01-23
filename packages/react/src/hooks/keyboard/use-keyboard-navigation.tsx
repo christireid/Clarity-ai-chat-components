@@ -387,7 +387,7 @@ export function KeyboardNavigationProvider({
   children,
   defaultShortcuts = [],
   sequenceTimeout = 1000,
-  warnOnConflicts = process.env.NODE_ENV === 'development',
+  warnOnConflicts = process.env['NODE_ENV'] === 'development',
 }: KeyboardNavigationProviderProps) {
   const [state, dispatch] = React.useReducer(keyboardNavigationReducer, {
     shortcuts: new Map(defaultShortcuts.map((s) => [s.id, s])),

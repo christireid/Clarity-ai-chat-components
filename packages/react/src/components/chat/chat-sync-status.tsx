@@ -69,9 +69,12 @@ export function ChatSyncStatus({
   }
 
   const getStatusIcon = () => {
-    if (!status.isOnline) return <WifiSlashIcon className="w-4 h-4 text-muted-foreground" />
-    if (status.isSyncing) return <ArrowPathIcon className="w-4 h-4 text-blue-500 animate-spin" />
-    if (errors.length > 0) return <ExclamationTriangleIcon className="w-4 h-4 text-destructive" />
+    if (!status.isOnline)
+      return <WifiSlashIcon className="w-4 h-4 text-muted-foreground" />
+    if (status.isSyncing)
+      return <ArrowPathIcon className="w-4 h-4 text-blue-500 animate-spin" />
+    if (errors.length > 0)
+      return <ExclamationTriangleIcon className="w-4 h-4 text-destructive" />
     return <CheckCircleIcon className="w-4 h-4 text-green-500" />
   }
 
@@ -95,12 +98,11 @@ export function ChatSyncStatus({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
         className={`flex items-center gap-2 px-3 py-2 bg-muted/50 border rounded-lg ${className}`}
       >
         {getStatusIcon()}
-        <span className={`text-sm ${getStatusColor()}`}>
-          {getStatusText()}
-        </span>
+        <span className={`text-sm ${getStatusColor()}`}>{getStatusText()}</span>
         {status.pendingChanges > 0 && (
           <Badge variant="secondary" className="text-xs">
             {status.pendingChanges} pending
@@ -114,7 +116,9 @@ export function ChatSyncStatus({
             disabled={!status.isOnline || isManualSyncing}
             className="ml-auto"
           >
-            <ArrowPathIcon className={`w-3 h-3 ${isManualSyncing ? 'animate-spin' : ''}`} />
+            <ArrowPathIcon
+              className={`w-3 h-3 ${isManualSyncing ? 'animate-spin' : ''}`}
+            />
           </Button>
         )}
       </motion.div>
@@ -127,6 +131,7 @@ export function ChatSyncStatus({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
+        viewport={{ once: true }}
         className={className}
       >
         <Card>
@@ -139,7 +144,11 @@ export function ChatSyncStatus({
                   variant={status.isOnline ? 'default' : 'secondary'}
                   className="ml-2"
                 >
-                  {status.isOnline ? <WifiIcon className="w-3 h-3 mr-1" /> : <WifiSlashIcon className="w-3 h-3 mr-1" />}
+                  {status.isOnline ? (
+                    <WifiIcon className="w-3 h-3 mr-1" />
+                  ) : (
+                    <WifiSlashIcon className="w-3 h-3 mr-1" />
+                  )}
                   {status.isOnline ? 'Online' : 'Offline'}
                 </Badge>
               </CardTitle>
@@ -160,8 +169,7 @@ export function ChatSyncStatus({
                 <div className="font-medium">
                   {status.lastSyncTime > 0
                     ? formatRelativeTime(status.lastSyncTime)
-                    : 'Never'
-                  }
+                    : 'Never'}
                 </div>
               </div>
               <div>
@@ -181,7 +189,10 @@ export function ChatSyncStatus({
             {showRealtimeToggle && (
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label htmlFor="realtime-sync" className="text-sm font-medium">
+                  <Label
+                    htmlFor="realtime-sync"
+                    className="text-sm font-medium"
+                  >
                     Real-time Sync
                   </Label>
                   <p className="text-xs text-muted-foreground">
@@ -191,7 +202,7 @@ export function ChatSyncStatus({
                 <Switch
                   id="realtime-sync"
                   checked={status.realtimeEnabled}
-                  onCheckedChange={(enabled) => {
+                  onCheckedChange={(enabled: boolean) => {
                     if (enabled) {
                       actions.enableRealtime()
                     } else {
@@ -208,15 +219,21 @@ export function ChatSyncStatus({
                 <div className="text-sm font-medium">Last Sync Result</div>
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="text-center">
-                    <div className="font-medium text-green-600">{lastSyncResult.syncedItems}</div>
+                    <div className="font-medium text-green-600">
+                      {lastSyncResult.syncedItems}
+                    </div>
                     <div className="text-muted-foreground">Synced</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-medium text-blue-600">{lastSyncResult.conflictsResolved}</div>
+                    <div className="font-medium text-blue-600">
+                      {lastSyncResult.conflictsResolved}
+                    </div>
                     <div className="text-muted-foreground">Conflicts</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-medium text-red-600">{lastSyncResult.errors.length}</div>
+                    <div className="font-medium text-red-600">
+                      {lastSyncResult.errors.length}
+                    </div>
                     <div className="text-muted-foreground">Errors</div>
                   </div>
                 </div>
@@ -232,7 +249,11 @@ export function ChatSyncStatus({
                   onClick={() => setShowErrors(!showErrors)}
                   className="flex items-center gap-2 text-destructive hover:text-destructive"
                 >
-                  {showErrors ? <EyeSlashIcon className="w-3 h-3" /> : <EyeIcon className="w-3 h-3" />}
+                  {showErrors ? (
+                    <EyeSlashIcon className="w-3 h-3" />
+                  ) : (
+                    <EyeIcon className="w-3 h-3" />
+                  )}
                   {errors.length} Sync Error{errors.length !== 1 ? 's' : ''}
                 </Button>
 
@@ -242,6 +263,7 @@ export function ChatSyncStatus({
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
+                      viewport={{ once: true }}
                       className="space-y-2"
                     >
                       {errors.slice(-3).map((error, index) => (
@@ -266,7 +288,9 @@ export function ChatSyncStatus({
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={handleManualSync}
-                  disabled={!status.isOnline || isManualSyncing || status.isSyncing}
+                  disabled={
+                    !status.isOnline || isManualSyncing || status.isSyncing
+                  }
                   className="flex-1"
                 >
                   {isManualSyncing ? (
@@ -287,7 +311,9 @@ export function ChatSyncStatus({
             {/* Sync Progress Indicator */}
             {status.isSyncing && (
               <div className="space-y-2">
-                <div className="text-sm text-muted-foreground">Syncing changes...</div>
+                <div className="text-sm text-muted-foreground">
+                  Syncing changes...
+                </div>
                 <Progress value={undefined} className="h-1" />
               </div>
             )}

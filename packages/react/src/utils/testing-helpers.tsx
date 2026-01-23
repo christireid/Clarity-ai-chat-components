@@ -8,8 +8,7 @@
  */
 
 import * as React from 'react'
-import { vi } from 'vitest'
-import type { Mock } from 'vitest'
+import { vi, type Mock } from 'vitest'
 
 // =============================================================================
 // MOCKS AND STUBS
@@ -58,7 +57,7 @@ export const mockChatAPI = {
 export class MockWebSocket {
   onmessage?: (event: MessageEvent) => void
   onopen?: () => void
-  onclose?: (event?: CloseEvent) => void
+  onclose?: () => void
   onerror?: (error: Event) => void
 
   readyState: number = WebSocket.OPEN
@@ -129,8 +128,8 @@ export class MockLocalStorage {
  * Mock fetch for API testing
  */
 export const createMockFetch = (responses: Record<string, any>) => {
-  return vi.fn((url: string, options?: RequestInit) => {
-    const urlKey = url
+  return vi.fn((url: string | URL, options?: RequestInit) => {
+    const urlKey = typeof url === 'string' ? url : url.toString()
     const response = responses[urlKey]
 
     if (!response) {
@@ -153,7 +152,9 @@ export const createMockFetch = (responses: Record<string, any>) => {
 /**
  * Render ClarityChat with test-friendly defaults
  */
-export function renderChatWithDefaults(props: Partial<Record<string, unknown>> = {}): { props: Record<string, unknown> } {
+export function renderChatWithDefaults(props: Partial<any> = {}): {
+  props: any
+} {
   const defaultProps = {
     api: '/api/chat',
     onSendMessage: vi.fn(),
@@ -265,12 +266,12 @@ export function createMockChatState(initialMessages: any[] = []) {
 /**
  * Test hook for useClarityChat
  */
-export function createMockClarityChatHook(initialState?: Partial<Record<string, unknown>>): {
-  hook: ReturnType<typeof vi.fn>
-  state: Record<string, unknown>
-  updateState: (updates: Partial<Record<string, unknown>>) => void
+export function createMockClarityChatHook(initialState?: Partial<any>): {
+  hook: any
+  state: any
+  updateState: (updates: Partial<any>) => void
 } {
-  const mockState: Record<string, unknown> = {
+  const mockState = {
     messages: [],
     isLoading: false,
     error: null,
@@ -285,7 +286,7 @@ export function createMockClarityChatHook(initialState?: Partial<Record<string, 
   return {
     hook: mockHook,
     state: mockState,
-    updateState: (updates: Partial<Record<string, unknown>>) => {
+    updateState: (updates: Partial<typeof mockState>) => {
       Object.assign(mockState, updates)
     },
   }
@@ -356,14 +357,18 @@ export const domTestUtils = {
   },
 
   /** Focus an element */
-  focus: (element: HTMLElement) => {
-    element.focus()
+  focus: (element: Element) => {
+    if (element instanceof HTMLElement) {
+      element.focus()
+    }
     element.dispatchEvent(new Event('focus', { bubbles: true }))
   },
 
   /** Blur an element */
-  blur: (element: HTMLElement) => {
-    element.blur()
+  blur: (element: Element) => {
+    if (element instanceof HTMLElement) {
+      element.blur()
+    }
     element.dispatchEvent(new Event('blur', { bubbles: true }))
   },
 
@@ -529,7 +534,7 @@ export const e2eTestUtils = {
     // Mock fetch
     global.fetch = createMockFetch({
       '/api/chat': mockChatAPI.success('Test response'),
-    }) as unknown as typeof fetch
+    }) as any
   },
 
   /** Teardown test environment */
@@ -636,7 +641,7 @@ export function createTestComponent<P extends {}>(
 ) {
   return (props: Partial<P> = {}) => (
     <TestWrapper>
-      <Component {...(defaultProps as P)} {...(props as P)} />
+      <Component {...({ ...defaultProps, ...props } as P)} />
     </TestWrapper>
   )
 }
@@ -723,5 +728,5 @@ export const chatAssertions = {
 export {
   // Re-export vitest utilities for convenience
   vi,
+  type Mock,
 }
-export type { Mock }

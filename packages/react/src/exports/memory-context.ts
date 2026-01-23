@@ -35,7 +35,7 @@ export * from '../memory/types'
 // LOW-LEVEL: Core Services and Utilities
 // ============================================================================
 
-export { MemoryService } from '../memory/memory-service'
+export { MemoryService } from '@clarity-chat/memory'
 
 export {
   TokenCounter as MemoryTokenCounter,

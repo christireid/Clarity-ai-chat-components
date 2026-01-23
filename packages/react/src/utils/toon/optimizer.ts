@@ -74,7 +74,7 @@ export function autoOptimize<T = unknown>(
   }
 
   // Check if data is suitable for TOON
-  const suitable = isSuitableForToon(data)
+  const suitable = isSuitableForToon(data as any)
 
   if (!suitable && !forceToon) {
     return {
@@ -84,16 +84,17 @@ export function autoOptimize<T = unknown>(
       optimizedTokens: jsonTokens,
       tokensSaved: 0,
       savingsPercent: 0,
-      reason: 'Data not suitable for TOON (deeply nested or non-uniform structure)',
+      reason:
+        'Data not suitable for TOON (deeply nested or non-uniform structure)',
     }
   }
 
   // Estimate savings
-  const savings = estimateToonSavings(data)
+  const savings = estimateToonSavings(data as any)
 
   // Use TOON if savings exceed threshold or forced
   if (savings.savingsPercent >= minSavingsPercent || forceToon) {
-    const toon = jsonToToon(data, { compact })
+    const toon = jsonToToon(data as any, { compact })
     const toonTokens = estimateTokens(toon)
 
     return {
@@ -125,14 +126,14 @@ export function autoOptimize<T = unknown>(
 export function parseFlexible<T = unknown>(response: string): T {
   // Try JSON first
   try {
-    return JSON.parse(response)
+    return JSON.parse(response) as T
   } catch {
     // Try TOON
     try {
-      return toonToJson(response)
+      return toonToJson(response) as T
     } catch {
       // Return raw string if neither works
-      return response
+      return response as T
     }
   }
 }
@@ -148,12 +149,13 @@ export function batchOptimize<T = unknown>(
   totalSavings: number
   totalSavingsPercent: number
 } {
-  const results = items.map(item => autoOptimize(item, options))
+  const results = items.map((item) => autoOptimize(item, options))
 
   const totalOriginal = results.reduce((sum, r) => sum + r.originalTokens, 0)
   const totalOptimized = results.reduce((sum, r) => sum + r.optimizedTokens, 0)
   const totalSavings = totalOriginal - totalOptimized
-  const totalSavingsPercent = totalOriginal > 0 ? (totalSavings / totalOriginal) * 100 : 0
+  const totalSavingsPercent =
+    totalOriginal > 0 ? (totalSavings / totalOriginal) * 100 : 0
 
   return {
     results,

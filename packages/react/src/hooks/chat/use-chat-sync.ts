@@ -8,36 +8,36 @@
 'use client'
 
 import * as React from 'react'
-import { SyncManager, useSyncManager } from '../../utils/sync-manager'
+import {
+  SyncManager,
+  useSyncManager,
+} from '../../utils/sync-manager'
 import type {
   SyncableData,
   SyncOptions,
   SyncResult,
 } from '../../utils/sync-manager'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-
-// Extended message type for sync operations
-interface SyncMessage extends CoreMessage {
-  timestamp?: number
-  metadata?: Record<string, unknown>
-}
+import type { Message } from '@clarity-chat/types'
 
 // Convert messages to syncable format
-function messagesToSyncable(
-  messages: SyncMessage[],
-  conversationId: string
-): SyncableData {
+function messagesToSyncable(messages: Message[], conversationId: string): SyncableData {
+  const getLastModified = (m: any) => {
+    if (m.timestamp) return new Date(m.timestamp).getTime()
+    if (m.createdAt) return new Date(m.createdAt).getTime()
+    return 0
+  }
+
   return {
     id: `conversation_${conversationId}`,
-    lastModified: Math.max(...messages.map((m) => m.timestamp || 0), 0),
+    lastModified: Math.max(...messages.map(getLastModified), 0),
     version: 1, // Would be incremented on changes
     data: {
       conversationId,
-      messages: messages.map((m) => ({
+      messages: messages.map((m: any) => ({
         id: m.id,
         role: m.role,
         content: m.content,
-        timestamp: m.timestamp,
+        timestamp: getLastModified(m) || Date.now(),
         metadata: m.metadata,
       })),
     },
@@ -45,14 +45,18 @@ function messagesToSyncable(
 }
 
 // Convert syncable data back to messages
-function syncableToMessages(syncable: SyncableData): SyncMessage[] {
+function syncableToMessages(syncable: SyncableData): Message[] {
   const data = syncable.data
   return data.messages.map((m: any) => ({
     id: m.id,
     role: m.role,
     content: m.content,
-    timestamp: m.timestamp,
+    timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
     metadata: m.metadata,
+    status: 'sent', // Add default status
+    createdAt: m.timestamp ? new Date(m.timestamp) : new Date(), // Add default createdAt
+    updatedAt: m.timestamp ? new Date(m.timestamp) : new Date(), // Add default updatedAt
+    chatId: syncable.data.conversationId, // Add default chatId
   }))
 }
 
@@ -69,9 +73,7 @@ class ChatLocalStorage {
 
     try {
       const messages = await this.getStoredMessages()
-      return messages.length > 0
-        ? [messagesToSyncable(messages, this.conversationId)]
-        : []
+      return messages.length > 0 ? [messagesToSyncable(messages, this.conversationId)] : []
     } catch (error) {
       console.warn('Failed to get local chat data:', error)
       return []
@@ -83,9 +85,7 @@ class ChatLocalStorage {
 
     try {
       const messages = await this.getStoredMessages()
-      return messages.length > 0
-        ? messagesToSyncable(messages, this.conversationId)
-        : null
+      return messages.length > 0 ? messagesToSyncable(messages, this.conversationId) : null
     } catch (error) {
       console.warn('Failed to get local chat data:', error)
       return null
@@ -113,13 +113,23 @@ class ChatLocalStorage {
     }
   }
 
-  private async getStoredMessages(): Promise<SyncMessage[]> {
+  private async getStoredMessages(): Promise<Message[]> {
     const key = `chat_sync_${this.conversationId}`
     const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : []
+    if (!stored) return []
+    
+    const parsed = JSON.parse(stored)
+    // Ensure all required fields are present
+    return parsed.map((m: any) => ({
+      ...m,
+      status: m.status || 'sent',
+      createdAt: m.createdAt ? new Date(m.createdAt) : new Date(m.timestamp || Date.now()),
+      updatedAt: m.updatedAt ? new Date(m.updatedAt) : new Date(m.timestamp || Date.now()),
+      chatId: m.chatId || this.conversationId,
+    }))
   }
 
-  private async storeMessages(messages: SyncMessage[]): Promise<void> {
+  private async storeMessages(messages: Message[]): Promise<void> {
     const key = `chat_sync_${this.conversationId}`
     localStorage.setItem(key, JSON.stringify(messages))
   }
@@ -277,15 +287,15 @@ export interface ChatSyncReturn {
  * Hook for chat synchronization across devices
  */
 export function useChatSync(
-  messages: SyncMessage[],
-  onMessagesChange: (messages: SyncMessage[]) => void,
+  messages: Message[],
+  onMessagesChange: (messages: Message[]) => void,
   options: ChatSyncOptions
 ): ChatSyncReturn {
   const {
     conversationId,
     apiEndpoint,
     authToken,
-    enableRealtime: initialRealtimeEnabled = false,
+    enableRealtime: shouldEnableRealtime = false,
     realtimeEndpoint,
     conflictStrategy = 'merge',
     onConflict,
@@ -293,12 +303,8 @@ export function useChatSync(
   } = options
 
   const [isSyncing, setIsSyncing] = React.useState(false)
-  const [lastSyncResult, setLastSyncResult] = React.useState<SyncResult | null>(
-    null
-  )
-  const [syncErrors, setSyncErrors] = React.useState<
-    Array<{ timestamp: number; error: string }>
-  >([])
+  const [lastSyncResult, setLastSyncResult] = React.useState<SyncResult | null>(null)
+  const [syncErrors, setSyncErrors] = React.useState<Array<{ timestamp: number; error: string }>>([])
 
   // Create storage adapters
   const localStorage = React.useMemo(
@@ -314,30 +320,25 @@ export function useChatSync(
   // Use sync manager
   const { syncManager, status } = useSyncManager(localStorage, remoteStorage, {
     conflictStrategy,
-    enableRealtime: initialRealtimeEnabled,
+    enableRealtime: shouldEnableRealtime,
     syncInterval: 30000, // 30 seconds
     maxRetries: 3,
-    onConflict:
-      onConflict ||
-      (async (conflict) => {
-        // Default conflict resolution: merge messages
-        console.warn('Chat sync conflict detected:', conflict)
-        // For now, prefer the newer version
-        return conflict.local.lastModified > conflict.remote.lastModified
-          ? conflict.local
-          : conflict.remote
-      }),
+    onConflict: onConflict || (async (conflict) => {
+      // Default conflict resolution: merge messages
+      console.warn('Chat sync conflict detected:', conflict)
+      // For now, prefer the newer version
+      return conflict.local.lastModified > conflict.remote.lastModified
+        ? conflict.local
+        : conflict.remote
+    }),
     onProgress: (progress) => {
       setIsSyncing(progress.phase !== 'complete')
     },
     onError: (error) => {
-      setSyncErrors((prev) => [
-        ...prev.slice(-9),
-        {
-          timestamp: Date.now(),
-          error: error.message,
-        },
-      ])
+      setSyncErrors(prev => [...prev.slice(-9), {
+        timestamp: Date.now(),
+        error: error.message,
+      }])
     },
     ...syncOptions,
   })
@@ -360,28 +361,22 @@ export function useChatSync(
       }
     }
 
-    window.addEventListener(
-      'chat-sync-update',
-      handleSyncUpdate as EventListener
-    )
+    window.addEventListener('chat-sync-update', handleSyncUpdate as EventListener)
     return () => {
-      window.removeEventListener(
-        'chat-sync-update',
-        handleSyncUpdate as EventListener
-      )
+      window.removeEventListener('chat-sync-update', handleSyncUpdate as EventListener)
     }
   }, [conversationId, onMessagesChange])
 
   // Start real-time sync if enabled
   React.useEffect(() => {
-    if (initialRealtimeEnabled && realtimeEndpoint) {
+    if (shouldEnableRealtime && realtimeEndpoint) {
       syncManager.startRealtime(realtimeEndpoint)
     }
 
     return () => {
       syncManager.stopRealtime()
     }
-  }, [initialRealtimeEnabled, realtimeEndpoint, syncManager])
+  }, [shouldEnableRealtime, realtimeEndpoint, syncManager])
 
   const syncNow = async (): Promise<SyncResult> => {
     setIsSyncing(true)

@@ -18,7 +18,7 @@ import {
   validateString,
   validateNumber,
 } from '../utils/validation.js'
-import { validateProjectPath } from '../utils/security.js'
+import { validateProjectPath, sanitizeForLogging } from '../utils/security.js'
 import { modelCache, CacheKeys } from '../utils/cache.js'
 import {
   validateInput,
@@ -599,7 +599,10 @@ export async function handleToolCall(
   name: string,
   args: Record<string, any>
 ): Promise<any> {
-  logger.debug('Tool call received', { tool: name, args })
+  logger.debug('Tool call received', {
+    tool: name,
+    args: sanitizeForLogging(args),
+  })
 
   try {
     switch (name) {
@@ -1884,7 +1887,7 @@ function handleListCategories() {
  * Handle accessibility check for multiple components
  */
 function handleCheckAccessibility(args: Record<string, unknown>) {
-  logger.debug('Checking accessibility', { args })
+  logger.debug('Checking accessibility', { args: sanitizeForLogging(args) })
 
   const componentNames = args.componentNames as string[] | undefined
   const targetLevel = (args.wcagLevel as string) || 'AA'

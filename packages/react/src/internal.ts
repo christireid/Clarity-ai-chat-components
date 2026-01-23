@@ -135,7 +135,6 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
 export * from './hooks/ui/use-is-mounted'
 export * from './hooks/ui/use-merged-ref'
 export * from './hooks/ui/use-window-size'
@@ -228,18 +227,29 @@ export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
+// Security utilities (available exports only)
 export {
-  SecurityMonitor,
-  securityMonitor,
-  useSecureContent,
-  useCSP,
-  sanitizeHTML,
-  sanitizeMarkdown,
-  sanitizeUserInput,
-  DEFAULT_SECURITY_CONFIG,
-  type SecurityConfig,
-  type SecurityHeaders,
-  type SecurityAuditResult,
+  safeEvaluate,
+  detectDangerousPatterns,
+  formatEvaluateResult,
+  sanitizeCodeHtml,
+  escapeHtmlEntities,
+  createSafeCodeHtml,
+  detectDangerousHtml,
+  sanitizeSQL,
+  sanitizeSQLIdentifier,
+  sanitizeShellArg,
+  detectCommandInjection,
+  sanitizePath,
+  sanitizeFilename,
+  sanitizeLDAP,
+  sanitizeXML,
+  sanitizeURLParam,
+  isSafeInput,
+  truncateInput,
+  sanitization,
+  type SafeEvaluateResult,
+  type SafeEvaluateOptions,
 } from './utils/security'
 
 // Re-export types from @clarity-chat/types for convenience
@@ -375,7 +385,8 @@ export * from './vector-stores'
 // ============================================================================
 // DOCUMENT LOADERS
 // ============================================================================
-export * from './document-loaders'
+export * from './document-loaders/docx-loader'
+export * from './document-loaders/pdf-loader'
 
 // ============================================================================
 // RERANKING

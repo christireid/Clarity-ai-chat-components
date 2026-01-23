@@ -971,17 +971,6 @@ export class ToolLifecycleManager {
 export const globalToolLifecycle = new ToolLifecycleManager()
 
 // =============================================================================
-// Exports
+// Exports (already exported inline above)
 // =============================================================================
-
-export type {
-  ToolCallStatus,
-  ToolCallRecord,
-  ToolLifecycleEvent,
-  ToolLifecycleListener,
-  ToolLifecycleListeners,
-  AuditLogEntry,
-  AuditLogConfig,
-  AuditLogPersister,
-  AuditLogFilter,
-}
+// All exports are handled inline throughout the file

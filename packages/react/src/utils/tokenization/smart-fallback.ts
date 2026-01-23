@@ -348,7 +348,7 @@ export class SmartTokenCounter {
     primaryCount: number,
     fallbackCount: number
   ) {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.log(
         `[TokenCounter] Using ${strategy} fallback. Primary: ${primaryCount}, Fallback: ${fallbackCount}, Text: "${text.substring(0, 50)}..."`
       )

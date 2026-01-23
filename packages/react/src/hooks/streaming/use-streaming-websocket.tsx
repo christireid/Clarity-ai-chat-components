@@ -235,7 +235,6 @@ export function useStreamingWebSocket(
   }
 
   const {
-    url,
     protocols,
     autoReconnect = true,
     reconnectOnCleanClose = true,
@@ -289,7 +288,7 @@ export function useStreamingWebSocket(
   const lastPongRef = React.useRef<number>(Date.now())
   const reconnectFnRef = React.useRef<(() => void) | null>(null)
   const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
-  
+
   // STREAM-3: RAF Batching refs
   const rafRef = React.useRef<number | null>(null)
   const pendingMessagesRef = React.useRef<WebSocketMessage[]>([])
@@ -431,7 +430,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('open', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection detected, aborting')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection detected, aborting'
+          )
           return
         }
 
@@ -482,9 +483,14 @@ export function useStreamingWebSocket(
 
         // STREAM-3: Batch updates using RAF
         pendingMessagesRef.current.push(message)
-        
+
         // Immediate side effects
-        if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
+        if (
+          enableAcknowledgment &&
+          message.data &&
+          typeof message.data === 'object' &&
+          'id' in message.data
+        ) {
           const messageId = message.data.id as string
           try {
             const ackMessage = JSON.stringify({
@@ -494,21 +500,25 @@ export function useStreamingWebSocket(
             ws.send(ackMessage)
             onAcknowledgmentSent?.(messageId)
           } catch (err) {
-            logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
+            logger.warn(
+              '[useStreamingWebSocket] Failed to send acknowledgment:',
+              err
+            )
           }
         }
-        
+
         onMessage?.(message)
 
         if (!rafRef.current) {
           rafRef.current = requestAnimationFrame(() => {
             rafRef.current = null
-            
+
             const newMessagesBatch = pendingMessagesRef.current
-            
+
             if (newMessagesBatch.length === 0) return
 
-            const lastMessageInBatch = newMessagesBatch[newMessagesBatch.length - 1]
+            const lastMessageInBatch =
+              newMessagesBatch[newMessagesBatch.length - 1]
 
             // Bounded message buffer to prevent memory leaks
             setMessages((prev) => {
@@ -523,7 +533,7 @@ export function useStreamingWebSocket(
               return newMessages
             })
             setLastMessage(lastMessageInBatch)
-            
+
             // Clear buffer
             pendingMessagesRef.current = []
           })
@@ -534,7 +544,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('error', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection error, ignoring')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection error, ignoring'
+          )
           return
         }
 

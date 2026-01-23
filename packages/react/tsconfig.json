@@ -3,9 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    // TODO: Re-enable after fixing ~300 index access errors across codebase
+    // TODO: Re-enable after fixing remaining 728 strict mode errors
+    // Progress: Fixed 98 errors (NODE_ENV access patterns + React imports)
+    // Remaining: undefined access checks, type annotations, module structure
     "noUncheckedIndexedAccess": false,
-    // TODO: Re-enable after fixing 12 index signature access errors
     "noPropertyAccessFromIndexSignature": false,
     "esModuleInterop": true,
     "skipLibCheck": true,

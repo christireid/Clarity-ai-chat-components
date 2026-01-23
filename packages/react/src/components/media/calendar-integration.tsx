@@ -284,7 +284,7 @@ export function CalendarIntegration({
       }
     } catch (error) {
       // Silently fail for availability (non-critical)
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         logger.error('Failed to load availability:', error)
       }
     }

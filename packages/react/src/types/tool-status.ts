@@ -450,7 +450,7 @@ export function getUnifiedStatusFromInvocation(
 }
 
 // =============================================================================
-// Exports
+// Exports (already exported inline above)
 // =============================================================================
 
 export type { ToolStatusVariant, UnifiedToolStatus }

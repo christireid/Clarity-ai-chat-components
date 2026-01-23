@@ -59,14 +59,20 @@ export const DEFAULT_TOKEN_OPTIMIZATION_CONFIG: Required<TokenOptimizationConfig
   }
 
 export const DEFAULT_TOOLS_CONFIG: Required<
-  Omit<ToolsConfig, 'customRenderer'>
+  Omit<ToolsConfig, 'customRenderer' | 'approvalHandler'>
 > & {
   customRenderer?: ToolsConfig['customRenderer']
+  approvalHandler?: ToolsConfig['approvalHandler']
 } = {
   registry: [],
   defaultRenderer: 'card',
   customRenderer: undefined,
   autoApprove: false,
+  approvalMode: 'manual',
+  allowedTools: [],
+  blockedTools: [],
+  autoApproveRiskLevels: ['safe', 'low'],
+  approvalHandler: undefined,
   timeoutMs: 30000,
 }
 

@@ -5,7 +5,7 @@
  * user interaction monitoring, and performance metrics collection.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { errorReporter } from '../components/ui/error-boundary'
 
 // ============================================================================
@@ -40,10 +40,6 @@ export interface ComponentUsageEvent extends AnalyticsEvent {
     renderTime?: number
     interactionType?: string
     element?: string
-    /** Duration in ms (for unmount events) */
-    duration?: number
-    /** Number of renders (for unmount/render events) */
-    renderCount?: number
   }
 }
 
@@ -451,9 +447,8 @@ export function useAnalytics(componentName: string, trackUsage = true) {
       if (trackUsage && mountTime.current) {
         const duration = Date.now() - mountTime.current
         analyticsManager.trackComponentUsage(componentName, 'unmount', {
-          duration,
-          renderCount: renderCount.current,
-        })
+          renderTime: duration,
+        } as any)
       }
     }
   }, [componentName, trackUsage])
@@ -463,7 +458,7 @@ export function useAnalytics(componentName: string, trackUsage = true) {
     renderCount.current++
     if (trackUsage && renderCount.current > 1) {
       analyticsManager.trackComponentUsage(componentName, 'render', {
-        renderCount: renderCount.current,
+        props: { renderCount: renderCount.current },
       })
     }
   })
@@ -775,4 +770,7 @@ export function batchAnalyticsEvents(
   events.forEach((event) => analyticsManager.trackEvent(event))
 }
 
-// Types are exported at their declarations above
+// ============================================================================
+// Exports (already exported inline above)
+// ============================================================================
+// All exports are handled inline throughout the file

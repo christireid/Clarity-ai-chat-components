@@ -7,3 +7,4 @@
 export * from './use-message-history'
 export * from './use-message-operations'
 export * from './use-optimistic-message'
+export * from './use-regenerate-message'
