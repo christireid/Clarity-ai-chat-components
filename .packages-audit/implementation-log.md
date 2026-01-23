@@ -382,9 +382,87 @@ eliminated)
 
 ---
 
+### ✅ Task 8: Validation Error Consolidation (COMPLETED)
+
+**Date:** 2026-01-23 (evening) **duplicateApisRemaining:** 116 → 113 (3 duplicates eliminated)
+
+**Initial Audit Finding:** ~9 "duplicates" identified
+
+**Actual Analysis:** Found 3 TRUE duplicates after thorough investigation:
+
+- Most ValidationError implementations were legitimate domain-specific versions
+- Audit overcounted by not distinguishing specialized implementations
+
+#### 8.1 Parallel Agent Execution
+
+**4 agents deployed simultaneously:**
+
+1. **Agent a47795f** - Deleted legacy ValidationError from error-handling (lines 217-244)
+2. **Agent a7d4004** - Deleted unused CLIValidationError from utils (lines 101-109)
+3. **Agent ad1a69f** - Deleted unused ValidationError from react/enterprise (lines 79-97)
+4. **Agent a05c873** - Updated utils exports to remove CLIValidationError
+
+#### 8.2 Files Deleted (3 total, ~57 lines removed)
+
+**TRUE DUPLICATES:**
+
+- ✅ `error-handling/src/errors/index.ts` - legacy ValidationError (24 lines, lines 217-244) -
+  Deprecated, superseded by EnhancedValidationError
+- ✅ `utils/src/errors/cli.ts` - CLIValidationError (9 lines, lines 101-109) - UNUSED duplicate of
+  cli ValidationError
+- ✅ `react/src/enterprise/enterprise-errors.ts` - ValidationError (19 lines, lines 79-97) - ZERO
+  usage found
+
+**Total:** 52 lines of duplicate ValidationError code removed
+
+#### 8.3 Canonical Implementations Established
+
+**Validation Errors Architecture:**
+
+- **Basic:** `@clarity-chat/utils/errors/validation.ts` - ValidationError (44 lines, simple fields)
+- **Advanced:** `@clarity-chat/error-handling/validation-error.ts` - EnhancedValidationError (253
+  lines, multiple fields, factory methods)
+
+**Domain-Specific Implementations KEPT (Legitimate):**
+
+- `cli/src/utils/errors.ts` - ValidationError (CLI-specific with exit codes, used by 15+ files)
+- `token-optimization/src/errors/` - ValidationError (domain-specific for token optimization)
+- `react/app-api/resolve-config.ts` - ConfigValidationError (config-specific with suggestions,
+  docsUrl)
+- `react/prompt/architect/validation/schemas.ts` - ValidationError (Zod wrapper for architect
+  validation)
+- `memory/src/errors.ts` - MemoryValidationError (memory operations, minimal differentiation)
+
+#### 8.4 Consumers Updated
+
+**Factory updated:**
+
+- ✅ `error-handling/src/errors/factory.ts` - Migrated to EnhancedValidationError static methods
+  (field(), required(), tooLong(), invalidFormat())
+
+**Tests updated:**
+
+- ✅ `error-handling/__tests__/errors/factory.test.ts` - Updated to test EnhancedValidationError API
+- ✅ `error-handling/__tests__/errors/index.test.ts` - Removed legacy ValidationError tests
+
+**Exports cleaned:**
+
+- ✅ `utils/src/index.ts` - Removed CLIValidationError export
+
+#### 8.5 Verification
+
+- ✅ error-handling package typechecks (0 errors)
+- ✅ utils package typechecks (0 errors)
+- ✅ error-handling tests pass (535 tests)
+- ✅ No imports from deleted ValidationError implementations
+
+**Status:** ✅ Complete
+
+---
+
 ## Pending
 
-- Task 8: Consolidate Validation Errors (9 duplicates)
+- Task 9: Consolidate Utilities (40+ duplicates)
 - Task 9: Consolidate Utilities (40+ duplicates)
 - Task 10: Split Large Files
 - Task 11: Break Circular Dependency
@@ -394,10 +472,10 @@ eliminated)
 
 ## Metrics
 
-| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | After Task 5 | After Task 6 | After Task 7 | Target  |
-| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------- |
-| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | **123**      | **118**      | **116**      | 7       |
-| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
-| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | **13,342**   | **14,524**   | **14,639**   | ~10,000 |
-| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 13           | 13           | 13           | 3       |
-| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | After Task 5 | After Task 6 | After Task 7 | After Task 8 | Target  |
+| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------- |
+| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | **123**      | **118**      | **116**      | **113**      | 7       |
+| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | **13,342**   | **14,524**   | **14,639**   | **14,691**   | ~10,000 |
+| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 13           | 13           | 13           | 13           | 3       |
+| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |

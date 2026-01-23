@@ -140,7 +140,6 @@ export {
 export {
   ExitCode,
   CLIError,
-  CLIValidationError,
   CLIConfigError,
   CLINotFoundError,
   CLIPermissionError,

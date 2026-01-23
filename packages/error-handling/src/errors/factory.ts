@@ -3,12 +3,13 @@ import {
   APIError,
   AuthenticationError,
   NetworkError,
-  ValidationError,
+  EnhancedValidationError,
   StreamError,
   RateLimitError,
   TokenLimitError,
   TimeoutError,
 } from './index'
+import { ValidationErrorCode } from './error-codes'
 
 /**
  * Factory functions for configuration errors
@@ -17,7 +18,8 @@ export const createConfigError = {
   missingApiEndpoint: () =>
     new ConfigurationError('Missing API endpoint configuration', {
       code: 'MISSING_API_ENDPOINT',
-      solution: 'Add apiEndpoint prop to your ChatContainer: <ChatContainer apiEndpoint="/api/chat" />',
+      solution:
+        'Add apiEndpoint prop to your ChatContainer: <ChatContainer apiEndpoint="/api/chat" />',
       docs: 'https://docs.claritychat.dev/configuration#api-endpoint',
       context: {
         requiredProp: 'apiEndpoint',
@@ -39,7 +41,8 @@ export const createConfigError = {
   missingApiKey: () =>
     new ConfigurationError('Missing API key', {
       code: 'MISSING_API_KEY',
-      solution: 'Add apiKey prop to your ChatContainer or set CLARITY_API_KEY environment variable',
+      solution:
+        'Add apiKey prop to your ChatContainer or set CLARITY_API_KEY environment variable',
       docs: 'https://docs.claritychat.dev/authentication',
       context: {
         requiredProp: 'apiKey',
@@ -89,7 +92,8 @@ export const createApiError = {
   invalidResponse: (endpoint: string, details?: string) =>
     new APIError(`Invalid API response from: ${endpoint}`, {
       code: 'INVALID_API_RESPONSE',
-      solution: 'Ensure your API returns valid JSON with the expected structure',
+      solution:
+        'Ensure your API returns valid JSON with the expected structure',
       docs: 'https://docs.claritychat.dev/api-reference#response-format',
       context: {
         endpoint,
@@ -101,7 +105,8 @@ export const createApiError = {
     new APIError(`Server error: ${endpoint}`, {
       code: 'SERVER_ERROR',
       statusCode,
-      solution: 'The server encountered an error. Please try again later or contact support',
+      solution:
+        'The server encountered an error. Please try again later or contact support',
       context: {
         endpoint,
         statusCode,
@@ -126,7 +131,8 @@ export const createAuthError = {
   missingApiKey: () =>
     new AuthenticationError('API key is missing', {
       code: 'MISSING_API_KEY',
-      solution: 'Provide an API key via the apiKey prop or CLARITY_API_KEY environment variable',
+      solution:
+        'Provide an API key via the apiKey prop or CLARITY_API_KEY environment variable',
       docs: 'https://docs.claritychat.dev/authentication',
     }),
 
@@ -154,7 +160,8 @@ export const createNetworkError = {
   connectionFailed: (endpoint: string) =>
     new NetworkError(`Failed to connect to: ${endpoint}`, {
       code: 'CONNECTION_FAILED',
-      solution: 'Check your internet connection and verify the endpoint is accessible',
+      solution:
+        'Check your internet connection and verify the endpoint is accessible',
       context: {
         endpoint,
       },
@@ -192,52 +199,20 @@ export const createNetworkError = {
  */
 export const createValidationError = {
   invalidInput: (field: string, value: unknown, expected: string) =>
-    new ValidationError(`Invalid input for ${field}`, {
-      code: 'INVALID_INPUT',
+    EnhancedValidationError.field(
       field,
-      value,
-      expected,
-      solution: `Expected ${expected}, received ${typeof value}`,
-      context: {
-        field,
-        providedValue: value,
-        expectedType: expected,
-      },
-    }),
+      `Invalid input for ${field}`,
+      ValidationErrorCode.INVALID_TYPE,
+      { value, expected }
+    ),
 
-  requiredField: (field: string) =>
-    new ValidationError(`Required field missing: ${field}`, {
-      code: 'REQUIRED_FIELD_MISSING',
-      field,
-      solution: `Provide a value for the required field: ${field}`,
-      context: {
-        field,
-      },
-    }),
+  requiredField: (field: string) => EnhancedValidationError.required(field),
 
   valueTooLong: (field: string, maxLength: number, actualLength: number) =>
-    new ValidationError(`Value too long for ${field}`, {
-      code: 'VALUE_TOO_LONG',
-      field,
-      solution: `Maximum length is ${maxLength}, received ${actualLength}`,
-      context: {
-        field,
-        maxLength,
-        actualLength,
-      },
-    }),
+    EnhancedValidationError.tooLong(field, maxLength, actualLength),
 
   invalidFormat: (field: string, format: string) =>
-    new ValidationError(`Invalid format for ${field}`, {
-      code: 'INVALID_FORMAT',
-      field,
-      expected: format,
-      solution: `Expected format: ${format}`,
-      context: {
-        field,
-        expectedFormat: format,
-      },
-    }),
+    EnhancedValidationError.invalidFormat(field, format),
 }
 
 /**
@@ -247,7 +222,8 @@ export const createStreamError = {
   connectionLost: () =>
     new StreamError('Stream connection lost', {
       code: 'STREAM_CONNECTION_LOST',
-      solution: 'The stream connection was interrupted. It will automatically retry',
+      solution:
+        'The stream connection was interrupted. It will automatically retry',
     }),
 
   malformedData: (data: string) =>
@@ -296,7 +272,8 @@ export const createRateLimitError = {
     new RateLimitError('API quota exceeded', {
       code: 'QUOTA_EXCEEDED',
       limit,
-      solution: 'Your API quota has been exceeded. Upgrade your plan or wait for quota reset',
+      solution:
+        'Your API quota has been exceeded. Upgrade your plan or wait for quota reset',
       context: {
         limit,
         used,
@@ -327,7 +304,8 @@ export const createTokenLimitError = {
       code: 'CONTEXT_TOO_LONG',
       limit,
       actual,
-      solution: 'Clear some conversation history or use a model with a larger context window',
+      solution:
+        'Clear some conversation history or use a model with a larger context window',
       context: {
         limit,
         actual,

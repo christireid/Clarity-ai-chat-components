@@ -14,7 +14,7 @@ import {
   APIError,
   AuthenticationError,
   NetworkError,
-  ValidationError,
+  EnhancedValidationError,
   StreamError,
   RateLimitError,
   TokenLimitError,
@@ -45,14 +45,21 @@ describe('createConfigError', () => {
   })
 
   it('should create invalidConfiguration error', () => {
-    const error = createConfigError.invalidConfiguration('timeout', 5000, 'number')
+    const error = createConfigError.invalidConfiguration(
+      'timeout',
+      5000,
+      'number'
+    )
     expect(error).toBeInstanceOf(ConfigurationError)
     expect(error.code).toBe('INVALID_CONFIGURATION')
     expect(error.context?.field).toBe('timeout')
   })
 
   it('should create missingRequiredProp error', () => {
-    const error = createConfigError.missingRequiredProp('apiKey', 'ChatContainer')
+    const error = createConfigError.missingRequiredProp(
+      'apiKey',
+      'ChatContainer'
+    )
     expect(error).toBeInstanceOf(ConfigurationError)
     expect(error.code).toBe('MISSING_REQUIRED_PROP')
     expect(error.context?.propName).toBe('apiKey')
@@ -62,7 +69,11 @@ describe('createConfigError', () => {
 
 describe('createApiError', () => {
   it('should create requestFailed error', () => {
-    const error = createApiError.requestFailed('/api/chat', 500, 'Internal Server Error')
+    const error = createApiError.requestFailed(
+      '/api/chat',
+      500,
+      'Internal Server Error'
+    )
     expect(error).toBeInstanceOf(APIError)
     expect(error.code).toBe('API_REQUEST_FAILED')
     expect(error.statusCode).toBe(500)
@@ -143,36 +154,41 @@ describe('createNetworkError', () => {
 
 describe('createValidationError', () => {
   it('should create invalidInput error', () => {
-    const error = createValidationError.invalidInput('email', 'not-an-email', 'email format')
-    expect(error).toBeInstanceOf(ValidationError)
-    expect(error.code).toBe('INVALID_INPUT')
-    expect(error.field).toBe('email')
-    expect(error.value).toBe('not-an-email')
-    expect(error.expected).toBe('email format')
+    const error = createValidationError.invalidInput(
+      'email',
+      'not-an-email',
+      'email format'
+    )
+    expect(error).toBeInstanceOf(EnhancedValidationError)
+    expect(error.fields).toHaveLength(1)
+    expect(error.fields[0].field).toBe('email')
+    expect(error.fields[0].value).toBe('not-an-email')
+    expect(error.fields[0].expected).toBe('email format')
   })
 
   it('should create requiredField error', () => {
     const error = createValidationError.requiredField('message')
-    expect(error).toBeInstanceOf(ValidationError)
-    expect(error.code).toBe('REQUIRED_FIELD_MISSING')
-    expect(error.field).toBe('message')
+    expect(error).toBeInstanceOf(EnhancedValidationError)
+    expect(error.fields).toHaveLength(1)
+    expect(error.fields[0].field).toBe('message')
+    expect(error.fields[0].code).toBe('VALIDATION_REQUIRED_FIELD')
   })
 
   it('should create valueTooLong error', () => {
     const error = createValidationError.valueTooLong('message', 100, 150)
-    expect(error).toBeInstanceOf(ValidationError)
-    expect(error.code).toBe('VALUE_TOO_LONG')
-    expect(error.field).toBe('message')
-    expect(error.context?.maxLength).toBe(100)
-    expect(error.context?.actualLength).toBe(150)
+    expect(error).toBeInstanceOf(EnhancedValidationError)
+    expect(error.fields).toHaveLength(1)
+    expect(error.fields[0].field).toBe('message')
+    expect(error.fields[0].value).toBe(150)
+    expect(error.fields[0].expected).toContain('100')
   })
 
   it('should create invalidFormat error', () => {
     const error = createValidationError.invalidFormat('date', 'YYYY-MM-DD')
-    expect(error).toBeInstanceOf(ValidationError)
-    expect(error.code).toBe('INVALID_FORMAT')
-    expect(error.field).toBe('date')
-    expect(error.expected).toBe('YYYY-MM-DD')
+    expect(error).toBeInstanceOf(EnhancedValidationError)
+    expect(error.fields).toHaveLength(1)
+    expect(error.fields[0].field).toBe('date')
+    expect(error.fields[0].expected).toBe('YYYY-MM-DD')
   })
 })
 
