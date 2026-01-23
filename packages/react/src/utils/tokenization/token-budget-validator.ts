@@ -1,4 +1,4 @@
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 export interface TokenBudget {
   total: number
@@ -48,6 +48,7 @@ export interface TruncationOptions {
 export class TokenBudgetValidator {
   private budgets = new Map<string, TokenBudget>()
   private configs = new Map<string, TokenBudgetConfig>()
+  private counter = new AccurateTokenCounter({ model: 'gpt-4' })
 
   /**
    * Create a new token budget
@@ -92,7 +93,7 @@ export class TokenBudgetValidator {
       throw new Error(`Budget '${budgetId}' not found`)
     }
 
-    const tokenCount = TokenCounter.count(text)
+    const tokenCount = this.counter.count(text)
     const projectedUsed = budget.used + tokenCount
     const projectedPercentage = projectedUsed / budget.total
 
@@ -188,7 +189,7 @@ export class TokenBudgetValidator {
 
     // Count system message if provided
     if (options.systemMessage) {
-      const systemTokens = TokenCounter.count(options.systemMessage)
+      const systemTokens = this.counter.count(options.systemMessage)
       totalTokens += systemTokens
       messageTokens.push(systemTokens)
     }
@@ -196,7 +197,7 @@ export class TokenBudgetValidator {
     // Count all messages
     messages.forEach((message, index) => {
       const messageContent = `${message.role}: ${message.content}`
-      const tokens = TokenCounter.count(messageContent)
+      const tokens = this.counter.count(messageContent)
       totalTokens += tokens
       messageTokens.push(tokens)
     })
@@ -285,7 +286,7 @@ export class TokenBudgetValidator {
     maxTokens: number,
     options: TruncationOptions = {}
   ): { text: string; originalTokens: number; truncatedTokens: number } {
-    const originalTokens = TokenCounter.count(text)
+    const originalTokens = this.counter.count(text)
 
     if (originalTokens <= maxTokens) {
       return { text, originalTokens, truncatedTokens: originalTokens }
@@ -308,7 +309,7 @@ export class TokenBudgetValidator {
         truncatedText = this.truncateText(text, maxTokens, options)
     }
 
-    const truncatedTokens = TokenCounter.count(truncatedText)
+    const truncatedTokens = this.counter.count(truncatedText)
     return { text: truncatedText, originalTokens, truncatedTokens }
   }
 
@@ -332,7 +333,7 @@ export class TokenBudgetValidator {
     while (left <= right) {
       const mid = Math.floor((left + right) / 2)
       const truncated = text.substring(0, mid)
-      const tokens = TokenCounter.count(truncated)
+      const tokens = this.counter.count(truncated)
 
       if (tokens <= maxTokens) {
         bestLength = mid
@@ -350,7 +351,7 @@ export class TokenBudgetValidator {
    */
   private truncatePreserveContext(text: string, maxTokens: number): string {
     // Keep first and last parts, truncate middle
-    const tokens = TokenCounter.count(text)
+    const tokens = this.counter.count(text)
     if (tokens <= maxTokens) return text
 
     const keepRatio = 0.3 // Keep 30% from beginning and end
@@ -373,13 +374,13 @@ export class TokenBudgetValidator {
     // Remove examples, explanations, or redundant content
     const lines = text.split('\n')
     let currentText = text
-    let currentTokens = TokenCounter.count(currentText)
+    let currentTokens = this.counter.count(currentText)
 
     // Remove lines from the end first
     while (currentTokens > maxTokens && lines.length > 1) {
       lines.pop()
       currentText = lines.join('\n')
-      currentTokens = TokenCounter.count(currentText)
+      currentTokens = this.counter.count(currentText)
     }
 
     return currentText
@@ -401,7 +402,7 @@ export class TokenBudgetValidator {
     }
 
     const summary = `${sentences[0].trim()} ${sentences[sentences.length - 1].trim()}`
-    const summaryTokens = TokenCounter.count(summary)
+    const summaryTokens = this.counter.count(summary)
 
     if (summaryTokens <= maxTokens) {
       return summary
@@ -484,11 +485,11 @@ export class TokenBudgetValidator {
     text: string,
     conversation?: Array<{ role: string; content: string }>
   ): number {
-    let totalTokens = TokenCounter.count(text)
+    let totalTokens = this.counter.count(text)
 
     if (conversation) {
       conversation.forEach((message) => {
-        totalTokens += TokenCounter.count(`${message.role}: ${message.content}`)
+        totalTokens += this.counter.count(`${message.role}: ${message.content}`)
       })
     }
 

@@ -10,7 +10,10 @@
  * - Response caching and reuse
  */
 
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+// Module-level counter instance for token counting
+const tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
 import { adaptiveOptimizer } from './adaptive-optimizer'
 
 export type ResponseOptimizationStrategy =
@@ -128,7 +131,7 @@ export class ResponseLengthPredictor {
     model: string,
     context?: ConversationContext
   ): Promise<ResponsePrediction> {
-    const promptTokens = await TokenCounter.count(prompt)
+    const promptTokens = await tokenCounter.count(prompt)
 
     // Analyze prompt characteristics
     const promptAnalysis = this.analyzePrompt(prompt)
@@ -490,7 +493,7 @@ export class ResponseLengthPredictor {
     const key = `${model}_${context?.conversationId || 'global'}`
     const history = this.historicalData.get(key) || []
 
-    const actualTokens = await TokenCounter.count(actualResponse)
+    const actualTokens = await tokenCounter.count(actualResponse)
     const prediction = await this.predictResponseLength(prompt, model, context)
 
     history.push({
@@ -633,8 +636,8 @@ export class ResponseOptimizer {
     prediction: ResponsePrediction,
     model: string
   ): Promise<ResponseMetrics> {
-    const originalTokens = await TokenCounter.count(originalPrompt)
-    const optimizedTokens = await TokenCounter.count(optimizedPrompt)
+    const originalTokens = await tokenCounter.count(originalPrompt)
+    const optimizedTokens = await tokenCounter.count(optimizedPrompt)
     const predictedTokens = prediction.predictedTokens
 
     const informationDensity = this.calculateInformationDensity(optimizedPrompt)
@@ -704,7 +707,7 @@ export class ResponseOptimizer {
       `\n\nPlease provide your response in chunks of approximately ${chunkSize} tokens.`
 
     const metrics: ResponseMetrics = {
-      actualTokens: await TokenCounter.count(optimizedPrompt),
+      actualTokens: await tokenCounter.count(optimizedPrompt),
       predictedTokens: prediction.predictedTokens,
       qualityScore: prediction.qualityEstimate,
       informationDensity: 0.7,
@@ -857,7 +860,7 @@ export class ResponseOptimizer {
     metadata?: Record<string, unknown>
   ): Promise<void> {
     const cacheKey = this.generateCacheKey(prompt, model)
-    const responseTokens = await TokenCounter.count(response)
+    const responseTokens = await tokenCounter.count(response)
 
     // Type assertion needed as semanticCache uses generic unknown type
 

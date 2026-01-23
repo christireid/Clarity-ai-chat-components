@@ -9,7 +9,10 @@
  * - Multi-document summarization for RAG systems
  */
 
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+// Module-level counter instance for token counting
+const tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
 
 // Truncation strategies based on content type and requirements
 export type TruncationStrategy =
@@ -118,7 +121,7 @@ export class SmartTruncator {
     text: string,
     config: TruncationConfig
   ): Promise<TruncationResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const originalTokens = await tokenCounter.count(text)
 
     if (originalTokens <= config.maxTokens) {
       return this.createNoTruncationResult(text, originalTokens, 'semantic')
@@ -138,7 +141,7 @@ export class SmartTruncator {
 
     // Reconstruct text preserving coherence
     const truncatedText = this.reconstructCoherentText(selectedUnits, text)
-    const truncatedTokens = await TokenCounter.count(truncatedText)
+    const truncatedTokens = await tokenCounter.count(truncatedText)
 
     return {
       originalText: text,
@@ -167,7 +170,7 @@ export class SmartTruncator {
     text: string,
     config: TruncationConfig
   ): Promise<TruncationResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const originalTokens = await tokenCounter.count(text)
 
     if (originalTokens <= config.maxTokens) {
       return this.createNoTruncationResult(text, originalTokens, 'extractive')
@@ -182,7 +185,7 @@ export class SmartTruncator {
     // Score sentences based on multiple factors
     const scoredSentences = await Promise.all(
       sentences.map(async (sentence) => {
-        const tokens = await TokenCounter.count(sentence)
+        const tokens = await tokenCounter.count(sentence)
         const positionScore = this.calculatePositionScore(sentence, text)
         const keyphraseScore = this.calculateKeyphraseScore(
           sentence,
@@ -207,7 +210,7 @@ export class SmartTruncator {
       config.maxTokens
     )
     const truncatedText = this.reconstructFromSentences(selectedSentences, text)
-    const truncatedTokens = await TokenCounter.count(truncatedText)
+    const truncatedTokens = await tokenCounter.count(truncatedText)
 
     return {
       originalText: text,
@@ -236,7 +239,7 @@ export class SmartTruncator {
     text: string,
     config: TruncationConfig
   ): Promise<TruncationResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const originalTokens = await tokenCounter.count(text)
 
     if (originalTokens <= config.maxTokens) {
       return this.createNoTruncationResult(text, originalTokens, 'hierarchical')
@@ -253,7 +256,7 @@ export class SmartTruncator {
 
     // Reconstruct maintaining hierarchy
     const truncatedText = this.reconstructHierarchicalText(truncatedStructure)
-    const truncatedTokens = await TokenCounter.count(truncatedText)
+    const truncatedTokens = await tokenCounter.count(truncatedText)
 
     return {
       originalText: text,
@@ -297,7 +300,7 @@ export class SmartTruncator {
     conversation: string,
     config: TruncationConfig
   ): Promise<TruncationResult> {
-    const originalTokens = await TokenCounter.count(conversation)
+    const originalTokens = await tokenCounter.count(conversation)
 
     if (originalTokens <= config.maxTokens) {
       return this.createNoTruncationResult(
@@ -321,7 +324,7 @@ export class SmartTruncator {
 
     // Reconstruct conversation maintaining flow
     const truncatedConversation = this.reconstructConversation(selectedTurns)
-    const truncatedTokens = await TokenCounter.count(truncatedConversation)
+    const truncatedTokens = await tokenCounter.count(truncatedConversation)
 
     return {
       originalText: conversation,
@@ -372,7 +375,7 @@ export class SmartTruncator {
     // Analyze each document
     const documentAnalyses = await Promise.all(
       documents.map(async (doc) => {
-        const tokens = await TokenCounter.count(doc)
+        const tokens = await tokenCounter.count(doc)
         const keyphrases = await this.extractKeyphrases(doc)
         const summary = await this.summarizeExtractive(doc, {
           ...config,
@@ -392,7 +395,7 @@ export class SmartTruncator {
     const combinedSummary = this.combineSummaries(documentAnalyses, config)
 
     // Ensure final result meets token budget
-    const finalTokens = await TokenCounter.count(combinedSummary)
+    const finalTokens = await tokenCounter.count(combinedSummary)
     if (finalTokens <= config.maxTokens) {
       return combinedSummary
     }
@@ -479,7 +482,7 @@ export class SmartTruncator {
     let currentTokens = 0
 
     for (const unit of scoredUnits) {
-      const unitTokens = await TokenCounter.count(unit.text)
+      const unitTokens = await tokenCounter.count(unit.text)
       if (currentTokens + unitTokens <= maxTokens) {
         selected.push(unit)
         currentTokens += unitTokens
@@ -649,7 +652,7 @@ export class SmartTruncator {
   }
 
   private async analyzeContent(text: string): Promise<ContentAnalysis> {
-    const tokens = await TokenCounter.count(text)
+    const tokens = await tokenCounter.count(text)
     const sentences = this.splitIntoSentences(text).length
     const words = text.split(/\s+/).length
 
@@ -764,7 +767,7 @@ export class SmartTruncator {
     let currentTokens = 0
 
     for (const turn of prioritizedTurns) {
-      const turnTokens = await TokenCounter.count(turn.content)
+      const turnTokens = await tokenCounter.count(turn.content)
       if (currentTokens + turnTokens <= maxTokens) {
         selected.push(turn)
         currentTokens += turnTokens
@@ -893,7 +896,7 @@ export class SmartSummarizer {
    * Generate summary using multiple strategies
    */
   async summarize(text: string, config: SummarizationConfig): Promise<string> {
-    const originalTokens = await TokenCounter.count(text)
+    const originalTokens = await tokenCounter.count(text)
 
     if (originalTokens <= config.maxTokens) {
       return text // No summarization needed
@@ -936,7 +939,7 @@ export class SmartSummarizer {
 
     // Ensure we don't exceed token limit
     let summary = bulletPoints.join('\n')
-    const tokens = await TokenCounter.count(summary)
+    const tokens = await tokenCounter.count(summary)
 
     if (tokens > config.maxTokens) {
       // Reduce number of bullet points
