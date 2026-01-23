@@ -112,13 +112,15 @@ export function useMemory(options?: UseMemoryOptions): UseMemoryReturn {
       // Cleanup on unmount
       memoryRef.current?.close().catch(console.error)
     }
-  }, []) // Only create once
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- options intentionally excluded, only initialize once
+  }, [])
 
   // Auto-initialize if enabled
   useEffect(() => {
     if (options?.autoInitialize !== false && memory && !initialized) {
       initialize()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initialize is a stable callback
   }, [memory, initialized, options?.autoInitialize])
 
   const initialize = useCallback(async () => {

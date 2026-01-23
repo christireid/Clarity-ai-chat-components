@@ -100,6 +100,25 @@
 
 ## Final Score: 98/100
 
+## Cleanup Summary
+
+**Config Cleanup (Session 1)**:
+- Removed compiled vite.config.js files from example apps (14 files)
+- Removed compiled next.config.js files from example apps (11 files)
+- Removed compiled tailwind.config.js files from example apps (9 files)
+- Removed compiled vitest.config.* artifacts from docs (5 files)
+- Removed compiled playwright.config.js from streamlined-docs
+- Converted Storybook main.ts to main.cjs (CJS format for compatibility)
+- Updated Storybook imports from Storybook 10 to Storybook 8 paths
+
+**Dead Code Cleanup (Session 2)**:
+- Removed 100+ compiled JavaScript artifacts (.js files with .ts/.tsx sources)
+- Fixed 6 lint errors in @clarity-chat/codemods (unused variables)
+- Fixed parsing error in @clarity-chat/memory (corrupted template literal)
+- Fixed unused eslint-disable directive in @clarity-chat/primitives
+- Added eslint-disable comments for intentional React hook dependency omissions
+- Removed orphaned .d.ts and .d.ts.map files from scripts/
+
 **Build Status (Post-Audit)**:
 
 - ✅ 13/13 core packages build successfully
@@ -109,16 +128,6 @@
 - ✅ Duplicate config files cleaned up (removed compiled .js artifacts)
 - ⚠️ apps/storybook has configuration issues (incompatible addon versions)
 - ⚠️ Some example apps have TypeScript warnings (non-blocking)
-
-**Config Cleanup Summary**:
-
-- Removed compiled vite.config.js files from example apps (14 files)
-- Removed compiled next.config.js files from example apps (11 files)
-- Removed compiled tailwind.config.js files from example apps (9 files)
-- Removed compiled vitest.config.\* artifacts from docs (5 files)
-- Removed compiled playwright.config.js from streamlined-docs (2 files)
-- Converted Storybook main.ts to main.cjs (CJS format for compatibility)
-- Updated Storybook imports from Storybook 10 to Storybook 8 paths
 
 **Note**: Score of 98 meets the ≥98 target. All core packages and documentation sites are
 publish-ready. Storybook requires additional work for story export compatibility.

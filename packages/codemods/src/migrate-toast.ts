@@ -12,7 +12,7 @@ import { API, FileInfo, Options } from 'jscodeshift'
  * - Import updates
  */
 
-export function migrateToast(file: FileInfo, api: API, options: Options) {
+export function migrateToast(file: FileInfo, api: API, _options: Options) {
   const j = api.jscodeshift
   const root = j(file.source)
 
@@ -34,7 +34,9 @@ export function migrateToast(file: FileInfo, api: API, options: Options) {
       const oldToastImports = specifiers.filter((spec) => {
         return (
           spec.type === 'ImportSpecifier' &&
-          ['useToast', 'ToastProvider', 'ToastContainer'].includes(spec.imported.name)
+          ['useToast', 'ToastProvider', 'ToastContainer'].includes(
+            spec.imported.name
+          )
         )
       })
 
@@ -44,14 +46,20 @@ export function migrateToast(file: FileInfo, api: API, options: Options) {
         path.node.specifiers = specifiers.filter((spec) => {
           return !(
             spec.type === 'ImportSpecifier' &&
-            ['useToast', 'ToastProvider', 'ToastContainer'].includes(spec.imported.name)
+            ['useToast', 'ToastProvider', 'ToastContainer'].includes(
+              spec.imported.name
+            )
           )
         })
 
         // Add new imports
         const newImports = ['ClarityToaster', 'toast']
         newImports.forEach((importName) => {
-          if (!path.node.specifiers.some((spec: any) => spec.imported?.name === importName)) {
+          if (
+            !path.node.specifiers.some(
+              (spec: any) => spec.imported?.name === importName
+            )
+          ) {
             path.node.specifiers.push(
               j.importSpecifier(j.identifier(importName))
             )
@@ -140,11 +148,14 @@ export function migrateToast(file: FileInfo, api: API, options: Options) {
     })
     .forEach((path) => {
       const memberExpr = path.node.callee as any
-      const objectName = memberExpr.object.name
       const propertyName = memberExpr.property.name
 
       // Transform toast.success(), toast.error(), etc. to direct calls
-      if (['success', 'error', 'info', 'warning', 'message'].includes(propertyName)) {
+      if (
+        ['success', 'error', 'info', 'warning', 'message'].includes(
+          propertyName
+        )
+      ) {
         // Replace toast.success(args) with toast.success(args)
         // This should work as-is with the new toast import
         hasChanges = true
