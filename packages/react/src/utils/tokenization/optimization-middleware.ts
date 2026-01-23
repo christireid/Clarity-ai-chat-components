@@ -10,7 +10,7 @@
  * - Performance tracking and analytics
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import {
   adaptiveOptimizer,
   optimizeTokensAdaptively,

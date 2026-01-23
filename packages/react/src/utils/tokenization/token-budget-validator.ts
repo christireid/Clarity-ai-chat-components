@@ -1,76 +1,77 @@
-import { TokenCounter } from '@clarity-chat/token-optimization';
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 
 export interface TokenBudget {
-  total: number;
-  used: number;
-  remaining: number;
-  percentage: number;
-  isExceeded: boolean;
+  total: number
+  used: number
+  remaining: number
+  percentage: number
+  isExceeded: boolean
 }
 
 export interface TokenBudgetConfig {
-  maxTokens: number;
-  warningThreshold?: number; // percentage (0-1)
-  criticalThreshold?: number; // percentage (0-1)
-  autoTruncate?: boolean;
-  preserveContext?: boolean;
-  truncationStrategy?: 'truncate' | 'remove' | 'summarize';
+  maxTokens: number
+  warningThreshold?: number // percentage (0-1)
+  criticalThreshold?: number // percentage (0-1)
+  autoTruncate?: boolean
+  preserveContext?: boolean
+  truncationStrategy?: 'truncate' | 'remove' | 'summarize'
 }
 
 export interface TokenBudgetValidation {
-  isValid: boolean;
-  budget: TokenBudget;
-  violations: TokenBudgetViolation[];
-  suggestions: string[];
+  isValid: boolean
+  budget: TokenBudget
+  violations: TokenBudgetViolation[]
+  suggestions: string[]
 }
 
 export interface TokenBudgetViolation {
-  type: 'exceeds_total' | 'exceeds_remaining' | 'warning_threshold' | 'critical_threshold';
-  message: string;
-  severity: 'warning' | 'error' | 'critical';
-  suggestedAction: string;
+  type:
+    | 'exceeds_total'
+    | 'exceeds_remaining'
+    | 'warning_threshold'
+    | 'critical_threshold'
+  message: string
+  severity: 'warning' | 'error' | 'critical'
+  suggestedAction: string
 }
 
 export interface TruncationOptions {
-  strategy?: 'truncate' | 'remove' | 'summarize';
-  preserveContext?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  strategy?: 'truncate' | 'remove' | 'summarize'
+  preserveContext?: boolean
+  minLength?: number
+  maxLength?: number
 }
 
 /**
  * Token budget validation and management
  */
 export class TokenBudgetValidator {
-  private budgets = new Map<string, TokenBudget>();
-  private configs = new Map<string, TokenBudgetConfig>();
+  private budgets = new Map<string, TokenBudget>()
+  private configs = new Map<string, TokenBudgetConfig>()
 
   /**
    * Create a new token budget
    */
-  public createBudget(
-    id: string,
-    config: TokenBudgetConfig
-  ): TokenBudget {
+  public createBudget(id: string, config: TokenBudgetConfig): TokenBudget {
     const budget: TokenBudget = {
       total: config.maxTokens,
       used: 0,
       remaining: config.maxTokens,
       percentage: 0,
-      isExceeded: false
-    };
+      isExceeded: false,
+    }
 
-    this.budgets.set(id, budget);
+    this.budgets.set(id, budget)
     this.configs.set(id, {
       warningThreshold: 0.8,
       criticalThreshold: 0.95,
       autoTruncate: false,
       preserveContext: true,
       truncationStrategy: 'truncate',
-      ...config
-    });
+      ...config,
+    })
 
-    return { ...budget };
+    return { ...budget }
   }
 
   /**
@@ -80,23 +81,23 @@ export class TokenBudgetValidator {
     budgetId: string,
     text: string,
     options: {
-      allowTruncation?: boolean;
-      contextId?: string;
+      allowTruncation?: boolean
+      contextId?: string
     } = {}
   ): TokenBudgetValidation {
-    const budget = this.budgets.get(budgetId);
-    const config = this.configs.get(budgetId);
+    const budget = this.budgets.get(budgetId)
+    const config = this.configs.get(budgetId)
 
     if (!budget || !config) {
-      throw new Error(`Budget '${budgetId}' not found`);
+      throw new Error(`Budget '${budgetId}' not found`)
     }
 
-    const tokenCount = TokenCounter.count(text);
-    const projectedUsed = budget.used + tokenCount;
-    const projectedPercentage = projectedUsed / budget.total;
+    const tokenCount = TokenCounter.count(text)
+    const projectedUsed = budget.used + tokenCount
+    const projectedPercentage = projectedUsed / budget.total
 
-    const violations: TokenBudgetViolation[] = [];
-    const suggestions: string[] = [];
+    const violations: TokenBudgetViolation[] = []
+    const suggestions: string[] = []
 
     // Check if text exceeds total budget
     if (tokenCount > budget.total) {
@@ -104,8 +105,8 @@ export class TokenBudgetValidator {
         type: 'exceeds_total',
         message: `Text requires ${tokenCount} tokens, but total budget is ${budget.total}`,
         severity: 'error',
-        suggestedAction: 'Reduce text size or increase budget'
-      });
+        suggestedAction: 'Reduce text size or increase budget',
+      })
     }
 
     // Check if text exceeds remaining budget
@@ -114,8 +115,8 @@ export class TokenBudgetValidator {
         type: 'exceeds_remaining',
         message: `Text would exceed remaining budget (${budget.remaining} tokens remaining)`,
         severity: 'error',
-        suggestedAction: 'Truncate text or clear budget'
-      });
+        suggestedAction: 'Truncate text or clear budget',
+      })
     }
 
     // Set default thresholds
@@ -128,8 +129,8 @@ export class TokenBudgetValidator {
         type: 'warning_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds warning threshold (${(warningThreshold * 100).toFixed(1)}%)`,
         severity: 'warning',
-        suggestedAction: 'Consider reducing text size or clearing budget'
-      });
+        suggestedAction: 'Consider reducing text size or clearing budget',
+      })
     }
 
     // Check critical threshold
@@ -138,27 +139,30 @@ export class TokenBudgetValidator {
         type: 'critical_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds critical threshold (${(criticalThreshold * 100).toFixed(1)}%)`,
         severity: 'critical',
-        suggestedAction: 'Immediate action required to prevent budget exhaustion'
-      });
+        suggestedAction:
+          'Immediate action required to prevent budget exhaustion',
+      })
     }
 
     // Generate suggestions
     if (violations.length > 0 && options.allowTruncation) {
-      suggestions.push(...this.generateTruncationSuggestions(text, budget, config));
+      suggestions.push(
+        ...this.generateTruncationSuggestions(text, budget, config)
+      )
     }
 
     if (projectedPercentage > 0.9) {
-      suggestions.push('Consider increasing the token budget');
-      suggestions.push('Implement text truncation or summarization');
-      suggestions.push('Clear budget periodically');
+      suggestions.push('Consider increasing the token budget')
+      suggestions.push('Implement text truncation or summarization')
+      suggestions.push('Clear budget periodically')
     }
 
     return {
-      isValid: violations.filter(v => v.severity === 'error').length === 0,
+      isValid: violations.filter((v) => v.severity === 'error').length === 0,
       budget: { ...budget },
       violations,
-      suggestions
-    };
+      suggestions,
+    }
   }
 
   /**
@@ -168,40 +172,40 @@ export class TokenBudgetValidator {
     budgetId: string,
     messages: Array<{ role: string; content: string }>,
     options: {
-      allowTruncation?: boolean;
-      systemMessage?: string;
+      allowTruncation?: boolean
+      systemMessage?: string
     } = {}
   ): TokenBudgetValidation {
-    const budget = this.budgets.get(budgetId);
-    const config = this.configs.get(budgetId);
+    const budget = this.budgets.get(budgetId)
+    const config = this.configs.get(budgetId)
 
     if (!budget || !config) {
-      throw new Error(`Budget '${budgetId}' not found`);
+      throw new Error(`Budget '${budgetId}' not found`)
     }
 
-    let totalTokens = 0;
-    const messageTokens: number[] = [];
+    let totalTokens = 0
+    const messageTokens: number[] = []
 
     // Count system message if provided
     if (options.systemMessage) {
-      const systemTokens = TokenCounter.count(options.systemMessage);
-      totalTokens += systemTokens;
-      messageTokens.push(systemTokens);
+      const systemTokens = TokenCounter.count(options.systemMessage)
+      totalTokens += systemTokens
+      messageTokens.push(systemTokens)
     }
 
     // Count all messages
     messages.forEach((message, index) => {
-      const messageContent = `${message.role}: ${message.content}`;
-      const tokens = TokenCounter.count(messageContent);
-      totalTokens += tokens;
-      messageTokens.push(tokens);
-    });
+      const messageContent = `${message.role}: ${message.content}`
+      const tokens = TokenCounter.count(messageContent)
+      totalTokens += tokens
+      messageTokens.push(tokens)
+    })
 
-    const projectedUsed = budget.used + totalTokens;
-    const projectedPercentage = projectedUsed / budget.total;
+    const projectedUsed = budget.used + totalTokens
+    const projectedPercentage = projectedUsed / budget.total
 
-    const violations: TokenBudgetViolation[] = [];
-    const suggestions: string[] = [];
+    const violations: TokenBudgetViolation[] = []
+    const suggestions: string[] = []
 
     // Check if conversation exceeds total budget
     if (totalTokens > budget.total) {
@@ -209,8 +213,8 @@ export class TokenBudgetValidator {
         type: 'exceeds_total',
         message: `Conversation requires ${totalTokens} tokens, but total budget is ${budget.total}`,
         severity: 'error',
-        suggestedAction: 'Reduce number of messages or increase budget'
-      });
+        suggestedAction: 'Reduce number of messages or increase budget',
+      })
     }
 
     // Check if conversation exceeds remaining budget
@@ -219,8 +223,8 @@ export class TokenBudgetValidator {
         type: 'exceeds_remaining',
         message: `Conversation would exceed remaining budget (${budget.remaining} tokens remaining)`,
         severity: 'error',
-        suggestedAction: 'Truncate messages or clear budget'
-      });
+        suggestedAction: 'Truncate messages or clear budget',
+      })
     }
 
     // Set default thresholds
@@ -233,8 +237,8 @@ export class TokenBudgetValidator {
         type: 'warning_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds warning threshold`,
         severity: 'warning',
-        suggestedAction: 'Consider reducing conversation length'
-      });
+        suggestedAction: 'Consider reducing conversation length',
+      })
     }
 
     if (projectedPercentage > criticalThreshold) {
@@ -242,38 +246,35 @@ export class TokenBudgetValidator {
         type: 'critical_threshold',
         message: `Projected usage (${(projectedPercentage * 100).toFixed(1)}%) exceeds critical threshold`,
         severity: 'critical',
-        suggestedAction: 'Immediate action required'
-      });
+        suggestedAction: 'Immediate action required',
+      })
     }
 
     return {
-      isValid: violations.filter(v => v.severity === 'error').length === 0,
+      isValid: violations.filter((v) => v.severity === 'error').length === 0,
       budget: { ...budget },
       violations,
-      suggestions
-    };
+      suggestions,
+    }
   }
 
   /**
    * Use tokens from budget
    */
-  public useTokens(
-    budgetId: string,
-    tokenCount: number
-  ): TokenBudget {
-    const budget = this.budgets.get(budgetId);
-    const config = this.configs.get(budgetId);
+  public useTokens(budgetId: string, tokenCount: number): TokenBudget {
+    const budget = this.budgets.get(budgetId)
+    const config = this.configs.get(budgetId)
 
     if (!budget || !config) {
-      throw new Error(`Budget '${budgetId}' not found`);
+      throw new Error(`Budget '${budgetId}' not found`)
     }
 
-    budget.used += tokenCount;
-    budget.remaining = Math.max(0, budget.total - budget.used);
-    budget.percentage = budget.used / budget.total;
-    budget.isExceeded = budget.used > budget.total;
+    budget.used += tokenCount
+    budget.remaining = Math.max(0, budget.total - budget.used)
+    budget.percentage = budget.used / budget.total
+    budget.isExceeded = budget.used > budget.total
 
-    return { ...budget };
+    return { ...budget }
   }
 
   /**
@@ -284,31 +285,31 @@ export class TokenBudgetValidator {
     maxTokens: number,
     options: TruncationOptions = {}
   ): { text: string; originalTokens: number; truncatedTokens: number } {
-    const originalTokens = TokenCounter.count(text);
-    
+    const originalTokens = TokenCounter.count(text)
+
     if (originalTokens <= maxTokens) {
-      return { text, originalTokens, truncatedTokens: originalTokens };
+      return { text, originalTokens, truncatedTokens: originalTokens }
     }
 
-    const strategy = options.strategy || 'truncate';
-    let truncatedText = text;
+    const strategy = options.strategy || 'truncate'
+    let truncatedText = text
 
     switch (strategy) {
       case 'truncate':
-        truncatedText = this.truncateText(text, maxTokens, options);
-        break;
+        truncatedText = this.truncateText(text, maxTokens, options)
+        break
       case 'remove':
-        truncatedText = this.removeContent(text, maxTokens, options);
-        break;
+        truncatedText = this.removeContent(text, maxTokens, options)
+        break
       case 'summarize':
-        truncatedText = this.summarizeText(text, maxTokens, options);
-        break;
+        truncatedText = this.summarizeText(text, maxTokens, options)
+        break
       default:
-        truncatedText = this.truncateText(text, maxTokens, options);
+        truncatedText = this.truncateText(text, maxTokens, options)
     }
 
-    const truncatedTokens = TokenCounter.count(truncatedText);
-    return { text: truncatedText, originalTokens, truncatedTokens };
+    const truncatedTokens = TokenCounter.count(truncatedText)
+    return { text: truncatedText, originalTokens, truncatedTokens }
   }
 
   /**
@@ -320,28 +321,28 @@ export class TokenBudgetValidator {
     options: TruncationOptions
   ): string {
     if (options.preserveContext) {
-      return this.truncatePreserveContext(text, maxTokens);
+      return this.truncatePreserveContext(text, maxTokens)
     }
 
     // Binary search for optimal truncation point
-    let left = 0;
-    let right = text.length;
-    let bestLength = 0;
+    let left = 0
+    let right = text.length
+    let bestLength = 0
 
     while (left <= right) {
-      const mid = Math.floor((left + right) / 2);
-      const truncated = text.substring(0, mid);
-      const tokens = TokenCounter.count(truncated);
+      const mid = Math.floor((left + right) / 2)
+      const truncated = text.substring(0, mid)
+      const tokens = TokenCounter.count(truncated)
 
       if (tokens <= maxTokens) {
-        bestLength = mid;
-        left = mid + 1;
+        bestLength = mid
+        left = mid + 1
       } else {
-        right = mid - 1;
+        right = mid - 1
       }
     }
 
-    return text.substring(0, bestLength);
+    return text.substring(0, bestLength)
   }
 
   /**
@@ -349,16 +350,16 @@ export class TokenBudgetValidator {
    */
   private truncatePreserveContext(text: string, maxTokens: number): string {
     // Keep first and last parts, truncate middle
-    const tokens = TokenCounter.count(text);
-    if (tokens <= maxTokens) return text;
+    const tokens = TokenCounter.count(text)
+    if (tokens <= maxTokens) return text
 
-    const keepRatio = 0.3; // Keep 30% from beginning and end
-    const keepLength = Math.floor(text.length * keepRatio);
-    
-    const beginning = text.substring(0, keepLength);
-    const end = text.substring(text.length - keepLength);
-    
-    return `${beginning}\n[... truncated ...]\n${end}`;
+    const keepRatio = 0.3 // Keep 30% from beginning and end
+    const keepLength = Math.floor(text.length * keepRatio)
+
+    const beginning = text.substring(0, keepLength)
+    const end = text.substring(text.length - keepLength)
+
+    return `${beginning}\n[... truncated ...]\n${end}`
   }
 
   /**
@@ -370,18 +371,18 @@ export class TokenBudgetValidator {
     options: TruncationOptions
   ): string {
     // Remove examples, explanations, or redundant content
-    const lines = text.split('\n');
-    let currentText = text;
-    let currentTokens = TokenCounter.count(currentText);
+    const lines = text.split('\n')
+    let currentText = text
+    let currentTokens = TokenCounter.count(currentText)
 
     // Remove lines from the end first
     while (currentTokens > maxTokens && lines.length > 1) {
-      lines.pop();
-      currentText = lines.join('\n');
-      currentTokens = TokenCounter.count(currentText);
+      lines.pop()
+      currentText = lines.join('\n')
+      currentTokens = TokenCounter.count(currentText)
     }
 
-    return currentText;
+    return currentText
   }
 
   /**
@@ -393,20 +394,20 @@ export class TokenBudgetValidator {
     options: TruncationOptions
   ): string {
     // Simple summarization - keep first and last sentences
-    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-    
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text]
+
     if (sentences.length <= 2) {
-      return this.truncateText(text, maxTokens, options);
+      return this.truncateText(text, maxTokens, options)
     }
 
-    const summary = `${sentences[0].trim()} ${sentences[sentences.length - 1].trim()}`;
-    const summaryTokens = TokenCounter.count(summary);
-    
+    const summary = `${sentences[0].trim()} ${sentences[sentences.length - 1].trim()}`
+    const summaryTokens = TokenCounter.count(summary)
+
     if (summaryTokens <= maxTokens) {
-      return summary;
+      return summary
     }
-    
-    return this.truncateText(summary, maxTokens, options);
+
+    return this.truncateText(summary, maxTokens, options)
   }
 
   /**
@@ -417,52 +418,54 @@ export class TokenBudgetValidator {
     budget: TokenBudget,
     config: TokenBudgetConfig
   ): string[] {
-    const suggestions: string[] = [];
-    const maxTokens = budget.remaining;
-    
-    suggestions.push('Enable auto-truncation to automatically fit text to budget');
-    suggestions.push(`Consider using 'summarize' strategy for long text`);
-    suggestions.push(`Current text could be truncated to ${maxTokens} tokens`);
-    
+    const suggestions: string[] = []
+    const maxTokens = budget.remaining
+
+    suggestions.push(
+      'Enable auto-truncation to automatically fit text to budget'
+    )
+    suggestions.push(`Consider using 'summarize' strategy for long text`)
+    suggestions.push(`Current text could be truncated to ${maxTokens} tokens`)
+
     if (text.length > 1000) {
-      suggestions.push('Break long text into smaller chunks');
-      suggestions.push('Use progressive loading for large documents');
+      suggestions.push('Break long text into smaller chunks')
+      suggestions.push('Use progressive loading for large documents')
     }
 
-    return suggestions;
+    return suggestions
   }
 
   /**
    * Get budget status
    */
   public getBudget(id: string): TokenBudget | undefined {
-    const budget = this.budgets.get(id);
-    return budget ? { ...budget } : undefined;
+    const budget = this.budgets.get(id)
+    return budget ? { ...budget } : undefined
   }
 
   /**
    * Get all budgets
    */
   public getAllBudgets(): Record<string, TokenBudget> {
-    const result: Record<string, TokenBudget> = {};
+    const result: Record<string, TokenBudget> = {}
     this.budgets.forEach((budget, id) => {
-      result[id] = { ...budget };
-    });
-    return result;
+      result[id] = { ...budget }
+    })
+    return result
   }
 
   /**
    * Clear budget
    */
   public clearBudget(id: string): void {
-    const budget = this.budgets.get(id);
-    const config = this.configs.get(id);
-    
+    const budget = this.budgets.get(id)
+    const config = this.configs.get(id)
+
     if (budget && config) {
-      budget.used = 0;
-      budget.remaining = budget.total;
-      budget.percentage = 0;
-      budget.isExceeded = false;
+      budget.used = 0
+      budget.remaining = budget.total
+      budget.percentage = 0
+      budget.isExceeded = false
     }
   }
 
@@ -470,8 +473,8 @@ export class TokenBudgetValidator {
    * Remove budget
    */
   public removeBudget(id: string): void {
-    this.budgets.delete(id);
-    this.configs.delete(id);
+    this.budgets.delete(id)
+    this.configs.delete(id)
   }
 
   /**
@@ -481,21 +484,21 @@ export class TokenBudgetValidator {
     text: string,
     conversation?: Array<{ role: string; content: string }>
   ): number {
-    let totalTokens = TokenCounter.count(text);
-    
+    let totalTokens = TokenCounter.count(text)
+
     if (conversation) {
-      conversation.forEach(message => {
-        totalTokens += TokenCounter.count(`${message.role}: ${message.content}`);
-      });
+      conversation.forEach((message) => {
+        totalTokens += TokenCounter.count(`${message.role}: ${message.content}`)
+      })
     }
-    
+
     // Add 20% buffer for safety
-    return Math.ceil(totalTokens * 1.2);
+    return Math.ceil(totalTokens * 1.2)
   }
 }
 
 // Export singleton instance
-export const tokenBudgetValidator = new TokenBudgetValidator();
+export const tokenBudgetValidator = new TokenBudgetValidator()
 
 // Convenience functions
 export function validateTokenBudget(
@@ -503,7 +506,7 @@ export function validateTokenBudget(
   text: string,
   options?: any
 ) {
-  return tokenBudgetValidator.validateText(budgetId, text, options);
+  return tokenBudgetValidator.validateText(budgetId, text, options)
 }
 
 export function createTokenBudget(
@@ -511,5 +514,5 @@ export function createTokenBudget(
   maxTokens: number,
   options?: Partial<TokenBudgetConfig>
 ) {
-  return tokenBudgetValidator.createBudget(id, { maxTokens, ...options });
+  return tokenBudgetValidator.createBudget(id, { maxTokens, ...options })
 }

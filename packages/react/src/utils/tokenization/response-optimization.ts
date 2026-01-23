@@ -10,7 +10,7 @@
  * - Response caching and reuse
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import { adaptiveOptimizer } from './adaptive-optimizer'
 
 export type ResponseOptimizationStrategy =

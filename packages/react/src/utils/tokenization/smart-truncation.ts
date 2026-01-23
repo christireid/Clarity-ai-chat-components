@@ -9,7 +9,7 @@
  * - Multi-document summarization for RAG systems
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 
 // Truncation strategies based on content type and requirements
 export type TruncationStrategy =
@@ -640,7 +640,9 @@ export class SmartTruncator {
     }
   }
 
-  private reconstructHierarchicalText(truncatedStructure: HierarchicalStructure): string {
+  private reconstructHierarchicalText(
+    truncatedStructure: HierarchicalStructure
+  ): string {
     return truncatedStructure.sections
       .map((section: HierarchicalSection) => section.text)
       .join('\n\n')

@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import type { TokenOptimizationStats } from '@clarity-chat/token-optimization'
+import type { TokenOptimizationStats } from '@clarity-chat/token-optimization/react'
 import {
   cn,
   glassVariants,
