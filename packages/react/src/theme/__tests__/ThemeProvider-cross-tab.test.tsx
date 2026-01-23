@@ -359,7 +359,7 @@ describe('ThemeProvider Cross-Tab Sync', () => {
         <ThemeProvider
           enableCrossTabSync
           crossTabSyncDebounce={0}
-          defaultTheme={{ preset: 'vibrant', mode: 'light' }}
+          defaultTheme={{ preset: 'default', mode: 'light' }}
         >
           <ThemeConsumer />
         </ThemeProvider>

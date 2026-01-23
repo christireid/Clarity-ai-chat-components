@@ -94,25 +94,25 @@ describe('ThemeProvider', () => {
   describe('preset selection', () => {
     it('should apply preset theme', async () => {
       render(
-        <ThemeProvider defaultTheme={{ preset: 'neutral' }}>
+        <ThemeProvider defaultTheme={{ preset: 'default' }}>
           <ThemeConsumer />
         </ThemeProvider>
       )
       // Wait for theme to be applied
       await waitFor(() => {
-        expect(screen.getByTestId('theme-name')).toHaveTextContent('neutral')
+        expect(screen.getByTestId('theme-name')).toHaveTextContent('default')
       })
     })
 
     it('should apply dark preset', async () => {
       render(
-        <ThemeProvider defaultTheme={{ preset: 'neutral-dark' }}>
+        <ThemeProvider defaultTheme={{ preset: 'default-dark' }}>
           <ThemeConsumer />
         </ThemeProvider>
       )
       await waitFor(() => {
         expect(screen.getByTestId('theme-name')).toHaveTextContent(
-          'neutral-dark'
+          'default-dark'
         )
       })
     })
@@ -208,10 +208,10 @@ describe('useTheme', () => {
       return (
         <div>
           <button
-            onClick={() => setTheme({ preset: 'vibrant' })}
+            onClick={() => setTheme({ preset: 'dark' })}
             data-testid="set-preset"
           >
-            Set Vibrant
+            Set Dark
           </button>
           <span data-testid="current-preset">{theme.preset ?? 'none'}</span>
         </div>
@@ -228,7 +228,7 @@ describe('useTheme', () => {
     await user.click(screen.getByTestId('set-preset'))
 
     await waitFor(() => {
-      expect(screen.getByTestId('current-preset')).toHaveTextContent('vibrant')
+      expect(screen.getByTestId('current-preset')).toHaveTextContent('dark')
     })
   })
 
