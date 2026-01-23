@@ -22,7 +22,7 @@ import type { CompressionResult } from '../compression/markdown-compressor'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
 import type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,

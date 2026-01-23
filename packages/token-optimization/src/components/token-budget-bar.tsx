@@ -189,7 +189,7 @@ export const TokenBudgetBar = React.memo(function TokenBudgetBar({
   )
 
   // Track previous status for change detection
-  const prevStatusRef = useRef<BudgetStatus | null>(null)
+  const prevStatusRef = useRef<TokenBudgetBarStatus | null>(null)
 
   // Notify on status change
   useEffect(() => {

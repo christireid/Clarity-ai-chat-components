@@ -17,7 +17,7 @@ import { ModelRouter, RoutingStrategy } from './routing/model-router'
 import type {
   RoutingResult,
   RouterStats,
-  ModelConfig,
+  ModelRoutingConfig,
 } from './routing/model-router'
 import {
   MarkdownCompressor,
@@ -27,10 +27,7 @@ import type { CompressionResult as MarkdownCompressionResult } from './compressi
 import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 import type { SemanticCacheConfig } from './caching/advanced-semantic-cache'
 import { ProviderCachingFormatter } from './providers/prompt-caching'
-import type {
-  ProviderCachingConfig,
-  CacheableMessage,
-} from './providers/types'
+import type { ProviderCachingConfig, CacheableMessage } from './providers/types'
 
 /**
  * Preset configuration levels
@@ -315,7 +312,7 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
     : null
 
   // Create model configs for router
-  const modelConfigs: ModelConfig[] = availableModels.map((m) => ({
+  const modelConfigs: ModelRoutingConfig[] = availableModels.map((m) => ({
     id: m,
     tier: m.includes('mini') ? 'small' : m.includes('4o') ? 'medium' : 'large',
     contextWindow: m.includes('turbo')
@@ -436,7 +433,8 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
             },
           ]
 
-          const providerResult = await providerCaching.formatMessagesForCaching(messages)
+          const providerResult =
+            await providerCaching.formatMessagesForCaching(messages)
 
           if (providerResult.cached) {
             providerCacheApplied = true

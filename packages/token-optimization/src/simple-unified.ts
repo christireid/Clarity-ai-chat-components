@@ -5,9 +5,9 @@
  */
 
 import {
-  SimpleTokenCounter as AccurateTokenCounter,
-  SimpleSecurityManager as TokenSecurityManager,
-  SimpleToonOptimizer as ToonOptimizer,
+  AccurateTokenCounter,
+  TokenSecurityManager,
+  ToonOptimizer,
   DEFAULT_TOKENIZER_CONFIG,
   DEFAULT_SECURITY_CONFIG,
   DEFAULT_TOON_CONFIG,

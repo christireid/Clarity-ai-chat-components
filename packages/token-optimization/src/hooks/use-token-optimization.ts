@@ -23,7 +23,7 @@ import type {
   ModelRouterConfig,
   RoutingResult,
   RouterStats,
-  ModelConfig,
+  ModelRoutingConfig,
 } from '../routing/model-router'
 import {
   MarkdownCompressor,
@@ -356,7 +356,7 @@ export function useTokenOptimization(
   const counterRef = useRef<AccurateTokenCounter | null>(null)
 
   // Create model configs for router
-  const modelConfigs: ModelConfig[] = useMemo(
+  const modelConfigs: ModelRoutingConfig[] = useMemo(
     () =>
       availableModels.map((m) => ({
         id: m,

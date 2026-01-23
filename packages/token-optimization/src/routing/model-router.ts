@@ -607,7 +607,7 @@ export class ModelRouter {
     candidates: ModelRoutingConfig[],
     complexity: ComplexityResult,
     strategy: RoutingStrategy
-  ): ModelConfig | undefined {
+  ): ModelRoutingConfig | undefined {
     if (candidates.length === 0) return undefined
 
     switch (strategy) {
@@ -628,7 +628,7 @@ export class ModelRouter {
   private selectCostOptimized(
     candidates: ModelRoutingConfig[],
     complexity: ComplexityResult
-  ): ModelConfig | undefined {
+  ): ModelRoutingConfig | undefined {
     const targetTier = this.getTierForComplexity(complexity.level)
     const tierOrder: ModelTier[] = ['small', 'medium', 'large', 'premium']
     const targetIndex = tierOrder.indexOf(targetTier)
@@ -672,7 +672,7 @@ export class ModelRouter {
   private selectBalanced(
     candidates: ModelRoutingConfig[],
     complexity: ComplexityResult
-  ): ModelConfig | undefined {
+  ): ModelRoutingConfig | undefined {
     // Bump up one tier from cost-optimized for better quality
     const targetTier = this.getTierForComplexity(complexity.level)
     const tierOrder: ModelTier[] = ['small', 'medium', 'large', 'premium']

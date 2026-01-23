@@ -382,7 +382,9 @@ export type {
   CacheableMessage,
   // Token counting provider interface
   TokenCountingProvider,
-  TokenCounter, // @deprecated - use TokenCountingProvider
+  // Deprecated type alias - use TokenCountingProvider instead
+  // Note: Cannot export type TokenCounter due to conflict with legacy class export
+  // Use TokenCountingProvider for provider interface types
 } from './providers/types'
 export type { SimpleProviderCachingConfig } from './providers/simple-caching'
 

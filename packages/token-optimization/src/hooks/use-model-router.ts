@@ -11,7 +11,7 @@ import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
 import type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,
@@ -56,7 +56,7 @@ export interface UseModelRouterReturn {
   /**
    * Available models
    */
-  models: ModelConfig[]
+  models: ModelRoutingConfig[]
 
   /**
    * Default routing strategy

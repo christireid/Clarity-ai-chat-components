@@ -24,7 +24,7 @@ export { useModelRouter, RoutingStrategy } from './use-model-router'
 export type {
   UseModelRouterConfig,
   UseModelRouterReturn,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,

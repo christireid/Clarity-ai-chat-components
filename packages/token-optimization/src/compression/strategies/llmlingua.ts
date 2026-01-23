@@ -300,11 +300,6 @@ const INSTRUCTION_MARKERS = [
 const CODE_BLOCK_PATTERN = /```[\s\S]*?```|`[^`]+`/g
 
 /**
- * Maximum recursion depth for quality threshold retries
- */
-const MAX_RECURSION_DEPTH = 5
-
-/**
  * LLMLingua-style prompt compression using perplexity-based token importance.
  * Achieves 2-20x compression while preserving semantic meaning.
  *
