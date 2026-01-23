@@ -187,10 +187,7 @@ export {
   type CodeFontFamily,
 } from './components/code/CodeBlock'
 
-export {
-  InlineCode,
-  type InlineCodeProps,
-} from './components/code/InlineCode'
+export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -233,8 +230,14 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
-export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
+export {
+  OfflineChatSync,
+  useOfflineChat,
+} from './components/chat/offline-chat-sync'
+export {
+  ChatSyncStatus,
+  type ChatSyncStatusProps,
+} from './components/chat/chat-sync-status'
 export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
@@ -292,12 +295,36 @@ export {
 // TOKEN OPTIMIZATION
 // ============================================================================
 
+// Core token optimization types from token-optimization package
+// Note: TokenEstimate is exported from component below, not from token-optimization
+export type {
+  TokenUsage,
+  ModelPricing,
+  TokenBudgetUsage,
+} from '@clarity-chat/token-optimization'
+
 export {
   TokenBudgetProvider,
   useTokenBudget,
   type TokenBudgetContextValue,
   type TokenBudgetProviderProps,
 } from './context/token-budget-context'
+
+// Token optimization hooks (from @clarity-chat/token-optimization)
+export {
+  useTokenCount,
+  useTieredCache,
+  useModelRouter as useTokenModelRouter,
+  useOptimizationPipeline,
+  useTokenOptimization,
+  type ModelId,
+  type KnownModelId,
+  type TokenModelConfig,
+  type PricingProvider,
+  type CostCalculation,
+  type SemanticCacheConfig,
+  type CacheMetadata,
+} from '@clarity-chat/token-optimization'
 
 // ============================================================================
 // THEME SYSTEM
@@ -472,11 +499,7 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export {
-  SetupWizard,
-  QuickSetup,
-  interactiveSetup,
-} from './utils/setup-wizard'
+export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -491,6 +514,89 @@ export {
 } from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
+// Note: Some migration helpers were planned but not implemented
+// MigrationPresets is available from './utils/migration-helpers'
+
+// IntelliSense Helpers - Enhanced TypeScript DX
+export type {
+  ChatApiConfig,
+  ChatPreset,
+  MemoryConfigHelper,
+  StreamingConfigHelper,
+  RateLimitConfigHelper,
+  HeaderConfigHelper,
+  MessageActionsConfigHelper,
+  PromptsConfigHelper,
+  ErrorHandlingConfigHelper,
+  ChatErrorType,
+  ErrorHandlingConfigHelper as ErrorConfigHelper,
+} from './types/intellisense-helpers'
+
+// Component Composition - Easy component building
+export {
+  composeComponents,
+  withProps,
+  conditional,
+  Compositions,
+  createGridLayout,
+  FlexLayouts,
+  composeHooks,
+  transformProps,
+  withDefaults,
+  withVariants,
+  createContextProvider,
+} from './utils/component-composition'
+
+// Theme Helpers - Re-exported from './theme' (see line 308)
+// Note: Additional theme utilities can be added via './utils/theme-helpers' if implemented
+
+// Accessibility Helpers - Enhanced A11y support
+export {
+  createAccessibleButtonProps,
+  createAccessibleDialogProps,
+  createAccessibleListboxProps,
+  useKeyboardListNavigation,
+  useChatInputKeyboard,
+  announceToScreenReader,
+  useScreenReaderAnnouncements,
+  LiveRegion,
+  useFocusManagement,
+  isKeyboardAccessible,
+  getFocusableElements,
+  validateChatAccessibility,
+  useMotionPreferences,
+  createAccessibleMotionProps,
+  useHighContrastMode,
+  applyHighContrastAdjustments,
+  SkipLink,
+  ScreenReaderOnly,
+} from './utils/accessibility-helpers'
+
+// Testing Helpers - Comprehensive testing toolkit
+export {
+  mockChatAPI,
+  MockWebSocket,
+  MockLocalStorage,
+  createMockFetch,
+  renderChatWithDefaults,
+  createTestMessages,
+  createMockChatState,
+  createMockClarityChatHook,
+  asyncTestUtils,
+  domTestUtils,
+  a11yTestUtils,
+  performanceTestUtils,
+  e2eTestUtils,
+  testConfigs,
+  TestWrapper,
+  createTestComponent,
+  testDataFactories,
+  chatAssertions,
+  vi,
+} from './utils/testing-helpers'
+export type { Mock } from './utils/testing-helpers'
+
+// Migration Helpers - Easy migration from other libraries
 export {
   VercelAdapter,
   OpenAIAdapter,
@@ -498,7 +604,7 @@ export {
   CustomAdapter,
   MigrationTracker,
   MigrationAnalyzer,
-  MigrationPresets,
+  // MigrationPresets, // Exported from ./utils/migration-helpers.tsx above
   generateMigrationReport,
   migrateQuick,
 } from './utils/migration-helpers'
@@ -634,20 +740,21 @@ export {
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
+export {
+  AdaptiveTokenOptimizer as TokenOptimizer,
+  adaptiveOptimizer,
+} from './utils/tokenization/adaptive-optimizer'
 export {
   TokenCostPreview,
   useTokenEstimate,
   type TokenCostPreviewProps,
   type UseTokenEstimateOptions,
-  // Note: TokenEstimate type intentionally omitted to avoid conflict with app-api/token-engine.ts
-  // Import directly from '@clarity-chat/token-optimization/react' if needed
+  type TokenEstimate,
 } from './components/token/TokenCostPreview'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
+  // TokenUsage and ModelPricing types are exported above from @clarity-chat/token-optimization
   type TokenUsageMeterProps,
 } from './components/token/token-usage-meter'
 export {
@@ -713,7 +820,10 @@ export { AdvancedChatInput } from './components/input/advanced-chat-input'
 export { FileUpload } from './components/input/file-upload'
 export { InlineVoiceInput } from './components/input/voice-input'
 export { StructuredInputBuilder } from './components/input/structured-input-builder'
-export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
+export {
+  DocumentIntegration,
+  useDocumentIntegration,
+} from './components/media/document-integration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
@@ -724,7 +834,10 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
-export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
+export {
+  CollaborativeEditor,
+  useCollaborativeSession,
+} from './components/ai/collaborative-editing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
@@ -796,8 +909,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 // Keyboard navigation
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
-// Security
-export { SecurityManager, securityManager, useSecurity } from './utils/security-helpers'
+// Security - see comprehensive exports below (around line 1038)
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'

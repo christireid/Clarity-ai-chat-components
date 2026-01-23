@@ -18,9 +18,9 @@ export type ModelName = ModelId
 export type TokenUsageStatus = 'safe' | 'warning' | 'critical' | 'exceeded'
 
 /**
- * Current token usage metrics
+ * Current token budget usage metrics
  */
-export interface TokenUsage {
+export interface TokenBudgetUsage {
   /** Current tokens used */
   current: number
   /** Maximum tokens allowed */
@@ -41,6 +41,12 @@ export interface TokenUsage {
   /** Effective max for input (max - reserved) */
   effectiveMax: number
 }
+
+/**
+ * @deprecated Use TokenBudgetUsage instead
+ * Backward compatibility alias
+ */
+export type TokenUsage = TokenBudgetUsage
 
 /**
  * Trimming result when auto-trim is triggered
@@ -93,11 +99,11 @@ export interface TokenBudgetConfig {
   /** Model name for accurate token counting */
   model?: ModelName
   /** Callback when warning threshold is crossed */
-  onWarning?: (usage: TokenUsage) => void
+  onWarning?: (usage: TokenBudgetUsage) => void
   /** Callback when critical threshold is crossed */
-  onCritical?: (usage: TokenUsage) => void
+  onCritical?: (usage: TokenBudgetUsage) => void
   /** Callback when exceeded (over 100%) */
-  onExceeded?: (usage: TokenUsage) => void
+  onExceeded?: (usage: TokenBudgetUsage) => void
   /** Auto-trigger trimming at critical threshold */
   autoTrim?: boolean
   /** Callback after auto-trim occurs */
@@ -113,7 +119,7 @@ export interface TokenBudgetConfig {
  */
 export interface TokenBudgetMonitorReturn {
   /** Current token usage metrics */
-  usage: TokenUsage
+  usage: TokenBudgetUsage
   /** Whether currently in warning state */
   isWarning: boolean
   /** Whether currently in critical state */
@@ -172,7 +178,7 @@ function calculateStatus(
 /**
  * Create initial usage state
  */
-function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
+function createInitialUsage(config: TokenBudgetConfig): TokenBudgetUsage {
   const effectiveMax =
     config.maxInputTokens -
     (config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput)
@@ -191,6 +197,19 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
 
 /**
  * Hook for monitoring token budget in real-time
+ *
+ * @deprecated Use `useTokenBudgetTracking` instead for clarity
+ * The name `useTokenBudgetMonitor` is confusing as it conflicts with component-specific usage.
+ * This hook will be removed in v3.0.0
+ *
+ * Migration:
+ * ```diff
+ * - import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+ * + import { useTokenBudgetTracking } from '@clarity-chat/token-optimization'
+ *
+ * - const { usage } = useTokenBudgetMonitor(config)
+ * + const { usage } = useTokenBudgetTracking(config)
+ * ```
  *
  * Provides threshold-based warnings and automatic trimming to prevent
  * context overflow and provide immediate cost awareness.
@@ -223,6 +242,20 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
 export function useTokenBudgetMonitor(
   config: TokenBudgetConfig
 ): TokenBudgetMonitorReturn {
+  // Runtime deprecation warning in development
+  if (process.env['NODE_ENV'] === 'development') {
+    // Only warn once per session
+    const warningKey = 'useTokenBudgetMonitor-deprecation-warned'
+    if (typeof globalThis !== 'undefined' && !(globalThis as any)[warningKey]) {
+      console.warn(
+        '[Deprecation] useTokenBudgetMonitor: This hook will be renamed to useTokenBudgetTracking in v3.0.0. ' +
+          'Please update your imports:\n' +
+          '  - useTokenBudgetMonitor → useTokenBudgetTracking (for monitoring/analytics)\n' +
+          '  See: https://github.com/clarity-ai/token-optimization#migration'
+      )
+      ;(globalThis as any)[warningKey] = true
+    }
+  }
   // Validate config in development
   if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {
@@ -441,7 +474,7 @@ export function useTokenBudgetMonitor(
       const exceededPercent =
         utilizationPercent > 100 ? utilizationPercent - 100 : 0
 
-      const newUsage: TokenUsage = {
+      const newUsage: TokenBudgetUsage = {
         current: currentTokens,
         max: resolvedConfig.maxInputTokens,
         available,
@@ -636,7 +669,7 @@ export function getStatusColor(
  * - Normal: "5,000 / 10,000 tokens (50.0%)"
  * - Exceeded: "15,000 / 10,000 tokens (100% + 50% over)"
  */
-export function formatTokenUsage(usage: TokenUsage): string {
+export function formatTokenUsage(usage: TokenBudgetUsage): string {
   const current = usage.current.toLocaleString()
   const max = usage.effectiveMax.toLocaleString()
 
@@ -864,7 +897,7 @@ export interface TokenCostEstimate {
  * ```
  */
 export function estimateTokenCost(
-  usage: TokenUsage,
+  usage: TokenBudgetUsage,
   model: BudgetMonitorModel
 ): TokenCostEstimate | null {
   const pricing = MODEL_PRICING[model]

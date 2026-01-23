@@ -13,7 +13,7 @@ import { SimpleModelRouter } from './routing/simple-router'
 import { AdvancedTokenCounter } from './tokenizers/advanced-counter'
 import { toBase64 } from './utils/crypto'
 import {
-  ProviderCachingManager,
+  ProviderCachingFormatter,
   type ProviderCachingConfig,
   type CacheableMessage,
 } from './providers'
@@ -108,7 +108,7 @@ export class UnifiedTokenOptimizer {
   private compressor: BasicCompressionEngine
   private router: SimpleModelRouter
   private counter: AdvancedTokenCounter
-  private providerCaching?: ProviderCachingManager
+  private providerCaching?: ProviderCachingFormatter
   private stats: OptimizationStats
 
   constructor(providerCachingConfig?: Partial<ProviderCachingConfig>) {
@@ -130,7 +130,7 @@ export class UnifiedTokenOptimizer {
 
     // Initialize provider caching if config provided
     if (providerCachingConfig) {
-      this.providerCaching = new ProviderCachingManager(
+      this.providerCaching = new ProviderCachingFormatter(
         providerCachingConfig,
         this.counter
       )
@@ -200,8 +200,8 @@ export class UnifiedTokenOptimizer {
           },
         ]
 
-        // Apply provider caching
-        const providerResult = await this.providerCaching.applyCaching(messages)
+        // Format messages for provider caching
+        const providerResult = await this.providerCaching.formatMessagesForCaching(messages)
 
         if (providerResult.cached) {
           providerCacheHit = true

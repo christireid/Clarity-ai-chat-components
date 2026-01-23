@@ -32,22 +32,8 @@ export type {
   IToolRegistry,
 } from '../types/tool-definition'
 
-// Note: Canonical types have been removed. Use ToolDefinition, ToolParameters, etc. directly
+// Note: Legacy types have been removed. Use ToolDefinition, ToolParameters, etc. directly from '../types/tool-definition'
 
-// =============================================================================
-// DEPRECATED: Legacy Types (kept for backward compatibility)
-// =============================================================================
-
-/**
- * @deprecated Use ToolDefinition from '../types/tool-definition' instead
- *
- * This simplified Tool interface is missing critical fields like:
- * - displayName, cacheable, cacheTtl, timeout, parallelizable
- * - hooks (lifecycle callbacks)
- * - execute function doesn't receive ToolExecutionContext
- *
- * Migrate to ToolDefinition for full feature support and security.
- */
 export interface Tool {
   /** Tool name */
   name: string

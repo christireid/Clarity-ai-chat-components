@@ -11,7 +11,7 @@ import { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
 import type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,
@@ -56,7 +56,7 @@ export interface UseModelRouterReturn {
   /**
    * Available models
    */
-  models: ModelConfig[]
+  models: ModelRoutingConfig[]
 
   /**
    * Default routing strategy
@@ -119,13 +119,18 @@ export function useModelRouter(
   // Persist router instance across renders
   const routerRef = useRef<ModelRouter | null>(null)
 
+  // Lazy initialization
+  if (routerRef.current === null) {
+    routerRef.current = new ModelRouter(routerConfig)
+  }
+
   // Track stats reactively if enabled
   const [stats, setStats] = useState<RouterStats | null>(null)
 
-  // Initialize router lazily (refs can be set during render)
-  if (!routerRef.current) {
+  // Update router on config change
+  useEffect(() => {
     routerRef.current = new ModelRouter(routerConfig)
-  }
+  }, [routerConfig])
 
   // Initialize stats in effect to avoid setState during render
   useEffect(() => {
@@ -195,4 +200,4 @@ export function useModelRouter(
 
 // Re-export types and enums for convenience
 export { RoutingStrategy }
-export type { ModelConfig, RoutingOptions, RoutingResult, RouterStats }
+export type { ModelRoutingConfig, RoutingOptions, RoutingResult, RouterStats }

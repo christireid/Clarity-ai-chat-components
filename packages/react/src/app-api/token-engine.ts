@@ -45,7 +45,11 @@ export interface TokenEngineState {
   qualityThreshold: number
 }
 
-export interface TokenEstimate {
+/**
+ * Token estimation result for app-api internal use
+ * @internal - Use TokenEstimate from @clarity-chat/token-optimization for external APIs
+ */
+export interface AppTokenEstimate {
   inputTokens: number
   outputTokens: number
   totalTokens: number
@@ -508,7 +512,7 @@ export function getTokenEstimate(
   state: TokenEngineState,
   messages: Message[],
   expectedOutputTokens: number = 500
-): TokenEstimate {
+): AppTokenEstimate {
   const inputTokens = estimateConversationTokens(messages, state.model)
   const outputTokens = expectedOutputTokens
   const totalTokens = inputTokens + outputTokens

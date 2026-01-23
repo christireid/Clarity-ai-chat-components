@@ -7,7 +7,7 @@
  * @module providers/simple-caching
  */
 
-import { ProviderCachingManager } from './prompt-caching'
+import { ProviderCachingFormatter } from './prompt-caching'
 import { SimpleTokenCounter } from '../tokenizers/simple-counter'
 import type {
   CacheableMessage,
@@ -64,8 +64,8 @@ export function createProviderCache(config: SimpleProviderCachingConfig = {}) {
   // Create token counter with simple defaults
   const tokenCounter = new SimpleTokenCounter()
 
-  // Create manager with optimized config
-  const manager = new ProviderCachingManager(
+  // Create formatter with optimized config
+  const formatter = new ProviderCachingFormatter(
     {
       enabled: true,
       provider,
@@ -108,10 +108,10 @@ export function createProviderCache(config: SimpleProviderCachingConfig = {}) {
       const selectedProvider: CachingProvider =
         totalTokens > 5000 ? 'openai' : 'anthropic'
 
-      return manager.applyCaching(messages, selectedProvider)
+      return formatter.formatMessagesForCaching(messages, selectedProvider)
     }
 
-    return manager.applyCaching(messages, provider)
+    return formatter.formatMessagesForCaching(messages, provider)
   }
 }
 

@@ -80,12 +80,20 @@ export {
   isValidModelId,
   getModelConfig,
   tryGetModelConfig,
+  // Model Registration API (for custom models)
+  registerModel,
+  createCustomModel,
+  isCustomModel,
+  unregisterModel,
 } from './models/model-registry'
 export type {
   ModelId,
+  KnownModelId,
   ModelProvider,
   TokenizerEncoding,
-  TokenModelConfig,
+  ModelRegistryConfig,
+  // Deprecated - use ModelRegistryConfig
+  ModelRegistryConfig as TokenModelConfig,
 } from './models/model-registry'
 
 export {
@@ -280,12 +288,18 @@ export type {
 } from './compression'
 
 // Token counting exports (legacy compatibility)
+// New canonical names
 export {
-  TokenCounter,
+  LegacyTokenCounter,
+  TokenBudgetManager as LegacyTokenBudgetManager,
+} from './legacy-compatibility'
+
+// Deprecated - for backward compatibility only
+export {
+  TokenCounter, // @deprecated - use LegacyTokenCounter, AccurateTokenCounter, or FastTokenCounter
   ContextOptimizer,
   MemoryCompressor,
   SemanticChunker,
-  TokenBudgetManager as LegacyTokenBudgetManager,
   countTokens,
   countTokensBatch,
   truncateToTokens,
@@ -315,6 +329,13 @@ export type {
   ChatMessage,
 } from './tokenizers/accurate-counter'
 
+// Fast token counter (new canonical name)
+export {
+  FastTokenCounter,
+  type FastTokenCounterConfig,
+} from './tokenizers/fast-counter'
+
+// Deprecated - use FastTokenCounter
 export { SimpleTokenCounter } from './tokenizers/simple-counter'
 
 // Provider-Native Token Counting - 100% accurate counting using provider APIs
@@ -327,12 +348,16 @@ export type {
   TokenCountResult,
 } from './tokenizers/provider-native-counter'
 
-// Provider-Native Caching (Anthropic, OpenAI, Google) - 90% savings on cached tokens
+// Provider-Native Caching (Anthropic, OpenAI, Google)
+// ⚠️ Formats messages for provider caching. You must implement provider API calls.
 export {
   // Advanced API (full control)
+  ProviderCachingFormatter,
+  formatMessagesForProviderCaching,
+  parseOpenAICacheMetrics,
+  // Deprecated aliases (use ProviderCachingFormatter instead)
   ProviderCachingManager,
   applyProviderCaching,
-  parseOpenAICacheMetrics,
   // Simple API (recommended for most use cases)
   createProviderCache,
   quickCache,
@@ -355,6 +380,11 @@ export type {
   ProviderCachingResult,
   ProviderCachingConfig,
   CacheableMessage,
+  // Token counting provider interface
+  TokenCountingProvider,
+  // Deprecated type alias - use TokenCountingProvider instead
+  // Note: Cannot export type TokenCounter due to conflict with legacy class export
+  // Use TokenCountingProvider for provider interface types
 } from './providers/types'
 export type { SimpleProviderCachingConfig } from './providers/simple-caching'
 
@@ -457,11 +487,13 @@ export {
 } from './routing/model-router'
 export type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   ModelTier,
   RoutingOptions,
   RoutingResult,
   RouterStats,
+  // Deprecated - use ModelRoutingConfig
+  ModelRoutingConfig as ModelConfig,
 } from './routing/model-router'
 
 // React Hooks
@@ -472,7 +504,9 @@ export {
   useTieredCache,
   useModelRouter,
   useOptimizationPipeline,
-  // Token budget monitoring
+  // Token budget tracking (new canonical name)
+  useTokenBudgetTracking,
+  // Token budget monitoring (deprecated - use useTokenBudgetTracking)
   useTokenBudgetMonitor,
   getStatusColor,
   formatTokenUsage,
@@ -493,65 +527,20 @@ export type {
   PipelineResult,
   PipelineStats,
   UseOptimizationPipelineReturn,
-  // Token budget monitoring types
+  // Token budget tracking types (new canonical name)
+  TokenBudgetTrackingReturn,
+  // Token budget monitoring types (deprecated)
   TokenUsageStatus,
-  TokenUsage,
+  TokenBudgetUsage,
+  TokenUsage, // @deprecated - use TokenBudgetUsage for budget tracking, or analytics/TokenUsage for API metrics
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,
-  TokenBudgetMonitorReturn,
+  TokenBudgetMonitorReturn, // @deprecated - use TokenBudgetTrackingReturn
   BudgetMonitorModel,
   TokenCostEstimate,
   ModelName, // Backward compatibility
 } from './hooks'
-
-// React Components
-export { TokenBudgetBar, useTokenBudget } from './components'
-export type {
-  BudgetStatus as TokenBudgetStatus,
-  TokenBudgetTheme,
-  TokenBudgetBarProps,
-  UseTokenBudgetConfig,
-  UseTokenBudgetReturn,
-} from './components'
-
-// Token Cost Preview (React)
-export { TokenCostPreview, useTokenEstimate } from './react'
-export type {
-  TokenCostPreviewProps,
-  UseTokenEstimateOptions,
-  TokenEstimate,
-} from './react'
-
-// Token Usage Meter (React) - Animated + Static versions
-export {
-  TokenUsageMeter,
-  TokenUsageMeterStatic,
-  MODEL_PRICING_PRESETS,
-} from './react'
-export type {
-  TokenUsage as TokenMeterUsage,
-  ModelPricing as TokenMeterPricing,
-  TokenUsageMeterProps,
-  TokenUsageStatic as TokenMeterUsageStatic,
-  ModelPricingStatic as TokenMeterPricingStatic,
-  TokenUsageMeterStaticProps,
-} from './react'
-
-// Token Optimization Components (React) - Badge, Panel, Dashboard
-export {
-  TokenOptimizationBadge,
-  TokenOptimizationPanel,
-  TokenOptimizationDashboard,
-  createEmptyStats,
-} from './react'
-export type {
-  TokenOptimizationBadgeProps,
-  TokenOptimizationPanelProps,
-  TokenOptimizationDashboardProps,
-  OptimizationMetrics,
-  TokenOptimizationStats,
-} from './react'
 
 // Accessibility - WCAG 2.1 AA compliant utilities
 export {

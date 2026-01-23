@@ -1,10 +1,18 @@
 /**
- * Provider-Native Prompt Caching
+ * Provider-Native Prompt Caching Formatter
  *
- * Implements provider-specific caching strategies:
- * - Anthropic: cache_control breakpoints (90% savings on cached tokens)
- * - OpenAI: Automatic caching detection (90% savings on cached tokens)
- * - Google: Explicit and implicit caching modes (90% savings on cached tokens)
+ * ⚠️ IMPORTANT: This module FORMATS messages for provider-native caching.
+ * It does NOT implement actual caching or make API calls.
+ *
+ * Formats messages with provider-specific cache control markers:
+ * - Anthropic: cache_control breakpoints
+ * - OpenAI: Message reordering for automatic caching
+ * - Google: Cache metadata preparation
+ *
+ * To use provider caching:
+ * 1. Format messages using this module
+ * 2. Make API calls to provider with formatted messages
+ * 3. Track actual costs to measure real savings
  *
  * @module providers/prompt-caching
  */
@@ -46,11 +54,32 @@ const DEFAULT_CONFIG: ProviderCachingConfig = {
 }
 
 /**
- * Provider-Native Caching Manager
+ * Provider-Native Caching Formatter
  *
- * Orchestrates caching strategies across different LLM providers
+ * ⚠️ IMPORTANT: This class only FORMATS messages with cache control markers.
+ * It does NOT make API calls or implement actual caching. You must:
+ * 1. Use this class to format messages with cache markers
+ * 2. Make provider API calls yourself with the formatted messages
+ * 3. Make repeated API calls to benefit from provider caching
+ * 4. Track actual costs to measure real savings
+ *
+ * Provider-specific formatting:
+ * - Anthropic: Adds cache_control breakpoints to message blocks
+ * - OpenAI: Reorders messages to optimize automatic caching (≥1024 tokens)
+ * - Google: Prepares metadata for implicit/explicit caching modes
+ *
+ * @example
+ * const formatter = new ProviderCachingFormatter({ provider: 'anthropic' })
+ * const { messages } = await formatter.formatMessagesForCaching(myMessages)
+ *
+ * // YOU implement the actual caching:
+ * const response = await anthropic.messages.create({
+ *   messages,  // Uses formatted messages
+ *   model: 'claude-3-5-sonnet-20241022',
+ *   // ... other params
+ * })
  */
-export class ProviderCachingManager {
+export class ProviderCachingFormatter {
   private config: ProviderCachingConfig
   private tokenCounter?: TokenCounter
 
@@ -63,13 +92,20 @@ export class ProviderCachingManager {
   }
 
   /**
-   * Apply provider-native caching to messages
+   * Format messages for provider-native caching
    *
-   * @param messages - Array of messages to optimize
+   * ⚠️ This method ONLY formats messages. It does NOT:
+   * - Make API calls to providers
+   * - Store or retrieve cached content
+   * - Guarantee any cost savings
+   *
+   * You must implement provider API calls yourself to use caching.
+   *
+   * @param messages - Array of messages to format
    * @param provider - Target provider (defaults to config.provider)
-   * @returns Caching result with optimized messages
+   * @returns Formatting result with cache-optimized messages
    */
-  async applyCaching(
+  async formatMessagesForCaching(
     messages: CacheableMessage[],
     provider?: CachingProvider
   ): Promise<ProviderCachingResult> {
@@ -550,6 +586,20 @@ export class ProviderCachingManager {
   }
 
   /**
+   * @deprecated Use formatMessagesForCaching() instead. Will be removed in v2.0.0.
+   */
+  async applyCaching(
+    messages: CacheableMessage[],
+    provider?: CachingProvider
+  ): Promise<ProviderCachingResult> {
+    console.warn(
+      '[DEPRECATION] ProviderCachingFormatter.applyCaching() is deprecated. ' +
+      'Use formatMessagesForCaching() instead. See MIGRATION.md for details.'
+    )
+    return this.formatMessagesForCaching(messages, provider)
+  }
+
+  /**
    * Update configuration
    */
   updateConfig(config: Partial<ProviderCachingConfig>): void {
@@ -565,15 +615,37 @@ export class ProviderCachingManager {
 }
 
 /**
- * Convenience function: Apply provider caching to messages
+ * @deprecated Use ProviderCachingFormatter instead. Will be removed in v2.0.0.
+ */
+export const ProviderCachingManager = ProviderCachingFormatter
+
+/**
+ * Convenience function: Format messages for provider caching
+ *
+ * ⚠️ This function ONLY formats messages. You must make provider API calls yourself.
+ */
+export async function formatMessagesForProviderCaching(
+  messages: CacheableMessage[],
+  config: Partial<ProviderCachingConfig> = {},
+  tokenCounter?: TokenCounter
+): Promise<ProviderCachingResult> {
+  const formatter = new ProviderCachingFormatter(config, tokenCounter)
+  return formatter.formatMessagesForCaching(messages)
+}
+
+/**
+ * @deprecated Use formatMessagesForProviderCaching() instead. Will be removed in v2.0.0.
  */
 export async function applyProviderCaching(
   messages: CacheableMessage[],
   config: Partial<ProviderCachingConfig> = {},
   tokenCounter?: TokenCounter
 ): Promise<ProviderCachingResult> {
-  const manager = new ProviderCachingManager(config, tokenCounter)
-  return manager.applyCaching(messages)
+  console.warn(
+    '[DEPRECATION] applyProviderCaching() is deprecated. ' +
+    'Use formatMessagesForProviderCaching() instead. See MIGRATION.md for details.'
+  )
+  return formatMessagesForProviderCaching(messages, config, tokenCounter)
 }
 
 /**

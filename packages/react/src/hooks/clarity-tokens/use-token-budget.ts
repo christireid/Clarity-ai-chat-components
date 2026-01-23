@@ -35,7 +35,13 @@ export interface TokenUsageRecord {
   requestId?: string
 }
 
-export interface BudgetStatus {
+/**
+ * Token budget status tracking
+ *
+ * Renamed from BudgetStatus to TokenBudgetStatus to avoid collision with
+ * BudgetStatus interface in @clarity-chat/token-optimization cost module.
+ */
+export interface TokenBudgetStatus {
   remainingTokens: number
   usedTokens: number
   percentUsed: number
@@ -49,7 +55,7 @@ export interface UseTokenBudgetReturn {
   /** Total tokens used this session */
   usedTokens: number
   /** Budget status */
-  status: BudgetStatus
+  status: TokenBudgetStatus
   /** Register token usage */
   registerUsage: (usage: {
     inputTokens: number
@@ -134,6 +140,21 @@ function saveToStorage(
 /**
  * useTokenBudget - Tracks per-session token usage and enforces budget
  *
+ * @deprecated Use `useTokenBudgetBar` instead for component-specific usage
+ * The name `useTokenBudget` is ambiguous. For UI components like TokenBudgetBar,
+ * use `useTokenBudgetBar`. For monitoring/analytics, use `useTokenBudgetTracking`
+ * from @clarity-chat/token-optimization.
+ * This hook will be removed in v3.0.0
+ *
+ * Migration:
+ * ```diff
+ * - import { useTokenBudget } from '@clarity-chat/react'
+ * + import { useTokenBudgetBar } from '@clarity-chat/react'
+ *
+ * - const budget = useTokenBudget(config)
+ * + const budget = useTokenBudgetBar(config)
+ * ```
+ *
  * Provides session-level token budget management with support for:
  * - Usage tracking and history
  * - Budget enforcement with assertCanSpend
@@ -183,6 +204,20 @@ function saveToStorage(
 export function useTokenBudget(
   config: UseTokenBudgetConfig
 ): UseTokenBudgetReturn {
+  // Runtime deprecation warning in development
+  if (process.env['NODE_ENV'] === 'development') {
+    // Only warn once per session
+    const warningKey = 'useTokenBudget-deprecation-warned'
+    if (typeof globalThis !== 'undefined' && !(globalThis as any)[warningKey]) {
+      console.warn(
+        '[Deprecation] useTokenBudget: This hook will be renamed to useTokenBudgetBar in v3.0.0. ' +
+          'Please update your imports:\n' +
+          '  - useTokenBudget → useTokenBudgetBar (for component/UI usage)\n' +
+          '  See: https://github.com/clarity-ai/react#migration'
+      )
+      ;(globalThis as any)[warningKey] = true
+    }
+  }
   const {
     sessionBudgetTokens,
     persist = false,
@@ -224,7 +259,7 @@ export function useTokenBudget(
   /**
    * Calculate budget status
    */
-  const status = React.useMemo((): BudgetStatus => {
+  const status = React.useMemo((): TokenBudgetStatus => {
     const percentUsed = usedTokens / sessionBudgetTokens
     const isOverBudget = usedTokens >= sessionBudgetTokens
 

@@ -84,9 +84,11 @@ const { model, cost, reason } = router.route(prompt)
 console.log(`Use ${model} - ${reason}`)
 ```
 
-### Provider-Native Caching (90% Savings!)*
+### Provider-Native Caching (Up to 90% Cost Reduction Possible)\*
 
-<sub>*Based on provider prompt caching specifications. Actual savings may vary.</sub>
+<sub>\*Based on provider prompt caching pricing specifications. Requires provider API
+implementation. Actual savings depend on cache hit rates and usage patterns. See documentation for
+details.</sub>
 
 Leverage built-in caching from Anthropic, OpenAI, and Google:
 
@@ -121,7 +123,11 @@ Works with:
 Monitor actual savings from token optimization with built-in cost analytics:
 
 ```typescript
-import { CostTracker, calculateRequestCost, getSavingsPercentage } from '@clarity-chat/token-optimization'
+import {
+  CostTracker,
+  calculateRequestCost,
+  getSavingsPercentage,
+} from '@clarity-chat/token-optimization'
 
 // Create a tracker for your model
 const tracker = new CostTracker('claude-3-5-sonnet')
@@ -130,7 +136,7 @@ const tracker = new CostTracker('claude-3-5-sonnet')
 const cost = tracker.trackRequest({
   inputTokens: 10000,
   outputTokens: 500,
-  cachedInputTokens: 8000 // 80% cache hit rate
+  cachedInputTokens: 8000, // 80% cache hit rate
 })
 
 console.log(`This request: $${cost.totalCost.toFixed(4)}`)
@@ -151,11 +157,12 @@ const singleCost = calculateRequestCost({
   model: 'gpt-4o',
   inputTokens: 5000,
   outputTokens: 1000,
-  cachedInputTokens: 4000
+  cachedInputTokens: 4000,
 })
 ```
 
 **Features:**
+
 - Real-time cost calculations with caching savings
 - Cumulative tracking across multiple requests
 - Personalized recommendations for optimization
@@ -202,48 +209,43 @@ const localCounter = new ProviderNativeCounter({
 - **Auto fallback** - Uses fast local counting when API unavailable
 - **Caching** - Results cached for 1 hour to minimize API calls
 
-### File Optimization (40-60% Savings!)*
+### File Optimization (Coming Soon)
 
-<sub>*Compression rates vary by content type and configuration.</sub>
+> ⚠️ **Note**: FileOptimizer is planned for a future release and is not yet available. Current
+> version provides format-specific optimizers (HTML, Markdown, TOON).
 
-Optimize files for token efficiency with smart chunking and format conversion:
+**Available Now:**
 
 ```typescript
-import { FileOptimizer } from '@clarity-chat/token-optimization'
+import { HTMLOptimizer, MarkdownOptimizer, ToonOptimizer } from '@clarity-chat/token-optimization'
 
-const optimizer = new FileOptimizer({
-  outputFormat: 'toon', // Convert to Token-Optimized Object Notation
-  chunkingStrategy: 'semantic', // Smart chunking at paragraph boundaries
-  targetChunkSize: 1000, // Tokens per chunk
-  removeComments: true, // Strip code comments
-  normalizeWhitespace: true, // Collapse extra whitespace
-})
+// HTML optimization (40-60% savings)
+const htmlOpt = new HTMLOptimizer()
+const markdown = htmlToMarkdown('<html><body><h1>API Guide</h1></body></html>')
 
-// Optimize HTML documentation to Markdown
-const htmlDoc = '<html><body><h1>API Guide</h1><p>...</p></body></html>'
-const result = await optimizer.optimize(htmlDoc, 'html')
+// TOON format (20-45% measured savings)
+const toonOpt = new ToonOptimizer()
+const toon = encodeToon({ name: 'John', age: 30 })
 
-console.log(`Saved ${result.stats.tokensSaved} tokens (${result.stats.savingsPercent.toFixed(1)}%)`)
-console.log(`Original: ${result.stats.originalTokens} tokens`)
-console.log(`Optimized: ${result.stats.optimizedTokens} tokens`)
-console.log(`Chunks: ${result.chunks?.length || 1}`)
+// Markdown compression
+const mdOpt = new MarkdownOptimizer()
+const compressed = compressMarkdown(largeMarkdownDoc, { level: 'aggressive' })
 ```
 
-**Supported conversions:**
+**Supported optimizations:**
 
-- HTML → Markdown/TOON (40-60% savings)*
-- JSON → TOON (30-50% savings with single-letter keys)*
-- Code → Markdown (remove comments, normalize whitespace)
-- PDF → Text (extract and optimize)
+- HTML → Markdown/Text (40-60% savings)
+- JSON → TOON (20-45% measured savings)
+- Markdown → Compressed Markdown
+- Text → Normalized Text
 
-<sub>*Compression rates vary by content type and configuration.</sub>
+<sub>\*TOON savings measured using real GPT tokenizer across diverse test cases.</sub>
 
-**Chunking strategies:**
+**See Also:**
 
-- `semantic` - Split at natural boundaries (paragraphs, sentences)
-- `fixed-size` - Fixed token counts with overlap
-- `sliding-window` - Overlapping windows for context
-- `hierarchical` - Multi-level semantic chunking
+- `TextChunker` for smart chunking strategies
+- `LLMLinguaCompressor` for statistical compression
+- Format-specific optimizers (HTMLOptimizer, MarkdownOptimizer, ToonOptimizer)
 
 ## Installation
 
@@ -261,7 +263,9 @@ npm install @clarity-chat/token-optimization
 | React hooks          | ✅ Built-in  | ❌ DIY         |
 | Model routing        | ✅ Built-in  | ❌ DIY         |
 
-> **Note on Accuracy**: 99%+ for OpenAI models (gpt-tokenizer). For Claude/Gemini, uses character estimation (~90% accurate). For 100% accuracy across all providers, use the new `ProviderNativeCounter` with API keys.
+> **Note on Accuracy**: 99%+ for OpenAI models (gpt-tokenizer). For Claude/Gemini, uses character
+> estimation (~90% accurate). For 100% accuracy across all providers, use the new
+> `ProviderNativeCounter` with API keys.
 
 ## Sensible Defaults
 
@@ -325,9 +329,10 @@ import { UnsupportedModelError } from '@clarity-chat/token-optimization'
 const { count } = useTokenCount(text)
 ```
 
-### Level 2: Add Provider Caching (90% savings)*
+### Level 2: Add Provider Caching (90% savings)\*
 
-<sub>*Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on provider specifications. Actual savings may vary.</sub>
+<sub>\*Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on
+provider specifications. Actual savings may vary.</sub>
 
 ```typescript
 import { createProviderCache } from '@clarity-chat/token-optimization'
@@ -359,22 +364,27 @@ const { result, stats } = useOptimizationPipeline(text, {
 
 This package provides:
 
-- **Provider-Native Caching**: 90% cost reduction with Anthropic, OpenAI, Google* ⭐ NEW
-  - *Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on provider specifications.
-- **Provider-Native Token Counting**: 100% accurate counting via provider APIs (Anthropic, Gemini) ⭐ NEW
+- **Provider-Native Caching**: 90% cost reduction with Anthropic, OpenAI, Google\* ⭐ NEW
+  - \*Leverages provider-native caching when available (Anthropic, OpenAI, Google). Based on
+    provider specifications.
+- **Provider-Native Token Counting**: 100% accurate counting via provider APIs (Anthropic, Gemini)
+  ⭐ NEW
 - **File Optimization**: Smart chunking & format conversion (HTML/PDF→Markdown/TOON) ⭐ NEW
 - **Token Counting**: 99%+ accurate with gpt-tokenizer (5-6x smaller: 972KB vs 5.3MB tiktoken)
 - **Text Chunking**: Smart splitting with overlap support
-- **Compression**: LLMLingua-style compression (2-10x reduction, typically 4-5x)*
-  - *Compression rates vary by content type and configuration.
+- **Compression**: LLMLingua-style compression (2-10x reduction, typically 4-5x)\*
+  - \*Compression rates vary by content type and configuration.
 - **Caching**: Multi-tier with semantic similarity matching
 - **Model Routing**: Automatic model selection by cost/quality/complexity
-- **TOON Format**: Token-Optimized Object Notation (40-60% savings)
+- **TOON Format**: Token-Optimized Object Notation (20-45% measured savings)
 - **Security**: OWASP LLM Top 10 compliance
 - **Accessibility**: WCAG 2.1 AA compliant components
 - **Production**: Health checks, observability, circuit breakers
 
-**Why so comprehensive?** Token optimization in production requires more than just counting. This package provides integrated infrastructure for security, observability, and resilience because these are essential for production LLM applications. See [PACKAGE_SCOPE.md](./PACKAGE_SCOPE.md) for architecture rationale and scope justification.
+**Why so comprehensive?** Token optimization in production requires more than just counting. This
+package provides integrated infrastructure for security, observability, and resilience because these
+are essential for production LLM applications. See [PACKAGE_SCOPE.md](./PACKAGE_SCOPE.md) for
+architecture rationale and scope justification.
 
 ## Supported Models
 
@@ -388,31 +398,32 @@ This package provides:
 
 ### Provider Caching Functions (NEW!)
 
-| Function                 | Purpose                          |
-| ------------------------ | -------------------------------- |
-| `quickCache`             | Zero-config caching              |
-| `anthropicCache`         | Anthropic-specific caching       |
-| `openaiCache`            | OpenAI-specific caching          |
-| `googleCache`            | Google Gemini-specific caching   |
-| `createProviderCache`    | Create reusable cache function   |
-| `estimateCacheSavings`   | Estimate savings before applying |
-| `ProviderCachingManager` | Advanced caching control         |
+| Function                   | Purpose                              |
+| -------------------------- | ------------------------------------ |
+| `quickCache`               | Zero-config caching                  |
+| `anthropicCache`           | Anthropic-specific caching           |
+| `openaiCache`              | OpenAI-specific caching              |
+| `googleCache`              | Google Gemini-specific caching       |
+| `createProviderCache`      | Create reusable cache function       |
+| `estimateCacheSavings`     | Estimate savings before applying     |
+| `ProviderCachingFormatter` | Format messages for provider caching |
+| `ProviderCachingManager`   | (Deprecated - use Formatter)         |
 
 ### Provider-Native Token Counting (NEW!)
 
-| Function/Class           | Purpose                              |
-| ------------------------ | ------------------------------------ |
-| `ProviderNativeCounter`  | 100% accurate counting via APIs      |
-| `providerNativeCount`    | Quick count helper function          |
+| Function/Class          | Purpose                         |
+| ----------------------- | ------------------------------- |
+| `ProviderNativeCounter` | 100% accurate counting via APIs |
+| `providerNativeCount`   | Quick count helper function     |
 
 Supports: Anthropic (free API), Google Gemini (free API), OpenAI (local gpt-tokenizer)
 
 ### File Optimization (NEW!)
 
-| Function/Class  | Purpose                                  |
-| --------------- | ---------------------------------------- |
-| `FileOptimizer` | Smart chunking & format conversion       |
-| `optimizeFile`  | Quick optimization helper                |
+| Function/Class  | Purpose                            |
+| --------------- | ---------------------------------- |
+| `FileOptimizer` | Smart chunking & format conversion |
+| `optimizeFile`  | Quick optimization helper          |
 
 Formats: HTML→Markdown/TOON, JSON→TOON, Code→Markdown, PDF→Text
 
@@ -523,14 +534,18 @@ import { compressWithLLMLingua } from '@clarity-chat/token-optimization/compress
 ### Internal "Simple" Files
 
 You may notice files prefixed with `simple-` in the source code:
+
 - `src/simple-index.ts`
 - `src/simple-unified.ts`
 - `src/security/simple-security.ts`
 - etc.
 
-**These are internal development utilities**, not public APIs. They provide lightweight implementations for testing without external dependencies. **Do NOT import these directly** - they are not included in the package exports.
+**These are internal development utilities**, not public APIs. They provide lightweight
+implementations for testing without external dependencies. **Do NOT import these directly** - they
+are not included in the package exports.
 
 **For users:** Always import from the main package:
+
 ```typescript
 // ✅ Correct
 import { countTokens } from '@clarity-chat/token-optimization'

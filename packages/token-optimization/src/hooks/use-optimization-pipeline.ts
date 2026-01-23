@@ -22,7 +22,7 @@ import type { CompressionResult } from '../compression/markdown-compressor'
 import { ModelRouter, RoutingStrategy } from '../routing/model-router'
 import type {
   ModelRouterConfig,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,
@@ -230,31 +230,28 @@ export function useOptimizationPipeline(
   // Reactive stats
   const [stats, setStats] = useState<PipelineStats | null>(null)
 
-  // Track if initialized
-  const isInitialized = useRef(false)
-
-  // Initialize components lazily (refs can be set during render)
-  if (!isInitialized.current) {
-    if (config.cache) {
+  // Initialize components in useEffect (not during render!)
+  // This ensures proper React lifecycle compliance and works in Strict Mode
+  useEffect(() => {
+    // Initialize cache
+    if (config.cache && !cacheRef.current) {
       cacheRef.current = new TieredCache(config.cache)
     }
 
-    if (config.compressionLevel) {
+    // Initialize compressor
+    if (config.compressionLevel && !compressorRef.current) {
       compressorRef.current = new MarkdownCompressor({
         level: config.compressionLevel,
         enableTOON: true,
       })
     }
 
-    if (config.router) {
+    // Initialize router
+    if (config.router && !routerRef.current) {
       routerRef.current = new ModelRouter(config.router)
     }
 
-    isInitialized.current = true
-  }
-
-  // Cleanup on unmount to prevent memory leaks
-  useEffect(() => {
+    // Cleanup when config changes or on unmount
     return () => {
       // Clear cache
       cacheRef.current?.clear()
@@ -264,10 +261,8 @@ export function useOptimizationPipeline(
       // but setting to null allows garbage collection
       routerRef.current = null
       compressorRef.current = null
-
-      isInitialized.current = false
     }
-  }, [])
+  }, [config.cache, config.compressionLevel, config.router])
 
   // Initialize stats in effect to avoid setState during render
   useEffect(() => {
@@ -460,4 +455,4 @@ export function useOptimizationPipeline(
 
 // Re-export types and enums for convenience
 export { CompressionLevel, RoutingStrategy }
-export type { ModelConfig, RoutingOptions, CacheStats, RouterStats }
+export type { ModelRoutingConfig, RoutingOptions, CacheStats, RouterStats }

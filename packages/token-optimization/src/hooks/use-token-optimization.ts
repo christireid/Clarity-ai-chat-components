@@ -23,7 +23,7 @@ import type {
   ModelRouterConfig,
   RoutingResult,
   RouterStats,
-  ModelConfig,
+  ModelRoutingConfig,
 } from '../routing/model-router'
 import {
   MarkdownCompressor,
@@ -356,7 +356,7 @@ export function useTokenOptimization(
   const counterRef = useRef<AccurateTokenCounter | null>(null)
 
   // Create model configs for router
-  const modelConfigs: ModelConfig[] = useMemo(
+  const modelConfigs: ModelRoutingConfig[] = useMemo(
     () =>
       availableModels.map((m) => ({
         id: m,
@@ -378,45 +378,65 @@ export function useTokenOptimization(
     [availableModels]
   )
 
-  // Lazy initialization with useEffect for proper cleanup
-  // This pattern ensures instances are created once and cleaned up on unmount
-  const isInitialized = useRef(false)
-
-  if (!isInitialized.current) {
-    // Initialize cache
-    if (enableCache) {
-      cacheRef.current = new TieredCache({
+  // Memoize configuration objects to avoid unnecessary re-initialization
+  const tieredCacheConfig = useMemo(
+    () =>
+      ({
         exact: { maxSize: 500, ttl: 1800000, ...presetConfig.cache.exact },
         smart: { maxSize: 200, ttl: 1800000, ...presetConfig.cache.smart },
         semantic: cacheConfig?.semantic ?? getDefaultSemanticConfig(preset),
         ...cacheConfig,
-      } as TieredCacheConfig)
+      }) as TieredCacheConfig,
+    [preset, cacheConfig, presetConfig.cache]
+  )
+
+  const routerConfiguration = useMemo(
+    () => ({
+      models: modelConfigs,
+      defaultStrategy: presetConfig.routing,
+      ...routerConfig,
+    }),
+    [modelConfigs, presetConfig.routing, routerConfig]
+  )
+
+  const compressorConfiguration = useMemo(
+    () => ({
+      level: presetConfig.compression,
+    }),
+    [presetConfig.compression]
+  )
+
+  const counterConfiguration = useMemo(
+    () => ({
+      model,
+    }),
+    [model]
+  )
+
+  // Initialize instances in useEffect (not during render!)
+  // This ensures proper React lifecycle compliance
+  useEffect(() => {
+    // Initialize cache
+    if (enableCache && !cacheRef.current) {
+      cacheRef.current = new TieredCache(tieredCacheConfig)
     }
 
     // Initialize router
-    if (enableRouting) {
-      routerRef.current = new ModelRouter({
-        models: modelConfigs,
-        defaultStrategy: presetConfig.routing,
-        ...routerConfig,
-      })
+    if (enableRouting && !routerRef.current) {
+      routerRef.current = new ModelRouter(routerConfiguration)
     }
 
     // Initialize compressor
-    if (enableCompression) {
-      compressorRef.current = new MarkdownCompressor({
-        level: presetConfig.compression,
-      })
+    if (enableCompression && !compressorRef.current) {
+      compressorRef.current = new MarkdownCompressor(compressorConfiguration)
     }
 
     // Initialize token counter
-    counterRef.current = new AccurateTokenCounter({ model })
+    if (!counterRef.current) {
+      counterRef.current = new AccurateTokenCounter(counterConfiguration)
+    }
 
-    isInitialized.current = true
-  }
-
-  // Cleanup on unmount to prevent memory leaks
-  useEffect(() => {
+    // Cleanup when config changes or on unmount
     return () => {
       // Destroy counter to clear its internal cache and timers
       counterRef.current?.destroy()
@@ -430,10 +450,16 @@ export function useTokenOptimization(
       // but setting to null allows garbage collection
       routerRef.current = null
       compressorRef.current = null
-
-      isInitialized.current = false
     }
-  }, [])
+  }, [
+    enableCache,
+    enableRouting,
+    enableCompression,
+    tieredCacheConfig,
+    routerConfiguration,
+    compressorConfiguration,
+    counterConfiguration,
+  ])
 
   // Count tokens
   const countTokens = useCallback((text: string): number => {

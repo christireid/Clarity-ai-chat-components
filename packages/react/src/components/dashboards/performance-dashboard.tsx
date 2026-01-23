@@ -14,7 +14,7 @@ import {
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
-import { useRenderPerformance } from '../../utils/analytics'
+import { useRenderPerformance /* , useMemoryUsage */ } from '../../utils/analytics'
 
 // Stub for useMemoryUsage - not yet implemented in analytics
 function useMemoryUsage() {
@@ -315,8 +315,8 @@ export function PerformanceBadge({ className }: { className?: string }) {
   const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
-    if (performanceMetrics.lastRenderDuration > 50) return 'poor'
-    if (performanceMetrics.lastRenderDuration > 16) return 'warning'
+    if (performanceMetrics.lastRenderTime > 50) return 'poor'
+    if (performanceMetrics.lastRenderTime > 16) return 'warning'
     if (
       memoryInfo &&
       memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.9
@@ -328,7 +328,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
     )
       return 'warning'
     return 'good'
-  }, [performanceMetrics.lastRenderDuration, memoryInfo])
+  }, [performanceMetrics.lastRenderTime, memoryInfo])
 
   return (
     <div
@@ -339,9 +339,9 @@ export function PerformanceBadge({ className }: { className?: string }) {
             ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20'
             : 'bg-destructive/10 text-destructive border-destructive/20'
       } ${className || ''}`}
-      title={`Last render: ${performanceMetrics.lastRenderDuration.toFixed(2)}ms`}
+      title={`Last render: ${performanceMetrics.lastRenderTime.toFixed(2)}ms`}
       role="status"
-      aria-label={`Performance status: ${status}, last render ${performanceMetrics.lastRenderDuration.toFixed(1)} milliseconds`}
+      aria-label={`Performance status: ${status}, last render ${performanceMetrics.lastRenderTime.toFixed(1)} milliseconds`}
     >
       <span
         className={`w-2 h-2 rounded-full ${
@@ -353,7 +353,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
         }`}
         aria-hidden="true"
       />
-      {performanceMetrics.lastRenderDuration.toFixed(1)}ms
+      {performanceMetrics.lastRenderTime.toFixed(1)}ms
     </div>
   )
 }

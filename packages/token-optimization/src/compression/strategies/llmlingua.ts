@@ -34,6 +34,8 @@ export interface LLMLinguaOptions {
   preserveWords?: string[]
   /** Enable debug logging */
   debug?: boolean
+  /** Maximum recursion depth for quality retries (default: 5, max: 20) */
+  maxRecursionDepth?: number
 }
 
 /**
@@ -54,6 +56,8 @@ export interface LLMLinguaResult {
   tokenReductionRatio: number
   /** Quality metrics */
   quality: LLMLinguaQualityMetrics
+  /** Warning message if quality threshold couldn't be met or recursion limit reached */
+  warning?: string
   /** Debug information if enabled */
   debug?: LLMLinguaDebugInfo
 }
@@ -319,11 +323,13 @@ const CODE_BLOCK_PATTERN = /```[\s\S]*?```|`[^`]+`/g
 export class LLMLinguaCompressor {
   private readonly stopWords: Set<string>
   private readonly instructionMarkers: Set<string>
+  private readonly maxRecursionDepth: number
 
   /**
    * Create a new LLMLingua compressor
    *
    * @param defaultOptions - Default options for all compressions
+   * @throws {Error} If maxRecursionDepth is not between 0 and 20
    */
   constructor(private readonly defaultOptions: Partial<LLMLinguaOptions> = {}) {
     this.stopWords = new Set([
@@ -333,6 +339,14 @@ export class LLMLinguaCompressor {
     this.instructionMarkers = new Set(
       INSTRUCTION_MARKERS.map((m) => m.toLowerCase())
     )
+    this.maxRecursionDepth = defaultOptions.maxRecursionDepth ?? 5
+
+    // Validate maxRecursionDepth
+    if (this.maxRecursionDepth < 0 || this.maxRecursionDepth > 20) {
+      throw new Error(
+        `maxRecursionDepth must be between 0 and 20, got ${this.maxRecursionDepth}`
+      )
+    }
   }
 
   /**
@@ -341,6 +355,7 @@ export class LLMLinguaCompressor {
    * @param text - Input text to compress
    * @param targetRatio - Target compression ratio (0.1 = keep 10% = 10x compression)
    * @param options - Compression options
+   * @param _recursionDepth - Internal recursion depth tracking (do not set manually)
    * @returns Compression result with metrics
    *
    * @example
@@ -355,7 +370,8 @@ export class LLMLinguaCompressor {
   async compress(
     text: string,
     targetRatio: number,
-    options?: LLMLinguaOptions
+    options?: LLMLinguaOptions,
+    _recursionDepth: number = 0
   ): Promise<LLMLinguaResult> {
     const startTime = Date.now()
     const opts = { ...this.defaultOptions, ...options }
@@ -403,15 +419,31 @@ export class LLMLinguaCompressor {
     // Calculate quality metrics
     const quality = this.calculateQuality(text, compressed, tokensWithMetadata)
 
+    // Track quality warnings
+    let qualityWarning: string | undefined
+
     // Check minimum quality
     if (opts.minQuality && quality.overallQuality < opts.minQuality) {
       // Recursively try with higher ratio
       const higherRatio = Math.min(1.0, ratio + 0.1)
-      if (higherRatio < 1.0) {
-        return this.compress(text, higherRatio, {
-          ...opts,
-          minQuality: opts.minQuality,
-        })
+
+      // Check if we can recurse (not at max depth and ratio can be increased)
+      if (higherRatio < 1.0 && _recursionDepth < this.maxRecursionDepth) {
+        return this.compress(
+          text,
+          higherRatio,
+          {
+            ...opts,
+            minQuality: opts.minQuality,
+          },
+          _recursionDepth + 1 // Track recursion depth
+        )
+      } else {
+        // Can't meet quality threshold - save warning to add to result
+        qualityWarning =
+          higherRatio >= 1.0
+            ? `Quality threshold (${opts.minQuality}) could not be met at maximum compression ratio (1.0). Actual quality: ${quality.overallQuality.toFixed(3)}`
+            : `Max recursion depth (${this.maxRecursionDepth}) reached while trying to meet quality threshold. Actual quality: ${quality.overallQuality.toFixed(3)}`
       }
     }
 
@@ -435,6 +467,11 @@ export class LLMLinguaCompressor {
         keptTokens,
         processingTime
       )
+    }
+
+    // Add quality warning if threshold couldn't be met
+    if (qualityWarning) {
+      result.warning = qualityWarning
     }
 
     return result

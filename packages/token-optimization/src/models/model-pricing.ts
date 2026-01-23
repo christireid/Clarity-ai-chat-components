@@ -9,7 +9,7 @@
 import {
   MODEL_REGISTRY,
   type ModelId,
-  type TokenModelConfig,
+  type ModelRegistryConfig,
 } from './model-registry'
 
 /**
@@ -39,9 +39,9 @@ export interface ModelPricing {
 }
 
 /**
- * Convert MODEL_REGISTRY TokenModelConfig to ModelPricing format
+ * Convert MODEL_REGISTRY ModelRegistryConfig to ModelPricing format
  */
-function toModelPricing(config: TokenModelConfig): ModelPricing {
+function toModelPricing(config: ModelRegistryConfig): ModelPricing {
   // Map providers not supported in ModelPricing to 'other'
   const normalizedProvider: PricingProvider =
     config.provider === 'meta' || config.provider === 'mistral'

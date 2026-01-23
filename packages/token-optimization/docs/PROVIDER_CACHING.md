@@ -97,9 +97,9 @@ All providers offer **90% cost reduction** on cached tokens:
 **Best for**: Structured prompts with static system instructions
 
 ```typescript
-import { ProviderCachingManager } from '@clarity-chat/token-optimization'
+import { ProviderCachingFormatter } from '@clarity-chat/token-optimization'
 
-const manager = new ProviderCachingManager({
+const formatter = new ProviderCachingFormatter({
   enabled: true,
   provider: 'anthropic',
   anthropic: {
@@ -110,7 +110,7 @@ const manager = new ProviderCachingManager({
   },
 })
 
-const result = await manager.applyCaching(messages)
+const result = await formatter.formatMessagesForCaching(messages)
 ```
 
 ### OpenAI GPT
@@ -124,7 +124,7 @@ const result = await manager.applyCaching(messages)
 **Best for**: Large context windows and conversation history
 
 ```typescript
-const manager = new ProviderCachingManager({
+const formatter = new ProviderCachingFormatter({
   enabled: true,
   provider: 'openai',
   openai: {
@@ -146,7 +146,7 @@ const manager = new ProviderCachingManager({
 
 ```typescript
 // Implicit mode (automatic)
-const manager = new ProviderCachingManager({
+const formatter = new ProviderCachingFormatter({
   enabled: true,
   provider: 'google',
   google: {

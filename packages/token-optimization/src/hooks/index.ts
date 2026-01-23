@@ -24,7 +24,7 @@ export { useModelRouter, RoutingStrategy } from './use-model-router'
 export type {
   UseModelRouterConfig,
   UseModelRouterReturn,
-  ModelConfig,
+  ModelRoutingConfig,
   RoutingOptions,
   RoutingResult,
   RouterStats,
@@ -51,8 +51,15 @@ export type {
 } from './use-token-optimization'
 
 // Token budget monitoring (advanced usage tracking)
+// New canonical name
 export {
-  useTokenBudgetMonitor,
+  useTokenBudgetTracking,
+  type TokenBudgetTrackingReturn,
+} from './use-token-budget-tracking'
+
+// Deprecated exports - kept for backward compatibility
+export {
+  useTokenBudgetMonitor, // @deprecated - use useTokenBudgetTracking
   getStatusColor,
   formatTokenUsage,
   createModelBudgetMonitor,
@@ -61,11 +68,12 @@ export {
 } from './use-token-budget-monitor'
 export type {
   TokenUsageStatus,
-  TokenUsage,
+  TokenBudgetUsage,
+  TokenUsage, // @deprecated - use TokenBudgetUsage
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,
-  TokenBudgetMonitorReturn,
+  TokenBudgetMonitorReturn, // @deprecated - use TokenBudgetTrackingReturn
   BudgetMonitorModel,
   TokenCostEstimate,
   ModelName, // Backward compatibility alias
