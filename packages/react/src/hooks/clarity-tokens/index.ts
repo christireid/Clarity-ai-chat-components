@@ -214,7 +214,7 @@ export type {
   UseTokenBudgetConfig,
   UseTokenBudgetReturn,
   TokenUsageRecord,
-  BudgetStatus,
+  TokenBudgetStatus,
 } from './use-token-budget'
 
 // useVectorSearch types

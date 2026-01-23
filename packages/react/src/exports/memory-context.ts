@@ -40,6 +40,5 @@ export { MemoryService } from '@clarity-chat/memory'
 export {
   TokenCounter as MemoryTokenCounter,
   TokenBudgetManager,
-  MemoryCompressor,
   ContextOptimizer,
 } from '@clarity-chat/memory'
