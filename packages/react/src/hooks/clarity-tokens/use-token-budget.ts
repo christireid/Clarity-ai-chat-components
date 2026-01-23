@@ -134,6 +134,21 @@ function saveToStorage(
 /**
  * useTokenBudget - Tracks per-session token usage and enforces budget
  *
+ * @deprecated Use `useTokenBudgetBar` instead for component-specific usage
+ * The name `useTokenBudget` is ambiguous. For UI components like TokenBudgetBar,
+ * use `useTokenBudgetBar`. For monitoring/analytics, use `useTokenBudgetTracking`
+ * from @clarity-chat/token-optimization.
+ * This hook will be removed in v3.0.0
+ *
+ * Migration:
+ * ```diff
+ * - import { useTokenBudget } from '@clarity-chat/react'
+ * + import { useTokenBudgetBar } from '@clarity-chat/react'
+ *
+ * - const budget = useTokenBudget(config)
+ * + const budget = useTokenBudgetBar(config)
+ * ```
+ *
  * Provides session-level token budget management with support for:
  * - Usage tracking and history
  * - Budget enforcement with assertCanSpend
@@ -183,6 +198,20 @@ function saveToStorage(
 export function useTokenBudget(
   config: UseTokenBudgetConfig
 ): UseTokenBudgetReturn {
+  // Runtime deprecation warning in development
+  if (process.env['NODE_ENV'] === 'development') {
+    // Only warn once per session
+    const warningKey = 'useTokenBudget-deprecation-warned'
+    if (typeof globalThis !== 'undefined' && !(globalThis as any)[warningKey]) {
+      console.warn(
+        '[Deprecation] useTokenBudget: This hook will be renamed to useTokenBudgetBar in v3.0.0. ' +
+          'Please update your imports:\n' +
+          '  - useTokenBudget → useTokenBudgetBar (for component/UI usage)\n' +
+          '  See: https://github.com/clarity-ai/react#migration'
+      )
+      ;(globalThis as any)[warningKey] = true
+    }
+  }
   const {
     sessionBudgetTokens,
     persist = false,

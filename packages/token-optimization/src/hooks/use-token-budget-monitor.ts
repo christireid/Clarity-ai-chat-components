@@ -198,6 +198,19 @@ function createInitialUsage(config: TokenBudgetConfig): TokenBudgetUsage {
 /**
  * Hook for monitoring token budget in real-time
  *
+ * @deprecated Use `useTokenBudgetTracking` instead for clarity
+ * The name `useTokenBudgetMonitor` is confusing as it conflicts with component-specific usage.
+ * This hook will be removed in v3.0.0
+ *
+ * Migration:
+ * ```diff
+ * - import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+ * + import { useTokenBudgetTracking } from '@clarity-chat/token-optimization'
+ *
+ * - const { usage } = useTokenBudgetMonitor(config)
+ * + const { usage } = useTokenBudgetTracking(config)
+ * ```
+ *
  * Provides threshold-based warnings and automatic trimming to prevent
  * context overflow and provide immediate cost awareness.
  *
@@ -229,6 +242,20 @@ function createInitialUsage(config: TokenBudgetConfig): TokenBudgetUsage {
 export function useTokenBudgetMonitor(
   config: TokenBudgetConfig
 ): TokenBudgetMonitorReturn {
+  // Runtime deprecation warning in development
+  if (process.env['NODE_ENV'] === 'development') {
+    // Only warn once per session
+    const warningKey = 'useTokenBudgetMonitor-deprecation-warned'
+    if (typeof globalThis !== 'undefined' && !(globalThis as any)[warningKey]) {
+      console.warn(
+        '[Deprecation] useTokenBudgetMonitor: This hook will be renamed to useTokenBudgetTracking in v3.0.0. ' +
+          'Please update your imports:\n' +
+          '  - useTokenBudgetMonitor → useTokenBudgetTracking (for monitoring/analytics)\n' +
+          '  See: https://github.com/clarity-ai/token-optimization#migration'
+      )
+      ;(globalThis as any)[warningKey] = true
+    }
+  }
   // Validate config in development
   if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {

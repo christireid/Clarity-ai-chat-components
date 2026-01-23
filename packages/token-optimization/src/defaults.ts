@@ -202,21 +202,39 @@ export const DEFAULT_FALLBACK_MODEL = 'gpt-4o-mini'
 /**
  * Default security configuration.
  *
- * ⚠️ SECURITY NOTE: These defaults prioritize safety for enterprise use.
- * - PII redaction: ENABLED by default (safer for compliance)
- * - Audit logging: ENABLED by default (safer for accountability)
- * - Compliance: 'standard' provides good balance
+ * ⚠️ SECURITY CONFIGURATION:
+ * - PII Redaction: DISABLED by default (opt-in for compliance needs)
+ * - Audit Logging: ENABLED by default (required for security monitoring)
+ * - Sanitization: ENABLED by default (required for injection protection)
  *
- * If you need minimal security for development/testing, explicitly configure:
+ * Use presets for different security levels:
+ * - `minimal`: Development - no PII redaction, no audit logging
+ * - `standard`: Default - no PII redaction, audit logging enabled (THIS DEFAULT)
+ * - `production`: Production - PII redaction enabled, audit logging enabled
+ * - `enterprise`: Compliance - PII redaction enabled, strict compliance, 90-day retention
+ *
+ * @example
  * ```typescript
- * { enablePIIRedaction: false, enableAuditLogging: false }
+ * // Use standard preset (default - inherits this config)
+ * const optimizer = createOptimizer({ preset: 'standard' })
+ *
+ * // Use enterprise preset for compliance
+ * const secureOptimizer = createOptimizer({ preset: 'enterprise' })
+ *
+ * // Custom override
+ * const customOptimizer = createOptimizer({
+ *   preset: 'standard',
+ *   security: {
+ *     enablePIIRedaction: true, // Override to enable
+ *   },
+ * })
  * ```
  */
 export const DEFAULT_SECURITY_CONFIG = {
   /** Enable input sanitization */
   enableSanitization: true,
-  /** Enable PII detection and redaction (ENABLED for safety) */
-  enablePIIRedaction: true,
+  /** Enable PII detection and redaction (DISABLED - opt-in for compliance) */
+  enablePIIRedaction: false,
   /** Enable audit logging (ENABLED for accountability) */
   enableAuditLogging: true,
   /** Compliance level ('standard' balances security and performance) */
@@ -295,40 +313,83 @@ export const DEFAULT_USE_TOKEN_OPTIMIZATION_OPTIONS = {
 /**
  * Preset configurations for different use cases.
  *
- * - `minimal`: Lowest resource usage, fastest
- * - `standard`: Good balance for most applications (recommended)
- * - `production`: Higher limits and caching for production
- * - `enterprise`: Maximum performance and caching
+ * - `minimal`: Lowest resource usage, fastest (development)
+ * - `standard`: Good balance for most applications (recommended, DEFAULT)
+ * - `production`: Higher limits and security for production
+ * - `enterprise`: Maximum performance and compliance
  *
  * @example
  * ```typescript
- * const optimizer = createOptimizer({ preset: 'production' })
+ * // Use standard preset (default)
+ * const optimizer = createOptimizer({ preset: 'standard' })
+ *
+ * // Use enterprise preset for compliance
+ * const secureOptimizer = createOptimizer({ preset: 'enterprise' })
+ *
+ * // Custom configuration overrides preset
+ * const customOptimizer = createOptimizer({
+ *   preset: 'standard',
+ *   security: {
+ *     enablePIIRedaction: true, // Override preset
+ *   },
+ * })
  * ```
  */
 export const PRESETS = {
   minimal: {
-    description: 'Lowest resource usage, suitable for development',
+    description:
+      'Development - lowest security overhead, suitable for local development',
     cache: DEFAULT_TIERED_CACHE_BY_PRESET.minimal,
     compressionLevel: 'light',
     routingStrategy: 'cost-optimized',
+    security: {
+      enableSanitization: true,
+      enablePIIRedaction: false, // Disabled for dev
+      enableAuditLogging: false,
+      complianceLevel: 'minimal' as const,
+      auditRetention: 7,
+    },
   },
   standard: {
-    description: 'Balanced defaults for most applications (recommended)',
+    description:
+      'Balanced defaults for most applications (recommended, DEFAULT)',
     cache: DEFAULT_TIERED_CACHE_BY_PRESET.standard,
     compressionLevel: 'moderate',
     routingStrategy: 'balanced',
+    security: {
+      enableSanitization: true,
+      enablePIIRedaction: false, // Disabled - opt-in
+      enableAuditLogging: true,
+      complianceLevel: 'standard' as const,
+      auditRetention: 30,
+    },
   },
   production: {
-    description: 'Higher limits for production workloads',
+    description: 'Production workloads with enhanced security',
     cache: DEFAULT_TIERED_CACHE_BY_PRESET.production,
     compressionLevel: 'moderate',
     routingStrategy: 'balanced',
+    security: {
+      enableSanitization: true,
+      enablePIIRedaction: true, // Enabled for production
+      enableAuditLogging: true,
+      complianceLevel: 'standard' as const,
+      auditRetention: 30,
+    },
   },
   enterprise: {
-    description: 'Maximum performance for high-volume applications',
+    description:
+      'Maximum performance and compliance for high-volume applications',
     cache: DEFAULT_TIERED_CACHE_BY_PRESET.enterprise,
     compressionLevel: 'aggressive',
     routingStrategy: 'quality-first',
+    security: {
+      enableSanitization: true,
+      enablePIIRedaction: true, // Enabled for compliance
+      enableAuditLogging: true,
+      complianceLevel: 'strict' as const,
+      auditRetention: 90,
+    },
   },
 } as const
 

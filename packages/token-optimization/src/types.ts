@@ -44,7 +44,13 @@ export interface SecurityConfig {
   enableAuditLogging: boolean
   enablePIIRedaction: boolean
   noiseLevel?: number
-  complianceLevel?: 'basic' | 'enterprise' | 'government'
+  complianceLevel?:
+    | 'minimal'
+    | 'standard'
+    | 'strict'
+    | 'basic'
+    | 'enterprise'
+    | 'government'
   auditRetention?: number
 }
 

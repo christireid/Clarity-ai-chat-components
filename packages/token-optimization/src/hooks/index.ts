@@ -51,8 +51,15 @@ export type {
 } from './use-token-optimization'
 
 // Token budget monitoring (advanced usage tracking)
+// New canonical name
 export {
-  useTokenBudgetMonitor,
+  useTokenBudgetTracking,
+  type TokenBudgetTrackingReturn,
+} from './use-token-budget-tracking'
+
+// Deprecated exports - kept for backward compatibility
+export {
+  useTokenBudgetMonitor, // @deprecated - use useTokenBudgetTracking
   getStatusColor,
   formatTokenUsage,
   createModelBudgetMonitor,
@@ -66,7 +73,7 @@ export type {
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,
-  TokenBudgetMonitorReturn,
+  TokenBudgetMonitorReturn, // @deprecated - use TokenBudgetTrackingReturn
   BudgetMonitorModel,
   TokenCostEstimate,
   ModelName, // Backward compatibility alias

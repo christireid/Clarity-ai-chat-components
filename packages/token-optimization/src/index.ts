@@ -482,7 +482,9 @@ export {
   useTieredCache,
   useModelRouter,
   useOptimizationPipeline,
-  // Token budget monitoring
+  // Token budget tracking (new canonical name)
+  useTokenBudgetTracking,
+  // Token budget monitoring (deprecated - use useTokenBudgetTracking)
   useTokenBudgetMonitor,
   getStatusColor,
   formatTokenUsage,
@@ -503,14 +505,16 @@ export type {
   PipelineResult,
   PipelineStats,
   UseOptimizationPipelineReturn,
-  // Token budget monitoring types
+  // Token budget tracking types (new canonical name)
+  TokenBudgetTrackingReturn,
+  // Token budget monitoring types (deprecated)
   TokenUsageStatus,
   TokenBudgetUsage,
   TokenUsage, // @deprecated - use TokenBudgetUsage for budget tracking, or analytics/TokenUsage for API metrics
   TrimResult,
   BudgetMessage,
   TokenBudgetConfig,
-  TokenBudgetMonitorReturn,
+  TokenBudgetMonitorReturn, // @deprecated - use TokenBudgetTrackingReturn
   BudgetMonitorModel,
   TokenCostEstimate,
   ModelName, // Backward compatibility

@@ -126,6 +126,13 @@ export {
 
 export { useTokenThrottle } from './use-token-throttle'
 export { useTokenLimitGuard } from './use-token-limit-guard'
+// New canonical name for component-specific budget tracking
+export {
+  useTokenBudgetBar,
+  type UseTokenBudgetBarConfig,
+  type UseTokenBudgetBarReturn,
+} from './use-token-budget-bar'
+// Deprecated - use useTokenBudgetBar
 export { useTokenBudget } from './use-token-budget'
 export { useVectorSearch } from './use-vector-search'
 export { useContextInjector } from './use-context-injector'

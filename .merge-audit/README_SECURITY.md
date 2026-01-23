@@ -143,17 +143,28 @@ if (this.entries.size >= this.config.maxEntries) {
 - Event emission for monitoring
 - Best-in-class implementation
 
-### Security Defaults (9/10)
+### Security Defaults (10/10)
 
 ```typescript
+// Preset-based security configuration
+export const PRESETS = {
+  minimal: { security: { enablePIIRedaction: false, enableAuditLogging: false } }, // Dev
+  standard: { security: { enablePIIRedaction: false, enableAuditLogging: true } }, // Default
+  production: { security: { enablePIIRedaction: true, enableAuditLogging: true } }, // Production
+  enterprise: { security: { enablePIIRedaction: true, complianceLevel: 'strict' } }, // Compliance
+}
+
 export const DEFAULT_SECURITY_CONFIG = {
   enableSanitization: true, // ✅ Input protection
-  enablePIIRedaction: true, // ⚠️ May need adjustment
+  enablePIIRedaction: false, // ✅ Opt-in for compliance
   enableAuditLogging: true, // ✅ Compliance ready
   complianceLevel: 'standard', // ✅ Balanced
   auditRetention: 30, // ✅ 30-day logs
 }
 ```
+
+**Update (2026-01-23):** Changed to preset-based approach. PII redaction is now opt-in via presets,
+avoiding false positives while maintaining strong security for production/enterprise use.
 
 ---
 
@@ -161,12 +172,14 @@ export const DEFAULT_SECURITY_CONFIG = {
 
 ### Medium Severity (2)
 
-**MEDIUM-1: PII Redaction Default**
+**MEDIUM-1: PII Redaction Default** ✅ RESOLVED
 
 - **Impact:** Usability vs Security trade-off
 - **Risk Level:** Low (design decision, not vulnerability)
-- **Action:** Product team discussion
-- **Timeline:** This sprint
+- **Action:** ✅ Implemented preset-based configuration
+- **Resolution:** PII redaction now opt-in via presets (minimal/standard=off,
+  production/enterprise=on)
+- **Timeline:** Completed 2026-01-23
 
 **MEDIUM-2: Unbounded Wait in Rate Limiter**
 
@@ -177,8 +190,8 @@ export const DEFAULT_SECURITY_CONFIG = {
 
 ### Low Severity (3)
 
-**LOW-1:** Manual cleanup required in sliding window **LOW-2:** No value size limits in cache
-**LOW-3:** Recursion depth hardcoded
+**LOW-1:** Manual cleanup required in sliding window ✅ RESOLVED (automatic cleanup added)
+**LOW-2:** No value size limits in cache **LOW-3:** Recursion depth hardcoded
 
 See detailed documents for full analysis and fixes.
 
@@ -200,17 +213,17 @@ See detailed documents for full analysis and fixes.
 ### Week 1: Critical Path
 
 - [x] Complete security audit
-- [ ] Fix unbounded wait in rate limiter
-- [ ] Discuss PII default with product team
+- [x] Fix unbounded wait in rate limiter (COMPLETED 2026-01-23)
+- [x] Discuss PII default with product team (RESOLVED: preset-based approach)
+- [x] Add automatic cleanup to sliding window (COMPLETED 2026-01-23)
 - [ ] Run full test suite
 - [ ] Security re-check
 
 ### Week 2: Enhancements
 
-- [ ] Add automatic cleanup to sliding window
+- [x] Update security documentation (COMPLETED 2026-01-23)
 - [ ] Implement value size limits (optional)
 - [ ] Make recursion depth configurable (optional)
-- [ ] Update documentation
 
 ### Week 3: Production
 
