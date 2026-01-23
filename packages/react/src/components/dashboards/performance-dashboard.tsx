@@ -9,7 +9,7 @@ import {
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
-import { useRenderPerformance, useMemoryUsage } from '../../utils/analytics'
+import { useRenderPerformance /* , useMemoryUsage */ } from '../../utils/analytics'
 
 interface PerformanceDashboardProps {
   className?: string
@@ -292,21 +292,22 @@ PerformanceDashboard.displayName = 'PerformanceDashboard'
 
 export function PerformanceBadge({ className }: { className?: string }) {
   const performanceMetrics = useRenderPerformance('PerformanceBadge')
-  const memoryInfo = useMemoryUsage()
+  // TODO: Re-enable once useMemoryUsage is implemented
+  // const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
     if (performanceMetrics.lastRenderTime > 50) return 'poor'
     if (performanceMetrics.lastRenderTime > 16) return 'warning'
-    if (
-      memoryInfo &&
-      memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.9
-    )
-      return 'poor'
-    if (
-      memoryInfo &&
-      memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.7
-    )
-      return 'warning'
+    // if (
+    //   memoryInfo &&
+    //   memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.9
+    // )
+    //   return 'poor'
+    // if (
+    //   memoryInfo &&
+    //   memoryInfo.usedJSHeapSize > memoryInfo.jsHeapSizeLimit * 0.7
+    // )
+    //   return 'warning'
     return 'good'
   }, [performanceMetrics.lastRenderTime, memoryInfo])
 

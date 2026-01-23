@@ -220,10 +220,10 @@ export function useStreamingWebSocket(
   }
 
   // Validate WebSocket protocol
-  const url = options.url.trim()
-  if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+  const validatedUrl = options.url.trim()
+  if (!validatedUrl.startsWith('ws://') && !validatedUrl.startsWith('wss://')) {
     throw new Error(
-      `useStreamingWebSocket: Invalid WebSocket URL "${url}".\n` +
+      `useStreamingWebSocket: Invalid WebSocket URL "${validatedUrl}".\n` +
         'WebSocket URLs must use ws:// (insecure) or wss:// (secure) protocol.\n\n' +
         'Example:\n' +
         '  ✓ wss://api.example.com/ws (secure, recommended)\n' +

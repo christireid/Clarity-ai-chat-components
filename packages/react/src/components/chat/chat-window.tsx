@@ -472,7 +472,7 @@ export function ChatWindow({
       />
 
       <ErrorBanner
-        error={effectiveErrorHandling.error}
+        error={effectiveErrorHandling.error ?? null}
         onRetry={effectiveErrorHandling.onRetry}
         onDismissError={effectiveErrorHandling.onDismissError}
       />

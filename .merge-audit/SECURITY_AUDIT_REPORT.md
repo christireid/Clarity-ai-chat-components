@@ -355,6 +355,7 @@ async acquire(options?: { timeoutMs?: number; signal?: AbortSignal }): Promise<v
    - Manual cleanup method (lines 92-106)
 
 3. **Defensive Checks** (Line 58)
+
    ```typescript
    if (firstKey !== undefined) {
    ```
