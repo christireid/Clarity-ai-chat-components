@@ -35,7 +35,12 @@ import {
   useConfirmationDialog,
 } from './confirmation-dialog'
 import { VirtualList } from './virtual-list'
-import { ScreenReaderAnnouncer, SkipLink, useAnnounce } from './accessibility'
+// Import from canonical accessibility source
+import {
+  useScreenReaderAnnounce,
+  SkipLink,
+} from '@clarity-chat/error-handling/accessibility'
+import { useA11y } from '@clarity-chat/primitives'
 
 // ============================================================================
 // Playground Sections
@@ -367,11 +372,11 @@ function VirtualListPlayground() {
 // ============================================================================
 
 function AccessibilityPlayground() {
-  const { announce, Announcer } = useAnnounce()
+  const { announce } = useA11y()
   const [lastAnnouncement, setLastAnnouncement] = React.useState('')
 
   const handleAnnounce = (message: string, level: 'polite' | 'assertive') => {
-    announce(message, level)
+    announce(message, { assertive: level === 'assertive' })
     setLastAnnouncement(`${level}: "${message}"`)
   }
 
@@ -380,8 +385,6 @@ function AccessibilityPlayground() {
       title="Accessibility"
       description="Screen reader and keyboard navigation utilities"
     >
-      <Announcer />
-
       <div className="playground-a11y-group">
         <h3>Screen Reader Announcements</h3>
         <div className="playground-row">

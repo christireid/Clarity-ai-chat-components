@@ -14,5 +14,5 @@ export * from './demo'
 export * from './virtual-list'
 export * from './loading-state'
 export * from './confirmation-dialog'
-export * from './accessibility'
+// Accessibility utilities moved to @clarity-chat/error-handling/accessibility
 export * from './playground'

@@ -11,6 +11,7 @@ import type {
   RenderPromptOptions,
   PromptRenderResult,
 } from './types'
+import { escapeHtml as escapeHtmlEntities } from '../utils/security/sanitize-html'
 
 /** Maximum template length to prevent DoS */
 const MAX_TEMPLATE_LENGTH = 100_000
@@ -250,7 +251,7 @@ export class PromptTemplateEngine {
     }
 
     if (escape) {
-      str = this.escapeHtml(str)
+      str = escapeHtmlEntities(str)
     }
 
     return str
@@ -258,15 +259,6 @@ export class PromptTemplateEngine {
 
   private escapeRegExp(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  }
-
-  private escapeHtml(str: string): string {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
   }
 }
 

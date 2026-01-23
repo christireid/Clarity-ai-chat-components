@@ -222,8 +222,17 @@ function sanitizeStyleAttribute(style: string): string {
 /**
  * Escape HTML entities (for displaying code as text)
  *
+ * This is the canonical HTML escaping implementation.
+ * Use this instead of local escapeHtml implementations.
+ *
  * @param text - Plain text to escape
  * @returns HTML-escaped string
+ *
+ * @example
+ * ```ts
+ * const safe = escapeHtmlEntities('<script>alert("xss")</script>')
+ * // Returns: &lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;
+ * ```
  */
 export function escapeHtmlEntities(text: string): string {
   const escapeMap: Record<string, string> = {
@@ -236,6 +245,12 @@ export function escapeHtmlEntities(text: string): string {
 
   return text.replace(/[&<>"']/g, (char) => escapeMap[char] || char)
 }
+
+/**
+ * Alias for escapeHtmlEntities for backwards compatibility
+ * @deprecated Use escapeHtmlEntities instead for clarity
+ */
+export const escapeHtml = escapeHtmlEntities
 
 /**
  * Create safe HTML for code display (when no highlighting is available)

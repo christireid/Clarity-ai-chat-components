@@ -440,10 +440,10 @@ export function validateToolDefinition(
     throw new Error('Invalid tool definition: missing required properties')
   }
 
-  // Validate name format
-  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tool.name)) {
+  // Validate name format (allow dots for namespacing)
+  if (!/^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(tool.name)) {
     throw new Error(
-      `Invalid tool name: "${tool.name}". Must be alphanumeric with underscores.`
+      `Invalid tool name: "${tool.name}". Must be alphanumeric with underscores and dots for namespacing.`
     )
   }
 

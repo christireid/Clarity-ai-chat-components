@@ -379,21 +379,6 @@ export function throttle<T extends (...args: any[]) => any>(
 }
 
 /**
- * Escape HTML special characters
- */
-export function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  }
-
-  return text.replace(/[&<>"']/g, (m) => map[m] ?? m)
-}
-
-/**
  * Unescape HTML special characters
  */
 export function unescapeHtml(html: string): string {

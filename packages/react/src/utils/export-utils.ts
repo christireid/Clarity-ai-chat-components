@@ -10,6 +10,7 @@
  */
 
 import type { Message as BaseMessage } from '@clarity-chat/types'
+import { escapeHtml } from './security/sanitize-html'
 
 // ============================================================================
 // Types
@@ -409,24 +410,6 @@ export function exportToHTML(
 `
 
   return html
-}
-
-function escapeHtml(text: string): string {
-  // SSR-safe HTML escaping - try DOM first, fallback to string replacement
-  if (typeof document !== 'undefined') {
-    // Client-side: use DOM API
-    const div = document.createElement('div')
-    div.textContent = text
-    return div.innerHTML
-  }
-
-  // Server-side: use string replacement
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }
 
 // ============================================================================

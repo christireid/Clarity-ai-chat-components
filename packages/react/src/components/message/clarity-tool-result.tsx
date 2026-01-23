@@ -29,16 +29,7 @@ import type {
 } from '../../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
 import { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
-
-/**
- * Escape HTML special characters to prevent XSS
- * FIX: TOOL-011
- */
-function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
-}
+import { escapeHtml } from '../../utils/security/sanitize-html'
 
 /**
  * Tool call interface for ClarityToolResult
