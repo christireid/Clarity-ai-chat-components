@@ -497,7 +497,11 @@ export default function RAGWorkbenchPage() {
                                         documentName={source.documentName}
                                       />
                                     </div>
-                                    <Citation source={source} index={idx + 1} />
+                                    <Citation
+                                      source={source}
+                                      index={idx + 1}
+                                      className=""
+                                    />
                                   </div>
                                 ))}
                               </div>

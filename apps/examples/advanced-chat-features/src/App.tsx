@@ -80,6 +80,7 @@ function AdvancedChatApp() {
     tokens,
     estimatedCost,
     clear: resetTokens,
+    addMessage: addTokenMessage,
   } = useTokenTracker({
     modelName: 'gpt-4-turbo',
   })
@@ -132,8 +133,8 @@ function AdvancedChatApp() {
             content: responseContent,
           })
 
-          const tokens = Math.ceil(responseContent.length / 4)
-          addOutputTokens(tokens)
+          // Track response tokens
+          addTokenMessage({ role: 'assistant', content: responseContent })
 
           await new Promise((resolve) => setTimeout(resolve, 800))
         }
@@ -141,7 +142,7 @@ function AdvancedChatApp() {
         setIsLoading(false)
       }
     },
-    [messages, deleteMessage, addMessage, addOutputTokens]
+    [messages, deleteMessage, addMessage, addTokenMessage]
   )
 
   // Handle delete
@@ -163,8 +164,8 @@ function AdvancedChatApp() {
         content,
       })
 
-      const userTokens = Math.ceil(content.length / 4)
-      addInputTokens(userTokens)
+      // Track input tokens
+      addTokenMessage({ role: 'user', content })
 
       setIsLoading(true)
       try {
@@ -178,13 +179,13 @@ function AdvancedChatApp() {
           content: responseContent,
         })
 
-        const aiTokens = Math.ceil(responseContent.length / 4)
-        addOutputTokens(aiTokens)
+        // Track response tokens
+        addTokenMessage({ role: 'assistant', content: responseContent })
       } finally {
         setIsLoading(false)
       }
     },
-    [addMessage, addInputTokens, addOutputTokens]
+    [addMessage, addTokenMessage]
   )
 
   // Handle export

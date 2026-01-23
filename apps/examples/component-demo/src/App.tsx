@@ -321,7 +321,6 @@ import {
   // AI Components
   Citation,
   EnhancedMarkdownRenderer,
-  EnhancedMarkdownRenderer,
   CodeBlock,
   StreamingCodeBlock,
   EnhancedCodeBlock,

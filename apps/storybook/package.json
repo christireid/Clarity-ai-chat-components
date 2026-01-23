@@ -23,7 +23,8 @@
     "@storybook/test": "^8.6.15",
     "@vueless/storybook-dark-mode": "^10.0.6",
     "chromatic": "^11.25.2",
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "storybook": "^8.6.15"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",
