@@ -287,7 +287,6 @@ export class DOCXLoader implements DocumentLoader {
   private async loadMammoth(): Promise<any> {
     try {
       // Try to dynamically import mammoth (optional peer dependency)
-      // @ts-expect-error - mammoth is an optional peer dependency
       return await import('mammoth')
     } catch {
       throw new Error('Mammoth library could not be loaded')

@@ -406,7 +406,7 @@ export function useStreamingWebSocket(
       const currentConnectionId = connectionIdRef.current
 
       // Create WebSocket connection
-      const ws = new WebSocket(url, protocols)
+      const ws = new WebSocket(validatedUrl, protocols)
       wsRef.current = ws
 
       // Update ready state
@@ -611,7 +611,7 @@ export function useStreamingWebSocket(
       setError(err as Event)
     }
   }, [
-    url,
+    validatedUrl,
     protocols,
     status,
     autoReconnect,
