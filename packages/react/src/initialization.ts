@@ -80,7 +80,9 @@ export function initializeClarity(
 
   // Set the license key
   if (licenseKey) {
-    LicenseInfo.setLicenseKey(licenseKey)
+    // NOTE: LicenseInfo doesn't exist - license package not available
+    // LicenseInfo.setLicenseKey(licenseKey)
+    // TODO: Implement when license package is available
   }
 
   // Warn in development if no license

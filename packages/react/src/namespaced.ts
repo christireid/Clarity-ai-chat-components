@@ -78,7 +78,8 @@ import { convertCoreMessagesToMessages } from './utils/message/message-conversio
  */
 export const hooks = {
   /** Simplified chat hook with sensible defaults */
-  useChat: useSimpleChat,
+  // NOTE: useSimpleChat doesn't exist - using useClarityChat instead
+  useChat: useClarityChat,
   /** Full-featured chat hook with all options */
   useClarityChat,
   /** Pre-configured handlers for ChatWindow */
@@ -106,8 +107,9 @@ export type {
   MessageProps,
   PromptSuggestion,
   // Hook options and returns
-  UseChatOptions,
-  UseChatReturn,
+  // NOTE: UseChatOptions and UseChatReturn don't exist - use UseClarityChat* instead
+  // UseChatOptions,
+  // UseChatReturn,
   UseClarityChatOptions,
   UseClarityChatReturn,
   UseChatHandlersOptions,

@@ -20,13 +20,8 @@ export type {
   IToolRegistry,
 } from '../types/tool-definition'
 
-// Re-export canonical types as primary exports
-export type {
-  CanonicalToolDefinition,
-  CanonicalToolParameters,
-  CanonicalToolArguments,
-  CanonicalToolResult,
-}
+// NOTE: Canonical* aliases don't exist - the types above are already canonical
+// Re-exporting them with different names would cause confusion
 
 // =============================================================================
 // DEPRECATED: Legacy Types (kept for backward compatibility)

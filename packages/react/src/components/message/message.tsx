@@ -15,6 +15,7 @@ import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
 import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
 import { MessageHeader } from './message-header'
+import { formatRelativeTime } from '../../internal/helpers'
 
 export interface MessageProps {
   message: MessageType

@@ -6,8 +6,20 @@
  * @packageDocumentation
  */
 
-// NOTE: @clarity-chat/license package doesn't exist - commenting out
+import * as React from 'react'
+
+// NOTE: @clarity-chat/license package doesn't exist - creating stub implementation
 // import { createLicenseWrapper } from '@clarity-chat/license'
+
+/**
+ * Stub wrapper that passes through the component without license checks
+ * TODO: Implement when license package is available
+ */
+const createLicenseWrapper = (_config: any) => {
+  return <T extends React.ComponentType<any>>(Component: T, _name: string): T => {
+    return Component
+  }
+}
 
 /**
  * Factory for creating Pro-licensed components.

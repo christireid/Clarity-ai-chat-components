@@ -438,6 +438,10 @@ export function useStreamingSSE(
       return
     }
 
+    // Declare these outside try block so they're accessible in catch
+    let timeoutId: NodeJS.Timeout | undefined
+    let currentConnectionId: number
+
     try {
       setStatus('connecting')
       setError(undefined)
@@ -445,13 +449,13 @@ export function useStreamingSSE(
 
       // RECONNECT-1: Increment connection ID to prevent mount/unmount races
       connectionIdRef.current += 1
-      const currentConnectionId = connectionIdRef.current
+      currentConnectionId = connectionIdRef.current
 
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
 
       // Set connection timeout
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         if (abortControllerRef.current) {
           abortControllerRef.current.abort()
           const timeoutError = new Error(
