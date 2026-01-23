@@ -10,7 +10,10 @@ import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from '../message/thinking-indicator'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useMessageNormalization } from '../../hooks/chat/use-message-normalization'
-import { ChatWindowHeader, type ChatWindowHeaderProps } from './chat-window-header'
+import {
+  ChatWindowHeader,
+  type ChatWindowHeaderProps,
+} from './chat-window-header'
 import { DefaultEmptyState } from './empty-state'
 import { ErrorBanner } from '../ui/error-banner'
 import { FollowUpSuggestions } from './follow-up-suggestions'
@@ -243,7 +246,7 @@ const LiveRegion = ({
   lastAnnouncedMessageId,
   setLastAnnouncedMessageId,
   normalizedMessages,
-  isLoading
+  isLoading,
 }: LiveRegionProps) => {
   const liveRegionRef = React.useRef<HTMLDivElement>(null)
 
@@ -349,52 +352,91 @@ export function ChatWindow({
   enableMessageOperations,
 }: ChatWindowProps) {
   // Map legacy props to grouped props for backward compatibility
-  const effectiveMessageActions = React.useMemo(() => ({
-    onCopy: messageActions?.onCopy ?? onMessageCopy,
-    onFeedback: messageActions?.onFeedback ?? onMessageFeedback,
-    onRetry: messageActions?.onRetry ?? onMessageRetry,
-    onEdit: messageActions?.onEdit ?? onEditMessage,
-    onRegenerate: messageActions?.onRegenerate ?? onRegenerateMessage,
-    onDelete: messageActions?.onDelete ?? onDeleteMessage,
-  }), [messageActions, onMessageCopy, onMessageFeedback, onMessageRetry, onEditMessage, onRegenerateMessage, onDeleteMessage])
+  const effectiveMessageActions = React.useMemo(
+    () => ({
+      onCopy: messageActions?.onCopy ?? onMessageCopy,
+      onFeedback: messageActions?.onFeedback ?? onMessageFeedback,
+      onRetry: messageActions?.onRetry ?? onMessageRetry,
+      onEdit: messageActions?.onEdit ?? onEditMessage,
+      onRegenerate: messageActions?.onRegenerate ?? onRegenerateMessage,
+      onDelete: messageActions?.onDelete ?? onDeleteMessage,
+    }),
+    [
+      messageActions,
+      onMessageCopy,
+      onMessageFeedback,
+      onMessageRetry,
+      onEditMessage,
+      onRegenerateMessage,
+      onDeleteMessage,
+    ]
+  )
 
-  const effectiveEditActions = React.useMemo(() => ({
-    editingMessageId: editActions?.editingMessageId ?? editingMessageId,
-    onSaveEdit: editActions?.onSaveEdit ?? onSaveEdit,
-    onCancelEdit: editActions?.onCancelEdit ?? onCancelEdit,
-  }), [editActions, editingMessageId, onSaveEdit, onCancelEdit])
+  const effectiveEditActions = React.useMemo(
+    () => ({
+      editingMessageId: editActions?.editingMessageId ?? editingMessageId,
+      onSaveEdit: editActions?.onSaveEdit ?? onSaveEdit,
+      onCancelEdit: editActions?.onCancelEdit ?? onCancelEdit,
+    }),
+    [editActions, editingMessageId, onSaveEdit, onCancelEdit]
+  )
 
-  const effectiveHeader = React.useMemo(() => ({
-    show: header?.show ?? showHeader ?? false,
-    title: header?.title ?? sessionTitle ?? 'Chat Session',
-    subtitle: header?.subtitle ?? sessionSubtitle,
-    actions: header?.actions ?? headerActions,
-    showMessageCount: header?.showMessageCount ?? showMessageCount ?? false,
-  }), [header, showHeader, sessionTitle, sessionSubtitle, headerActions, showMessageCount])
+  const effectiveHeader = React.useMemo(
+    () => ({
+      show: header?.show ?? showHeader ?? false,
+      title: header?.title ?? sessionTitle ?? 'Chat Session',
+      subtitle: header?.subtitle ?? sessionSubtitle,
+      actions: header?.actions ?? headerActions,
+      showMessageCount: header?.showMessageCount ?? showMessageCount ?? false,
+    }),
+    [
+      header,
+      showHeader,
+      sessionTitle,
+      sessionSubtitle,
+      headerActions,
+      showMessageCount,
+    ]
+  )
 
-  const effectiveActions = React.useMemo(() => ({
-    onExport: actions?.onExport ?? onExport,
-    onClear: actions?.onClear ?? onClear,
-  }), [actions, onExport, onClear])
+  const effectiveActions = React.useMemo(
+    () => ({
+      onExport: actions?.onExport ?? onExport,
+      onClear: actions?.onClear ?? onClear,
+    }),
+    [actions, onExport, onClear]
+  )
 
-  const effectiveErrorHandling = React.useMemo(() => ({
-    error: errorHandling?.error ?? error,
-    onRetry: errorHandling?.onRetry ?? onRetry,
-    onDismissError: errorHandling?.onDismissError ?? onDismissError,
-  }), [errorHandling, error, onRetry, onDismissError])
+  const effectiveErrorHandling = React.useMemo(
+    () => ({
+      error: errorHandling?.error ?? error,
+      onRetry: errorHandling?.onRetry ?? onRetry,
+      onDismissError: errorHandling?.onDismissError ?? onDismissError,
+    }),
+    [errorHandling, error, onRetry, onDismissError]
+  )
 
-  const effectivePrompts = React.useMemo(() => ({
-    starterPrompts: prompts?.starterPrompts ?? starterPrompts,
-    followUpSuggestions: prompts?.followUpSuggestions ?? followUpSuggestions,
-    showStarterPrompts: prompts?.showStarterPrompts ?? showStarterPrompts ?? true,
-    showFollowUpSuggestions: prompts?.showFollowUpSuggestions ?? showFollowUpSuggestions ?? true,
-  }), [prompts, starterPrompts, followUpSuggestions, showStarterPrompts, showFollowUpSuggestions])
+  const effectivePrompts = React.useMemo(
+    () => ({
+      starterPrompts: prompts?.starterPrompts ?? starterPrompts,
+      followUpSuggestions: prompts?.followUpSuggestions ?? followUpSuggestions,
+      showStarterPrompts:
+        prompts?.showStarterPrompts ?? showStarterPrompts ?? true,
+      showFollowUpSuggestions:
+        prompts?.showFollowUpSuggestions ?? showFollowUpSuggestions ?? true,
+    }),
+    [
+      prompts,
+      starterPrompts,
+      followUpSuggestions,
+      showStarterPrompts,
+      showFollowUpSuggestions,
+    ]
+  )
 
   // Runtime validation
   if (!Array.isArray(messages)) {
-    throw new Error(
-      'ChatWindow: "messages" prop must be an array.'
-    )
+    throw new Error('ChatWindow: "messages" prop must be an array.')
   }
 
   if (typeof onSendMessage !== 'function') {
@@ -487,7 +529,7 @@ export function ChatWindow({
       />
 
       <ErrorBanner
-        error={effectiveErrorHandling.error}
+        error={effectiveErrorHandling.error ?? null}
         onRetry={effectiveErrorHandling.onRetry}
         onDismissError={effectiveErrorHandling.onDismissError}
       />
@@ -503,6 +545,7 @@ export function ChatWindow({
               duration: duration('normal'),
               ease: [0.25, 0.1, 0.25, 1],
             }}
+            viewport={{ once: true }}
             className="border-b border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50"
           >
             <div className="flex items-center justify-between gap-3 px-4 py-2.5">
@@ -514,6 +557,7 @@ export function ChatWindow({
                     repeat: Infinity,
                     ease: 'linear',
                   }}
+                  viewport={{ once: true }}
                   className="h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"
                 />
                 <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">

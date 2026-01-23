@@ -442,7 +442,7 @@ export function useStreamingSSE(
 
     // Declare variables outside try block for catch block access
     let timeoutId: NodeJS.Timeout | undefined
-    let currentConnectionId: number
+    let currentConnectionId = connectionIdRef.current
 
     try {
       setStatus('connecting')

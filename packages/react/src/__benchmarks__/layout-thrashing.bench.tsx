@@ -18,11 +18,14 @@ function generateMessages(count: number): Message[] {
   const messages: Message[] = []
 
   for (let i = 0; i < count; i++) {
+    const now = new Date()
     messages.push({
       id: `msg-${i}`,
+      chatId: 'bench-chat',
       role: i % 2 === 0 ? 'user' : 'assistant',
       content: `Message ${i}`,
-      timestamp: new Date(),
+      createdAt: now,
+      updatedAt: now,
       status: 'sent',
     })
   }
@@ -125,7 +128,7 @@ const StreamingThrashing: React.FC<StreamingThrashingProps> = ({ text }) => {
 
     const interval = setInterval(() => {
       if (index < words.length) {
-        setDisplayedText(prev => prev + words[index] + ' ')
+        setDisplayedText((prev) => prev + words[index] + ' ')
         index++
 
         // BAD: Force layout after every update
@@ -164,7 +167,7 @@ const StreamingOptimized: React.FC<StreamingOptimizedProps> = ({ text }) => {
 
     const interval = setInterval(() => {
       if (index < words.length) {
-        setDisplayedText(prev => prev + words[index] + ' ')
+        setDisplayedText((prev) => prev + words[index] + ' ')
         index++
       } else {
         clearInterval(interval)
@@ -202,7 +205,7 @@ const AccordionThrashing: React.FC<AccordionThrashingProps> = ({ items }) => {
   const itemRefs = React.useRef<Map<string, HTMLDivElement>>(new Map())
 
   const toggleItem = (id: string) => {
-    setOpenItems(prev => {
+    setOpenItems((prev) => {
       const next = new Set(prev)
       if (next.has(id)) {
         next.delete(id)
@@ -244,7 +247,10 @@ const AccordionThrashing: React.FC<AccordionThrashingProps> = ({ items }) => {
           }}
         >
           <button onClick={() => toggleItem(item.id)}>{item.title}</button>
-          <div className="content" style={{ overflow: 'hidden', transition: 'max-height 0.3s' }}>
+          <div
+            className="content"
+            style={{ overflow: 'hidden', transition: 'max-height 0.3s' }}
+          >
             {item.content}
           </div>
         </div>
@@ -277,7 +283,9 @@ describe('Layout Thrashing Benchmarks', () => {
 
       endRender()
 
-      console.log(`Layout recalculations (thrashing): ${layoutCountAfter - layoutCountBefore}`)
+      console.log(
+        `Layout recalculations (thrashing): ${layoutCountAfter - layoutCountBefore}`
+      )
     })
 
     bench('Optimized: 100 items', () => {
@@ -290,7 +298,9 @@ describe('Layout Thrashing Benchmarks', () => {
 
       endRender()
 
-      console.log(`Layout recalculations (optimized): ${layoutCountAfter - layoutCountBefore}`)
+      console.log(
+        `Layout recalculations (optimized): ${layoutCountAfter - layoutCountBefore}`
+      )
     })
 
     bench('Layout thrashing: 500 items', () => {
@@ -303,7 +313,9 @@ describe('Layout Thrashing Benchmarks', () => {
 
       endRender()
 
-      console.log(`Layout recalculations (thrashing, 500): ${layoutCountAfter - layoutCountBefore}`)
+      console.log(
+        `Layout recalculations (thrashing, 500): ${layoutCountAfter - layoutCountBefore}`
+      )
     })
 
     bench('Optimized: 500 items', () => {
@@ -316,7 +328,9 @@ describe('Layout Thrashing Benchmarks', () => {
 
       endRender()
 
-      console.log(`Layout recalculations (optimized, 500): ${layoutCountAfter - layoutCountBefore}`)
+      console.log(
+        `Layout recalculations (optimized, 500): ${layoutCountAfter - layoutCountBefore}`
+      )
     })
   })
 
@@ -333,7 +347,7 @@ describe('Layout Thrashing Benchmarks', () => {
 
       render(<StreamingThrashing text={text} />)
 
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
       profiler.stopFPSTracking()
       endRender()
@@ -351,7 +365,7 @@ describe('Layout Thrashing Benchmarks', () => {
 
       render(<StreamingOptimized text={text} />)
 
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
       profiler.stopFPSTracking()
       endRender()
@@ -516,9 +530,15 @@ describe('Layout Thrashing Benchmarks', () => {
 
       console.log('\n=== Layout Thrashing Report ===')
       console.log(`Total layouts: ${report.layouts.count}`)
-      console.log(`Average layout duration: ${report.layouts.averageDuration.toFixed(2)}ms`)
-      console.log(`Max layout duration: ${report.layouts.maxDuration.toFixed(2)}ms`)
-      console.log(`Total blocking time: ${report.userExperience.totalBlockingTime.toFixed(2)}ms`)
+      console.log(
+        `Average layout duration: ${report.layouts.averageDuration.toFixed(2)}ms`
+      )
+      console.log(
+        `Max layout duration: ${report.layouts.maxDuration.toFixed(2)}ms`
+      )
+      console.log(
+        `Total blocking time: ${report.userExperience.totalBlockingTime.toFixed(2)}ms`
+      )
       console.log('===============================\n')
     })
 
@@ -533,9 +553,15 @@ describe('Layout Thrashing Benchmarks', () => {
 
       console.log('\n=== Optimized Report ===')
       console.log(`Total layouts: ${report.layouts.count}`)
-      console.log(`Average layout duration: ${report.layouts.averageDuration.toFixed(2)}ms`)
-      console.log(`Max layout duration: ${report.layouts.maxDuration.toFixed(2)}ms`)
-      console.log(`Total blocking time: ${report.userExperience.totalBlockingTime.toFixed(2)}ms`)
+      console.log(
+        `Average layout duration: ${report.layouts.averageDuration.toFixed(2)}ms`
+      )
+      console.log(
+        `Max layout duration: ${report.layouts.maxDuration.toFixed(2)}ms`
+      )
+      console.log(
+        `Total blocking time: ${report.userExperience.totalBlockingTime.toFixed(2)}ms`
+      )
       console.log('========================\n')
     })
   })

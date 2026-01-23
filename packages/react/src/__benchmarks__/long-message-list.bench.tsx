@@ -12,7 +12,10 @@ import { render, cleanup } from '@testing-library/react'
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
 import { PerformanceProfiler } from '../utils/profiling/performance-profiler'
-import { createDeviceSimulator, DEVICE_PROFILES } from '../utils/profiling/device-simulation'
+import {
+  createDeviceSimulator,
+  DEVICE_PROFILES,
+} from '../utils/profiling/device-simulation'
 
 // Generate mock messages
 function generateMessages(count: number): Message[] {
@@ -21,13 +24,16 @@ function generateMessages(count: number): Message[] {
 
   for (let i = 0; i < count; i++) {
     const isUser = i % 2 === 0
+    const timestamp = new Date(now + i * 1000)
     messages.push({
       id: `msg-${i}`,
+      chatId: 'bench-chat',
       role: isUser ? 'user' : 'assistant',
       content: isUser
         ? `This is a user message ${i}. Here's some additional text to make it more realistic.`
         : `This is an assistant response ${i}. It includes multiple sentences to simulate real conversation. The response might include code examples, explanations, and detailed information that would typically appear in a chat interface.`,
-      timestamp: new Date(now + i * 1000),
+      createdAt: timestamp,
+      updatedAt: timestamp,
       status: 'sent',
     })
   }
@@ -54,7 +60,7 @@ const SimpleMessageList: React.FC<SimpleMessageListProps> = ({ messages }) => {
           </div>
           <div>{message.content}</div>
           <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-            {message.timestamp.toLocaleTimeString()}
+            {message.createdAt.toLocaleTimeString()}
           </div>
         </div>
       ))}
@@ -67,7 +73,9 @@ interface VirtualizedMessageListProps {
   messages: Message[]
 }
 
-const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({ messages }) => {
+const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({
+  messages,
+}) => {
   const [scrollTop, setScrollTop] = React.useState(0)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
@@ -107,14 +115,20 @@ const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({ message
             <div
               key={message.id}
               data-message-id={message.id}
-              style={{ padding: '12px', marginBottom: '8px', height: ITEM_HEIGHT }}
+              style={{
+                padding: '12px',
+                marginBottom: '8px',
+                height: ITEM_HEIGHT,
+              }}
             >
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
                 {message.role === 'user' ? 'User' : 'Assistant'}
               </div>
               <div>{message.content}</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-                {message.timestamp.toLocaleTimeString()}
+              <div
+                style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}
+              >
+                {message.createdAt.toLocaleTimeString()}
               </div>
             </div>
           ))}
@@ -207,7 +221,9 @@ describe('Long Message List Benchmarks', () => {
       // Log memory delta
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
       if (delta > 10) {
-        console.warn(`High memory usage for 100 messages: ${delta.toFixed(2)}MB`)
+        console.warn(
+          `High memory usage for 100 messages: ${delta.toFixed(2)}MB`
+        )
       }
     })
 
@@ -219,7 +235,9 @@ describe('Long Message List Benchmarks', () => {
 
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
       if (delta > 50) {
-        console.warn(`High memory usage for 1000 messages: ${delta.toFixed(2)}MB`)
+        console.warn(
+          `High memory usage for 1000 messages: ${delta.toFixed(2)}MB`
+        )
       }
     })
 
@@ -231,7 +249,9 @@ describe('Long Message List Benchmarks', () => {
 
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
       if (delta > 20) {
-        console.warn(`High memory usage for virtualized 1000 messages: ${delta.toFixed(2)}MB`)
+        console.warn(
+          `High memory usage for virtualized 1000 messages: ${delta.toFixed(2)}MB`
+        )
       }
     })
   })
@@ -257,7 +277,9 @@ describe('Long Message List Benchmarks', () => {
       simulator.start()
 
       const messages = generateMessages(500)
-      const endRender = profiler.measureRender('LowEnd-VirtualizedMessageList-500')
+      const endRender = profiler.measureRender(
+        'LowEnd-VirtualizedMessageList-500'
+      )
 
       await simulator.getCPUThrottler().throttledExecute(() => {
         render(<VirtualizedMessageList messages={messages} />)
@@ -273,11 +295,14 @@ describe('Long Message List Benchmarks', () => {
       const messages: Message[] = []
 
       for (let i = 1; i <= 100; i++) {
+        const now = new Date()
         messages.push({
           id: `msg-${i}`,
+          chatId: 'bench-chat',
           role: i % 2 === 0 ? 'user' : 'assistant',
           content: `Message ${i}`,
-          timestamp: new Date(),
+          createdAt: now,
+          updatedAt: now,
           status: 'sent',
         })
 
@@ -292,16 +317,21 @@ describe('Long Message List Benchmarks', () => {
       const messages: Message[] = []
 
       for (let i = 1; i <= 100; i++) {
+        const now = new Date()
         messages.push({
           id: `msg-${i}`,
+          chatId: 'bench-chat',
           role: i % 2 === 0 ? 'user' : 'assistant',
           content: `Message ${i}`,
-          timestamp: new Date(),
+          createdAt: now,
+          updatedAt: now,
           status: 'sent',
         })
 
         const endRender = profiler.measureRender(`IncrementalVirtualized-${i}`)
-        const { unmount } = render(<VirtualizedMessageList messages={messages} />)
+        const { unmount } = render(
+          <VirtualizedMessageList messages={messages} />
+        )
         endRender()
         unmount()
       }

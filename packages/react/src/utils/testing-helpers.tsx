@@ -73,7 +73,7 @@ export class MockWebSocket {
 
   close() {
     this.readyState = WebSocket.CLOSED
-    this.onclose?.(new Event('close'))
+    this.onclose?.()
   }
 
   // Test helper methods
@@ -128,7 +128,7 @@ export class MockLocalStorage {
  * Mock fetch for API testing
  */
 export const createMockFetch = (responses: Record<string, any>) => {
-  return vi.fn((url: string, options?: RequestInit) => {
+  return vi.fn((url: string | URL, options?: RequestInit) => {
     const urlKey = typeof url === 'string' ? url : url.toString()
     const response = responses[urlKey]
 
@@ -358,13 +358,17 @@ export const domTestUtils = {
 
   /** Focus an element */
   focus: (element: Element) => {
-    element.focus()
+    if (element instanceof HTMLElement) {
+      element.focus()
+    }
     element.dispatchEvent(new Event('focus', { bubbles: true }))
   },
 
   /** Blur an element */
   blur: (element: Element) => {
-    element.blur()
+    if (element instanceof HTMLElement) {
+      element.blur()
+    }
     element.dispatchEvent(new Event('blur', { bubbles: true }))
   },
 
@@ -530,7 +534,7 @@ export const e2eTestUtils = {
     // Mock fetch
     global.fetch = createMockFetch({
       '/api/chat': mockChatAPI.success('Test response'),
-    })
+    }) as any
   },
 
   /** Teardown test environment */
@@ -637,7 +641,7 @@ export function createTestComponent<P extends {}>(
 ) {
   return (props: Partial<P> = {}) => (
     <TestWrapper>
-      <Component {...defaultProps} {...props} />
+      <Component {...({ ...defaultProps, ...props } as P)} />
     </TestWrapper>
   )
 }
