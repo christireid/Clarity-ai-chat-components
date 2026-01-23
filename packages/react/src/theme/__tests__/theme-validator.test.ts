@@ -21,8 +21,8 @@ describe('validateThemeConfig', () => {
       expect(result.errors).toHaveLength(0)
     })
 
-    it('should validate high-contrast theme', () => {
-      const result = validateThemeConfig(modernThemes['high-contrast'])
+    it('should validate light alias theme', () => {
+      const result = validateThemeConfig(modernThemes['light'])
       expect(result.valid).toBe(true)
       expect(result.errors).toHaveLength(0)
     })

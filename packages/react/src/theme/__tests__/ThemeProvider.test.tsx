@@ -267,10 +267,10 @@ describe('useTheme', () => {
       return (
         <div>
           <button
-            onClick={() => setPreset('high-contrast')}
+            onClick={() => setPreset('dark')}
             data-testid="set-preset"
           >
-            High Contrast
+            Dark Theme
           </button>
           <span data-testid="theme-name">{resolvedTheme?.name ?? 'none'}</span>
         </div>
@@ -288,7 +288,7 @@ describe('useTheme', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('theme-name')).toHaveTextContent(
-        'high-contrast'
+        'default-dark'
       )
     })
   })

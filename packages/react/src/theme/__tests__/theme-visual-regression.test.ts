@@ -156,19 +156,16 @@ describe('Theme Visual Regression', () => {
   })
 
   describe('Preset Completeness', () => {
+    // After theme consolidation: only 4 entries (2 themes with aliases)
     const presetNames: ModernThemePresetName[] = [
       'default',
       'default-dark',
-      'neutral',
-      'neutral-dark',
-      'vibrant',
-      'vibrant-dark',
-      'high-contrast',
-      'high-contrast-dark',
+      'light',
+      'dark',
     ]
 
-    it('should have all 8 presets defined', () => {
-      expect(Object.keys(modernThemes)).toHaveLength(8)
+    it('should have all 4 preset entries defined', () => {
+      expect(Object.keys(modernThemes)).toHaveLength(4)
       presetNames.forEach((name) => {
         expect(modernThemes[name]).toBeDefined()
       })
@@ -208,7 +205,7 @@ describe('Theme Visual Regression', () => {
       expect(['light', 'dark']).toContain(theme.mode)
 
       // Dark presets should have mode 'dark'
-      if (presetName.endsWith('-dark')) {
+      if (presetName.endsWith('-dark') || presetName === 'dark') {
         expect(theme.mode).toBe('dark')
       } else {
         expect(theme.mode).toBe('light')
@@ -321,22 +318,22 @@ describe('Theme Visual Regression', () => {
       expect(theme.colors.foreground).toBe('210 40% 98%')
     })
 
-    it('should have stable high-contrast light theme structure', () => {
-      const theme = getModernPreset('high-contrast')
+    it('should have light alias pointing to default', () => {
+      const lightTheme = getModernPreset('light')
+      const defaultTheme = getModernPreset('default')
 
-      expect(theme).toHaveProperty('mode', 'light')
-      expect(theme.colors.primary).toBe('239 100% 40%')
-      expect(theme.colors.background).toBe('0 0% 100%')
-      expect(theme.colors.foreground).toBe('0 0% 0%')
+      expect(lightTheme).toHaveProperty('mode', 'light')
+      expect(lightTheme.colors.primary).toBe(defaultTheme.colors.primary)
+      expect(lightTheme.colors.background).toBe(defaultTheme.colors.background)
     })
 
-    it('should have stable high-contrast dark theme structure', () => {
-      const theme = getModernPreset('high-contrast-dark')
+    it('should have dark alias pointing to default-dark', () => {
+      const darkTheme = getModernPreset('dark')
+      const defaultDarkTheme = getModernPreset('default-dark')
 
-      expect(theme).toHaveProperty('mode', 'dark')
-      expect(theme.colors.primary).toBe('239 84% 75%')
-      expect(theme.colors.background).toBe('0 0% 0%')
-      expect(theme.colors.foreground).toBe('0 0% 100%')
+      expect(darkTheme).toHaveProperty('mode', 'dark')
+      expect(darkTheme.colors.primary).toBe(defaultDarkTheme.colors.primary)
+      expect(darkTheme.colors.background).toBe(defaultDarkTheme.colors.background)
     })
 
     it('should have consistent theme property counts', () => {
@@ -363,7 +360,8 @@ describe('Theme Visual Regression', () => {
       const hslPattern = /^\d{1,3}\s+\d{1,3}%\s+\d{1,3}%$/
 
       Object.entries(theme.colors).forEach(([key, value]) => {
-        if (value) {
+        // Skip nested objects (glassmorphism, aurora, neumorphism, adaptive, quantum)
+        if (value && typeof value === 'string') {
           expect(value, `Color ${key} should be valid HSL`).toMatch(hslPattern)
         }
       })
@@ -388,11 +386,10 @@ describe('Theme Visual Regression', () => {
 
 describe('Theme Mode Transitions', () => {
   it('should pair light and dark themes correctly', () => {
+    // After theme consolidation: only light/dark variants
     const pairs = [
       ['default', 'default-dark'],
-      ['neutral', 'neutral-dark'],
-      ['vibrant', 'vibrant-dark'],
-      ['high-contrast', 'high-contrast-dark'],
+      ['light', 'dark'],
     ] as const
 
     pairs.forEach(([lightName, darkName]) => {

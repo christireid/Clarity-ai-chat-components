@@ -46,11 +46,11 @@ describe('theme-composer', () => {
     describe('extend()', () => {
       it('should extend from a preset name', () => {
         const theme = new ThemeBuilder()
-          .extend('vibrant')
+          .extend('dark')
           .name('extended')
           .build()
         expect(theme.colors.primary).toBe(
-          modernThemes['vibrant'].colors.primary
+          modernThemes['dark'].colors.primary
         )
       })
 
@@ -403,8 +403,8 @@ describe('theme-composer', () => {
     })
 
     it('should allow composing preset names', () => {
-      const result = composeThemes('default', 'vibrant')
-      expect(result.colors.primary).toBe(modernThemes['vibrant'].colors.primary)
+      const result = composeThemes('default', 'dark')
+      expect(result.colors.primary).toBe(modernThemes['dark'].colors.primary)
     })
   })
 

@@ -113,7 +113,7 @@ function validateHSLFormat(
   }
 
   // Skip validation for hex colors (they get converted)
-  if (value.startsWith('#')) {
+  if (typeof value === 'string' && value.startsWith('#')) {
     return null
   }
 
@@ -262,9 +262,9 @@ export function validateThemeConfig(
       }
     }
 
-    // Validate HSL format for each color
+    // Validate HSL format for each color (skip nested objects like glassmorphism, aurora, etc.)
     for (const [key, value] of Object.entries(theme.colors)) {
-      if (value) {
+      if (value && typeof value === 'string') {
         const issue = validateHSLFormat(value, `colors.${key}`)
         if (issue) {
           errors.push(issue)

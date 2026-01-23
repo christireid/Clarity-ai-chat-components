@@ -23,12 +23,12 @@ describe('create-theme', () => {
     })
 
     it('should extend from a preset', () => {
-      const theme = createTheme({ extends: 'neutral' })
-      expect(theme.name).toBe('neutral')
+      const theme = createTheme({ extends: 'default' })
+      expect(theme.name).toBe('default')
     })
 
     it('should extend from a dark preset', () => {
-      const theme = createTheme({ extends: 'neutral-dark' })
+      const theme = createTheme({ extends: 'default-dark' })
       expect(theme.mode).toBe('dark')
     })
 
@@ -170,17 +170,18 @@ describe('create-theme', () => {
 
       expect(consoleWarnSpy).toHaveBeenCalled()
       const warningMessage = consoleWarnSpy.mock.calls[0][0]
+      // After theme consolidation: only light/dark themes
       expect(warningMessage).toContain('default')
       expect(warningMessage).toContain('default-dark')
-      expect(warningMessage).toContain('neutral')
-      expect(warningMessage).toContain('vibrant')
-      expect(warningMessage).toContain('high-contrast')
+      expect(warningMessage).toContain('light')
+      expect(warningMessage).toContain('dark')
     })
 
     it('should not warn for valid preset names', () => {
       createTheme({ extends: 'default' })
-      createTheme({ extends: 'neutral-dark' })
-      createTheme({ extends: 'vibrant' })
+      createTheme({ extends: 'default-dark' })
+      createTheme({ extends: 'light' })
+      createTheme({ extends: 'dark' })
 
       expect(consoleWarnSpy).not.toHaveBeenCalled()
     })
