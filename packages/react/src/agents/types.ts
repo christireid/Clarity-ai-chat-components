@@ -32,6 +32,18 @@ export type {
   IToolRegistry,
 } from '../types/tool-definition'
 
+// Re-export canonical types as primary exports
+export type {
+  CanonicalToolDefinition,
+  CanonicalToolParameters,
+  CanonicalToolArguments,
+  CanonicalToolResult,
+}
+
+// =============================================================================
+// DEPRECATED: Legacy Types (kept for backward compatibility)
+// =============================================================================
+
 /**
  * @deprecated Use ToolDefinition from '../types/tool-definition' instead
  *

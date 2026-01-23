@@ -11,28 +11,71 @@
  * - Auto-approval for safe tools
  */
 
-import type { ToolsConfig, ToolDefinition, ToolAuditLog } from './types'
+import type { ToolsConfig, ToolDefinition } from './types'
+import { safeEvaluate } from '../utils/math/safe-evaluator'
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export interface ToolCall {
+/**
+ * ToolsEngine call state
+ *
+ * **IMPORTANT**: This type is specific to the ToolsEngine functional API.
+ * It represents the immutable state for React/functional components.
+ *
+ * **When to use**:
+ * - When using the ToolsEngine functional API (createToolsEngine, executeToolCall, etc.)
+ * - For React state management with immutable updates
+ * - For functional/pure component architectures
+ *
+ * **Related types** (use for different purposes):
+ * - `ToolCallRecord` (core/tool-lifecycle.ts): Full lifecycle tracking with 11 states
+ * - `ToolInvocation` (types/tool-invocation.ts): Message format for chat UI (5 states)
+ *
+ * **Property Alignment**: Uses `name` and `parameters` for backwards compatibility,
+ * but converters are provided to align with `toolName` and `args` used elsewhere.
+ *
+ * @see {@link toToolCallRecord} for conversion to ToolCallRecord
+ * @see {@link ToolCallRecord} for full lifecycle tracking
+ */
+export interface ToolsEngineCall {
+  /** Unique call identifier */
   id: string
+
+  /** Tool name */
   name: string
+
+  /** Tool parameters/arguments */
   parameters: Record<string, unknown>
+
+  /** Current execution status */
   status:
-    | 'pending'
-    | 'approved'
-    | 'executing'
-    | 'completed'
-    | 'failed'
-    | 'timeout'
+    | 'pending' // Awaiting approval
+    | 'approved' // Approved, ready to execute
+    | 'executing' // Currently executing
+    | 'completed' // Successfully completed
+    | 'failed' // Execution failed
+    | 'timeout' // Execution timed out
+
+  /** Execution result (if completed) */
   result?: unknown
+
+  /** Error message (if failed) */
   error?: string
+
+  /** Execution start timestamp */
   startTime?: number
+
+  /** Execution end timestamp */
   endTime?: number
 }
+
+/**
+ * @deprecated Use ToolsEngineCall instead. This alias is provided for backwards compatibility.
+ * Will be removed in v2.0.0.
+ */
+export type ToolCall = ToolsEngineCall
 
 export interface ToolExecutionResult {
   success: boolean
@@ -41,21 +84,32 @@ export interface ToolExecutionResult {
   executionTimeMs: number
 }
 
+/**
+ * ToolsEngine state container
+ *
+ * Immutable state object for functional/React-based tool management.
+ */
 export interface ToolsEngineState {
+  /** Tool registry (map of tool name to definition) */
   registry: Map<string, ToolDefinition>
-  pendingCalls: ToolCall[]
-  completedCalls: ToolCall[]
+
+  /** Pending tool calls (awaiting approval or execution) */
+  pendingCalls: ToolsEngineCall[]
+
+  /** Completed tool calls (completed, failed, or timeout) */
+  completedCalls: ToolsEngineCall[]
+
+  /** Auto-approve tools without user confirmation (NEVER use in production) */
   autoApprove: boolean
+
+  /** Tool execution timeout in milliseconds */
   timeoutMs: number
+
+  /** Result cache */
   cache: Map<string, { result: unknown; timestamp: number }>
+
+  /** Cache TTL in milliseconds */
   cacheTtlMs: number
-  // NEW: Approval system fields
-  approvalMode?: 'auto' | 'manual' | 'allowlist' | 'blocklist'
-  allowedTools?: string[]
-  blockedTools?: string[]
-  autoApproveRiskLevels?: Array<'safe' | 'low' | 'medium' | 'high'>
-  approvalHandler?: (call: ToolCall) => Promise<boolean>
-  auditLog: ToolAuditLog[]
 }
 
 // =============================================================================
@@ -66,10 +120,6 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'get_current_time',
     description: 'Get the current date and time',
-    deterministic: false, // Time changes on each call
-    riskLevel: 'safe',
-    capabilities: [],
-    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -79,12 +129,7 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
         },
       },
     },
-    execute: async (params, signal) => {
-      // Check if aborted before execution
-      if (signal?.aborted) {
-        throw new Error('Operation aborted')
-      }
-
+    execute: async (params) => {
       const { timezone } = params as { timezone?: string }
       const now = new Date()
       if (timezone) {
@@ -96,9 +141,6 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'calculate',
     description: 'Perform a mathematical calculation',
-    riskLevel: 'safe',
-    capabilities: [],
-    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -109,30 +151,16 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
       },
       required: ['expression'],
     },
-    execute: async (params, signal) => {
-      // Check if aborted before execution
-      if (signal?.aborted) {
-        throw new Error('Operation aborted')
-      }
-
+    execute: async (params) => {
       const { expression } = params as { expression: string }
-      // Simple safe expression evaluation
-      const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, '')
-      if (!sanitized) {
-        throw new Error('Invalid expression')
-      }
-      // Use Function instead of eval for slightly better isolation
-      const result = new Function(`return (${sanitized})`)()
-      return { expression: sanitized, result }
+      // SECURITY: Use safe recursive descent parser - no eval() or Function()
+      const result = safeEvaluate(expression)
+      return { expression, result }
     },
   },
   {
     name: 'generate_uuid',
     description: 'Generate a unique identifier',
-    deterministic: false, // Generates random/unique IDs each call
-    riskLevel: 'safe',
-    capabilities: [],
-    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -143,12 +171,7 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
         },
       },
     },
-    execute: async (params, signal) => {
-      // Check if aborted before execution
-      if (signal?.aborted) {
-        throw new Error('Operation aborted')
-      }
-
+    execute: async (params) => {
       const { format = 'uuid' } = params as { format?: string }
       if (format === 'short') {
         return Math.random().toString(36).slice(2, 10)
@@ -167,9 +190,6 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
   {
     name: 'format_json',
     description: 'Format or validate JSON data',
-    riskLevel: 'safe',
-    capabilities: [],
-    requiresApproval: false,
     parameters: {
       type: 'object',
       properties: {
@@ -184,12 +204,7 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
       },
       required: ['json'],
     },
-    execute: async (params, signal) => {
-      // Check if aborted before execution
-      if (signal?.aborted) {
-        throw new Error('Operation aborted')
-      }
-
+    execute: async (params) => {
       const { json, indent = 2 } = params as { json: string; indent?: number }
       try {
         const parsed = JSON.parse(json)
@@ -212,166 +227,10 @@ const BUILT_IN_TOOLS: ToolDefinition[] = [
 // =============================================================================
 
 interface JsonSchema {
-  type?: string | string[]
+  type?: string
   properties?: Record<string, JsonSchema>
   required?: string[]
   enum?: unknown[]
-  items?: JsonSchema
-  minItems?: number
-  maxItems?: number
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-  minimum?: number
-  maximum?: number
-  multipleOf?: number
-  format?: string
-}
-
-/**
- * Validate a value against a JSON Schema type
- */
-function validateType(value: unknown, expectedType: string): boolean {
-  switch (expectedType) {
-    case 'string':
-      return typeof value === 'string'
-    case 'number':
-      return typeof value === 'number' && !Number.isNaN(value)
-    case 'integer':
-      return typeof value === 'number' && Number.isInteger(value)
-    case 'boolean':
-      return typeof value === 'boolean'
-    case 'array':
-      return Array.isArray(value)
-    case 'object':
-      return (
-        typeof value === 'object' && value !== null && !Array.isArray(value)
-      )
-    case 'null':
-      return value === null
-    default:
-      return true
-  }
-}
-
-/**
- * Validate string format constraints
- */
-function validateFormat(value: string, format: string): boolean {
-  switch (format) {
-    case 'email':
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-    case 'url':
-    case 'uri':
-      try {
-        new URL(value)
-        return true
-      } catch {
-        return false
-      }
-    case 'date':
-      return !Number.isNaN(Date.parse(value))
-    case 'uuid':
-      return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        value
-      )
-    default:
-      return true
-  }
-}
-
-/**
- * Validate a single value against a JSON Schema
- */
-function validateValue(
-  value: unknown,
-  schema: JsonSchema,
-  path: string = 'root'
-): string[] {
-  const errors: string[] = []
-
-  // Type validation
-  if (schema.type) {
-    const types = Array.isArray(schema.type) ? schema.type : [schema.type]
-    const isValid = types.some((type) => validateType(value, type))
-    if (!isValid) {
-      errors.push(`${path} must be of type: ${types.join(' or ')}`)
-      return errors // Stop further validation if type is wrong
-    }
-  }
-
-  // Enum validation
-  if (schema.enum && !schema.enum.includes(value)) {
-    errors.push(`${path} must be one of: ${schema.enum.join(', ')}`)
-  }
-
-  // String validations
-  if (typeof value === 'string') {
-    if (schema.minLength !== undefined && value.length < schema.minLength) {
-      errors.push(`${path} must be at least ${schema.minLength} characters`)
-    }
-    if (schema.maxLength !== undefined && value.length > schema.maxLength) {
-      errors.push(`${path} must be at most ${schema.maxLength} characters`)
-    }
-    if (schema.pattern) {
-      try {
-        const regex = new RegExp(schema.pattern)
-        if (!regex.test(value)) {
-          errors.push(`${path} must match pattern: ${schema.pattern}`)
-        }
-      } catch {
-        errors.push(`Invalid regex pattern in schema: ${schema.pattern}`)
-      }
-    }
-    if (schema.format && !validateFormat(value, schema.format)) {
-      errors.push(`${path} must be a valid ${schema.format}`)
-    }
-  }
-
-  // Number validations
-  if (typeof value === 'number') {
-    if (schema.minimum !== undefined && value < schema.minimum) {
-      errors.push(`${path} must be >= ${schema.minimum}`)
-    }
-    if (schema.maximum !== undefined && value > schema.maximum) {
-      errors.push(`${path} must be <= ${schema.maximum}`)
-    }
-    if (schema.multipleOf !== undefined && value % schema.multipleOf !== 0) {
-      errors.push(`${path} must be a multiple of ${schema.multipleOf}`)
-    }
-  }
-
-  // Array validations
-  if (Array.isArray(value)) {
-    if (schema.minItems !== undefined && value.length < schema.minItems) {
-      errors.push(`${path} must have at least ${schema.minItems} items`)
-    }
-    if (schema.maxItems !== undefined && value.length > schema.maxItems) {
-      errors.push(`${path} must have at most ${schema.maxItems} items`)
-    }
-    if (schema.items) {
-      value.forEach((item, index) => {
-        errors.push(...validateValue(item, schema.items!, `${path}[${index}]`))
-      })
-    }
-  }
-
-  // Object validations
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    schema.properties
-  ) {
-    const obj = value as Record<string, unknown>
-    for (const [key, propSchema] of Object.entries(schema.properties)) {
-      if (key in obj) {
-        errors.push(...validateValue(obj[key], propSchema, `${path}.${key}`))
-      }
-    }
-  }
-
-  return errors
 }
 
 /**
@@ -398,13 +257,25 @@ function validateParameters(
     }
   }
 
-  // Validate each property
+  // Validate property types
   for (const [key, value] of Object.entries(params)) {
     const propSchema = properties[key] as JsonSchema | undefined
     if (!propSchema) continue
 
-    // Use comprehensive validation
-    errors.push(...validateValue(value, propSchema, key))
+    if (propSchema.type === 'string' && typeof value !== 'string') {
+      errors.push(`Parameter "${key}" must be a string`)
+    }
+    if (propSchema.type === 'number' && typeof value !== 'number') {
+      errors.push(`Parameter "${key}" must be a number`)
+    }
+    if (propSchema.type === 'boolean' && typeof value !== 'boolean') {
+      errors.push(`Parameter "${key}" must be a boolean`)
+    }
+    if (propSchema.enum && !propSchema.enum.includes(value)) {
+      errors.push(
+        `Parameter "${key}" must be one of: ${propSchema.enum.join(', ')}`
+      )
+    }
   }
 
   return { valid: errors.length === 0, errors }
@@ -444,21 +315,36 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
     registry.set(tool.name, tool)
   }
 
+  // SECURITY: Default to requiring approval for tool execution
+  const autoApprove = config.autoApprove ?? false
+
+  // SECURITY: Prevent autoApprove in production
+  if (autoApprove) {
+    const isProduction =
+      typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+
+    if (isProduction) {
+      throw new Error(
+        '[Clarity Chat] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+          'Tools must require explicit user approval. Set autoApprove: false.'
+      )
+    }
+
+    // Warn in non-production environments
+    console.warn(
+      '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+        'This should only be used in trusted development/testing environments.'
+    )
+  }
+
   return {
     registry,
     pendingCalls: [],
     completedCalls: [],
-    autoApprove: config.autoApprove ?? true,
+    autoApprove,
     timeoutMs: config.timeoutMs || 30000,
     cache: new Map(),
     cacheTtlMs: 60000, // 1 minute cache
-    // NEW: Approval system configuration
-    approvalMode: config.approvalMode,
-    allowedTools: config.allowedTools,
-    blockedTools: config.blockedTools,
-    autoApproveRiskLevels: config.autoApproveRiskLevels,
-    approvalHandler: config.approvalHandler,
-    auditLog: [],
   }
 }
 
@@ -501,137 +387,6 @@ export function getAvailableTools(state: ToolsEngineState): Array<{
   }))
 }
 
-// =============================================================================
-// Approval Logic & Audit Logging
-// =============================================================================
-
-/**
- * Sanitize parameters for logging (remove sensitive data)
- */
-function sanitizeParameters(
-  params: Record<string, unknown>
-): Record<string, unknown> {
-  const sanitized: Record<string, unknown> = {}
-  const sensitiveKeywords = [
-    'password',
-    'apikey',
-    'api_key',
-    'secret',
-    'token',
-    'auth',
-    'key',
-  ]
-
-  for (const [key, value] of Object.entries(params)) {
-    const lowerKey = key.toLowerCase()
-    // Check if key contains any sensitive keyword
-    const isSensitive = sensitiveKeywords.some((keyword) =>
-      lowerKey.includes(keyword)
-    )
-
-    if (isSensitive) {
-      sanitized[key] = '***REDACTED***'
-    } else if (
-      typeof value === 'object' &&
-      value !== null &&
-      !Array.isArray(value)
-    ) {
-      sanitized[key] = sanitizeParameters(value as Record<string, unknown>)
-    } else {
-      sanitized[key] = value
-    }
-  }
-
-  return sanitized
-}
-
-/**
- * Create an audit log entry
- */
-function createAuditLog(
-  toolName: string,
-  callId: string,
-  tool: ToolDefinition,
-  parameters: Record<string, unknown>,
-  approved: boolean,
-  approvedBy: 'user' | 'auto' | 'allowlist',
-  executionStatus: 'success' | 'failure' | 'timeout' | 'denied',
-  executionTimeMs?: number,
-  error?: string
-): ToolAuditLog {
-  return {
-    timestamp: Date.now(),
-    toolName,
-    callId,
-    riskLevel: tool.riskLevel || 'safe',
-    capabilities: tool.capabilities || [],
-    parameters: sanitizeParameters(parameters),
-    approved,
-    approvedBy: approved ? approvedBy : undefined,
-    executionStatus,
-    executionTimeMs,
-    error,
-  }
-}
-
-/**
- * Determine if a tool call requires user approval based on configuration
- */
-function shouldRequireApproval(
-  state: ToolsEngineState,
-  tool: ToolDefinition
-): boolean {
-  // Check if tool is explicitly blocked
-  if (state.blockedTools?.includes(tool.name)) {
-    return true // Blocked tools always require approval (which will deny them)
-  }
-
-  // Check approval mode
-  switch (state.approvalMode) {
-    case 'auto':
-      // Auto mode: never require approval (approve everything)
-      return false
-
-    case 'allowlist':
-      // Allowlist mode: require approval unless in allowed list
-      return !state.allowedTools?.includes(tool.name)
-
-    case 'blocklist':
-      // Blocklist mode: require approval only if in blocked list
-      return state.blockedTools?.includes(tool.name) ?? false
-
-    case 'manual':
-    default:
-      // Manual mode (default): check tool properties and risk level
-
-      // If tool explicitly requires approval, honor that
-      if (tool.requiresApproval === true) {
-        return true
-      }
-      if (tool.requiresApproval === false) {
-        return false
-      }
-
-      const riskLevel = tool.riskLevel || 'safe'
-
-      // If autoApproveRiskLevels is configured, ONLY use that for approval decisions
-      if (
-        state.autoApproveRiskLevels &&
-        state.autoApproveRiskLevels.length > 0
-      ) {
-        return !state.autoApproveRiskLevels.includes(riskLevel)
-      }
-
-      // Fall back to legacy autoApprove flag
-      if (state.autoApprove) {
-        return false
-      }
-
-      // Default: require approval for medium/high risk tools
-      return riskLevel === 'medium' || riskLevel === 'high'
-  }
-}
-
 /**
  * Create a tool call (request execution)
  */
@@ -639,11 +394,11 @@ export function createToolCall(
   state: ToolsEngineState,
   name: string,
   parameters: Record<string, unknown>
-): { state: ToolsEngineState; call: ToolCall } {
+): { state: ToolsEngineState; call: ToolsEngineCall } {
   const tool = state.registry.get(name)
 
   if (!tool) {
-    const call: ToolCall = {
+    const call: ToolsEngineCall = {
       id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name,
       parameters,
@@ -659,7 +414,7 @@ export function createToolCall(
   // Validate parameters
   const validation = validateParameters(parameters, tool.parameters)
   if (!validation.valid) {
-    const call: ToolCall = {
+    const call: ToolsEngineCall = {
       id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name,
       parameters,
@@ -672,14 +427,11 @@ export function createToolCall(
     }
   }
 
-  // Determine if approval is required using new approval system
-  const requiresApproval = shouldRequireApproval(state, tool)
-
-  const call: ToolCall = {
+  const call: ToolsEngineCall = {
     id: `call_${Date.now()}_${Math.random().toString(36).slice(2)}`,
     name,
     parameters,
-    status: requiresApproval ? 'pending' : 'approved',
+    status: state.autoApprove ? 'approved' : 'pending',
   }
 
   return {
@@ -712,7 +464,7 @@ export function rejectToolCall(
   const call = state.pendingCalls.find((c) => c.id === callId)
   if (!call) return state
 
-  const rejectedCall: ToolCall = {
+  const rejectedCall: ToolsEngineCall = {
     ...call,
     status: 'failed',
     error: `Rejected: ${reason}`,
@@ -734,32 +486,6 @@ export async function executeToolCall(
 ): Promise<{ state: ToolsEngineState; result: ToolExecutionResult }> {
   const call = state.pendingCalls.find((c) => c.id === callId)
   if (!call || call.status !== 'approved') {
-    // Audit log for denied execution
-    if (call) {
-      const tool = state.registry.get(call.name)
-      if (tool) {
-        const auditEntry = createAuditLog(
-          call.name,
-          call.id,
-          tool,
-          call.parameters,
-          false,
-          'auto',
-          'denied'
-        )
-        return {
-          state: {
-            ...state,
-            auditLog: [...(state.auditLog || []), auditEntry],
-          },
-          result: {
-            success: false,
-            error: 'Call not found or not approved',
-            executionTimeMs: 0,
-          },
-        }
-      }
-    }
     return {
       state,
       result: {
@@ -782,49 +508,33 @@ export async function executeToolCall(
     }
   }
 
-  // Check cache (skip for non-deterministic tools)
-  const isDeterministic = tool.deterministic !== false // Default to true if not specified
-  if (isDeterministic) {
-    const cacheKey = generateCacheKey(call.name, call.parameters)
-    const cached = state.cache.get(cacheKey)
-    if (cached && Date.now() - cached.timestamp < state.cacheTtlMs) {
-      const completedCall: ToolCall = {
-        ...call,
-        status: 'completed',
+  // Check cache
+  const cacheKey = generateCacheKey(call.name, call.parameters)
+  const cached = state.cache.get(cacheKey)
+  if (cached && Date.now() - cached.timestamp < state.cacheTtlMs) {
+    const completedCall: ToolsEngineCall = {
+      ...call,
+      status: 'completed',
+      result: cached.result,
+      startTime: Date.now(),
+      endTime: Date.now(),
+    }
+
+    return {
+      state: {
+        ...state,
+        pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
+        completedCalls: [...state.completedCalls, completedCall],
+      },
+      result: {
+        success: true,
         result: cached.result,
-        startTime: Date.now(),
-        endTime: Date.now(),
-      }
-
-      // Audit log for cached execution
-      const auditEntry = createAuditLog(
-        call.name,
-        call.id,
-        tool,
-        call.parameters,
-        true,
-        'auto',
-        'success',
-        0
-      )
-
-      return {
-        state: {
-          ...state,
-          pendingCalls: state.pendingCalls.filter((c) => c.id !== callId),
-          completedCalls: [...state.completedCalls, completedCall],
-          auditLog: [...(state.auditLog || []), auditEntry],
-        },
-        result: {
-          success: true,
-          result: cached.result,
-          executionTimeMs: 0,
-        },
-      }
+        executionTimeMs: 0,
+      },
     }
   }
 
-  // Execute with timeout and proper cleanup via AbortController
+  // Execute with timeout
   const startTime = Date.now()
 
   // Update call status to executing
@@ -835,60 +545,30 @@ export async function executeToolCall(
     ),
   }
 
-  // Create AbortController for proper cancellation (scoped outside try for cleanup)
-  const abortController = new AbortController()
-  const { signal } = abortController
-
-  // Set up timeout that aborts the signal
-  const timeoutId = setTimeout(() => {
-    abortController.abort()
-  }, state.timeoutMs)
-
   try {
     const timeoutPromise = new Promise<never>((_, reject) => {
-      signal.addEventListener('abort', () => {
-        reject(new Error('Execution timeout'))
-      })
+      setTimeout(() => reject(new Error('Execution timeout')), state.timeoutMs)
     })
 
     const result = await Promise.race([
-      tool.execute(call.parameters, signal),
+      tool.execute(call.parameters),
       timeoutPromise,
     ])
-
-    // Clear timeout on successful completion
-    clearTimeout(timeoutId)
 
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
 
-    // Cache the result (only for deterministic tools)
-    let newCache = state.cache
-    if (isDeterministic) {
-      newCache = new Map(state.cache)
-      const cacheKey = generateCacheKey(call.name, call.parameters)
-      newCache.set(cacheKey, { result, timestamp: Date.now() })
-    }
+    // Cache the result
+    const newCache = new Map(state.cache)
+    newCache.set(cacheKey, { result, timestamp: Date.now() })
 
-    const completedCall: ToolCall = {
+    const completedCall: ToolsEngineCall = {
       ...call,
       status: 'completed',
       result,
       startTime,
       endTime,
     }
-
-    // Audit log for successful execution
-    const auditEntry = createAuditLog(
-      call.name,
-      call.id,
-      tool,
-      call.parameters,
-      true,
-      'auto', // TODO: Track actual approval source
-      'success',
-      executionTimeMs
-    )
 
     return {
       state: {
@@ -898,7 +578,6 @@ export async function executeToolCall(
         ),
         completedCalls: [...executingState.completedCalls, completedCall],
         cache: newCache,
-        auditLog: [...(executingState.auditLog || []), auditEntry],
       },
       result: {
         success: true,
@@ -907,34 +586,17 @@ export async function executeToolCall(
       },
     }
   } catch (err) {
-    // Clear timeout on error/timeout
-    clearTimeout(timeoutId)
-
     const endTime = Date.now()
     const executionTimeMs = endTime - startTime
     const errorMessage = err instanceof Error ? err.message : String(err)
-    const isTimeout = errorMessage === 'Execution timeout'
 
-    const failedCall: ToolCall = {
+    const failedCall: ToolsEngineCall = {
       ...call,
-      status: isTimeout ? 'timeout' : 'failed',
+      status: errorMessage === 'Execution timeout' ? 'timeout' : 'failed',
       error: errorMessage,
       startTime,
       endTime,
     }
-
-    // Audit log for failed/timeout execution
-    const auditEntry = createAuditLog(
-      call.name,
-      call.id,
-      tool,
-      call.parameters,
-      true,
-      'auto', // TODO: Track actual approval source
-      isTimeout ? 'timeout' : 'failure',
-      executionTimeMs,
-      errorMessage
-    )
 
     return {
       state: {
@@ -943,7 +605,6 @@ export async function executeToolCall(
           (c) => c.id !== callId
         ),
         completedCalls: [...executingState.completedCalls, failedCall],
-        auditLog: [...(executingState.auditLog || []), auditEntry],
       },
       result: {
         success: false,
@@ -1034,4 +695,143 @@ export function clearToolHistory(state: ToolsEngineState): ToolsEngineState {
  */
 export function clearToolCache(state: ToolsEngineState): ToolsEngineState {
   return { ...state, cache: new Map() }
+}
+
+// =============================================================================
+// Type Converters (Interoperability with Other Tool Calling APIs)
+// =============================================================================
+
+/**
+ * Convert ToolsEngineCall to ToolCallRecord format (for lifecycle tracking)
+ *
+ * **Use case**: When integrating ToolsEngine with ToolLifecycleManager
+ *
+ * @param call - ToolsEngineCall to convert
+ * @returns ToolCallRecord compatible object
+ *
+ * @example
+ * ```typescript
+ * import { ToolLifecycleManager } from '../core/tool-lifecycle'
+ *
+ * const engineCall = createToolCall(state, 'get_weather', { location: 'SF' })
+ * const lifecycleRecord = toToolCallRecord(engineCall.call)
+ * lifecycle.trackCall(lifecycleRecord)
+ * ```
+ */
+export function toToolCallRecord(call: ToolsEngineCall): {
+  id: string
+  toolName: string
+  args: Record<string, unknown>
+  status: import('../core/tool-lifecycle').ToolCallStatus
+  timestamps: {
+    requested?: number
+    executionStarted?: number
+    executionEnded?: number
+  }
+  result?: unknown
+  error?: {
+    message: string
+  }
+} {
+  // Map ToolsEngineCall status to ToolCallStatus
+  const statusMap: Record<
+    ToolsEngineCall['status'],
+    import('../core/tool-lifecycle').ToolCallStatus
+  > = {
+    pending: 'pending_approval',
+    approved: 'approved',
+    executing: 'executing',
+    completed: 'completed',
+    failed: 'failed',
+    timeout: 'timeout',
+  }
+
+  return {
+    id: call.id,
+    toolName: call.name, // name → toolName
+    args: call.parameters, // parameters → args
+    status: statusMap[call.status],
+    timestamps: {
+      requested: call.startTime,
+      executionStarted: call.startTime,
+      executionEnded: call.endTime,
+    },
+    result: call.result,
+    error: call.error ? { message: call.error } : undefined,
+  }
+}
+
+/**
+ * Convert ToolsEngineCall to ToolInvocation format (for message/UI layer)
+ *
+ * **Use case**: When adding tool calls to chat messages
+ *
+ * @param call - ToolsEngineCall to convert
+ * @returns ToolInvocation compatible object
+ *
+ * @example
+ * ```typescript
+ * import type { AssistantMessage } from '../types/tool-invocation'
+ *
+ * const engineCall = createToolCall(state, 'calculator', { expression: '2+2' })
+ * const invocation = toToolInvocation(engineCall.call)
+ *
+ * const message: AssistantMessage = {
+ *   id: 'msg_123',
+ *   role: 'assistant',
+ *   content: 'Let me calculate that...',
+ *   toolInvocations: [invocation]
+ * }
+ * ```
+ */
+export function toToolInvocation(
+  call: ToolsEngineCall
+): import('../types/tool-invocation').ToolInvocation {
+  // Map ToolsEngineCall status to ToolInvocation state
+  if (call.status === 'completed' && call.result !== undefined) {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'result',
+      args: call.parameters,
+      result: call.result,
+      executionStartedAt: call.startTime,
+      executionCompletedAt: call.endTime,
+      duration:
+        call.startTime && call.endTime
+          ? call.endTime - call.startTime
+          : undefined,
+    }
+  }
+
+  if (call.status === 'failed' || call.status === 'timeout') {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'error',
+      args: call.parameters,
+      error: call.error ?? 'Unknown error',
+      errorCode: call.status === 'timeout' ? 'timeout' : 'execution',
+      executionStartedAt: call.startTime,
+      errorTimestamp: call.endTime,
+    }
+  }
+
+  if (call.status === 'executing') {
+    return {
+      toolCallId: call.id,
+      toolName: call.name,
+      state: 'executing',
+      args: call.parameters,
+      executionStartedAt: call.startTime,
+    }
+  }
+
+  // pending or approved
+  return {
+    toolCallId: call.id,
+    toolName: call.name,
+    state: 'call',
+    args: call.parameters,
+  }
 }

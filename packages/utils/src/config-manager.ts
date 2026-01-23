@@ -243,16 +243,14 @@ export function validateConfig<T extends Record<string, unknown>>(
   config: unknown,
   schema: ConfigSchema<T>
 ): StrictValidation<T> {
-  return createConfigManager(schema).validate(config)
+  return createConfigManager(schema).validate(config) as StrictValidation<T>
 }
 
 /**
  * Get default values from a configuration schema
  */
-export function getConfigDefaults<T extends Record<string, unknown>>(
-  schema: ConfigSchema<T>
-): Partial<T> {
-  return createConfigManager(schema).getDefaults()
+export function getConfigDefaults<T extends Record<string, unknown>>(schema: ConfigSchema<T>): Partial<T> {
+  return createConfigManager(schema).getDefaults() as Partial<T>
 }
 
 /**

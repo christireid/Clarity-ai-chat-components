@@ -2,7 +2,8 @@
 
 **Comprehensive security guidelines for safe tool calling in Clarity AI Chat Components**
 
-This guide covers security boundaries, threat models, best practices, and mitigation strategies for building secure tool calling systems.
+This guide covers security boundaries, threat models, best practices, and mitigation strategies for
+building secure tool calling systems.
 
 ---
 
@@ -52,21 +53,25 @@ The tool calling system implements defense-in-depth with multiple security layer
 ### Threat Actors
 
 #### 1. **Malicious User** 🔴 HIGH RISK
+
 - **Goal**: Exploit system, access unauthorized data, cause denial of service
 - **Capability**: Craft malicious prompts, inject code, exhaust resources
 - **Mitigation Priority**: CRITICAL
 
 #### 2. **Compromised AI Model** 🟡 MEDIUM RISK
+
 - **Goal**: Execute unauthorized actions via tool calls
 - **Capability**: Generate tool calls with malicious parameters
 - **Mitigation Priority**: HIGH
 
 #### 3. **Insider Threat** 🟡 MEDIUM RISK
+
 - **Goal**: Abuse tool system for unauthorized access
 - **Capability**: Register malicious tools, bypass controls
 - **Mitigation Priority**: MEDIUM
 
 #### 4. **External Attacker** 🟠 MEDIUM-HIGH RISK
+
 - **Goal**: Compromise application via tool vulnerabilities
 - **Capability**: Exploit unvalidated inputs, code injection
 - **Mitigation Priority**: HIGH
@@ -91,12 +96,14 @@ registry.register(eval(userInput.toolCode)) // NEVER DO THIS
 ```
 
 **Security Controls**:
+
 - JSON Schema validation on registration
 - Name conflict detection
 - Tool definition validation
 - No dynamic code execution during registration
 
 **Threats Mitigated**:
+
 - Malicious tool injection
 - Code execution during registration
 - Tool impersonation
@@ -124,6 +131,7 @@ const orchestrator = new ToolOrchestrator({
 ```
 
 **Security Controls**:
+
 - Mandatory approval flow
 - Argument validation (JSON Schema)
 - Timeout protection
@@ -131,6 +139,7 @@ const orchestrator = new ToolOrchestrator({
 - Concurrency limits
 
 **Threats Mitigated**:
+
 - Unauthorized execution
 - Resource exhaustion
 - Denial of service
@@ -159,12 +168,14 @@ validateToolArguments(tool, JSON.parse(aiToolCall.arguments))
 ```
 
 **Security Controls**:
+
 - Tool name allowlist (registry)
 - Argument validation before execution
 - Type checking and schema enforcement
 - Safe JSON parsing with error handling
 
 **Threats Mitigated**:
+
 - Prompt injection leading to tool abuse
 - Malicious tool parameters
 - Type confusion attacks
@@ -200,6 +211,7 @@ app.post('/api/tools/execute', authenticate, async (req, res) => {
 ```
 
 **Security Controls**:
+
 - Authentication required
 - Authorization per tool
 - Per-user rate limiting
@@ -207,6 +219,7 @@ app.post('/api/tools/execute', authenticate, async (req, res) => {
 - Input sanitization
 
 **Threats Mitigated**:
+
 - Unauthorized API access
 - Cross-user attacks
 - API abuse
@@ -235,12 +248,14 @@ async execute(args, context) {
 ```
 
 **Security Controls**:
+
 - No automatic memory writes from tools
 - Explicit context passing
 - Session isolation
 - User-based memory access control
 
 **Threats Mitigated**:
+
 - Memory poisoning
 - Cross-session leakage
 - Unauthorized data access
@@ -273,12 +288,14 @@ for await (const chunk of stream) {
 ```
 
 **Security Controls**:
+
 - Stream pause on tool call
 - Complete JSON validation before execution
 - No partial execution
 - Approval during stream pause
 
 **Threats Mitigated**:
+
 - Streaming-based injection
 - Partial tool call exploitation
 - Race conditions
@@ -299,6 +316,7 @@ AI: <calls delete_database>
 **Mitigations**:
 
 ✅ **Approval Flow** (PRIMARY DEFENSE)
+
 ```typescript
 // User must explicitly approve dangerous tools
 {
@@ -307,6 +325,7 @@ AI: <calls delete_database>
 ```
 
 ✅ **Tool Allowlisting**
+
 ```typescript
 // Only register safe, reviewed tools
 const safeRegistry = new ToolRegistry()
@@ -315,6 +334,7 @@ safeRegistry.registerMany([calculatorTool, weatherTool])
 ```
 
 ✅ **Audit Logging**
+
 ```typescript
 lifecycle.on('tool_requested', (event) => {
   if (event.call.toolName === 'delete_database') {
@@ -343,6 +363,7 @@ lifecycle.on('tool_requested', (event) => {
 **Mitigations**:
 
 ✅ **JSON Schema Validation**
+
 ```typescript
 {
   parameters: {
@@ -359,6 +380,7 @@ lifecycle.on('tool_requested', (event) => {
 ```
 
 ✅ **Parameter Sanitization**
+
 ```typescript
 async execute(args) {
   // Use parameterized queries
@@ -368,6 +390,7 @@ async execute(args) {
 ```
 
 ✅ **Argument Inspection**
+
 ```typescript
 lifecycle.on('tool_pending_approval', (event) => {
   // Show args to user for approval
@@ -396,6 +419,7 @@ for (let i = 0; i < 10000; i++) {
 **Mitigations**:
 
 ✅ **Rate Limiting**
+
 ```typescript
 const executor = new ToolExecutor(lifecycle, {
   enableRateLimit: true,
@@ -406,6 +430,7 @@ const executor = new ToolExecutor(lifecycle, {
 ```
 
 ✅ **Concurrency Limits**
+
 ```typescript
 const executor = new ToolExecutor(lifecycle, {
   enableConcurrencyLimit: true,
@@ -415,6 +440,7 @@ const executor = new ToolExecutor(lifecycle, {
 ```
 
 ✅ **Timeout Protection**
+
 ```typescript
 {
   timeout: 5000, // Kill after 5 seconds
@@ -438,6 +464,7 @@ Step 3: Use "send_email" to exfiltrate data
 **Mitigations**:
 
 ✅ **Per-Tool Approval**
+
 ```typescript
 // Each tool in chain requires approval
 lifecycle.on('tool_pending_approval', async (event) => {
@@ -455,12 +482,11 @@ lifecycle.on('tool_pending_approval', async (event) => {
 ```
 
 ✅ **Tool Dependencies Analysis**
+
 ```typescript
 // Track tool call sequences
 function analyzeToolChain(sessionId: string) {
-  const calls = lifecycle.getAllCalls().filter(c =>
-    c.context.sessionId === sessionId
-  )
+  const calls = lifecycle.getAllCalls().filter((c) => c.context.sessionId === sessionId)
 
   // Alert on suspicious patterns
   if (hasSuspiciousPattern(calls)) {
@@ -470,6 +496,7 @@ function analyzeToolChain(sessionId: string) {
 ```
 
 ✅ **Principle of Least Privilege**
+
 ```typescript
 // Limit tool capabilities
 const readOnlyDb: ToolDefinition = {
@@ -499,6 +526,7 @@ const readOnlyDb: ToolDefinition = {
 **Mitigations**:
 
 ✅ **NEVER use eval() or Function()**
+
 ```typescript
 // ❌ DANGEROUS
 async execute(args) {
@@ -512,6 +540,7 @@ async execute(args) {
 ```
 
 ✅ **Sandboxing (Recommended)**
+
 ```typescript
 // Use isolated-vm or vm2
 import ivm from 'isolated-vm'
@@ -529,6 +558,7 @@ async execute(args) {
 ```
 
 ✅ **Input Validation**
+
 ```typescript
 {
   parameters: {
@@ -553,19 +583,18 @@ async execute(args) {
 **Mitigations**:
 
 ✅ **Constant-Time Operations**
+
 ```typescript
 // Use constant-time comparisons for secrets
 import crypto from 'crypto'
 
 function compareSecrets(a: string, b: string): boolean {
-  return crypto.timingSafeEqual(
-    Buffer.from(a),
-    Buffer.from(b)
-  )
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b))
 }
 ```
 
 ✅ **Timeout Normalization**
+
 ```typescript
 // Add random delay to hide timing
 async execute(args) {
@@ -650,10 +679,10 @@ const secureTool: ToolDefinition = {
     const validated = schema.parse(args)
 
     // 7. Parameterized query (safe)
-    const result = await db.query(
-      'SELECT ?? FROM users WHERE id = ?',
-      [validated.fields || ['name'], validated.userId]
-    )
+    const result = await db.query('SELECT ?? FROM users WHERE id = ?', [
+      validated.fields || ['name'],
+      validated.userId,
+    ])
 
     // 8. Sanitize output
     return sanitizeOutput(result)
@@ -786,9 +815,8 @@ const calculatorTool: ToolDefinition = {
 }
 ```
 
-**Pros**: Fast, no dependencies, built-in
-**Cons**: Limited to math expressions
-**Security**: 🟢 SAFE
+**Pros**: Fast, no dependencies, built-in **Cons**: Limited to math expressions **Security**: 🟢
+SAFE
 
 ---
 
@@ -829,9 +857,8 @@ const codeExecutionTool: ToolDefinition = {
 }
 ```
 
-**Pros**: True isolation, resource limits
-**Cons**: Native dependency, complex
-**Security**: 🟢 SAFE (if configured correctly)
+**Pros**: True isolation, resource limits **Cons**: Native dependency, complex **Security**: 🟢 SAFE
+(if configured correctly)
 
 ---
 
@@ -883,9 +910,8 @@ const sandboxedTool: ToolDefinition = {
 }
 ```
 
-**Pros**: Maximum isolation, network restrictions
-**Cons**: Slow, requires Docker
-**Security**: 🟢 VERY SAFE
+**Pros**: Maximum isolation, network restrictions **Cons**: Slow, requires Docker **Security**: 🟢
+VERY SAFE
 
 ---
 
@@ -1008,10 +1034,12 @@ lifecycle.on('tool_failed', (event) => {
 9. 📋 **Follow checklists** for every tool and configuration
 10. 🚨 **Have an incident response plan** ready
 
-With these security measures in place, the tool calling system achieves **enterprise-grade security** suitable for production deployment with untrusted users.
+With these security measures in place, the tool calling system achieves **enterprise-grade
+security** suitable for production deployment with untrusted users.
 
 ---
 
 **Questions or Security Concerns?**
 
-If you discover a security vulnerability, please report it responsibly to the security team. Do not create public issues for security vulnerabilities.
+If you discover a security vulnerability, please report it responsibly to the security team. Do not
+create public issues for security vulnerabilities.

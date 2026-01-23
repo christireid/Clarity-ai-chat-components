@@ -1,3 +1,0 @@
-id,timestamp,scenarioId,turn,model,provider,estimatedInputTokens,actualInputTokens,estimatedOutputTokens,actualOutputTokens,optimizationEnabled,techniquesApplied,estimatedSavings,actualSavings,optimizationEffective,latencyMs,success,error
-2c43a65a-87be-4fba-8d53-c0452366de1a,2025-12-29T12:51:53.173Z,adversarial-03-json-dump,1,gpt-4,openai,9211,9211,1,25,true,prompt-compression;pii-redaction,6391,6391,true,37,true,
-8d1795de-70e3-4141-8cb5-2c04f56578c6,2025-12-29T12:51:53.175Z,replay-02-structured-data,1,gpt-4,openai,35,35,1,23,true,prompt-compression,15,15,true,1,true,

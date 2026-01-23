@@ -9,8 +9,8 @@
 // Types
 export * from './types'
 
-// Core service
-export { MemoryService } from './memory-service'
+// Core service (re-exported from @clarity-chat/memory)
+export { MemoryService } from '@clarity-chat/memory'
 
 // Token optimization
 export {

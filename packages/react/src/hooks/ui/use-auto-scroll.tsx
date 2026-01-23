@@ -10,6 +10,7 @@ import {
   type DependencyList,
 } from 'react'
 import { useSafeAnimationFrame } from './use-safe-timeout'
+import { useThrottledCallback } from './use-throttle'
 
 export interface UseAutoScrollOptions {
   /**
@@ -137,18 +138,20 @@ export function useAutoScroll(
     scrollToBottomRef.current()
   }, [])
 
+  // Throttled scroll handler for better performance (60fps = ~16ms)
+  // Prevents 100+ scroll events/sec from causing performance issues
+  const handleScroll = useThrottledCallback(() => {
+    setIsNearBottom(checkIfNearBottomRef.current())
+  }, 16) // 60fps throttle
+
   // Update isNearBottom on scroll
   useEffect(() => {
     const element = scrollRef.current
     if (!element) return
 
-    const handleScroll = () => {
-      setIsNearBottom(checkIfNearBottomRef.current())
-    }
-
     element.addEventListener('scroll', handleScroll, { passive: true })
     return () => element.removeEventListener('scroll', handleScroll)
-  }, []) // Function accessed via ref
+  }, [handleScroll]) // handleScroll is stable from useThrottledCallback
 
   // Auto-scroll when dependencies change
   useEffect(() => {

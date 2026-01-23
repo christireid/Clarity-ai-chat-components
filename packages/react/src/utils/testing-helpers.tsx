@@ -8,8 +8,7 @@
  */
 
 import * as React from 'react'
-import { vi } from 'vitest'
-import type { Mock } from 'vitest'
+import { vi, Mock } from 'vitest'
 
 // =============================================================================
 // MOCKS AND STUBS
@@ -46,7 +45,7 @@ export const mockChatAPI = {
     error: {
       message: 'Rate limit exceeded',
       code: 'RATE_LIMIT',
-      retryAfter,
+      retryAfter
     },
     success: false,
   }),
@@ -58,10 +57,10 @@ export const mockChatAPI = {
 export class MockWebSocket {
   onmessage?: (event: MessageEvent) => void
   onopen?: () => void
-  onclose?: (event: CloseEvent) => void
+  onclose?: () => void
   onerror?: (error: Event) => void
 
-  readyState: number = 1 // WebSocket.OPEN
+  readyState = WebSocket.OPEN
   url = 'ws://mock-chat-api.com'
 
   constructor(url?: string) {
@@ -73,15 +72,13 @@ export class MockWebSocket {
   }
 
   close() {
-    this.readyState = 3 // WebSocket.CLOSED
-    this.onclose?.(new CloseEvent('close'))
+    this.readyState = WebSocket.CLOSED
+    this.onclose?.(new Event('close'))
   }
 
   // Test helper methods
   simulateMessage(data: any) {
-    this.onmessage?.(
-      new MessageEvent('message', { data: JSON.stringify(data) })
-    )
+    this.onmessage?.(new MessageEvent('message', { data: JSON.stringify(data) }))
   }
 
   simulateOpen() {
@@ -129,7 +126,7 @@ export class MockLocalStorage {
  * Mock fetch for API testing
  */
 export const createMockFetch = (responses: Record<string, any>) => {
-  return vi.fn((url: string | URL, options?: RequestInit) => {
+  return vi.fn((url: string, options?: RequestInit) => {
     const urlKey = typeof url === 'string' ? url : url.toString()
     const response = responses[urlKey]
 
@@ -153,9 +150,7 @@ export const createMockFetch = (responses: Record<string, any>) => {
 /**
  * Render ClarityChat with test-friendly defaults
  */
-export function renderChatWithDefaults(props: Partial<any> = {}): {
-  props: any
-} {
+export function renderChatWithDefaults(props: Partial<any> = {}): { props: any } {
   const defaultProps = {
     api: '/api/chat',
     onSendMessage: vi.fn(),
@@ -216,34 +211,28 @@ export function createMockChatState(initialMessages: any[] = []) {
   const listeners = new Set<() => void>()
 
   return {
-    get messages() {
-      return messages
-    },
-    get isLoading() {
-      return isLoading
-    },
-    get error() {
-      return error
-    },
+    get messages() { return messages },
+    get isLoading() { return isLoading },
+    get error() { return error },
 
     setMessages: (newMessages: any[]) => {
       messages = [...newMessages]
-      listeners.forEach((listener) => listener())
+      listeners.forEach(listener => listener())
     },
 
     setLoading: (loading: boolean) => {
       isLoading = loading
-      listeners.forEach((listener) => listener())
+      listeners.forEach(listener => listener())
     },
 
     setError: (newError: Error | null) => {
       error = newError
-      listeners.forEach((listener) => listener())
+      listeners.forEach(listener => listener())
     },
 
     append: (message: any) => {
       messages = [...messages, message]
-      listeners.forEach((listener) => listener())
+      listeners.forEach(listener => listener())
     },
 
     subscribe: (listener: () => void) => {
@@ -255,7 +244,7 @@ export function createMockChatState(initialMessages: any[] = []) {
       messages = []
       isLoading = false
       error = null
-      listeners.forEach((listener) => listener())
+      listeners.forEach(listener => listener())
     },
   }
 }
@@ -267,11 +256,7 @@ export function createMockChatState(initialMessages: any[] = []) {
 /**
  * Test hook for useClarityChat
  */
-export function createMockClarityChatHook(initialState?: Partial<any>): {
-  hook: any
-  state: any
-  updateState: (updates: any) => void
-} {
+export function createMockClarityChatHook(initialState?: Partial<any>): { hook: any, state: any, updateState: (updates: Partial<any>) => void } {
   const mockState = {
     messages: [],
     isLoading: false,
@@ -298,10 +283,10 @@ export function createMockClarityChatHook(initialState?: Partial<any>): {
  */
 export const asyncTestUtils = {
   /** Wait for next tick */
-  nextTick: () => new Promise((resolve) => setTimeout(resolve, 0)),
+  nextTick: () => new Promise(resolve => setTimeout(resolve, 0)),
 
   /** Wait for specific time */
-  wait: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
+  wait: (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
 
   /** Wait for condition to be true */
   waitFor: (condition: () => boolean, timeout = 1000) => {
@@ -344,11 +329,7 @@ export const domTestUtils = {
   },
 
   /** Press a key */
-  pressKey: (
-    element: Element,
-    key: string,
-    options: Partial<KeyboardEventInit> = {}
-  ) => {
+  pressKey: (element: Element, key: string, options: Partial<KeyboardEventInit> = {}) => {
     const event = new KeyboardEvent('keydown', {
       key,
       bubbles: true,
@@ -359,26 +340,18 @@ export const domTestUtils = {
 
   /** Focus an element */
   focus: (element: Element) => {
-    if ('focus' in element && typeof element.focus === 'function') {
-      element.focus()
-    }
+    element.focus()
     element.dispatchEvent(new Event('focus', { bubbles: true }))
   },
 
   /** Blur an element */
   blur: (element: Element) => {
-    if ('blur' in element && typeof element.blur === 'function') {
-      element.blur()
-    }
+    element.blur()
     element.dispatchEvent(new Event('blur', { bubbles: true }))
   },
 
   /** Wait for element to appear */
-  waitForElement: (
-    selector: string,
-    container: Element = document.body,
-    timeout = 1000
-  ) => {
+  waitForElement: (selector: string, container: Element = document.body, timeout = 1000) => {
     return new Promise<Element>((resolve, reject) => {
       const element = container.querySelector(selector)
       if (element) {
@@ -444,9 +417,8 @@ export const a11yTestUtils = {
       '[tabindex]:not([tabindex="-1"])',
     ]
 
-    return Array.from(
-      container.querySelectorAll(focusableSelectors.join(','))
-    ).filter(a11yTestUtils.isKeyboardAccessible)
+    return Array.from(container.querySelectorAll(focusableSelectors.join(',')))
+      .filter(a11yTestUtils.isKeyboardAccessible)
   },
 
   /** Test keyboard navigation */
@@ -457,9 +429,7 @@ export const a11yTestUtils = {
     // Test tab order
     focusable.forEach((element, index) => {
       domTestUtils.pressKey(element, 'Tab')
-      expect(document.activeElement).toBe(
-        index < focusable.length - 1 ? focusable[index + 1] : focusable[0]
-      )
+      expect(document.activeElement).toBe(index < focusable.length - 1 ? focusable[index + 1] : focusable[0])
     })
   },
 }
@@ -473,10 +443,7 @@ export const a11yTestUtils = {
  */
 export const performanceTestUtils = {
   /** Measure render time */
-  measureRenderTime: async (
-    component: React.ComponentType,
-    props: any = {}
-  ) => {
+  measureRenderTime: async (component: React.ComponentType, props: any = {}) => {
     const start = performance.now()
 
     // Render component (this would be implemented with testing library)
@@ -535,7 +502,7 @@ export const e2eTestUtils = {
     // Mock fetch
     global.fetch = createMockFetch({
       '/api/chat': mockChatAPI.success('Test response'),
-    }) as any
+    })
   },
 
   /** Teardown test environment */
@@ -554,9 +521,7 @@ export const e2eTestUtils = {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: message }],
-        }),
+        body: JSON.stringify({ messages: [{ role: 'user', content: message }] }),
       })
 
       const data = await response.json()
@@ -627,22 +592,24 @@ export const testConfigs = {
 /**
  * Test wrapper component for consistent testing setup
  */
-export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  return <div data-testid="test-wrapper">{children}</div>
+export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div data-testid="test-wrapper">
+      {children}
+    </div>
+  )
 }
 
 /**
  * Create test component with props
  */
-export function createTestComponent<P extends object>(
+export function createTestComponent<P extends {}>(
   Component: React.ComponentType<P>,
   defaultProps: Partial<P> = {}
 ) {
   return (props: Partial<P> = {}) => (
     <TestWrapper>
-      <Component {...(defaultProps as P)} {...(props as P)} />
+      <Component {...defaultProps} {...props} />
     </TestWrapper>
   )
 }
@@ -729,6 +696,5 @@ export const chatAssertions = {
 export {
   // Re-export vitest utilities for convenience
   vi,
+  Mock,
 }
-
-export type { Mock }

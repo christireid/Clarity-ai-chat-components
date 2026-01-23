@@ -147,7 +147,7 @@ export function usePerformanceTracking({
 /**
  * Log performance metrics with appropriate formatting
  */
-function logPerformanceMetrics(metrics: PerformanceMetrics) {
+export function logPerformanceMetrics(metrics: PerformanceMetrics) {
   const config = DEFAULT_CONFIG
 
   if (!config.logToConsole) return

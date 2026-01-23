@@ -181,5 +181,8 @@ archive/documentation-overhaul/
 # Build reports
 build-report.json
 
+# VS Code Extension Tests
+tools/vscode-extension/.vscode-test/
+
 # Benchmark results
 tools/benchmark-results/

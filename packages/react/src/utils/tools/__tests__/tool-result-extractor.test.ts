@@ -103,16 +103,12 @@ describe('Tool Result Extractor', () => {
 
     it('should extract tool results from direct metadata format', () => {
       const messages = [
-        createMessage(
-          'msg1',
-          JSON.stringify({ success: true }),
-          {
-            toolCallId: 'call_123',
-            name: 'getTodo',
-            args: { id: '1' },
-            result: { todo: 'Task 1' },
-          }
-        ),
+        createMessage('msg1', JSON.stringify({ success: true }), {
+          toolCallId: 'call_123',
+          name: 'getTodo',
+          args: { id: '1' },
+          result: { todo: 'Task 1' },
+        }),
       ]
 
       const results = extractToolResults(messages)
@@ -125,15 +121,11 @@ describe('Tool Result Extractor', () => {
 
     it('should parse content as result if metadata.result is missing', () => {
       const messages = [
-        createMessage(
-          'msg1',
-          JSON.stringify({ success: true, data: 'test' }),
-          {
-            toolCallId: 'call_123',
-            name: 'getTodo',
-            args: { id: '1' },
-          }
-        ),
+        createMessage('msg1', JSON.stringify({ success: true, data: 'test' }), {
+          toolCallId: 'call_123',
+          name: 'getTodo',
+          args: { id: '1' },
+        }),
       ]
 
       const results = extractToolResults(messages)
@@ -144,15 +136,11 @@ describe('Tool Result Extractor', () => {
 
     it('should use content as-is if not valid JSON', () => {
       const messages = [
-        createMessage(
-          'msg1',
-          'Plain text result',
-          {
-            toolCallId: 'call_123',
-            name: 'getTodo',
-            args: { id: '1' },
-          }
-        ),
+        createMessage('msg1', 'Plain text result', {
+          toolCallId: 'call_123',
+          name: 'getTodo',
+          args: { id: '1' },
+        }),
       ]
 
       const results = extractToolResults(messages)
@@ -163,14 +151,10 @@ describe('Tool Result Extractor', () => {
 
     it('should skip messages with invalid toolCallId type', () => {
       const messages = [
-        createMessage(
-          'msg1',
-          'content',
-          {
-            toolCallId: 123, // Not a string
-            name: 'getTodo',
-          }
-        ),
+        createMessage('msg1', 'content', {
+          toolCallId: 123, // Not a string
+          name: 'getTodo',
+        }),
       ]
 
       const results = extractToolResults(messages)
@@ -180,14 +164,10 @@ describe('Tool Result Extractor', () => {
 
     it('should skip messages with invalid name type', () => {
       const messages = [
-        createMessage(
-          'msg1',
-          'content',
-          {
-            toolCallId: 'call_123',
-            name: 123, // Not a string
-          }
-        ),
+        createMessage('msg1', 'content', {
+          toolCallId: 'call_123',
+          name: 123, // Not a string
+        }),
       ]
 
       const results = extractToolResults(messages)
@@ -306,16 +286,12 @@ describe('Tool Result Extractor', () => {
             },
           ],
         }),
-        createMessage(
-          'msg2',
-          JSON.stringify({ success: true }),
-          {
-            toolCallId: 'call_456',
-            name: 'createTodo',
-            args: { title: 'New' },
-            result: { id: '2' },
-          }
-        ),
+        createMessage('msg2', JSON.stringify({ success: true }), {
+          toolCallId: 'call_456',
+          name: 'createTodo',
+          args: { title: 'New' },
+          result: { id: '2' },
+        }),
       ]
 
       const results = extractToolResults(messages)

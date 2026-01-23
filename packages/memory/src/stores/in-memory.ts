@@ -3,7 +3,14 @@
  * Simple implementation for development and testing
  */
 
-import type { MemoryItem, MemoryType } from '../types'
+import type {
+  MemoryItem,
+  MemoryType,
+  VectorStoreQuery,
+  VectorStoreMatch,
+  VectorStoreVector,
+  VectorStoreUpsertOptions,
+} from '../types'
 import type { VectorStore, SearchOptions } from './base'
 
 export class InMemoryStore implements VectorStore {
@@ -138,65 +145,169 @@ export class InMemoryStore implements VectorStore {
   }> {
     const memories = Array.from(this.memories.values())
     const totalMemories = memories.length
-    
+
     // Count by type - ensure all expected types exist
     const byType: Record<string, number> = {
       episodic: 0,
       semantic: 0,
-      procedural: 0
+      procedural: 0,
     }
     for (const memory of memories) {
       byType[memory.type] = (byType[memory.type] || 0) + 1
     }
-    
+
     // Count by scope - ensure all expected scopes exist
     const byScope: Record<string, number> = {
       session: 0,
       user: 0,
-      global: 0
+      global: 0,
     }
     for (const memory of memories) {
       byScope[memory.scope] = (byScope[memory.scope] || 0) + 1
     }
-    
+
     // Calculate average importance
-    const totalImportance = memories.reduce((sum, m) => sum + (m.importance ?? 0.5), 0)
-    const averageImportance = totalMemories > 0 ? totalImportance / totalMemories : 0
-    
+    const totalImportance = memories.reduce(
+      (sum, m) => sum + (m.importance ?? 0.5),
+      0
+    )
+    const averageImportance =
+      totalMemories > 0 ? totalImportance / totalMemories : 0
+
     // Calculate token usage (simplified)
     const tokenUsage = memories.reduce((sum, m) => sum + (m.tokens || 0), 0)
-    
+
     // Calculate compression ratio (simplified)
-    const compressedCount = memories.filter(m => m.compressed).length
-    const compressionRatio = totalMemories > 0 ? compressedCount / totalMemories : 0
-    
+    const compressedCount = memories.filter((m) => m.compressed).length
+    const compressionRatio =
+      totalMemories > 0 ? compressedCount / totalMemories : 0
+
     return {
       totalMemories,
       tokenUsage,
       averageImportance,
       compressionRatio,
       byType,
-      byScope
+      byScope,
     }
   }
 
-  async query(options?: { scope?: string; type?: MemoryType; userId?: string; sessionId?: string }): Promise<MemoryItem[]> {
+  /**
+   * Vector store query method (required by VectorStore interface)
+   * For in-memory store, this performs basic similarity matching without true vector search
+   */
+  async query(options: VectorStoreQuery): Promise<VectorStoreMatch[]> {
+    const matches: VectorStoreMatch[] = []
+
+    for (const memory of this.memories.values()) {
+      // Apply metadata filters
+      if (options.filter) {
+        let matchesFilter = true
+        for (const [key, value] of Object.entries(options.filter)) {
+          if (memory.metadata?.[key] !== value) {
+            matchesFilter = false
+            break
+          }
+        }
+        if (!matchesFilter) continue
+      }
+
+      // Calculate score (simplified - no real vector similarity)
+      // Use confidence as a proxy for score
+      const score = memory.confidence || 0.5
+
+      if (score >= (options.minScore || 0)) {
+        matches.push({
+          id: memory.id,
+          score,
+          values: memory.embedding || [],
+          metadata: {
+            type: memory.type,
+            scope: memory.scope,
+            content: memory.content,
+            ...memory.metadata,
+          },
+        })
+      }
+    }
+
+    // Sort by score descending and limit results
+    matches.sort((a, b) => b.score - a.score)
+    return matches.slice(0, options.topK || 10)
+  }
+
+  /**
+   * Upsert vectors (required by VectorStore interface)
+   * For in-memory store, this stores the vector data as memories
+   */
+  async upsert(
+    vectors: VectorStoreVector[],
+    _options?: VectorStoreUpsertOptions
+  ): Promise<void> {
+    for (const vector of vectors) {
+      // Check if memory already exists
+      const existing = this.memories.get(vector.id)
+
+      if (existing) {
+        // Update existing memory with new embedding
+        const updated: MemoryItem = {
+          ...existing,
+          embedding: vector.values,
+          metadata: {
+            ...existing.metadata,
+            ...vector.metadata,
+          },
+          updatedAt: new Date(),
+        }
+        this.memories.set(vector.id, updated)
+      } else {
+        // Create new memory from vector
+        const memory: MemoryItem = {
+          id: vector.id,
+          type: (vector.metadata?.type as MemoryType) || 'episodic',
+          scope: (vector.metadata?.scope as any) || 'session',
+          content: (vector.metadata?.content as string) || '',
+          metadata: vector.metadata || {},
+          embedding: vector.values,
+          confidence: 0.8,
+          priority: (vector.metadata?.priority as any) || 'medium',
+          tokens: 0,
+          accessCount: 0,
+          lastAccessed: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+        this.memories.set(memory.id, memory)
+        this.accessCounts.set(memory.id, 0)
+      }
+    }
+  }
+
+  /**
+   * Query memories by filters (legacy method for backwards compatibility)
+   */
+  async queryMemories(options?: {
+    scope?: string
+    type?: MemoryType
+    userId?: string
+    sessionId?: string
+  }): Promise<MemoryItem[]> {
     const results = Array.from(this.memories.values())
 
     if (options?.scope) {
-      return results.filter(m => m.scope === options.scope)
+      return results.filter((m) => m.scope === options.scope)
     }
 
     if (options?.type) {
-      return results.filter(m => m.type === options.type)
+      return results.filter((m) => m.type === options.type)
     }
 
     if (options?.userId) {
-      return results.filter(m => m.metadata?.userId === options.userId)
+      return results.filter((m) => m.metadata?.userId === options.userId)
     }
 
     if (options?.sessionId) {
-      return results.filter(m => m.metadata?.sessionId === options.sessionId)
+      return results.filter((m) => m.metadata?.sessionId === options.sessionId)
     }
 
     return results

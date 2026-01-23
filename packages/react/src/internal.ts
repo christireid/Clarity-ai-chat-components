@@ -13,6 +13,24 @@
  * @internal
  */
 
+if (
+  typeof window !== 'undefined' &&
+  typeof process !== 'undefined' &&
+  process.env.NODE_ENV !== 'production'
+) {
+  // Use a flag to ensure we only warn once per session
+  const GLOBAL_WARNING_KEY = '__CLARITY_INTERNAL_WARNING_SHOWN__'
+  if (!(window as any)[GLOBAL_WARNING_KEY]) {
+    console.warn(
+      '[@clarity-chat/react] ⚠️ WARNING: You are importing from "@clarity-chat/react/internal".\n' +
+        'These APIs are experimental, unstable, and NOT part of the public semantic versioning guarantees.\n' +
+        'They may change or be removed without notice between minor versions.\n' +
+        'Please prefer using the public API from "@clarity-chat/react".'
+    )
+    ;(window as any)[GLOBAL_WARNING_KEY] = true
+  }
+}
+
 // Re-export everything from public API
 export * from './public-api'
 

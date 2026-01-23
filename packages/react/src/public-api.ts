@@ -187,7 +187,10 @@ export {
   type CodeFontFamily,
 } from './components/code/CodeBlock'
 
-export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
+export {
+  InlineCode,
+  type InlineCodeProps,
+} from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -230,14 +233,8 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export {
-  OfflineChatSync,
-  useOfflineChat,
-} from './components/chat/offline-chat-sync'
-export {
-  ChatSyncStatus,
-  type ChatSyncStatusProps,
-} from './components/chat/chat-sync-status'
+export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
+export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
 export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
@@ -475,7 +472,11 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
+export {
+  SetupWizard,
+  QuickSetup,
+  interactiveSetup,
+} from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -490,124 +491,17 @@ export {
 } from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
-// Note: migration-helpers file doesn't exist, commented out dead code
-// export {
-//   migrateToV1,
-//   createMigrationWrapper,
-//   applyMigration,
-//   validateMigration,
-//   MigrationUtils,
-// } from './utils/migration-helpers'
-
-// IntelliSense Helpers - Enhanced TypeScript DX
-export type {
-  ChatApiConfig,
-  ChatPreset,
-  MemoryConfigHelper,
-  StreamingConfigHelper,
-  RateLimitConfigHelper,
-  HeaderConfigHelper,
-  MessageActionsConfigHelper,
-  PromptsConfigHelper,
-  ErrorHandlingConfigHelper,
-  ChatErrorType,
-} from './types/intellisense-helpers'
-
-// Component Composition - Easy component building
 export {
-  composeComponents,
-  withProps,
-  conditional,
-  Compositions,
-  createGridLayout,
-  FlexLayouts,
-  composeHooks,
-  transformProps,
-  withDefaults,
-  withVariants,
-  createContextProvider,
-} from './utils/component-composition'
-
-// Theme Helpers - Easy theming and customization
-// COMMENTED OUT: theme-helpers file doesn't exist
-// export {
-//   ThemePresets,
-//   createThemeFromPalette,
-//   createThemeFromCSSVariables,
-//   mergeThemes,
-//   createThemeVariant,
-//   createThemeClasses,
-//   applyThemeToCSS,
-//   // useTheme, // Duplicate - exported from './theme'
-//   useResponsiveTheme,
-//   usePersistentTheme,
-//   // ThemeProvider, // Duplicate - exported from './theme'
-//   ThemeToggle,
-//   ThemeSelector,
-// } from './utils/theme-helpers'
-
-// Accessibility Helpers - Enhanced A11y support
-export {
-  createAccessibleButtonProps,
-  createAccessibleDialogProps,
-  createAccessibleListboxProps,
-  useKeyboardListNavigation,
-  useChatInputKeyboard,
-  announceToScreenReader,
-  useScreenReaderAnnouncements,
-  LiveRegion,
-  useFocusManagement,
-  isKeyboardAccessible,
-  getFocusableElements,
-  validateChatAccessibility,
-  useMotionPreferences,
-  createAccessibleMotionProps,
-  useHighContrastMode,
-  applyHighContrastAdjustments,
-  SkipLink,
-  ScreenReaderOnly,
-  useDebouncedStreamingAnnouncements,
-  useStreamingFocusPreservation,
-} from './utils/accessibility-helpers'
-
-// Testing Helpers - Comprehensive testing toolkit
-export {
-  mockChatAPI,
-  MockWebSocket,
-  MockLocalStorage,
-  createMockFetch,
-  renderChatWithDefaults,
-  createTestMessages,
-  createMockChatState,
-  createMockClarityChatHook,
-  asyncTestUtils,
-  domTestUtils,
-  a11yTestUtils,
-  performanceTestUtils,
-  e2eTestUtils,
-  testConfigs,
-  TestWrapper,
-  createTestComponent,
-  testDataFactories,
-  chatAssertions,
-  vi,
-} from './utils/testing-helpers'
-
-export type { Mock } from './utils/testing-helpers'
-
-// Migration Helpers - Easy migration from other libraries
-// Note: migration-helpers file doesn't exist, commented out dead code
-// export {
-//   VercelAdapter,
-//   OpenAIAdapter,
-//   ChatbotKitAdapter,
-//   CustomAdapter,
-//   MigrationTracker,
-//   MigrationAnalyzer,
-//   MigrationPresets,
-//   generateMigrationReport,
-//   migrateQuick,
-// } from './utils/migration-helpers'
+  VercelAdapter,
+  OpenAIAdapter,
+  ChatbotKitAdapter,
+  CustomAdapter,
+  MigrationTracker,
+  MigrationAnalyzer,
+  MigrationPresets,
+  generateMigrationReport,
+  migrateQuick,
+} from './utils/migration-helpers'
 
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
@@ -740,10 +634,7 @@ export {
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export {
-  AdaptiveTokenOptimizer as TokenOptimizer,
-  adaptiveOptimizer,
-} from './utils/tokenization/adaptive-optimizer'
+export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
 export {
   TokenCostPreview,
   useTokenEstimate,
@@ -822,10 +713,7 @@ export { AdvancedChatInput } from './components/input/advanced-chat-input'
 export { FileUpload } from './components/input/file-upload'
 export { InlineVoiceInput } from './components/input/voice-input'
 export { StructuredInputBuilder } from './components/input/structured-input-builder'
-export {
-  DocumentIntegration,
-  useDocumentIntegration,
-} from './components/media/document-integration'
+export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
@@ -836,10 +724,7 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
-export {
-  CollaborativeEditor,
-  useCollaborativeSession,
-} from './components/ai/collaborative-editing'
+export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
@@ -895,11 +780,6 @@ export { usePrevious } from './hooks/ui/use-previous'
 
 // Message operations
 export { useMessageOperations } from './hooks/message/use-message-operations'
-export {
-  useRegenerateMessage,
-  type UseRegenerateMessageOptions,
-  type UseRegenerateMessageReturn,
-} from './hooks/message/use-regenerate-message'
 
 // Token hooks
 export { useTokenBudgetMonitor } from './hooks/token/use-token-budget-monitor'
@@ -917,7 +797,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
 // Security
-export { SecurityMonitor, securityMonitor } from './utils/security'
+export { SecurityManager, securityManager, useSecurity } from './utils/security-helpers'
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -969,7 +849,6 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-// COMMENTED OUT: These files don't exist
 // export { ApiTokenManager } from './components/enterprise/api-token-manager'
 // export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
 
@@ -993,6 +872,7 @@ export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
 // Performance monitoring
 export {
   usePerformanceTracking,
+  logPerformanceMetrics,
   getPerformanceSummary,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
@@ -1042,12 +922,13 @@ export {
   createSecureContentWrapper,
   useSecureContent,
   useCSP,
+  securityMonitor,
   DEFAULT_SECURITY_CONFIG,
   type SecurityConfig,
   type SanitizationOptions,
   type SecurityHeaders,
   type SecurityAuditResult,
-} from './utils/security'
+} from './utils/security-helpers'
 
 // Error boundaries
 export {

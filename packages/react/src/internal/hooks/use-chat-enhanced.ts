@@ -39,6 +39,12 @@
 
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
+import {
+  validateApiEndpoint,
+  validateStreamingProps,
+  validateMessages,
+  validateCallbacks,
+} from '../../utils/config/runtime-validation'
 
 // Re-export MessageRole for modules that import from this file
 export type { MessageRole }
@@ -249,6 +255,42 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     sendExtraMessageFields = false,
   } = options
 
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate API endpoint
+    if (api) {
+      validateApiEndpoint(api, 'useChat')
+    }
+
+    // Validate initial messages
+    if (initialMessages.length > 0) {
+      validateMessages(initialMessages, 'useChat')
+    }
+
+    // Validate streaming props
+    validateStreamingProps(
+      {
+        stream,
+        streamProtocol: streamProtocol as 'sse' | 'data' | 'webstream',
+        maxSteps,
+        keepLastMessageOnError,
+      },
+      'useChat'
+    )
+
+    // Validate callbacks
+    validateCallbacks(
+      {
+        onResponse,
+        onFinish,
+        onError,
+        onMessageAppend,
+        transform,
+      },
+      'useChat'
+    )
+  }
+
   const [messages, setMessages] = React.useState<CoreMessage[]>(initialMessages)
   const [input, setInput] = React.useState('')
   const [isLoading, setIsLoading] = React.useState(false)
@@ -259,6 +301,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
   const messagesRef = React.useRef<CoreMessage[]>(messages)
   const messageIdRef = React.useRef<string | null>(null)
+  const rafRef = React.useRef<number | null>(null)
+  const readerRef = React.useRef<ReadableStreamDefaultReader | null>(null)
+  const connectionIdRef = React.useRef<number>(0)
 
   // Keep messagesRef in sync with messages state to avoid stale closures
   React.useEffect(() => {
@@ -271,6 +316,16 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     mountedRef.current = true
     return () => {
       mountedRef.current = false
+      // Cleanup RAF on unmount
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      // Cleanup reader on unmount
+      if (readerRef.current) {
+        readerRef.current.cancel().catch(() => {})
+        readerRef.current = null
+      }
     }
   }, [])
 
@@ -278,9 +333,25 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
    * Abort current request
    */
   const abort = React.useCallback(() => {
+    // Invalidate current connection
+    connectionIdRef.current++
+
+    // Cancel reader to prevent dangling promises
+    if (readerRef.current) {
+      readerRef.current.cancel('User aborted stream').catch(() => {})
+      readerRef.current = null
+    }
+
+    // Abort fetch request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+    }
+
+    // Cancel pending RAF updates
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
     }
   }, [])
 
@@ -338,6 +409,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         setIsLoading(true)
         setError(undefined)
         setData(undefined)
+
+        // Increment connection ID to invalidate any previous streams
+        const currentConnectionId = ++connectionIdRef.current
 
         abortControllerRef.current = new AbortController()
         const assistantMessageId = generateMessageId()
@@ -409,11 +483,39 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
           // Streaming response
           const reader = response.body.getReader()
+          readerRef.current = reader // Store reader ref for cleanup
           const decoder = new TextDecoder()
           let accumulatedContent = ''
           let currentMessage = { ...assistantMessage }
 
+          // Helper to schedule batched update
+          const scheduleUpdate = () => {
+            // Check if this stream is still active
+            if (connectionIdRef.current !== currentConnectionId) return
+
+            if (mountedRef.current && !rafRef.current) {
+              rafRef.current = requestAnimationFrame(() => {
+                rafRef.current = null
+                // Double-check connection is still active
+                if (!mountedRef.current || connectionIdRef.current !== currentConnectionId) return
+
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === assistantMessageId ? currentMessage : msg
+                  )
+                )
+                setData(currentMessage)
+              })
+            }
+          }
+
           while (true) {
+            // Check if this stream was cancelled by a newer request
+            if (connectionIdRef.current !== currentConnectionId) {
+              console.log('[useChat] Stream cancelled - newer request started')
+              break
+            }
+
             const { done, value } = await reader.read()
 
             if (done) break
@@ -471,12 +573,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                         content: accumulatedContent,
                       }
                       currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
+                      scheduleUpdate()
                     }
                   }
                 } catch {
@@ -489,12 +586,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                         content: accumulatedContent,
                       }
                       currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
+                      scheduleUpdate()
                     }
                   }
                 }
@@ -507,19 +599,23 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     content: accumulatedContent,
                   }
                   currentAssistantMessageRef.current = currentMessage
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === assistantMessageId ? currentMessage : msg
-                    )
-                  )
-                  setData(currentMessage)
+                  scheduleUpdate()
                 }
               }
             }
           }
 
-          // Finalize message
-          if (mountedRef.current) {
+          // Cancel any pending update before finalization
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current)
+            rafRef.current = null
+          }
+
+          // Clear reader ref
+          readerRef.current = null
+
+          // Finalize message (only if this stream is still active)
+          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
             const finalMessage: CoreMessage = {
               ...currentMessage,
               content: accumulatedContent,
@@ -536,22 +632,39 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           return assistantMessageId
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') {
+            // FIX: Issue #14 - Remove partial message on abort to prevent incomplete messages in history
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
             return null
           }
 
           const error = err instanceof Error ? err : new Error(String(err))
-          setError(error)
-          onError?.(error)
 
-          if (!keepLastMessageOnError && mountedRef.current) {
-            setMessages((prev) =>
-              prev.filter((msg) => msg.id !== assistantMessageId)
-            )
+          // Only update state if this stream is still active
+          if (connectionIdRef.current === currentConnectionId) {
+            setError(error)
+            onError?.(error)
+
+            if (!keepLastMessageOnError && mountedRef.current) {
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== assistantMessageId)
+              )
+            }
           }
 
           throw error
         } finally {
-          if (mountedRef.current) {
+          // Cleanup reader ref
+          if (readerRef.current) {
+            readerRef.current.cancel().catch(() => {})
+            readerRef.current = null
+          }
+
+          // Only cleanup if this is still the active connection
+          if (mountedRef.current && connectionIdRef.current === currentConnectionId) {
             setIsLoading(false)
             abortControllerRef.current = null
             currentAssistantMessageRef.current = null
@@ -626,7 +739,31 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     ) => {
       event?.preventDefault()
 
-      if (!input.trim() || isLoading) return
+      // FIX: Issue #13 - Provide feedback when input is empty
+      if (!input.trim()) {
+        const error = new Error('Message cannot be empty')
+        onError?.(error)
+        return
+      }
+
+      // Check if already loading
+      if (isLoading) {
+        const error = new Error('Please wait for the current response to complete')
+        onError?.(error)
+        return
+      }
+
+      // FIX: Issue #21 - Credentials validation
+      // Ensure credentials are sent with cross-origin requests if mode is 'include'
+      if (api && api.startsWith('http') && !api.includes(window.location.origin) && credentials === 'include') {
+        // Just a warning in dev mode, but good practice to verify
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[useChat] Cross-origin request with credentials: include. ' +
+            'Ensure your server sets Access-Control-Allow-Credentials: true'
+          )
+        }
+      }
 
       const userMessage: CoreMessage = {
         role: 'user',
@@ -641,7 +778,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           // Error already handled in append
         })
     },
-    [input, isLoading, append]
+    [input, isLoading, append, onError]
   )
 
   // Cleanup on unmount

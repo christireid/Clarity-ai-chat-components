@@ -18,44 +18,6 @@ export type SSEStatus =
   | 'closed'
 
 /**
- * Valid SSE state transitions
- *
- * Maps current state to allowed next states.
- * Any transition not in this map is considered invalid.
- */
-const VALID_STATE_TRANSITIONS: Record<SSEStatus, SSEStatus[]> = {
-  idle: ['connecting'],
-  connecting: ['connected', 'error', 'closed'],
-  connected: ['streaming', 'error', 'closed'],
-  streaming: ['closed', 'error', 'connecting'],
-  error: ['connecting', 'closed', 'idle'],
-  closed: ['connecting', 'idle'],
-}
-
-/**
- * Validate state transition
- *
- * Checks if transitioning from currentState to nextState is valid.
- * Logs warning for invalid transitions in production.
- *
- * @param currentState - Current SSE status
- * @param nextState - Desired next status
- * @returns true if transition is valid, false otherwise
- */
-function isValidTransition(
-  currentState: SSEStatus,
-  nextState: SSEStatus
-): boolean {
-  // Same state is always valid (idempotent)
-  if (currentState === nextState) {
-    return true
-  }
-
-  const allowedTransitions = VALID_STATE_TRANSITIONS[currentState]
-  return allowedTransitions.includes(nextState)
-}
-
-/**
  * Event type for SSE messages
  */
 export interface SSEEvent {
@@ -105,8 +67,20 @@ export interface UseStreamingSSEOptions {
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
 
+  /** RECONNECT-2: Consecutive successes required to reset backoff (default: 3) */
+  reconnectSuccessThreshold?: number
+
   /** Heartbeat interval in ms (default: 30000) */
   heartbeatInterval?: number
+
+  /** Connection timeout in ms (default: 15000) */
+  connectionTimeout?: number
+
+  /** Maximum number of events to keep in buffer (default: 1000, prevents memory leaks) */
+  maxEventBufferSize?: number
+
+  /** DELIVERY-3: Called when event buffer overflows (oldest events dropped) */
+  onEventBufferOverflow?: (droppedCount: number, bufferSize: number) => void
 
   /** Resume from last event ID (default: true) */
   resumeFromLastEventId?: boolean
@@ -289,7 +263,11 @@ export function useStreamingSSE(
     maxReconnectAttempts = 5,
     reconnectDelay: initialReconnectDelay = 1000,
     maxReconnectDelay = 30000,
+    reconnectSuccessThreshold = 3, // RECONNECT-2: Consecutive successes to reset backoff
     heartbeatInterval = 30000,
+    connectionTimeout = 15000,
+    maxEventBufferSize: rawMaxEventBufferSize = 1000,
+    onEventBufferOverflow, // DELIVERY-3: Buffer overflow callback
     resumeFromLastEventId = true,
     autoParseJson = true,
     onOpen,
@@ -300,6 +278,9 @@ export function useStreamingSSE(
     onMaxReconnectAttemptsReached,
   } = options
 
+  // Validate and normalize maxEventBufferSize (must be at least 1)
+  const maxEventBufferSize = Math.max(1, Math.floor(rawMaxEventBufferSize))
+
   // State
   const [status, setStatus] = React.useState<SSEStatus>('idle')
   const [events, setEvents] = React.useState<SSEEvent[]>([])
@@ -308,33 +289,7 @@ export function useStreamingSSE(
   const [error, setError] = React.useState<Error | undefined>(undefined)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
   const [isReconnecting, setIsReconnecting] = React.useState(false)
-
-  /**
-   * Validated state setter
-   *
-   * Wraps setStatus with state transition validation.
-   * Logs warnings for invalid transitions but allows them (defensive).
-   */
-  const setStatusSafe = React.useCallback(
-    (nextStatus: SSEStatus) => {
-      const currentStatus = status
-      const valid = isValidTransition(currentStatus, nextStatus)
-
-      if (!valid) {
-        logger.warn(
-          `[useStreamingSSE] Invalid state transition: ${currentStatus} → ${nextStatus}`,
-          {
-            currentStatus,
-            nextStatus,
-            allowedTransitions: VALID_STATE_TRANSITIONS[currentStatus],
-          }
-        )
-      }
-
-      setStatus(nextStatus)
-    },
-    [status]
-  )
+  const [reconnectSuccessCount, setReconnectSuccessCount] = React.useState(0) // RECONNECT-2: Track consecutive successes
 
   // Refs
   const abortControllerRef = React.useRef<AbortController | null>(null)
@@ -344,8 +299,17 @@ export function useStreamingSSE(
   const reconnectTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const heartbeatTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const reconnectDelayRef = React.useRef(initialReconnectDelay)
+  const serverSuggestedRetryRef = React.useRef<number | null>(null) // SSE-6: Server-suggested retry persists across connections
   const shouldReconnectRef = React.useRef(false)
-  const isDisconnectingRef = React.useRef(false)
+  const reconnectFnRef = React.useRef<(() => void) | null>(null)
+  const connectionIdRef = React.useRef(0) // RECONNECT-1: Track connection ID to prevent mount/unmount races
+  const reconnectingRef = React.useRef(false) // FIX: Issue #5 - Prevent concurrent reconnections (from main)
+
+  // STREAM-3: RAF Batching refs
+  const rafRef = React.useRef<number | null>(null)
+  const pendingEventsRef = React.useRef<SSEEvent[]>([])
+  const pendingDataRef = React.useRef<string>('')
+  const MAX_DATA_SIZE = 10 * 1024 * 1024 // From main: 10MB data limit
 
   /**
    * Parse SSE event data
@@ -379,36 +343,85 @@ export function useStreamingSSE(
         lastEventIdRef.current = eventId
       }
 
-      setEvents((prev) => [...prev, event])
-      setLastEvent(event)
-      setData((prev) => prev + eventData)
+      // STREAM-3: Batch updates using RAF with bounds checking (merged from main)
+      if (pendingEventsRef.current.length < maxEventBufferSize) {
+        pendingEventsRef.current.push(event)
+      } else {
+        console.warn('[useStreamingSSE] Event buffer full, dropping event')
+        onEventBufferOverflow?.(1, maxEventBufferSize)
+      }
+
+      // Apply data size limit (from main)
+      const newData = pendingDataRef.current + eventData
+      if (newData.length <= MAX_DATA_SIZE) {
+        pendingDataRef.current = newData
+      } else {
+        console.warn(`[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`)
+        onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
+        pendingDataRef.current = newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
+      }
 
       onMessage?.(event)
+
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null
+          
+          const newEventsBatch = pendingEventsRef.current
+          const newDataBatch = pendingDataRef.current
+          
+          if (newEventsBatch.length === 0) return
+
+          const lastEventInBatch = newEventsBatch[newEventsBatch.length - 1]
+
+          // Bounded event buffer to prevent memory leaks
+          setEvents((prev) => {
+            const newEvents = [...prev, ...newEventsBatch]
+            // Keep only the last maxEventBufferSize events
+            if (newEvents.length > maxEventBufferSize) {
+              // DELIVERY-3: Notify about buffer overflow
+              const droppedCount = newEvents.length - maxEventBufferSize
+              onEventBufferOverflow?.(droppedCount, maxEventBufferSize)
+              return newEvents.slice(-maxEventBufferSize)
+            }
+            return newEvents
+          })
+          setLastEvent(lastEventInBatch)
+
+          // Note: `data` accumulates all event data. For long sessions, consider
+          // using only `lastEvent` or clearing data periodically with `reset()`
+          setData((prev) => prev + newDataBatch)
+          
+          // Clear buffers
+          pendingEventsRef.current = []
+          pendingDataRef.current = ''
+        })
+      }
     },
-    [parseEventData, onMessage]
+    [parseEventData, onMessage, maxEventBufferSize, onEventBufferOverflow]
   )
 
   /**
    * Reset heartbeat timer
    */
   const resetHeartbeat = React.useCallback(() => {
-    // Don't create new timeouts if disconnecting
-    if (isDisconnectingRef.current) {
-      return
-    }
-
     if (heartbeatTimeoutRef.current) {
       clearTimeout(heartbeatTimeoutRef.current)
     }
+
+    // RECONNECT-3: Add ±10% jitter to prevent synchronized heartbeats across clients
+    const jitterRange = heartbeatInterval * 0.1 // 10% jitter
+    const jitter = (Math.random() - 0.5) * 2 * jitterRange // Random value between -10% and +10%
+    const intervalWithJitter = Math.floor(heartbeatInterval + jitter)
 
     heartbeatTimeoutRef.current = setTimeout(() => {
       logger.warn(
         '[useStreamingSSE] Heartbeat timeout - connection may be stale'
       )
       if (autoReconnect && shouldReconnectRef.current) {
-        reconnect()
+        reconnectFnRef.current?.()
       }
-    }, heartbeatInterval)
+    }, intervalWithJitter)
   }, [heartbeatInterval, autoReconnect])
 
   /**
@@ -425,26 +438,31 @@ export function useStreamingSSE(
       return
     }
 
-    // Defense-in-depth: Clear any existing timeouts to prevent accumulation
-    // This handles edge cases where connect() is called without proper cleanup
-    if (heartbeatTimeoutRef.current) {
-      clearTimeout(heartbeatTimeoutRef.current)
-      heartbeatTimeoutRef.current = null
-    }
-
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current)
-      reconnectTimeoutRef.current = null
-    }
-
     try {
-      setStatusSafe('connecting')
+      setStatus('connecting')
       setError(undefined)
       shouldReconnectRef.current = true
-      isDisconnectingRef.current = false // Reset disconnect flag on new connection
+
+      // RECONNECT-1: Increment connection ID to prevent mount/unmount races
+      connectionIdRef.current += 1
+      const currentConnectionId = connectionIdRef.current
 
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
+
+      // Set connection timeout
+      const timeoutId = setTimeout(() => {
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort()
+          const timeoutError = new Error(
+            `SSE connection timeout after ${connectionTimeout}ms`
+          )
+          logger.error('[useStreamingSSE] Connection timeout:', timeoutError)
+          setError(timeoutError)
+          setStatus('error')
+          onError?.(timeoutError)
+        }
+      }, connectionTimeout)
 
       // Prepare headers
       const requestHeaders: Record<string, string> = { ...headers }
@@ -483,10 +501,31 @@ export function useStreamingSSE(
         throw new Error('Response body is null')
       }
 
-      setStatusSafe('connected')
+      // Clear connection timeout - connection successful
+      clearTimeout(timeoutId)
+
+      // RECONNECT-1: Check connection ID to prevent stale connection updates
+      if (currentConnectionId !== connectionIdRef.current) {
+        logger.debug('[useStreamingSSE] Stale connection detected, aborting')
+        return
+      }
+
+      setStatus('connected')
       setReconnectAttempt(0)
       setIsReconnecting(false)
-      reconnectDelayRef.current = initialReconnectDelay
+
+      // RECONNECT-2: Only reset backoff after sustained success
+      setReconnectSuccessCount((prev) => {
+        const newCount = prev + 1
+        // Reset delay only after reaching threshold
+        if (newCount >= reconnectSuccessThreshold) {
+          // SSE-6: Use server-suggested retry if available, otherwise use initial delay
+          reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
+          return 0 // Reset success count after backoff reset
+        }
+        return newCount
+      })
+
       onOpen?.()
 
       // Start heartbeat monitoring
@@ -502,18 +541,13 @@ export function useStreamingSSE(
       let currentEventData = ''
       let currentEventId = ''
 
-      setStatusSafe('streaming')
+      setStatus('streaming')
 
       while (true) {
         const { done, value } = await reader.read()
 
-        // Check if disconnect was called while waiting for read()
-        if (isDisconnectingRef.current) {
-          break
-        }
-
         if (done) {
-          setStatusSafe('closed')
+          setStatus('closed')
           onClose?.()
           break
         }
@@ -564,6 +598,8 @@ export function useStreamingSSE(
             case 'retry':
               const retryMs = parseInt(value, 10)
               if (!isNaN(retryMs)) {
+                // SSE-6: Store server-suggested retry delay (persists across connections per SSE spec)
+                serverSuggestedRetryRef.current = retryMs
                 reconnectDelayRef.current = retryMs
               }
               break
@@ -573,16 +609,26 @@ export function useStreamingSSE(
     } catch (err) {
       const error = err as Error
 
+      // Clear connection timeout on error
+      clearTimeout(timeoutId)
+
       // Ignore abort errors
       if (error.name === 'AbortError') {
-        setStatusSafe('closed')
+        setStatus('closed')
         onClose?.()
+        return
+      }
+
+      // RECONNECT-1: Check connection ID to prevent stale connection updates
+      if (currentConnectionId !== connectionIdRef.current) {
+        logger.debug('[useStreamingSSE] Stale connection error, ignoring')
         return
       }
 
       logger.error('[useStreamingSSE] Connection error:', error)
       setError(error)
-      setStatusSafe('error')
+      setStatus('error')
+      setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on error
       onError?.(error)
 
       // Attempt reconnection
@@ -592,43 +638,20 @@ export function useStreamingSSE(
         reconnectAttempt < maxReconnectAttempts
       ) {
         const nextAttempt = reconnectAttempt + 1
-        // Calculate delay with exponential backoff and jitter (0.5-1.5x multiplier)
+        // Calculate delay with exponential backoff and additive jitter (±30%)
         // Jitter prevents "thundering herd" when many clients reconnect simultaneously
         const baseDelay =
           reconnectDelayRef.current * Math.pow(2, reconnectAttempt)
-        const jitter = 0.5 + Math.random() // Random multiplier between 0.5 and 1.5
+        const jitterRange = baseDelay * 0.3 // 30% jitter
+        const jitter = (Math.random() - 0.5) * 2 * jitterRange // Random value between -jitterRange and +jitterRange
         const delay = Math.min(
-          Math.floor(baseDelay * jitter),
+          Math.floor(baseDelay + jitter),
           maxReconnectDelay
         )
 
         setReconnectAttempt(nextAttempt)
         setIsReconnecting(true)
         onReconnecting?.(nextAttempt, delay)
-
-        // CRITICAL: Clear ALL existing timeouts before scheduling reconnection
-        // This prevents timeout accumulation over many reconnection cycles
-        // Without this, old heartbeat timeouts accumulate (100+ reconnects = 100+ zombie timeouts)
-        if (heartbeatTimeoutRef.current) {
-          clearTimeout(heartbeatTimeoutRef.current)
-          heartbeatTimeoutRef.current = null
-        }
-
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current)
-          reconnectTimeoutRef.current = null
-        }
-
-        // Cancel any ongoing request/reader to prevent race conditions
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort()
-          abortControllerRef.current = null
-        }
-
-        if (readerRef.current) {
-          readerRef.current.cancel()
-          readerRef.current = null
-        }
 
         reconnectTimeoutRef.current = setTimeout(() => {
           connect()
@@ -660,15 +683,12 @@ export function useStreamingSSE(
     onMaxReconnectAttemptsReached,
     processEvent,
     resetHeartbeat,
-    setStatusSafe,
   ])
 
   /**
    * Disconnect from SSE endpoint
    */
   const disconnect = React.useCallback(() => {
-    // Set flag FIRST to prevent race with in-flight reader.read()
-    isDisconnectingRef.current = true
     shouldReconnectRef.current = false
 
     // Cancel ongoing request
@@ -677,9 +697,11 @@ export function useStreamingSSE(
       abortControllerRef.current = null
     }
 
-    // Cancel reader (this will cause pending read() to reject)
+    // Cancel reader
     if (readerRef.current) {
-      readerRef.current.cancel()
+      readerRef.current.cancel().catch(() => {
+        // Ignore cancellation errors
+      })
       readerRef.current = null
     }
 
@@ -694,10 +716,18 @@ export function useStreamingSSE(
       heartbeatTimeoutRef.current = null
     }
 
-    setStatusSafe('closed')
+    // STREAM-3: Clear RAF and pending buffers
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    pendingEventsRef.current = []
+    pendingDataRef.current = ''
+
+    setStatus('closed')
     setIsReconnecting(false)
     onClose?.()
-  }, [onClose, setStatusSafe])
+  }, [onClose])
 
   /**
    * Reconnect (disconnect and connect)
@@ -717,9 +747,16 @@ export function useStreamingSSE(
     setError(undefined)
     setReconnectAttempt(0)
     setIsReconnecting(false)
+    setReconnectSuccessCount(0) // RECONNECT-2: Reset success count on manual reset
     lastEventIdRef.current = ''
+    serverSuggestedRetryRef.current = null // SSE-6: Clear server-suggested retry on reset
     reconnectDelayRef.current = initialReconnectDelay
   }, [initialReconnectDelay])
+
+  // Update reconnect ref to avoid circular dependency in heartbeat
+  React.useEffect(() => {
+    reconnectFnRef.current = reconnect
+  }, [reconnect])
 
   // Cleanup on unmount
   React.useEffect(() => {
