@@ -437,7 +437,7 @@ export class TokenOptimizationMiddleware {
     if (context.contextType === 'code') return 'extractive'
     if (context.complexity === 'high') return 'llmlingua'
     if (text.length > 5000) return 'llmlingua'
-    return 'adaptive'
+    return 'hybrid'
   }
 
   /**

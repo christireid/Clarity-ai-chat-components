@@ -212,7 +212,7 @@ export class AdaptiveTokenOptimizer {
   private learningRate: number
 
   constructor(learningRate = 0.01) {
-    this.tokenCounter = new AccurateTokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.compressionOrchestrator = new AdaptiveCompressor({})
     this.performanceHistory = new Map()
     this.contextProfiles = new Map()
@@ -456,8 +456,7 @@ export class AdaptiveTokenOptimizer {
         minQuality: compressionConfig.qualityThreshold,
         llmlinguaOptions: {
           preserveCode: compressionConfig.preserveCode,
-          preserveUrls: true,
-          preserveEmails: true,
+          preserveInstructions: true,
         },
       }
     )
@@ -617,8 +616,7 @@ export class AdaptiveTokenOptimizer {
             minQuality: strategy.qualityThreshold,
             llmlinguaOptions: {
               preserveCode: true,
-              preserveUrls: true,
-              preserveEmails: true,
+              preserveInstructions: true,
             },
           }
         )
