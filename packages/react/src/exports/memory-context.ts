@@ -28,8 +28,11 @@ export {
   useMemoryOptimization,
 } from '../memory/memory-provider'
 
-// Memory types
+// Memory types (local React-specific types)
 export * from '../memory/types'
+
+// Memory types (canonical from @clarity-chat/memory)
+export type { MemoryServiceConfig } from '@clarity-chat/memory'
 
 // ============================================================================
 // LOW-LEVEL: Core Services and Utilities

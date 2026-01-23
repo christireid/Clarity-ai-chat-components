@@ -25,9 +25,9 @@
       "documentation": "2/5"
     }
   },
-  "duplicateApisRemaining": 111,
-  "lastCompletedTask": "Consolidated SemanticChunker - 2 duplicates eliminated, 66 lines removed",
-  "lastUpdated": "2026-01-23T23:30:00Z",
+  "duplicateApisRemaining": 102,
+  "lastCompletedTask": "Utility Consolidation (Task 1.9) - 9 duplicates eliminated, 101 lines removed",
+  "lastUpdated": "2026-01-24T01:15:00Z",
   "packages": [
     "cli",
     "codemods",
@@ -184,6 +184,23 @@
       "parallel": true,
       "agents": 5,
       "note": "Audit initially counted 4 duplicates. Analysis found 2 TRUE duplicates - SemanticChunker stub in memory package with incompatible API (tests expected different methods like chunkConversation, retrieveOptimalChunks that didn't exist). Deleted stub (66 lines) and removed exports from memory package. Canonical SemanticChunker at react/utils/memory/semantic-chunker.ts (304 lines) kept as it provides unique features NOT in TextChunker: async embeddings, importance scoring, topic extraction, cosine similarity retrieval, budget-aware selection. Serves different use case than TextChunker (semantic retrieval vs general chunking). Audit claimed token-optimization/legacy-compatibility.ts and react/memory/token-optimizer.ts existed but they don't."
+    },
+    {
+      "date": "2026-01-24T01:15:00Z",
+      "task": "Utility Consolidation (Plan Task 1.9)",
+      "files": [
+        "primitives/src/lib/utils.ts (cn function removed)",
+        "marketing-site/lib/animations.ts",
+        "dev-tools/src/react/components/accessibility.tsx",
+        "react/src/memory/types.ts",
+        "primitives/src/components/ui/button.tsx"
+      ],
+      "linesDeleted": 101,
+      "duplicatesEliminated": 9,
+      "status": "COMPLETE",
+      "parallel": true,
+      "agents": 10,
+      "note": "Consolidated utilities: cn (3 duplicates), useReducedMotion (4 duplicates), MemoryServiceConfig (1 duplicate), Button (1 duplicate - deleted ui/button.tsx, kept button-enhanced.tsx and custom button.tsx as complementary). Dialog analysis found both versions are complementary (Radix-based vs Framer Motion-based), not duplicates - kept both with improved documentation."
     }
   ],
   "nextSteps": [
@@ -195,7 +212,8 @@
     "6. ✅ DONE: plan.md Task 1.6: Logger Consolidation (2 true duplicates, audit overcounted)",
     "7. ✅ DONE: plan.md Task 1.7: Validation Error Consolidation (3 true duplicates, audit overcounted)",
     "8. ✅ DONE: plan.md Task 1.8: Semantic Chunker Consolidation (2 true duplicates, audit overcounted)",
-    "9. Continue through all consolidation tasks (Utilities: cn, useReducedMotion, Button, Dialog, etc.)",
+    "9. ✅ DONE: plan.md Task 1.9: Utility Consolidation (9 duplicates: cn, useReducedMotion, MemoryServiceConfig, Button)",
+    "10. Continue through remaining consolidation tasks",
     "8. Update all consumers",
     "7. Delete duplicate files",
     "8. Run verification",
@@ -204,8 +222,8 @@
   ],
   "estimatedEffort": {
     "totalHours": 135,
-    "completed": 42,
-    "remaining": 93,
-    "percentComplete": 31.1
+    "completed": 48,
+    "remaining": 87,
+    "percentComplete": 35.6
   }
 }

@@ -13,9 +13,10 @@ import {
   Badge,
   Checkbox,
   cn,
+  useReducedMotion,
 } from '@clarity-chat/primitives'
 import type { PromptVariable } from '../../prompts/types'
-import { getMotionSafePreset, useReducedMotion } from '../../animations'
+import { getMotionSafePreset } from '../../animations'
 
 /**
  * Extended variable type with editing metadata

@@ -380,12 +380,6 @@ export interface MemoryStats {
 }
 
 /**
- * Memory service configuration
- * @deprecated Use MemoryServiceConfig from @clarity-chat/memory instead
- */
-export type { MemoryServiceConfig } from '@clarity-chat/memory'
-
-/**
  * Memory event types
  */
 export type MemoryEventType =

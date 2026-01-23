@@ -3,16 +3,14 @@
  * These variants automatically respect the user's prefers-reduced-motion setting.
  */
 import { Variants } from 'framer-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { durations, easings } from './constants'
 
 /**
  * Hook to check if reduced motion is preferred.
- * Returns true if the user has requested reduced motion in their OS settings.
+ * Re-exported from @clarity-chat/primitives
  */
-export function useReducedMotion(): boolean {
-  if (typeof window === 'undefined') return false
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
+export { useReducedMotion }
 
 /**
  * Creates motion-safe animation props.

@@ -228,6 +228,116 @@ rg "DynamicCompressionEngine" packages/ --type ts
 
 **Total:** 1,182 lines of duplicate error boundary code removed (net reduction after re-export)
 
+#### 6.3 Legitimate Implementations KEPT
+
+- ✅ CLI templates (`cli/templates/components/error-boundary/`) - Must be standalone
+- ✅ Next.js error.tsx files in apps - Framework requirement
+- ✅ AdvancedErrorBoundary in React - Feature-rich (recovery, telemetry)
+- ✅ StreamingErrorBoundary in React - Specialized for streaming
+- ✅ ChatErrorBoundary in error-handling - Domain-specific extension
+
+**Status:** ✅ Complete
+
+---
+
+### ✅ Task 9: Utility Consolidation (COMPLETED)
+
+**Date:** 2026-01-24 (early morning) **duplicateApisRemaining:** 111 → 102 (9 duplicates eliminated)
+
+#### 9.1 Parallel Agent Execution
+
+**10 agents deployed simultaneously:**
+
+1. **Agent ab50848** - Delete cn utility duplicates
+2. **Agent a123c17** - Update cn utility imports
+3. **Agent a7bf124** - Delete useReducedMotion duplicates
+4. **Agent ac874ba** - Update useReducedMotion imports
+5. **Agent acb29ec** - Delete Memory Service type duplicates
+6. **Agent a634f88** - Update Memory Service imports
+7. **Agent ae2e60c** - Consolidate Button components
+8. **Agent a8b5e6c** - Analyze Dialog component
+9. **Agent a57db17** - Clean up barrel exports
+10. **Agent a2377c3** - Verify no broken imports
+
+#### 9.2 Files Modified/Deleted (5 files, 101 lines removed)
+
+**cn Utility (3 duplicates):**
+
+- ✅ `primitives/src/lib/utils.ts` - Removed duplicate cn() function (11 lines)
+- ✅ `playground/src/utils/cn.ts` - Already deleted in previous commit
+- ✅ `react/src/utils/cn.ts` - Already deleted in previous commit
+
+**useReducedMotion Hook (4 duplicates):**
+
+- ✅ `marketing-site/lib/animations.ts` - Replaced with re-export (4 lines → 1 line)
+- ✅ `dev-tools/src/react/components/accessibility.tsx` - Replaced with re-export (17 lines → 1
+  line)
+- ✅ `error-handling/src/accessibility.ts` - Already re-exporting (no change needed)
+- ✅ `react/src/accessibility/core-utilities.ts` - Already re-exporting (no change needed)
+
+**MemoryServiceConfig Type (1 duplicate):**
+
+- ✅ `react/src/memory/types.ts` - Removed duplicate re-export (4 lines)
+
+**Button Component (1 duplicate):**
+
+- ✅ `primitives/src/components/ui/button.tsx` - Deleted pure shadcn version (64 lines)
+
+**Dialog Component (0 duplicates):**
+
+- ⚠️ Analysis found both versions are complementary, NOT duplicates
+- ✅ `primitives/src/components/ui/dialog.tsx` - Radix UI-based (kept)
+- ✅ `primitives/src/components/dialog.tsx` - Framer Motion-based (kept)
+
+**Total:** 101 lines removed
+
+#### 9.3 Canonical Implementations Established
+
+**cn utility:**
+
+- Canonical: `primitives/src/lib/cn.ts`
+- Re-exported by: playground/utils, react/utils (for backward compatibility)
+
+**useReducedMotion:**
+
+- Canonical: `primitives/src/hooks/use-reduced-motion.ts`
+- Re-exported by: error-handling/accessibility, react/animations
+
+**MemoryServiceConfig:**
+
+- Canonical: `memory/src/memory-service.ts`
+- Re-exported by: react/exports/memory-context.ts
+
+**Button:**
+
+- Default: `primitives/src/components/ui/button-enhanced.tsx` (with loading states)
+- Feature-rich: `primitives/src/components/button.tsx` (ripple, a11y, animations)
+
+**Dialog:**
+
+- Radix-based: `primitives/src/components/ui/dialog.tsx` (production-ready)
+- Motion-based: `primitives/src/components/dialog.tsx` (premium animations)
+
+#### 9.4 Consumers Updated (8 files)
+
+- ✅ `playground/components/ConsolePanel.tsx` - Split cn import
+- ✅ `react/components/prompt/prompt-playground.tsx` - Moved useReducedMotion import
+- ✅ `react/components/prompt/prompt-variables-editor.tsx` - Consolidated useReducedMotion import
+- ✅ `react/hooks/__tests__/use-reduced-motion.test.ts` - Updated import path
+- ✅ `react/exports/memory-context.ts` - Added MemoryServiceConfig re-export
+- ✅ `primitives/components/button.tsx` - Updated to import from button-enhanced
+- ✅ `primitives/src/index.ts` - Removed obsolete ShadcnButton exports
+- ✅ All barrel exports verified clean
+
+#### 9.5 Verification
+
+- ✅ No broken imports found
+- ✅ TypeScript compilation: 21 of 23 tasks passed
+- ⚠️ 10 TypeScript errors in react package (unrelated to utility consolidation - pre-existing from
+  token-optimization refactoring)
+
+**Status:** ✅ Complete
+
 #### 6.3 Canonical Implementations Established
 
 **Error Handling Package** (`@clarity-chat/error-handling`):

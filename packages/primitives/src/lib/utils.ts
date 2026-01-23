@@ -3,22 +3,13 @@
  * Extended utilities for enterprise features while maintaining backward compatibility
  */
 
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-/**
- * Utility function to merge Tailwind CSS classes
- * Uses clsx for conditional classes and tailwind-merge to handle conflicts
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
 /**
  * Format date to relative time (e.g., "2 hours ago")
  * Accepts Date objects, ISO strings, or timestamps
  */
-export function formatRelativeTime(date: Date | string | number | undefined | null): string {
+export function formatRelativeTime(
+  date: Date | string | number | undefined | null
+): string {
   if (!date) return ''
 
   // Convert to Date if needed
@@ -52,7 +43,11 @@ export function formatRelativeTime(date: Date | string | number | undefined | nu
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
-    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+    if (
+      typeof navigator !== 'undefined' &&
+      navigator.clipboard &&
+      navigator.clipboard.writeText
+    ) {
       await navigator.clipboard.writeText(text)
       return true
     }
@@ -65,7 +60,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       textarea.style.left = '-9999px'
       document.body.appendChild(textarea)
       textarea.select()
-      const success = document.execCommand ? document.execCommand('copy') : false
+      const success = document.execCommand
+        ? document.execCommand('copy')
+        : false
       document.body.removeChild(textarea)
       return success
     }
@@ -97,12 +94,12 @@ export function truncate(text: string, maxLength: number): string {
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes'
-  
+
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 /**
@@ -123,7 +120,11 @@ export function formatTimestamp(date: Date): string {
 /**
  * Calculate percentage
  */
-export function calculatePercentage(part: number, total: number, decimals: number = 2): number {
+export function calculatePercentage(
+  part: number,
+  total: number,
+  decimals: number = 2
+): number {
   if (total === 0) return 0
   return parseFloat(((part / total) * 100).toFixed(decimals))
 }
@@ -153,7 +154,10 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Generate unique filename with timestamp
  */
-export function generateUniqueFilename(prefix: string, extension: string): string {
+export function generateUniqueFilename(
+  prefix: string,
+  extension: string
+): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
   return `${prefix}-${timestamp}.${extension}`
 }
@@ -167,9 +171,9 @@ export function parseFileSize(sizeStr: string): number {
     KB: 1024,
     MB: 1024 * 1024,
     GB: 1024 * 1024 * 1024,
-    TB: 1024 * 1024 * 1024 * 1024
+    TB: 1024 * 1024 * 1024 * 1024,
   }
-  
+
   const match = sizeStr.trim().match(/^(\d+(?:\.\d+)?)\s*([KMGT]?B)$/i)
   if (!match) throw new Error(`Invalid file size format: ${sizeStr}`)
 
@@ -182,12 +186,19 @@ export function parseFileSize(sizeStr: string): number {
 /**
  * Deep merge objects
  */
-export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
+export function deepMerge<T extends Record<string, unknown>>(
+  target: T,
+  source: Partial<T>
+): T {
   const result = { ...target }
 
   for (const key in source) {
     const sourceValue = source[key]
-    if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+    if (
+      sourceValue &&
+      typeof sourceValue === 'object' &&
+      !Array.isArray(sourceValue)
+    ) {
       const targetValue = result[key] as Record<string, unknown> | undefined
       result[key] = deepMerge(
         targetValue ?? ({} as Record<string, unknown>),
@@ -248,7 +259,8 @@ export function isNode(): boolean {
   // Check for Node.js environment without relying on @types/node
   return (
     typeof globalThis !== 'undefined' &&
-    typeof (globalThis as { process?: { versions?: { node?: string } } }).process?.versions?.node === 'string'
+    typeof (globalThis as { process?: { versions?: { node?: string } } })
+      .process?.versions?.node === 'string'
   )
 }
 
@@ -286,7 +298,7 @@ export function randomString(length: number = 8): string {
  * Sleep/delay function
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -298,7 +310,7 @@ export async function retry<T>(
   delay: number = 1000
 ): Promise<T> {
   let lastError: Error
-  
+
   for (let i = 0; i < retries; i++) {
     try {
       return await fn()
@@ -309,7 +321,7 @@ export async function retry<T>(
       }
     }
   }
-  
+
   throw lastError!
 }
 
@@ -321,14 +333,14 @@ export function memoize<T extends (...args: any[]) => any>(
   keyFn?: (...args: Parameters<T>) => string
 ): T {
   const cache = new Map<string, ReturnType<T>>()
-  
+
   return ((...args: Parameters<T>): ReturnType<T> => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args)
-    
+
     if (cache.has(key)) {
       return cache.get(key)!
     }
-    
+
     const result = fn(...args)
     cache.set(key, result)
     return result
@@ -344,11 +356,11 @@ export function throttle<T extends (...args: any[]) => any>(
 ): T {
   let timeout: ReturnType<typeof setTimeout> | null = null
   let previous = 0
-  
+
   return ((...args: Parameters<T>): ReturnType<T> | void => {
     const now = Date.now()
     const remaining = wait - (now - previous)
-    
+
     if (remaining <= 0 || remaining > wait) {
       if (timeout) {
         clearTimeout(timeout)
@@ -375,9 +387,9 @@ export function escapeHtml(text: string): string {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#39;'
+    "'": '&#39;',
   }
-  
+
   return text.replace(/[&<>"']/g, (m) => map[m] ?? m)
 }
 
@@ -390,9 +402,9 @@ export function unescapeHtml(html: string): string {
     '&lt;': '<',
     '&gt;': '>',
     '&quot;': '"',
-    '&#39;': "'"
+    '&#39;': "'",
   }
-  
+
   return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m] ?? m)
 }
 
@@ -411,7 +423,7 @@ export function kebabCase(str: string): string {
  */
 export function camelCase(str: string): string {
   return str
-    .replace(/[-_\s]+(.)?/g, (_, char) => char ? char.toUpperCase() : '')
+    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''))
     .replace(/^(.)/, (char) => char.toLowerCase())
 }
 
@@ -420,7 +432,7 @@ export function camelCase(str: string): string {
  */
 export function pascalCase(str: string): string {
   return str
-    .replace(/[-_\s]+(.)?/g, (_, char) => char ? char.toUpperCase() : '')
+    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''))
     .replace(/^(.)/, (char) => char.toUpperCase())
 }
 
@@ -449,7 +461,11 @@ export function isValidJson(str: string): boolean {
 /**
  * Get nested object value safely
  */
-export function getNestedValue(obj: any, path: string, defaultValue?: any): any {
+export function getNestedValue(
+  obj: any,
+  path: string,
+  defaultValue?: any
+): any {
   return path.split('.').reduce((current, key) => {
     return current && current[key] !== undefined ? current[key] : defaultValue
   }, obj)
@@ -461,7 +477,7 @@ export function getNestedValue(obj: any, path: string, defaultValue?: any): any 
 export function setNestedValue(obj: any, path: string, value: any): any {
   const keys = path.split('.')
   const lastKey = keys.pop()!
-  
+
   let current = obj
   for (const key of keys) {
     if (!current[key] || typeof current[key] !== 'object') {
@@ -469,7 +485,7 @@ export function setNestedValue(obj: any, path: string, value: any): any {
     }
     current = current[key]
   }
-  
+
   current[lastKey] = value
   return obj
 }
@@ -486,7 +502,7 @@ export function unique<T>(array: T[]): T[] {
  */
 export function uniqueBy<T>(array: T[], key: keyof T): T[] {
   const seen = new Set()
-  return array.filter(item => {
+  return array.filter((item) => {
     const value = item[key]
     if (seen.has(value)) {
       return false
@@ -500,24 +516,31 @@ export function uniqueBy<T>(array: T[], key: keyof T): T[] {
  * Group array items by key
  */
 export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
-  return array.reduce((groups, item) => {
-    const group = String(item[key])
-    if (!groups[group]) {
-      groups[group] = []
-    }
-    groups[group].push(item)
-    return groups
-  }, {} as Record<string, T[]>)
+  return array.reduce(
+    (groups, item) => {
+      const group = String(item[key])
+      if (!groups[group]) {
+        groups[group] = []
+      }
+      groups[group].push(item)
+      return groups
+    },
+    {} as Record<string, T[]>
+  )
 }
 
 /**
  * Sort array by key
  */
-export function sortBy<T>(array: T[], key: keyof T, order: 'asc' | 'desc' = 'asc'): T[] {
+export function sortBy<T>(
+  array: T[],
+  key: keyof T,
+  order: 'asc' | 'desc' = 'asc'
+): T[] {
   return [...array].sort((a, b) => {
     const aVal = a[key]
     const bVal = b[key]
-    
+
     if (aVal < bVal) return order === 'asc' ? -1 : 1
     if (aVal > bVal) return order === 'asc' ? 1 : -1
     return 0
@@ -547,7 +570,10 @@ export function flatten<T>(array: (T | T[])[]): T[] {
 /**
  * Pick properties from object
  */
-export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Pick<T, K> {
   const result = {} as Pick<T, K>
   for (const key of keys) {
     if (key in obj) {
@@ -560,7 +586,10 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 /**
  * Omit properties from object
  */
-export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> {
   const result = { ...obj }
   for (const key of keys) {
     delete result[key]
@@ -571,7 +600,10 @@ export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Om
 /**
  * Check if object has property
  */
-export function hasProperty<T extends object>(obj: T, key: PropertyKey): key is keyof T {
+export function hasProperty<T extends object>(
+  obj: T,
+  key: PropertyKey
+): key is keyof T {
   return Object.prototype.hasOwnProperty.call(obj, key)
 }
 
@@ -592,7 +624,9 @@ export function values<T extends object>(obj: T): Array<T[keyof T]> {
 /**
  * Get object entries
  */
-export function entries<T extends object>(obj: T): Array<[keyof T, T[keyof T]]> {
+export function entries<T extends object>(
+  obj: T
+): Array<[keyof T, T[keyof T]]> {
   return Object.entries(obj) as Array<[keyof T, T[keyof T]]>
 }
 
@@ -634,8 +668,10 @@ export function isBoolean(value: any): value is boolean {
 /**
  * Check if value is function
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
+
+export function isFunction(
+  value: unknown
+): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
 }
 
@@ -689,17 +725,17 @@ export function isEqual(a: any, b: any): boolean {
   if (a == null || b == null) return false
   if (typeof a !== typeof b) return false
   if (typeof a !== 'object') return false
-  
+
   const keysA = Object.keys(a)
   const keysB = Object.keys(b)
-  
+
   if (keysA.length !== keysB.length) return false
-  
+
   for (const key of keysA) {
     if (!keysB.includes(key)) return false
     if (!isEqual(a[key], b[key])) return false
   }
-  
+
   return true
 }
 
@@ -860,7 +896,10 @@ export function excludes<T>(array: T[], value: T): boolean {
 /**
  * Find first match in array
  */
-export function find<T>(array: T[], predicate: (item: T) => boolean): T | undefined {
+export function find<T>(
+  array: T[],
+  predicate: (item: T) => boolean
+): T | undefined {
   return array.find(predicate)
 }
 
@@ -889,21 +928,21 @@ export function every<T>(array: T[], predicate: (item: T) => boolean): boolean {
  * Check if array includes any of the values
  */
 export function includesAny<T>(array: T[], values: T[]): boolean {
-  return values.some(value => array.includes(value))
+  return values.some((value) => array.includes(value))
 }
 
 /**
  * Check if array includes all of the values
  */
 export function includesAll<T>(array: T[], values: T[]): boolean {
-  return values.every(value => array.includes(value))
+  return values.every((value) => array.includes(value))
 }
 
 /**
  * Check if array excludes all of the values
  */
 export function excludesAll<T>(array: T[], values: T[]): boolean {
-  return values.every(value => !array.includes(value))
+  return values.every((value) => !array.includes(value))
 }
 
 /**
@@ -1020,7 +1059,8 @@ export function isJsonString(str: string): boolean {
  * Check if string is UUID
  */
 export function isUuid(str: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   return uuidRegex.test(str)
 }
 
@@ -1028,8 +1068,10 @@ export function isUuid(str: string): boolean {
  * Check if string is IP address
  */
 export function isIpAddress(str: string): boolean {
-  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-  const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/
+  const ipv4Regex =
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+  const ipv6Regex =
+    /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/
   return ipv4Regex.test(str) || ipv6Regex.test(str)
 }
 
@@ -1060,7 +1102,8 @@ export function isTimeString(str: string): boolean {
  * Check if string is color
  */
 export function isColorString(str: string): boolean {
-  const colorRegex = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$|^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$|^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(0|1|0?\.\d+)\s*\)$|^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$|^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(0|1|0?\.\d+)\s*\)$/
+  const colorRegex =
+    /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$|^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$|^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(0|1|0?\.\d+)\s*\)$|^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$|^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(0|1|0?\.\d+)\s*\)$/
   return colorRegex.test(str)
 }
 
@@ -1068,7 +1111,8 @@ export function isColorString(str: string): boolean {
  * Check if string is CSS unit
  */
 export function isCssUnit(str: string): boolean {
-  const cssUnitRegex = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ex|ch|cm|mm|in|pt|pc|fr)$/
+  const cssUnitRegex =
+    /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ex|ch|cm|mm|in|pt|pc|fr)$/
   return cssUnitRegex.test(str)
 }
 
@@ -1077,7 +1121,115 @@ export function isCssUnit(str: string): boolean {
  */
 export function isHtmlTag(str: string): boolean {
   const htmlTags = [
-    'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr'
+    'a',
+    'abbr',
+    'address',
+    'area',
+    'article',
+    'aside',
+    'audio',
+    'b',
+    'base',
+    'bdi',
+    'bdo',
+    'blockquote',
+    'body',
+    'br',
+    'button',
+    'canvas',
+    'caption',
+    'cite',
+    'code',
+    'col',
+    'colgroup',
+    'data',
+    'datalist',
+    'dd',
+    'del',
+    'details',
+    'dfn',
+    'dialog',
+    'div',
+    'dl',
+    'dt',
+    'em',
+    'embed',
+    'fieldset',
+    'figcaption',
+    'figure',
+    'footer',
+    'form',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'head',
+    'header',
+    'hr',
+    'html',
+    'i',
+    'iframe',
+    'img',
+    'input',
+    'ins',
+    'kbd',
+    'label',
+    'legend',
+    'li',
+    'link',
+    'main',
+    'map',
+    'mark',
+    'meta',
+    'meter',
+    'nav',
+    'noscript',
+    'object',
+    'ol',
+    'optgroup',
+    'option',
+    'output',
+    'p',
+    'param',
+    'picture',
+    'pre',
+    'progress',
+    'q',
+    'rp',
+    'rt',
+    'ruby',
+    's',
+    'samp',
+    'script',
+    'section',
+    'select',
+    'small',
+    'source',
+    'span',
+    'strong',
+    'style',
+    'sub',
+    'summary',
+    'sup',
+    'table',
+    'tbody',
+    'td',
+    'template',
+    'textarea',
+    'tfoot',
+    'th',
+    'thead',
+    'time',
+    'title',
+    'tr',
+    'track',
+    'u',
+    'ul',
+    'var',
+    'video',
+    'wbr',
   ]
   return htmlTags.includes(str.toLowerCase())
 }
@@ -1087,7 +1239,39 @@ export function isHtmlTag(str: string): boolean {
  */
 export function isSvgTag(str: string): boolean {
   const svgTags = [
-    'svg', 'g', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'text', 'tspan', 'tref', 'textPath', 'defs', 'clipPath', 'mask', 'pattern', 'image', 'switch', 'foreignObject', 'use', 'symbol', 'marker', 'linearGradient', 'radialGradient', 'stop', 'animate', 'animateMotion', 'animateTransform', 'set', 'metadata', 'title', 'desc'
+    'svg',
+    'g',
+    'path',
+    'rect',
+    'circle',
+    'ellipse',
+    'line',
+    'polyline',
+    'polygon',
+    'text',
+    'tspan',
+    'tref',
+    'textPath',
+    'defs',
+    'clipPath',
+    'mask',
+    'pattern',
+    'image',
+    'switch',
+    'foreignObject',
+    'use',
+    'symbol',
+    'marker',
+    'linearGradient',
+    'radialGradient',
+    'stop',
+    'animate',
+    'animateMotion',
+    'animateTransform',
+    'set',
+    'metadata',
+    'title',
+    'desc',
   ]
   return svgTags.includes(str.toLowerCase())
 }
@@ -1097,7 +1281,48 @@ export function isSvgTag(str: string): boolean {
  */
 export function isMathmlTag(str: string): boolean {
   const mathmlTags = [
-    'math', 'maction', 'maligngroup', 'malignmark', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mlongdiv', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mscarries', 'mscarry', 'msgroup', 'msline', 'mspace', 'msqrt', 'msrow', 'mstack', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover', 'semantics', 'annotation', 'annotation-xml'
+    'math',
+    'maction',
+    'maligngroup',
+    'malignmark',
+    'menclose',
+    'merror',
+    'mfenced',
+    'mfrac',
+    'mglyph',
+    'mi',
+    'mlabeledtr',
+    'mlongdiv',
+    'mmultiscripts',
+    'mn',
+    'mo',
+    'mover',
+    'mpadded',
+    'mphantom',
+    'mroot',
+    'mrow',
+    'ms',
+    'mscarries',
+    'mscarry',
+    'msgroup',
+    'msline',
+    'mspace',
+    'msqrt',
+    'msrow',
+    'mstack',
+    'mstyle',
+    'msub',
+    'msup',
+    'msubsup',
+    'mtable',
+    'mtd',
+    'mtext',
+    'mtr',
+    'munder',
+    'munderover',
+    'semantics',
+    'annotation',
+    'annotation-xml',
   ]
   return mathmlTags.includes(str.toLowerCase())
 }

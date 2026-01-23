@@ -61,13 +61,6 @@
 export { Button, buttonVariants } from './components/ui/button-enhanced'
 export type { ButtonProps, ButtonState } from './components/ui/button-enhanced'
 
-// Also export pure shadcn Button for those who want it
-export {
-  Button as ShadcnButton,
-  buttonVariants as shadcnButtonVariants,
-} from './components/ui/button'
-export type { ButtonProps as ShadcnButtonProps } from './components/ui/button'
-
 // Dialog
 export {
   Dialog,

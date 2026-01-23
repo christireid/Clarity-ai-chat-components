@@ -19,7 +19,8 @@ import {
   TabsContent,
 } from '@clarity-chat/primitives'
 import type { PromptTemplate, PromptVariable } from '../../prompts/types'
-import { getMotionSafePreset, useReducedMotion } from '../../animations'
+import { getMotionSafePreset } from '../../animations'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   usePromptPlayground,
   MODEL_PRICING,
