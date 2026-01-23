@@ -9,7 +9,7 @@
  * - Historical analytics and trend analysis
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 
 // Dashboard metrics and visualizations
 export interface DashboardMetrics {

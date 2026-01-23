@@ -12,7 +12,7 @@
  * @module
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import {
   AdvancedCompressionOrchestrator,
   compressWithAdvanced,
@@ -449,7 +449,13 @@ export class AdaptiveTokenOptimizer {
 
     const compressedText = await compressWithAdvanced(
       text,
-      strategy.compressionStrategy as 'llmlingua' | 'selective_context' | 'semantic_pruning' | 'structural' | 'adaptive' | undefined,
+      strategy.compressionStrategy as
+        | 'llmlingua'
+        | 'selective_context'
+        | 'semantic_pruning'
+        | 'structural'
+        | 'adaptive'
+        | undefined,
       compressionConfig.compressionRatio,
       compressionConfig.qualityThreshold
     )
@@ -730,7 +736,10 @@ export class AdaptiveTokenOptimizer {
     this.conversationStates.set(conversationId, updatedState)
   }
 
-  getPerformanceAnalytics(model?: string, domain?: string): {
+  getPerformanceAnalytics(
+    model?: string,
+    domain?: string
+  ): {
     totalOptimizations: number
     averageReduction: number
     averageQuality: number
@@ -805,7 +814,10 @@ export function updateConversationState(
   adaptiveOptimizer.updateConversationState(conversationId, update)
 }
 
-export function getAdaptiveAnalytics(model?: string, domain?: string): {
+export function getAdaptiveAnalytics(
+  model?: string,
+  domain?: string
+): {
   totalOptimizations: number
   averageReduction: number
   averageQuality: number

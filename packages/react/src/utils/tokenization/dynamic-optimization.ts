@@ -9,7 +9,7 @@
  * - Historical optimization data
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 
 // Model families with different token efficiency characteristics
 export type ModelFamily =

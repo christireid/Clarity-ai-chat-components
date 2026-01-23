@@ -1,4 +1,4 @@
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 
 export interface MigrationRule {
   from: string

@@ -5,7 +5,7 @@
  * Uses js-tiktoken when available, falls back to estimation.
  */
 
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
 import { InputValidator } from './input-validator'
 import {
   errorHandler,
