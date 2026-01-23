@@ -187,6 +187,16 @@ export interface ChatWindowProps {
   showStarterPrompts?: boolean
   /** @deprecated Use prompts.showFollowUpSuggestions instead */
   showFollowUpSuggestions?: boolean
+  /** Enable auto-scroll to bottom on new messages */
+  autoScroll?: boolean
+  /** Theme for the chat interface */
+  theme?: string
+  /** Show token counter in input */
+  showTokenCounter?: boolean
+  /** Show network status indicator */
+  showNetworkStatus?: boolean
+  /** Enable message operations (edit, delete, branch) */
+  enableMessageOperations?: boolean
 }
 
 // Skip Links Navigation Component
@@ -332,6 +342,11 @@ export function ChatWindow({
   // Other props
   emptyState,
   className,
+  autoScroll,
+  theme,
+  showTokenCounter,
+  showNetworkStatus,
+  enableMessageOperations,
 }: ChatWindowProps) {
   // Map legacy props to grouped props for backward compatibility
   const effectiveMessageActions = React.useMemo(() => ({
@@ -538,6 +553,7 @@ export function ChatWindow({
           aria-label="Chat messages"
           role="log"
           aria-live="polite"
+          autoScroll={autoScroll}
         />
 
         <FollowUpSuggestions

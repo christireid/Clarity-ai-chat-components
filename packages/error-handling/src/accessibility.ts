@@ -284,6 +284,8 @@ export function useHighContrastMode(): boolean {
   const [isHighContrast, setIsHighContrast] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
     const checkHighContrast = () => {
       // Check for Windows high contrast mode
       const isWindowsHighContrast = window.matchMedia('(-ms-high-contrast: active)').matches;
@@ -308,12 +310,23 @@ export function useHighContrastMode(): boolean {
     const mediaQuery1 = window.matchMedia('(-ms-high-contrast: active)');
     const mediaQuery2 = window.matchMedia('(forced-colors: active)');
 
-    mediaQuery1.addEventListener('change', checkHighContrast);
-    mediaQuery2.addEventListener('change', checkHighContrast);
+    if (mediaQuery1.addEventListener) {
+      mediaQuery1.addEventListener('change', checkHighContrast);
+      mediaQuery2.addEventListener('change', checkHighContrast);
+    } else {
+      // Fallback
+      mediaQuery1.addListener(checkHighContrast);
+      mediaQuery2.addListener(checkHighContrast);
+    }
 
     return () => {
-      mediaQuery1.removeEventListener('change', checkHighContrast);
-      mediaQuery2.removeEventListener('change', checkHighContrast);
+      if (mediaQuery1.removeEventListener) {
+        mediaQuery1.removeEventListener('change', checkHighContrast);
+        mediaQuery2.removeEventListener('change', checkHighContrast);
+      } else {
+        mediaQuery1.removeListener(checkHighContrast);
+        mediaQuery2.removeListener(checkHighContrast);
+      }
     };
   }, []);
 
@@ -331,6 +344,8 @@ export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
 

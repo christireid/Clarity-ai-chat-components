@@ -35,6 +35,56 @@ export * from './types'
 // Memory service (framework-agnostic)
 export { MemoryService } from './memory-service'
 
+// Consent management (GDPR/CCPA compliance)
+export {
+  ConsentManager,
+  type ConsentPurpose,
+  type ConsentEvent,
+  type ConsentRecord,
+  type ConsentVerification,
+} from './consent'
+
+// Audit logging (GDPR Article 30 compliance)
+export {
+  AuditLogger,
+  type AuditEventType,
+  type AuditEventSeverity,
+  type AuditEventMetadata,
+  type AuditLogEntry,
+  type AuditLogQuery,
+  type AuditLogStats,
+  type AuditLoggerConfig,
+} from './audit'
+
+// Error handling (typed errors with error codes)
+export {
+  MemoryError,
+  MemoryConfigError,
+  MemoryConsentError,
+  MemoryOperationError,
+  MemoryStorageError,
+  MemoryEmbeddingError,
+  MemoryQueryError,
+  MemoryToolError,
+  MemoryValidationError,
+  MemoryErrorCode,
+  isMemoryError,
+  isMemoryErrorType,
+  formatErrorForUser,
+  getErrorCode,
+} from './errors'
+
+// Configuration presets and profiles
+export {
+  ENVIRONMENT_PRESETS,
+  APPLICATION_PROFILES,
+  createConfig,
+  getPreset,
+  getProfile,
+  listPresets,
+  listProfiles,
+} from './config-presets'
+
 // Token optimization utilities re-exported for convenience
 // Note: Import directly from @clarity-chat/token-optimization for full API access
 export type {
@@ -105,4 +155,8 @@ export type {
   TokenOptimizationConfig,
   CompressedMemory,
   MemoryChunk,
+  DeletionResult,
+  DeletionVerification,
+  DataExportResult,
+  DataExportOptions,
 } from './types'

@@ -152,6 +152,11 @@ export function useClarityChat(
     errorType: null,
   })
 
+  // State for consent tracking
+  const [consentGranted, setConsentGranted] = React.useState<boolean | null>(null)
+  const consentRequestedRef = React.useRef<boolean>(false)
+  const autoCaptureWarnedRef = React.useRef<boolean>(false)
+
   // Transform function with memory enrichment
   const originalTransform = rest.transform
   const syncTransform = React.useCallback(
@@ -184,56 +189,114 @@ export function useClarityChat(
     async (message: CoreMessage) => {
       await originalOnFinish?.(message)
 
-      if (memory?.enabled && memoryContext?.service) {
-        try {
-          const content = extractTextContent(message.content)
+      // Check if memory is enabled
+      if (!memory?.enabled || !memoryContext?.service) {
+        return
+      }
 
-          if (content) {
-            const storeMemory = async () => {
-              return await memoryContext.addMemory(
-                content,
-                'episodic',
-                'thread',
-                {
-                  messageId: message.id,
-                  role: message.role,
-                  timestamp: new Date().toISOString(),
-                },
-                {
-                  priority: message.role === 'assistant' ? 'high' : 'medium',
-                }
-              )
+      // Check if autoCapture is enabled (default: false)
+      const autoCapture = memory.autoCapture ?? false
+      if (!autoCapture) {
+        // Auto-capture is disabled - messages must be manually added to memory
+        return
+      }
+
+      // Warn once about auto-capture being enabled (privacy implications)
+      if (!autoCaptureWarnedRef.current) {
+        console.warn(
+          '[Clarity Chat] Auto-capture is enabled. All messages will be automatically stored to memory. ' +
+          'Ensure users have given explicit consent for data collection. ' +
+          'See privacy documentation for GDPR/CCPA compliance guidance.'
+        )
+        autoCaptureWarnedRef.current = true
+      }
+
+      // Check consent if required (default: true)
+      const requireConsent = memory.requireConsent ?? true
+      if (requireConsent) {
+        // Request consent on first capture if not already requested
+        if (consentGranted === null && !consentRequestedRef.current) {
+          consentRequestedRef.current = true
+
+          try {
+            const consent = memory.onConsentRequired
+              ? await Promise.resolve(memory.onConsentRequired())
+              : false
+
+            setConsentGranted(consent)
+
+            if (!consent) {
+              debug.log('[Clarity Chat] Memory capture consent denied by user')
+              return
             }
 
-            if (memory.retryOnError !== false) {
-              await retryOperation(
-                storeMemory,
-                memory.maxRetryAttempts || 2,
-                500
-              )
-            } else {
-              await storeMemory()
-            }
+            debug.log('[Clarity Chat] Memory capture consent granted by user')
+          } catch (error) {
+            console.error('[Clarity Chat] Error obtaining consent:', error)
+            setConsentGranted(false)
+            return
           }
-        } catch (error) {
-          const err = error as Error
-          const errorType = classifyError(err)
-
-          setMemoryError({ error: err, operation: 'store', errorType })
-          memory.onMemoryError?.(err, 'store')
-          console.warn(
-            `[Clarity Chat] Memory storage failed (${errorType}):`,
-            err.message
-          )
+        } else if (consentGranted === false) {
+          // Consent was previously denied
+          return
         }
+        // If consentGranted === true, proceed with storage
+      }
+
+      // Store message to memory
+      try {
+        const content = extractTextContent(message.content)
+
+        if (content) {
+          const storeMemory = async () => {
+            return await memoryContext.addMemory(
+              content,
+              'episodic',
+              'thread',
+              {
+                messageId: message.id,
+                role: message.role,
+                timestamp: new Date().toISOString(),
+                autoCapture: true, // Mark as auto-captured for audit trail
+              },
+              {
+                priority: message.role === 'assistant' ? 'high' : 'medium',
+              }
+            )
+          }
+
+          if (memory.retryOnError !== false) {
+            await retryOperation(
+              storeMemory,
+              memory.maxRetryAttempts || 2,
+              500
+            )
+          } else {
+            await storeMemory()
+          }
+        }
+      } catch (error) {
+        const err = error as Error
+        const errorType = classifyError(err)
+
+        setMemoryError({ error: err, operation: 'store', errorType })
+        memory.onMemoryError?.(err, 'store')
+        console.warn(
+          `[Clarity Chat] Memory storage failed (${errorType}):`,
+          err.message
+        )
       }
     },
     [
       memory?.enabled,
+      memory?.autoCapture,
+      memory?.requireConsent,
+      memory?.onConsentRequired,
       memoryContext?.service,
       memory?.retryOnError,
       memory?.maxRetryAttempts,
       memory?.onMemoryError,
+      consentGranted,
       originalOnFinish,
     ]
   )

@@ -636,3 +636,20 @@ export class SecurityMonitor {
 
 // Global security monitor instance
 export const securityMonitor = SecurityMonitor.getInstance()
+
+/**
+ * Alias for SecurityMonitor (backward compatibility)
+ */
+export { SecurityMonitor as SecurityManager }
+export { securityMonitor as securityManager }
+
+/**
+ * Hook to access security features
+ */
+export function useSecurity() {
+  return {
+    monitor: securityMonitor,
+    ...useSecureContent(),
+    ...useCSP(),
+  }
+}

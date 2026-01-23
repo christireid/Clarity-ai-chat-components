@@ -29,7 +29,7 @@
  * ```
  */
 
-import { MemoryService } from './memory-service'
+import { MemoryService } from '@clarity-chat/memory'
 import type { MemoryType, MemoryScope, MemoryServiceConfig } from './types'
 
 /**

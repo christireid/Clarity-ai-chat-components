@@ -281,9 +281,17 @@ describe('isMalformedErrorBody', () => {
 })
 
 describe('logDetectionResult', () => {
-  it('should log warning for low confidence results', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  let warnSpy: any
 
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    warnSpy.mockRestore()
+  })
+
+  it('should log warning for low confidence results', () => {
     logDetectionResult('openai', 400, {
       code: ProviderErrorCode.OPENAI_ERROR,
       confidence: 'low',
@@ -292,17 +300,12 @@ describe('logDetectionResult', () => {
     })
 
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.any(String),
       expect.stringContaining('Low confidence detection'),
       expect.any(Object)
     )
-
-    warnSpy.mockRestore()
   })
 
   it('should not log for high confidence results', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
     logDetectionResult('openai', 429, {
       code: ProviderErrorCode.RATE_LIMIT,
       confidence: 'high',
@@ -310,7 +313,5 @@ describe('logDetectionResult', () => {
     })
 
     expect(warnSpy).not.toHaveBeenCalled()
-
-    warnSpy.mockRestore()
   })
 })

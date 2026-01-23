@@ -14,7 +14,7 @@ import {
   useFocusManagementLegacy,
   useFocusTrap,
   useAnnounce,
-  usePrefersReducedMotion,
+  usePrefersReducedMotionLegacy as usePrefersReducedMotion,
   useIdLegacy,
 } from '../accessibility'
 

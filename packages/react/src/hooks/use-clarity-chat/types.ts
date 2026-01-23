@@ -16,6 +16,33 @@ import type {
 export interface ClarityMemoryOptions {
   /** Enable memory integration */
   enabled?: boolean
+  /**
+   * Enable automatic capture of messages to memory (default: false)
+   *
+   * IMPORTANT: When enabled, ALL messages will be automatically stored to memory.
+   * This has privacy implications - ensure users have given explicit consent.
+   *
+   * @default false
+   */
+  autoCapture?: boolean
+  /**
+   * Require user consent before capturing any messages (default: true)
+   *
+   * When true, onConsentRequired callback will be invoked before first capture.
+   * If consent is not obtained, messages will not be stored.
+   *
+   * @default true
+   */
+  requireConsent?: boolean
+  /**
+   * Consent callback - invoked before first memory capture
+   *
+   * Should return true if user consents to memory capture, false otherwise.
+   * This callback is only invoked once per session when autoCapture is enabled.
+   *
+   * @returns Promise<boolean> or boolean - true if consent granted
+   */
+  onConsentRequired?: () => Promise<boolean> | boolean
   /** Memory strategy: sliding-window, semantic-chunks, or vector-store */
   strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Maximum tokens for memory context */
