@@ -5,7 +5,7 @@
  */
 
 import type { EmbeddingProvider } from './embedding-provider'
-import { LRUCache, TTLCache } from '@clarity-chat/utils/cache'
+import { LRUCache, TTLCache } from '@clarity-chat/utils'
 import { retry, isRetryableError } from '../utils/retry'
 import { RateLimiter } from '../utils/rate-limiter'
 

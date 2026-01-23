@@ -5,7 +5,7 @@
 export * from './environment'
 export * from './validation'
 export * from './health-check'
-export * from './cache'
+// Cache utilities moved to @clarity-chat/utils
 export * from './retry'
 export * from './rate-limiter'
 export * from './batch'
