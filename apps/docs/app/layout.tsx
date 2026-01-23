@@ -108,6 +108,14 @@ export default function RootLayout({
       className={`${fontClasses.sans} ${fontClasses.mono}`}
     >
       <head>
+        {/* Pre-hydration theme script - prevents flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+(function(){try{var t=localStorage.getItem('clarity-chat-theme');var p=t?JSON.parse(t):{mode:'system'};var m=p.mode||'system';if(m==='system'){m=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}if(m==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}if(p.preset){document.documentElement.setAttribute('data-theme',p.preset)}document.documentElement.style.colorScheme=m}catch(e){}})();
+            `.trim(),
+          }}
+        />
         <StructuredData type="software" />
         <OrganizationStructuredData />
         <SoftwareLibraryStructuredData />
@@ -120,7 +128,10 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
+      <body
+        className="font-sans antialiased overflow-x-hidden"
+        suppressHydrationWarning
+      >
         <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">

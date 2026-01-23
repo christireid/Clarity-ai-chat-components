@@ -15,7 +15,7 @@ import type {
   ToolResult as CanonicalToolResult,
 } from '../types/tool-definition'
 
-// Re-export canonical types as primary exports
+// Re-export canonical types from tool-definition
 export type {
   CanonicalToolDefinition as ToolDefinition,
   CanonicalToolParameters as ToolParameters,
@@ -23,43 +23,17 @@ export type {
   CanonicalToolResult as ToolResult,
 }
 
+// Also re-export ToolParameterProperty from canonical source
+export type { ToolParameterProperty } from '../types/tool-definition'
+
 // =============================================================================
-// DEPRECATED: Legacy Types (kept for backward compatibility)
+// Local Type Aliases (for use within this file)
 // =============================================================================
 
-/**
- * @deprecated Use ToolParameterProperty from '../types/tool-definition' instead
- *
- * JSON Schema property types for tool parameters
- */
-export interface ToolParameterProperty {
-  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
-  description?: string
-  enum?: (string | number | boolean)[]
-  default?: unknown
-  items?: ToolParameterProperty
-  properties?: Record<string, ToolParameterProperty>
-  required?: string[]
-  minimum?: number
-  maximum?: number
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-}
-
-/** JSON Schema for tool parameters */
-export interface ToolParameters {
-  type: 'object'
-  properties: Record<string, ToolParameterProperty>
-  required?: string[]
-  additionalProperties?: boolean
-}
-
-/** Arguments passed to tool execution */
-export type ToolArguments = Record<string, string | number | boolean | string[] | number[] | Record<string, unknown>>
-
-/** Result from tool execution */
-export type ToolResult = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined
+// Local aliases for use in this file (export type doesn't create local bindings)
+type ToolParameters = CanonicalToolParameters
+type ToolArguments = CanonicalToolArguments
+type ToolResult = CanonicalToolResult
 
 export interface Tool {
   /** Tool name */
@@ -106,7 +80,10 @@ export interface AgentConfig {
 }
 
 /** Metadata attached to agent messages */
-export type AgentMessageMetadata = Record<string, string | number | boolean | null>
+export type AgentMessageMetadata = Record<
+  string,
+  string | number | boolean | null
+>
 
 export interface AgentMessage {
   /** Message role */
@@ -201,32 +178,32 @@ export interface Agent {
   description: string
   /** Available tools */
   tools: Tool[]
-  
+
   /**
    * Execute a query
    */
   execute(query: string, context?: AgentMessage[]): Promise<AgentExecution>
-  
+
   /**
    * Execute a single step
    */
   step(execution: AgentExecution): Promise<AgentStep>
-  
+
   /**
    * Add a tool
    */
   addTool(tool: Tool): void
-  
+
   /**
    * Remove a tool
    */
   removeTool(toolName: string): void
-  
+
   /**
    * Get tool by name
    */
   getTool(name: string): Tool | undefined
-  
+
   /**
    * Create a plan for a query
    */
@@ -238,17 +215,17 @@ export interface AgentMemory {
    * Add message to memory
    */
   addMessage(message: AgentMessage): void
-  
+
   /**
    * Get recent messages
    */
   getMessages(limit?: number): AgentMessage[]
-  
+
   /**
    * Clear memory
    */
   clear(): void
-  
+
   /**
    * Summarize memory if needed
    */
@@ -273,4 +250,3 @@ export interface AgentCallbacks {
   /** Called for tool approval (if required) */
   onToolApproval?: ToolApprovalCallback
 }
-

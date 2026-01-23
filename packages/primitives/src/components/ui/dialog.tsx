@@ -39,6 +39,11 @@ export interface DialogContentProps extends React.ComponentPropsWithoutRef<
    * Animation style
    */
   animation?: 'default' | 'slide' | 'scale' | 'none'
+  /**
+   * Visual variant - default (solid) or glass (glassmorphism)
+   * Glass variant provides premium translucent appearance with backdrop blur
+   */
+  variant?: 'default' | 'glass' | 'frosted'
 }
 
 const dialogSizeClasses = {
@@ -108,12 +113,46 @@ function useMobileFocusTrap(
   }, [isOpen])
 }
 
+/**
+ * Glass variant classes for DialogContent
+ * Follows Premium Glassmorphism spec:
+ * - Dark mode: 5-15% white opacity, 12-16px blur, 120-180% saturate
+ */
+const dialogVariantClasses = {
+  default: 'bg-background border',
+  glass: [
+    'bg-white/70 dark:bg-white/[0.08]',
+    'backdrop-blur-[14px] backdrop-saturate-150',
+    'border border-white/20 dark:border-white/[0.1]',
+    'shadow-xl',
+    // Typography smoothing on glass
+    'antialiased',
+    // Isolation for stacking context
+    'isolate',
+  ].join(' '),
+  frosted: [
+    'bg-white/85 dark:bg-white/[0.12]',
+    'backdrop-blur-xl backdrop-saturate-[1.8]',
+    'border border-white/30 dark:border-white/[0.15]',
+    'shadow-2xl',
+    'antialiased',
+    'isolate',
+  ].join(' '),
+}
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
 >(
   (
-    { className, children, size = 'lg', animation = 'default', ...props },
+    {
+      className,
+      children,
+      size = 'lg',
+      animation = 'default',
+      variant = 'default',
+      ...props
+    },
     ref
   ) => {
     const contentRef = React.useRef<HTMLElement>(null)
@@ -140,8 +179,12 @@ const DialogContent = React.forwardRef<
 
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'data-state') {
-            const newState = contentRef.current?.getAttribute('data-state') === 'open'
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'data-state'
+          ) {
+            const newState =
+              contentRef.current?.getAttribute('data-state') === 'open'
             setIsOpen(newState)
           }
         })
@@ -153,7 +196,8 @@ const DialogContent = React.forwardRef<
       })
 
       // Initial state check
-      const initialState = contentRef.current.getAttribute('data-state') === 'open'
+      const initialState =
+        contentRef.current.getAttribute('data-state') === 'open'
       setIsOpen(initialState)
 
       return () => observer.disconnect()
@@ -168,7 +212,8 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
           ref={combinedRef}
           className={cn(
-            'fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg',
+            'fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 p-6 shadow-lg duration-200 sm:rounded-lg',
+            dialogVariantClasses[variant],
             dialogSizeClasses[size],
             animation !== 'none' &&
               'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',

@@ -31,13 +31,14 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.75rem;
-    
+
     /* Refined shadow system */
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.03);
     --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.04);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
+    --shadow-xl:
+      0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
 
     /* Glass effect variables */
     --glass-bg-opacity: 0.6;
@@ -89,13 +90,14 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
-    
+
     /* Dark mode refined shadows */
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
+    --shadow-xl:
+      0 20px 40px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
 
     /* Dark mode glass effect variables */
     --glass-bg-opacity: 0.6;
@@ -123,7 +125,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
     font-smooth: always;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -143,7 +147,8 @@
       oklch(from var(--card) l c h / calc(var(--glass-bg-opacity) - 0.1)) 100%
     );
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid oklch(from var(--border) l c h / var(--glass-border-opacity));
+    border: 1px solid
+      oklch(from var(--border) l c h / var(--glass-border-opacity));
     background-size: 200% 200%;
   }
 
@@ -166,23 +171,157 @@
   }
 }
 
+/* =========================================================================
+   ACCESSIBILITY - MEDIA QUERIES
+   ========================================================================= */
+
 /* Accessibility - High contrast mode */
 @media (prefers-contrast: high) {
-  .glass-panel {
+  .glass-panel,
+  .glass-surface,
+  .glass-overlay {
     backdrop-filter: none;
-    background: var(--card) !important;
-    border: 2px solid var(--border) !important;
+    -webkit-backdrop-filter: none;
+    background: hsl(var(--card)) !important;
+    border: 2px solid hsl(var(--border)) !important;
   }
 }
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .glass-panel,
+  .glass-surface,
+  .glass-overlay,
   .glass-animated,
   .glass-glow {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Accessibility - Reduced transparency (WCAG 2.1) */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-surface,
+  .glass-overlay,
+  [class*='backdrop-blur'] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Remove glass-specific opacity */
+  :root {
+    --glass-bg-opacity: 1;
+    --glass-blur: 0;
+    --glass-saturate: 100%;
+  }
+}
+
+/* Accessibility - Forced colors (Windows High Contrast) */
+@media (forced-colors: active) {
+  .glass-panel,
+  .glass-surface,
+  .glass-overlay {
+    background: Canvas !important;
+    border: 1px solid CanvasText !important;
+    forced-color-adjust: none;
+  }
+
+  button,
+  [role='button'] {
+    border: 2px solid ButtonText !important;
+  }
+
+  a {
+    color: LinkText !important;
+  }
+
+  a:visited {
+    color: VisitedText !important;
+  }
+}
+
+/* =========================================================================
+   @SUPPORTS FALLBACK - Backdrop Filter
+   Provides solid background when backdrop-filter is not supported
+   ========================================================================= */
+
+/* Default: solid background (fallback) */
+.glass-surface-fallback,
+.glass-panel-fallback {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+/* Enhanced: with backdrop-filter support */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass-surface-fallback,
+  .glass-panel-fallback {
+    background: linear-gradient(
+      var(--gradient-angle),
+      oklch(from var(--background) l c h / var(--glass-bg-opacity)) 0%,
+      oklch(from var(--card) l c h / calc(var(--glass-bg-opacity) - 0.1)) 100%
+    );
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur))
+      saturate(var(--glass-saturate));
+    border: 1px solid
+      oklch(from var(--border) l c h / var(--glass-border-opacity));
+  }
+}
+
+/* =========================================================================
+   VISUAL TEST MODE
+   Disables blur and animations for stable visual regression testing
+   (Chromatic, Percy, Playwright visual tests)
+   ========================================================================= */
+
+.visual-test-mode,
+.visual-test-mode * {
+  /* Disable blur for deterministic snapshots */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  /* Disable animations */
+  animation: none !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition: none !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Ensure glass surfaces have solid backgrounds in test mode */
+.visual-test-mode .glass-panel,
+.visual-test-mode .glass-surface,
+.visual-test-mode .glass-overlay,
+.visual-test-mode [class*='backdrop-blur'] {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* =========================================================================
+   TYPOGRAPHY SMOOTHING ON GLASS
+   Improves text rendering on translucent surfaces
+   ========================================================================= */
+
+.glass-panel,
+.glass-surface,
+.glass-overlay,
+[class*='backdrop-blur'] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================================================================
+   ISOLATION FOR STACKING CONTEXTS
+   Prevents backdrop-filter inheritance issues when nesting glass
+   ========================================================================= */
+
+.glass-isolate {
+  isolation: isolate;
 }
 
 /* Custom scrollbar */
@@ -272,12 +411,24 @@
   line-height: inherit !important;
 }
 
-.larger-text h1 { font-size: 2.5rem !important; }
-.larger-text h2 { font-size: 2rem !important; }
-.larger-text h3 { font-size: 1.75rem !important; }
-.larger-text h4 { font-size: 1.5rem !important; }
-.larger-text h5 { font-size: 1.25rem !important; }
-.larger-text h6 { font-size: 1.125rem !important; }
+.larger-text h1 {
+  font-size: 2.5rem !important;
+}
+.larger-text h2 {
+  font-size: 2rem !important;
+}
+.larger-text h3 {
+  font-size: 1.75rem !important;
+}
+.larger-text h4 {
+  font-size: 1.5rem !important;
+}
+.larger-text h5 {
+  font-size: 1.25rem !important;
+}
+.larger-text h6 {
+  font-size: 1.125rem !important;
+}
 
 /* Screen reader optimizations */
 .screen-reader-mode .sr-only {

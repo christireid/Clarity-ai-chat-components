@@ -22,7 +22,14 @@
  */
 export interface ToolParameterProperty {
   /** Property type */
-  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object' | 'null'
+  type:
+    | 'string'
+    | 'number'
+    | 'integer'
+    | 'boolean'
+    | 'array'
+    | 'object'
+    | 'null'
 
   /** Human-readable description */
   description?: string
@@ -122,36 +129,56 @@ export interface ToolExecutionContext {
  * Hooks for tool execution lifecycle
  * All hooks are optional and support async operations
  */
-export interface ToolLifecycleHooks<TArgs = Record<string, unknown>, TResult = unknown> {
+export interface ToolLifecycleHooks<
+  TArgs = Record<string, unknown>,
+  TResult = unknown,
+> {
   /**
    * Called before parameter validation
    * Can modify arguments or throw to prevent execution
    */
-  onBefore?: (args: TArgs, context: ToolExecutionContext) => void | Promise<void>
+  onBefore?: (
+    args: TArgs,
+    context: ToolExecutionContext
+  ) => void | Promise<void>
 
   /**
    * Called after successful execution
    * Can modify result or perform side effects (logging, analytics)
    */
-  onAfter?: (result: TResult, args: TArgs, context: ToolExecutionContext) => void | Promise<void>
+  onAfter?: (
+    result: TResult,
+    args: TArgs,
+    context: ToolExecutionContext
+  ) => void | Promise<void>
 
   /**
    * Called when execution fails
    * Can perform cleanup or error logging
    */
-  onError?: (error: Error, args: TArgs, context: ToolExecutionContext) => void | Promise<void>
+  onError?: (
+    error: Error,
+    args: TArgs,
+    context: ToolExecutionContext
+  ) => void | Promise<void>
 
   /**
    * Called when execution times out
    * Can perform cleanup specific to timeout scenarios
    */
-  onTimeout?: (args: TArgs, context: ToolExecutionContext) => void | Promise<void>
+  onTimeout?: (
+    args: TArgs,
+    context: ToolExecutionContext
+  ) => void | Promise<void>
 
   /**
    * Called when execution is cancelled
    * Can perform cleanup for cancelled operations
    */
-  onCancel?: (args: TArgs, context: ToolExecutionContext) => void | Promise<void>
+  onCancel?: (
+    args: TArgs,
+    context: ToolExecutionContext
+  ) => void | Promise<void>
 }
 
 // =============================================================================
@@ -194,7 +221,7 @@ export interface ToolLifecycleHooks<TArgs = Record<string, unknown>, TResult = u
  */
 export interface ToolDefinition<
   TArgs extends Record<string, unknown> = Record<string, unknown>,
-  TResult = unknown
+  TResult = unknown,
 > {
   // ===== IDENTIFICATION =====
 
@@ -237,7 +264,10 @@ export interface ToolDefinition<
    * @returns Tool result (must be JSON-serializable)
    * @throws Error if execution fails
    */
-  execute: (args: ToolArguments<TArgs>, context: ToolExecutionContext) => Promise<ToolResult<TResult>>
+  execute: (
+    args: ToolArguments<TArgs>,
+    context: ToolExecutionContext
+  ) => Promise<ToolResult<TResult>>
 
   // ===== SECURITY & BEHAVIOR =====
 
@@ -403,14 +433,18 @@ export function isToolDefinition(obj: unknown): obj is ToolDefinition {
  * Validate tool definition
  * Throws detailed error if invalid
  */
-export function validateToolDefinition(tool: unknown): asserts tool is ToolDefinition {
+export function validateToolDefinition(
+  tool: unknown
+): asserts tool is ToolDefinition {
   if (!isToolDefinition(tool)) {
     throw new Error('Invalid tool definition: missing required properties')
   }
 
   // Validate name format
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tool.name)) {
-    throw new Error(`Invalid tool name: "${tool.name}". Must be alphanumeric with underscores.`)
+    throw new Error(
+      `Invalid tool name: "${tool.name}". Must be alphanumeric with underscores.`
+    )
   }
 
   // Validate description
@@ -419,22 +453,14 @@ export function validateToolDefinition(tool: unknown): asserts tool is ToolDefin
   }
 
   // Validate parameters
-  if (!tool.parameters.properties || typeof tool.parameters.properties !== 'object') {
-    throw new Error(`Tool "${tool.name}" parameters must have a properties object`)
+  if (
+    !tool.parameters.properties ||
+    typeof tool.parameters.properties !== 'object'
+  ) {
+    throw new Error(
+      `Tool "${tool.name}" parameters must have a properties object`
+    )
   }
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
-
-export type {
-  ToolParameterProperty,
-  ToolParameters,
-  ToolArguments,
-  ToolResult,
-  ToolExecutionContext,
-  ToolLifecycleHooks,
-  ToolDefinition,
-  IToolRegistry,
-}
+// Note: All types are exported inline above

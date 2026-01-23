@@ -408,3 +408,21 @@ export {
   ecommerceTheme,
   lifestyleTheme,
 } from './modern-presets'
+
+// ============================================================================
+// SSR & Security Utilities
+// ============================================================================
+
+// Pre-hydration theme script (prevents flash)
+export { themeScript, getThemeScript } from './theme-script'
+
+// Theme override sanitization (security)
+export {
+  isSafeCssValue,
+  sanitizeCssValue,
+  sanitizeThemeOverrides,
+  applyThemeOverrides,
+  removeThemeOverrides,
+  getThemeOverrides,
+  type SanitizeResult,
+} from './theme-sanitizer'

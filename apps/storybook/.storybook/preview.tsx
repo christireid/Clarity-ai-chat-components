@@ -155,12 +155,38 @@ const withReducedMotion: Decorator = (Story, context) => {
   )
 }
 
+/**
+ * Visual Test Mode Effect Component
+ *
+ * Adds .visual-test-mode class to disable backdrop-filter and animations
+ * for stable visual regression testing (Chromatic, Percy).
+ */
+function VisualTestModeEffect({ enabled }: { enabled: boolean }) {
+  React.useEffect(() => {
+    if (enabled) {
+      document.documentElement.classList.add('visual-test-mode')
+    } else {
+      document.documentElement.classList.remove('visual-test-mode')
+    }
+
+    return () => {
+      document.documentElement.classList.remove('visual-test-mode')
+    }
+  }, [enabled])
+
+  return null
+}
+
 const withTheme: Decorator = (Story, context) => {
   const mode = context.globals.themeMode ?? 'system'
   const preset =
     context.globals.themePreset && context.globals.themePreset !== 'auto'
       ? context.globals.themePreset
       : undefined
+
+  // Enable visual test mode for Chromatic or when explicitly enabled
+  const visualTestMode =
+    context.globals.visualTestMode === true || process.env.CHROMATIC === 'true'
 
   return (
     <ThemeProvider
@@ -171,6 +197,7 @@ const withTheme: Decorator = (Story, context) => {
       }}
     >
       <ToastProvider>
+        <VisualTestModeEffect enabled={visualTestMode} />
         <div className="sb-clarity-shell min-h-screen bg-background text-foreground">
           <Story />
         </div>
@@ -332,6 +359,21 @@ const preview: Preview = {
         items: [
           { value: false, title: 'Motion Enabled', icon: 'play' },
           { value: true, title: 'Reduced Motion', icon: 'stop' },
+        ],
+        showName: true,
+        dynamicTitle: true,
+      },
+    },
+    visualTestMode: {
+      name: 'Visual Test Mode',
+      description:
+        'Disable blur and animations for stable visual regression testing',
+      defaultValue: false,
+      toolbar: {
+        icon: 'photo',
+        items: [
+          { value: false, title: 'Normal', icon: 'eye' },
+          { value: true, title: 'Visual Test', icon: 'camera' },
         ],
         showName: true,
         dynamicTitle: true,

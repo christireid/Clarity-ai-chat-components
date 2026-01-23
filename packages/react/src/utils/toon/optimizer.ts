@@ -8,6 +8,16 @@ import { jsonToToon, estimateToonSavings, isSuitableForToon } from './encoder'
 import { toonToJson } from './decoder'
 import { estimateTokens } from '../tokenization/estimator'
 
+/** JSON-serializable value type */
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | { [key: string]: JsonValue }
+  | JsonValue[]
+
 export interface ToonOptimizationResult {
   /** Format used (json or toon) */
   format: 'json' | 'toon'
@@ -46,7 +56,7 @@ export interface AutoToonOptions {
  * // Send result.data to LLM
  * ```
  */
-export function autoOptimize<T = unknown>(
+export function autoOptimize<T extends JsonValue = JsonValue>(
   data: T,
   options: AutoToonOptions = {}
 ): ToonOptimizationResult {
@@ -84,7 +94,8 @@ export function autoOptimize<T = unknown>(
       optimizedTokens: jsonTokens,
       tokensSaved: 0,
       savingsPercent: 0,
-      reason: 'Data not suitable for TOON (deeply nested or non-uniform structure)',
+      reason:
+        'Data not suitable for TOON (deeply nested or non-uniform structure)',
     }
   }
 
@@ -125,14 +136,14 @@ export function autoOptimize<T = unknown>(
 export function parseFlexible<T = unknown>(response: string): T {
   // Try JSON first
   try {
-    return JSON.parse(response)
+    return JSON.parse(response) as T
   } catch {
     // Try TOON
     try {
-      return toonToJson(response)
+      return toonToJson(response) as T
     } catch {
       // Return raw string if neither works
-      return response
+      return response as T
     }
   }
 }
@@ -140,7 +151,7 @@ export function parseFlexible<T = unknown>(response: string): T {
 /**
  * Batch optimize multiple data items
  */
-export function batchOptimize<T = unknown>(
+export function batchOptimize<T extends JsonValue = JsonValue>(
   items: T[],
   options: AutoToonOptions = {}
 ): {
@@ -148,12 +159,13 @@ export function batchOptimize<T = unknown>(
   totalSavings: number
   totalSavingsPercent: number
 } {
-  const results = items.map(item => autoOptimize(item, options))
+  const results = items.map((item) => autoOptimize(item, options))
 
   const totalOriginal = results.reduce((sum, r) => sum + r.originalTokens, 0)
   const totalOptimized = results.reduce((sum, r) => sum + r.optimizedTokens, 0)
   const totalSavings = totalOriginal - totalOptimized
-  const totalSavingsPercent = totalOriginal > 0 ? (totalSavings / totalOriginal) * 100 : 0
+  const totalSavingsPercent =
+    totalOriginal > 0 ? (totalSavings / totalOriginal) * 100 : 0
 
   return {
     results,
@@ -165,7 +177,7 @@ export function batchOptimize<T = unknown>(
 /**
  * Format data for LLM with automatic optimization
  */
-export function formatForLLM<T = unknown>(
+export function formatForLLM<T extends JsonValue = JsonValue>(
   data: T,
   options: AutoToonOptions = {}
 ): {

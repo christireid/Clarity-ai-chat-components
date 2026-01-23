@@ -331,6 +331,34 @@ export {
   type GlassButtonVariants,
 } from './lib/glass-variants'
 
+// ============================================================================
+// Glass Primitives (Premium Glassmorphism Design System)
+// ============================================================================
+
+// GlassSurface - Core glass primitive
+export {
+  GlassSurface,
+  GlassCard,
+  GlassPanel,
+  glassSurfaceVariants,
+  type GlassSurfaceVariants,
+  type GlassSurfaceProps,
+} from './components/ui/glass-surface'
+
+// GlassOverlay - Glass for overlays (dialogs, sheets, popovers)
+export {
+  GlassOverlay,
+  GlassDialogContent,
+  GlassSheetContent,
+  GlassPopoverContent,
+  GlassTooltipContent,
+  glassOverlayVariants,
+  glassBackdropVariants,
+  type GlassOverlayVariants,
+  type GlassBackdropVariants,
+  type GlassOverlayProps,
+} from './components/ui/glass-overlay'
+
 // Full utils module commented out due to Node.js type issues
 // export * from './lib/utils'
 

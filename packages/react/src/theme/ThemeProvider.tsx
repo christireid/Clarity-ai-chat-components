@@ -295,7 +295,8 @@ export function ThemeProvider({
 
     // Listen for changes
     highContrastQuery.addEventListener('change', updateContrastMode)
-    return () => highContrastQuery.removeEventListener('change', updateContrastMode)
+    return () =>
+      highContrastQuery.removeEventListener('change', updateContrastMode)
   }, [])
 
   // Listen to forced colors mode (Windows High Contrast)
@@ -316,7 +317,46 @@ export function ThemeProvider({
 
     // Listen for changes
     forcedColorsQuery.addEventListener('change', updateForcedColorsMode)
-    return () => forcedColorsQuery.removeEventListener('change', updateForcedColorsMode)
+    return () =>
+      forcedColorsQuery.removeEventListener('change', updateForcedColorsMode)
+  }, [])
+
+  // Listen to reduced transparency preference (WCAG 2.1)
+  // This media query has growing browser support and is important for users
+  // who find translucent/frosted effects difficult to use
+  React.useEffect(() => {
+    const reducedTransparencyQuery = window.matchMedia(
+      '(prefers-reduced-transparency: reduce)'
+    )
+
+    const updateReducedTransparencyMode = () => {
+      if (reducedTransparencyQuery.matches) {
+        document.documentElement.classList.add('reduced-transparency')
+        // Disable glass effects by setting CSS variables
+        document.documentElement.style.setProperty('--glass-bg-opacity', '1')
+        document.documentElement.style.setProperty('--glass-blur', '0')
+        document.documentElement.style.setProperty('--glass-saturate', '100%')
+      } else {
+        document.documentElement.classList.remove('reduced-transparency')
+        // Restore default glass variables
+        document.documentElement.style.removeProperty('--glass-bg-opacity')
+        document.documentElement.style.removeProperty('--glass-blur')
+        document.documentElement.style.removeProperty('--glass-saturate')
+      }
+    }
+
+    updateReducedTransparencyMode()
+
+    // Listen for changes
+    reducedTransparencyQuery.addEventListener(
+      'change',
+      updateReducedTransparencyMode
+    )
+    return () =>
+      reducedTransparencyQuery.removeEventListener(
+        'change',
+        updateReducedTransparencyMode
+      )
   }, [])
 
   // Helper to get theme by preset name

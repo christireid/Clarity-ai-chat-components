@@ -396,20 +396,23 @@ export function useStreamingSSE(
       return
     }
 
+    // RECONNECT-1: Increment connection ID to prevent mount/unmount races
+    connectionIdRef.current += 1
+    const currentConnectionId = connectionIdRef.current
+
+    // Set connection timeout - declared outside try for catch access
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
     try {
       setStatus('connecting')
       setError(undefined)
       shouldReconnectRef.current = true
 
-      // RECONNECT-1: Increment connection ID to prevent mount/unmount races
-      connectionIdRef.current += 1
-      const currentConnectionId = connectionIdRef.current
-
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
 
       // Set connection timeout
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         if (abortControllerRef.current) {
           abortControllerRef.current.abort()
           const timeoutError = new Error(
@@ -478,7 +481,8 @@ export function useStreamingSSE(
         // Reset delay only after reaching threshold
         if (newCount >= reconnectSuccessThreshold) {
           // SSE-6: Use server-suggested retry if available, otherwise use initial delay
-          reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
+          reconnectDelayRef.current =
+            serverSuggestedRetryRef.current ?? initialReconnectDelay
           return 0 // Reset success count after backoff reset
         }
         return newCount

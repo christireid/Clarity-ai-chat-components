@@ -140,9 +140,10 @@ export class AuthenticationError extends AdapterError {
       statusCode?: number
       provider?: string
       cause?: Error
+      code?: AdapterErrorCode
     }
   ) {
-    super(message, AdapterErrorCode.UNAUTHORIZED, {
+    super(message, options?.code ?? AdapterErrorCode.UNAUTHORIZED, {
       ...options,
       isRetryable: false,
     })
@@ -157,8 +158,8 @@ export class APIKeyMissingError extends AuthenticationError {
   constructor(provider: string) {
     super(`${provider} API key is required but not provided`, {
       provider,
+      code: AdapterErrorCode.API_KEY_MISSING,
     })
-    this.code = AdapterErrorCode.API_KEY_MISSING
     this.name = 'APIKeyMissingError'
   }
 }
@@ -400,10 +401,14 @@ export function parseNetworkError(
     message.includes('timed out') ||
     error.name === 'TimeoutError'
   ) {
-    return new TimeoutError(`${provider} request timeout: ${error.message}`, 0, {
-      provider,
-      cause: error,
-    })
+    return new TimeoutError(
+      `${provider} request timeout: ${error.message}`,
+      0,
+      {
+        provider,
+        cause: error,
+      }
+    )
   }
 
   if (
@@ -413,13 +418,10 @@ export function parseNetworkError(
     message.includes('econnrefused') ||
     message.includes('enotfound')
   ) {
-    return new NetworkError(
-      `${provider} network error: ${error.message}`,
-      {
-        provider,
-        cause: error,
-      }
-    )
+    return new NetworkError(`${provider} network error: ${error.message}`, {
+      provider,
+      cause: error,
+    })
   }
 
   // Unknown error

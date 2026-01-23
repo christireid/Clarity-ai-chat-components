@@ -9,7 +9,20 @@
  * Based on Sarah Drasner's Night Owl theme for VS Code.
  */
 
-import type { IStandaloneThemeData } from 'monaco-editor'
+/**
+ * Monaco theme data interface (defined locally to avoid monaco-editor dependency)
+ */
+interface IStandaloneThemeData {
+  base: 'vs' | 'vs-dark' | 'hc-black' | 'hc-light'
+  inherit: boolean
+  rules: Array<{
+    token: string
+    foreground?: string
+    background?: string
+    fontStyle?: string
+  }>
+  colors: Record<string, string>
+}
 
 /**
  * Night Owl Color Palette
@@ -118,41 +131,89 @@ export const NIGHT_OWL_MONACO_THEME: IStandaloneThemeData = {
   rules: [
     // Keywords
     { token: 'keyword', foreground: NIGHT_OWL_COLORS.keyword.replace('#', '') },
-    { token: 'keyword.control', foreground: NIGHT_OWL_COLORS.keyword.replace('#', '') },
-    { token: 'keyword.operator', foreground: NIGHT_OWL_COLORS.operator.replace('#', '') },
+    {
+      token: 'keyword.control',
+      foreground: NIGHT_OWL_COLORS.keyword.replace('#', ''),
+    },
+    {
+      token: 'keyword.operator',
+      foreground: NIGHT_OWL_COLORS.operator.replace('#', ''),
+    },
 
     // Types
     { token: 'type', foreground: NIGHT_OWL_COLORS.type.replace('#', '') },
-    { token: 'type.builtin', foreground: NIGHT_OWL_COLORS.type.replace('#', '') },
-    { token: 'type.parameter', foreground: NIGHT_OWL_COLORS.accent.replace('#', '') },
+    {
+      token: 'type.builtin',
+      foreground: NIGHT_OWL_COLORS.type.replace('#', ''),
+    },
+    {
+      token: 'type.parameter',
+      foreground: NIGHT_OWL_COLORS.accent.replace('#', ''),
+    },
 
     // Functions
-    { token: 'entity.name.function', foreground: NIGHT_OWL_COLORS.function.replace('#', '') },
-    { token: 'entity.name.function.method', foreground: NIGHT_OWL_COLORS.function.replace('#', '') },
+    {
+      token: 'entity.name.function',
+      foreground: NIGHT_OWL_COLORS.function.replace('#', ''),
+    },
+    {
+      token: 'entity.name.function.method',
+      foreground: NIGHT_OWL_COLORS.function.replace('#', ''),
+    },
 
     // Variables
-    { token: 'variable', foreground: NIGHT_OWL_COLORS.variable.replace('#', '') },
-    { token: 'variable.parameter', foreground: NIGHT_OWL_COLORS.accent.replace('#', '') },
-    { token: 'variable.other', foreground: NIGHT_OWL_COLORS.foregroundSecondary.replace('#', '') },
+    {
+      token: 'variable',
+      foreground: NIGHT_OWL_COLORS.variable.replace('#', ''),
+    },
+    {
+      token: 'variable.parameter',
+      foreground: NIGHT_OWL_COLORS.accent.replace('#', ''),
+    },
+    {
+      token: 'variable.other',
+      foreground: NIGHT_OWL_COLORS.foregroundSecondary.replace('#', ''),
+    },
 
     // Constants
-    { token: 'constant', foreground: NIGHT_OWL_COLORS.constant.replace('#', '') },
-    { token: 'constant.numeric', foreground: NIGHT_OWL_COLORS.number.replace('#', '') },
-    { token: 'constant.language', foreground: NIGHT_OWL_COLORS.keyword.replace('#', '') },
+    {
+      token: 'constant',
+      foreground: NIGHT_OWL_COLORS.constant.replace('#', ''),
+    },
+    {
+      token: 'constant.numeric',
+      foreground: NIGHT_OWL_COLORS.number.replace('#', ''),
+    },
+    {
+      token: 'constant.language',
+      foreground: NIGHT_OWL_COLORS.keyword.replace('#', ''),
+    },
 
     // Strings
     { token: 'string', foreground: NIGHT_OWL_COLORS.string.replace('#', '') },
-    { token: 'string.quoted', foreground: NIGHT_OWL_COLORS.string.replace('#', '') },
+    {
+      token: 'string.quoted',
+      foreground: NIGHT_OWL_COLORS.string.replace('#', ''),
+    },
 
     // Comments
     { token: 'comment', foreground: NIGHT_OWL_COLORS.comment.replace('#', '') },
 
     // Operators
-    { token: 'operator', foreground: NIGHT_OWL_COLORS.operator.replace('#', '') },
+    {
+      token: 'operator',
+      foreground: NIGHT_OWL_COLORS.operator.replace('#', ''),
+    },
 
     // Markup
-    { token: 'entity.name.tag', foreground: NIGHT_OWL_COLORS.accentSecondary.replace('#', '') },
-    { token: 'entity.other.attribute-name', foreground: NIGHT_OWL_COLORS.accent.replace('#', '') },
+    {
+      token: 'entity.name.tag',
+      foreground: NIGHT_OWL_COLORS.accentSecondary.replace('#', ''),
+    },
+    {
+      token: 'entity.other.attribute-name',
+      foreground: NIGHT_OWL_COLORS.accent.replace('#', ''),
+    },
   ],
   colors: {
     'editor.background': NIGHT_OWL_COLORS.background,

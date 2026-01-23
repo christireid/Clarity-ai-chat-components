@@ -220,10 +220,10 @@ export function useStreamingWebSocket(
   }
 
   // Validate WebSocket protocol
-  const url = options.url.trim()
-  if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+  const trimmedUrl = options.url.trim()
+  if (!trimmedUrl.startsWith('ws://') && !trimmedUrl.startsWith('wss://')) {
     throw new Error(
-      `useStreamingWebSocket: Invalid WebSocket URL "${url}".\n` +
+      `useStreamingWebSocket: Invalid WebSocket URL "${trimmedUrl}".\n` +
         'WebSocket URLs must use ws:// (insecure) or wss:// (secure) protocol.\n\n' +
         'Example:\n' +
         '  ✓ wss://api.example.com/ws (secure, recommended)\n' +
@@ -427,7 +427,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('open', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection detected, aborting')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection detected, aborting'
+          )
           return
         }
 
@@ -491,7 +493,12 @@ export function useStreamingWebSocket(
         setLastMessage(message)
 
         // DELIVERY-5: Send acknowledgment if enabled and message has ID
-        if (enableAcknowledgment && message.data && typeof message.data === 'object' && 'id' in message.data) {
+        if (
+          enableAcknowledgment &&
+          message.data &&
+          typeof message.data === 'object' &&
+          'id' in message.data
+        ) {
           const messageId = message.data.id as string
           try {
             const ackMessage = JSON.stringify({
@@ -501,7 +508,10 @@ export function useStreamingWebSocket(
             ws.send(ackMessage)
             onAcknowledgmentSent?.(messageId)
           } catch (err) {
-            logger.warn('[useStreamingWebSocket] Failed to send acknowledgment:', err)
+            logger.warn(
+              '[useStreamingWebSocket] Failed to send acknowledgment:',
+              err
+            )
           }
         }
 
@@ -512,7 +522,9 @@ export function useStreamingWebSocket(
       ws.addEventListener('error', (event) => {
         // RECONNECT-1: Check connection ID to prevent stale connection updates
         if (currentConnectionId !== connectionIdRef.current) {
-          logger.debug('[useStreamingWebSocket] Stale connection error, ignoring')
+          logger.debug(
+            '[useStreamingWebSocket] Stale connection error, ignoring'
+          )
           return
         }
 
