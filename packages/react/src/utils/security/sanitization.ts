@@ -378,6 +378,7 @@ export function sanitizeFilename(
   }
 
   // Check for null bytes and control characters
+  // eslint-disable-next-line no-control-regex
   if (/[\0-\x1f\x7f]/.test(filename)) {
     throw new Error('Filename contains invalid control characters')
   }
