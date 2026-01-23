@@ -10,7 +10,7 @@
  * - Performance tracking and analytics
  */
 
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import {
   adaptiveOptimizer,
   optimizeTokensAdaptively,
@@ -244,7 +244,8 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
 
     // Apply compression based on content analysis
     const compressionStrategy = this.selectCompressionStrategy(text, context)
@@ -261,7 +262,7 @@ export class TokenOptimizationMiddleware {
       config.qualityThreshold || 0.8
     )
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)
@@ -297,7 +298,8 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
 
     // Apply manual compression with specified parameters
     const compressionRatio = config.compressionRatio || 0.3
@@ -310,7 +312,7 @@ export class TokenOptimizationMiddleware {
       qualityThreshold
     )
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)
@@ -382,7 +384,8 @@ export class TokenOptimizationMiddleware {
     context: OptimizationContext,
     config: MiddlewareConfig
   ): Promise<MiddlewareResult> {
-    const originalTokens = await TokenCounter.count(text)
+    const counter = new AccurateTokenCounter({ model })
+    const originalTokens = counter.count(text)
     const budgetTokens = config.budgetTokens
     const budgetCost = config.budgetCost
 
@@ -406,7 +409,7 @@ export class TokenOptimizationMiddleware {
       config.qualityThreshold || 0.7 // Lower quality for budget
     )
 
-    const compressedTokens = await TokenCounter.count(compressedText)
+    const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
     const estimatedQuality = this.estimateQuality(text, compressedText)
     const estimatedCost = this.estimateCost(compressedTokens, model)

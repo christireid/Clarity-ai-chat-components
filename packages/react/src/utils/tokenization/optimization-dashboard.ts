@@ -209,8 +209,9 @@ export class TokenOptimizationMonitor {
     qualityScore: number,
     latency: number
   ): Promise<void> {
-    const originalTokens = await AccurateTokenCounter.count(originalText)
-    const optimizedTokens = await AccurateTokenCounter.count(optimizedText)
+    const counter = new AccurateTokenCounter({ model: modelName })
+    const originalTokens = counter.count(originalText)
+    const optimizedTokens = counter.count(optimizedText)
     const tokensSaved = originalTokens - optimizedTokens
     const compressionRatio = optimizedTokens / originalTokens
 

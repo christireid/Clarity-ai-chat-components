@@ -233,7 +233,8 @@ export class AdaptiveTokenOptimizer {
     const startTime = performance.now()
 
     // Analyze context and content
-    const contextProfile = await this.analyzeContext(text)
+    const counter = new AccurateTokenCounter({ model })
+    const contextProfile = await this.analyzeContext(text, counter)
     const modelProfile =
       MODEL_EFFICIENCY_PROFILES[model] || this.createDefaultModelProfile(model)
     const conversationState = conversationId
@@ -281,7 +282,7 @@ export class AdaptiveTokenOptimizer {
 
     return {
       optimizedText: optimizedResult.compressedText,
-      originalTokens: await AccurateTokenCounter.count(text),
+      originalTokens: counter.count(text),
       optimizedTokens: optimizedResult.compressedTokens,
       reductionRatio: optimizedResult.compressionRatio,
       estimatedQuality: optimizedResult.estimatedQuality,
@@ -302,11 +303,13 @@ export class AdaptiveTokenOptimizer {
   /**
    * Analyze content and create context profile
    */
-  private async analyzeContext(text: string): Promise<ContextProfile> {
+  private async analyzeContext(
+    text: string,
+    counter: AccurateTokenCounter
+  ): Promise<ContextProfile> {
     const words = text.split(/\s+/).length
     const characters = text.length
-    const tokenDensity =
-      (await AccurateTokenCounter.count(text)) / Math.max(characters, 1)
+    const tokenDensity = counter.count(text) / Math.max(characters, 1)
 
     const domain = this.detectDomain(text)
     const complexity = this.assessComplexity(text)
@@ -482,8 +485,9 @@ export class AdaptiveTokenOptimizer {
     costSavings: number
     performanceScore: number
   }> {
-    const originalTokens = await AccurateTokenCounter.count(originalText)
-    const optimizedTokens = await AccurateTokenCounter.count(optimizedText)
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    const originalTokens = counter.count(originalText)
+    const optimizedTokens = counter.count(optimizedText)
 
     const inputCost = (originalTokens / 1000) * modelProfile.costPerInputToken
     const optimizedInputCost =
@@ -603,6 +607,7 @@ export class AdaptiveTokenOptimizer {
       { name: 'aggressive', compressionRatio: 0.6, qualityThreshold: 0.7 },
     ]
 
+    const counter = new AccurateTokenCounter({ model: 'gpt-4' })
     const alternatives = await Promise.all(
       strategies.map(async (strategy) => {
         const compressedText = await compressWithAdvanced(
@@ -612,7 +617,7 @@ export class AdaptiveTokenOptimizer {
           strategy.qualityThreshold
         )
 
-        const tokens = await AccurateTokenCounter.count(compressedText)
+        const tokens = counter.count(compressedText)
         const cost = (tokens / 1000) * modelProfile.costPerInputToken
 
         return {
