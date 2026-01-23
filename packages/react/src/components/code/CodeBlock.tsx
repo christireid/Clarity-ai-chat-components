@@ -497,7 +497,7 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       )}
 
       {/* Error indicator (hidden, for debugging) */}
-      {error && process.env.NODE_ENV === 'development' && (
+      {error && process.env['NODE_ENV'] === 'development' && (
         <div className="absolute top-0 right-0 p-1">
           <span className="text-xs text-red-500" title={error.message}>
             ⚠
@@ -516,7 +516,7 @@ CodeBlockComponent.displayName = 'CodeBlock'
 export const CodeBlock = (props: CodeBlockProps) => (
   <ContentErrorBoundary
     componentName="CodeBlock"
-    showErrorDetails={process.env.NODE_ENV === 'development'}
+    showErrorDetails={process.env['NODE_ENV'] === 'development'}
   >
     <CodeBlockComponent {...props} />
   </ContentErrorBoundary>

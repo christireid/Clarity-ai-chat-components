@@ -97,7 +97,9 @@ export class DOCXLoader implements DocumentLoader {
   }
 
   supports(type: string): boolean {
-    return this.supportedTypes.some((t) => type.toLowerCase().includes(t.toLowerCase()))
+    return this.supportedTypes.some((t) =>
+      type.toLowerCase().includes(t.toLowerCase())
+    )
   }
 
   /**
@@ -145,8 +147,8 @@ export class DOCXLoader implements DocumentLoader {
       // Try to load from global if available
       console.warn(
         'DOCXLoader: mammoth library not found. Please install:\n' +
-        'npm install mammoth\n' +
-        'Then import: import mammoth from "mammoth"'
+          'npm install mammoth\n' +
+          'Then import: import mammoth from "mammoth"'
       )
       // Fallback to basic extraction using JSZip
       return this.fallbackParse(arrayBuffer, options)
@@ -284,7 +286,8 @@ export class DOCXLoader implements DocumentLoader {
    */
   private async loadMammoth(): Promise<any> {
     try {
-      // Try to dynamically import mammoth
+      // Try to dynamically import mammoth (optional peer dependency)
+      // @ts-expect-error - mammoth is an optional peer dependency
       return await import('mammoth')
     } catch {
       throw new Error('Mammoth library could not be loaded')

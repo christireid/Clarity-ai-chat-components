@@ -131,7 +131,8 @@ export function useClarityChat(
   const lastQueryRef = React.useRef<string>('')
 
   // State for current memory context to trigger re-renders
-  const [currentMemoryContext, setCurrentMemoryContext] = React.useState<string>('')
+  const [currentMemoryContext, setCurrentMemoryContext] =
+    React.useState<string>('')
 
   // State for optimized messages and token stats
   const [optimizedMessagesState, setOptimizedMessagesState] = React.useState<{
@@ -153,7 +154,9 @@ export function useClarityChat(
   })
 
   // State for consent tracking
-  const [consentGranted, setConsentGranted] = React.useState<boolean | null>(null)
+  const [consentGranted, setConsentGranted] = React.useState<boolean | null>(
+    null
+  )
   const consentRequestedRef = React.useRef<boolean>(false)
   const autoCaptureWarnedRef = React.useRef<boolean>(false)
 
@@ -205,8 +208,8 @@ export function useClarityChat(
       if (!autoCaptureWarnedRef.current) {
         console.warn(
           '[Clarity Chat] Auto-capture is enabled. All messages will be automatically stored to memory. ' +
-          'Ensure users have given explicit consent for data collection. ' +
-          'See privacy documentation for GDPR/CCPA compliance guidance.'
+            'Ensure users have given explicit consent for data collection. ' +
+            'See privacy documentation for GDPR/CCPA compliance guidance.'
         )
         autoCaptureWarnedRef.current = true
       }
@@ -226,11 +229,17 @@ export function useClarityChat(
             setConsentGranted(consent)
 
             if (!consent) {
-              debug.log('[Clarity Chat] Memory capture consent denied by user')
+              debug.info(
+                'use-clarity-chat',
+                'Memory capture consent denied by user'
+              )
               return
             }
 
-            debug.log('[Clarity Chat] Memory capture consent granted by user')
+            debug.info(
+              'use-clarity-chat',
+              'Memory capture consent granted by user'
+            )
           } catch (error) {
             console.error('[Clarity Chat] Error obtaining consent:', error)
             setConsentGranted(false)
@@ -255,7 +264,8 @@ export function useClarityChat(
               'thread',
               {
                 messageId: message.id,
-                role: message.role,
+                // Normalize role to exclude 'function' (map to 'tool' or filter out)
+                role: message.role === 'function' ? 'tool' : message.role,
                 timestamp: new Date().toISOString(),
                 autoCapture: true, // Mark as auto-captured for audit trail
               },
@@ -266,11 +276,7 @@ export function useClarityChat(
           }
 
           if (memory.retryOnError !== false) {
-            await retryOperation(
-              storeMemory,
-              memory.maxRetryAttempts || 2,
-              500
-            )
+            await retryOperation(storeMemory, memory.maxRetryAttempts || 2, 500)
           } else {
             await storeMemory()
           }
@@ -353,11 +359,12 @@ export function useClarityChat(
                     )
                   : await queryMemory()
 
-              const contextString = memoryResults.length > 0
-                ? memoryResults
-                    .map((result) => result.memory.content)
-                    .join('\n\n')
-                : ''
+              const contextString =
+                memoryResults.length > 0
+                  ? memoryResults
+                      .map((result) => result.memory.content)
+                      .join('\n\n')
+                  : ''
 
               memoryContextRef.current = contextString
               setCurrentMemoryContext(contextString)
@@ -467,19 +474,12 @@ export function useClarityChat(
       }
 
       // Debounce optimization to avoid excessive processing during rapid updates
-      const debouncedOptimize = debounce(optimizeMessages, 500)
-      debouncedOptimize()
-      
-      // Cleanup not strictly necessary for simple debounce but good practice if we returned a cancel function
-      // For now, debounce wrapper creates a new timer each effect run if dependencies change
-      // Ideally we would memoize the debounced function, but we want it to run on dependency change.
-      // The previous setTimeout approach was actually correct for a simple effect-based debounce.
-      // Let's revert to inline setTimeout to avoid creating new function references or complex useMemo.
-      
-      // Actually, standard useEffect debounce pattern:
+      // Use standard useEffect debounce pattern with setTimeout
       const timeoutId = setTimeout(optimizeMessages, 500)
       return () => clearTimeout(timeoutId)
     }
+    // Return undefined when optimization is disabled or no messages
+    return undefined
   }, [
     promptOptimization?.enabled,
     chat.messages, // Include full messages array to detect content changes
@@ -513,7 +513,12 @@ export function useClarityChat(
     } else {
       setMemoryStats({ count: 0, contextItems: 0 })
     }
-  }, [memory?.enabled, memoryContext?.service, chat.messages.length, currentMemoryContext])
+  }, [
+    memory?.enabled,
+    memoryContext?.service,
+    chat.messages.length,
+    currentMemoryContext,
+  ])
 
   // Calculate memory info
   const memoryInfo: ClarityChatMemoryInfo = React.useMemo(() => {

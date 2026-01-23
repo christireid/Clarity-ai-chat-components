@@ -167,7 +167,7 @@ function getEnvironment() {
  *           createSentryProvider({ dsn: 'YOUR_DSN' }),
  *           createConsoleProvider()
  *         ],
- *         enabled: process.env.NODE_ENV === 'production',
+ *         enabled: process.env['NODE_ENV'] === 'production',
  *         autoReport: true,
  *         enableFeedback: true
  *       }}

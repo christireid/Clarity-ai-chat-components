@@ -315,6 +315,6 @@ export function showDXGuide() {
 }
 
 // Auto-show guide in development
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined' && process.env['NODE_ENV'] === 'development') {
   setTimeout(showDXGuide, 1000)
 }

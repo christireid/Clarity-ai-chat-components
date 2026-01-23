@@ -148,7 +148,7 @@ function getThemeByName(name: string): CompleteThemeConfig {
     return modernThemes[name]
   }
   // Warn about invalid preset and fallback to default
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env['NODE_ENV'] !== 'production') {
     console.warn(
       `[Clarity Chat] Unknown theme preset "${name}". ` +
         `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +

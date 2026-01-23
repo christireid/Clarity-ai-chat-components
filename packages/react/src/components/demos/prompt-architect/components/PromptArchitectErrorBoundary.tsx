@@ -60,7 +60,7 @@ export function PromptArchitectErrorBoundary({
       onReset={onReset}
       logError={(error, errorInfo) => {
         // Log to console in development with PromptArchitect context
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env['NODE_ENV'] === 'development') {
           console.error('[PromptArchitect] Error caught:', error)
           console.error('[PromptArchitect] Error info:', errorInfo)
         }

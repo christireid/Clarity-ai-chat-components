@@ -19,11 +19,14 @@ function generateMessages(count: number): Message[] {
   const now = Date.now()
 
   for (let i = 0; i < count; i++) {
+    const timestamp = new Date(now + i * 1000)
     messages.push({
       id: `msg-${i}`,
+      chatId: 'bench-chat',
       role: i % 2 === 0 ? 'user' : 'assistant',
       content: `Message ${i}: ${'Lorem ipsum '.repeat(Math.floor(Math.random() * 20) + 5)}`,
-      timestamp: new Date(now + i * 1000),
+      createdAt: timestamp,
+      updatedAt: timestamp,
       status: 'sent',
     })
   }
@@ -52,7 +55,10 @@ const FixedHeightVirtualList: React.FC<FixedHeightVirtualListProps> = ({
     return (
       <div style={{ height: CONTAINER_HEIGHT, overflow: 'auto' }}>
         {messages.map((message) => (
-          <div key={message.id} style={{ padding: '12px', height: ITEM_HEIGHT }}>
+          <div
+            key={message.id}
+            style={{ padding: '12px', height: ITEM_HEIGHT }}
+          >
             {message.content}
           </div>
         ))}
@@ -76,13 +82,20 @@ const FixedHeightVirtualList: React.FC<FixedHeightVirtualListProps> = ({
 
   return (
     <div
-      style={{ height: CONTAINER_HEIGHT, overflow: 'auto', position: 'relative' }}
+      style={{
+        height: CONTAINER_HEIGHT,
+        overflow: 'auto',
+        position: 'relative',
+      }}
       onScroll={handleScroll}
     >
       <div style={{ height: totalHeight, position: 'relative' }}>
         <div style={{ transform: `translateY(${offsetY}px)` }}>
           {visibleMessages.map((message) => (
-            <div key={message.id} style={{ padding: '12px', height: ITEM_HEIGHT }}>
+            <div
+              key={message.id}
+              style={{ padding: '12px', height: ITEM_HEIGHT }}
+            >
               {message.content}
             </div>
           ))}
@@ -97,7 +110,9 @@ interface DynamicHeightVirtualListProps {
   messages: Message[]
 }
 
-const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({ messages }) => {
+const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({
+  messages,
+}) => {
   const [scrollTop, setScrollTop] = React.useState(0)
   const [heights, setHeights] = React.useState<Map<string, number>>(new Map())
   const itemRefs = React.useRef<Map<string, HTMLDivElement>>(new Map())
@@ -119,14 +134,28 @@ const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({ mes
     return result
   }, [messages, heights])
 
-  const totalHeight = offsets[offsets.length - 1] + (heights.get(messages[messages.length - 1]?.id) || ESTIMATED_HEIGHT)
+  const totalHeight =
+    offsets[offsets.length - 1] +
+    (heights.get(messages[messages.length - 1]?.id) || ESTIMATED_HEIGHT)
 
   // Find visible range
-  const startIndex = offsets.findIndex(offset => offset + (heights.get(messages[offsets.indexOf(offset)]?.id) || ESTIMATED_HEIGHT) > scrollTop) - OVERSCAN
-  const endIndex = offsets.findIndex(offset => offset > scrollTop + CONTAINER_HEIGHT) + OVERSCAN
+  const startIndex =
+    offsets.findIndex(
+      (offset) =>
+        offset +
+          (heights.get(messages[offsets.indexOf(offset)]?.id) ||
+            ESTIMATED_HEIGHT) >
+        scrollTop
+    ) - OVERSCAN
+  const endIndex =
+    offsets.findIndex((offset) => offset > scrollTop + CONTAINER_HEIGHT) +
+    OVERSCAN
 
   const visibleStartIndex = Math.max(0, startIndex)
-  const visibleEndIndex = Math.min(messages.length, endIndex === -1 ? messages.length : endIndex)
+  const visibleEndIndex = Math.min(
+    messages.length,
+    endIndex === -1 ? messages.length : endIndex
+  )
 
   const visibleMessages = messages.slice(visibleStartIndex, visibleEndIndex)
   const offsetY = offsets[visibleStartIndex] || 0
@@ -155,7 +184,11 @@ const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({ mes
 
   return (
     <div
-      style={{ height: CONTAINER_HEIGHT, overflow: 'auto', position: 'relative' }}
+      style={{
+        height: CONTAINER_HEIGHT,
+        overflow: 'auto',
+        position: 'relative',
+      }}
       onScroll={handleScroll}
     >
       <div style={{ height: totalHeight, position: 'relative' }}>
@@ -241,7 +274,9 @@ describe('Virtualization Benchmarks', () => {
   describe('Scroll Performance', () => {
     bench('Scroll: Fixed height (1000 messages)', () => {
       const messages = generateMessages(1000)
-      const { container } = render(<FixedHeightVirtualList messages={messages} threshold={50} />)
+      const { container } = render(
+        <FixedHeightVirtualList messages={messages} threshold={50} />
+      )
       const scrollContainer = container.firstChild as HTMLDivElement
 
       const endRender = profiler.measureRender('ScrollFixed-1000msgs')
@@ -257,7 +292,9 @@ describe('Virtualization Benchmarks', () => {
 
     bench('Scroll: Dynamic height (1000 messages)', () => {
       const messages = generateMessages(1000)
-      const { container } = render(<DynamicHeightVirtualList messages={messages} />)
+      const { container } = render(
+        <DynamicHeightVirtualList messages={messages} />
+      )
       const scrollContainer = container.firstChild as HTMLDivElement
 
       const endRender = profiler.measureRender('ScrollDynamic-1000msgs')
@@ -273,7 +310,9 @@ describe('Virtualization Benchmarks', () => {
 
     bench('Scroll up/down 100 times (1000 messages)', () => {
       const messages = generateMessages(1000)
-      const { container } = render(<FixedHeightVirtualList messages={messages} threshold={50} />)
+      const { container } = render(
+        <FixedHeightVirtualList messages={messages} threshold={50} />
+      )
       const scrollContainer = container.firstChild as HTMLDivElement
 
       const endRender = profiler.measureRender('ScrollUpDown-1000msgs')
@@ -333,7 +372,9 @@ describe('Virtualization Benchmarks', () => {
       const snapshot2 = profiler.captureMemorySnapshot()
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
 
-      console.log(`Fixed height virtualization memory delta: ${delta.toFixed(2)}MB`)
+      console.log(
+        `Fixed height virtualization memory delta: ${delta.toFixed(2)}MB`
+      )
 
       if (delta > 50) {
         console.warn(`High memory usage: ${delta.toFixed(2)}MB`)
@@ -349,7 +390,9 @@ describe('Virtualization Benchmarks', () => {
       const snapshot2 = profiler.captureMemorySnapshot()
       const delta = snapshot2.usedHeapSizeMB - snapshot1.usedHeapSizeMB
 
-      console.log(`Dynamic height virtualization memory delta: ${delta.toFixed(2)}MB`)
+      console.log(
+        `Dynamic height virtualization memory delta: ${delta.toFixed(2)}MB`
+      )
 
       if (delta > 100) {
         console.warn(`High memory usage: ${delta.toFixed(2)}MB`)
@@ -363,7 +406,9 @@ describe('Virtualization Benchmarks', () => {
       const endRender = profiler.measureRender('NoOverscan-1000msgs')
 
       // Modified component with overscan = 0
-      const { container } = render(<FixedHeightVirtualList messages={messages} threshold={50} />)
+      const { container } = render(
+        <FixedHeightVirtualList messages={messages} threshold={50} />
+      )
 
       // Simulate rapid scrolling
       const scrollContainer = container.firstChild as HTMLDivElement
@@ -379,7 +424,9 @@ describe('Virtualization Benchmarks', () => {
       const endRender = profiler.measureRender('LargeOverscan-1000msgs')
 
       // In a real implementation, you'd modify the overscan value
-      const { container } = render(<FixedHeightVirtualList messages={messages} threshold={50} />)
+      const { container } = render(
+        <FixedHeightVirtualList messages={messages} threshold={50} />
+      )
 
       // Simulate rapid scrolling
       const scrollContainer = container.firstChild as HTMLDivElement
@@ -403,13 +450,16 @@ describe('Virtualization Benchmarks', () => {
 
       for (let i = 0; i < 100; i++) {
         // Add a new message
+        const now = new Date()
         messages = [
           ...messages,
           {
             id: `msg-new-${i}`,
+            chatId: 'bench-chat',
             role: 'assistant',
             content: `New message ${i}`,
-            timestamp: new Date(),
+            createdAt: now,
+            updatedAt: now,
             status: 'sent' as const,
           },
         ]
@@ -427,7 +477,9 @@ describe('Virtualization Benchmarks', () => {
 
     bench('Update existing messages (100 iterations)', () => {
       let messages = generateMessages(100)
-      const { rerender } = render(<FixedHeightVirtualList messages={messages} threshold={50} />)
+      const { rerender } = render(
+        <FixedHeightVirtualList messages={messages} threshold={50} />
+      )
 
       const endRender = profiler.measureRender('UpdateMessages-100iterations')
 

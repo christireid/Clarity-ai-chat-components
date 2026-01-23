@@ -191,7 +191,9 @@ export function TanStackMessageList({
           return (
             <div
               key={message.id || `msg-${index}`}
-              ref={(el) => (itemRefs.current[index] = el)}
+              ref={(el) => {
+                itemRefs.current[index] = el
+              }}
               tabIndex={isFocused ? 0 : -1}
               role="article"
               aria-label={`Message ${index + 1} of ${messages.length}${
@@ -388,7 +390,9 @@ export function TanStackMessageList({
                 left: 0,
                 width: '100%',
                 transform: `translateY(${virtualItem.start}px)`,
-                outline: isFocused ? '2px solid var(--focus-ring-color, #0066cc)' : 'none',
+                outline: isFocused
+                  ? '2px solid var(--focus-ring-color, #0066cc)'
+                  : 'none',
                 outlineOffset: '2px',
               }}
             >

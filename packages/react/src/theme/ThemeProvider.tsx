@@ -326,7 +326,7 @@ export function ThemeProvider({
         return modernThemes[preset]
       }
       // Warn about invalid preset and fallback to default
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env['NODE_ENV'] !== 'production') {
         console.warn(
           `[Clarity Chat] Unknown theme preset "${preset}". ` +
             `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
@@ -484,7 +484,7 @@ export function ThemeProvider({
     if (!enableCrossTabSync || typeof window === 'undefined') return
     if (typeof BroadcastChannel === 'undefined') {
       // Log warning in development only
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env['NODE_ENV'] !== 'production') {
         console.warn(
           '[Clarity Chat] BroadcastChannel API not available. ' +
             'Cross-tab theme sync will fall back to localStorage-only persistence. ' +

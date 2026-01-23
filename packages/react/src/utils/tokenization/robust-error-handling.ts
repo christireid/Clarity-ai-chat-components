@@ -446,7 +446,7 @@ export class RobustTokenCounter {
       this.errorLog = this.errorLog.slice(-this.maxLogSize)
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.warn('[RobustTokenCounter] Error logged:', {
         code: error.code,
         message: error.message,

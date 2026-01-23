@@ -47,6 +47,8 @@
   --popover-foreground: 217 33% 18%;
   --primary: 214 90% 55%;
   --primary-foreground: 0 0% 100%;
+  --primary-message: 214 90% 48%; /* WCAG AA compliant: 4.84:1 contrast */
+  --primary-message-end: 214 90% 45%; /* WCAG AA compliant: 5.40:1 contrast */
   --secondary: 221 16% 94%;
   --secondary-foreground: 220 26% 24%;
   --muted: 220 14% 93%;
@@ -106,6 +108,8 @@
   --popover-foreground: 210 40% 96%;
   --primary: 214 88% 72%;
   --primary-foreground: 222 47% 11%;
+  --primary-message: 214 88% 72%; /* Already WCAG AA compliant: 7.89:1 contrast */
+  --primary-message-end: 214 88% 68%; /* Subtle gradient variation */
   --secondary: 219 20% 22%;
   --secondary-foreground: 210 40% 96%;
   --muted: 219 18% 26%;
@@ -558,8 +562,8 @@ body, .text-base {
 .clarity-message-bubble.user {
   background: linear-gradient(
     135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--primary) / 0.9) 100%
+    hsl(var(--primary-message)) 0%,
+    hsl(var(--primary-message-end)) 100%
   );
   color: hsl(var(--primary-foreground));
   border-color: hsl(var(--primary) / 0.3);

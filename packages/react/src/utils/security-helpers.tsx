@@ -9,7 +9,7 @@
  * - Input validation and sanitization
  */
 
-import * as React from 'react'
+import React from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 
 // ============================================================================
@@ -581,7 +581,7 @@ export class SecurityMonitor {
     })
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.warn(`Security violation detected: ${type}`, {
         component,
         details,

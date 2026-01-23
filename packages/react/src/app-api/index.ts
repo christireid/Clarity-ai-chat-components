@@ -128,6 +128,8 @@ export type {
   ToolsEngineState,
 } from './tools-engine'
 
+export type { ToolAuditLog } from './types'
+
 // Token Optimization Engine (for advanced usage)
 export {
   createTokenEngine,

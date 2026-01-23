@@ -43,9 +43,12 @@ export function MessageHeader({
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0.7 }}
             transition={{ duration: duration('normal') }}
+            viewport={{ once: true }}
             className="text-xs text-muted-foreground whitespace-nowrap"
           >
-            {formatRelativeTime(timestamp)}
+            {formatRelativeTime(
+              typeof timestamp === 'string' ? new Date(timestamp) : timestamp
+            )}
           </motion.span>
         </>
       )}

@@ -5,8 +5,7 @@
  * Integrates with testing suites and development workflow.
  */
 
-import * as React from 'react'
-import type { ReactElement } from 'react'
+import React, { type ReactElement } from 'react'
 
 // ============================================================================
 // TYPES
@@ -308,13 +307,13 @@ export function logAccessibilityViolations(report: AccessibilityReport): void {
   )
 
   Object.entries(grouped).forEach(([impact, violations]) => {
-    const emojiMap: Record<string, string> = {
+    const emojiMap = {
       minor: '⚠️',
       moderate: '🟡',
       serious: '🟠',
       critical: '🔴',
-    }
-    const emoji = emojiMap[impact] || '❓'
+    } as const
+    const emoji = emojiMap[impact as keyof typeof emojiMap] || '❓'
 
     console.group(`${emoji} ${impact.toUpperCase()} (${violations.length})`)
 
@@ -418,7 +417,7 @@ export function useAccessibilityTesting(
         const result = await testAccessibility(component, options)
         setReport(result)
 
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env['NODE_ENV'] === 'development') {
           logAccessibilityViolations(result)
         }
 

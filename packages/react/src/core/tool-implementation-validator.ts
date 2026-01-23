@@ -263,7 +263,7 @@ export function validateToolImplementation(
   }
 
   // Check for caching configuration
-  if (tool.cacheable === true && !tool.cacheKey) {
+  if (tool.cacheable === true && !('cacheKey' in tool)) {
     issues.push({
       severity: 'warning',
       code: 'CACHEABLE_WITHOUT_KEY',

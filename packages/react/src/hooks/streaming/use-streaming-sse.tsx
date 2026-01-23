@@ -356,7 +356,9 @@ export function useStreamingSSE(
       if (newData.length <= MAX_DATA_SIZE) {
         pendingDataRef.current = newData
       } else {
-        console.warn(`[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`)
+        console.warn(
+          `[useStreamingSSE] Data buffer limit (${MAX_DATA_SIZE} bytes) reached. Truncating.`
+        )
         onEventBufferOverflow?.(newData.length, MAX_DATA_SIZE)
         pendingDataRef.current = newData.slice(-MAX_DATA_SIZE) // Keep last 10MB
       }
@@ -366,10 +368,10 @@ export function useStreamingSSE(
       if (!rafRef.current) {
         rafRef.current = requestAnimationFrame(() => {
           rafRef.current = null
-          
+
           const newEventsBatch = pendingEventsRef.current
           const newDataBatch = pendingDataRef.current
-          
+
           if (newEventsBatch.length === 0) return
 
           const lastEventInBatch = newEventsBatch[newEventsBatch.length - 1]
@@ -391,7 +393,7 @@ export function useStreamingSSE(
           // Note: `data` accumulates all event data. For long sessions, consider
           // using only `lastEvent` or clearing data periodically with `reset()`
           setData((prev) => prev + newDataBatch)
-          
+
           // Clear buffers
           pendingEventsRef.current = []
           pendingDataRef.current = ''
@@ -438,6 +440,10 @@ export function useStreamingSSE(
       return
     }
 
+    // Declare variables outside try block for catch block access
+    let timeoutId: NodeJS.Timeout | undefined
+    let currentConnectionId = connectionIdRef.current
+
     try {
       setStatus('connecting')
       setError(undefined)
@@ -445,13 +451,13 @@ export function useStreamingSSE(
 
       // RECONNECT-1: Increment connection ID to prevent mount/unmount races
       connectionIdRef.current += 1
-      const currentConnectionId = connectionIdRef.current
+      currentConnectionId = connectionIdRef.current
 
       // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
 
       // Set connection timeout
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         if (abortControllerRef.current) {
           abortControllerRef.current.abort()
           const timeoutError = new Error(
@@ -520,7 +526,8 @@ export function useStreamingSSE(
         // Reset delay only after reaching threshold
         if (newCount >= reconnectSuccessThreshold) {
           // SSE-6: Use server-suggested retry if available, otherwise use initial delay
-          reconnectDelayRef.current = serverSuggestedRetryRef.current ?? initialReconnectDelay
+          reconnectDelayRef.current =
+            serverSuggestedRetryRef.current ?? initialReconnectDelay
           return 0 // Reset success count after backoff reset
         }
         return newCount

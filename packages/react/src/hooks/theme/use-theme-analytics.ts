@@ -141,7 +141,7 @@ export interface ThemeAnalyticsSummary {
  *       // Send to analytics service
  *       sendToAnalytics('theme_event', event)
  *     },
- *     debug: process.env.NODE_ENV === 'development',
+ *     debug: process.env['NODE_ENV'] === 'development',
  *   })
  *
  *   // In theme change handler:
@@ -179,7 +179,7 @@ export function useThemeAnalytics(
     (event: ThemeAnalyticsEvent) => {
       setEvents((prev) => [...prev, event])
 
-      if (debug && process.env.NODE_ENV !== 'production') {
+      if (debug && process.env['NODE_ENV'] !== 'production') {
         console.log('[ThemeAnalytics]', event.type, event.data)
       }
 

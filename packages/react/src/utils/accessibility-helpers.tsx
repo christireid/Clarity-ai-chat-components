@@ -16,15 +16,13 @@ import * as React from 'react'
 /**
  * Generate accessible button props with proper ARIA attributes
  */
-export function createAccessibleButtonProps(
-  options: {
-    label: string
-    description?: string
-    expanded?: boolean
-    pressed?: boolean
-    disabled?: boolean
-  }
-) {
+export function createAccessibleButtonProps(options: {
+  label: string
+  description?: string
+  expanded?: boolean
+  pressed?: boolean
+  disabled?: boolean
+}) {
   const { label, description, expanded, pressed, disabled } = options
 
   return {
@@ -40,15 +38,13 @@ export function createAccessibleButtonProps(
 /**
  * Generate accessible dialog props
  */
-export function createAccessibleDialogProps(
-  options: {
-    open: boolean
-    title: string
-    description?: string
-    labelledBy?: string
-    describedBy?: string
-  }
-) {
+export function createAccessibleDialogProps(options: {
+  open: boolean
+  title: string
+  description?: string
+  labelledBy?: string
+  describedBy?: string
+}) {
   const { open, title, description, labelledBy, describedBy } = options
 
   return {
@@ -63,13 +59,11 @@ export function createAccessibleDialogProps(
 /**
  * Generate accessible listbox props
  */
-export function createAccessibleListboxProps(
-  options: {
-    expanded: boolean
-    multiselectable?: boolean
-    labelledBy?: string
-  }
-) {
+export function createAccessibleListboxProps(options: {
+  expanded: boolean
+  multiselectable?: boolean
+  labelledBy?: string
+}) {
   const { expanded, multiselectable, labelledBy } = options
 
   return {
@@ -87,53 +81,56 @@ export function createAccessibleListboxProps(
 /**
  * Keyboard navigation handler for lists
  */
-export function useKeyboardListNavigation(
-  options: {
-    items: any[]
-    onSelect: (item: any, index: number) => void
-    loop?: boolean
-    orientation?: 'vertical' | 'horizontal'
-  }
-) {
+export function useKeyboardListNavigation(options: {
+  items: any[]
+  onSelect: (item: any, index: number) => void
+  loop?: boolean
+  orientation?: 'vertical' | 'horizontal'
+}) {
   const { items, onSelect, loop = true, orientation = 'vertical' } = options
   const [focusedIndex, setFocusedIndex] = React.useState(-1)
 
-  const handleKeyDown = React.useCallback((event: React.KeyboardEvent) => {
-    const { key } = event
-    let newIndex = focusedIndex
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      const { key } = event
+      let newIndex = focusedIndex
 
-    switch (key) {
-      case orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight':
-        event.preventDefault()
-        newIndex = loop && focusedIndex === items.length - 1 ? 0 : focusedIndex + 1
-        break
-      case orientation === 'vertical' ? 'ArrowUp' : 'ArrowLeft':
-        event.preventDefault()
-        newIndex = loop && focusedIndex === 0 ? items.length - 1 : focusedIndex - 1
-        break
-      case 'Home':
-        event.preventDefault()
-        newIndex = 0
-        break
-      case 'End':
-        event.preventDefault()
-        newIndex = items.length - 1
-        break
-      case 'Enter':
-      case ' ':
-        event.preventDefault()
-        if (focusedIndex >= 0 && focusedIndex < items.length) {
-          onSelect(items[focusedIndex], focusedIndex)
-        }
-        return
-      default:
-        return
-    }
+      switch (key) {
+        case orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight':
+          event.preventDefault()
+          newIndex =
+            loop && focusedIndex === items.length - 1 ? 0 : focusedIndex + 1
+          break
+        case orientation === 'vertical' ? 'ArrowUp' : 'ArrowLeft':
+          event.preventDefault()
+          newIndex =
+            loop && focusedIndex === 0 ? items.length - 1 : focusedIndex - 1
+          break
+        case 'Home':
+          event.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          event.preventDefault()
+          newIndex = items.length - 1
+          break
+        case 'Enter':
+        case ' ':
+          event.preventDefault()
+          if (focusedIndex >= 0 && focusedIndex < items.length) {
+            onSelect(items[focusedIndex], focusedIndex)
+          }
+          return
+        default:
+          return
+      }
 
-    if (newIndex >= 0 && newIndex < items.length) {
-      setFocusedIndex(newIndex)
-    }
-  }, [items, focusedIndex, onSelect, loop, orientation])
+      if (newIndex >= 0 && newIndex < items.length) {
+        setFocusedIndex(newIndex)
+      }
+    },
+    [items, focusedIndex, onSelect, loop, orientation]
+  )
 
   return {
     focusedIndex,
@@ -149,37 +146,38 @@ export function useKeyboardListNavigation(
 /**
  * Keyboard navigation for chat input
  */
-export function useChatInputKeyboard(
-  options: {
-    onSend: (message: string) => void
-    onNewLine?: () => void
-    sendOnEnter?: boolean
-  }
-) {
+export function useChatInputKeyboard(options: {
+  onSend: (message: string) => void
+  onNewLine?: () => void
+  sendOnEnter?: boolean
+}) {
   const { onSend, onNewLine, sendOnEnter = true } = options
 
-  const handleKeyDown = React.useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const { key, shiftKey, ctrlKey, metaKey } = event
-    const target = event.target as HTMLTextAreaElement
-    const value = target.value.trim()
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      const { key, shiftKey, ctrlKey, metaKey } = event
+      const target = event.target as HTMLTextAreaElement
+      const value = target.value.trim()
 
-    if (key === 'Enter') {
-      if (sendOnEnter && !shiftKey && !ctrlKey && !metaKey) {
-        event.preventDefault()
-        if (value) {
-          onSend(value)
-          target.value = ''
+      if (key === 'Enter') {
+        if (sendOnEnter && !shiftKey && !ctrlKey && !metaKey) {
+          event.preventDefault()
+          if (value) {
+            onSend(value)
+            target.value = ''
+          }
+        } else if (!sendOnEnter || shiftKey) {
+          // Allow new line
+          onNewLine?.()
         }
-      } else if (!sendOnEnter || shiftKey) {
-        // Allow new line
-        onNewLine?.()
       }
-    }
 
-    if (key === 'Escape') {
-      target.blur()
-    }
-  }, [onSend, onNewLine, sendOnEnter])
+      if (key === 'Escape') {
+        target.blur()
+      }
+    },
+    [onSend, onNewLine, sendOnEnter]
+  )
 
   return { handleKeyDown }
 }
@@ -221,11 +219,86 @@ export function announceToScreenReader(
  * Hook for screen reader announcements
  */
 export function useScreenReaderAnnouncements() {
-  const announce = React.useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    announceToScreenReader(message, priority)
-  }, [])
+  const announce = React.useCallback(
+    (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+      announceToScreenReader(message, priority)
+    },
+    []
+  )
 
   return { announce }
+}
+
+/**
+ * Hook for debounced streaming announcements
+ * Prevents screen reader overload during rapid content updates
+ *
+ * @param delay - Debounce delay in milliseconds (default: 500ms)
+ * @returns Object with announce function and clear method
+ *
+ * @example
+ * ```tsx
+ * const { announce } = useDebouncedStreamingAnnouncements(500)
+ *
+ * // During streaming
+ * useEffect(() => {
+ *   if (isStreaming && content) {
+ *     // Announces only after 500ms of no updates
+ *     announce(content, 'polite')
+ *   }
+ * }, [content, isStreaming])
+ * ```
+ */
+export function useDebouncedStreamingAnnouncements(delay: number = 500) {
+  const timeoutRef = React.useRef<number | null>(null)
+  const lastMessageRef = React.useRef<string>('')
+  const mountedRef = React.useRef(true)
+
+  React.useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  const announce = React.useCallback(
+    (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+      // Clear previous timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      // Only announce if message has changed significantly (>10% difference)
+      const isDifferent =
+        Math.abs(message.length - lastMessageRef.current.length) >
+        lastMessageRef.current.length * 0.1
+
+      if (!isDifferent) {
+        return
+      }
+
+      // Debounce the announcement
+      timeoutRef.current = window.setTimeout(() => {
+        if (mountedRef.current) {
+          lastMessageRef.current = message
+          announceToScreenReader(message, priority)
+        }
+      }, delay)
+    },
+    [delay]
+  )
+
+  const clear = React.useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  return { announce, clear }
 }
 
 /**
@@ -294,34 +367,96 @@ export function useFocusManagement(
     }
   }, [initialFocus, returnFocus])
 
-  const handleKeyDown = React.useCallback((event: React.KeyboardEvent) => {
-    if (!trapFocus || !containerRef.current) return
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!trapFocus || !containerRef.current) return
 
-    const { key } = event
-    if (key !== 'Tab') return
+      const { key } = event
+      if (key !== 'Tab') return
 
-    const focusableElements = containerRef.current.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    const firstElement = focusableElements[0] as HTMLElement
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      const focusableElements = containerRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement
 
-    if (event.shiftKey) {
-      if (document.activeElement === firstElement) {
-        event.preventDefault()
-        lastElement.focus()
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
       }
-    } else {
-      if (document.activeElement === lastElement) {
-        event.preventDefault()
-        firstElement.focus()
-      }
-    }
-  }, [trapFocus])
+    },
+    [trapFocus]
+  )
 
   return {
     containerRef,
     handleKeyDown,
+  }
+}
+
+/**
+ * Hook for preserving focus during streaming content updates
+ * Prevents focus from jumping to newly rendered content unexpectedly
+ *
+ * @param isStreaming - Whether content is currently streaming
+ * @returns Focus lock state and controls
+ *
+ * @example
+ * ```tsx
+ * const { shouldPreserveFocus } = useStreamingFocusPreservation(isStreaming)
+ *
+ * return (
+ *   <div {...(shouldPreserveFocus ? { 'aria-atomic': 'true' } : {})}>
+ *     {streamingContent}
+ *   </div>
+ * )
+ * ```
+ */
+export function useStreamingFocusPreservation(isStreaming: boolean) {
+  const [shouldPreserveFocus, setShouldPreserveFocus] = React.useState(false)
+  const focusedElementRef = React.useRef<HTMLElement | null>(null)
+  const containerHasFocusRef = React.useRef(false)
+
+  React.useEffect(() => {
+    if (isStreaming) {
+      // Store current focus when streaming starts
+      const activeElement = document.activeElement as HTMLElement
+      const isWithinContainer =
+        activeElement && activeElement.closest('[data-streaming-container]')
+
+      if (isWithinContainer) {
+        focusedElementRef.current = activeElement
+        containerHasFocusRef.current = true
+        setShouldPreserveFocus(true)
+      }
+    } else {
+      // Restore focus when streaming ends (if needed)
+      if (containerHasFocusRef.current && focusedElementRef.current) {
+        // Only restore if focus hasn't moved elsewhere
+        const currentFocus = document.activeElement
+        if (currentFocus === document.body || !currentFocus) {
+          focusedElementRef.current.focus()
+        }
+      }
+
+      setShouldPreserveFocus(false)
+      containerHasFocusRef.current = false
+      focusedElementRef.current = null
+    }
+  }, [isStreaming])
+
+  return {
+    shouldPreserveFocus,
+    focusedElementRef,
   }
 }
 
@@ -397,7 +532,7 @@ export function validateChatAccessibility(container: HTMLElement): {
   }
 
   // Calculate accessibility score (0-100)
-  const score = Math.max(0, 100 - (issues.length * 20))
+  const score = Math.max(0, 100 - issues.length * 20)
 
   return { issues, score, suggestions }
 }
@@ -416,7 +551,8 @@ export function useMotionPreferences() {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setPrefersReducedMotion(mediaQuery.matches)
 
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    const handler = (e: MediaQueryListEvent) =>
+      setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
@@ -467,8 +603,9 @@ export function useHighContrastMode() {
       document.body.appendChild(testElement)
 
       const computedColor = window.getComputedStyle(testElement).color
-      const isHighContrastMode = computedColor === 'rgb(255, 255, 255)' ||
-                                 computedColor === 'rgb(0, 0, 0)'
+      const isHighContrastMode =
+        computedColor === 'rgb(255, 255, 255)' ||
+        computedColor === 'rgb(0, 0, 0)'
 
       document.body.removeChild(testElement)
       setIsHighContrast(isHighContrastMode)

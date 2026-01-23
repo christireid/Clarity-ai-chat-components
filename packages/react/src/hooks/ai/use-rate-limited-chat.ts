@@ -8,7 +8,11 @@
 'use client'
 
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions, type CoreMessage } from '../chat/use-clarity-chat'
+import {
+  useClarityChat,
+  type UseClarityChatOptions,
+} from '../chat/use-clarity-chat'
+import type { CoreMessage } from '../use-clarity-chat/types'
 import { useRequestQueue, type QueuedRequest } from '../../utils/request-queue'
 import { ProviderError } from '../../utils/error-handling/provider-error'
 
@@ -73,7 +77,9 @@ export function useRateLimitedChat(
   } = options
 
   const [isRateLimited, setIsRateLimited] = React.useState(false)
-  const [rateLimitResetAt, setRateLimitResetAt] = React.useState<number | null>(null)
+  const [rateLimitResetAt, setRateLimitResetAt] = React.useState<number | null>(
+    null
+  )
 
   // Base chat hook
   const chat = useClarityChat(chatOptions)
@@ -82,13 +88,20 @@ export function useRateLimitedChat(
   const queue = useRequestQueue({
     maxConcurrent,
     maxQueueSize,
-    rateLimitCheck: rateLimitCheck || (async () => ({ allowed: true, resetAt: 0 })),
+    rateLimitCheck:
+      rateLimitCheck || (async () => ({ allowed: true, resetAt: 0 })),
     onQueueFull: (request) => {
-      console.warn('[useRateLimitedChat] Queue full, rejecting request:', request.id)
+      console.warn(
+        '[useRateLimitedChat] Queue full, rejecting request:',
+        request.id
+      )
       onQueueFull?.()
     },
     onRateLimited: (request, resetAt) => {
-      console.warn('[useRateLimitedChat] Rate limited, queuing request:', request.id)
+      console.warn(
+        '[useRateLimitedChat] Rate limited, queuing request:',
+        request.id
+      )
       setIsRateLimited(true)
       setRateLimitResetAt(resetAt)
       onRateLimited?.(resetAt)
@@ -102,26 +115,23 @@ export function useRateLimitedChat(
         return chat.append(message)
       }
 
-      return queue.enqueue(
-        () => chat.append(message),
-        {
-          priority: 'normal',
-          onQueueUpdate: (position, estimatedWaitMs) => {
-            onRequestQueued?.(position, estimatedWaitMs)
-          },
-          onSuccess: () => {
-            setIsRateLimited(false)
-            setRateLimitResetAt(null)
-          },
-          onError: (error) => {
-            // Handle rate limit errors
-            if (error instanceof ProviderError && error.code === 'RATE_LIMIT') {
-              setIsRateLimited(true)
-              // The queue will handle retrying
-            }
-          },
-        }
-      )
+      return queue.enqueue(() => chat.append(message), {
+        priority: 'normal',
+        onQueueUpdate: (position, estimatedWaitMs) => {
+          onRequestQueued?.(position, estimatedWaitMs)
+        },
+        onSuccess: () => {
+          setIsRateLimited(false)
+          setRateLimitResetAt(null)
+        },
+        onError: (error) => {
+          // Handle rate limit errors
+          if (error instanceof ProviderError && error.code === 'RATE_LIMIT') {
+            setIsRateLimited(true)
+            // The queue will handle retrying
+          }
+        },
+      })
     },
     [enableRateLimiting, chat.append, queue, onRequestQueued, onRateLimited]
   )

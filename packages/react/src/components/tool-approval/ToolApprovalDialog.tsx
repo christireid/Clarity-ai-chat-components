@@ -9,7 +9,7 @@
 
 import React, { useState } from 'react'
 import type { ToolCallRecord } from '../../core/tool-lifecycle'
-import type { ToolDefinition } from '../../../types/tool-definition'
+import type { ToolDefinition } from '../../types/tool-definition'
 
 // =============================================================================
 // Types
@@ -95,7 +95,7 @@ export function ToolApprovalDialog({
   showRiskLevel = true,
   className = '',
   theme = 'auto',
-}: ToolApprovalDialogProps): JSX.Element {
+}: ToolApprovalDialogProps): React.ReactElement {
   const [rejectReason, setRejectReason] = useState('')
   const [showRejectInput, setShowRejectInput] = useState(false)
 
@@ -121,7 +121,9 @@ export function ToolApprovalDialog({
         <div className="tool-approval-header">
           <h2>Tool Approval Required</h2>
           {showRiskLevel && (
-            <span className={`tool-approval-risk tool-approval-risk-${riskLevel}`}>
+            <span
+              className={`tool-approval-risk tool-approval-risk-${riskLevel}`}
+            >
               {riskLevel.toUpperCase()}
             </span>
           )}
@@ -137,27 +139,35 @@ export function ToolApprovalDialog({
           {showDescription && toolDefinition?.description && (
             <div className="tool-approval-section">
               <h3>Description</h3>
-              <p className="tool-approval-description">{toolDefinition.description}</p>
+              <p className="tool-approval-description">
+                {toolDefinition.description}
+              </p>
             </div>
           )}
 
           {showArguments && Object.keys(toolCall.args).length > 0 && (
             <div className="tool-approval-section">
               <h3>Arguments</h3>
-              <pre className="tool-approval-args">{JSON.stringify(toolCall.args, null, 2)}</pre>
+              <pre className="tool-approval-args">
+                {JSON.stringify(toolCall.args, null, 2)}
+              </pre>
             </div>
           )}
 
           <div className="tool-approval-section">
             <h3>What will this do?</h3>
-            <p className="tool-approval-explanation">{generateExplanation(toolCall, toolDefinition)}</p>
+            <p className="tool-approval-explanation">
+              {generateExplanation(toolCall, toolDefinition)}
+            </p>
           </div>
         </div>
 
         {/* Reject Input (if showing) */}
         {showRejectInput && (
           <div className="tool-approval-reject-input">
-            <label htmlFor="reject-reason">Reason for rejection (optional):</label>
+            <label htmlFor="reject-reason">
+              Reason for rejection (optional):
+            </label>
             <input
               id="reject-reason"
               type="text"
@@ -205,7 +215,7 @@ export function ToolApprovalDialog({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .tool-approval-dialog {
           position: fixed;
           inset: 0;
@@ -473,13 +483,29 @@ function determineRiskLevel(
   const toolName = toolCall.toolName.toLowerCase()
 
   // High risk tools
-  const highRiskKeywords = ['delete', 'remove', 'drop', 'destroy', 'execute', 'eval', 'system']
+  const highRiskKeywords = [
+    'delete',
+    'remove',
+    'drop',
+    'destroy',
+    'execute',
+    'eval',
+    'system',
+  ]
   if (highRiskKeywords.some((keyword) => toolName.includes(keyword))) {
     return 'high'
   }
 
   // Medium risk tools
-  const mediumRiskKeywords = ['write', 'update', 'modify', 'create', 'send', 'email', 'database']
+  const mediumRiskKeywords = [
+    'write',
+    'update',
+    'modify',
+    'create',
+    'send',
+    'email',
+    'database',
+  ]
   if (mediumRiskKeywords.some((keyword) => toolName.includes(keyword))) {
     return 'medium'
   }

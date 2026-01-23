@@ -339,7 +339,7 @@ export const debug = {
  * @returns Result of the function
  */
 export function measurePerformance<T>(name: string, fn: () => T): T {
-  if (!config.enabled || process.env.NODE_ENV === 'production') {
+  if (!config.enabled || process.env['NODE_ENV'] === 'production') {
     return fn()
   }
 
@@ -372,7 +372,7 @@ export async function measurePerformanceAsync<T>(
   name: string,
   fn: () => Promise<T>
 ): Promise<T> {
-  if (!config.enabled || process.env.NODE_ENV === 'production') {
+  if (!config.enabled || process.env['NODE_ENV'] === 'production') {
     return fn()
   }
 
@@ -425,7 +425,7 @@ function exposeGlobalDebug(): void {
     globalInterface
 
   // Show help message in development
-  if (process.env.NODE_ENV !== 'production' && !config.enabled) {
+  if (process.env['NODE_ENV'] !== 'production' && !config.enabled) {
     console.log(
       '%c[Clarity Chat]%c Debug mode available. Type %cClarityDebug.enable()%c in console to start.',
       'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',

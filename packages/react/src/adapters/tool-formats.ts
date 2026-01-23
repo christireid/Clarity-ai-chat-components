@@ -121,8 +121,13 @@ export function toOpenAIFunctions(tools: ToolDefinition[]): OpenAIFunction[] {
  */
 export function fromOpenAIFunction(
   openaiFunc: OpenAIFunction,
-  execute: (args: ToolArguments, context: ToolExecutionContext) => Promise<ToolResult>,
-  options?: Partial<Omit<ToolDefinition, 'name' | 'description' | 'parameters' | 'execute'>>
+  execute: (
+    args: ToolArguments,
+    context: ToolExecutionContext
+  ) => Promise<ToolResult>,
+  options?: Partial<
+    Omit<ToolDefinition, 'name' | 'description' | 'parameters' | 'execute'>
+  >
 ): ToolDefinition {
   return {
     name: openaiFunc.function.name,
@@ -220,7 +225,7 @@ export function fromLegacyEngineTool(
   return {
     name: legacyTool.name,
     description: legacyTool.description,
-    parameters: legacyTool.parameters as ToolParameters,
+    parameters: legacyTool.parameters as unknown as ToolParameters,
     execute: async (args: ToolArguments, _context: ToolExecutionContext) => {
       return legacyTool.execute(args)
     },
@@ -274,7 +279,10 @@ export function detectToolFormat(
  */
 export function toCanonicalFormat(
   tool: unknown,
-  execute?: (args: ToolArguments, context: ToolExecutionContext) => Promise<ToolResult>
+  execute?: (
+    args: ToolArguments,
+    context: ToolExecutionContext
+  ) => Promise<ToolResult>
 ): ToolDefinition {
   const format = detectToolFormat(tool)
 
@@ -310,7 +318,10 @@ export function toCanonicalFormat(
  */
 export function convertToolsToCanonical(
   tools: unknown[],
-  executeMap?: Map<string, (args: ToolArguments, context: ToolExecutionContext) => Promise<ToolResult>>
+  executeMap?: Map<
+    string,
+    (args: ToolArguments, context: ToolExecutionContext) => Promise<ToolResult>
+  >
 ): ToolDefinition[] {
   return tools.map((tool) => {
     const format = detectToolFormat(tool)
@@ -335,7 +346,9 @@ export function convertToolsToCanonical(
 /**
  * Convert array of canonical tools to OpenAI format
  */
-export function convertToolsToOpenAI(tools: ToolDefinition[]): OpenAIFunction[] {
+export function convertToolsToOpenAI(
+  tools: ToolDefinition[]
+): OpenAIFunction[] {
   return tools.map(toOpenAIFunction)
 }
 

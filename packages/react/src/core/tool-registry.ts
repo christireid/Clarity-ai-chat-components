@@ -574,7 +574,6 @@ export class NamespacedRegistry implements IToolRegistry {
 export const globalToolRegistry = new ToolRegistry()
 
 // =============================================================================
-// Exports
+// Exports (already exported inline above)
 // =============================================================================
-
-export type { RegistryEventType, RegistryEvent, RegistryListener }
+// All exports are handled inline throughout the file
