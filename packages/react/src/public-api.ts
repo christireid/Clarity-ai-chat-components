@@ -295,10 +295,10 @@ export {
 // TOKEN OPTIMIZATION
 // ============================================================================
 
-// Core token optimization types (single source of truth from token-optimization package)
+// Core token optimization types from token-optimization package
+// Note: TokenEstimate is exported from component below, not from token-optimization
 export type {
   TokenUsage,
-  TokenEstimate,
   ModelPricing,
   TokenBudgetUsage,
 } from '@clarity-chat/token-optimization'
@@ -749,7 +749,7 @@ export {
   useTokenEstimate,
   type TokenCostPreviewProps,
   type UseTokenEstimateOptions,
-  // TokenEstimate type is exported above from @clarity-chat/token-optimization
+  type TokenEstimate,
 } from './components/token/TokenCostPreview'
 export {
   TokenUsageMeter,

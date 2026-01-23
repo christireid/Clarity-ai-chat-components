@@ -516,54 +516,6 @@ export type {
   ModelName, // Backward compatibility
 } from './hooks'
 
-// React Components
-export { TokenBudgetBar, useTokenBudget } from './components'
-export type {
-  BudgetStatus as TokenBudgetStatus,
-  TokenBudgetTheme,
-  TokenBudgetBarProps,
-  UseTokenBudgetConfig,
-  UseTokenBudgetReturn,
-} from './components'
-
-// Token Cost Preview (React)
-export { TokenCostPreview, useTokenEstimate } from './react'
-export type {
-  TokenCostPreviewProps,
-  UseTokenEstimateOptions,
-  TokenEstimate,
-} from './react'
-
-// Token Usage Meter (React) - Animated + Static versions
-export {
-  TokenUsageMeter,
-  TokenUsageMeterStatic,
-  MODEL_PRICING_PRESETS,
-} from './react'
-export type {
-  TokenUsage as TokenMeterUsage,
-  ModelPricing as TokenMeterPricing,
-  TokenUsageMeterProps,
-  TokenUsageStatic as TokenMeterUsageStatic,
-  ModelPricingStatic as TokenMeterPricingStatic,
-  TokenUsageMeterStaticProps,
-} from './react'
-
-// Token Optimization Components (React) - Badge, Panel, Dashboard
-export {
-  TokenOptimizationBadge,
-  TokenOptimizationPanel,
-  TokenOptimizationDashboard,
-  createEmptyStats,
-} from './react'
-export type {
-  TokenOptimizationBadgeProps,
-  TokenOptimizationPanelProps,
-  TokenOptimizationDashboardProps,
-  OptimizationMetrics,
-  TokenOptimizationStats,
-} from './react'
-
 // Accessibility - WCAG 2.1 AA compliant utilities
 export {
   // Screen reader announcements
