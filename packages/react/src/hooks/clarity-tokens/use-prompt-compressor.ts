@@ -6,9 +6,14 @@ import {
   type DynamicCompressionConfig,
   type CompressionResult as TokenOptCompressionResult,
   type CompressionStrategy as TokenOptCompressionStrategy,
-} from '@clarity-chat/token-optimization/compression'
-import type { ChatMessage } from '@clarity-chat/token-optimization'
-import type { UsePromptCompressorConfig, UsePromptCompressorReturn, CompressionResult, CompressionStrategy } from './types'
+  type ChatMessage,
+} from '@clarity-chat/token-optimization'
+import type {
+  UsePromptCompressorConfig,
+  UsePromptCompressorReturn,
+  CompressionResult,
+  CompressionStrategy,
+} from './types'
 
 /**
  * usePromptCompressor - Client-side prompt compression
@@ -153,7 +158,9 @@ export function usePromptCompressor(
             const result = await compressorRef.current!.compress(msg.content)
             totalSaved += result.tokensSaved
             totalOriginalTokens += Math.ceil(msg.content.length / 4) // Estimate
-            totalCompressedTokens += Math.ceil(result.compressedContent.length / 4)
+            totalCompressedTokens += Math.ceil(
+              result.compressedContent.length / 4
+            )
 
             return {
               ...msg,
@@ -165,9 +172,10 @@ export function usePromptCompressor(
         return {
           messages: compressedMessages,
           totalSaved,
-          compressionRatio: totalOriginalTokens > 0
-            ? totalCompressedTokens / totalOriginalTokens
-            : 1,
+          compressionRatio:
+            totalOriginalTokens > 0
+              ? totalCompressedTokens / totalOriginalTokens
+              : 1,
         }
       } finally {
         setIsCompressing(false)
@@ -179,33 +187,33 @@ export function usePromptCompressor(
   /**
    * Streaming compression (generator)
    */
-  const compressStream = React.useCallback(
-    async function* (
-      text: string
-    ): AsyncGenerator<{ chunk: string; progress: number }> {
-      if (!compressorRef.current) {
-        throw new Error('Compressor not initialized')
-      }
+  const compressStream = React.useCallback(async function* (
+    text: string
+  ): AsyncGenerator<{ chunk: string; progress: number }> {
+    if (!compressorRef.current) {
+      throw new Error('Compressor not initialized')
+    }
 
-      // Compress the full text
-      const result = await compressorRef.current.compress(text)
+    // Compress the full text
+    const result = await compressorRef.current.compress(text)
 
-      // Simulate chunked output
-      const chunkSize = 100
-      let position = 0
+    // Simulate chunked output
+    const chunkSize = 100
+    let position = 0
 
-      while (position < result.compressedContent.length) {
-        const chunk = result.compressedContent.slice(position, position + chunkSize)
-        const progress = Math.min(
-          (position + chunkSize) / result.compressedContent.length,
-          1
-        )
-        yield { chunk, progress }
-        position += chunkSize
-      }
-    },
-    []
-  )
+    while (position < result.compressedContent.length) {
+      const chunk = result.compressedContent.slice(
+        position,
+        position + chunkSize
+      )
+      const progress = Math.min(
+        (position + chunkSize) / result.compressedContent.length,
+        1
+      )
+      yield { chunk, progress }
+      position += chunkSize
+    }
+  }, [])
 
   /**
    * Load model (for model-based compression)
@@ -235,8 +243,11 @@ export function usePromptCompressor(
 
       // Determine recommended strategy based on results
       const recommendedStrategy: CompressionStrategy =
-        result.compressionRatio < 0.3 ? 'extractive' :
-        result.compressionRatio < 0.6 ? 'heuristic' : 'auto'
+        result.compressionRatio < 0.3
+          ? 'extractive'
+          : result.compressionRatio < 0.6
+            ? 'heuristic'
+            : 'auto'
 
       return {
         estimatedRatio: result.compressionRatio,
