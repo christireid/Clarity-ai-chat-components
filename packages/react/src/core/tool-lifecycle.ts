@@ -974,14 +974,5 @@ export const globalToolLifecycle = new ToolLifecycleManager()
 // Exports
 // =============================================================================
 
-export type {
-  ToolCallStatus,
-  ToolCallRecord,
-  ToolLifecycleEvent,
-  ToolLifecycleListener,
-  ToolLifecycleListeners,
-  AuditLogEntry,
-  AuditLogConfig,
-  AuditLogPersister,
-  AuditLogFilter,
-}
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors

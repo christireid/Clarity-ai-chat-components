@@ -1508,9 +1508,5 @@ export class ToolExecutor {
 // Exports
 // =============================================================================
 
-export type {
-  ExecutionOptions,
-  ExecutionResult,
-  ExecutorConfig,
-  ToolResultCacheConfig,
-}
+// Note: All types are already exported inline above
+// Re-exporting them here causes "Export declaration conflicts" errors
