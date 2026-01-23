@@ -56,13 +56,15 @@ const ROLE_CONFIG = {
  * Streaming cursor component
  */
 function StreamingCursor() {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.span
       className="inline-block w-2 h-4 bg-primary ml-0.5"
-      animate={{ opacity: [1, 0, 1] }}
+      animate={{ opacity: prefersReducedMotion ? 1 : [1, 0, 1] }}
       transition={{
-        duration: DURATION_SECONDS.slower,
-        repeat: Infinity,
+        duration: prefersReducedMotion ? 0 : DURATION_SECONDS.slower,
+        repeat: prefersReducedMotion ? 0 : Infinity,
         ease: 'linear',
       }}
     />
@@ -79,13 +81,14 @@ export const PreviewMessage = React.memo(function PreviewMessage({
 }: PreviewMessageProps) {
   const config = ROLE_CONFIG[message.role]
   const displayContent = isStreaming ? streamingContent : message.content
+  const prefersReducedMotion = useReducedMotion()
 
   return (
     <motion.div
-      initial={ANIMATION_PRESETS.slideUp.initial}
-      animate={ANIMATION_PRESETS.slideUp.animate}
+      initial={prefersReducedMotion ? false : ANIMATION_PRESETS.slideUp.initial}
+      animate={prefersReducedMotion ? false : ANIMATION_PRESETS.slideUp.animate}
       transition={{
-        duration: DURATION_SECONDS.normal,
+        duration: prefersReducedMotion ? 0 : DURATION_SECONDS.normal,
         ease: EASING_FRAMER.out,
       }}
       className={cn('rounded-lg border p-4', config.bgClass)}

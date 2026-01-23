@@ -365,7 +365,7 @@ export function PromptArchitectDemo({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isRunning, previewMessages.length, saveVersion])
+  }, [isRunning, previewMessages.length, saveVersion, state.versions.length])
 
   // Run prompt
   const handleRunPrompt = React.useCallback(async () => {

@@ -654,6 +654,7 @@ export const useContainerSize = (ref: React.RefObject<HTMLElement | null>) => {
     resizeObserver.observe(ref.current)
 
     return () => resizeObserver.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return size
