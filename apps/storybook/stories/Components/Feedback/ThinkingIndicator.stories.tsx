@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ThinkingIndicator } from '@clarity-chat/react'
 import type { ThinkingStage } from '@clarity-chat/types'
-import { expect, within } from 'storybook/test'
+import { expect, within } from '@storybook/test'
 
 /**
  * **ThinkingIndicator Component**
- * 
+ *
  * Animated thinking indicator showing AI processing stages
  * with progress tracking and estimated time.
- * 
+ *
  * **Key Features:**
  * - Multiple thinking stages (thinking, researching, compiling, generating, finalizing)
  * - Progress percentage display
@@ -16,7 +16,7 @@ import { expect, within } from 'storybook/test'
  * - Topic and detail text
  * - Smooth animations
  * - Accessible with ARIA labels
- * 
+ *
  * **Use Cases:**
  * - AI response generation
  * - Long-running operations
@@ -68,7 +68,13 @@ with progress tracking and estimated time.
     stage: {
       description: 'Current thinking stage',
       control: 'select',
-      options: ['thinking', 'researching', 'compiling', 'generating', 'finalizing'],
+      options: [
+        'thinking',
+        'researching',
+        'compiling',
+        'generating',
+        'finalizing',
+      ],
     },
     progress: {
       description: 'Progress percentage (0-100)',
@@ -161,10 +167,14 @@ export const WithAllDetails: Story = {
     await expect(canvas.getByText(/generating/i)).toBeInTheDocument()
 
     // Test topic is displayed
-    await expect(canvas.getByText('Comprehensive React Tutorial')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Comprehensive React Tutorial')
+    ).toBeInTheDocument()
 
     // Test detail is displayed
-    await expect(canvas.getByText('Creating detailed examples with code')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Creating detailed examples with code')
+    ).toBeInTheDocument()
 
     // Test progress percentage is displayed
     await expect(canvas.getByText(/50%/)).toBeInTheDocument()

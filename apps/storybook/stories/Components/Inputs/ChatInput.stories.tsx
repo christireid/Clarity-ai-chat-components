@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatInput } from '@clarity-chat/react'
 import { useState } from 'react'
-import { expect, userEvent, within, waitFor } from 'storybook/test'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Enhanced ChatInput component with delightful microanimations and state management.

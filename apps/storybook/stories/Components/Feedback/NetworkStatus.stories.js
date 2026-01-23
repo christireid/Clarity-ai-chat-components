@@ -1,5 +1,5 @@
 import { NetworkStatus } from '@clarity-chat/react';
-import { expect, within } from 'storybook/test';
+import { expect, within } from '@storybook/test';
 /**
  * **NetworkStatus Component**
  *

@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { EmptyState, NoSearchResultsState, NoConversationsState, ErrorState, SuccessState, } from '@clarity-chat/react';
 import { Database } from 'lucide-react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from '@storybook/test';
 /**
  * Empty State Components
  *

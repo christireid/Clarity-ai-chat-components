@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Badge } from '@clarity-chat/primitives';
-import { expect, within } from 'storybook/test';
+import { expect, within } from '@storybook/test';
 /**
  * Badge component for displaying small count indicators, status labels, and tags.
  *

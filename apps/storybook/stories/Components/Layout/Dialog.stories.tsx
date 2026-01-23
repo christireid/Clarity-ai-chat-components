@@ -13,7 +13,7 @@ import {
   Button,
   Input,
 } from '@clarity-chat/primitives'
-import { expect, userEvent, within, waitFor } from 'storybook/test'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 const meta: Meta<typeof Dialog> = {
   title: 'Components/Layout/Dialog',
@@ -80,23 +80,34 @@ export const Default: Story = {
     await userEvent.click(openButton)
 
     // Wait for dialog to appear and test content
-    await waitFor(async () => {
-      const dialog = document.querySelector('[role="dialog"]')
-      if (dialog) {
-        const dialogCanvas = within(dialog as HTMLElement)
-        await expect(dialogCanvas.getByText('Dialog Title')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText(/This is a basic dialog/i)).toBeInTheDocument()
+    await waitFor(
+      async () => {
+        const dialog = document.querySelector('[role="dialog"]')
+        if (dialog) {
+          const dialogCanvas = within(dialog as HTMLElement)
+          await expect(
+            dialogCanvas.getByText('Dialog Title')
+          ).toBeInTheDocument()
+          await expect(
+            dialogCanvas.getByText(/This is a basic dialog/i)
+          ).toBeInTheDocument()
 
-        // Test action buttons are present
-        const confirmButton = dialogCanvas.getByRole('button', { name: /confirm/i })
-        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
-        await expect(confirmButton).toBeInTheDocument()
-        await expect(cancelButton).toBeInTheDocument()
+          // Test action buttons are present
+          const confirmButton = dialogCanvas.getByRole('button', {
+            name: /confirm/i,
+          })
+          const cancelButton = dialogCanvas.getByRole('button', {
+            name: /cancel/i,
+          })
+          await expect(confirmButton).toBeInTheDocument()
+          await expect(cancelButton).toBeInTheDocument()
 
-        // Test confirm button closes dialog
-        await userEvent.click(confirmButton)
-      }
-    }, { timeout: 2000 })
+          // Test confirm button closes dialog
+          await userEvent.click(confirmButton)
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -125,21 +136,30 @@ export const WithTrigger: Story = {
     const canvas = within(canvasElement)
 
     // Test DialogTrigger button renders
-    const triggerButton = canvas.getByRole('button', { name: /open with trigger/i })
+    const triggerButton = canvas.getByRole('button', {
+      name: /open with trigger/i,
+    })
     await expect(triggerButton).toBeInTheDocument()
 
     // Test clicking trigger opens dialog
     await userEvent.click(triggerButton)
 
     // Wait for dialog to appear
-    await waitFor(async () => {
-      const dialog = document.querySelector('[role="dialog"]')
-      if (dialog) {
-        const dialogCanvas = within(dialog as HTMLElement)
-        await expect(dialogCanvas.getByText('Using DialogTrigger')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText(/The trigger component handles/i)).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+    await waitFor(
+      async () => {
+        const dialog = document.querySelector('[role="dialog"]')
+        if (dialog) {
+          const dialogCanvas = within(dialog as HTMLElement)
+          await expect(
+            dialogCanvas.getByText('Using DialogTrigger')
+          ).toBeInTheDocument()
+          await expect(
+            dialogCanvas.getByText(/The trigger component handles/i)
+          ).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -232,7 +252,9 @@ export const FullWidth: Story = {
       <DialogContent size="full">
         <DialogHeader>
           <DialogTitle>Full Width Dialog</DialogTitle>
-          <DialogDescription>Takes full available width with margin</DialogDescription>
+          <DialogDescription>
+            Takes full available width with margin
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <p className="text-sm">Useful for complex layouts or mobile views.</p>
@@ -255,7 +277,9 @@ export const ScaleAnimation: Story = {
       <DialogContent animation="scale">
         <DialogHeader>
           <DialogTitle>Scale Animation</DialogTitle>
-          <DialogDescription>Scales from 0.95 to 1.0 with fade</DialogDescription>
+          <DialogDescription>
+            Scales from 0.95 to 1.0 with fade
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <p className="text-sm">The default smooth scale-in effect.</p>
@@ -293,7 +317,9 @@ export const SlideDownAnimation: Story = {
       <DialogContent animation="slide-down">
         <DialogHeader>
           <DialogTitle>Slide Down Animation</DialogTitle>
-          <DialogDescription>Slides down from above with fade</DialogDescription>
+          <DialogDescription>
+            Slides down from above with fade
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <p className="text-sm">Slides downward into view.</p>
@@ -354,7 +380,9 @@ export const NoBackdropBlur: Story = {
       <DialogContent blurBackdrop={false}>
         <DialogHeader>
           <DialogTitle>Without Backdrop Blur</DialogTitle>
-          <DialogDescription>Backdrop is solid without blur effect</DialogDescription>
+          <DialogDescription>
+            Backdrop is solid without blur effect
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <p className="text-sm">Useful for performance or specific designs.</p>
@@ -373,7 +401,9 @@ export const NoCloseButton: Story = {
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>No Close Button</DialogTitle>
-          <DialogDescription>Must use action buttons to close</DialogDescription>
+          <DialogDescription>
+            Must use action buttons to close
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <p className="text-sm">Forces users to make a decision.</p>
@@ -395,10 +425,14 @@ export const NoClickOutsideClose: Story = {
       <DialogContent closeOnClickOutside={false}>
         <DialogHeader>
           <DialogTitle>Click Outside Disabled</DialogTitle>
-          <DialogDescription>Cannot close by clicking backdrop</DialogDescription>
+          <DialogDescription>
+            Cannot close by clicking backdrop
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
-          <p className="text-sm">Use X button, Escape key, or action buttons.</p>
+          <p className="text-sm">
+            Use X button, Escape key, or action buttons.
+          </p>
         </DialogBody>
       </DialogContent>
     </Dialog>
@@ -417,7 +451,9 @@ export const NoEscapeClose: Story = {
           <DialogDescription>Cannot close with Escape key</DialogDescription>
         </DialogHeader>
         <DialogBody>
-          <p className="text-sm">Use X button, click outside, or action buttons.</p>
+          <p className="text-sm">
+            Use X button, click outside, or action buttons.
+          </p>
         </DialogBody>
       </DialogContent>
     </Dialog>
@@ -438,8 +474,8 @@ export const ConfirmationDialog: Story = {
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -462,25 +498,36 @@ export const ConfirmationDialog: Story = {
     await userEvent.click(deleteButton)
 
     // Wait for dialog and test confirmation UI
-    await waitFor(async () => {
-      const dialog = document.querySelector('[role="dialog"]')
-      if (dialog) {
-        const dialogCanvas = within(dialog as HTMLElement)
+    await waitFor(
+      async () => {
+        const dialog = document.querySelector('[role="dialog"]')
+        if (dialog) {
+          const dialogCanvas = within(dialog as HTMLElement)
 
-        // Test warning message
-        await expect(dialogCanvas.getByText('Are you absolutely sure?')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText(/This action cannot be undone/i)).toBeInTheDocument()
+          // Test warning message
+          await expect(
+            dialogCanvas.getByText('Are you absolutely sure?')
+          ).toBeInTheDocument()
+          await expect(
+            dialogCanvas.getByText(/This action cannot be undone/i)
+          ).toBeInTheDocument()
 
-        // Test both action buttons present
-        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
-        const confirmDeleteButton = dialogCanvas.getAllByRole('button', { name: /delete account/i })[0]
-        await expect(cancelButton).toBeInTheDocument()
-        await expect(confirmDeleteButton).toBeInTheDocument()
+          // Test both action buttons present
+          const cancelButton = dialogCanvas.getByRole('button', {
+            name: /cancel/i,
+          })
+          const confirmDeleteButton = dialogCanvas.getAllByRole('button', {
+            name: /delete account/i,
+          })[0]
+          await expect(cancelButton).toBeInTheDocument()
+          await expect(confirmDeleteButton).toBeInTheDocument()
 
-        // Test cancel button
-        await userEvent.click(cancelButton)
-      }
-    }, { timeout: 2000 })
+          // Test cancel button
+          await userEvent.click(cancelButton)
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -504,7 +551,11 @@ export const FormDialog: Story = {
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Email</label>
-            <Input type="email" placeholder="Enter your email" defaultValue="john@example.com" />
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              defaultValue="john@example.com"
+            />
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Bio</label>
@@ -535,30 +586,40 @@ export const FormDialog: Story = {
     await userEvent.click(editButton)
 
     // Wait for dialog and test form elements
-    await waitFor(async () => {
-      const dialog = document.querySelector('[role="dialog"]')
-      if (dialog) {
-        const dialogCanvas = within(dialog as HTMLElement)
+    await waitFor(
+      async () => {
+        const dialog = document.querySelector('[role="dialog"]')
+        if (dialog) {
+          const dialogCanvas = within(dialog as HTMLElement)
 
-        // Test form labels and inputs
-        await expect(dialogCanvas.getByText('Edit Profile')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText('Name')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText('Email')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText('Bio')).toBeInTheDocument()
+          // Test form labels and inputs
+          await expect(
+            dialogCanvas.getByText('Edit Profile')
+          ).toBeInTheDocument()
+          await expect(dialogCanvas.getByText('Name')).toBeInTheDocument()
+          await expect(dialogCanvas.getByText('Email')).toBeInTheDocument()
+          await expect(dialogCanvas.getByText('Bio')).toBeInTheDocument()
 
-        // Test input fields have default values
-        const nameInput = dialogCanvas.getByPlaceholderText('Enter your name')
-        const emailInput = dialogCanvas.getByPlaceholderText('Enter your email')
-        await expect(nameInput).toHaveValue('John Doe')
-        await expect(emailInput).toHaveValue('john@example.com')
+          // Test input fields have default values
+          const nameInput = dialogCanvas.getByPlaceholderText('Enter your name')
+          const emailInput =
+            dialogCanvas.getByPlaceholderText('Enter your email')
+          await expect(nameInput).toHaveValue('John Doe')
+          await expect(emailInput).toHaveValue('john@example.com')
 
-        // Test form buttons
-        const saveButton = dialogCanvas.getByRole('button', { name: /save changes/i })
-        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
-        await expect(saveButton).toBeInTheDocument()
-        await expect(cancelButton).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+          // Test form buttons
+          const saveButton = dialogCanvas.getByRole('button', {
+            name: /save changes/i,
+          })
+          const cancelButton = dialogCanvas.getByRole('button', {
+            name: /cancel/i,
+          })
+          await expect(saveButton).toBeInTheDocument()
+          await expect(cancelButton).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -571,7 +632,9 @@ export const NestedDialog: Story = {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>First Dialog</DialogTitle>
-          <DialogDescription>This dialog can open another dialog</DialogDescription>
+          <DialogDescription>
+            This dialog can open another dialog
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Dialog>
@@ -613,9 +676,7 @@ export const ControlledDialog: Story = {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Controlled Dialog</DialogTitle>
-              <DialogDescription>
-                State is managed externally
-              </DialogDescription>
+              <DialogDescription>State is managed externally</DialogDescription>
             </DialogHeader>
             <DialogBody>
               <p className="text-sm">
@@ -641,23 +702,35 @@ export const ControlledDialog: Story = {
     await userEvent.click(openButton)
 
     // Wait for dialog to appear
-    await waitFor(async () => {
-      const dialog = document.querySelector('[role="dialog"]')
-      if (dialog) {
-        const dialogCanvas = within(dialog as HTMLElement)
-        await expect(dialogCanvas.getByText('Controlled Dialog')).toBeInTheDocument()
-        await expect(dialogCanvas.getByText(/State is managed externally/i)).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+    await waitFor(
+      async () => {
+        const dialog = document.querySelector('[role="dialog"]')
+        if (dialog) {
+          const dialogCanvas = within(dialog as HTMLElement)
+          await expect(
+            dialogCanvas.getByText('Controlled Dialog')
+          ).toBeInTheDocument()
+          await expect(
+            dialogCanvas.getByText(/State is managed externally/i)
+          ).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
 
     // Test programmatic close button
-    const closeProgrammatically = canvas.getByRole('button', { name: /close programmatically/i })
+    const closeProgrammatically = canvas.getByRole('button', {
+      name: /close programmatically/i,
+    })
     await userEvent.click(closeProgrammatically)
 
     // Verify state indicator updates
-    await waitFor(async () => {
-      await expect(canvas.getByText('Dialog is closed')).toBeInTheDocument()
-    }, { timeout: 1000 })
+    await waitFor(
+      async () => {
+        await expect(canvas.getByText('Dialog is closed')).toBeInTheDocument()
+      },
+      { timeout: 1000 }
+    )
   },
 }
 

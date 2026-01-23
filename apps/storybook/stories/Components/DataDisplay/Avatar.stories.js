@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Avatar } from '@clarity-chat/primitives';
-import { expect, within } from 'storybook/test';
+import { expect, within } from '@storybook/test';
 /**
  * Avatar component displays user profile pictures with fallback support.
  *

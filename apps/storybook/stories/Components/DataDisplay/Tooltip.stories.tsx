@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Tooltip, Button } from '@clarity-chat/primitives'
-import { expect, userEvent, within, waitFor } from 'storybook/test'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Tooltip component for displaying helpful information on hover.
- * 
+ *
  * **Key Features:**
  * - Appears on hover/focus
  * - Positioned relative to trigger
  * - Arrow indicator support
  * - Accessible with ARIA attributes
  * - Smooth animations
- * 
+ *
  * **Best Practices:**
  * - Use for helpful hints and additional information
  * - Keep content concise (1-2 lines)
@@ -24,7 +24,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Tooltip component for displaying helpful information on hover or focus.',
+        component:
+          'Tooltip component for displaying helpful information on hover or focus.',
       },
     },
     status: {
@@ -74,13 +75,25 @@ export const WithArrow: Story = {
 
 export const DifferentPositions: Story = {
   render: () => {
-    const positions: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left']
-    
+    const positions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ]
+
     return (
       <div className="flex flex-col gap-8 items-center">
         {positions.map((side) => (
-          <Tooltip key={side} content={`Tooltip on ${side}`} side={side} showArrow>
-            <Button variant="outline">{side.charAt(0).toUpperCase() + side.slice(1)}</Button>
+          <Tooltip
+            key={side}
+            content={`Tooltip on ${side}`}
+            side={side}
+            showArrow
+          >
+            <Button variant="outline">
+              {side.charAt(0).toUpperCase() + side.slice(1)}
+            </Button>
           </Tooltip>
         ))}
       </div>

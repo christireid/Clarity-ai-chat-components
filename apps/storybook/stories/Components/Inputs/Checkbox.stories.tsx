@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Checkbox } from '@clarity-chat/primitives'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Checkbox component for binary selection.
- * 
+ *
  * **Key Features:**
  * - Accessible with proper ARIA attributes
  * - Focus states with ring indicator
  * - Disabled state support
  * - Smooth transitions
- * 
+ *
  * **Best Practices:**
  * - Always provide labels (visible or aria-label)
  * - Use for single or multiple selections
@@ -24,7 +24,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Checkbox input component for binary selection with accessible focus states.',
+        component:
+          'Checkbox input component for binary selection with accessible focus states.',
       },
     },
     status: {
@@ -55,7 +56,10 @@ export const Default: Story = {
           checked={checked}
           onChange={(e) => setChecked(e.target.checked)}
         />
-        <label htmlFor="checkbox-default" className="text-sm font-medium cursor-pointer">
+        <label
+          htmlFor="checkbox-default"
+          className="text-sm font-medium cursor-pointer"
+        >
           Accept terms and conditions
         </label>
       </div>
@@ -89,7 +93,10 @@ export const Checked: Story = {
           checked={checked}
           onChange={(e) => setChecked(e.target.checked)}
         />
-        <label htmlFor="checkbox-checked" className="text-sm font-medium cursor-pointer">
+        <label
+          htmlFor="checkbox-checked"
+          className="text-sm font-medium cursor-pointer"
+        >
           Newsletter subscription
         </label>
       </div>
@@ -102,13 +109,19 @@ export const Disabled: Story = {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <Checkbox id="checkbox-disabled-unchecked" disabled />
-        <label htmlFor="checkbox-disabled-unchecked" className="text-sm text-muted-foreground">
+        <label
+          htmlFor="checkbox-disabled-unchecked"
+          className="text-sm text-muted-foreground"
+        >
           Disabled unchecked
         </label>
       </div>
       <div className="flex items-center gap-2">
         <Checkbox id="checkbox-disabled-checked" checked disabled />
-        <label htmlFor="checkbox-disabled-checked" className="text-sm text-muted-foreground">
+        <label
+          htmlFor="checkbox-disabled-checked"
+          className="text-sm text-muted-foreground"
+        >
           Disabled checked
         </label>
       </div>
@@ -142,7 +155,10 @@ export const WithLabel: Story = {
           className="mt-0.5"
         />
         <div className="flex flex-col">
-          <label htmlFor="checkbox-label" className="text-sm font-medium cursor-pointer">
+          <label
+            htmlFor="checkbox-label"
+            className="text-sm font-medium cursor-pointer"
+          >
             Enable notifications
           </label>
           <span className="text-xs text-muted-foreground">
@@ -174,7 +190,10 @@ export const MultipleOptions: Story = {
                 setOptions((prev) => ({ ...prev, [key]: e.target.checked }))
               }
             />
-            <label htmlFor={`checkbox-${key}`} className="text-sm font-medium cursor-pointer capitalize">
+            <label
+              htmlFor={`checkbox-${key}`}
+              className="text-sm font-medium cursor-pointer capitalize"
+            >
               {key}
             </label>
           </div>

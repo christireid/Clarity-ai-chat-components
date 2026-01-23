@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@clarity-chat/primitives';
 import { Button } from '@clarity-chat/primitives';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from '@storybook/test';
 /**
  * Card component provides a flexible container for content sections.
  *

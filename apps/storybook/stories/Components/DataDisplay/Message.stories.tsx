@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * **Message Component**

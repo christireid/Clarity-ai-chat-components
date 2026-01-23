@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import * as React from 'react';
 import { Skeleton, SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonButton, } from '@clarity-chat/react';
-import { expect, within } from 'storybook/test';
+import { expect, within } from '@storybook/test';
 /**
  * Skeleton Loaders
  *

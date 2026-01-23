@@ -1,18 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Popover, PopoverContent, PopoverTrigger, Button } from '@clarity-chat/primitives'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Button,
+} from '@clarity-chat/primitives'
 import { useState } from 'react'
-import { expect, userEvent, within, waitFor } from 'storybook/test'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Popover component for displaying floating content.
- * 
+ *
  * **Key Features:**
  * - Positioned relative to trigger
  * - Arrow indicator support
  * - Collision detection
  * - Keyboard accessible
  * - Smooth animations
- * 
+ *
  * **Best Practices:**
  * - Use for contextual information
  * - Keep content concise
@@ -25,7 +30,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Popover component for displaying floating content relative to a trigger element.',
+        component:
+          'Popover component for displaying floating content relative to a trigger element.',
       },
     },
     status: {
@@ -66,19 +72,24 @@ export const Default: Story = {
     await userEvent.click(openButton)
 
     // Wait for popover to appear and test content
-    await waitFor(async () => {
-      // Popovers typically don't use role="dialog", they may use role="tooltip" or be in the DOM
-      const popoverTitle = document.querySelector('h4')
-      if (popoverTitle && popoverTitle.textContent === 'Popover Title') {
-        await expect(popoverTitle).toBeInTheDocument()
+    await waitFor(
+      async () => {
+        // Popovers typically don't use role="dialog", they may use role="tooltip" or be in the DOM
+        const popoverTitle = document.querySelector('h4')
+        if (popoverTitle && popoverTitle.textContent === 'Popover Title') {
+          await expect(popoverTitle).toBeInTheDocument()
 
-        // Find popover content
-        const popoverContent = document.body.querySelector('.text-muted-foreground')
-        if (popoverContent) {
-          await expect(popoverContent).toBeInTheDocument()
+          // Find popover content
+          const popoverContent = document.body.querySelector(
+            '.text-muted-foreground'
+          )
+          if (popoverContent) {
+            await expect(popoverContent).toBeInTheDocument()
+          }
         }
-      }
-    }, { timeout: 2000 })
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -102,14 +113,21 @@ export const WithArrow: Story = {
 
 export const DifferentPositions: Story = {
   render: () => {
-    const positions: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left']
-    
+    const positions: Array<'top' | 'right' | 'bottom' | 'left'> = [
+      'top',
+      'right',
+      'bottom',
+      'left',
+    ]
+
     return (
       <div className="flex flex-col gap-8 items-center">
         {positions.map((side) => (
           <Popover key={side}>
             <PopoverTrigger>
-              <Button variant="outline">{side.charAt(0).toUpperCase() + side.slice(1)}</Button>
+              <Button variant="outline">
+                {side.charAt(0).toUpperCase() + side.slice(1)}
+              </Button>
             </PopoverTrigger>
             <PopoverContent side={side} showArrow>
               <div className="space-y-2">
@@ -160,27 +178,35 @@ export const Controlled: Story = {
     await userEvent.click(triggerButton)
 
     // Wait for popover to appear
-    await waitFor(async () => {
-      const popoverTitle = Array.from(document.querySelectorAll('h4')).find(
-        (el) => el.textContent === 'Controlled Popover'
-      )
-      if (popoverTitle) {
-        await expect(popoverTitle).toBeInTheDocument()
-
-        // Test close button in popover
-        const closeButtons = Array.from(document.querySelectorAll('button')).filter(
-          (btn) => btn.textContent === 'Close'
+    await waitFor(
+      async () => {
+        const popoverTitle = Array.from(document.querySelectorAll('h4')).find(
+          (el) => el.textContent === 'Controlled Popover'
         )
-        if (closeButtons.length > 0) {
-          await userEvent.click(closeButtons[0])
+        if (popoverTitle) {
+          await expect(popoverTitle).toBeInTheDocument()
+
+          // Test close button in popover
+          const closeButtons = Array.from(
+            document.querySelectorAll('button')
+          ).filter((btn) => btn.textContent === 'Close')
+          if (closeButtons.length > 0) {
+            await userEvent.click(closeButtons[0])
+          }
         }
-      }
-    }, { timeout: 2000 })
+      },
+      { timeout: 2000 }
+    )
 
     // Verify button text changes back to "Open"
-    await waitFor(async () => {
-      await expect(canvas.getByRole('button', { name: /open popover/i })).toBeInTheDocument()
-    }, { timeout: 1000 })
+    await waitFor(
+      async () => {
+        await expect(
+          canvas.getByRole('button', { name: /open popover/i })
+        ).toBeInTheDocument()
+      },
+      { timeout: 1000 }
+    )
   },
 }
 
@@ -230,34 +256,41 @@ export const WithForm: Story = {
     await userEvent.click(editButton)
 
     // Wait for popover form to appear
-    await waitFor(async () => {
-      const formTitle = Array.from(document.querySelectorAll('h4')).find(
-        (el) => el.textContent === 'Edit Profile'
-      )
-      if (formTitle) {
-        await expect(formTitle).toBeInTheDocument()
-
-        // Test form labels
-        const nameLabel = Array.from(document.querySelectorAll('label')).find(
-          (el) => el.textContent === 'Name'
+    await waitFor(
+      async () => {
+        const formTitle = Array.from(document.querySelectorAll('h4')).find(
+          (el) => el.textContent === 'Edit Profile'
         )
-        const emailLabel = Array.from(document.querySelectorAll('label')).find(
-          (el) => el.textContent === 'Email'
-        )
-        if (nameLabel && emailLabel) {
-          await expect(nameLabel).toBeInTheDocument()
-          await expect(emailLabel).toBeInTheDocument()
+        if (formTitle) {
+          await expect(formTitle).toBeInTheDocument()
 
-          // Test form inputs
-          const nameInput = document.querySelector('input[placeholder="John Doe"]')
-          const emailInput = document.querySelector('input[placeholder="john@example.com"]')
-          if (nameInput && emailInput) {
-            await expect(nameInput).toBeInTheDocument()
-            await expect(emailInput).toBeInTheDocument()
+          // Test form labels
+          const nameLabel = Array.from(document.querySelectorAll('label')).find(
+            (el) => el.textContent === 'Name'
+          )
+          const emailLabel = Array.from(
+            document.querySelectorAll('label')
+          ).find((el) => el.textContent === 'Email')
+          if (nameLabel && emailLabel) {
+            await expect(nameLabel).toBeInTheDocument()
+            await expect(emailLabel).toBeInTheDocument()
+
+            // Test form inputs
+            const nameInput = document.querySelector(
+              'input[placeholder="John Doe"]'
+            )
+            const emailInput = document.querySelector(
+              'input[placeholder="john@example.com"]'
+            )
+            if (nameInput && emailInput) {
+              await expect(nameInput).toBeInTheDocument()
+              await expect(emailInput).toBeInTheDocument()
+            }
           }
         }
-      }
-    }, { timeout: 2000 })
+      },
+      { timeout: 2000 }
+    )
   },
 }
 

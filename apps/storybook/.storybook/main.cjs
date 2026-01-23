@@ -1,9 +1,8 @@
-import type { StorybookConfig } from '@storybook/react-vite'
-import path from 'path'
+// @ts-check
+const path = require('path')
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
-
-const config: StorybookConfig = {
+/** @type {import('@storybook/react-vite').StorybookConfig} */
+const config = {
   stories: [
     // IMPORTANT:
     // - Story sources in this repo are TypeScript.
@@ -20,9 +19,7 @@ const config: StorybookConfig = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-a11y',
-    '@vueless/storybook-dark-mode',
     '@storybook/addon-docs',
-    './.storybook/addons/clarity-a11y/register.tsx',
   ],
 
   framework: {
@@ -198,4 +195,4 @@ const config: StorybookConfig = {
   },
 }
 
-export default config
+module.exports = config
