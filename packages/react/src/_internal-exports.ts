@@ -529,7 +529,6 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
 export * from './hooks/ui/use-is-mounted'
 export {
   useMergedRef,

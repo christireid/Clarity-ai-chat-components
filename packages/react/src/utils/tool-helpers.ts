@@ -514,8 +514,8 @@ export function createAPITool<TArgs extends Record<string, unknown>>(config: {
       properties: config.parameters as any,
       required: (config.required || []) as string[],
     },
-    execute: withErrorHandling(async (args: TArgs) => {
-      const request = config.buildRequest(args)
+    execute: withErrorHandling(async (args: Record<string, unknown>) => {
+      const request = config.buildRequest(args as TArgs)
       const url = new URL(config.endpoint, config.baseURL)
 
       // Add query parameters

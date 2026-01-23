@@ -12,7 +12,7 @@
  */
 
 import type { ToolOrchestrator } from '../core/tool-orchestrator'
-import type { ToolArguments, ToolResult } from '../../types/tool-definition'
+import type { ToolArguments, ToolResult } from '../types/tool-definition'
 import type { OrchestrationResult } from '../core/tool-orchestrator'
 
 // =============================================================================
@@ -123,7 +123,8 @@ export async function executeWithRetry(
 
       // Check if we should retry
       const shouldRetryDefault = retryOn.includes(result.status as any)
-      const shouldRetryCustom = customShouldRetry?.(result, attempt) ?? shouldRetryDefault
+      const shouldRetryCustom =
+        customShouldRetry?.(result, attempt) ?? shouldRetryDefault
 
       if (result.status === 'completed') {
         return result.result as ToolResult
@@ -167,7 +168,9 @@ export async function executeWithRetry(
   }
 
   // Should never reach here, but TypeScript needs it
-  throw lastError || new Error(`Tool execution failed after ${maxRetries} retries`)
+  throw (
+    lastError || new Error(`Tool execution failed after ${maxRetries} retries`)
+  )
 }
 
 // =============================================================================
@@ -225,7 +228,8 @@ export async function executeWithFallback(
       }
 
       // Tool didn't complete successfully
-      const error = result.error || new Error(`Tool ${toolName} ${result.status}`)
+      const error =
+        result.error || new Error(`Tool ${toolName} ${result.status}`)
       errors.push({ tool: toolName, error })
 
       // Try next tool if available
@@ -242,7 +246,9 @@ export async function executeWithFallback(
   }
 
   // All tools failed
-  const errorMessages = errors.map((e) => `${e.tool}: ${e.error.message}`).join('; ')
+  const errorMessages = errors
+    .map((e) => `${e.tool}: ${e.error.message}`)
+    .join('; ')
   throw new Error(`All fallback tools failed: ${errorMessages}`)
 }
 
@@ -278,7 +284,11 @@ export async function executeWithTimeout(
   args: ToolArguments,
   options: TimeoutOptions
 ): Promise<ToolResult> {
-  const { timeout, message = `Tool execution timed out after ${timeout}ms`, onTimeout } = options
+  const {
+    timeout,
+    message = `Tool execution timed out after ${timeout}ms`,
+    onTimeout,
+  } = options
 
   const controller = new AbortController()
 
@@ -299,7 +309,9 @@ export async function executeWithTimeout(
       return result.result as ToolResult
     }
 
-    throw new Error(`Tool execution ${result.status}: ${result.error?.message || 'Unknown error'}`)
+    throw new Error(
+      `Tool execution ${result.status}: ${result.error?.message || 'Unknown error'}`
+    )
   } catch (error) {
     clearTimeout(timeoutId)
 
@@ -355,14 +367,20 @@ export async function executeWithLogging(
   if (!enabled) {
     const result = await orchestrator.executeTool(toolName, args)
     if (result.status !== 'completed') {
-      throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+      throw new Error(
+        `Tool execution ${result.status}: ${result.error?.message}`
+      )
     }
     return result.result as ToolResult
   }
 
   const startTime = Date.now()
 
-  logger(level, `🔧 Executing tool: ${toolName}`, logArgs ? { args } : undefined)
+  logger(
+    level,
+    `🔧 Executing tool: ${toolName}`,
+    logArgs ? { args } : undefined
+  )
 
   try {
     const result = await orchestrator.executeTool(toolName, args)
@@ -372,18 +390,21 @@ export async function executeWithLogging(
       logger(
         level,
         `✓ Tool completed: ${toolName} (${duration}ms)${result.cached ? ' [cached]' : ''}`,
-        logResults ? { result: result.result } : { duration, cached: result.cached }
+        logResults
+          ? { result: result.result }
+          : { duration, cached: result.cached }
       )
 
       return result.result as ToolResult
     } else {
-      logger(
-        'error',
-        `✗ Tool ${result.status}: ${toolName} (${duration}ms)`,
-        { error: result.error?.message, duration }
-      )
+      logger('error', `✗ Tool ${result.status}: ${toolName} (${duration}ms)`, {
+        error: result.error?.message,
+        duration,
+      })
 
-      throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+      throw new Error(
+        `Tool execution ${result.status}: ${result.error?.message}`
+      )
     }
   } catch (error) {
     const duration = Date.now() - startTime
@@ -442,7 +463,9 @@ export async function executeWithAll(
     } else {
       const result = await orchestrator.executeTool(toolName, args)
       if (result.status !== 'completed') {
-        throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+        throw new Error(
+          `Tool execution ${result.status}: ${result.error?.message}`
+        )
       }
       return result.result as ToolResult
     }
@@ -492,11 +515,10 @@ export async function executeWithAll(
         } catch (error) {
           const duration = Date.now() - startTime
 
-          customLogger?.(
-            'error',
-            `✗ Tool error: ${toolName} (${duration}ms)`,
-            { error: error instanceof Error ? error.message : String(error), duration }
-          )
+          customLogger?.('error', `✗ Tool error: ${toolName} (${duration}ms)`, {
+            error: error instanceof Error ? error.message : String(error),
+            duration,
+          })
 
           throw error
         }
@@ -603,10 +625,13 @@ export async function executeBatch(
     // Sort args keys for consistent hashing
     const sortedArgs = Object.keys(call.args)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = call.args[key]
-        return acc
-      }, {} as Record<string, unknown>)
+      .reduce(
+        (acc, key) => {
+          acc[key] = call.args[key]
+          return acc
+        },
+        {} as Record<string, unknown>
+      )
     return `${call.toolName}:${JSON.stringify(sortedArgs)}`
   }
 
@@ -633,7 +658,11 @@ export async function executeBatch(
   let hasError = false
 
   // Execute unique calls with concurrency limit
-  const executeCall = async (call: BatchCall, callKey: string, uniqueIndex: number) => {
+  const executeCall = async (
+    call: BatchCall,
+    callKey: string,
+    uniqueIndex: number
+  ) => {
     if (hasError && stopOnError) {
       return
     }
@@ -641,7 +670,11 @@ export async function executeBatch(
     const startTime = Date.now()
 
     try {
-      const result = await orchestrator.executeTool(call.toolName, call.args, call.options)
+      const result = await orchestrator.executeTool(
+        call.toolName,
+        call.args,
+        call.options
+      )
       const duration = Date.now() - startTime
 
       const batchResult: BatchResult = {
@@ -718,9 +751,11 @@ export async function executeBatch(
       break
     }
 
-    const promise = executeCall(item.call, item.key, item.uniqueIndex).then(() => {
-      executing.splice(executing.indexOf(promise), 1)
-    })
+    const promise = executeCall(item.call, item.key, item.uniqueIndex).then(
+      () => {
+        executing.splice(executing.indexOf(promise), 1)
+      }
+    )
 
     executing.push(promise)
   }
@@ -768,4 +803,3 @@ export async function executeBatchSimple(
 
   return Promise.all(promises)
 }
-

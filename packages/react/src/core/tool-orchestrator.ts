@@ -459,14 +459,7 @@ export class ToolOrchestrator {
   /**
    * Get orchestrator statistics
    */
-  getStats(): {
-    registry: ReturnType<ToolRegistry['getStats']>
-    calls: {
-      total: number
-      byStatus: Record<ToolCallStatus, number>
-    }
-    cache: ReturnType<typeof this.executor.getCache>['getStats']
-  } {
+  getStats() {
     const calls = this.lifecycle.getAllCalls()
     const byStatus: Record<string, number> = {}
 
@@ -550,7 +543,6 @@ export class ToolOrchestrator {
 export const globalToolOrchestrator = new ToolOrchestrator()
 
 // =============================================================================
-// Exports
+// Exports (already exported inline above)
 // =============================================================================
-
-export type { OrchestratorConfig, OrchestrationResult }
+// All exports are handled inline throughout the file

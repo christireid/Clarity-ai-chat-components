@@ -117,7 +117,6 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
 export * from './hooks/ui/use-is-mounted'
 export * from './hooks/ui/use-merged-ref'
 export * from './hooks/ui/use-window-size'
@@ -357,7 +356,8 @@ export * from './vector-stores'
 // ============================================================================
 // DOCUMENT LOADERS
 // ============================================================================
-export * from './document-loaders'
+export * from './document-loaders/docx-loader'
+export * from './document-loaders/pdf-loader'
 
 // ============================================================================
 // RERANKING

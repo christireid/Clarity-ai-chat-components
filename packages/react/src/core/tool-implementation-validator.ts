@@ -58,13 +58,16 @@ const DANGEROUS_PATTERNS = [
     pattern: /\beval\s*\(/,
     code: 'DANGEROUS_EVAL',
     message: 'Tool implementation uses eval() which is a security risk',
-    suggestion: 'Use safe alternatives like JSON.parse() or implement a safe parser',
+    suggestion:
+      'Use safe alternatives like JSON.parse() or implement a safe parser',
   },
   {
     pattern: /\bnew\s+Function\s*\(/,
     code: 'DANGEROUS_FUNCTION_CONSTRUCTOR',
-    message: 'Tool implementation uses Function constructor which is a security risk',
-    suggestion: 'Define functions statically instead of constructing them at runtime',
+    message:
+      'Tool implementation uses Function constructor which is a security risk',
+    suggestion:
+      'Define functions statically instead of constructing them at runtime',
   },
   {
     pattern: /\bexec\s*\(/,
@@ -81,7 +84,8 @@ const DANGEROUS_PATTERNS = [
   {
     pattern: /\bvm\.|vm\.runInContext|vm\.runInNewContext/,
     code: 'DANGEROUS_VM_MODULE',
-    message: 'Tool implementation uses Node.js vm module (potential escape vector)',
+    message:
+      'Tool implementation uses Node.js vm module (potential escape vector)',
     suggestion: 'Use isolated-vm for proper sandboxing instead of vm module',
   },
 ]
@@ -185,8 +189,7 @@ export function validateToolImplementation(
         code: 'SUSPICIOUS_SIGNATURE',
         field: 'execute',
         message: `Execute function has ${tool.execute.length} parameters (expected 1-2)`,
-        suggestion:
-          'Execute function should accept (args) or (args, context)',
+        suggestion: 'Execute function should accept (args) or (args, context)',
       })
     }
   }
@@ -223,8 +226,7 @@ export function validateToolImplementation(
           code: 'NO_PARAMETERS',
           field: 'parameters.properties',
           message: 'Tool has no parameters defined',
-          suggestion:
-            'If tool accepts parameters, define them in the schema',
+          suggestion: 'If tool accepts parameters, define them in the schema',
         })
       }
     }
@@ -261,14 +263,13 @@ export function validateToolImplementation(
   }
 
   // Check for caching configuration
-  if (tool.cacheable === true && !tool.cacheKey) {
+  if (tool.cacheable === true && !('cacheKey' in tool)) {
     issues.push({
       severity: 'warning',
       code: 'CACHEABLE_WITHOUT_KEY',
       field: 'cacheKey',
       message: 'Tool is cacheable but has no custom cache key function',
-      suggestion:
-        'Implement cacheKey function for fine-grained cache control',
+      suggestion: 'Implement cacheKey function for fine-grained cache control',
     })
   }
 
@@ -332,16 +333,12 @@ export function validateToolImplementation(
  * registry.register(myTool)
  * ```
  */
-export function validateToolImplementationStrict(
-  tool: ToolDefinition
-): void {
+export function validateToolImplementationStrict(tool: ToolDefinition): void {
   const result = validateToolImplementation(tool)
 
   // Log warnings
   if (result.warnings.length > 0) {
-    console.warn(
-      `[Tool Validation] Warnings for tool "${tool.name}":`
-    )
+    console.warn(`[Tool Validation] Warnings for tool "${tool.name}":`)
     result.warnings.forEach((warning) => {
       console.warn(`  - ${warning.message}`)
       if (warning.suggestion) {

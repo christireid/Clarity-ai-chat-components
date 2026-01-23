@@ -53,18 +53,9 @@ export type {
   ExecutionResult,
   ExecutorConfig,
   ToolResultCacheConfig,
-  CacheStats,
-  RateLimitConfig,
-  RateLimitStats,
-  ConcurrencyConfig,
-  ConcurrencyStats,
 } from './tool-executor'
 
-export {
-  ToolValidationError,
-  ToolExecutionError,
-  ToolTimeoutError,
-} from './tool-executor'
+export { ToolValidationError } from './tool-executor'
 
 // =============================================================================
 // Unified Error Hierarchy

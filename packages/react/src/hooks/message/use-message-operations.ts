@@ -213,10 +213,15 @@ function operationsReducer(
     }
 
     case 'ROLLBACK_EDIT': {
-      // Find the last edit operation for this message
-      const lastEditIndex = state.history.findLastIndex(
-        (op) => op.type === 'edit' && op.messageId === action.payload
-      )
+      // Find the last edit operation for this message (backward compatible)
+      let lastEditIndex = -1
+      for (let i = state.history.length - 1; i >= 0; i--) {
+        const op = state.history[i]
+        if (op && op.type === 'edit' && op.messageId === action.payload) {
+          lastEditIndex = i
+          break
+        }
+      }
 
       if (lastEditIndex === -1) return state
 

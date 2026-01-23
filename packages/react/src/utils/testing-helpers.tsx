@@ -58,10 +58,10 @@ export const mockChatAPI = {
 export class MockWebSocket {
   onmessage?: (event: MessageEvent) => void
   onopen?: () => void
-  onclose?: () => void
+  onclose?: (event: CloseEvent) => void
   onerror?: (error: Event) => void
 
-  readyState = WebSocket.OPEN
+  readyState: number = 1 // WebSocket.OPEN
   url = 'ws://mock-chat-api.com'
 
   constructor(url?: string) {
@@ -73,8 +73,8 @@ export class MockWebSocket {
   }
 
   close() {
-    this.readyState = WebSocket.CLOSED
-    this.onclose?.(new Event('close'))
+    this.readyState = 3 // WebSocket.CLOSED
+    this.onclose?.(new CloseEvent('close'))
   }
 
   // Test helper methods
@@ -129,7 +129,7 @@ export class MockLocalStorage {
  * Mock fetch for API testing
  */
 export const createMockFetch = (responses: Record<string, any>) => {
-  return vi.fn((url: string, options?: RequestInit) => {
+  return vi.fn((url: string | URL, options?: RequestInit) => {
     const urlKey = typeof url === 'string' ? url : url.toString()
     const response = responses[urlKey]
 
@@ -359,13 +359,17 @@ export const domTestUtils = {
 
   /** Focus an element */
   focus: (element: Element) => {
-    element.focus()
+    if ('focus' in element && typeof element.focus === 'function') {
+      element.focus()
+    }
     element.dispatchEvent(new Event('focus', { bubbles: true }))
   },
 
   /** Blur an element */
   blur: (element: Element) => {
-    element.blur()
+    if ('blur' in element && typeof element.blur === 'function') {
+      element.blur()
+    }
     element.dispatchEvent(new Event('blur', { bubbles: true }))
   },
 
@@ -531,7 +535,7 @@ export const e2eTestUtils = {
     // Mock fetch
     global.fetch = createMockFetch({
       '/api/chat': mockChatAPI.success('Test response'),
-    })
+    }) as any
   },
 
   /** Teardown test environment */
@@ -632,13 +636,13 @@ export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({
 /**
  * Create test component with props
  */
-export function createTestComponent<P extends {}>(
+export function createTestComponent<P extends object>(
   Component: React.ComponentType<P>,
   defaultProps: Partial<P> = {}
 ) {
   return (props: Partial<P> = {}) => (
     <TestWrapper>
-      <Component {...defaultProps} {...props} />
+      <Component {...(defaultProps as P)} {...(props as P)} />
     </TestWrapper>
   )
 }

@@ -1139,9 +1139,11 @@ export class ToolExecutor {
 
           // Call onTimeout hook
           if (tool.hooks?.onTimeout) {
-            tool.hooks.onTimeout(args, context).catch((err) => {
-              console.error('Error in onTimeout hook:', err)
-            })
+            Promise.resolve(tool.hooks.onTimeout(args, context)).catch(
+              (err: Error) => {
+                console.error('Error in onTimeout hook:', err)
+              }
+            )
           }
         }
       }, timeoutMs)
@@ -1155,9 +1157,11 @@ export class ToolExecutor {
 
           // Call onCancel hook
           if (tool.hooks?.onCancel) {
-            tool.hooks.onCancel(args, context).catch((err) => {
-              console.error('Error in onCancel hook:', err)
-            })
+            Promise.resolve(tool.hooks.onCancel(args, context)).catch(
+              (err: Error) => {
+                console.error('Error in onCancel hook:', err)
+              }
+            )
           }
         }
       }
@@ -1274,16 +1278,9 @@ export class ToolExecutor {
   destroy(): void {
     this.cache.destroy()
   }
-
 }
 
 // =============================================================================
-// Exports
+// Exports (already exported inline above)
 // =============================================================================
-
-export type {
-  ExecutionOptions,
-  ExecutionResult,
-  ExecutorConfig,
-  ToolResultCacheConfig,
-}
+// All exports are handled inline throughout the file

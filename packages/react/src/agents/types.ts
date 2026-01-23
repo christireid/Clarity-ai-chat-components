@@ -8,6 +8,18 @@
  * These types are kept for backward compatibility but are deprecated.
  */
 
+// Import types for use within this file
+import type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
+} from '../types/tool-definition'
+
 // Re-export canonical types without confusing aliases
 export type {
   ToolDefinition,
@@ -75,7 +87,10 @@ export interface AgentConfig {
 }
 
 /** Metadata attached to agent messages */
-export type AgentMessageMetadata = Record<string, string | number | boolean | null>
+export type AgentMessageMetadata = Record<
+  string,
+  string | number | boolean | null
+>
 
 export interface AgentMessage {
   /** Message role */
@@ -170,32 +185,32 @@ export interface Agent {
   description: string
   /** Available tools */
   tools: Tool[]
-  
+
   /**
    * Execute a query
    */
   execute(query: string, context?: AgentMessage[]): Promise<AgentExecution>
-  
+
   /**
    * Execute a single step
    */
   step(execution: AgentExecution): Promise<AgentStep>
-  
+
   /**
    * Add a tool
    */
   addTool(tool: Tool): void
-  
+
   /**
    * Remove a tool
    */
   removeTool(toolName: string): void
-  
+
   /**
    * Get tool by name
    */
   getTool(name: string): Tool | undefined
-  
+
   /**
    * Create a plan for a query
    */
@@ -207,17 +222,17 @@ export interface AgentMemory {
    * Add message to memory
    */
   addMessage(message: AgentMessage): void
-  
+
   /**
    * Get recent messages
    */
   getMessages(limit?: number): AgentMessage[]
-  
+
   /**
    * Clear memory
    */
   clear(): void
-  
+
   /**
    * Summarize memory if needed
    */
@@ -242,4 +257,3 @@ export interface AgentCallbacks {
   /** Called for tool approval (if required) */
   onToolApproval?: ToolApprovalCallback
 }
-
