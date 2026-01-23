@@ -12,6 +12,8 @@
  * @module model-registry
  */
 
+import { UnsupportedModelError } from '../errors/index.js'
+
 /**
  * Known AI model identifiers
  *
@@ -876,9 +878,14 @@ export function isValidModelId(id: string): id is ModelId {
 }
 
 /**
- * Get model config with type safety
+ * Get model config with type safety and runtime validation
+ *
+ * @throws {UnsupportedModelError} If the model ID is not in the registry
  */
 export function getModelConfig(id: ModelId): TokenModelConfig {
+  if (!isValidModelId(id)) {
+    throw new UnsupportedModelError(id, getAllModelIds())
+  }
   return MODEL_REGISTRY[id]
 }
 
@@ -941,7 +948,7 @@ export function registerModel(
   if (!id || typeof id !== 'string' || id.trim().length === 0) {
     throw new Error(
       '[registerModel] Model ID must be a non-empty string. ' +
-      `Received: ${JSON.stringify(id)}`
+        `Received: ${JSON.stringify(id)}`
     )
   }
 
@@ -951,7 +958,7 @@ export function registerModel(
   if (trimmedId in MODEL_REGISTRY) {
     console.warn(
       `[registerModel] Model '${trimmedId}' already exists in registry. ` +
-      'Overwriting with new configuration. This may affect existing code.'
+        'Overwriting with new configuration. This may affect existing code.'
     )
   }
 
@@ -974,13 +981,14 @@ export function registerModel(
     if (!(field in config)) {
       throw new Error(
         `[registerModel] Missing required field '${field}' for model '${trimmedId}'. ` +
-        'See TokenModelConfig interface for required fields.'
+          'See TokenModelConfig interface for required fields.'
       )
     }
   }
 
   // Register the model
-  ;(MODEL_REGISTRY as Record<string, TokenModelConfig>)[trimmedId] = config as TokenModelConfig
+  ;(MODEL_REGISTRY as Record<string, TokenModelConfig>)[trimmedId] =
+    config as TokenModelConfig
 }
 
 /**
@@ -1133,7 +1141,7 @@ export function unregisterModel(id: string): boolean {
   if (!isCustomModel(id)) {
     console.warn(
       `[unregisterModel] Cannot unregister built-in model '${id}'. ` +
-      'Only custom models registered via registerModel() can be unregistered.'
+        'Only custom models registered via registerModel() can be unregistered.'
     )
     return false
   }
