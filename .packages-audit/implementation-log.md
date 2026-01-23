@@ -460,10 +460,85 @@ eliminated)
 
 ---
 
+### ✅ Task 9: Semantic Chunker Consolidation (COMPLETED)
+
+**Date:** 2026-01-23 (evening) **duplicateApisRemaining:** 113 → 111 (2 duplicates eliminated)
+
+**Initial Audit Finding:** ~4 "duplicates" identified
+
+**Actual Analysis:** Found 2 TRUE duplicates after analysis:
+
+- SemanticChunker stub in memory package had incompatible API (tests expected different methods)
+- Canonical implementation at react/utils/memory/semantic-chunker.ts provides unique features not in
+  TextChunker
+
+#### 9.1 Parallel Agent Execution
+
+**5 agents deployed** for analysis and deletion:
+
+- 2 deletion agents - Removed duplicate files
+- 3 exploration agents - Analyzed implementations and consumers
+
+#### 9.2 Files Deleted (1 partial, ~66 lines removed)
+
+**TRUE DUPLICATES:**
+
+- ✅ `memory/src/utils/token-optimization-stubs.ts` - SemanticChunker stub class (66 lines, lines
+  96-156) - Incompatible API with consumers, unused internally
+
+**Total:** 66 lines of duplicate SemanticChunker code removed
+
+#### 9.3 Canonical Implementation Established
+
+**Canonical:** `react/src/utils/memory/semantic-chunker.ts` - SemanticChunker (304 lines)
+
+**Why Keep Canonical SemanticChunker?**
+
+- Provides unique features NOT in TextChunker:
+  - Async embedding generation
+  - Importance scoring (0-1 scale)
+  - Topic extraction via keyword analysis
+  - Cosine similarity for relevance-based retrieval
+  - Budget-aware optimal chunk selection
+- Serves different use case than TextChunker (semantic retrieval vs general chunking)
+
+**General-Purpose Chunking:** `token-optimization/src/chunking/text-chunker.ts` - TextChunker
+(recommended for basic chunking)
+
+#### 9.4 Consumers Updated
+
+**Exports removed:**
+
+- ✅ `memory/src/index.ts` - Removed SemanticChunker export (stub deleted)
+- ✅ `react/src/memory/index.ts` - Removed SemanticChunker re-export from @clarity-chat/memory
+- ✅ `react/src/exports/memory-context.ts` - Removed SemanticChunker re-export
+- ✅ `react/DESIGN.md` - Removed SemanticChunker from public API table
+
+**Imports fixed:**
+
+- ✅ `react/src/memory/__tests__/token-optimizer.test.ts` - Updated to import from canonical
+  location (../../utils/memory/semantic-chunker)
+
+#### 9.5 Non-existent Files
+
+**Audit claimed these existed but they don't:**
+
+- ❌ `token-optimization/src/legacy-compatibility.ts` - File does not exist
+- ❌ `react/src/memory/token-optimizer.ts` - File does not exist (only test file exists)
+
+#### 9.6 Verification
+
+- ✅ Canonical SemanticChunker remains at react/utils/memory/semantic-chunker.ts
+- ✅ No imports from deleted stub remain
+- ✅ Tests now import from correct canonical location
+
+**Status:** ✅ Complete
+
+---
+
 ## Pending
 
-- Task 9: Consolidate Utilities (40+ duplicates)
-- Task 9: Consolidate Utilities (40+ duplicates)
+- Task 10: Consolidate Utilities (cn, useReducedMotion, Button, Dialog, etc.)
 - Task 10: Split Large Files
 - Task 11: Break Circular Dependency
 - Task 12: Final Verification
@@ -472,10 +547,10 @@ eliminated)
 
 ## Metrics
 
-| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | After Task 5 | After Task 6 | After Task 7 | After Task 8 | Target  |
-| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------- |
-| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | **123**      | **118**      | **116**      | **113**      | 7       |
-| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
-| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | **13,342**   | **14,524**   | **14,639**   | **14,691**   | ~10,000 |
-| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 13           | 13           | 13           | 13           | 3       |
-| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Metric                 | Before | After Task 1 | After Task 2 | After Task 3 | After Task 4 | After Task 5 | After Task 6 | After Task 7 | After Task 8 | After Task 9 | Target  |
+| ---------------------- | ------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------- |
+| duplicateApisRemaining | 150    | 150          | **140**      | **137**      | **126**      | **123**      | **118**      | **116**      | **113**      | **111**      | 7       |
+| Deprecated LOC         | 1,246  | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |
+| Duplicate code removed | 0      | 1,246        | **4,969**    | **6,410**    | **11,346**   | **13,342**   | **14,524**   | **14,639**   | **14,691**   | **14,757**   | ~10,000 |
+| Files >1000 lines      | 15     | 14           | 14           | 14           | 13           | 13           | 13           | 13           | 13           | 13           | 3       |
+| Test files broken      | 0      | 0            | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅         | 0 ✅    |

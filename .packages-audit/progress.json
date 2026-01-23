@@ -25,9 +25,9 @@
       "documentation": "2/5"
     }
   },
-  "duplicateApisRemaining": 113,
-  "lastCompletedTask": "Consolidated validation errors - 3 duplicates eliminated (audit overcounted), 52 lines removed",
-  "lastUpdated": "2026-01-23T23:00:00Z",
+  "duplicateApisRemaining": 111,
+  "lastCompletedTask": "Consolidated SemanticChunker - 2 duplicates eliminated, 66 lines removed",
+  "lastUpdated": "2026-01-23T23:30:00Z",
   "packages": [
     "cli",
     "codemods",
@@ -173,6 +173,17 @@
       "parallel": true,
       "agents": 4,
       "note": "Audit initially counted 9 duplicates. Analysis found 3 TRUE duplicates after investigating 12 ValidationError implementations. Most were legitimate domain-specific: CLI ValidationError (exit codes, 15+ consumers), token-optimization ValidationError (domain-specific), ConfigValidationError (config-specific), architect ValidationError (Zod wrapper), MemoryValidationError (memory operations). Deleted: legacy deprecated ValidationError from error-handling, unused CLIValidationError from utils, unused enterprise ValidationError. Updated factory.ts to use EnhancedValidationError static methods."
+    },
+    {
+      "date": "2026-01-23T23:30:00Z",
+      "task": "Semantic Chunker Consolidation (Plan Task 1.8)",
+      "files": ["memory/src/utils/token-optimization-stubs.ts"],
+      "linesDeleted": 66,
+      "duplicatesEliminated": 2,
+      "status": "COMPLETE",
+      "parallel": true,
+      "agents": 5,
+      "note": "Audit initially counted 4 duplicates. Analysis found 2 TRUE duplicates - SemanticChunker stub in memory package with incompatible API (tests expected different methods like chunkConversation, retrieveOptimalChunks that didn't exist). Deleted stub (66 lines) and removed exports from memory package. Canonical SemanticChunker at react/utils/memory/semantic-chunker.ts (304 lines) kept as it provides unique features NOT in TextChunker: async embeddings, importance scoring, topic extraction, cosine similarity retrieval, budget-aware selection. Serves different use case than TextChunker (semantic retrieval vs general chunking). Audit claimed token-optimization/legacy-compatibility.ts and react/memory/token-optimizer.ts existed but they don't."
     }
   ],
   "nextSteps": [
@@ -183,7 +194,8 @@
     "5. ✅ DONE: plan.md Task 1.5: Error Boundary Consolidation (5 true duplicates, audit overcounted)",
     "6. ✅ DONE: plan.md Task 1.6: Logger Consolidation (2 true duplicates, audit overcounted)",
     "7. ✅ DONE: plan.md Task 1.7: Validation Error Consolidation (3 true duplicates, audit overcounted)",
-    "8. Continue through all consolidation tasks (Utilities)",
+    "8. ✅ DONE: plan.md Task 1.8: Semantic Chunker Consolidation (2 true duplicates, audit overcounted)",
+    "9. Continue through all consolidation tasks (Utilities: cn, useReducedMotion, Button, Dialog, etc.)",
     "8. Update all consumers",
     "7. Delete duplicate files",
     "8. Run verification",
@@ -192,8 +204,8 @@
   ],
   "estimatedEffort": {
     "totalHours": 135,
-    "completed": 40,
-    "remaining": 95,
-    "percentComplete": 29.6
+    "completed": 42,
+    "remaining": 93,
+    "percentComplete": 31.1
   }
 }

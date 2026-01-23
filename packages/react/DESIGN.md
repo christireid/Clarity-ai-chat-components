@@ -17,13 +17,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Render a functional chat interface with minimal configuration.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `ClarityChat`, `ChatWithMemory`, `ChatComplete` | Drop-in components, zero config |
-| **Mid-level** | `ChatWindow`, `useChat`, `useClarityChat` | Composable building blocks |
-| **Low-level** | `Message`, `ChatInput`, `useChatCore`, `convertCoreMessagesToMessages` | Primitives and utilities |
+| Layer         | APIs                                                                   | Purpose                         |
+| ------------- | ---------------------------------------------------------------------- | ------------------------------- |
+| **Top-level** | `ClarityChat`, `ChatWithMemory`, `ChatComplete`                        | Drop-in components, zero config |
+| **Mid-level** | `ChatWindow`, `useChat`, `useClarityChat`                              | Composable building blocks      |
+| **Low-level** | `Message`, `ChatInput`, `useChatCore`, `convertCoreMessagesToMessages` | Primitives and utilities        |
 
 **Naming Convention**:
+
 - Top-level: `Chat*` components (e.g., `ClarityChat`, `ChatWithMemory`)
 - Mid-level: `useChat*` hooks, `*Window` components
 - Low-level: `*Core` hooks, `*Utils` functions
@@ -32,13 +33,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Manage conversation context and enable long-term memory.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `useMemory`, `MemoryProvider` | Simple memory access |
-| **Mid-level** | `useMemoryQuery`, `useConversationMemory`, `useMemoryOptimization` | Memory operations |
-| **Low-level** | `MemoryService`, `TokenCounter`, `ContextOptimizer`, `SemanticChunker` | Core services and utilities |
+| Layer         | APIs                                                               | Purpose                     |
+| ------------- | ------------------------------------------------------------------ | --------------------------- |
+| **Top-level** | `useMemory`, `MemoryProvider`                                      | Simple memory access        |
+| **Mid-level** | `useMemoryQuery`, `useConversationMemory`, `useMemoryOptimization` | Memory operations           |
+| **Low-level** | `MemoryService`, `TokenCounter`, `ContextOptimizer`                | Core services and utilities |
 
 **Naming Convention**:
+
 - Top-level: `useMemory*` hooks, `*Provider` components
 - Mid-level: `useMemory*` hooks for specific operations
 - Low-level: `*Service`, `*Manager`, `*Optimizer` classes
@@ -47,13 +49,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Connect to AI models, handle streaming, orchestrate agents.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `createAgent`, `useStreaming`, `useAssistant` | High-level AI operations |
+| Layer         | APIs                                                                     | Purpose                  |
+| ------------- | ------------------------------------------------------------------------ | ------------------------ |
+| **Top-level** | `createAgent`, `useStreaming`, `useAssistant`                            | High-level AI operations |
 | **Mid-level** | `ReactAgent`, `useStreamingSSE`, `useStreamingWebSocket`, model adapters | Composable AI primitives |
-| **Low-level** | `StreamParser`, `AdapterBase`, `ToolRegistry` | Internal utilities |
+| **Low-level** | `StreamParser`, `AdapterBase`, `ToolRegistry`                            | Internal utilities       |
 
 **Naming Convention**:
+
 - Top-level: `create*` factories, `use*` hooks for common patterns
 - Mid-level: `*Agent`, `*Adapter`, `use*` hooks for specific transports
 - Low-level: `*Parser`, `*Registry`, `*Base` classes
@@ -62,13 +65,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Multi-tenant, secure, auditable AI applications.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `createTenantContext`, `useRBAC`, `useAudit` | Enterprise setup |
+| Layer         | APIs                                                             | Purpose             |
+| ------------- | ---------------------------------------------------------------- | ------------------- |
+| **Top-level** | `createTenantContext`, `useRBAC`, `useAudit`                     | Enterprise setup    |
 | **Mid-level** | `TenantProvider`, `RBACProvider`, `AuditLogger`, `SafetyService` | Enterprise services |
-| **Low-level** | `QuotaManager`, `PermissionChecker`, `AuditStore` | Internal utilities |
+| **Low-level** | `QuotaManager`, `PermissionChecker`, `AuditStore`                | Internal utilities  |
 
 **Naming Convention**:
+
 - Top-level: `create*` factories, `use*` hooks
 - Mid-level: `*Provider`, `*Service`, `*Logger` classes
 - Low-level: `*Manager`, `*Checker`, `*Store` classes
@@ -77,13 +81,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Track usage, monitor performance, debug issues.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `useAnalytics`, `AnalyticsProvider` | Simple analytics access |
-| **Mid-level** | `usePerformance`, `useErrorTracking`, analytics providers | Specific tracking |
-| **Low-level** | `AnalyticsEvent`, `PerformanceMonitor`, `ErrorTracker` | Core services |
+| Layer         | APIs                                                      | Purpose                 |
+| ------------- | --------------------------------------------------------- | ----------------------- |
+| **Top-level** | `useAnalytics`, `AnalyticsProvider`                       | Simple analytics access |
+| **Mid-level** | `usePerformance`, `useErrorTracking`, analytics providers | Specific tracking       |
+| **Low-level** | `AnalyticsEvent`, `PerformanceMonitor`, `ErrorTracker`    | Core services           |
 
 **Naming Convention**:
+
 - Top-level: `useAnalytics`, `*Provider` components
 - Mid-level: `use*` hooks for specific tracking
 - Low-level: `*Event`, `*Monitor`, `*Tracker` classes
@@ -92,13 +97,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 
 **Job to be done**: Reduce boilerplate, provide sensible defaults, enable quick iteration.
 
-| Layer | APIs | Purpose |
-|-------|------|---------|
-| **Top-level** | `chatPresets`, `applyChatPreset`, recipe components | Pre-configured setups |
-| **Mid-level** | `useChatComposable`, `createChatHook`, helper hooks | Feature composition |
-| **Low-level** | `normalizeMessages`, `buildContextBundle`, test utilities | Internal helpers |
+| Layer         | APIs                                                      | Purpose               |
+| ------------- | --------------------------------------------------------- | --------------------- |
+| **Top-level** | `chatPresets`, `applyChatPreset`, recipe components       | Pre-configured setups |
+| **Mid-level** | `useChatComposable`, `createChatHook`, helper hooks       | Feature composition   |
+| **Low-level** | `normalizeMessages`, `buildContextBundle`, test utilities | Internal helpers      |
 
 **Naming Convention**:
+
 - Top-level: `*Preset`, `apply*` functions, recipe components
 - Mid-level: `use*Composable`, `create*` builders
 - Low-level: `normalize*`, `build*`, `*Utils` functions
@@ -108,6 +114,7 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 ### Hooks
 
 **Return Shape**:
+
 ```tsx
 {
   // Data
@@ -125,12 +132,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 **Naming**: Always `use*` prefix
 
 **Examples**:
+
 - ✅ `useChat`, `useMemory`, `useAnalytics`
 - ❌ `chatHook`, `getMemory`, `trackAnalytics`
 
 ### Components
 
 **Props Shape**:
+
 ```tsx
 {
   // Required
@@ -154,12 +163,14 @@ Clarity Chat is organized around **6 core domains**, each with a clear layered a
 **Naming**: PascalCase, descriptive
 
 **Examples**:
+
 - ✅ `ChatWindow`, `MessageList`, `ChatInput`
 - ❌ `Chat`, `MsgList`, `Input`
 
 ### Config Objects
 
 **Shape**:
+
 ```tsx
 {
   // Common options
@@ -231,10 +242,10 @@ Which domain does this belong to? If none, consider if it's needed or if it fits
 
 ### From Old to New Architecture
 
-**Old**: Everything exported from root
-**New**: Layered exports with clear domains
+**Old**: Everything exported from root **New**: Layered exports with clear domains
 
 **Migration**:
+
 - Old exports still work (backward compatible)
 - New exports follow layered architecture
 - Gradually migrate to new structure
@@ -291,5 +302,4 @@ const adapter = new OpenAIAdapter(apiKey)
 
 ---
 
-**Last Updated**: Phase 2 Architecture Refinement
-**Maintainer**: Architecture Team
+**Last Updated**: Phase 2 Architecture Refinement **Maintainer**: Architecture Team

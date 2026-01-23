@@ -147,7 +147,6 @@ export type {
 } from './utils/token-counter'
 
 export { TokenBudgetManager } from './context/token-budget'
-export { SemanticChunker } from './utils/token-optimization-stubs'
 export { ContextOptimizer } from './utils/context-optimizer'
 export type {
   TokenBudgetAllocation,

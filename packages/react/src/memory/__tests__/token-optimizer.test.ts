@@ -7,9 +7,9 @@ import {
   TokenCounter,
   TokenBudgetManager,
   MemoryCompressor,
-  SemanticChunker,
   ContextOptimizer,
 } from '@clarity-chat/memory'
+import { SemanticChunker } from '../../utils/memory/semantic-chunker'
 import type { TokenOptimizationConfig, MemoryItem } from '../types'
 
 const defaultConfig: TokenOptimizationConfig = {
