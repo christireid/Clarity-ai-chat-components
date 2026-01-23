@@ -135,7 +135,8 @@ export * from './hooks/ui/use-debounce'
 export * from './hooks/ui/use-throttle'
 export * from './hooks/ui/use-toggle'
 export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-mounted'
+// NOTE: use-mounted doesn't exist - use use-is-mounted instead
+// export * from './hooks/ui/use-mounted'
 export * from './hooks/ui/use-is-mounted'
 export * from './hooks/ui/use-merged-ref'
 export * from './hooks/ui/use-window-size'
@@ -376,7 +377,20 @@ export * from './vector-stores'
 // ============================================================================
 // DOCUMENT LOADERS
 // ============================================================================
-export * from './document-loaders'
+// Note: DocumentMetadata is exported from './components/media' - exclude from document-loaders to avoid ambiguity
+export type {
+  DocumentMetadataValue,
+  Document,
+  DocumentChunk,
+  ChunkingOptions,
+  DocumentLoadOptions,
+  DocumentLoader,
+  TextSplitter,
+} from './document-loaders/types'
+export * from './document-loaders/text-splitter'
+export * from './document-loaders/loaders'
+export * from './document-loaders/pdf-loader'
+export * from './document-loaders/docx-loader'
 
 // ============================================================================
 // RERANKING

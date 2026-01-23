@@ -235,7 +235,6 @@ export function useStreamingWebSocket(
   }
 
   const {
-    url,
     protocols,
     autoReconnect = true,
     reconnectOnCleanClose = true,

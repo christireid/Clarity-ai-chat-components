@@ -286,9 +286,13 @@ export function Message({
         {/* Header - only show on group start */}
         {isGroupStart && (
           <MessageHeader
-            role={message.role}
-            timestamp={message.createdAt}
-            status={message.status}
+            role={message.role === 'system' ? 'assistant' : message.role}
+            timestamp={message.createdAt.getTime()}
+            status={
+              message.status === 'pending'
+                ? 'sending'
+                : message.status
+            }
             showTimestamp={showTimestamp}
             isHovered={isHovered}
           />

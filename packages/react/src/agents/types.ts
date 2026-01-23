@@ -8,6 +8,18 @@
  * These types are kept for backward compatibility but are deprecated.
  */
 
+// Import types for use within this file
+import type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
+} from '../types/tool-definition'
+
 // Re-export canonical types without confusing aliases
 export type {
   ToolDefinition,
@@ -18,7 +30,7 @@ export type {
   ToolExecutionContext,
   ToolLifecycleHooks,
   IToolRegistry,
-} from '../types/tool-definition'
+}
 
 // NOTE: Canonical* aliases don't exist - the types above are already canonical
 // Re-exporting them with different names would cause confusion

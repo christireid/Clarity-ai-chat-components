@@ -9,7 +9,14 @@
  * Based on Sarah Drasner's Night Owl theme for VS Code.
  */
 
-import type { IStandaloneThemeData } from 'monaco-editor'
+// NOTE: monaco-editor is not a dependency - defining local type
+// import type { IStandaloneThemeData } from 'monaco-editor'
+interface IStandaloneThemeData {
+  base: string
+  inherit: boolean
+  rules: Array<{ token: string; foreground: string; background?: string; fontStyle?: string }>
+  colors: Record<string, string>
+}
 
 /**
  * Night Owl Color Palette

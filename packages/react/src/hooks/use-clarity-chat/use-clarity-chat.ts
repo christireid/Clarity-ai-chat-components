@@ -226,11 +226,11 @@ export function useClarityChat(
             setConsentGranted(consent)
 
             if (!consent) {
-              debug.info('[Clarity Chat] Memory capture consent denied by user')
+              debug.info('hook:useClarityChat', 'Memory capture consent denied by user')
               return
             }
 
-            debug.info('[Clarity Chat] Memory capture consent granted by user')
+            debug.info('hook:useClarityChat', 'Memory capture consent granted by user')
           } catch (error) {
             console.error('[Clarity Chat] Error obtaining consent:', error)
             setConsentGranted(false)
@@ -255,7 +255,7 @@ export function useClarityChat(
               'thread',
               {
                 messageId: message.id,
-                role: message.role,
+                role: message.role === 'function' ? 'tool' : message.role,
                 timestamp: new Date().toISOString(),
                 autoCapture: true, // Mark as auto-captured for audit trail
               },
@@ -421,56 +421,58 @@ export function useClarityChat(
 
   // Effect for prompt optimization
   React.useEffect(() => {
-    if (promptOptimization?.enabled && chat.messages.length > 0) {
-      const optimizeMessages = async () => {
-        try {
-          const modelMetadata: ModelMetadata | undefined =
-            promptOptimization.model
-              ? MODEL_PRESETS[promptOptimization.model] || {
-                  model: promptOptimization.model,
-                  maxTokens: promptOptimization.targetTokens || 8192,
-                }
-              : MODEL_PRESETS['gpt-4']
-
-          const result = await buildModelPrompt({
-            toonNodes: undefined,
-            variables: {},
-            memoryContext: memoryContextRef.current || undefined,
-            userInput: undefined,
-            modelMetadata,
-            messages: chat.messages,
-            targetTokens: promptOptimization.targetTokens,
-            optimization: {
-              enabled: true,
-              strategy: promptOptimization.strategy || 'hybrid',
-              priorities: promptOptimization.priorities,
-              summarizeFn: promptOptimization.summarizeFn,
-              keepRecent: promptOptimization.keepRecent || 2,
-            },
-          })
-
-          setOptimizedMessagesState({
-            messages: result.messages,
-            tokenStats: {
-              inputTokens: result.tokenStats.inputTokens,
-              remainingBudget: result.tokenStats.remainingBudget,
-              utilization: result.tokenStats.utilization,
-              lastOptimizationReason: result.optimizationDiagnostics
-                ? result.optimizationDiagnostics.details.join(', ')
-                : undefined,
-              wasOptimized: result.optimizationDiagnostics !== undefined,
-            },
-          })
-        } catch (error) {
-          console.warn('[useClarityChat] Prompt optimization failed:', error)
-        }
-      }
-
-      // Debounce optimization to avoid excessive processing during rapid updates
-      // Standard useEffect debounce pattern using setTimeout:
-      const timeoutId = setTimeout(optimizeMessages, 500)
-      return () => clearTimeout(timeoutId)
+    if (!promptOptimization?.enabled || chat.messages.length === 0) {
+      return
     }
+
+    const optimizeMessages = async () => {
+      try {
+        const modelMetadata: ModelMetadata | undefined =
+          promptOptimization.model
+            ? MODEL_PRESETS[promptOptimization.model] || {
+                model: promptOptimization.model,
+                maxTokens: promptOptimization.targetTokens || 8192,
+              }
+            : MODEL_PRESETS['gpt-4']
+
+        const result = await buildModelPrompt({
+          toonNodes: undefined,
+          variables: {},
+          memoryContext: memoryContextRef.current || undefined,
+          userInput: undefined,
+          modelMetadata,
+          messages: chat.messages,
+          targetTokens: promptOptimization.targetTokens,
+          optimization: {
+            enabled: true,
+            strategy: promptOptimization.strategy || 'hybrid',
+            priorities: promptOptimization.priorities,
+            summarizeFn: promptOptimization.summarizeFn,
+            keepRecent: promptOptimization.keepRecent || 2,
+          },
+        })
+
+        setOptimizedMessagesState({
+          messages: result.messages,
+          tokenStats: {
+            inputTokens: result.tokenStats.inputTokens,
+            remainingBudget: result.tokenStats.remainingBudget,
+            utilization: result.tokenStats.utilization,
+            lastOptimizationReason: result.optimizationDiagnostics
+              ? result.optimizationDiagnostics.details.join(', ')
+              : undefined,
+            wasOptimized: result.optimizationDiagnostics !== undefined,
+          },
+        })
+      } catch (error) {
+        console.warn('[useClarityChat] Prompt optimization failed:', error)
+      }
+    }
+
+    // Debounce optimization to avoid excessive processing during rapid updates
+    // Standard useEffect debounce pattern using setTimeout:
+    const timeoutId = setTimeout(optimizeMessages, 500)
+    return () => clearTimeout(timeoutId)
   }, [
     promptOptimization?.enabled,
     chat.messages, // Include full messages array to detect content changes

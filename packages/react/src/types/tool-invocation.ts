@@ -356,7 +356,7 @@ export function getToolInvocations(message: ChatMessage): ToolInvocation[] {
   if (!hasToolInvocations(message)) {
     return []
   }
-  return message.toolInvocations
+  return message.toolInvocations ?? []
 }
 
 /**

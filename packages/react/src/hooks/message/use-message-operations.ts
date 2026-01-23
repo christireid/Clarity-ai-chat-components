@@ -566,10 +566,18 @@ export function useMessageOperations(
         }
         break
       case 'regenerate':
-        // Restore the regenerated messages
+        // Restore the regenerated message
         if (operation.previousState) {
-          // previousState should contain the full message array after regeneration
-          setMessages(operation.previousState as MessageWithOperations[])
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === operation.messageId)
+            if (!exists) {
+              console.warn('[MessageOperations] Cannot redo regenerate: message not found')
+              return prev
+            }
+            return prev.map((m) =>
+              m.id === operation.messageId ? operation.previousState! : m
+            )
+          })
         }
         break
     }

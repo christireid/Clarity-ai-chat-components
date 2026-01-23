@@ -8,6 +8,11 @@ import { jsonToToon, estimateToonSavings, isSuitableForToon } from './encoder'
 import { toonToJson } from './decoder'
 import { estimateTokens } from '../tokenization/estimator'
 
+/** JSON-like value type for TOON encoding */
+type JsonValue = string | number | boolean | null | undefined | JsonObject | JsonArray
+type JsonObject = { [key: string]: JsonValue }
+type JsonArray = JsonValue[]
+
 export interface ToonOptimizationResult {
   /** Format used (json or toon) */
   format: 'json' | 'toon'
@@ -46,7 +51,7 @@ export interface AutoToonOptions {
  * // Send result.data to LLM
  * ```
  */
-export function autoOptimize<T = unknown>(
+export function autoOptimize<T extends JsonValue = JsonValue>(
   data: T,
   options: AutoToonOptions = {}
 ): ToonOptimizationResult {
@@ -125,14 +130,14 @@ export function autoOptimize<T = unknown>(
 export function parseFlexible<T = unknown>(response: string): T {
   // Try JSON first
   try {
-    return JSON.parse(response)
+    return JSON.parse(response) as T
   } catch {
     // Try TOON
     try {
-      return toonToJson(response)
+      return toonToJson(response) as T
     } catch {
       // Return raw string if neither works
-      return response
+      return response as T
     }
   }
 }
@@ -140,7 +145,7 @@ export function parseFlexible<T = unknown>(response: string): T {
 /**
  * Batch optimize multiple data items
  */
-export function batchOptimize<T = unknown>(
+export function batchOptimize<T extends JsonValue = JsonValue>(
   items: T[],
   options: AutoToonOptions = {}
 ): {
@@ -165,7 +170,7 @@ export function batchOptimize<T = unknown>(
 /**
  * Format data for LLM with automatic optimization
  */
-export function formatForLLM<T = unknown>(
+export function formatForLLM<T extends JsonValue = JsonValue>(
   data: T,
   options: AutoToonOptions = {}
 ): {

@@ -153,12 +153,16 @@ export class AuthenticationError extends AdapterError {
 /**
  * API key missing error
  */
-export class APIKeyMissingError extends AuthenticationError {
+export class APIKeyMissingError extends AdapterError {
   constructor(provider: string) {
-    super(`${provider} API key is required but not provided`, {
-      provider,
-    })
-    this.code = AdapterErrorCode.API_KEY_MISSING
+    super(
+      `${provider} API key is required but not provided`,
+      AdapterErrorCode.API_KEY_MISSING,
+      {
+        provider,
+        isRetryable: false,
+      }
+    )
     this.name = 'APIKeyMissingError'
   }
 }

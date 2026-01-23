@@ -191,7 +191,9 @@ export function TanStackMessageList({
           return (
             <div
               key={message.id || `msg-${index}`}
-              ref={(el) => (itemRefs.current[index] = el)}
+              ref={(el) => {
+                itemRefs.current[index] = el
+              }}
               tabIndex={isFocused ? 0 : -1}
               role="article"
               aria-label={`Message ${index + 1} of ${messages.length}${
