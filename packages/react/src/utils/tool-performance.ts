@@ -167,7 +167,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: event.call.cached || false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'completed',
       })
     })
@@ -177,7 +177,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'failed',
         error: event.error.message,
       }
@@ -191,7 +191,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'timeout',
         error: 'Execution timeout',
       }
@@ -205,7 +205,7 @@ export class ToolPerformanceMonitor {
         toolName: event.call.toolName,
         duration: event.call.duration || 0,
         cached: false,
-        timestamp: event.call.startedAt || Date.now(),
+        timestamp: event.call.timestamps.executionStarted || Date.now(),
         status: 'cancelled',
       })
     })
@@ -297,26 +297,34 @@ export class ToolPerformanceMonitor {
     const toolStats = Object.entries(byTool)
     const slowestTool =
       toolStats.length > 0
-        ? toolStats.reduce((slowest, [name, stats]) =>
-            stats.avgDuration > (slowest?.avgDuration ?? 0)
-              ? { name, avgDuration: stats.avgDuration }
-              : slowest
+        ? toolStats.reduce<{ name: string; avgDuration: number } | null>(
+            (slowest, [name, stats]) =>
+              stats.avgDuration > (slowest?.avgDuration ?? 0)
+                ? { name, avgDuration: stats.avgDuration }
+                : slowest,
+            null
           )
         : null
 
     const fastestTool =
       toolStats.length > 0
-        ? toolStats.reduce((fastest, [name, stats]) =>
-            stats.avgDuration < (fastest?.avgDuration ?? Infinity)
-              ? { name, avgDuration: stats.avgDuration }
-              : fastest
+        ? toolStats.reduce<{ name: string; avgDuration: number } | null>(
+            (fastest, [name, stats]) =>
+              stats.avgDuration < (fastest?.avgDuration ?? Infinity)
+                ? { name, avgDuration: stats.avgDuration }
+                : fastest,
+            null
           )
         : null
 
     const mostUsedTool =
       toolStats.length > 0
-        ? toolStats.reduce((mostUsed, [name, stats]) =>
-            stats.count > (mostUsed?.count ?? 0) ? { name, count: stats.count } : mostUsed
+        ? toolStats.reduce<{ name: string; count: number } | null>(
+            (mostUsed, [name, stats]) =>
+              stats.count > (mostUsed?.count ?? 0)
+                ? { name, count: stats.count }
+                : mostUsed,
+            null
           )
         : null
 
