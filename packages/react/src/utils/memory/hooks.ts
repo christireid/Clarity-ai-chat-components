@@ -13,7 +13,7 @@ import type {
   MemoryStats,
 } from './types'
 import { MemoryService, type MemoryServiceConfig } from '@clarity-chat/memory'
-import { estimateTokens } from './prompt-compression'
+import { estimateTokens } from '../tokenization'
 
 /**
  * Hook for managing memory service instance

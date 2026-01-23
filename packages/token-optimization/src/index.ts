@@ -239,6 +239,9 @@ export {
   MemoryAdaptiveStrategy,
   createMemoryAdaptiveStrategy,
   compressWithMemoryAdaptive,
+  // Legacy compression API (deprecated, use compressAdaptively instead)
+  compressText,
+  compressTextBatch,
 } from './compression'
 
 export type {

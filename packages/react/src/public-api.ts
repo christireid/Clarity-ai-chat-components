@@ -551,26 +551,20 @@ export {
 // Note: Additional theme utilities can be added via './utils/theme-helpers' if implemented
 
 // Accessibility Helpers - Enhanced A11y support
+// Core accessibility utilities from @clarity-chat/error-handling
 export {
-  createAccessibleButtonProps,
-  createAccessibleDialogProps,
-  createAccessibleListboxProps,
-  useKeyboardListNavigation,
-  useChatInputKeyboard,
-  announceToScreenReader,
-  useScreenReaderAnnouncements,
-  LiveRegion,
   useFocusManagement,
-  isKeyboardAccessible,
-  getFocusableElements,
-  validateChatAccessibility,
-  useMotionPreferences,
-  createAccessibleMotionProps,
+  useScreenReaderAnnounce,
   useHighContrastMode,
-  applyHighContrastAdjustments,
-  SkipLink,
-  ScreenReaderOnly,
-} from './utils/accessibility-helpers'
+  useReducedMotion,
+  useColorContrast,
+} from '@clarity-chat/error-handling'
+
+// Streaming-specific accessibility utilities
+export {
+  useDebouncedStreamingAnnouncements,
+  useStreamingFocusPreservation,
+} from './utils/accessibility-streaming'
 
 // Testing Helpers - Comprehensive testing toolkit
 export {
@@ -653,11 +647,11 @@ export {
   type TimeStats as StreamTimeStats,
 } from './hooks/streaming/use-stream-status'
 
-// Accessibility
-export { useReducedMotion } from './animations'
+// Accessibility - focus management utilities
 export {
   useFocusTrap,
   useFocusRestoration,
+  getFocusableElements,
 } from './accessibility/focus-management'
 
 // Auto-scroll

@@ -2030,6 +2030,12 @@ importers:
 
   packages/dev-tools:
     dependencies:
+      '@clarity-chat/error-handling':
+        specifier: workspace:*
+        version: link:../error-handling
+      '@clarity-chat/primitives':
+        specifier: workspace:*
+        version: link:../primitives
       '@clarity-chat/utils':
         specifier: workspace:*
         version: link:../utils

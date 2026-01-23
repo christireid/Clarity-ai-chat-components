@@ -10,10 +10,23 @@
  * - Response caching and reuse
  */
 
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  AdvancedSemanticCache,
+} from '@clarity-chat/token-optimization'
 
 // Module-level counter instance for token counting
 const tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
+// Module-level semantic cache instance
+const semanticCache = new AdvancedSemanticCache({
+  maxSize: 1000,
+  maxAge: 1000 * 60 * 60, // 1 hour
+  similarityThreshold: 0.8,
+  enableEmbeddingCache: true,
+  enableContextAwareness: true,
+  enablePredictiveCaching: false,
+  compressionThreshold: 10000, // Compress if larger than 10KB
+})
 import { adaptiveOptimizer } from './adaptive-optimizer'
 
 export type ResponseOptimizationStrategy =
@@ -537,11 +550,11 @@ export class ResponseLengthPredictor {
  */
 export class ResponseOptimizer {
   private predictor: ResponseLengthPredictor
-  private tokenCounter: TokenCounter
+  private tokenCounter: AccurateTokenCounter
 
   constructor() {
     this.predictor = new ResponseLengthPredictor()
-    this.tokenCounter = new TokenCounter()
+    this.tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   /**
@@ -862,15 +875,21 @@ export class ResponseOptimizer {
     const cacheKey = this.generateCacheKey(prompt, model)
     const responseTokens = await tokenCounter.count(response)
 
-    // Type assertion needed as semanticCache uses generic unknown type
-
-    await semanticCache.set(cacheKey, {
+    await semanticCache.set(
+      cacheKey,
       response,
-      tokens: responseTokens,
-      model,
-      timestamp: Date.now(),
-      metadata,
-    } as any)
+      {
+        contentType: 'text' as const,
+        semanticFingerprint: cacheKey,
+        qualityScore: 0.9,
+        domain: model,
+        ...metadata,
+      },
+      {
+        domain: 'response-optimization',
+        userContext: model,
+      }
+    )
   }
 
   /**
@@ -882,13 +901,13 @@ export class ResponseOptimizer {
     similarityThreshold = 0.8
   ): Promise<string | null> {
     const cacheKey = this.generateCacheKey(prompt, model)
-    // Type assertion needed as semanticCache uses generic unknown type
-    const cached = (await semanticCache.get(cacheKey)) as {
-      response?: string
-    } | null
+    const result = await semanticCache.get(cacheKey, {
+      domain: 'response-optimization',
+      userContext: model,
+    })
 
-    if (cached && cached.response) {
-      return cached.response
+    if (result.found && result.entry) {
+      return result.entry.content
     }
 
     // Try semantic matching

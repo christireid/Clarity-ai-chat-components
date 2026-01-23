@@ -47,6 +47,6 @@ export {
   type PerformanceOptions,
 } from './performance-unified.js'
 
-// Keep original exports for any direct references
-export { formatDuration, formatBytes }
-export { getLogger }
+// Re-export utilities from other modules for backward compatibility
+export { formatDuration, formatBytes } from './format/index.js'
+export { getLogger } from './logger/index.js'

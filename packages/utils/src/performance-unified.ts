@@ -112,9 +112,6 @@ export class UnifiedPerformanceMonitor {
 
   private static renders: RenderTiming[] = []
   private static memorySnapshots: MemorySnapshot[] = []
-  private static fpsFrames: number[] = []
-  private static longTasks: number = 0
-  private static performanceObserver?: PerformanceObserver
 
   /**
    * Configure performance monitoring
@@ -362,8 +359,6 @@ export class UnifiedPerformanceMonitor {
     this.activeTimers.clear()
     this.renders = []
     this.memorySnapshots = []
-    this.fpsFrames = []
-    this.longTasks = 0
   }
 
   /**

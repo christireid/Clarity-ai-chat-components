@@ -326,7 +326,7 @@ export {
 export {
   PerformanceMonitor,
   measurePerformance,
-  measureAsyncPerformance,
+  measurePerformanceAsync,
   startPerformanceTimer,
   endPerformanceTimer,
   getPerformanceMetrics,
