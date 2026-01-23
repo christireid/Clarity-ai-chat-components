@@ -137,6 +137,25 @@ export class ToolOrchestrator {
       tools: config.tools ?? [],
     }
 
+    // SECURITY: Prevent autoApprove in production
+    if (this.config.autoApprove) {
+      const isProduction =
+        typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+
+      if (isProduction) {
+        throw new Error(
+          '[ToolOrchestrator] SECURITY ERROR: autoApprove cannot be enabled in production. ' +
+            'Tools must require explicit user approval. Set autoApprove: false.'
+        )
+      }
+
+      // Warn in non-production environments
+      console.warn(
+        '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+          'This should only be used in trusted development/testing environments.'
+      )
+    }
+
     this.registry = new ToolRegistry()
     this.lifecycle = new ToolLifecycleManager()
     this.executor = new ToolExecutor(this.lifecycle)
@@ -246,10 +265,14 @@ export class ToolOrchestrator {
         if (this.config.autoApprove) {
           this.lifecycle.approve(call.id, 'auto')
         } else {
-          // Throw error - approval must be done externally
-          throw new Error(
-            `Tool requires approval: ${toolName}. Call approve(callId) first.`
-          )
+          // Return pending status so caller knows to wait for approval
+          return {
+            callId: call.id,
+            toolName,
+            args,
+            status: 'pending_approval',
+            lifecycleRecord: this.lifecycle.getCall(call.id),
+          }
         }
       } else {
         // Auto-approved
@@ -364,7 +387,18 @@ export class ToolOrchestrator {
       // Mark as executing
       this.lifecycle.markExecuting(callId)
 
-      // Execute
+      // FIX: TOOL-018 - Re-validate approval status atomically
+      const currentCall = this.lifecycle.getCall(callId)
+      if (
+        currentCall.status !== 'approved' &&
+        currentCall.status !== 'executing'
+      ) {
+        throw new Error(
+          `Tool execution rejected: status changed to ${currentCall.status} during approval validation`
+        )
+      }
+
+      // Now safe to execute
       const result = await this.executor.execute(tool, call.args, {
         context: call.context,
       })

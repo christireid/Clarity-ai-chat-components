@@ -97,7 +97,7 @@ export const OpenAIAdapter = {
     return openaiMessages.map((msg, index) => ({
       id: `msg-${Date.now()}-${index}`,
       content: typeof msg.content === 'string' ? msg.content :
-               Array.isArray(msg.content) ? msg.content.map(c => c.text || '').join('') : '',
+               Array.isArray(msg.content) ? msg.content.map((c: { text?: string }) => c.text || '').join('') : '',
       role: msg.role,
       timestamp: Date.now(),
       // Preserve OpenAI-specific fields
@@ -493,7 +493,7 @@ export const MigrationPresets = {
   }),
 
   /** Migrate from custom implementation */
-  fromCustom: (config: { chatFunction: Function; messageConverters?: any }) => ({
+  fromCustom: (config: { chatFunction: (...args: any[]) => Promise<any>; messageConverters?: any }) => ({
     apiAdapter: CustomAdapter.createAPIRoute(config.chatFunction),
     messageConverter: (messages: any[]) =>
       CustomAdapter.convertMessages(messages, config.messageConverters),

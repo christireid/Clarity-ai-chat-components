@@ -12,7 +12,7 @@ import type {
   MemoryStorageOptions,
   MemoryStats,
 } from './types'
-import { MemoryService, type MemoryServiceConfig } from './memory-service'
+import { MemoryService, type MemoryServiceConfig } from '@clarity-chat/memory'
 import { estimateTokens } from './prompt-compression'
 
 /**

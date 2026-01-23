@@ -8,19 +8,24 @@
  * These types are kept for backward compatibility but are deprecated.
  */
 
-import type {
-  ToolDefinition as CanonicalToolDefinition,
-  ToolParameters as CanonicalToolParameters,
-  ToolArguments as CanonicalToolArguments,
-  ToolResult as CanonicalToolResult,
+// Re-export canonical types without confusing aliases
+export type {
+  ToolDefinition,
+  ToolParameters,
+  ToolArguments,
+  ToolResult,
+  ToolParameterProperty,
+  ToolExecutionContext,
+  ToolLifecycleHooks,
+  IToolRegistry,
 } from '../types/tool-definition'
 
 // Re-export canonical types as primary exports
 export type {
-  CanonicalToolDefinition as ToolDefinition,
-  CanonicalToolParameters as ToolParameters,
-  CanonicalToolArguments as ToolArguments,
-  CanonicalToolResult as ToolResult,
+  CanonicalToolDefinition,
+  CanonicalToolParameters,
+  CanonicalToolArguments,
+  CanonicalToolResult,
 }
 
 // =============================================================================
@@ -28,58 +33,24 @@ export type {
 // =============================================================================
 
 /**
- * @deprecated Use ToolParameterProperty from '../types/tool-definition' instead
+ * @deprecated Use ToolDefinition from '../types/tool-definition' instead
  *
- * JSON Schema property types for tool parameters
+ * This simplified Tool interface is missing critical fields like:
+ * - displayName, cacheable, cacheTtl, timeout, parallelizable
+ * - hooks (lifecycle callbacks)
+ * - execute function doesn't receive ToolExecutionContext
+ *
+ * Migrate to ToolDefinition for full feature support and security.
  */
-export interface LegacyToolParameterProperty {
-  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
-  description?: string
-  enum?: (string | number | boolean)[]
-  default?: unknown
-  items?: LegacyToolParameterProperty
-  properties?: Record<string, LegacyToolParameterProperty>
-  required?: string[]
-  minimum?: number
-  maximum?: number
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-}
-
-/** JSON Schema for tool parameters */
-export interface LegacyToolParameters {
-  type: 'object'
-  properties: Record<string, LegacyToolParameterProperty>
-  required?: string[]
-  additionalProperties?: boolean
-}
-
-/** Arguments passed to tool execution */
-export type LegacyToolArguments = Record<
-  string,
-  string | number | boolean | string[] | number[] | Record<string, unknown>
->
-
-/** Result from tool execution */
-export type LegacyToolResult =
-  | string
-  | number
-  | boolean
-  | Record<string, unknown>
-  | unknown[]
-  | null
-  | undefined
-
 export interface Tool {
   /** Tool name */
   name: string
   /** Tool description for AI */
   description: string
   /** Input schema (JSON Schema) */
-  parameters: LegacyToolParameters
+  parameters: ToolParameters
   /** Tool execution function */
-  execute: (args: LegacyToolArguments) => Promise<LegacyToolResult>
+  execute: (args: ToolArguments) => Promise<ToolResult>
   /** Whether tool requires approval */
   requiresApproval?: boolean
   /** Tool category */
@@ -132,7 +103,7 @@ export interface AgentMessage {
     arguments: string
   }
   /** Function result (if role is 'function') */
-  functionResult?: LegacyToolResult
+  functionResult?: ToolResult
   /** Tool calls (for parallel function calling) */
   toolCalls?: Array<{
     id: string
@@ -156,9 +127,9 @@ export interface AgentStep {
   /** Tool used (if action) */
   tool?: string
   /** Tool arguments (if action) */
-  args?: LegacyToolArguments
+  args?: ToolArguments
   /** Tool result (if observation) */
-  result?: LegacyToolResult
+  result?: ToolResult
   /** Error (if failed) */
   error?: string
   /** Timestamp */
@@ -269,16 +240,16 @@ export interface AgentMemory {
 }
 
 export interface ToolApprovalCallback {
-  (tool: Tool, args: LegacyToolArguments): Promise<boolean>
+  (tool: Tool, args: ToolArguments): Promise<boolean>
 }
 
 export interface AgentCallbacks {
   /** Called when agent starts thinking */
   onThought?: (thought: string) => void
   /** Called when agent decides on an action */
-  onAction?: (tool: string, args: LegacyToolArguments) => void
+  onAction?: (tool: string, args: ToolArguments) => void
   /** Called when tool execution completes */
-  onObservation?: (result: LegacyToolResult) => void
+  onObservation?: (result: ToolResult) => void
   /** Called when agent provides final answer */
   onAnswer?: (answer: string) => void
   /** Called on error */

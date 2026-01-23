@@ -32,12 +32,25 @@ import type {
   ContextOptions,
   ContextBundle,
   TokenBreakdown,
+  DeletionResult,
+  DeletionVerification,
 } from './types'
 import {
   DecayManager,
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
+import { ConsentManager, type ConsentPurpose } from './consent'
+import { AuditLogger } from './audit'
+import { DEFAULT_RETENTION_POLICY, DEFAULT_MEMORY_LIMITS } from './constants'
+import type { DataExportResult, DataExportOptions } from './types'
+import { ImportanceScorer } from './scoring/importance-scorer'
+import {
+  MemoryConsentError,
+  MemoryConfigError,
+  MemoryOperationError,
+  MemoryErrorCode,
+} from './errors'
 
 /**
  * Simple token counter utility
@@ -213,19 +226,37 @@ export class MemoryService {
   private summarizationInterval?: ReturnType<typeof setInterval>
   private decayManager?: DecayManager
   private decayInterval?: ReturnType<typeof setInterval>
+  private consentManager?: ConsentManager
+  private auditLogger: AuditLogger
+  private importanceScorer?: ImportanceScorer
 
   constructor(
     config: MemoryServiceConfig,
     vectorStore?: VectorStore,
-    embeddings?: EmbeddingProvider
+    embeddings?: EmbeddingProvider,
+    consentManager?: ConsentManager,
+    auditLogger?: AuditLogger
   ) {
     this.config = config
     this.vectorStore = vectorStore
     this.embeddings = embeddings
+    this.consentManager = consentManager
     this.cache = new Map()
     this.buffer = this.createBuffer()
     this.optimizer = createDefaultOptimizer(config.tokenOptimization)
     this.eventListeners = new Map()
+
+    // Initialize audit logger
+    this.auditLogger = auditLogger || new AuditLogger(vectorStore, config.audit)
+
+    // Initialize importance scorer if enabled
+    if (config.importanceScoring?.enabled) {
+      this.importanceScorer = new ImportanceScorer({
+        recencyHalfLife: config.importanceScoring.recencyHalfLife,
+        maxFrequencyAccesses: config.importanceScoring.maxFrequencyAccesses,
+        weights: config.importanceScoring.weights,
+      })
+    }
 
     this.initialize()
   }
@@ -278,7 +309,48 @@ export class MemoryService {
   }
 
   /**
-   * Add memory item
+   * Add a new memory item to the memory system
+   *
+   * Stores a memory with the specified type, scope, and metadata. The memory will be:
+   * - Validated for consent (if enabled)
+   * - Checked for duplicates (if deduplication enabled)
+   * - Checked against size and count limits
+   * - Embedded (if embedding provider configured)
+   * - Stored in cache and optionally persisted to vector store
+   *
+   * @param content - Memory content to store
+   * @param type - Memory type (episodic, semantic, procedural, working)
+   * @param scope - Memory scope (global, user, thread, session)
+   * @param metadata - Optional metadata (userId, threadId, etc.)
+   * @param options - Optional priority, confidence, and embedding
+   * @returns The created memory item with generated ID and timestamps
+   *
+   * @throws {MemoryConsentError} If consent is required but not granted or userId missing
+   * @throws {MemoryOperationError} If content exceeds maximum size limit
+   *
+   * @sideEffects
+   * - Writes to memory cache
+   * - May evict old memories if limits exceeded (LRU)
+   * - May write to vector store (if configured)
+   * - May update similar existing memory (if deduplication enabled)
+   * - Logs audit event (if audit logging enabled)
+   * - Emits 'memory:added' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Store a user message
+   * const memory = await service.addMemory(
+   *   'User asked about pricing',
+   *   'episodic',
+   *   'thread',
+   *   {
+   *     userId: 'user_123',
+   *     threadId: 'thread_456',
+   *     role: 'user',
+   *   },
+   *   { priority: 'medium', confidence: 0.9 }
+   * )
+   * ```
    */
   async addMemory(
     content: string,
@@ -291,6 +363,218 @@ export class MemoryService {
       embedding?: number[]
     } = {}
   ): Promise<MemoryItem> {
+    // Check consent if consent management is enabled
+    if (this.config.consent?.enabled && this.consentManager) {
+      const requireConsent = this.config.consent.requireConsentForWrites ?? true
+
+      if (requireConsent) {
+        // Extract user ID from metadata
+        const userId =
+          this.config.consent.getUserId?.(metadata) ||
+          (metadata.userId as string | undefined)
+
+        if (!userId) {
+          if (this.config.debug) {
+            console.warn(
+              '[MemoryService] Consent check failed: No user ID found in metadata. ' +
+                'Configure consent.getUserId or include userId in metadata.'
+            )
+          }
+          throw new MemoryConsentError(
+            'Cannot add memory: User ID required for consent verification. ' +
+              'Include userId in metadata or configure consent.getUserId.',
+            MemoryErrorCode.MISSING_USER_ID,
+            { metadata }
+          )
+        }
+
+        // Determine consent purpose based on operation
+        const purpose: ConsentPurpose =
+          type === 'episodic' || type === 'semantic'
+            ? 'message_storage'
+            : 'personalization'
+
+        // Check consent (will throw if not granted)
+        try {
+          await this.consentManager.requireConsent(userId, purpose)
+        } catch (error) {
+          if (this.config.debug) {
+            console.warn(
+              '[MemoryService] Memory write blocked:',
+              (error as Error).message
+            )
+          }
+          throw error
+        }
+      }
+    }
+
+    // Check completion status for streaming messages
+    const completionStatus = metadata?.completionStatus as
+      | 'complete'
+      | 'aborted'
+      | 'error'
+      | undefined
+
+    if (completionStatus) {
+      // Skip aborted messages unless explicitly configured to store them
+      if (
+        completionStatus === 'aborted' &&
+        this.config.streaming?.storeAbortedMessages !== true
+      ) {
+        if (this.config.debug) {
+          console.log(
+            '[MemoryService] Skipping aborted message (storeAbortedMessages=false)'
+          )
+        }
+        // Return a placeholder memory item (not stored)
+        return {
+          id: this.generateId(),
+          type,
+          scope,
+          content,
+          embedding: [],
+          tokens: TokenCounter.count(content),
+          confidence: 0,
+          importance: 0,
+          priority: 'low',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastAccessed: new Date(),
+          accessCount: 0,
+          metadata: {
+            ...metadata,
+            autoCapture: false,
+            completionStatus: 'aborted',
+          },
+        } satisfies MemoryItem
+      }
+
+      // Skip error messages unless explicitly configured to store them
+      if (
+        completionStatus === 'error' &&
+        this.config.streaming?.storeErrorMessages !== true
+      ) {
+        if (this.config.debug) {
+          console.log(
+            '[MemoryService] Skipping error message (storeErrorMessages=false)',
+            metadata?.errorMessage
+          )
+        }
+        // Return a placeholder memory item (not stored)
+        return {
+          id: this.generateId(),
+          type,
+          scope,
+          content,
+          embedding: [],
+          tokens: TokenCounter.count(content),
+          confidence: 0,
+          importance: 0,
+          priority: 'low',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastAccessed: new Date(),
+          accessCount: 0,
+          metadata: {
+            ...metadata,
+            autoCapture: false,
+            completionStatus: 'error',
+          },
+        } satisfies MemoryItem
+      }
+    }
+
+    // Check for duplicates if deduplication is enabled (streaming context)
+    if (this.config.streaming?.deduplicate !== false) {
+      const threshold = this.config.streaming?.deduplicateThreshold ?? 0.95
+      const windowMs = this.config.streaming?.deduplicateWindow ?? 60000
+
+      const similarMemory = await this.findSimilarMemory(
+        content,
+        threshold,
+        windowMs
+      )
+
+      if (similarMemory) {
+        // Update existing memory instead of creating duplicate
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Deduplication: Updating existing memory ${similarMemory.id} ` +
+              `instead of creating duplicate`
+          )
+        }
+
+        const updated = await this.updateMemory(similarMemory.id, {
+          ...similarMemory,
+          content, // Update with new content
+          accessCount: similarMemory.accessCount + 1,
+          updatedAt: new Date(),
+          metadata: {
+            ...similarMemory.metadata,
+            ...metadata, // Merge new metadata
+            regenerationCount:
+              ((similarMemory.metadata.regenerationCount as
+                | number
+                | undefined) || 0) + 1,
+          },
+        })
+
+        return updated!
+      }
+    }
+
+    // Get limits with defaults
+    const limits = {
+      maxMemories:
+        this.config.limits?.maxMemories ?? DEFAULT_MEMORY_LIMITS.maxMemories,
+      maxTotalTokens:
+        this.config.limits?.maxTotalTokens ??
+        DEFAULT_MEMORY_LIMITS.maxTotalTokens,
+      maxMemorySize:
+        this.config.limits?.maxMemorySize ??
+        DEFAULT_MEMORY_LIMITS.maxMemorySize,
+      warnThreshold:
+        this.config.limits?.warnThreshold ??
+        DEFAULT_MEMORY_LIMITS.warnThreshold,
+    }
+
+    // Check memory size limit
+    if (content.length > limits.maxMemorySize) {
+      const error = new MemoryOperationError(
+        `Memory content exceeds maximum size: ${content.length} > ${limits.maxMemorySize} characters. ` +
+          `Consider chunking or summarizing large content.`,
+        MemoryErrorCode.MEMORY_TOO_LARGE,
+        {
+          contentLength: content.length,
+          maxSize: limits.maxMemorySize,
+          operation: 'addMemory',
+        }
+      )
+      if (this.config.debug) {
+        console.error('[MemoryService]', error.message)
+      }
+      throw error
+    }
+
+    // Check and enforce memory count limit (LRU eviction)
+    if (this.cache.size >= limits.maxMemories) {
+      if (this.config.debug) {
+        console.warn(
+          `[MemoryService] Memory limit reached (${this.cache.size}/${limits.maxMemories}). ` +
+            `Evicting oldest memory (LRU).`
+        )
+      }
+
+      // Evict oldest memory (LRU - least recently accessed)
+      const oldestMemory = Array.from(this.cache.values()).reduce(
+        (oldest, current) =>
+          current.lastAccessed < oldest.lastAccessed ? current : oldest
+      )
+
+      await this.deleteMemory(oldestMemory.id)
+    }
+
     const memory: MemoryItem = {
       id: this.generateId(),
       type,
@@ -304,6 +588,70 @@ export class MemoryService {
       lastAccessed: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
+    }
+
+    // Check total tokens limit (evict if needed)
+    const currentTotalTokens = Array.from(this.cache.values()).reduce(
+      (sum, m) => sum + m.tokens,
+      0
+    )
+    const newTotalTokens = currentTotalTokens + memory.tokens
+
+    if (newTotalTokens > limits.maxTotalTokens) {
+      if (this.config.debug) {
+        console.warn(
+          `[MemoryService] Token limit would be exceeded (${newTotalTokens}/${limits.maxTotalTokens}). ` +
+            `Evicting lowest priority memories.`
+        )
+      }
+
+      // Evict lowest priority memories until under limit
+      // Deterministic ordering: priority (asc) -> lastAccessed (asc) -> id (asc)
+      const sortedMemories = Array.from(this.cache.values()).sort((a, b) => {
+        const priorityOrder = { low: 0, medium: 1, high: 2, critical: 3 }
+        const aPriority = priorityOrder[a.priority]
+        const bPriority = priorityOrder[b.priority]
+        if (aPriority !== bPriority) return aPriority - bPriority
+
+        // Secondary: Last accessed time (older first for eviction)
+        const timeA = a.lastAccessed.getTime()
+        const timeB = b.lastAccessed.getTime()
+        if (timeA !== timeB) return timeA - timeB
+
+        // Tertiary: Importance (lower first for eviction)
+        const importanceA = a.importance ?? 0.5
+        const importanceB = b.importance ?? 0.5
+        if (importanceA !== importanceB) return importanceA - importanceB
+
+        // Final tiebreaker: ID (deterministic)
+        return a.id.localeCompare(b.id)
+      })
+
+      let tokensToFree = newTotalTokens - limits.maxTotalTokens
+      for (const mem of sortedMemories) {
+        if (tokensToFree <= 0) break
+        await this.deleteMemory(mem.id)
+        tokensToFree -= mem.tokens
+      }
+    }
+
+    // Warn if approaching limits
+    const newMemoryCount = this.cache.size + 1
+    const memoryUtilization = newMemoryCount / limits.maxMemories
+    const tokenUtilization = newTotalTokens / limits.maxTotalTokens
+
+    if (memoryUtilization >= limits.warnThreshold && !this.config.debug) {
+      console.warn(
+        `[MemoryService] Approaching memory limit: ${newMemoryCount}/${limits.maxMemories} ` +
+          `(${Math.round(memoryUtilization * 100)}% utilization)`
+      )
+    }
+
+    if (tokenUtilization >= limits.warnThreshold && !this.config.debug) {
+      console.warn(
+        `[MemoryService] Approaching token limit: ${newTotalTokens}/${limits.maxTotalTokens} ` +
+          `(${Math.round(tokenUtilization * 100)}% utilization)`
+      )
     }
 
     // Generate embedding if not provided
@@ -339,6 +687,22 @@ export class MemoryService {
       type: 'memory:created',
       timestamp: new Date(),
       memory,
+    })
+
+    // Audit log: memory creation
+    await this.auditLogger.log({
+      eventType: 'memory:created',
+      severity: 'info',
+      description: `Memory created: ${type} (${scope})`,
+      metadata: {
+        userId: metadata.userId as string | undefined,
+        memoryId: memory.id,
+        memoryType: type,
+        memoryScope: scope,
+        purpose: (metadata.purpose as string | undefined) || 'general',
+        legalBasis: this.consentManager ? 'consent' : 'legitimate_interest',
+        result: 'success',
+      },
     })
 
     return memory
@@ -377,7 +741,40 @@ export class MemoryService {
   }
 
   /**
-   * Query memories
+   * Query memories with semantic search and filtering
+   *
+   * Searches memories using vector similarity (if embedding provided), filters by metadata,
+   * and applies importance scoring for ranking. Results are optimized for token budget limits.
+   *
+   * **Pure Operation**: This method does NOT track access by default. Use trackAccess parameter
+   * to update access counts and timestamps.
+   *
+   * @param query - Query configuration with filters, limits, and search parameters
+   * @returns Array of search results with memories and relevance scores, sorted by importance
+   *
+   * @sideEffects
+   * - May track access if trackAccess=true (updates accessCount and lastAccessed)
+   * - May trigger embeddings API call (if query string provided without embedding)
+   * - May query vector store (if embedding search used)
+   * - Emits 'memory:queried' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Semantic search with filters
+   * const results = await service.query({
+   *   query: 'user preferences',
+   *   types: ['semantic'],
+   *   scopes: ['user'],
+   *   metadata: { userId: 'user_123' },
+   *   limit: 10,
+   *   tokenBudget: 4000,
+   *   trackAccess: false, // Pure read, no side effects
+   * })
+   *
+   * // Results sorted by importance score
+   * console.log(results[0].relevance) // 0.95
+   * console.log(results[0].memory.content)
+   * ```
    */
   async query(query: MemoryQuery): Promise<MemorySearchResult[]> {
     let results: MemorySearchResult[] = []
@@ -397,15 +794,55 @@ export class MemoryService {
     // Apply filters
     results = this.applyFilters(results, query)
 
-    // Optimize for token budget
-    if (query.tokenBudget) {
-      results = this.optimizeForBudget(results, query.tokenBudget)
+    // Re-rank using importance scoring if enabled
+    if (this.importanceScorer && results.length > 0) {
+      const scored = this.importanceScorer.scoreBatch(
+        results.map((r) => r.memory),
+        query.query
+      )
+
+      // Map back to MemorySearchResult format with importance scores
+      results = scored.map(({ memory, score }) => {
+        const existing = results.find((r) => r.memory.id === memory.id)
+        return {
+          memory,
+          relevance: score.final, // Use importance score as relevance
+          score: score.final,
+          distance: existing?.distance,
+          highlights: existing?.highlights,
+        }
+      })
     }
 
-    // Update access stats
-    for (const result of results) {
-      result.memory.accessCount++
-      result.memory.lastAccessed = new Date()
+    // Enforce token budget (use query budget or fall back to global config)
+    const tokenBudget =
+      query.tokenBudget ?? this.config.tokenBudget?.maxContextWindow
+    if (tokenBudget) {
+      const originalCount = results.length
+      const originalTokens = results.reduce(
+        (sum, r) => sum + r.memory.tokens,
+        0
+      )
+
+      results = this.optimizeForBudget(results, tokenBudget)
+
+      // Warn if budget enforcement dropped results
+      if (results.length < originalCount && this.config.debug) {
+        const finalTokens = results.reduce((sum, r) => sum + r.memory.tokens, 0)
+        console.warn(
+          `[MemoryService] Token budget enforced: ${originalCount} results (${originalTokens} tokens) ` +
+            `reduced to ${results.length} results (${finalTokens} tokens) to fit ${tokenBudget} token budget`
+        )
+      }
+    }
+
+    // Update access stats (only if explicitly requested)
+    // This prevents write side effects in read operations
+    if (query.trackAccess) {
+      for (const result of results) {
+        result.memory.accessCount++
+        result.memory.lastAccessed = new Date()
+      }
     }
 
     // Auto-decay on recall if enabled
@@ -415,6 +852,23 @@ export class MemoryService {
         if (this.config.debug) {
           console.error('Auto-decay failed:', error)
         }
+      })
+    }
+
+    // Audit log: data access (GDPR Article 15)
+    if (results.length > 0) {
+      await this.auditLogger.log({
+        eventType: 'memory:queried',
+        severity: 'info',
+        description: `Memory query executed: ${results.length} results`,
+        metadata: {
+          userId: query.metadata?.userId as string | undefined,
+          memoryType: query.types?.[0],
+          memoryScope: query.scopes?.[0],
+          purpose: 'retrieval',
+          result: 'success',
+          resultCount: results.length,
+        },
       })
     }
 
@@ -455,6 +909,113 @@ export class MemoryService {
   }
 
   /**
+   * Find similar memory within time window for deduplication
+   * Used to prevent duplicate memories from message regeneration
+   *
+   * @param content - Content to compare against
+   * @param threshold - Similarity threshold (0-1)
+   * @param windowMs - Time window in milliseconds
+   * @returns Most similar memory if above threshold, null otherwise
+   */
+  private async findSimilarMemory(
+    content: string,
+    threshold: number,
+    windowMs: number
+  ): Promise<MemoryItem | null> {
+    const now = Date.now()
+    const cutoffTime = new Date(now - windowMs)
+
+    let bestMatch: MemoryItem | null = null
+    let bestScore = 0
+
+    // Search through recent memories in cache
+    for (const memory of this.cache.values()) {
+      // Only check memories within time window
+      if (memory.createdAt < cutoffTime) continue
+
+      // Calculate text similarity
+      const similarity = this.calculateTextSimilarity(content, memory.content)
+
+      if (similarity > bestScore && similarity >= threshold) {
+        bestScore = similarity
+        bestMatch = memory
+      }
+    }
+
+    return bestMatch
+  }
+
+  /**
+   * Calculate text similarity between two strings
+   * Uses a combination of character overlap and word overlap
+   *
+   * @param text1 - First text
+   * @param text2 - Second text
+   * @returns Similarity score (0-1)
+   */
+  private calculateTextSimilarity(text1: string, text2: string): number {
+    // Normalize texts
+    const norm1 = text1.toLowerCase().trim()
+    const norm2 = text2.toLowerCase().trim()
+
+    // Exact match
+    if (norm1 === norm2) return 1.0
+
+    // Length-based early exit for very different texts
+    const lenRatio =
+      Math.min(norm1.length, norm2.length) /
+      Math.max(norm1.length, norm2.length)
+    if (lenRatio < 0.5) return 0 // Texts differ too much in length
+
+    // Calculate word-based Jaccard similarity
+    const words1 = new Set(norm1.split(/\s+/))
+    const words2 = new Set(norm2.split(/\s+/))
+    const intersection = new Set([...words1].filter((w) => words2.has(w)))
+    const union = new Set([...words1, ...words2])
+    const jaccardScore = intersection.size / union.size
+
+    // Calculate character-based similarity (common subsequence approach)
+    const maxLen = Math.max(norm1.length, norm2.length)
+    const commonChars = this.longestCommonSubsequenceLength(norm1, norm2)
+    const charScore = commonChars / maxLen
+
+    // Weighted combination (favor word similarity for deduplication)
+    return jaccardScore * 0.7 + charScore * 0.3
+  }
+
+  /**
+   * Calculate longest common subsequence length
+   * Dynamic programming approach for character-level similarity
+   *
+   * @param s1 - First string
+   * @param s2 - Second string
+   * @returns Length of longest common subsequence
+   */
+  private longestCommonSubsequenceLength(s1: string, s2: string): number {
+    const m = s1.length
+    const n = s2.length
+
+    // Use space-optimized DP (only need previous row)
+    let prev = new Array(n + 1).fill(0)
+    let curr = new Array(n + 1).fill(0)
+
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (s1[i - 1] === s2[j - 1]) {
+          curr[j] = prev[j - 1] + 1
+        } else {
+          curr[j] = Math.max(curr[j - 1], prev[j])
+        }
+      }
+      // Swap rows
+      ;[prev, curr] = [curr, prev]
+      curr.fill(0)
+    }
+
+    return prev[n]
+  }
+
+  /**
    * Cache search
    */
   private cacheSearch(query: MemoryQuery): MemorySearchResult[] {
@@ -492,11 +1053,30 @@ export class MemoryService {
       results.push({ memory, relevance, score: relevance })
     }
 
-    // Sort by relevance and confidence
+    // Sort by relevance and confidence with deterministic secondary criteria
     results.sort((a, b) => {
+      // Primary: Combined score (relevance * confidence)
       const scoreA = a.relevance * a.memory.confidence
       const scoreB = b.relevance * b.memory.confidence
-      return scoreB - scoreA
+      if (scoreA !== scoreB) return scoreB - scoreA
+
+      // Secondary: Importance (if available)
+      const importanceA = a.memory.importance ?? 0.5
+      const importanceB = b.memory.importance ?? 0.5
+      if (importanceA !== importanceB) return importanceB - importanceA
+
+      // Tertiary: Recency (newer first)
+      const timeA = a.memory.createdAt.getTime()
+      const timeB = b.memory.createdAt.getTime()
+      if (timeA !== timeB) return timeB - timeA
+
+      // Quaternary: Access frequency (more accessed first)
+      if (a.memory.accessCount !== b.memory.accessCount) {
+        return b.memory.accessCount - a.memory.accessCount
+      }
+
+      // Final tiebreaker: ID (lexicographic for determinism)
+      return a.memory.id.localeCompare(b.memory.id)
     })
 
     return results.slice(0, query.limit || 10)
@@ -525,20 +1105,70 @@ export class MemoryService {
 
   /**
    * Optimize results for token budget
+   *
+   * Enforces strict token budget by:
+   * 1. Selecting results in relevance order while staying under budget
+   * 2. Attempting to fit as many high-relevance results as possible
+   * 3. Optionally truncating large results to fit more content
+   *
+   * Note: Results are processed in order to preserve relevance ranking.
+   * A greedy bin-packing approach is used to maximize information density.
    */
   private optimizeForBudget(
     results: MemorySearchResult[],
     budget: number
   ): MemorySearchResult[] {
+    if (budget <= 0) return []
+
     const optimized: MemorySearchResult[] = []
     let usedTokens = 0
 
+    // First pass: Fit complete results that don't exceed budget
     for (const result of results) {
-      if (usedTokens + result.memory.tokens <= budget) {
+      const tokensNeeded = result.memory.tokens
+
+      if (usedTokens + tokensNeeded <= budget) {
+        // Result fits completely
         optimized.push(result)
-        usedTokens += result.memory.tokens
+        usedTokens += tokensNeeded
+      } else if (optimized.length === 0 && tokensNeeded > budget) {
+        // Special case: First result is too large, truncate it to fit
+        // This ensures we always return at least some content
+        const truncationRatio = budget / tokensNeeded
+        const truncatedContent =
+          result.memory.content.slice(
+            0,
+            Math.floor(result.memory.content.length * truncationRatio)
+          ) + '...'
+
+        optimized.push({
+          ...result,
+          memory: {
+            ...result.memory,
+            content: truncatedContent,
+            tokens: budget,
+            metadata: {
+              ...result.memory.metadata,
+              truncated: true,
+              originalTokens: tokensNeeded,
+            },
+          },
+        })
+        usedTokens = budget
+        break // Budget exhausted
       } else {
+        // Budget exceeded, stop adding more results
         break
+      }
+    }
+
+    if (this.config.debug && optimized.length > 0) {
+      const efficiency = (usedTokens / budget) * 100
+      if (efficiency < 70) {
+        console.debug(
+          `[MemoryService] Budget utilization: ${Math.round(efficiency)}% ` +
+            `(${usedTokens}/${budget} tokens). Consider adjusting result filtering.`
+        )
       }
     }
 
@@ -546,7 +1176,36 @@ export class MemoryService {
   }
 
   /**
-   * Update memory item
+   * Update an existing memory item
+   *
+   * Updates memory fields and automatically recalculates tokens and embeddings if content changes.
+   * Updates both the in-memory cache and persistent vector store (if configured).
+   *
+   * @param id - Memory ID to update
+   * @param updates - Partial memory item with fields to update
+   * @returns Updated memory item, or null if memory not found
+   *
+   * @sideEffects
+   * - Updates memory in cache
+   * - Updates updatedAt timestamp
+   * - Recalculates tokens if content changed
+   * - Regenerates embedding if content changed (async, may fail silently)
+   * - Updates vector store (if configured)
+   * - Emits 'memory:updated' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Update memory priority
+   * const updated = await service.updateMemory('mem_123', {
+   *   priority: 'high',
+   *   confidence: 0.95,
+   * })
+   *
+   * // Update content (triggers re-embedding)
+   * const updated = await service.updateMemory('mem_123', {
+   *   content: 'Updated user preference: prefers dark mode',
+   * })
+   * ```
    */
   async updateMemory(
     id: string,
@@ -594,21 +1253,44 @@ export class MemoryService {
   }
 
   /**
-   * Delete memory item
+   * Delete a memory item by ID
+   *
+   * Removes memory from cache and vector store (if configured). Part of GDPR Right to Erasure support.
+   *
+   * @param id - Memory ID to delete
+   * @returns true if memory was deleted, false if not found
+   *
+   * @sideEffects
+   * - Removes memory from cache
+   * - Deletes from vector store (if configured)
+   * - Logs audit event (if audit logging enabled)
+   * - Emits 'memory:deleted' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Delete a single memory
+   * const deleted = await service.deleteMemory('mem_123')
+   * console.log(deleted ? 'Deleted' : 'Not found')
+   * ```
    */
   async deleteMemory(id: string): Promise<boolean> {
     const memory = this.cache.get(id)
     if (!memory) return false
 
+    // Delete from cache
     this.cache.delete(id)
+
+    // Delete from buffer
+    const bufferIndex = this.buffer.items.findIndex((item) => item.id === id)
+    if (bufferIndex !== -1) {
+      const removed = this.buffer.items.splice(bufferIndex, 1)[0]
+      this.buffer.totalTokens -= removed.tokens
+    }
 
     // Delete from vector store
     if (this.vectorStore) {
       try {
-        await this.vectorStore.delete(
-          [id],
-          this.config.persistence.vectorStoreNamespace
-        )
+        await this.vectorStore.delete(id)
       } catch (error) {
         if (this.config.debug) {
           console.error('Failed to delete from vector store:', error)
@@ -639,6 +1321,513 @@ export class MemoryService {
     }
 
     return deleted
+  }
+
+  /**
+   * Delete all user data (GDPR Article 17: Right to Erasure)
+   *
+   * Implements complete cascade deletion across all storage layers:
+   * - Cache (in-memory)
+   * - Buffer (pending writes)
+   * - Vector store (persistent storage)
+   * - Consent records
+   *
+   * This method ensures COMPLETE data deletion as required by GDPR.
+   *
+   * @param userId - User identifier
+   * @returns Detailed deletion result with verification
+   *
+   * @example
+   * ```typescript
+   * const result = await memoryService.deleteAllUserData('user123')
+   * console.log(`Deleted ${result.deleted.memories} memories`)
+   * console.log(`Verification passed: ${result.verified}`)
+   * ```
+   */
+  async deleteAllUserData(userId: string): Promise<DeletionResult> {
+    const timestamp = new Date()
+    const failed: string[] = []
+    let memoriesDeleted = 0
+    let embeddingsDeleted = 0
+    let cacheEntriesDeleted = 0
+    let bufferEntriesDeleted = 0
+    let consentRecordsDeleted = 0
+
+    if (this.config.debug) {
+      console.log(
+        `[MemoryService] Starting complete deletion for user: ${userId}`
+      )
+    }
+
+    // 1. Delete from cache
+    for (const [id, memory] of this.cache.entries()) {
+      if (memory.metadata?.userId === userId) {
+        try {
+          this.cache.delete(id)
+          cacheEntriesDeleted++
+          if (memory.embedding) {
+            embeddingsDeleted++
+          }
+        } catch (error) {
+          failed.push(id)
+          if (this.config.debug) {
+            console.error(`Failed to delete from cache: ${id}`, error)
+          }
+        }
+      }
+    }
+
+    // 2. Delete from buffer
+    this.buffer.items = this.buffer.items.filter((item) => {
+      if (item.metadata?.userId === userId) {
+        bufferEntriesDeleted++
+        this.buffer.totalTokens -= item.tokens
+        return false // Remove from buffer
+      }
+      return true // Keep in buffer
+    })
+
+    // 3. Delete from vector store
+    if (this.vectorStore) {
+      try {
+        // Search for all memories belonging to user
+        const userMemories = await this.vectorStore.search('', {
+          userId,
+          limit: 10000, // High limit to get all
+        })
+
+        for (const { memory } of userMemories) {
+          try {
+            await this.vectorStore.delete(memory.id)
+            memoriesDeleted++
+            if (memory.embedding) {
+              embeddingsDeleted++
+            }
+          } catch (error) {
+            failed.push(memory.id)
+            if (this.config.debug) {
+              console.error(
+                `Failed to delete from vector store: ${memory.id}`,
+                error
+              )
+            }
+          }
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to search vector store for user data:', error)
+        }
+      }
+    }
+
+    // 4. Delete consent records
+    if (this.consentManager) {
+      try {
+        // Withdraw all consent (this creates a withdrawal record)
+        await this.consentManager.withdrawConsent(userId)
+        consentRecordsDeleted++
+
+        if (this.config.debug) {
+          console.log(`[MemoryService] Withdrew consent for user: ${userId}`)
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to withdraw consent:', error)
+        }
+      }
+    }
+
+    // 5. Verify deletion
+    const verification = await this.verifyDeletion(userId)
+
+    // 6. Create deletion result
+    const result: DeletionResult = {
+      userId,
+      timestamp,
+      deleted: {
+        memories: memoriesDeleted,
+        embeddings: embeddingsDeleted,
+        cacheEntries: cacheEntriesDeleted,
+        bufferEntries: bufferEntriesDeleted,
+        consentRecords: consentRecordsDeleted,
+      },
+      failed,
+      verified: verification.passed,
+      verification,
+    }
+
+    // 7. Emit deletion event
+    this.emitEvent({
+      type: 'user:data:deleted',
+      timestamp,
+      data: {
+        userId,
+        result,
+      },
+    })
+
+    // 8. Audit log: user data deletion (GDPR Article 17)
+    await this.auditLogger.log({
+      eventType: 'user:data:deleted',
+      severity: verification.passed ? 'info' : 'warning',
+      description: `User data deletion ${verification.passed ? 'completed' : 'completed with issues'}: ${userId}`,
+      metadata: {
+        userId,
+        purpose: 'gdpr_right_to_erasure',
+        legalBasis: 'legal_obligation',
+        result: verification.passed ? 'success' : 'partial',
+        memoriesDeleted,
+        embeddingsDeleted,
+        cacheEntriesDeleted,
+        bufferEntriesDeleted,
+        consentRecordsDeleted,
+        failedDeletions: failed.length,
+        verified: verification.passed,
+      },
+    })
+
+    if (this.config.debug) {
+      console.log(
+        `[MemoryService] Deletion complete for user ${userId}:`,
+        `${memoriesDeleted} memories, ${cacheEntriesDeleted} cache entries, ` +
+          `${bufferEntriesDeleted} buffer entries, ${failed.length} failed, ` +
+          `verified: ${verification.passed}`
+      )
+    }
+
+    return result
+  }
+
+  /**
+   * Verify complete deletion of user data (GDPR Article 17 compliance)
+   *
+   * Checks all storage layers to ensure no user data remains.
+   * Required for demonstrating GDPR compliance.
+   *
+   * @param userId - User identifier
+   * @returns Verification result with details of any remaining data
+   *
+   * @example
+   * ```typescript
+   * const verification = await memoryService.verifyDeletion('user123')
+   * if (!verification.passed) {
+   *   console.error('Deletion incomplete:', verification.remainingData)
+   * }
+   * ```
+   */
+  async verifyDeletion(userId: string): Promise<DeletionVerification> {
+    const timestamp = new Date()
+    const remainingData: DeletionVerification['remainingData'] = []
+
+    try {
+      // Check cache
+      const cacheRemaining: string[] = []
+      for (const [id, memory] of this.cache.entries()) {
+        if (memory.metadata?.userId === userId) {
+          cacheRemaining.push(id)
+        }
+      }
+      if (cacheRemaining.length > 0) {
+        remainingData.push({
+          location: 'cache',
+          count: cacheRemaining.length,
+          sampleIds: cacheRemaining.slice(0, 5),
+        })
+      }
+
+      // Check buffer
+      const bufferRemaining = this.buffer.items
+        .filter((item) => item.metadata?.userId === userId)
+        .map((item) => item.id)
+      if (bufferRemaining.length > 0) {
+        remainingData.push({
+          location: 'buffer',
+          count: bufferRemaining.length,
+          sampleIds: bufferRemaining.slice(0, 5),
+        })
+      }
+
+      // Check vector store
+      if (this.vectorStore) {
+        try {
+          const storeRemaining = await this.vectorStore.search('', {
+            userId,
+            limit: 100,
+          })
+          if (storeRemaining.length > 0) {
+            remainingData.push({
+              location: 'vectorStore',
+              count: storeRemaining.length,
+              sampleIds: storeRemaining.slice(0, 5).map((r) => r.memory.id),
+            })
+          }
+        } catch (error) {
+          if (this.config.debug) {
+            console.error('Failed to verify vector store:', error)
+          }
+        }
+      }
+
+      // Check consent records (should only have withdrawal record)
+      if (this.consentManager) {
+        try {
+          const hasConsent = await this.consentManager.hasConsent(
+            userId,
+            'message_storage'
+          )
+          if (hasConsent) {
+            // Should not have active consent after deletion
+            remainingData.push({
+              location: 'consent',
+              count: 1,
+              sampleIds: [userId],
+            })
+          }
+        } catch (error) {
+          if (this.config.debug) {
+            console.error('Failed to verify consent:', error)
+          }
+        }
+      }
+
+      const passed = remainingData.length === 0
+
+      const verification: DeletionVerification = {
+        userId,
+        timestamp,
+        passed,
+        remainingData,
+      }
+
+      // Emit verification event
+      this.emitEvent({
+        type: 'user:data:deletion:verified',
+        timestamp,
+        data: {
+          userId,
+          verification,
+        },
+      })
+
+      return verification
+    } catch (error) {
+      return {
+        userId,
+        timestamp,
+        passed: false,
+        remainingData: [],
+        error: (error as Error).message,
+      }
+    }
+  }
+
+  /**
+   * Export all user data (GDPR Article 20: Data Portability)
+   *
+   * Provides complete user data in structured, machine-readable format.
+   * Implements GDPR Article 20 (Right to Data Portability).
+   *
+   * @param userId - User identifier
+   * @param options - Export options (what to include)
+   * @returns Complete data export
+   *
+   * @example
+   * ```typescript
+   * const export = await memoryService.exportUserData('user123', {
+   *   includeEmbeddings: false,     // Exclude large embeddings
+   *   includeConsentHistory: true,  // Include consent records
+   *   includeAuditTrail: true,      // Include audit logs
+   *   format: 'json',               // JSON format
+   * })
+   *
+   * // Save to file or send to user
+   * fs.writeFileSync('user_data.json', JSON.stringify(export, null, 2))
+   * ```
+   */
+  async exportUserData(
+    userId: string,
+    options: DataExportOptions = {}
+  ): Promise<DataExportResult> {
+    const timestamp = new Date()
+
+    // Default options
+    const opts: Required<DataExportOptions> = {
+      includeEmbeddings: options.includeEmbeddings ?? false, // Embeddings can be large
+      includeConsentHistory: options.includeConsentHistory ?? true,
+      includeAuditTrail: options.includeAuditTrail ?? true,
+      includeProfile: options.includeProfile ?? true,
+      format: options.format ?? 'json',
+      prettyPrint: options.prettyPrint ?? true,
+    }
+
+    if (this.config.debug) {
+      console.log(`[MemoryService] Starting data export for user: ${userId}`)
+    }
+
+    // 1. Export memories
+    const userMemories: MemoryItem[] = []
+    let embeddingsCount = 0
+
+    // From cache
+    for (const memory of this.cache.values()) {
+      if (memory.metadata?.userId === userId) {
+        const exportedMemory = { ...memory }
+
+        // Optionally remove embeddings (they're large)
+        if (!opts.includeEmbeddings && exportedMemory.embedding) {
+          delete exportedMemory.embedding
+        } else if (exportedMemory.embedding) {
+          embeddingsCount++
+        }
+
+        userMemories.push(exportedMemory)
+      }
+    }
+
+    // From vector store (if available)
+    if (this.vectorStore) {
+      try {
+        const storeMemories = await this.vectorStore.search('', {
+          userId,
+          limit: 10000,
+        })
+
+        for (const { memory } of storeMemories) {
+          // Check if not already in cache
+          if (!userMemories.find((m) => m.id === memory.id)) {
+            const exportedMemory = { ...memory }
+
+            if (!opts.includeEmbeddings && exportedMemory.embedding) {
+              delete exportedMemory.embedding
+            } else if (exportedMemory.embedding) {
+              embeddingsCount++
+            }
+
+            userMemories.push(exportedMemory)
+          }
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export from vector store:', error)
+        }
+      }
+    }
+
+    // 2. Export consent history (if requested)
+    let consentHistory: DataExportResult['data']['consentHistory'] = undefined
+    if (opts.includeConsentHistory && this.consentManager) {
+      try {
+        const events = await this.consentManager.getConsentHistory(userId)
+        consentHistory = events.map((event) => ({
+          type: event.type === 'granted' ? 'granted' : 'withdrawn',
+          purposes: event.purposes,
+          timestamp: event.timestamp,
+          version: event.version,
+        }))
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export consent history:', error)
+        }
+      }
+    }
+
+    // 3. Export audit trail (if requested)
+    let auditTrail: DataExportResult['data']['auditTrail'] = undefined
+    if (opts.includeAuditTrail) {
+      try {
+        const logs = await this.auditLogger.getUserAuditTrail(userId)
+        auditTrail = logs.map((log) => ({
+          eventType: log.eventType,
+          timestamp: log.timestamp,
+          description: log.description,
+          metadata: log.metadata,
+        }))
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Failed to export audit trail:', error)
+        }
+      }
+    }
+
+    // 4. Export profile data (if requested)
+    let profile: Record<string, unknown> | undefined = undefined
+    if (opts.includeProfile) {
+      // Try to find profile-type memories
+      const profileMemories = userMemories.filter((m) => m.type === 'profile')
+      if (profileMemories.length > 0) {
+        profile = profileMemories.reduce(
+          (acc, memory) => {
+            // Try to parse JSON content as profile data
+            try {
+              const parsed = JSON.parse(memory.content)
+              return { ...acc, ...parsed }
+            } catch {
+              acc[memory.id] = memory.content
+              return acc
+            }
+          },
+          {} as Record<string, unknown>
+        )
+      }
+    }
+
+    // 5. Calculate summary
+    const jsonString = JSON.stringify({
+      memories: userMemories,
+      consentHistory,
+      auditTrail,
+      profile,
+    })
+    const dataSizeBytes = new Blob([jsonString]).size
+
+    const result: DataExportResult = {
+      userId,
+      timestamp,
+      formatVersion: '1.0.0',
+      data: {
+        memories: userMemories,
+        consentHistory,
+        auditTrail,
+        profile,
+      },
+      summary: {
+        memoriesCount: userMemories.length,
+        embeddingsCount,
+        dataSizeBytes,
+        consentEventsCount: consentHistory?.length || 0,
+        auditLogsCount: auditTrail?.length || 0,
+      },
+      options: opts,
+    }
+
+    // 6. Audit log: data export (GDPR Article 20)
+    await this.auditLogger.log({
+      eventType: 'user:data:exported',
+      severity: 'info',
+      description: `User data exported: ${userId}`,
+      metadata: {
+        userId,
+        purpose: 'gdpr_data_portability',
+        legalBasis: 'legal_obligation',
+        result: 'success',
+        memoriesCount: userMemories.length,
+        embeddingsCount,
+        dataSizeBytes,
+        includeEmbeddings: opts.includeEmbeddings,
+        includeConsentHistory: opts.includeConsentHistory,
+        includeAuditTrail: opts.includeAuditTrail,
+      },
+    })
+
+    if (this.config.debug) {
+      console.log(
+        `[MemoryService] Data export complete for user ${userId}:`,
+        `${result.summary.memoriesCount} memories, `,
+        `${result.summary.dataSizeBytes} bytes`
+      )
+    }
+
+    return result
   }
 
   /**
@@ -706,22 +1895,31 @@ export class MemoryService {
   async flushBuffer(): Promise<void> {
     if (this.buffer.items.length === 0) return
 
+    // Capture items and clear buffer immediately to prevent race conditions
+    // where new items added during await would be lost
     const items = [...this.buffer.items]
-
-    // Update vector store
-    if (this.vectorStore) {
-      await this.updateVectorStore(items)
-    }
-
-    // Clear buffer
     this.buffer.items = []
     this.buffer.totalTokens = 0
 
-    this.emitEvent({
-      type: 'buffer:flushed',
-      timestamp: new Date(),
-      data: { count: items.length },
-    })
+    try {
+      // Update vector store
+      if (this.vectorStore) {
+        await this.updateVectorStore(items)
+      }
+
+      this.emitEvent({
+        type: 'buffer:flushed',
+        timestamp: new Date(),
+        data: { count: items.length },
+      })
+    } catch (error) {
+      // On failure, restore items to buffer (prepend to maintain partial order)
+      this.buffer.items = [...items, ...this.buffer.items]
+      // Re-calculate tokens (simplified)
+      this.buffer.totalTokens = this.buffer.items.reduce((sum, item) => sum + item.tokens, 0)
+      
+      throw error
+    }
   }
 
   /**
@@ -827,27 +2025,52 @@ export class MemoryService {
   /**
    * Cleanup expired memories
    */
+  /**
+   * Cleanup expired memories based on retention policies
+   *
+   * Automatically deletes memories that exceed their TTL based on:
+   * - Memory type (episodic, semantic, procedural, etc.)
+   * - Memory scope (session, thread, global, user)
+   * - Explicit expiresAt timestamp
+   *
+   * @returns Number of memories deleted
+   */
   async cleanup(): Promise<number> {
     const now = new Date()
     const toDelete: string[] = []
 
     for (const memory of this.cache.values()) {
-      // Check expiry
+      // Check explicit expiry
       if (memory.expiresAt && memory.expiresAt < now) {
         toDelete.push(memory.id)
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Memory expired (explicit): ${memory.id} ` +
+              `(expired at ${memory.expiresAt.toISOString()})`
+          )
+        }
         continue
       }
 
-      // Check retention policy
-      const retention = this.getRetentionForScope(memory.scope)
+      // Check retention policy (TTL)
+      const retention = this.getRetentionForMemory(memory)
       if (retention > 0) {
         const age = now.getTime() - memory.createdAt.getTime()
-        if (age > retention * 1000) {
+        const ageSeconds = age / 1000
+
+        if (ageSeconds > retention) {
           toDelete.push(memory.id)
+          if (this.config.debug) {
+            console.log(
+              `[MemoryService] Memory expired (retention): ${memory.id} ` +
+                `(age: ${Math.round(ageSeconds / 86400)} days, limit: ${Math.round(retention / 86400)} days)`
+            )
+          }
         }
       }
     }
 
+    // Delete expired memories
     for (const id of toDelete) {
       await this.deleteMemory(id)
       this.emitEvent({
@@ -855,6 +2078,12 @@ export class MemoryService {
         timestamp: new Date(),
         data: { id },
       })
+    }
+
+    if (this.config.debug && toDelete.length > 0) {
+      console.log(
+        `[MemoryService] Cleanup complete: ${toDelete.length} memories deleted`
+      )
     }
 
     return toDelete.length
@@ -1159,8 +2388,14 @@ export class MemoryService {
       return { sentence, score, index }
     })
 
-    // Sort by score and select top sentences
-    scoredSentences.sort((a, b) => b.score - a.score)
+    // Sort by score and select top sentences (deterministic ordering)
+    scoredSentences.sort((a, b) => {
+      // Primary: Score (higher first)
+      if (a.score !== b.score) return b.score - a.score
+
+      // Secondary: Original index (earlier sentences preferred)
+      return a.index - b.index
+    })
 
     // Build summary from top sentences, preserving original order
     const selectedIndices = new Set<number>()
@@ -1293,21 +2528,70 @@ export class MemoryService {
     return 'medium'
   }
 
-  private getRetentionForScope(scope: MemoryScope): number {
-    const policy = this.config.retentionPolicy
-    switch (scope) {
+  /**
+   * Get retention TTL for memory (checks both type and scope)
+   *
+   * Priority order:
+   * 1. Memory type (episodic, semantic, procedural, etc.)
+   * 2. Memory scope (session, thread, global, user)
+   * 3. Default retention policies
+   *
+   * @param memory - Memory item
+   * @returns TTL in seconds (0 = never expires)
+   */
+  private getRetentionForMemory(memory: MemoryItem): number {
+    const policy = this.config.retentionPolicy || {}
+
+    // Check type-specific retention first (higher priority)
+    if (memory.type) {
+      const typeRetention = policy[memory.type as keyof typeof policy]
+      if (typeRetention !== undefined) {
+        return typeRetention
+      }
+
+      // Fall back to defaults for type
+      const typeDefault =
+        DEFAULT_RETENTION_POLICY[
+          memory.type as keyof typeof DEFAULT_RETENTION_POLICY
+        ]
+      if (typeDefault !== undefined) {
+        return typeDefault
+      }
+    }
+
+    // Fall back to scope-based retention
+    switch (memory.scope) {
       case 'session':
-        return policy.session
+        return policy.session ?? DEFAULT_RETENTION_POLICY.session
       case 'thread':
-        return policy.thread
+        return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
       case 'global':
-        return policy.global
+        return policy.global ?? DEFAULT_RETENTION_POLICY.global
       case 'user':
-        return policy.user ?? 0
+        return policy.user ?? DEFAULT_RETENTION_POLICY.user
       default:
-        return 0
+        return DEFAULT_RETENTION_POLICY.session // Safe default
     }
   }
+
+  /**
+   * @deprecated Use getRetentionForMemory instead
+   */
+  // private getRetentionForScope(scope: MemoryScope): number {
+  //   const policy = this.config.retentionPolicy || {}
+  //   switch (scope) {
+  //     case 'session':
+  //       return policy.session ?? DEFAULT_RETENTION_POLICY.session
+  //     case 'thread':
+  //       return policy.thread ?? DEFAULT_RETENTION_POLICY.thread
+  //     case 'global':
+  //       return policy.global ?? DEFAULT_RETENTION_POLICY.global
+  //     case 'user':
+  //       return policy.user ?? DEFAULT_RETENTION_POLICY.user
+  //     default:
+  //       return DEFAULT_RETENTION_POLICY.session
+  //   }
+  // }
 
   /**
    * Get optimizer
@@ -1347,12 +2631,332 @@ export class MemoryService {
 
   /**
    * Recall memories matching a query (alias for query)
+   *
+   * Note: This convenience method enables access tracking by default,
+   * updating accessCount and lastAccessed for retrieved memories.
+   * For pure read operations without side effects, use query() directly.
    */
   async recall(
     queryText: string,
     options?: Partial<MemoryQuery>
   ): Promise<MemorySearchResult[]> {
-    return this.query({ query: queryText, ...options })
+    return this.query({
+      query: queryText,
+      trackAccess: true, // Enable tracking for convenience method
+      ...options,
+    })
+  }
+
+  /**
+   * Track access for memories (explicitly update accessCount and lastAccessed)
+   *
+   * This method provides explicit control over access tracking, separating
+   * read operations from write side effects. Use this when you want to:
+   * - Track memory usage for importance scoring
+   * - Update lastAccessed timestamps for decay calculations
+   * - Record access patterns for analytics
+   *
+   * @param memoryIds - Memory IDs to track
+   * @returns Number of memories tracked
+   *
+   * @example
+   * ```typescript
+   * // Pure read without side effects
+   * const results = await service.query({ query: 'test' })
+   *
+   * // Explicitly track access for importance scoring
+   * await service.trackAccess(results.map(r => r.memory.id))
+   * ```
+   */
+  async trackAccess(memoryIds: string | string[]): Promise<number> {
+    const ids = Array.isArray(memoryIds) ? memoryIds : [memoryIds]
+    let tracked = 0
+
+    for (const id of ids) {
+      const memory = this.cache.get(id)
+      if (memory) {
+        memory.accessCount++
+        memory.lastAccessed = new Date()
+        tracked++
+      }
+    }
+
+    return tracked
+  }
+
+  /**
+   * Capture a tool call and its result to memory
+   *
+   * Automatically stores tool invocations with intelligent token management:
+   * - Enforces per-tool token limits (default: 500 tokens)
+   * - Enforces total tool memory budget (default: 5000 tokens)
+   * - Auto-summarizes large outputs (configurable)
+   * - Applies tool filtering (if configured)
+   * - LRU eviction when budget exceeded
+   *
+   * @param toolName - Name of the tool that was called
+   * @param params - Tool parameters (will be JSON stringified)
+   * @param result - Tool result/output (will be JSON stringified)
+   * @param options - Optional tool type, metadata, scope, and priority
+   * @returns The created memory item, or null if capture is disabled or tool filtered out
+   *
+   * @sideEffects
+   * - Stores tool memory as episodic type
+   * - May summarize large outputs (if autoSummarize=true)
+   * - May evict old tool memories (if budget exceeded)
+   * - Writes to cache and vector store (if configured)
+   * - Emits 'memory:added' event to listeners
+   *
+   * @example
+   * ```typescript
+   * // Capture a database query
+   * const memory = await service.captureToolCall(
+   *   'database_query',
+   *   { sql: 'SELECT * FROM users WHERE active = true' },
+   *   { rows: 42, time: 150 },
+   *   {
+   *     toolType: 'database',
+   *     priority: 'medium',
+   *   }
+   * )
+   *
+   * // Returns null if capture disabled or filtered
+   * if (memory === null) {
+   *   console.log('Tool capture disabled or filtered')
+   * }
+   * ```
+   */
+  async captureToolCall(
+    toolName: string,
+    params: any,
+    result: any,
+    options?: {
+      toolType?: 'api' | 'database' | 'computation' | 'external' | 'utility'
+      metadata?: Record<string, any>
+      scope?: MemoryScope
+      priority?: MemoryPriority
+    }
+  ): Promise<MemoryItem | null> {
+    // Check if tool integration is enabled
+    if (!this.config.toolIntegration?.captureToolOutputs) {
+      if (this.config.debug) {
+        console.log(
+          '[MemoryService] Tool capture disabled (captureToolOutputs=false)'
+        )
+      }
+      return null
+    }
+
+    // Apply tool capture filter if configured
+    if (this.config.toolIntegration.toolCaptureFilter) {
+      if (!this.config.toolIntegration.toolCaptureFilter(toolName)) {
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Tool '${toolName}' filtered out by toolCaptureFilter`
+          )
+        }
+        return null
+      }
+    }
+
+    // Format tool call content
+    const paramsStr = JSON.stringify(params, null, 2)
+    const resultStr = JSON.stringify(result, null, 2)
+    let content = `Tool: ${toolName}\n\nParameters:\n${paramsStr}\n\nResult:\n${resultStr}`
+
+    // Check token limits and apply summarization if needed
+    const maxTokensPerTool = this.config.toolIntegration.maxTokensPerTool ?? 500
+    let tokens = TokenCounter.count(content)
+
+    if (tokens > maxTokensPerTool) {
+      if (this.config.toolIntegration.autoSummarize !== false) {
+        // Summarize large tool outputs
+        const summary = this.createSummary(resultStr, maxTokensPerTool - 100)
+        content = `Tool: ${toolName}\n\nParameters:\n${paramsStr}\n\nResult (summarized):\n${summary}`
+        tokens = TokenCounter.count(content)
+
+        if (this.config.debug) {
+          console.log(
+            `[MemoryService] Tool output summarized: ${toolName} ` +
+              `(${TokenCounter.count(resultStr)} → ${TokenCounter.count(summary)} tokens)`
+          )
+        }
+      } else {
+        // Truncate without summarization
+        const maxChars = Math.floor(
+          (maxTokensPerTool / tokens) * content.length
+        )
+        content = content.substring(0, maxChars) + '... [truncated]'
+        tokens = TokenCounter.count(content)
+      }
+    }
+
+    // Check total tool memory budget
+    const maxTotalToolTokens =
+      this.config.toolIntegration.maxTotalToolTokens ?? 5000
+
+    // Calculate current tool memory tokens
+    const toolMemories = Array.from(this.cache.values()).filter(
+      (m) => m.metadata.toolName
+    )
+    const currentToolTokens = toolMemories.reduce((sum, m) => sum + m.tokens, 0)
+
+    // Evict oldest tool memories if budget exceeded
+    if (currentToolTokens + tokens > maxTotalToolTokens) {
+      const tokensToFree = currentToolTokens + tokens - maxTotalToolTokens
+      let freedTokens = 0
+
+      // Sort by age (oldest first)
+      const sortedToolMemories = [...toolMemories].sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+      )
+
+      for (const memory of sortedToolMemories) {
+        if (freedTokens >= tokensToFree) break
+        await this.deleteMemory(memory.id)
+        freedTokens += memory.tokens
+      }
+
+      if (this.config.debug) {
+        console.log(
+          `[MemoryService] Tool memory budget enforced: Evicted ${sortedToolMemories.length} ` +
+            `memories to free ${freedTokens} tokens`
+        )
+      }
+    }
+
+    // Store tool memory
+    const memory = await this.addMemory(
+      content,
+      'episodic', // Tool calls are episodic events
+      options?.scope ?? 'thread',
+      {
+        toolName,
+        toolParams: params,
+        toolResult: result,
+        toolType: options?.toolType ?? 'external',
+        autoCapture: true,
+        ...options?.metadata,
+      },
+      {
+        priority: options?.priority ?? 'medium',
+        confidence: 0.9, // High confidence for tool results
+      }
+    )
+
+    return memory
+  }
+
+  /**
+   * Get tool call history for a specific tool or all tools
+   * Useful for analyzing patterns and providing context to LLM
+   *
+   * @param toolName - Optional tool name to filter by
+   * @param options - Query options (limit, timeRange, etc.)
+   * @returns Array of tool memories
+   */
+  async getToolHistory(
+    toolName?: string,
+    options?: {
+      limit?: number
+      timeRange?: { start?: Date; end?: Date }
+      scope?: MemoryScope
+      includeParams?: boolean
+      includeResults?: boolean
+    }
+  ): Promise<MemoryItem[]> {
+    const query: MemoryQuery = {
+      limit: options?.limit ?? 50,
+      timeRange: options?.timeRange,
+      scopes: options?.scope ? [options?.scope] : undefined,
+      metadata: toolName ? { toolName } : { toolName: { $exists: true } },
+    }
+
+    const results = await this.query(query)
+    return results.map((r) => r.memory)
+  }
+
+  /**
+   * Get tool context for a specific query
+   * Retrieves relevant tool call history to inform LLM responses
+   *
+   * @param query - Query string to find relevant tool context
+   * @param options - Query options
+   * @returns Formatted tool context string
+   */
+  async getToolContext(
+    query: string,
+    options?: {
+      limit?: number
+      toolNames?: string[]
+      maxTokens?: number
+    }
+  ): Promise<string> {
+    // Build metadata filter for specific tools if provided
+    const metadata = options?.toolNames
+      ? { toolName: { $in: options.toolNames } }
+      : { toolName: { $exists: true } }
+
+    const results = await this.query({
+      query,
+      limit: options?.limit ?? 10,
+      tokenBudget: options?.maxTokens,
+      metadata,
+    })
+
+    if (results.length === 0) {
+      return ''
+    }
+
+    // Format tool context
+    const toolContexts = results.map((r) => {
+      const memory = r.memory
+      return `[Tool: ${memory.metadata.toolName}]\n${memory.content}\n`
+    })
+
+    return `# Relevant Tool History\n\n${toolContexts.join('\n')}`
+  }
+
+  /**
+   * Replay tool call history as a timeline
+   * Useful for debugging and understanding tool usage patterns
+   *
+   * @param options - Filter and format options
+   * @returns Timeline of tool calls
+   */
+  async replayToolCalls(options?: {
+    toolNames?: string[]
+    timeRange?: { start?: Date; end?: Date }
+    limit?: number
+    format?: 'detailed' | 'summary'
+  }): Promise<
+    Array<{
+      timestamp: Date
+      toolName: string
+      params: any
+      result: any
+      memory: MemoryItem
+    }>
+  > {
+    const metadata = options?.toolNames
+      ? { toolName: { $in: options.toolNames } }
+      : { toolName: { $exists: true } }
+
+    const results = await this.query({
+      limit: options?.limit ?? 100,
+      timeRange: options?.timeRange,
+      metadata,
+    })
+
+    return results
+      .map((r) => ({
+        timestamp: r.memory.createdAt,
+        toolName: r.memory.metadata.toolName as string,
+        params: r.memory.metadata.toolParams,
+        result: r.memory.metadata.toolResult,
+        memory: r.memory,
+      }))
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
   }
 
   /**
@@ -1469,7 +3073,11 @@ export class MemoryService {
    */
   async embed(text: string): Promise<number[]> {
     if (!this.embeddings) {
-      throw new Error('Embedding provider not configured')
+      throw new MemoryConfigError(
+        'Embedding provider not configured. ' +
+          'Configure embeddings in MemoryServiceConfig to use this method.',
+        { method: 'embed' }
+      )
     }
     return this.embeddings.embedText(text)
   }

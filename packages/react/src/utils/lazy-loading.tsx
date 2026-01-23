@@ -52,7 +52,7 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
     )
   }
 
-  ComponentWithBoundary.displayName = `Lazy(${LazyComponent.displayName || 'Component'})`
+  ComponentWithBoundary.displayName = `Lazy(${(LazyComponent as { displayName?: string }).displayName || 'Component'})`
   return ComponentWithBoundary
 }
 
@@ -104,7 +104,7 @@ export function createLazyComponentWithBoundary<T extends React.ComponentType<an
     )
   }
 
-  ComponentWithBoundary.displayName = `LazyWithBoundary(${LazyComponent.displayName || 'Component'})`
+  ComponentWithBoundary.displayName = `LazyWithBoundary(${(LazyComponent as { displayName?: string }).displayName || 'Component'})`
   return ComponentWithBoundary
 }
 
@@ -251,10 +251,13 @@ function checkFeatureEnabled(feature: keyof typeof FeatureFlags): boolean {
 /**
  * Pre-configured lazy-loaded components for common use cases
  */
-export const LazyComponents = {
+export const LazyComponents: Record<string, React.ComponentType<any>> = {
   /** Lazy-loaded enhanced markdown renderer */
   MarkdownRenderer: createLazyComponent(
-    () => import('../components/ai/enhanced-markdown-renderer'),
+    () =>
+      import('../components/ai/enhanced-markdown-renderer').then((m) => ({
+        default: m.EnhancedMarkdownRenderer,
+      })),
     <div>Loading markdown...</div>
   ),
 
@@ -266,32 +269,29 @@ export const LazyComponents = {
 
   /** Lazy-loaded template marketplace */
   TemplateMarketplace: createLazyComponent(
-    () => import('../components/prompt/template-marketplace'),
+    () =>
+      import('../components/prompt/template-marketplace').then((m) => ({
+        default: m.TemplateMarketplace,
+      })),
     <div>Loading marketplace...</div>
   ),
 
   /** Lazy-loaded analytics dashboard */
   AnalyticsDashboard: createLazyComponent(
-    () => import('../components/dashboards/conversation-analytics-dashboard'),
+    () =>
+      import('../components/dashboards/conversation-analytics-dashboard').then((m) => ({
+        default: m.ConversationAnalyticsDashboard,
+      })),
     <div>Loading analytics...</div>
   ),
 
   /** Lazy-loaded performance monitor */
   PerformanceMonitor: createLazyComponent(
-    () => import('../components/dashboards/performance-dashboard'),
+    () =>
+      import('../components/dashboards/performance-dashboard').then((m) => ({
+        default: m.PerformanceDashboard,
+      })),
     <div>Loading performance...</div>
-  ),
-
-  /** Lazy-loaded accessibility tester */
-  AccessibilityTester: createLazyComponent(
-    () => import('../components/dashboards/accessibility-dashboard'),
-    <div>Loading accessibility tools...</div>
-  ),
-
-  /** Lazy-loaded vector store components */
-  VectorStoreManager: createLazyComponent(
-    () => import('../components/memory/vector-store-manager'),
-    <div>Loading memory tools...</div>
   ),
 }
 

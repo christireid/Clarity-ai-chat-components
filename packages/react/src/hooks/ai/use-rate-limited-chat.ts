@@ -8,7 +8,7 @@
 'use client'
 
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions } from '../chat/use-clarity-chat'
+import { useClarityChat, type UseClarityChatOptions, type CoreMessage } from '../chat/use-clarity-chat'
 import { useRequestQueue, type QueuedRequest } from '../../utils/request-queue'
 import { ProviderError } from '../../utils/error-handling/provider-error'
 
@@ -32,6 +32,7 @@ export interface RateLimitedChatOptions extends UseClarityChatOptions {
 export interface RateLimitedChatReturn {
   /** Chat functionality */
   messages: any[]
+  setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
   append: (message: any) => Promise<string | null>
   isLoading: boolean
   error: Error | undefined
@@ -136,6 +137,7 @@ export function useRateLimitedChat(
   return {
     // Chat functionality
     messages: chat.messages,
+    setMessages: chat.setMessages,
     append: appendWithQueue,
     isLoading: chat.isLoading,
     error: chat.error,

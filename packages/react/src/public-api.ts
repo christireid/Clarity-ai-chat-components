@@ -185,9 +185,12 @@ export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
+} from './components/code/CodeBlock'
+
+export {
   InlineCode,
   type InlineCodeProps,
-} from './components/code/CodeBlock'
+} from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -230,14 +233,8 @@ export {
   type FloatingChatWidgetProps,
 } from './components/chat/floating-chat-widget'
 export { ChatInput } from './components/chat/chat-input'
-export {
-  OfflineChatSync,
-  useOfflineChat,
-} from './components/chat/offline-chat-sync'
-export {
-  ChatSyncStatus,
-  type ChatSyncStatusProps,
-} from './components/chat/chat-sync-status'
+export { OfflineChatSync, useOfflineChat } from './components/chat/offline-chat-sync'
+export { ChatSyncStatus, type ChatSyncStatusProps } from './components/chat/chat-sync-status'
 export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
 export {
   TanStackMessageList,
@@ -312,24 +309,23 @@ export { ThemeProvider, useTheme, type ThemeProviderProps } from './theme'
 // LICENSE MANAGEMENT (Re-exported from @clarity-chat/license)
 // ============================================================================
 
-// NOTE: @clarity-chat/license package doesn't exist - commenting out
-// export {
-//   // Core license utilities
-//   LicenseInfo,
-//   verifyLicense,
-//   isLicenseValid,
-//   // React hooks
-//   useLicenseStatus,
-//   useIsLicensed,
-//   useHasPlan,
-//   useLicenseInfo,
-//   // Components
-//   LicenseProvider,
-//   LicenseGate,
-//   Watermark,
-//   // HOCs
-//   withLicense,
-// } from '@clarity-chat/license'
+export {
+  // Core license utilities
+  LicenseInfo,
+  verifyLicense,
+  isLicenseValid,
+  // React hooks
+  useLicenseStatus,
+  useIsLicensed,
+  useHasPlan,
+  useLicenseInfo,
+  // Components
+  LicenseProvider,
+  LicenseGate,
+  Watermark,
+  // HOCs
+  withLicense,
+} from '@clarity-chat/license'
 
 // License types are available from @clarity-chat/license directly
 // Consumers should import types as: import type { LicensePlan } from '@clarity-chat/license'
@@ -476,7 +472,11 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
+export {
+  SetupWizard,
+  QuickSetup,
+  interactiveSetup,
+} from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -492,118 +492,13 @@ export {
 
 // Migration Helpers - Smooth API transitions
 export {
-  // migrateToV1,
-  // createMigrationWrapper,
-  MigrationPresets,
-  // applyMigration,
-  // validateMigration,
-  // MigrationUtils,
-} from './utils/migration-helpers'
-
-// IntelliSense Helpers - Enhanced TypeScript DX
-export type {
-  ChatApiConfig,
-  ChatPreset,
-  MemoryConfigHelper,
-  StreamingConfigHelper,
-  RateLimitConfigHelper,
-  HeaderConfigHelper,
-  MessageActionsConfigHelper,
-  PromptsConfigHelper,
-  ErrorHandlingConfigHelper,
-  ChatErrorType,
-  ErrorHandlingConfigHelper as ErrorConfigHelper,
-} from './types/intellisense-helpers'
-
-// Component Composition - Easy component building
-export {
-  composeComponents,
-  withProps,
-  conditional,
-  Compositions,
-  createGridLayout,
-  FlexLayouts,
-  composeHooks,
-  transformProps,
-  withDefaults,
-  withVariants,
-  createContextProvider,
-} from './utils/component-composition'
-
-// Theme Helpers - Easy theming and customization
-// NOTE: These exports are commented out due to type errors in theme-helpers.tsx
-// The functionality is available from ./theme instead
-// export {
-//   ThemePresets,
-//   createThemeFromPalette,
-//   createThemeFromCSSVariables,
-//   mergeThemes,
-//   createThemeVariant,
-//   createThemeClasses,
-//   applyThemeToCSS,
-//   // useTheme, // Exported from ./theme
-//   // useResponsiveTheme, // Exported from ./theme
-//   // usePersistentTheme, // Exported from ./theme
-//   // ThemeProvider, // Exported from ./theme
-//   // ThemeToggle, // Exported from ./theme
-//   // ThemeSelector, // Exported from ./theme
-// } from './utils/theme-helpers'
-
-// Accessibility Helpers - Enhanced A11y support
-export {
-  createAccessibleButtonProps,
-  createAccessibleDialogProps,
-  createAccessibleListboxProps,
-  useKeyboardListNavigation,
-  useChatInputKeyboard,
-  announceToScreenReader,
-  useScreenReaderAnnouncements,
-  LiveRegion,
-  useFocusManagement,
-  isKeyboardAccessible,
-  getFocusableElements,
-  validateChatAccessibility,
-  useMotionPreferences,
-  createAccessibleMotionProps,
-  useHighContrastMode,
-  applyHighContrastAdjustments,
-  SkipLink,
-  ScreenReaderOnly,
-} from './utils/accessibility-helpers'
-
-// Testing Helpers - Comprehensive testing toolkit
-export {
-  mockChatAPI,
-  MockWebSocket,
-  MockLocalStorage,
-  createMockFetch,
-  renderChatWithDefaults,
-  createTestMessages,
-  createMockChatState,
-  createMockClarityChatHook,
-  asyncTestUtils,
-  domTestUtils,
-  a11yTestUtils,
-  performanceTestUtils,
-  e2eTestUtils,
-  testConfigs,
-  TestWrapper,
-  createTestComponent,
-  testDataFactories,
-  chatAssertions,
-  vi,
-  Mock,
-} from './utils/testing-helpers'
-
-// Migration Helpers - Easy migration from other libraries
-export {
   VercelAdapter,
   OpenAIAdapter,
   ChatbotKitAdapter,
   CustomAdapter,
   MigrationTracker,
   MigrationAnalyzer,
-  // MigrationPresets, // Exported from ./utils/migration-helpers.tsx above
+  MigrationPresets,
   generateMigrationReport,
   migrateQuick,
 } from './utils/migration-helpers'
@@ -739,10 +634,7 @@ export {
 export { TokenOptimizationPanel } from './components/token/TokenOptimizationPanel'
 export { TokenOptimizationBadge } from './components/token/TokenOptimizationBadge'
 export { TokenOptimizationDashboard } from './components/token/TokenOptimizationDashboard'
-export {
-  AdaptiveTokenOptimizer as TokenOptimizer,
-  adaptiveOptimizer,
-} from './utils/tokenization/adaptive-optimizer'
+export { AdaptiveTokenOptimizer as TokenOptimizer, adaptiveOptimizer } from './utils/tokenization/adaptive-optimizer'
 export {
   TokenCostPreview,
   useTokenEstimate,
@@ -821,10 +713,7 @@ export { AdvancedChatInput } from './components/input/advanced-chat-input'
 export { FileUpload } from './components/input/file-upload'
 export { InlineVoiceInput } from './components/input/voice-input'
 export { StructuredInputBuilder } from './components/input/structured-input-builder'
-export {
-  DocumentIntegration,
-  useDocumentIntegration,
-} from './components/media/document-integration'
+export { DocumentIntegration, useDocumentIntegration } from './components/media/document-integration'
 
 // ============================================================================
 // CONVERSATION & NAVIGATION
@@ -835,10 +724,7 @@ export { ConversationTimeline } from './components/conversation/conversation-tim
 export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 export { ContextMenu } from './components/navigation'
 export { CommandPalette } from './components/navigation/command-palette'
-export {
-  CollaborativeEditor,
-  useCollaborativeSession,
-} from './components/ai/collaborative-editing'
+export { CollaborativeEditor, useCollaborativeSession } from './components/ai/collaborative-editing'
 
 // ============================================================================
 // MEDIA & DOCUMENTS
@@ -911,7 +797,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
 // Security
-// export { SecurityManager, securityManager, useSecurity } from './utils/security'
+export { SecurityManager, securityManager, useSecurity } from './utils/security-helpers'
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -963,8 +849,8 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-export { ApiTokenManager } from './components/enterprise/ApiTokenManager'
-export { AuthTenantDashboard } from './components/enterprise/AuthTenantDashboard'
+// export { ApiTokenManager } from './components/enterprise/api-token-manager'
+// export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
 
 // ============================================================================
 // THEME COMPONENTS (Theme Preview & Testing)
@@ -1042,7 +928,7 @@ export {
   type SanitizationOptions,
   type SecurityHeaders,
   type SecurityAuditResult,
-} from './utils/security'
+} from './utils/security-helpers'
 
 // Error boundaries
 export {

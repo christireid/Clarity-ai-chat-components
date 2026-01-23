@@ -44,6 +44,7 @@ import {
 
 // Prompt optimization imports
 import { buildModelPrompt } from '../../prompt/core/builder'
+// debounce import removed as we use inline setTimeout for effect cleanup pattern
 import { MODEL_PRESETS } from '../../prompt/core/tokenizer'
 import type { ModelMetadata } from '../../prompt/core/tokenizer'
 
@@ -151,6 +152,11 @@ export function useClarityChat(
     errorType: null,
   })
 
+  // State for consent tracking
+  const [consentGranted, setConsentGranted] = React.useState<boolean | null>(null)
+  const consentRequestedRef = React.useRef<boolean>(false)
+  const autoCaptureWarnedRef = React.useRef<boolean>(false)
+
   // Transform function with memory enrichment
   const originalTransform = rest.transform
   const syncTransform = React.useCallback(
@@ -161,12 +167,12 @@ export function useClarityChat(
         enrichedMessages = originalTransform(enrichedMessages)
       }
 
-      // Use state variable to ensure reactivity
-      if (memory?.enabled && currentMemoryContext) {
+      // Use ref to ensure fresh value during async operations (fixes race condition)
+      if (memory?.enabled && memoryContextRef.current) {
         enrichedMessages = [
           {
             role: 'system',
-            content: `Relevant context from memory:\n${currentMemoryContext}`,
+            content: `Relevant context from memory:\n${memoryContextRef.current}`,
           } as CoreMessage,
           ...enrichedMessages,
         ]
@@ -183,56 +189,114 @@ export function useClarityChat(
     async (message: CoreMessage) => {
       await originalOnFinish?.(message)
 
-      if (memory?.enabled && memoryContext?.service) {
-        try {
-          const content = extractTextContent(message.content)
+      // Check if memory is enabled
+      if (!memory?.enabled || !memoryContext?.service) {
+        return
+      }
 
-          if (content) {
-            const storeMemory = async () => {
-              return await memoryContext.addMemory(
-                content,
-                'episodic',
-                'thread',
-                {
-                  messageId: message.id,
-                  role: message.role,
-                  timestamp: new Date().toISOString(),
-                },
-                {
-                  priority: message.role === 'assistant' ? 'high' : 'medium',
-                }
-              )
+      // Check if autoCapture is enabled (default: false)
+      const autoCapture = memory.autoCapture ?? false
+      if (!autoCapture) {
+        // Auto-capture is disabled - messages must be manually added to memory
+        return
+      }
+
+      // Warn once about auto-capture being enabled (privacy implications)
+      if (!autoCaptureWarnedRef.current) {
+        console.warn(
+          '[Clarity Chat] Auto-capture is enabled. All messages will be automatically stored to memory. ' +
+          'Ensure users have given explicit consent for data collection. ' +
+          'See privacy documentation for GDPR/CCPA compliance guidance.'
+        )
+        autoCaptureWarnedRef.current = true
+      }
+
+      // Check consent if required (default: true)
+      const requireConsent = memory.requireConsent ?? true
+      if (requireConsent) {
+        // Request consent on first capture if not already requested
+        if (consentGranted === null && !consentRequestedRef.current) {
+          consentRequestedRef.current = true
+
+          try {
+            const consent = memory.onConsentRequired
+              ? await Promise.resolve(memory.onConsentRequired())
+              : false
+
+            setConsentGranted(consent)
+
+            if (!consent) {
+              debug.log('[Clarity Chat] Memory capture consent denied by user')
+              return
             }
 
-            if (memory.retryOnError !== false) {
-              await retryOperation(
-                storeMemory,
-                memory.maxRetryAttempts || 2,
-                500
-              )
-            } else {
-              await storeMemory()
-            }
+            debug.log('[Clarity Chat] Memory capture consent granted by user')
+          } catch (error) {
+            console.error('[Clarity Chat] Error obtaining consent:', error)
+            setConsentGranted(false)
+            return
           }
-        } catch (error) {
-          const err = error as Error
-          const errorType = classifyError(err)
-
-          setMemoryError({ error: err, operation: 'store', errorType })
-          memory.onMemoryError?.(err, 'store')
-          console.warn(
-            `[Clarity Chat] Memory storage failed (${errorType}):`,
-            err.message
-          )
+        } else if (consentGranted === false) {
+          // Consent was previously denied
+          return
         }
+        // If consentGranted === true, proceed with storage
+      }
+
+      // Store message to memory
+      try {
+        const content = extractTextContent(message.content)
+
+        if (content) {
+          const storeMemory = async () => {
+            return await memoryContext.addMemory(
+              content,
+              'episodic',
+              'thread',
+              {
+                messageId: message.id,
+                role: message.role,
+                timestamp: new Date().toISOString(),
+                autoCapture: true, // Mark as auto-captured for audit trail
+              },
+              {
+                priority: message.role === 'assistant' ? 'high' : 'medium',
+              }
+            )
+          }
+
+          if (memory.retryOnError !== false) {
+            await retryOperation(
+              storeMemory,
+              memory.maxRetryAttempts || 2,
+              500
+            )
+          } else {
+            await storeMemory()
+          }
+        }
+      } catch (error) {
+        const err = error as Error
+        const errorType = classifyError(err)
+
+        setMemoryError({ error: err, operation: 'store', errorType })
+        memory.onMemoryError?.(err, 'store')
+        console.warn(
+          `[Clarity Chat] Memory storage failed (${errorType}):`,
+          err.message
+        )
       }
     },
     [
       memory?.enabled,
+      memory?.autoCapture,
+      memory?.requireConsent,
+      memory?.onConsentRequired,
       memoryContext?.service,
       memory?.retryOnError,
       memory?.maxRetryAttempts,
       memory?.onMemoryError,
+      consentGranted,
       originalOnFinish,
     ]
   )
@@ -312,6 +376,10 @@ export function useClarityChat(
                 memoryContextRef.current = ''
                 setCurrentMemoryContext('')
               }
+            } finally {
+              // FIX: Issue #11 - Ensure cleanup happens even if promise rejects
+              // This prevents loading state from getting stuck
+              lastQueryRef.current = queryText
             }
           }
         } catch (error) {
@@ -398,7 +466,19 @@ export function useClarityChat(
         }
       }
 
-      optimizeMessages()
+      // Debounce optimization to avoid excessive processing during rapid updates
+      const debouncedOptimize = debounce(optimizeMessages, 500)
+      debouncedOptimize()
+      
+      // Cleanup not strictly necessary for simple debounce but good practice if we returned a cancel function
+      // For now, debounce wrapper creates a new timer each effect run if dependencies change
+      // Ideally we would memoize the debounced function, but we want it to run on dependency change.
+      // The previous setTimeout approach was actually correct for a simple effect-based debounce.
+      // Let's revert to inline setTimeout to avoid creating new function references or complex useMemo.
+      
+      // Actually, standard useEffect debounce pattern:
+      const timeoutId = setTimeout(optimizeMessages, 500)
+      return () => clearTimeout(timeoutId)
     }
   }, [
     promptOptimization?.enabled,

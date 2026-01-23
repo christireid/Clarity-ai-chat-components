@@ -99,13 +99,14 @@
     "@playwright/test": "^1.57.0",
     "@size-limit/preset-big-lib": "^12.0.0",
     "@storybook/addon-designs": "^11.0.3",
-    "@storybook/builder-vite": "^10.1.4",
-    "@storybook/react-vite": "^10.1.4",
+    "@storybook/builder-vite": "^8.6.0",
+    "@storybook/react-vite": "^8.6.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
     "@vitejs/plugin-react": "^5.1.2",
+    "chalk": "^5.6.2",
     "eslint": "^9.39.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
@@ -184,6 +185,7 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
+    "dompurify": "^3.3.1",
     "tsx": "^4.21.0"
   }
 }

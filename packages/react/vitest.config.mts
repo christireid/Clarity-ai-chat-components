@@ -37,6 +37,7 @@ export default defineConfig({
     // Include all test directories
     include: [
       'src/**/__tests__/**/*.test.{ts,tsx}',
+      'src/**/__benchmarks__/**/*.bench.{ts,tsx}',
     ],
     // Exclude heavy tests that cause memory issues
     exclude: [
@@ -44,6 +45,13 @@ export default defineConfig({
       'dist',
       '**/*.stories.tsx',
     ],
+    // Benchmark configuration
+    benchmark: {
+      include: ['src/**/__benchmarks__/**/*.bench.{ts,tsx}'],
+      exclude: ['node_modules', 'dist'],
+      // Benchmark options
+      outputFile: './benchmark-results.json',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

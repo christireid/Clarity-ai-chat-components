@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 // ============================================================================
 // TYPES
@@ -308,13 +308,13 @@ export function logAccessibilityViolations(report: AccessibilityReport): void {
   )
 
   Object.entries(grouped).forEach(([impact, violations]) => {
-    const emoji =
-      {
-        minor: '⚠️',
-        moderate: '🟡',
-        serious: '🟠',
-        critical: '🔴',
-      }[impact as keyof typeof emoji] || '❓'
+    const emojiMap: Record<string, string> = {
+      minor: '⚠️',
+      moderate: '🟡',
+      serious: '🟠',
+      critical: '🔴',
+    }
+    const emoji = emojiMap[impact] || '❓'
 
     console.group(`${emoji} ${impact.toUpperCase()} (${violations.length})`)
 

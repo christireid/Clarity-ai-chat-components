@@ -407,14 +407,14 @@ export function ClarityChat({
       // Show toast after successful deletion (not in child component to avoid
       // showing toast when loading guard blocks the action)
       toast?.info('Message deleted')
-      onDeleteMessage?.(messageId)
+      processedProps.onDeleteMessage?.(messageId)
     },
     [
       chat.isLoading,
       chat.setMessages,
       editingMessageId,
       isRegenerating,
-      onDeleteMessage,
+      processedProps.onDeleteMessage,
       toast,
     ]
   )
@@ -428,9 +428,9 @@ export function ClarityChat({
         return
       }
       setEditingMessageId(messageId)
-      onEditMessage?.(messageId)
+      processedProps.onEditMessage?.(messageId)
     },
-    [chat.isLoading, isRegenerating, onEditMessage, toast]
+    [chat.isLoading, isRegenerating, processedProps.onEditMessage, toast]
   )
 
   // Handle saving edits
@@ -564,7 +564,7 @@ export function ClarityChat({
         try {
           // Resend the user message - append adds it and triggers AI response
           await chat.append({ role: 'user', content: userMessage.content })
-          onRegenerateMessage?.(messageId)
+          processedProps.onRegenerateMessage?.(messageId)
         } catch (error) {
           // CRITICAL: Restore original messages on failure to prevent data loss
           chat.setMessages(originalMessages)
@@ -580,7 +580,7 @@ export function ClarityChat({
         }
       }
     },
-    [chat, isRegenerating, onRegenerateMessage, toast]
+    [chat, isRegenerating, processedProps.onRegenerateMessage, toast]
   )
 
   return (

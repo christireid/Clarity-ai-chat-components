@@ -393,44 +393,21 @@ export const ExternalLinkIcon: React.FC<IconProps> = (props) => (
   </svg>
 )
 
-// Queue & List Icons
+// Additional icons for sync/status components
 export const QueueListIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M3 12h.01" />
-    <path d="M3 18h.01" />
-    <path d="M3 6h.01" />
-    <path d="M8 12h13" />
-    <path d="M8 18h13" />
-    <path d="M8 6h13" />
+    <path d="M3.5 5.5h17M3.5 12h17M3.5 18.5h10" />
   </svg>
 )
 
-export const StarIcon: React.FC<IconProps> = (props) => (
-  <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-)
+export const ExclamationTriangleIcon = AlertTriangleIcon
 
-export const HeartIcon: React.FC<IconProps> = (props) => (
-  <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-)
+export const XMarkIcon = CloseIcon
 
-// Sync & Connectivity Icons
 export const SyncIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-    <path d="M21 3v5h-5" />
-    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-    <path d="M3 21v-5h5" />
-  </svg>
-)
-
-export const ArrowPathIcon: React.FC<IconProps> = (props) => (
-  <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-    <path d="M21 3v5h-5" />
+    <path d="M21.5 2v6h-6M2.5 22v-6h6" />
+    <path d="M2.5 11.5a10 10 0 0 1 18.8-4.3M21.5 12.5a10 10 0 0 1-18.8 4.2" />
   </svg>
 )
 
@@ -439,23 +416,31 @@ export const WifiIcon: React.FC<IconProps> = (props) => (
     <path d="M5 12.55a11 11 0 0 1 14.08 0" />
     <path d="M1.42 9a16 16 0 0 1 21.16 0" />
     <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-    <path d="M12 20h.01" />
+    <line x1="12" x2="12.01" y1="20" y2="20" />
   </svg>
 )
 
 export const WifiSlashIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <line x1="2" y1="2" x2="22" y2="22" />
-    <path d="M8.5 16.5a5 5 0 0 1 7 0" />
-    <path d="M2 8.82a15 15 0 0 1 4.17-2.65" />
-    <path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76" />
-    <path d="M16.85 11.25a10 10 0 0 1 2.22 1.68" />
-    <path d="M5 13a10 10 0 0 1 5.24-2.76" />
-    <path d="M12 20h.01" />
+    <path d="M1 1 23 23" />
+    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+    <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+    <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+    <line x1="12" x2="12.01" y1="20" y2="20" />
   </svg>
 )
 
-// Visibility Icons
+export const ArrowPathIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+    <path d="M16 21h5v-5" />
+  </svg>
+)
+
 export const EyeIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
@@ -472,7 +457,22 @@ export const EyeSlashIcon: React.FC<IconProps> = (props) => (
   </svg>
 )
 
-// Additional Action Icons
+// Additional icons for prompt library and template marketplace
+export const SortIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <path d="m3 16 4 4 4-4" />
+    <path d="M7 20V4" />
+    <path d="m21 8-4-4-4 4" />
+    <path d="M17 4v16" />
+  </svg>
+)
+
+export const StarIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+)
+
 export const ShareIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
     <circle cx="18" cy="5" r="3" />
@@ -493,16 +493,8 @@ export const UploadIcon: React.FC<IconProps> = (props) => (
 
 export const PlusIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M12 5v14" />
-    <path d="M5 12h14" />
-  </svg>
-)
-
-export const SortIcon: React.FC<IconProps> = (props) => (
-  <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M3 6h18" />
-    <path d="M7 12h10" />
-    <path d="M11 18h2" />
+    <line x1="12" x2="12" y1="5" y2="19" />
+    <line x1="5" x2="19" y1="12" y2="12" />
   </svg>
 )
 
@@ -516,8 +508,14 @@ export const MoreVerticalIcon: React.FC<IconProps> = (props) => (
 
 export const TagIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
-    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-    <line x1="7" x2="7.01" y1="7" y2="7" />
+    <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+    <path d="M7 7h.01" />
+  </svg>
+)
+
+export const HeartIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
   </svg>
 )
 
@@ -540,7 +538,7 @@ export const PaletteIcon: React.FC<IconProps> = (props) => (
     <circle cx="17.5" cy="10.5" r=".5" />
     <circle cx="8.5" cy="7.5" r=".5" />
     <circle cx="6.5" cy="12.5" r=".5" />
-    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
   </svg>
 )
 
@@ -570,7 +568,3 @@ export const ForkIcon: React.FC<IconProps> = (props) => (
     <path d="M12 12v3" />
   </svg>
 )
-
-// Aliases for common naming conventions
-export const ExclamationTriangleIcon = AlertTriangleIcon
-export const XMarkIcon = CloseIcon

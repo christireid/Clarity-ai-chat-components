@@ -249,9 +249,7 @@ export function validateConfig<T extends Record<string, unknown>>(
 /**
  * Get default values from a configuration schema
  */
-export function getConfigDefaults<T extends Record<string, unknown>>(
-  schema: ConfigSchema<T>
-): Partial<T> {
+export function getConfigDefaults<T extends Record<string, unknown>>(schema: ConfigSchema<T>): Partial<T> {
   return createConfigManager(schema).getDefaults() as Partial<T>
 }
 

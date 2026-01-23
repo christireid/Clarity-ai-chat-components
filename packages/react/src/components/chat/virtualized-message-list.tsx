@@ -22,6 +22,12 @@ import { VariableSizeList as List } from 'react-window'
 import type { ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import type { Message } from '@clarity-chat/types'
+import { useScreenReaderDetection } from '../../hooks/accessibility/use-screen-reader'
+import {
+  validateVirtualizationProps,
+  validateMessages,
+  validateFunctionProp,
+} from '../../utils/config/runtime-validation'
 
 // Type assertions for react-window v1.8.11 with React 19
 // AutoSizer component type assertion for compatibility
@@ -34,6 +40,8 @@ type MessageListData = {
   renderMessage: (message: Message, index: number) => React.ReactNode
   heightCache: MessageHeightCache
   setItemHeight: (index: number, height: number) => void
+  focusedIndex: number
+  onItemFocus: (index: number) => void
 }
 // List component - using 'as any' to work around strict generic type constraints with refs
 // Note: react-window v2 has breaking API changes, staying on v1.8.11 for compatibility
@@ -50,10 +58,13 @@ export interface VirtualizedMessageListProps {
   /** Render function for each message */
   renderMessage: (message: Message, index: number) => React.ReactNode
 
-  /** Estimated height of each message in pixels */
+  /** Estimated height of each message in pixels (default: 150) */
   estimatedItemSize?: number
 
-  /** Number of items to render outside of the visible area */
+  /**
+   * Number of items to render outside of the visible area (default: 3)
+   * Note: Lower than TanStackMessageList (5) for better performance with react-window
+   */
   overscanCount?: number
 
   /** Auto-scroll to bottom when new messages arrive */
@@ -70,13 +81,19 @@ export interface VirtualizedMessageListProps {
 
   /** Custom item key getter */
   itemKey?: (index: number, data: Message[]) => string
+
+  /** VIRT-3: Maximum number of messages to render (windowing) */
+  maxMessages?: number
 }
 
 export interface MessageListProps extends Omit<
   VirtualizedMessageListProps,
   'threshold'
 > {
-  /** Enable virtualization automatically at this threshold */
+  /**
+   * Enable virtualization automatically at this threshold (default: 100)
+   * Note: Higher than TanStackMessageList (50) due to react-window's higher overhead
+   */
   virtualizationThreshold?: number
 }
 
@@ -118,32 +135,97 @@ interface MessageItemProps extends ListChildComponentProps<MessageListData> {
 }
 
 function MessageItem({ index, style, data }: MessageItemProps) {
-  const { messages, renderMessage, heightCache, setItemHeight } = data
+  const {
+    messages,
+    renderMessage,
+    heightCache,
+    setItemHeight,
+    focusedIndex,
+    onItemFocus,
+  } = data
   const message = messages[index]
   const itemRef = React.useRef<HTMLDivElement>(null)
+  const isFocused = focusedIndex === index
 
+  // Use ResizeObserver instead of offsetHeight to avoid forced layouts
   React.useEffect(() => {
-    if (itemRef.current && message) {
-      const height = itemRef.current.offsetHeight
-      const messageKey = message.id || `msg-${index}`
+    const element = itemRef.current
+    if (!element || !message) return
 
-      if (
-        !heightCache.hasHeight(messageKey) ||
-        heightCache.getHeight(messageKey) !== height
-      ) {
-        heightCache.setHeight(messageKey, height)
-        setItemHeight(index, height)
+    const messageKey = message.id || `msg-${index}`
+
+    // Create ResizeObserver to watch for size changes
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Use contentRect.height to avoid forced layout
+        const height = entry.contentRect.height
+
+        if (height > 0) {
+          const cachedHeight = heightCache.getHeight(messageKey)
+
+          // Only update if height changed significantly (>1px to avoid float rounding)
+          if (Math.abs(cachedHeight - height) > 1) {
+            heightCache.setHeight(messageKey, height)
+            setItemHeight(index, height)
+          }
+        }
       }
+    })
+
+    resizeObserver.observe(element)
+
+    // Cleanup observer on unmount
+    return () => {
+      resizeObserver.disconnect()
     }
   }, [message, index, heightCache, setItemHeight])
+
+  // Auto-focus when this item becomes the focused index
+  React.useEffect(() => {
+    if (isFocused && itemRef.current) {
+      itemRef.current.focus()
+    }
+  }, [isFocused])
 
   if (!message) {
     return <div style={style} />
   }
 
+  const handleFocus = () => {
+    onItemFocus(index)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Let parent handle navigation keys
+    if (
+      ['ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(
+        e.key
+      )
+    ) {
+      e.preventDefault()
+    }
+  }
+
   return (
     <div style={style}>
-      <div ref={itemRef}>{renderMessage(message, index)}</div>
+      <div
+        ref={itemRef}
+        tabIndex={isFocused ? 0 : -1}
+        role="article"
+        aria-label={`Message ${index + 1} of ${messages.length}${
+          message.role ? ` from ${message.role}` : ''
+        }`}
+        aria-posinset={index + 1}
+        aria-setsize={messages.length}
+        onFocus={handleFocus}
+        onKeyDown={handleKeyDown}
+        style={{
+          outline: isFocused ? '2px solid var(--focus-ring-color, #0066cc)' : 'none',
+          outlineOffset: '2px',
+        }}
+      >
+        {renderMessage(message, index)}
+      </div>
     </div>
   )
 }
@@ -161,7 +243,7 @@ function MessageItem({ index, style, data }: MessageItemProps) {
  * - Note: Some callbacks kept for stable refs required by react-window
  */
 export function VirtualizedMessageList({
-  messages,
+  messages: rawMessages,
   renderMessage,
   estimatedItemSize = 150,
   overscanCount = 3,
@@ -169,14 +251,103 @@ export function VirtualizedMessageList({
   onScroll,
   className,
   itemKey,
+  maxMessages = 1000,
 }: VirtualizedMessageListProps) {
+  // Runtime validation (development mode only)
+  if (process.env['NODE_ENV'] === 'development') {
+    // Validate messages array
+    validateMessages(rawMessages, 'VirtualizedMessageList')
+
+    // Validate renderMessage function
+    validateFunctionProp(renderMessage, 'renderMessage', 'VirtualizedMessageList')
+
+    // Validate virtualization props
+    validateVirtualizationProps(
+      {
+        itemHeight: estimatedItemSize,
+        overscan: overscanCount,
+        maxMessages,
+      },
+      'VirtualizedMessageList'
+    )
+
+    // Validate onScroll callback if provided
+    if (onScroll !== undefined) {
+      validateFunctionProp(onScroll, 'onScroll', 'VirtualizedMessageList')
+    }
+
+    // Validate itemKey callback if provided
+    if (itemKey !== undefined) {
+      validateFunctionProp(itemKey, 'itemKey', 'VirtualizedMessageList')
+    }
+  }
+
+  // VIRT-3: Apply message windowing
+  const messages = React.useMemo(() => {
+    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
+    return rawMessages.slice(rawMessages.length - maxMessages)
+  }, [rawMessages, maxMessages])
+
+  // Screen reader detection - render non-virtualized for accessibility
+  const isScreenReader = useScreenReaderDetection()
+
   const listRef = React.useRef<List>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
   const heightCacheRef = React.useRef(new MessageHeightCache(estimatedItemSize))
   // Replace force update anti-pattern with useReducer
   const [, forceRender] = React.useReducer((x: number) => x + 1, 0)
   const previousMessagesLength = React.useRef(messages.length)
   const isNearBottomRef = React.useRef(true)
   const [scrollOffset, setScrollOffset] = React.useState(0)
+  const [focusedIndex, setFocusedIndex] = React.useState(0)
+
+  // For screen readers: Render non-virtualized for full accessibility
+  // All messages remain in DOM for screen reader navigation
+  if (isScreenReader) {
+    // Check if any message is streaming
+    const isStreaming = React.useMemo(
+      () => messages.some((m) => m.status === 'streaming'),
+      [messages]
+    )
+
+    return (
+      <div
+        ref={containerRef}
+        className={className}
+        style={{ height: '100%', width: '100%', overflowY: 'auto' }}
+        role="log"
+        aria-label="Chat messages (screen reader mode)"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-busy={isStreaming}
+      >
+        {messages.map((message, index) => {
+          const isFocused = focusedIndex === index
+          return (
+            <div
+              key={message.id || `msg-${index}`}
+              tabIndex={isFocused ? 0 : -1}
+              role="article"
+              aria-label={`Message ${index + 1} of ${messages.length}${
+                message.role ? ` from ${message.role}` : ''
+              }`}
+              aria-posinset={index + 1}
+              aria-setsize={messages.length}
+              onFocus={() => setFocusedIndex(index)}
+              style={{
+                outline: isFocused
+                  ? '2px solid var(--focus-ring-color, #0066cc)'
+                  : 'none',
+                outlineOffset: '2px',
+              }}
+            >
+              {renderMessage(message, index)}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   // Track if user is near bottom and preserve scroll position
   // React 19: Keep useCallback for stable ref (required by react-window)
@@ -229,7 +400,7 @@ export function VirtualizedMessageList({
         // Small delay to ensure DOM has updated with new messages
         setTimeout(() => {
           if (listRef.current) {
-            listRef.current.scrollToOffset(scrollOffset)
+            listRef.current.scrollTo(scrollOffset)
           }
         }, 0)
       }
@@ -278,6 +449,62 @@ export function VirtualizedMessageList({
     }
   }, [messages.length])
 
+  // Keyboard navigation handler
+  React.useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { key } = e
+      let newIndex = focusedIndex
+
+      switch (key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 1, messages.length - 1)
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 1, 0)
+          break
+        case 'Home':
+          e.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newIndex = messages.length - 1
+          break
+        case 'PageDown':
+          e.preventDefault()
+          newIndex = Math.min(focusedIndex + 10, messages.length - 1)
+          break
+        case 'PageUp':
+          e.preventDefault()
+          newIndex = Math.max(focusedIndex - 10, 0)
+          break
+        default:
+          return
+      }
+
+      if (newIndex !== focusedIndex) {
+        setFocusedIndex(newIndex)
+        // Scroll to the newly focused item
+        if (listRef.current) {
+          listRef.current.scrollToItem(newIndex, 'smart')
+        }
+      }
+    }
+
+    container.addEventListener('keydown', handleKeyDown)
+    return () => container.removeEventListener('keydown', handleKeyDown)
+  }, [focusedIndex, messages.length])
+
+  // Callback for when an item receives focus (via mouse click)
+  const handleItemFocus = React.useCallback((index: number) => {
+    setFocusedIndex(index)
+  }, [])
+
   // Check if any message is currently streaming (for aria-busy)
   // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
   const isStreaming = React.useMemo(
@@ -287,6 +514,7 @@ export function VirtualizedMessageList({
 
   return (
     <div
+      ref={containerRef}
       className={className}
       style={{ height: '100%', width: '100%' }}
       role="log"
@@ -308,6 +536,8 @@ export function VirtualizedMessageList({
               renderMessage,
               heightCache: heightCacheRef.current,
               setItemHeight,
+              focusedIndex,
+              onItemFocus: handleItemFocus,
             }}
             itemKey={getItemKey}
             overscanCount={overscanCount}
