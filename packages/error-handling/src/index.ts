@@ -27,10 +27,6 @@ export * from './errors/factory'
 // Components
 // =============================================================================
 
-// Original ErrorBoundary (class component)
-export { ErrorBoundary } from './components/ErrorBoundary'
-export type { ErrorBoundaryProps } from './components/ErrorBoundary'
-
 // Enhanced ErrorBoundary (using react-error-boundary)
 export {
   EnhancedErrorBoundary,

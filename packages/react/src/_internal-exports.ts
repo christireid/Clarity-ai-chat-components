@@ -382,7 +382,6 @@ export * from './components/ai-ops'
 export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 
 // Error Handling Components
-export { ErrorBoundary } from './components/feedback/error-boundary'
 export { RetryButton } from './components/feedback/retry-button'
 export { NetworkStatus } from './components/feedback/network-status'
 

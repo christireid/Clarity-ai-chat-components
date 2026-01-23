@@ -2246,6 +2246,9 @@ importers:
 
   packages/playground:
     dependencies:
+      '@clarity-chat/error-handling':
+        specifier: workspace:*
+        version: link:../error-handling
       '@monaco-editor/react':
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.54.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2446,6 +2449,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@clarity-chat/error-handling':
+        specifier: workspace:*
+        version: link:../error-handling
       '@clarity-chat/license':
         specifier: workspace:*
         version: link:../license

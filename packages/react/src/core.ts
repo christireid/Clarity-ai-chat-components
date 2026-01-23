@@ -20,7 +20,7 @@
  * - Core Components: ClarityChat, ChatWindow, ChatInput, MessageList
  * - Primary Hook: useClarityChat
  * - Essential Types: Message, MessageRole
- * - Error Handling: ErrorBoundary, ChatWithErrorBoundary
+ * - Error Handling: ChatWithErrorBoundary
  * - Memory: createMemoryStore
  *
  * @example
@@ -94,7 +94,6 @@ export {
 } from './utils/message/message-conversion'
 
 // Error handling
-export { ErrorBoundary } from './components/feedback/error-boundary'
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,

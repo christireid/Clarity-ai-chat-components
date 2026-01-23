@@ -409,7 +409,6 @@ export type { InitializeClarityOptions } from './initialization'
 // ============================================================================
 
 // Error and Feedback
-export { ErrorBoundary } from './components/feedback/error-boundary'
 export { NetworkStatus } from './components/feedback/network-status'
 
 // Token Management

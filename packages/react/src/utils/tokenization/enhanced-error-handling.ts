@@ -5,7 +5,7 @@
  */
 
 import { InputValidator } from './input-validator'
-import { smartCountTokens } from './smart-fallback'
+import { smartCountTokens } from '../../components/smart-fallback'
 
 export enum ErrorSeverity {
   LOW = 'low',

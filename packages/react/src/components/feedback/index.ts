@@ -4,8 +4,6 @@
  * Error handling, status indicators, and user feedback components.
  */
 
-export { ErrorBoundary } from './error-boundary'
-export * from './error-boundary-enhanced'
 export { RetryButton, type RetryErrorType } from './retry-button'
 export {
   ErrorMessage,

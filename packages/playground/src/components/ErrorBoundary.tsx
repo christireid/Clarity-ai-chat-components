@@ -1,43 +1,18 @@
 /**
- * Error Boundary Component
+ * Error Boundary for Playground
  *
- * A beautifully designed error boundary with:
- * - Helpful error suggestions
- * - Common error patterns recognition
- * - Recovery options
- * - Professional visual design
- * - Copy error functionality
+ * This module:
+ * - Re-exports EnhancedErrorBoundary from error-handling package as ErrorBoundary
+ * - Provides PreviewErrorBoundary for preview-specific error handling
  */
 
 import { Component, type ReactNode } from 'react'
-import {
-  AlertCircle,
-  RefreshCw,
-  Copy,
-  Check,
-  Lightbulb,
-  Bug,
-  AlertTriangle,
-  ChevronDown,
-  ExternalLink,
-} from 'lucide-react'
-import { copyToClipboard, cn } from '../utils'
+import { AlertTriangle, RefreshCw, Lightbulb } from 'lucide-react'
 
-interface ErrorBoundaryProps {
-  children: ReactNode
-  fallback?: ReactNode
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
-  onReset?: () => void
-}
+// Re-export the main ErrorBoundary from error-handling package
+export { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
 
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-  errorInfo: React.ErrorInfo | null
-  copied: boolean
-}
-
-// Common error patterns and suggestions
+// Error suggestion patterns
 const errorSuggestions: Array<{
   pattern: RegExp
   title: string
@@ -115,186 +90,7 @@ function getErrorSuggestion(errorMessage: string) {
   }
 }
 
-export class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-      copied: false,
-    }
-  }
-
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error }
-  }
-
-  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({ errorInfo })
-    this.props.onError?.(error, errorInfo)
-
-    // Log to console for debugging
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null })
-    this.props.onReset?.()
-  }
-
-  handleCopyError = async () => {
-    const { error, errorInfo } = this.state
-    const errorText = `Error: ${error?.message}\n\nStack:\n${error?.stack}\n\nComponent Stack:\n${errorInfo?.componentStack}`
-    const success = await copyToClipboard(errorText)
-    if (success) {
-      this.setState({ copied: true })
-      setTimeout(() => this.setState({ copied: false }), 2000)
-    }
-  }
-
-  override render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
-
-      const { error, errorInfo, copied } = this.state
-      const suggestion = getErrorSuggestion(error?.message || '')
-
-      return (
-        <div className="p-6 bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-900/20 dark:to-orange-900/20 border border-rose-200 dark:border-rose-800 rounded-2xl animate-fade-in">
-          <div className="flex items-start gap-4">
-            {/* Icon */}
-            <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center flex-shrink-0">
-              <Bug className="w-6 h-6 text-rose-600 dark:text-rose-400" />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              {/* Header */}
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-bold text-lg text-rose-900 dark:text-rose-100">
-                  Something went wrong
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-xs font-medium">
-                  {suggestion.title}
-                </span>
-              </div>
-
-              <p className="text-sm text-rose-800 dark:text-rose-200 mb-4">
-                An error occurred while rendering the component. This might be
-                due to invalid code or a runtime error.
-              </p>
-
-              {/* Error Message */}
-              {error && (
-                <div className="mb-4 p-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-rose-200 dark:border-rose-800">
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="w-4 h-4 text-rose-500" />
-                    <span className="text-sm font-semibold text-rose-900 dark:text-rose-100">
-                      Error Message
-                    </span>
-                  </div>
-                  <pre className="text-sm text-rose-700 dark:text-rose-300 bg-rose-100/50 dark:bg-rose-900/30 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono">
-                    {error.message}
-                  </pre>
-                </div>
-              )}
-
-              {/* Suggestions */}
-              <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className="w-4 h-4 text-amber-500" />
-                  <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">
-                    Suggestions
-                  </span>
-                </div>
-                <ul className="space-y-2">
-                  {suggestion.suggestions.map((tip, index) => (
-                    <li
-                      key={index}
-                      className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-200"
-                    >
-                      <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 flex items-center justify-center flex-shrink-0 text-xs font-bold text-amber-700 dark:text-amber-300">
-                        {index + 1}
-                      </span>
-                      {tip}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Component Stack (collapsible) */}
-              {errorInfo?.componentStack && (
-                <details className="mb-4 group">
-                  <summary className="flex items-center gap-2 text-sm font-medium text-rose-700 dark:text-rose-300 cursor-pointer hover:text-rose-900 dark:hover:text-rose-100 transition-colors">
-                    <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
-                    View Component Stack
-                  </summary>
-                  <pre className="mt-2 text-xs text-rose-600 dark:text-rose-400 bg-rose-100/50 dark:bg-rose-900/30 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
-                    {errorInfo.componentStack}
-                  </pre>
-                </details>
-              )}
-
-              {/* Actions */}
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  onClick={this.handleReset}
-                  className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition-colors shadow-lg shadow-rose-500/25"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Try Again
-                </button>
-                <button
-                  onClick={this.handleCopyError}
-                  className={cn(
-                    'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-colors',
-                    copied
-                      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                      : 'bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300'
-                  )}
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      Copy Error
-                    </>
-                  )}
-                </button>
-                <a
-                  href="https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Learn More
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    return this.props.children
-  }
-}
-
-/**
- * Preview-specific Error Boundary
- *
- * A simpler, more compact error boundary for the preview iframe area.
- */
+// PreviewErrorBoundary - specific to preview functionality
 interface PreviewErrorBoundaryProps {
   children: ReactNode
   onRetry?: () => void
@@ -383,5 +179,3 @@ export class PreviewErrorBoundary extends Component<
     return this.props.children
   }
 }
-
-export default ErrorBoundary

@@ -195,6 +195,7 @@
   },
   "dependencies": {
     "@clarity-chat/license": "workspace:*",
+    "@clarity-chat/error-handling": "workspace:*",
     "@clarity-chat/memory": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/token-optimization": "workspace:*",

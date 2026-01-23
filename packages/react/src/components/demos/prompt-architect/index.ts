@@ -157,7 +157,7 @@ export {
   PresetSelector,
   VersionSelector,
   ErrorFallback,
-  PromptArchitectErrorBoundary,
+  CopyButton,
 } from './components'
 
 export type {
@@ -172,5 +172,5 @@ export type {
   PresetSelectorProps,
   VersionSelectorProps,
   ErrorFallbackProps,
-  PromptArchitectErrorBoundaryProps,
+  CopyButtonProps,
 } from './components'

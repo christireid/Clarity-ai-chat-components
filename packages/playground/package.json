@@ -55,6 +55,7 @@
     "lint": "eslint src --ext .ts,.tsx --ignore-pattern '*.js' --ignore-pattern '*.d.ts'"
   },
   "dependencies": {
+    "@clarity-chat/error-handling": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

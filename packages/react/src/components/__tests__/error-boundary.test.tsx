@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import * as React from 'react'
-import { ErrorBoundary } from '../feedback/error-boundary'
+import { EnhancedErrorBoundary as ErrorBoundary } from '@clarity-chat/error-handling'
 
 // Component that throws an error
 const ThrowError: React.FC<{ shouldThrow: boolean; errorMessage?: string }> = ({
