@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Enhanced Button component with ripple effect, loading states, and success/error feedback.
- * 
+ *
  * **Key Features:**
  * - Material Design ripple effect on click
  * - Loading state with spinner animation
@@ -14,7 +14,7 @@ import { expect, userEvent, within } from 'storybook/test'
  * - All standard button variants (default, destructive, outline, secondary, ghost, link)
  * - Accessible with proper ARIA attributes and keyboard navigation
  * - Automatic state reset after duration
- * 
+ *
  * **Design Philosophy:**
  * - Delightful by Default: Tactile feedback makes interactions feel responsive
  * - Minimal but Modern: Clean design with thoughtful animations
@@ -27,7 +27,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A versatile button component with enhanced UX through microanimations and state management.',
+        component:
+          'A versatile button component with enhanced UX through microanimations and state management.',
       },
     },
     status: {
@@ -39,7 +40,16 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link', 'success', 'error'],
+      options: [
+        'default',
+        'destructive',
+        'outline',
+        'secondary',
+        'ghost',
+        'link',
+        'success',
+        'error',
+      ],
       description: 'Button visual style',
     },
     size: {
@@ -140,18 +150,48 @@ export const IconButton: Story = {
   render: () => (
     <div className="flex items-center gap-4">
       <Button size="icon" variant="default">
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
         </svg>
       </Button>
       <Button size="icon" variant="outline">
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </Button>
       <Button size="icon" variant="ghost">
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
         </svg>
       </Button>
     </div>
@@ -213,25 +253,27 @@ export const ErrorState: Story = {
 
 export const InteractiveStates: Story = {
   render: () => {
-    const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-    
+    const [buttonState, setButtonState] = useState<
+      'idle' | 'loading' | 'success' | 'error'
+    >('idle')
+
     const handleClick = () => {
       setButtonState('loading')
-      
+
       // Simulate async operation
       setTimeout(() => {
         setButtonState('success')
-        
+
         // Auto-reset after showing success
         setTimeout(() => {
           setButtonState('idle')
         }, 2000)
       }, 2000)
     }
-    
+
     return (
       <div className="flex flex-col gap-4">
-        <Button 
+        <Button
           state={buttonState}
           onClick={handleClick}
           disabled={buttonState !== 'idle'}
@@ -251,25 +293,27 @@ export const InteractiveStates: Story = {
 
 export const SimulateError: Story = {
   render: () => {
-    const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-    
+    const [buttonState, setButtonState] = useState<
+      'idle' | 'loading' | 'success' | 'error'
+    >('idle')
+
     const handleClick = () => {
       setButtonState('loading')
-      
+
       // Simulate async operation that fails
       setTimeout(() => {
         setButtonState('error')
-        
+
         // Auto-reset after showing error
         setTimeout(() => {
           setButtonState('idle')
         }, 2000)
       }, 2000)
     }
-    
+
     return (
       <div className="flex flex-col gap-4">
-        <Button 
+        <Button
           state={buttonState}
           onClick={handleClick}
           disabled={buttonState !== 'idle'}
@@ -289,8 +333,10 @@ export const SimulateError: Story = {
 
 export const ManualStateControl: Story = {
   render: () => {
-    const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-    
+    const [state, setState] = useState<
+      'idle' | 'loading' | 'success' | 'error'
+    >('idle')
+
     return (
       <div className="flex flex-col gap-4">
         <Button state={state}>
@@ -299,15 +345,23 @@ export const ManualStateControl: Story = {
           {state === 'success' && 'Success!'}
           {state === 'error' && 'Error!'}
         </Button>
-        
+
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setState('idle')}>
             Idle
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setState('loading')}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setState('loading')}
+          >
             Loading
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setState('success')}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setState('success')}
+          >
             Success
           </Button>
           <Button size="sm" variant="outline" onClick={() => setState('error')}>
@@ -331,8 +385,8 @@ export const RippleEffect: Story = {
         <Button ripple={false}>Without Ripple</Button>
       </div>
       <p className="text-sm text-gray-600 max-w-md">
-        Click the buttons to see the Material Design ripple effect. 
-        The ripple provides tactile feedback and makes interactions feel responsive.
+        Click the buttons to see the Material Design ripple effect. The ripple
+        provides tactile feedback and makes interactions feel responsive.
       </p>
     </div>
   ),
@@ -363,44 +417,46 @@ export const RippleColors: Story = {
 
 export const FormSubmit: Story = {
   render: () => {
-    const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-    
+    const [state, setState] = useState<
+      'idle' | 'loading' | 'success' | 'error'
+    >('idle')
+
     const handleSubmit = async () => {
       setState('loading')
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
       // Random success/error
       const success = Math.random() > 0.3
       setState(success ? 'success' : 'error')
-      
+
       // Reset after 2 seconds
       setTimeout(() => setState('idle'), 2000)
     }
-    
+
     return (
       <div className="flex flex-col gap-4 p-6 border rounded-lg">
         <h3 className="font-semibold">Contact Form</h3>
-        <input 
-          type="text" 
-          placeholder="Name" 
+        <input
+          type="text"
+          placeholder="Name"
           className="px-3 py-2 border rounded"
           disabled={state !== 'idle'}
         />
-        <input 
-          type="email" 
-          placeholder="Email" 
+        <input
+          type="email"
+          placeholder="Email"
           className="px-3 py-2 border rounded"
           disabled={state !== 'idle'}
         />
-        <textarea 
-          placeholder="Message" 
+        <textarea
+          placeholder="Message"
           className="px-3 py-2 border rounded"
           rows={3}
           disabled={state !== 'idle'}
         />
-        <Button 
+        <Button
           state={state}
           onClick={handleSubmit}
           disabled={state !== 'idle'}
@@ -419,18 +475,18 @@ export const SaveAction: Story = {
   render: () => {
     const [isSaving, setIsSaving] = useState(false)
     const [saved, setSaved] = useState(false)
-    
+
     const handleSave = async () => {
       setIsSaving(true)
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500))
       setIsSaving(false)
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     }
-    
+
     return (
       <div className="flex items-center gap-4">
-        <Button 
+        <Button
           state={isSaving ? 'loading' : saved ? 'success' : 'idle'}
           onClick={handleSave}
           disabled={isSaving || saved}
@@ -452,10 +508,10 @@ export const DeleteConfirmation: Story = {
     const [showConfirm, setShowConfirm] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleted, setDeleted] = useState(false)
-    
+
     const handleDelete = async () => {
       setIsDeleting(true)
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500))
       setIsDeleting(false)
       setDeleted(true)
       setTimeout(() => {
@@ -463,29 +519,36 @@ export const DeleteConfirmation: Story = {
         setShowConfirm(false)
       }, 2000)
     }
-    
+
     if (deleted) {
       return (
         <div className="flex items-center gap-2 text-green-600 animate-[fadeIn_0.3s_ease-out]">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
           Item deleted successfully
         </div>
       )
     }
-    
+
     if (!showConfirm) {
       return (
-        <Button 
-          variant="destructive"
-          onClick={() => setShowConfirm(true)}
-        >
+        <Button variant="destructive" onClick={() => setShowConfirm(true)}>
           Delete Item
         </Button>
       )
     }
-    
+
     return (
       <div className="flex flex-col gap-3 p-4 border border-red-200 rounded-lg bg-red-50">
         <p className="text-sm font-medium text-red-900">
@@ -527,7 +590,7 @@ export const ButtonGroup: Story = {
         <Button>Middle</Button>
         <Button>Right</Button>
       </div>
-      
+
       <div className="flex gap-2">
         <Button variant="outline">Previous</Button>
         <Button variant="outline">1</Button>
@@ -535,16 +598,36 @@ export const ButtonGroup: Story = {
         <Button variant="outline">3</Button>
         <Button variant="outline">Next</Button>
       </div>
-      
+
       <div className="flex gap-2">
         <Button size="icon" variant="outline">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </Button>
         <Button size="icon" variant="outline">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </Button>
       </div>
@@ -560,23 +643,53 @@ export const WithIcons: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button>
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         Add Item
       </Button>
-      
+
       <Button variant="destructive">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
         </svg>
         Delete
       </Button>
-      
+
       <Button variant="outline">
         Download
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          />
         </svg>
       </Button>
     </div>
@@ -591,8 +704,18 @@ export const Accessibility: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <Button aria-label="Save document">
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       </Button>
 
@@ -605,8 +728,9 @@ export const Accessibility: Story = {
       </Button>
 
       <p className="text-sm text-gray-600 max-w-md">
-        All buttons have proper focus states (try pressing Tab),
-        ARIA labels for screen readers, and keyboard navigation support (Enter/Space to activate).
+        All buttons have proper focus states (try pressing Tab), ARIA labels for
+        screen readers, and keyboard navigation support (Enter/Space to
+        activate).
       </p>
     </div>
   ),
@@ -618,7 +742,9 @@ export const Accessibility: Story = {
     await expect(saveButton).toBeInTheDocument()
 
     // Test disabled button has aria-label
-    const disabledButton = canvas.getByRole('button', { name: /currently unavailable/i })
+    const disabledButton = canvas.getByRole('button', {
+      name: /currently unavailable/i,
+    })
     await expect(disabledButton).toBeDisabled()
 
     // Test keyboard navigation

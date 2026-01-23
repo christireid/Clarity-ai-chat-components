@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Textarea } from '@clarity-chat/primitives';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from '@storybook/test';
 /**
  * Textarea component for multi-line text input.
  *

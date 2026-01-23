@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar } from '@clarity-chat/primitives'
-import { expect, within } from 'storybook/test'
+import { expect, within } from '@storybook/test'
 
 /**
  * Avatar component displays user profile pictures with fallback support.
- * 
+ *
  * **Key Features:**
  * - Automatic fallback to initials
  * - Multiple sizes
  * - Status indicators
  * - Accessible with proper labels
- * 
+ *
  * **Best Practices:**
  * - Always provide alt text for images
  * - Use initials as fallback
@@ -23,7 +23,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Display user or bot avatars with automatic fallbacks and status indicators.',
+        component:
+          'Display user or bot avatars with automatic fallbacks and status indicators.',
       },
     },
     status: {
@@ -89,7 +90,7 @@ export const ChatParticipants: Story = {
           <div className="text-sm text-gray-500">Software Engineer</div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-3">
         <Avatar fallback="AI" alt="AI Assistant" />
         <div>
@@ -97,9 +98,13 @@ export const ChatParticipants: Story = {
           <div className="text-sm text-gray-500">Always ready to help</div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-3">
-        <Avatar src="https://github.com/vercel.png" alt="Support Bot" fallback="SB" />
+        <Avatar
+          src="https://github.com/vercel.png"
+          alt="Support Bot"
+          fallback="SB"
+        />
         <div>
           <div className="font-semibold">Support Bot</div>
           <div className="text-sm text-gray-500">Customer Support</div>
@@ -112,10 +117,26 @@ export const ChatParticipants: Story = {
 export const WithStatus: Story = {
   render: () => (
     <div className="flex gap-6">
-      <Avatar src="https://github.com/shadcn.png" alt="Online user" status="online" />
-      <Avatar src="https://github.com/shadcn.png" alt="Away user" status="away" />
-      <Avatar src="https://github.com/shadcn.png" alt="Busy user" status="busy" />
-      <Avatar src="https://github.com/shadcn.png" alt="Offline user" status="offline" />
+      <Avatar
+        src="https://github.com/shadcn.png"
+        alt="Online user"
+        status="online"
+      />
+      <Avatar
+        src="https://github.com/shadcn.png"
+        alt="Away user"
+        status="away"
+      />
+      <Avatar
+        src="https://github.com/shadcn.png"
+        alt="Busy user"
+        status="busy"
+      />
+      <Avatar
+        src="https://github.com/shadcn.png"
+        alt="Offline user"
+        status="offline"
+      />
     </div>
   ),
 }
@@ -123,10 +144,30 @@ export const WithStatus: Story = {
 export const AvatarGroup: Story = {
   render: () => (
     <div className="flex -space-x-2">
-      <Avatar size="lg" src="https://github.com/shadcn.png" alt="User 1" className="ring-2 ring-white" />
-      <Avatar size="lg" src="https://github.com/vercel.png" alt="User 2" className="ring-2 ring-white" />
-      <Avatar size="lg" fallback="U3" alt="User 3" className="ring-2 ring-white" />
-      <Avatar size="lg" fallback="+5" alt="+5 more" className="ring-2 ring-white bg-gray-200" />
+      <Avatar
+        size="lg"
+        src="https://github.com/shadcn.png"
+        alt="User 1"
+        className="ring-2 ring-white"
+      />
+      <Avatar
+        size="lg"
+        src="https://github.com/vercel.png"
+        alt="User 2"
+        className="ring-2 ring-white"
+      />
+      <Avatar
+        size="lg"
+        fallback="U3"
+        alt="User 3"
+        className="ring-2 ring-white"
+      />
+      <Avatar
+        size="lg"
+        fallback="+5"
+        alt="+5 more"
+        className="ring-2 ring-white bg-gray-200"
+      />
     </div>
   ),
 }

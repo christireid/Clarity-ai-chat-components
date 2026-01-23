@@ -429,6 +429,7 @@ export default function RAGWorkbenchPage() {
                                     key={idx}
                                     source={source}
                                     index={idx + 1}
+                                    className=""
                                   />
                                 ))}
                               </div>

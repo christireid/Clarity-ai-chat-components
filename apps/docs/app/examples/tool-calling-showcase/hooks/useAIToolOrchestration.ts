@@ -7,7 +7,7 @@
  * Streams responses, handles tool calls, and manages human-in-the-loop approval.
  */
 
-import { useChat, type Message as AIMessage } from 'ai/react'
+import { useChat, type Message as AIMessage } from '@ai-sdk/react'
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type {
   Message,
@@ -35,8 +35,11 @@ interface UseAIToolOrchestrationReturn {
 }
 
 export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
-  const [orchestratorState, setOrchestratorState] = useState<OrchestratorState>('idle')
-  const [pendingApproval, setPendingApproval] = useState<ToolCallState | null>(null)
+  const [orchestratorState, setOrchestratorState] =
+    useState<OrchestratorState>('idle')
+  const [pendingApproval, setPendingApproval] = useState<ToolCallState | null>(
+    null
+  )
   const [isProcessingApproval, setIsProcessingApproval] = useState(false)
   const [convertedMessages, setConvertedMessages] = useState<Message[]>([])
   const [error, setError] = useState<Error | null>(null)
@@ -112,19 +115,31 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
             name: invocation.toolName as ToolName,
             args: invocation.args as Record<string, unknown>,
             status,
-            result: invocation.state === 'result' ? invocation.result : undefined,
+            result:
+              invocation.state === 'result' ? invocation.result : undefined,
             startTime: Date.now(),
           })
 
           // Log tool events
           if (invocation.state === 'call') {
-            debugEvents.addEvent('TOOL_CALL', invocation.args, invocation.toolName)
+            debugEvents.addEvent(
+              'TOOL_CALL',
+              invocation.args,
+              invocation.toolName
+            )
           } else if (invocation.state === 'result') {
-            debugEvents.addEvent('TOOL_RESULT', invocation.result, invocation.toolName)
+            debugEvents.addEvent(
+              'TOOL_RESULT',
+              invocation.result,
+              invocation.toolName
+            )
 
             // Store price for reference
             if (invocation.toolName === 'get_financials' && invocation.result) {
-              const data = invocation.result as { symbol: string; currentPrice: number }
+              const data = invocation.result as {
+                symbol: string
+                currentPrice: number
+              }
               if (data.currentPrice) {
                 lastPriceRef.current[data.symbol] = data.currentPrice
               }

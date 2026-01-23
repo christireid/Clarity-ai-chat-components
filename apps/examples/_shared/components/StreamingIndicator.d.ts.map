@@ -1,1 +1,0 @@
-{"version":3,"file":"StreamingIndicator.d.ts","sourceRoot":"","sources":["StreamingIndicator.tsx"],"names":[],"mappings":"AAGA,MAAM,WAAW,uBAAuB;IACtC,OAAO,CAAC,EAAE,MAAM,CAAA;IAChB,QAAQ,CAAC,EAAE,MAAM,IAAI,CAAA;IACrB,OAAO,CAAC,EAAE,OAAO,GAAG,MAAM,CAAA;CAC3B;AAED,wBAAgB,kBAAkB,CAAC,EACjC,OAAiC,EACjC,QAAQ,EACR,OAAiB,GAClB,EAAE,uBAAuB,OAiCzB;AAED,eAAe,kBAAkB,CAAA"}

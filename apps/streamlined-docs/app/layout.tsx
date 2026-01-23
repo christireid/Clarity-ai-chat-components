@@ -127,7 +127,10 @@ export default function RootLayout({
           title="LLM-optimized documentation"
         />
       </head>
-      <body className="font-sans antialiased overflow-x-hidden" suppressHydrationWarning>
+      <body
+        className="font-sans antialiased overflow-x-hidden"
+        suppressHydrationWarning
+      >
         <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">
@@ -142,22 +145,7 @@ export default function RootLayout({
             <Footer />
             <DocsAssistant />
             <MobileBottomNav />
-            <FloatingActionButton
-              onSearchClick={() => {
-                // Trigger search dialog (handled by Navigation component via window event)
-                const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-              onShortcutsClick={() => {
-                const event = new KeyboardEvent('keydown', { key: '?' })
-                window.dispatchEvent(event)
-              }}
-              onAIClick={() => {
-                // Trigger AI assistant (Cmd+.)
-                const event = new KeyboardEvent('keydown', { key: '.', metaKey: true })
-                window.dispatchEvent(event)
-              }}
-            />
+            <FloatingActionButton />
           </div>
           <ToastManager />
         </Providers>

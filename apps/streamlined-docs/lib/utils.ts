@@ -1,8 +1,15 @@
 import { truncate } from '@clarity-chat/utils/format'
 import { debounce } from '@clarity-chat/utils/async'
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
-// Re-export cn from primitives (canonical source)
-export { cn } from '@clarity-chat/primitives'
+/**
+ * Utility function to merge Tailwind CSS classes
+ * Local implementation to ensure server component compatibility
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 /**
  * Generate a slug from a string

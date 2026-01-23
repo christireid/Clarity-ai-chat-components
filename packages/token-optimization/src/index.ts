@@ -239,6 +239,8 @@ export {
   MemoryAdaptiveStrategy,
   createMemoryAdaptiveStrategy,
   compressWithMemoryAdaptive,
+  // Legacy compression engine (deprecated - use AdaptiveCompressor)
+  DynamicCompressionEngine,
 } from './compression'
 
 export type {

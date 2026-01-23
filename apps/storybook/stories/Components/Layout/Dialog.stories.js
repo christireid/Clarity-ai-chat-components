@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import * as React from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter, DialogClose, Button, Input, } from '@clarity-chat/primitives';
-import { expect, userEvent, within, waitFor } from 'storybook/test';
+import { expect, userEvent, within, waitFor } from '@storybook/test';
 const meta = {
     title: 'Components/Layout/Dialog',
     component: Dialog,

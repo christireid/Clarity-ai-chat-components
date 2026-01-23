@@ -1,6 +1,6 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { FollowUpSuggestions } from '@clarity-chat/react';
-import { expect, within } from 'storybook/test';
+import { expect, within } from '@storybook/test';
 /**
  * **FollowUpSuggestions Component**
  *

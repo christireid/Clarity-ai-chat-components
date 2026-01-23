@@ -7,7 +7,7 @@ import {
   SkeletonAvatar,
   SkeletonButton,
 } from '@clarity-chat/react'
-import { expect, within } from 'storybook/test'
+import { expect, within } from '@storybook/test'
 
 /**
  * Skeleton Loaders

@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Tooltip, Button } from '@clarity-chat/primitives';
-import { expect, userEvent, within, waitFor } from 'storybook/test';
+import { expect, userEvent, within, waitFor } from '@storybook/test';
 /**
  * Tooltip component for displaying helpful information on hover.
  *

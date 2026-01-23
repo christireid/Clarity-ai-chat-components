@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import * as React from 'react';
 import { Message } from '@clarity-chat/react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from '@storybook/test';
 /**
  * **Message Component**
  *

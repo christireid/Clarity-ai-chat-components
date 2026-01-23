@@ -12,7 +12,7 @@ import {
   Button,
   Badge,
 } from '@clarity-chat/primitives'
-import { expect, userEvent, within, waitFor } from 'storybook/test'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 const meta: Meta<typeof Drawer> = {
   title: 'Components/Layout/Drawer',

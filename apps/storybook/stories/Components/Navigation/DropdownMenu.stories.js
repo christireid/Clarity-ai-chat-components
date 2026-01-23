@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup, } from '@clarity-chat/primitives';
 import { Button } from '@clarity-chat/primitives';
-import { expect, userEvent, within, waitFor } from 'storybook/test';
+import { expect, userEvent, within, waitFor } from '@storybook/test';
 /**
  * DropdownMenu provides a context menu triggered by a button click.
  *

@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { Progress } from '@clarity-chat/react';
 import { useState, useEffect } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, within } from '@storybook/test';
 /**
  * Progress Indicators
  *

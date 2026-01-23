@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { ToastProvider, useToast } from '@clarity-chat/react';
 import { useState } from 'react';
-import { expect, userEvent, within, waitFor } from 'storybook/test';
+import { expect, userEvent, within, waitFor } from '@storybook/test';
 /**
  * Toast Notification System
  *

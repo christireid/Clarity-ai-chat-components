@@ -1,15 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  PromptSuggestions,
-  type PromptSuggestion,
-} from '@clarity-chat/react'
+import { PromptSuggestions, type PromptSuggestion } from '@clarity-chat/react'
 import {
   SparklesIcon,
   CodeIcon,
   FileTextIcon,
   MessageSquareIcon,
 } from 'lucide-react'
-import { expect, within } from 'storybook/test'
+import { expect, within } from '@storybook/test'
 
 /**
  * **PromptSuggestions Component**

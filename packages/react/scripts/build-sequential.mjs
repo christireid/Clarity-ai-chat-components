@@ -53,13 +53,14 @@ for (let i = 0; i < entries.length; i++) {
   try {
     const loaderFlag = css ? '--loader .css=copy' : ''
     const cleanFlag = isFirst ? '--clean' : ''
-    // DTS generation uses paths from tsconfig.json pointing to dist/ folders
-    const dtsFlag = '--dts'
+    // DTS disabled - types validated via 'tsc --noEmit' instead
+    // This avoids memory issues with large codebase
     const outDirFlag = outDir ? `--out-dir ${outDir}` : ''
     const externalFlag = externals.map(e => `--external ${e}`).join(' ')
 
-    // Use config file for treeshake/minify/splitting settings, override only entry-specific options
-    const cmd = `npx tsup ${entry} --format cjs,esm ${dtsFlag} ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --no-sourcemap`
+    // CRITICAL: Use --no-config to bypass tsup.config.ts which has 13 parallel build configs
+    // Without this flag, each iteration runs ALL 13 configs simultaneously causing race conditions
+    const cmd = `npx tsup --no-config ${entry} --format cjs,esm ${cleanFlag} ${loaderFlag} ${outDirFlag} ${externalFlag} --minify --splitting --no-sourcemap`
 
     execSync(cmd, {
       cwd: resolve(__dirname, '..'),

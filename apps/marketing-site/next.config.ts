@@ -11,10 +11,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  // Turbopack configuration (Next.js 16 - stable)
-  turbopack: {},
-
-  // Optimize package imports for better tree-shaking (stable in Next.js 15.5+)
+  // Optimize package imports for better tree-shaking
   experimental: {
     optimizePackageImports: [
       '@clarity-chat/react',

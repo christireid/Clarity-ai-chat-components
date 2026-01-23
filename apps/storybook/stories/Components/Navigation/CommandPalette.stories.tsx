@@ -5,7 +5,7 @@ import {
   useCommandPalette,
 } from '@clarity-chat/react'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
+import { expect, within } from '@storybook/test'
 
 /**
  * Command Palette
