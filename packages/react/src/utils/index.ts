@@ -55,17 +55,9 @@ export * from './search'
 export {
   // Core token counting
   TokenCounter,
-  smartCountTokens,
-  smartTokenCounter,
-  countTokensRobust,
-  robustTokenCounter,
   validateTokenBudget,
   createTokenBudget,
   tokenBudgetValidator,
-  countTokensOptimized,
-  countTokensBatchOptimized,
-  benchmarkTokenCounter,
-  optimizedTokenCounter,
   // Analytics
   recordTokenUsage,
   getTokenAnalytics,
@@ -83,8 +75,6 @@ export {
   compressForRatio,
   compressSemanticOnly,
   compressMultiStrategy,
-  // Advanced compression (using module-specific names)
-  compressWithSelectiveContext,
   // Adaptive optimization
   AdaptiveTokenOptimizer,
   adaptiveOptimizer,
@@ -144,18 +134,10 @@ export {
 
 // Tokenization types (renamed to avoid conflicts with optimization types)
 export type {
-  FallbackStrategy,
-  FallbackContext,
-  TokenCounterError,
-  ErrorContext,
-  ErrorHandlingOptions,
   TokenBudget,
   TokenBudgetConfig,
   TokenBudgetValidation,
   TruncationOptions as TokenTruncationOptions,
-  PerformanceMetrics as TokenPerformanceMetrics,
-  PerformanceBenchmark,
-  CachingConfig,
   TokenUsageEvent,
   TokenAnalytics,
   TokenMetrics,
@@ -166,10 +148,6 @@ export type {
   CompressionStrategy,
   CompressionConfig,
   CompressionResult as TokenCompressionResult,
-  AdvancedCompressionStrategy,
-  AdvancedCompressionConfig,
-  AdvancedCompressionResult,
-  CompressionQualityMetrics,
   ModelEfficiencyProfile,
   ContextProfile,
   ConversationState,
