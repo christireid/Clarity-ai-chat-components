@@ -226,11 +226,11 @@ export function useClarityChat(
             setConsentGranted(consent)
 
             if (!consent) {
-              debug.log('[Clarity Chat] Memory capture consent denied by user')
+              debug.info('[Clarity Chat] Memory capture consent denied by user')
               return
             }
 
-            debug.log('[Clarity Chat] Memory capture consent granted by user')
+            debug.info('[Clarity Chat] Memory capture consent granted by user')
           } catch (error) {
             console.error('[Clarity Chat] Error obtaining consent:', error)
             setConsentGranted(false)

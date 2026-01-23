@@ -54,7 +54,7 @@ const SimpleMessageList: React.FC<SimpleMessageListProps> = ({ messages }) => {
           </div>
           <div>{message.content}</div>
           <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-            {message.timestamp.toLocaleTimeString()}
+            {message.createdAt.toLocaleTimeString()}
           </div>
         </div>
       ))}
@@ -114,7 +114,7 @@ const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({ message
               </div>
               <div>{message.content}</div>
               <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-                {message.timestamp.toLocaleTimeString()}
+                {message.createdAt.toLocaleTimeString()}
               </div>
             </div>
           ))}
