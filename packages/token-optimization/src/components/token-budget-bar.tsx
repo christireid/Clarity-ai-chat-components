@@ -10,9 +10,12 @@
 import React, { useMemo, useEffect, useRef, useId } from 'react'
 
 /**
- * Budget status levels
+ * Visual budget status levels for TokenBudgetBar component
+ *
+ * Renamed from BudgetStatus to TokenBudgetBarStatus to avoid collision with
+ * BudgetStatus interface in cost/cost-aware-optimizer.ts and React package.
  */
-export type BudgetStatus = 'safe' | 'warning' | 'critical' | 'exceeded'
+export type TokenBudgetBarStatus = 'safe' | 'warning' | 'critical' | 'exceeded'
 
 /**
  * Color theme configuration
@@ -61,7 +64,7 @@ export interface TokenBudgetBarProps {
   /** Whether to animate changes */
   animate?: boolean
   /** Callback when status changes */
-  onStatusChange?: (status: BudgetStatus, percentage: number) => void
+  onStatusChange?: (status: TokenBudgetBarStatus, percentage: number) => void
 }
 
 /**
@@ -85,7 +88,7 @@ function getBudgetStatus(
   percentage: number,
   warningThreshold: number,
   criticalThreshold: number
-): BudgetStatus {
+): TokenBudgetBarStatus {
   if (percentage >= 100) return 'exceeded'
   if (percentage >= criticalThreshold) return 'critical'
   if (percentage >= warningThreshold) return 'warning'
@@ -95,7 +98,10 @@ function getBudgetStatus(
 /**
  * Get status color based on budget status
  */
-function getStatusColor(status: BudgetStatus, theme: TokenBudgetTheme): string {
+function getStatusColor(
+  status: TokenBudgetBarStatus,
+  theme: TokenBudgetTheme
+): string {
   switch (status) {
     case 'exceeded':
       return theme.exceededColor
@@ -112,7 +118,10 @@ function getStatusColor(status: BudgetStatus, theme: TokenBudgetTheme): string {
 /**
  * Get accessible status message
  */
-function getStatusMessage(status: BudgetStatus, percentage: number): string {
+function getStatusMessage(
+  status: TokenBudgetBarStatus,
+  percentage: number
+): string {
   const roundedPercent = Math.round(percentage)
   switch (status) {
     case 'exceeded':
@@ -356,7 +365,7 @@ export interface UseTokenBudgetReturn {
   /** Maximum token budget */
   max: number
   /** Current budget status */
-  status: BudgetStatus
+  status: TokenBudgetBarStatus
   /** Current percentage used */
   percentage: number
   /** Add tokens to the budget */

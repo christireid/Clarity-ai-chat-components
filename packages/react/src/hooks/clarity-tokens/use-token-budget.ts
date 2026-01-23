@@ -35,7 +35,13 @@ export interface TokenUsageRecord {
   requestId?: string
 }
 
-export interface BudgetStatus {
+/**
+ * Token budget status tracking
+ *
+ * Renamed from BudgetStatus to TokenBudgetStatus to avoid collision with
+ * BudgetStatus interface in @clarity-chat/token-optimization cost module.
+ */
+export interface TokenBudgetStatus {
   remainingTokens: number
   usedTokens: number
   percentUsed: number
@@ -49,7 +55,7 @@ export interface UseTokenBudgetReturn {
   /** Total tokens used this session */
   usedTokens: number
   /** Budget status */
-  status: BudgetStatus
+  status: TokenBudgetStatus
   /** Register token usage */
   registerUsage: (usage: {
     inputTokens: number
@@ -253,7 +259,7 @@ export function useTokenBudget(
   /**
    * Calculate budget status
    */
-  const status = React.useMemo((): BudgetStatus => {
+  const status = React.useMemo((): TokenBudgetStatus => {
     const percentUsed = usedTokens / sessionBudgetTokens
     const isOverBudget = usedTokens >= sessionBudgetTokens
 

@@ -10,7 +10,7 @@
 export { TokenBudgetBar, useTokenBudget } from './token-budget-bar'
 
 export type {
-  BudgetStatus,
+  TokenBudgetBarStatus,
   TokenBudgetTheme,
   TokenBudgetBarProps,
   UseTokenBudgetConfig,
