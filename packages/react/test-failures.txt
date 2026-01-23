@@ -1,0 +1,88 @@
+Failing Tests Summary - Based on Test Output Analysis
+
+===================================================
+TEST FAILURES IDENTIFIED
+===================================================
+
+1. STREAMING + TOOLS INTEGRATION
+Location: src/core/__tests__/streaming-tools-integration.test.ts
+- should pause stream when tool call completes
+  Error: expected false to be true
+- should execute tool while stream is paused
+  Error: expected false to be true
+
+2. TOKENIZATION UTILITIES
+Location: src/utils/__tests__/tokenization.test.ts
+Multiple failures related to:
+- estimateTokensByProvider (function not found)
+- validateEstimation (function not found)
+- getCharsPerToken
+- estimateMessagesTokens
+- estimateTokensDebug
+
+3. TOOL IMPLEMENTATION VALIDATOR
+Location: src/core/__tests__/tool-implementation-validator.test.ts
+- should fail if tool has no name
+
+4. TOOL EXECUTOR
+Location: src/core/__tests__/tool-executor.test.ts
+- should validate number constraints
+  Error: expected validation error message mismatch
+
+5. TOOL APPROVAL SYSTEM
+Location: src/app-api/__tests__/tools-engine-approval.test.ts
+Multiple approval logic failures:
+- should auto-approve safe tools by default (expected 'pending' to be 'approved')
+- should auto-approve built-in safe tools
+- should honor explicit requiresApproval=false
+- should auto-approve everything in auto mode
+- should only approve allowlist tools in allowlist mode
+- should block specific tools in blocklist mode
+- should auto-approve configured risk levels
+- Audit logging tests (all failing)
+
+6. TOOL PERFORMANCE MONITOR
+Location: src/utils/__tests__/tool-performance.test.ts
+- should track failed executions
+  Error: expected 'pending' to be 'failed'
+
+7. SYNC MANAGER
+Location: src/utils/__tests__/sync-manager.test.ts
+- should retry failed operations (both SyncManager and SyncQueue)
+
+8. MESSAGE OPERATIONS ROLLBACK
+Location: src/hooks/message/__tests__/use-message-operations-rollback.test.tsx
+- should rollback failed edit to restore original content
+
+9. TOKEN COUNTING ACCURACY
+Location: src/hooks/clarity-tokens/__tests__/token-counting-accuracy.test.ts
+- should handle very long messages (TIMEOUT after 20000ms)
+- should handle chat messages limit checking
+  Error: Model name must be provided
+
+===================================================
+PATTERNS IDENTIFIED
+===================================================
+
+1. Import/Export Issues:
+   - estimateTokensByProvider is not a function
+   - validateEstimation is not a function
+
+2. Async State Issues:
+   - Multiple tests expecting 'approved' or 'failed' status but getting 'pending'
+   - Suggests timing/await issues in async operations
+
+3. Timeout Issues:
+   - Very long message test timing out (80+ seconds)
+
+4. Configuration Issues:
+   - Model name not being passed correctly
+
+===================================================
+ADDITIONAL NOTES
+===================================================
+
+- Multiple "act(...)" warnings for React state updates
+- Connection refused errors to localhost:3000 (expected in test env)
+- React prop warnings for motion components (whileHover, whileTap)
+- Memory provider warnings (expected configuration notices)

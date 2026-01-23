@@ -12,11 +12,10 @@
  * @module
  */
 
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import {
-  AdvancedCompressionOrchestrator,
-  compressWithAdvanced,
-} from './advanced-compression'
+  AccurateTokenCounter,
+  AdaptiveCompressor,
+} from '@clarity-chat/token-optimization'
 
 // Enhanced model characteristics with token efficiency data
 export interface ModelEfficiencyProfile {
@@ -206,7 +205,7 @@ const MODEL_EFFICIENCY_PROFILES: Record<string, ModelEfficiencyProfile> = {
  */
 export class AdaptiveTokenOptimizer {
   private tokenCounter: AccurateTokenCounter
-  private compressionOrchestrator: AdvancedCompressionOrchestrator
+  private compressionOrchestrator: AdaptiveCompressor
   private performanceHistory: Map<string, PerformanceHistoryEntry[]>
   private contextProfiles: Map<string, ContextProfile>
   private conversationStates: Map<string, ConversationState>
@@ -214,7 +213,7 @@ export class AdaptiveTokenOptimizer {
 
   constructor(learningRate = 0.01) {
     this.tokenCounter = new AccurateTokenCounter()
-    this.compressionOrchestrator = new AdvancedCompressionOrchestrator()
+    this.compressionOrchestrator = new AdaptiveCompressor({})
     this.performanceHistory = new Map()
     this.contextProfiles = new Map()
     this.conversationStates = new Map()
@@ -450,18 +449,19 @@ export class AdaptiveTokenOptimizer {
       adaptive: true,
     }
 
-    const compressedText = await compressWithAdvanced(
+    const compressionResult = await this.compressionOrchestrator.compress(
       text,
-      strategy.compressionStrategy as
-        | 'llmlingua'
-        | 'selective_context'
-        | 'semantic_pruning'
-        | 'structural'
-        | 'adaptive'
-        | undefined,
-      compressionConfig.compressionRatio,
-      compressionConfig.qualityThreshold
+      {
+        targetRatio: compressionConfig.compressionRatio,
+        minQuality: compressionConfig.qualityThreshold,
+        llmlinguaOptions: {
+          preserveCode: compressionConfig.preserveCode,
+          preserveUrls: true,
+          preserveEmails: true,
+        },
+      }
     )
+    const compressedText = compressionResult.compressed
 
     return {
       compressedText,
@@ -610,12 +610,19 @@ export class AdaptiveTokenOptimizer {
     const counter = new AccurateTokenCounter({ model: 'gpt-4' })
     const alternatives = await Promise.all(
       strategies.map(async (strategy) => {
-        const compressedText = await compressWithAdvanced(
+        const compressionResult = await this.compressionOrchestrator.compress(
           text,
-          'adaptive',
-          strategy.compressionRatio,
-          strategy.qualityThreshold
+          {
+            targetRatio: strategy.compressionRatio,
+            minQuality: strategy.qualityThreshold,
+            llmlinguaOptions: {
+              preserveCode: true,
+              preserveUrls: true,
+              preserveEmails: true,
+            },
+          }
         )
+        const compressedText = compressionResult.compressed
 
         const tokens = counter.count(compressedText)
         const cost = (tokens / 1000) * modelProfile.costPerInputToken

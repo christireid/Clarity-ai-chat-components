@@ -1912,7 +1912,7 @@ importers:
         specifier: ^0.10.0
         version: 0.10.1
       '@clarity-chat/utils':
-        specifier: file:../utils
+        specifier: workspace:*
         version: link:../utils
       boxen:
         specifier: ^7.1.1

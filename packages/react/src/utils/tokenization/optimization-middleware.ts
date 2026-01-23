@@ -10,16 +10,15 @@
  * - Performance tracking and analytics
  */
 
-import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+import {
+  AccurateTokenCounter,
+  compressAdaptively,
+  type CompressionStrategyType,
+} from '@clarity-chat/token-optimization'
 import {
   adaptiveOptimizer,
   optimizeTokensAdaptively,
 } from './adaptive-optimizer'
-import {
-  advancedCompressor,
-  compressWithAdvanced,
-  type AdvancedCompressionStrategy,
-} from './advanced-compression'
 
 export type MiddlewareMode =
   | 'automatic'
@@ -255,12 +254,7 @@ export class TokenOptimizationMiddleware {
       context
     )
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      compressionStrategy,
-      compressionRatio,
-      config.qualityThreshold || 0.8
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
     const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
@@ -305,12 +299,7 @@ export class TokenOptimizationMiddleware {
     const compressionRatio = config.compressionRatio || 0.3
     const qualityThreshold = config.qualityThreshold || 0.8
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      'adaptive',
-      compressionRatio,
-      qualityThreshold
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
     const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
@@ -402,12 +391,7 @@ export class TokenOptimizationMiddleware {
 
     const compressionRatio = targetTokens / originalTokens
 
-    const compressedText = await compressWithAdvanced(
-      text,
-      'adaptive',
-      compressionRatio,
-      config.qualityThreshold || 0.7 // Lower quality for budget
-    )
+    const compressedText = await compressAdaptively(text, compressionRatio)
 
     const compressedTokens = counter.count(compressedText)
     const reductionRatio = 1 - compressedTokens / originalTokens
@@ -449,9 +433,9 @@ export class TokenOptimizationMiddleware {
   private selectCompressionStrategy(
     text: string,
     context: OptimizationContext
-  ): AdvancedCompressionStrategy {
-    if (context.contextType === 'code') return 'structural'
-    if (context.complexity === 'high') return 'semantic_pruning'
+  ): CompressionStrategyType {
+    if (context.contextType === 'code') return 'extractive'
+    if (context.complexity === 'high') return 'llmlingua'
     if (text.length > 5000) return 'llmlingua'
     return 'adaptive'
   }

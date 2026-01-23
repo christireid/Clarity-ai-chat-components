@@ -50,7 +50,7 @@
     "prompts": "^2.4.2",
     "react": "^19.2.0",
     "zod": "^3.22.4",
-    "@clarity-chat/utils": "file:../utils"
+    "@clarity-chat/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
