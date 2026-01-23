@@ -12,6 +12,6 @@ export * from './batch'
 export * from './performance'
 export * from './token-counter'
 // Note: validation-helpers not exported to avoid conflicts with validation.ts
-export * from './logger'
+// Logger removed - use @clarity-chat/utils/logger instead
 export * from './decay-manager'
 export * from './context-optimizer'
