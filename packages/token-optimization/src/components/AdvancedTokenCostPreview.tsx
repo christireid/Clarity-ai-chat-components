@@ -15,7 +15,7 @@ import React, {
   useId,
 } from 'react'
 import {
-  AdvancedTokenCounter,
+  AccurateTokenCounter,
   countTokensWithConfidence,
   type ModelFamily,
   type TokenCountResult,
@@ -152,7 +152,10 @@ export const AdvancedTokenCostPreview: React.FC<
   // Track stale state for visual feedback
   const isStale = text !== deferredText || isPending
 
-  const _tokenCounter = useMemo(() => new AdvancedTokenCounter(), [])
+  const _tokenCounter = useMemo(
+    () => new AccurateTokenCounter({ model: 'gpt-4' }),
+    []
+  )
 
   /**
    * Calculate cost estimate

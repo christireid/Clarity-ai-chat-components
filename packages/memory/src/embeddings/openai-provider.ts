@@ -1,11 +1,11 @@
 /**
  * OpenAI Embedding Provider
- * 
+ *
  * Optimized with caching, retry logic, and rate limiting
  */
 
 import type { EmbeddingProvider } from './embedding-provider'
-import { LRUCache } from '../utils/cache'
+import { LRUCache, TTLCache } from '@clarity-chat/utils/cache'
 import { retry, isRetryableError } from '../utils/retry'
 import { RateLimiter } from '../utils/rate-limiter'
 
@@ -27,7 +27,7 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
   private apiKey: string
   private model: string
   public dimensions: number
-  private cache?: LRUCache<string, number[]>
+  private cache?: LRUCache<string, number[]> | TTLCache<string, number[]>
   private rateLimiter?: RateLimiter
 
   constructor(config: OpenAIProviderConfig) {
@@ -37,10 +37,13 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
 
     // Setup cache if enabled
     if (config.cache !== false) {
-      this.cache = new LRUCache<string, number[]>({
-        maxSize: config.cacheSize || 1000,
-        ttl: config.cacheTTL,
-      })
+      if (config.cacheTTL) {
+        // Use TTL cache if TTL is configured
+        this.cache = new TTLCache<string, number[]>(config.cacheTTL)
+      } else {
+        // Use LRU cache otherwise
+        this.cache = new LRUCache<string, number[]>(config.cacheSize || 1000)
+      }
     }
 
     // Setup rate limiter if configured
@@ -77,21 +80,23 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
         })
 
         if (!response.ok) {
-          const error = await response.json().catch(() => ({ error: 'Unknown error' }))
+          const error = await response
+            .json()
+            .catch(() => ({ error: 'Unknown error' }))
           const errorMessage = `OpenAI embedding failed: ${JSON.stringify(error)}`
-          
+
           // Check if retryable
           if (isRetryableError(new Error(errorMessage))) {
             throw new Error(errorMessage)
           }
-          
+
           // Non-retryable errors (e.g., invalid API key)
           throw new Error(errorMessage)
         }
 
         const data = await response.json()
         const result = data.data[0]?.embedding || []
-        
+
         if (result.length === 0) {
           throw new Error('Empty embedding returned')
         }
@@ -147,14 +152,18 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
           },
           body: JSON.stringify({
             model: this.model,
-            input: uncached.map(item => item.text),
+            input: uncached.map((item) => item.text),
             dimensions: this.dimensions,
           }),
         })
 
         if (!response.ok) {
-          const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-          throw new Error(`OpenAI batch embedding failed: ${JSON.stringify(error)}`)
+          const error = await response
+            .json()
+            .catch(() => ({ error: 'Unknown error' }))
+          throw new Error(
+            `OpenAI batch embedding failed: ${JSON.stringify(error)}`
+          )
         }
 
         const data = await response.json()
@@ -197,11 +206,10 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
   /**
    * Get cache stats
    */
-  getCacheStats(): { size: number; maxSize: number } | null {
+  getCacheStats(): { size: number } | null {
     if (!this.cache) return null
     return {
-      size: this.cache.size(),
-      maxSize: this.cache['maxSize'],
+      size: this.cache.size,
     }
   }
 }

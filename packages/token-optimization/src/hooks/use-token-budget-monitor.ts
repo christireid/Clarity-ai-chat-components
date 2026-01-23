@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { countTokens } from '../legacy-compatibility'
+import { AccurateTokenCounter } from '../tokenizers/accurate-counter'
 import { estimateTokens } from '../utils/token-estimation'
 import { MODEL_PRICING } from '../models/model-pricing'
 import { MODEL_REGISTRY, type ModelId } from '../models/model-registry'
@@ -349,8 +349,11 @@ export function useTokenBudgetMonitor(
 
       if (resolvedConfig.useAccurateTokenization) {
         try {
-          // Use accurate synchronous token counting from legacy-compatibility
-          return countTokens(text)
+          // Use accurate token counting from AccurateTokenCounter
+          const counter = new AccurateTokenCounter({
+            model: config.model || 'gpt-4',
+          })
+          return counter.count(text)
         } catch {
           // Fall back to estimation
           return estimateTokens(text, config.model)

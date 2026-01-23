@@ -8,10 +8,7 @@
  * to maintain backward compatibility with the original memory package API.
  */
 
-import {
-  AccurateTokenCounter,
-  SimpleTokenCounter as SimpleCounter,
-} from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 // Re-export types from token-optimization
 export type {
@@ -265,11 +262,6 @@ export function countTokensWithConfidence(
 ): TokenCountResult {
   return TokenCounter.countWithConfidence(text, model)
 }
-
-/**
- * Re-export SimpleTokenCounter for convenience
- */
-export { SimpleCounter as SimpleTokenCounter }
 
 /**
  * Detect content type based on text characteristics

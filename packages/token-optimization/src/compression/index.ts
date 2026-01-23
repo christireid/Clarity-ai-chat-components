@@ -165,18 +165,6 @@ export type {
  */
 export { compressText, compressTextBatch } from './basic-engine'
 
-/**
- * @deprecated Use AdaptiveCompressor instead.
- */
-export { DynamicCompressionEngine } from './dynamic-compression'
-
-/**
- * @deprecated
- */
-export type {
-  DynamicCompressionConfig,
-  CompressionStrategy as DynamicCompressionStrategy,
-  CompressionResult as DynamicCompressionResult,
-  QualityMetrics,
-  CompressionContext,
-} from './dynamic-compression'
+// DynamicCompressionEngine has been removed (deprecated)
+// Use AdaptiveCompressor instead:
+// import { AdaptiveCompressor } from '@clarity-chat/token-optimization'

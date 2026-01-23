@@ -20,7 +20,6 @@ import {
   compressWithAdvanced,
   type AdvancedCompressionStrategy,
 } from './advanced-compression'
-import { semanticCache, getCachedTokenCount } from './intelligent-caching'
 
 export type MiddlewareMode =
   | 'automatic'

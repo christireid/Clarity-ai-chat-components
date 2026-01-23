@@ -29,7 +29,7 @@ export {
 export {
   type TokenOptimizationStats,
   createEmptyStats,
-} from '../../hooks/clarity-tokens/use-token-optimization-stats'
+} from '@clarity-chat/token-optimization'
 export { TokenBudgetBar } from './token-budget-bar'
 export {
   TokenCostPreview,

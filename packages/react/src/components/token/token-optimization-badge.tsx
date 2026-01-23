@@ -6,8 +6,12 @@
  */
 
 import * as React from 'react'
-import type { TokenOptimizationStats } from '../../hooks/clarity-tokens/use-token-optimization-stats'
-import { cn, glassVariants, getSemanticGradient } from '@clarity-chat/primitives'
+import type { TokenOptimizationStats } from '@clarity-chat/token-optimization'
+import {
+  cn,
+  glassVariants,
+  getSemanticGradient,
+} from '@clarity-chat/primitives'
 
 export interface TokenOptimizationBadgeProps {
   /** Statistics to display */

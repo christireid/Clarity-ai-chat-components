@@ -281,29 +281,16 @@ export type {
   MemoryAdaptiveOptions,
   MemoryTruncateResult,
   MemoryNoCompressionResult,
-  // Legacy compression types (deprecated - for backward compatibility)
-  DynamicCompressionConfig,
-  QualityMetrics,
-  CompressionContext,
 } from './compression'
 
 // Token counting exports (legacy compatibility)
-// New canonical names
-export {
-  LegacyTokenCounter,
-  TokenBudgetManager as LegacyTokenBudgetManager,
-} from './legacy-compatibility'
+// Legacy compatibility exports have been removed
+// Use AccurateTokenCounter for token counting
+// Backward compatibility classes from legacy-compatibility.ts were deprecated and removed
 
-// Deprecated - for backward compatibility only
-export {
-  TokenCounter, // @deprecated - use LegacyTokenCounter, AccurateTokenCounter, or FastTokenCounter
-  ContextOptimizer,
-  MemoryCompressor,
-  SemanticChunker,
-  countTokens,
-  countTokensBatch,
-  truncateToTokens,
-} from './legacy-compatibility'
+// Deprecated legacy classes have been removed
+// For token counting: use AccurateTokenCounter
+// For memory optimization: use @clarity-chat/memory package
 
 // Memory Token Budget Manager (migrated from memory package)
 export {
@@ -328,15 +315,6 @@ export type {
   MonitoringStats,
   ChatMessage,
 } from './tokenizers/accurate-counter'
-
-// Fast token counter (new canonical name)
-export {
-  FastTokenCounter,
-  type FastTokenCounterConfig,
-} from './tokenizers/fast-counter'
-
-// Deprecated - use FastTokenCounter
-export { SimpleTokenCounter } from './tokenizers/simple-counter'
 
 // Provider-Native Token Counting - 100% accurate counting using provider APIs
 export {
@@ -382,9 +360,8 @@ export type {
   CacheableMessage,
   // Token counting provider interface
   TokenCountingProvider,
-  // Deprecated type alias - use TokenCountingProvider instead
-  // Note: Cannot export type TokenCounter due to conflict with legacy class export
-  // Use TokenCountingProvider for provider interface types
+  // Backward compatibility type alias
+  TokenCounter,
 } from './providers/types'
 export type { SimpleProviderCachingConfig } from './providers/simple-caching'
 

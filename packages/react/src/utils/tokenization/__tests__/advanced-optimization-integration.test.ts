@@ -15,13 +15,6 @@ import {
   getAdaptiveAnalytics,
 } from '../adaptive-optimizer'
 import {
-  getCachedTokenCount,
-  getCachedCompression,
-  setCachedCompression,
-  getCacheAnalytics,
-  tokenCache,
-} from '../intelligent-caching'
-import {
   optimizeResponse,
   predictResponseLength,
   controlResponseBudget,
@@ -125,43 +118,6 @@ describe('Advanced Token Optimization Integration Tests', () => {
     })
   })
 
-  describe('Intelligent Caching', () => {
-    it('should cache and retrieve token counts', async () => {
-      const text = 'Hello world, this is a test of the caching system'
-      const model = 'gpt-3.5-turbo'
-
-      // First call - cache miss
-      const count1 = await getCachedTokenCount(text, model)
-      expect(count1).toBeGreaterThan(0)
-
-      // Second call - cache hit
-      const count2 = await getCachedTokenCount(text, model)
-      expect(count2).toBe(count1)
-
-      const analytics = getCacheAnalytics()
-      expect(analytics).toBeDefined()
-    })
-
-    it('should cache compression results', async () => {
-      const originalText =
-        'This is a longer text that should be compressed and cached'
-      const strategy = 'adaptive'
-
-      // Cache compression result
-      const compressedText = await compressWithAdvanced(
-        originalText,
-        strategy,
-        0.3,
-        0.8
-      )
-      await setCachedCompression(originalText, compressedText, strategy)
-
-      // Retrieve from cache
-      const cachedText = await getCachedCompression(originalText, strategy)
-      expect(cachedText).toBe(compressedText)
-    })
-  })
-
   describe('Response Optimization', () => {
     it('should predict response length', async () => {
       const prompt = 'Explain the concept of machine learning in simple terms'
@@ -250,18 +206,11 @@ describe('Advanced Token Optimization Integration Tests', () => {
       )
       expect(compressed.length).toBeLessThan(originalText.length)
 
-      // Step 2: Cache the result
-      await setCachedCompression(originalText, compressed, 'adaptive')
-
-      // Step 3: Retrieve from cache
-      const cached = await getCachedCompression(originalText, 'adaptive')
-      expect(cached).toBe(compressed)
-
-      // Step 4: Predict response length
+      // Step 2: Predict response length
       const prediction = await predictResponseLength(compressed, model)
       expect(prediction.predictedTokens).toBeGreaterThan(0)
 
-      // Step 5: Optimize through middleware
+      // Step 3: Optimize through middleware
       const finalOptimized = await middlewareOptimizeTokens(compressed, model)
       expect(finalOptimized).toBeTruthy()
 

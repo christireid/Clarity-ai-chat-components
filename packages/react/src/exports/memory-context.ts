@@ -1,6 +1,6 @@
 /**
  * Memory & Context Domain Exports
- * 
+ *
  * Top-level: Simple memory access
  * Mid-level: Memory operations
  * Low-level: Core services and utilities
@@ -43,4 +43,4 @@ export {
   MemoryCompressor,
   SemanticChunker,
   ContextOptimizer,
-} from '../memory/token-optimizer'
+} from '@clarity-chat/memory'

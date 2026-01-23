@@ -12,7 +12,6 @@
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
 import { adaptiveOptimizer } from './adaptive-optimizer'
-import { semanticCache } from './intelligent-caching'
 
 export type ResponseOptimizationStrategy =
   | 'length_control' // Control response length
@@ -343,7 +342,11 @@ export class ResponseLengthPredictor {
     // Increase confidence with historical data
     const consistency = historicalPattern?.consistency
     if (consistency !== undefined && consistency > 0.8) confidence += 0.2
-    if (historicalPattern?.trend !== 0 && historicalPattern?.trend !== undefined) confidence += 0.1
+    if (
+      historicalPattern?.trend !== 0 &&
+      historicalPattern?.trend !== undefined
+    )
+      confidence += 0.1
 
     return Math.min(0.95, confidence)
   }
@@ -857,7 +860,7 @@ export class ResponseOptimizer {
     const responseTokens = await TokenCounter.count(response)
 
     // Type assertion needed as semanticCache uses generic unknown type
-     
+
     await semanticCache.set(cacheKey, {
       response,
       tokens: responseTokens,
@@ -877,7 +880,9 @@ export class ResponseOptimizer {
   ): Promise<string | null> {
     const cacheKey = this.generateCacheKey(prompt, model)
     // Type assertion needed as semanticCache uses generic unknown type
-    const cached = await semanticCache.get(cacheKey) as { response?: string } | null
+    const cached = (await semanticCache.get(cacheKey)) as {
+      response?: string
+    } | null
 
     if (cached && cached.response) {
       return cached.response

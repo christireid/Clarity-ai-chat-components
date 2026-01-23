@@ -8,7 +8,7 @@
  */
 
 import { ProviderCachingFormatter } from './prompt-caching'
-import { SimpleTokenCounter } from '../tokenizers/simple-counter'
+import { AccurateTokenCounter } from '../tokenizers/accurate-counter'
 import type {
   CacheableMessage,
   ProviderCachingResult,
@@ -62,7 +62,7 @@ export function createProviderCache(config: SimpleProviderCachingConfig = {}) {
   } = config
 
   // Create token counter with simple defaults
-  const tokenCounter = new SimpleTokenCounter()
+  const tokenCounter = new AccurateTokenCounter({ model: 'gpt-4' })
 
   // Create formatter with optimized config
   const formatter = new ProviderCachingFormatter(
@@ -158,7 +158,7 @@ export async function estimateCacheSavings(
   estimatedSavingsPercent: number
   recommendation: string
 }> {
-  const counter = new SimpleTokenCounter()
+  const counter = new AccurateTokenCounter({ model: 'gpt-4' })
 
   const totalTokens = messages.reduce(
     (sum, msg) =>

@@ -339,7 +339,7 @@ export interface CacheableMessage {
  *
  * @remarks
  * Renamed from TokenCounter to avoid confusion with token counter classes.
- * Use AccurateTokenCounter, FastTokenCounter, or implement this interface.
+ * Use AccurateTokenCounter or implement this interface.
  */
 export interface TokenCountingProvider {
   count(text: string): number

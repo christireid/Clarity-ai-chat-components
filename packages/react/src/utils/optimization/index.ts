@@ -26,7 +26,6 @@ export {
 } from './prompt-compression-advanced'
 
 export {
-  LLMLinguaCompressor,
   compressRAGContext,
   intelligentCompress,
   createLLMLinguaCompressor,
@@ -124,16 +123,6 @@ export {
   type CacheOptions as SmartCacheOptions,
   type CacheStats as SmartCacheStats,
 } from './smart-cache'
-
-export {
-  PersistentSemanticCache,
-  createPersistentSemanticCache,
-  usePersistentSemanticCacheConfig,
-  type SemanticCacheConfig,
-  type CachedResponse,
-  type SemanticCacheStats,
-  type CacheCheckResult,
-} from './semantic-cache-persistent'
 
 export {
   SchemaCache,

@@ -52,10 +52,11 @@ export class SimpleUnifiedOptimizer {
   constructor(enableCaching = true) {
     this.enableCaching = enableCaching
     this.logger = new Logger({ serviceName: 'simple-unified-optimizer' })
-    this.tokenCounter = new AccurateTokenCounter(
-      DEFAULT_TOKENIZER_CONFIG.enableCaching,
-      DEFAULT_TOKENIZER_CONFIG
-    )
+    this.tokenCounter = new AccurateTokenCounter({
+      model: DEFAULT_TOKENIZER_CONFIG.model,
+      enableCaching: DEFAULT_TOKENIZER_CONFIG.enableCaching,
+      enableMonitoring: DEFAULT_TOKENIZER_CONFIG.enableMonitoring,
+    })
     this.securityManager = new TokenSecurityManager(DEFAULT_SECURITY_CONFIG)
     this.toonOptimizer = new ToonOptimizer(DEFAULT_TOON_CONFIG)
   }

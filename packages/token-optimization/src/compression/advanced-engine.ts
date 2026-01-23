@@ -5,9 +5,14 @@
  * adaptive selection, and quality preservation
  */
 
-import { AdvancedTokenCounter, type ContentType } from './advanced-counter'
+import { AccurateTokenCounter } from '../tokenizers/accurate-counter'
 import { TokenOptimizationError, TokenErrorCode } from '../errors'
 import { Logger } from '../observability'
+
+/**
+ * Content type classification for adaptive compression
+ */
+export type ContentType = 'code' | 'prose' | 'mixed' | 'unknown'
 
 /**
  * Compression strategy interface
@@ -74,10 +79,10 @@ export interface CompressionConfig {
  * Content analyzer for compression strategy selection
  */
 class ContentAnalyzer {
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
 
   constructor() {
-    this.counter = new AdvancedTokenCounter()
+    this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   analyze(text: string): ContentAnalysis {
@@ -140,10 +145,10 @@ class ContentAnalyzer {
  */
 export class TruncateStrategy implements CompressionStrategy {
   name = 'truncate'
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
 
   constructor() {
-    this.counter = new AdvancedTokenCounter()
+    this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   async compress(
@@ -307,10 +312,10 @@ export class TruncateStrategy implements CompressionStrategy {
  */
 export class ExtractStrategy implements CompressionStrategy {
   name = 'extract'
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
 
   constructor() {
-    this.counter = new AdvancedTokenCounter()
+    this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
   }
 
   async compress(
@@ -529,10 +534,10 @@ export class AdaptiveStrategy implements CompressionStrategy {
   name = 'adaptive'
   private strategies: Map<string, CompressionStrategy>
   private analyzer: ContentAnalyzer
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
 
   constructor() {
-    this.counter = new AdvancedTokenCounter()
+    this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.analyzer = new ContentAnalyzer()
 
     this.strategies = new Map()
@@ -625,7 +630,7 @@ export class AdvancedCompressionEngine {
   private strategies: Map<string, CompressionStrategy>
   private defaultStrategy: CompressionStrategy
   private config: CompressionConfig
-  private counter: AdvancedTokenCounter
+  private counter: AccurateTokenCounter
   private analyzer: ContentAnalyzer
   private logger: Logger
 
@@ -641,7 +646,7 @@ export class AdvancedCompressionEngine {
       ...config,
     }
 
-    this.counter = new AdvancedTokenCounter()
+    this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
     this.analyzer = new ContentAnalyzer()
 
     this.strategies = new Map()
