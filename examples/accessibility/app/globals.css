@@ -1,50 +1,15 @@
+/**
+ * Accessibility Example - Global Styles
+ * Uses standard Tailwind/shadcn theme variables
+ * with high-contrast mode support
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47% 11.2%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217.2 91% 60%;
-    --primary-foreground: 222.2 47% 11.2%;
-    --secondary: 217.2 33% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 33% 17.5%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217.2 33% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 33% 17.5%;
-    --input: 217.2 33% 17.5%;
-    --ring: 224.3 76% 48%;
-  }
-
-  /* High Contrast Mode */
+  /* High Contrast Mode - Example-specific accessibility feature */
   .high-contrast {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
@@ -90,6 +55,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
