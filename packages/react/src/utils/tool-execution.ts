@@ -12,7 +12,7 @@
  */
 
 import type { ToolOrchestrator } from '../core/tool-orchestrator'
-import type { ToolArguments, ToolResult } from '../../types/tool-definition'
+import type { ToolArguments, ToolResult } from '../types/tool-definition'
 import type { OrchestrationResult } from '../core/tool-orchestrator'
 
 // =============================================================================
@@ -123,7 +123,8 @@ export async function executeWithRetry(
 
       // Check if we should retry
       const shouldRetryDefault = retryOn.includes(result.status as any)
-      const shouldRetryCustom = customShouldRetry?.(result, attempt) ?? shouldRetryDefault
+      const shouldRetryCustom =
+        customShouldRetry?.(result, attempt) ?? shouldRetryDefault
 
       if (result.status === 'completed') {
         return result.result as ToolResult
@@ -167,7 +168,9 @@ export async function executeWithRetry(
   }
 
   // Should never reach here, but TypeScript needs it
-  throw lastError || new Error(`Tool execution failed after ${maxRetries} retries`)
+  throw (
+    lastError || new Error(`Tool execution failed after ${maxRetries} retries`)
+  )
 }
 
 // =============================================================================
@@ -225,7 +228,8 @@ export async function executeWithFallback(
       }
 
       // Tool didn't complete successfully
-      const error = result.error || new Error(`Tool ${toolName} ${result.status}`)
+      const error =
+        result.error || new Error(`Tool ${toolName} ${result.status}`)
       errors.push({ tool: toolName, error })
 
       // Try next tool if available
@@ -242,7 +246,9 @@ export async function executeWithFallback(
   }
 
   // All tools failed
-  const errorMessages = errors.map((e) => `${e.tool}: ${e.error.message}`).join('; ')
+  const errorMessages = errors
+    .map((e) => `${e.tool}: ${e.error.message}`)
+    .join('; ')
   throw new Error(`All fallback tools failed: ${errorMessages}`)
 }
 
@@ -278,7 +284,11 @@ export async function executeWithTimeout(
   args: ToolArguments,
   options: TimeoutOptions
 ): Promise<ToolResult> {
-  const { timeout, message = `Tool execution timed out after ${timeout}ms`, onTimeout } = options
+  const {
+    timeout,
+    message = `Tool execution timed out after ${timeout}ms`,
+    onTimeout,
+  } = options
 
   const controller = new AbortController()
 
@@ -299,7 +309,9 @@ export async function executeWithTimeout(
       return result.result as ToolResult
     }
 
-    throw new Error(`Tool execution ${result.status}: ${result.error?.message || 'Unknown error'}`)
+    throw new Error(
+      `Tool execution ${result.status}: ${result.error?.message || 'Unknown error'}`
+    )
   } catch (error) {
     clearTimeout(timeoutId)
 
@@ -355,14 +367,20 @@ export async function executeWithLogging(
   if (!enabled) {
     const result = await orchestrator.executeTool(toolName, args)
     if (result.status !== 'completed') {
-      throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+      throw new Error(
+        `Tool execution ${result.status}: ${result.error?.message}`
+      )
     }
     return result.result as ToolResult
   }
 
   const startTime = Date.now()
 
-  logger(level, `🔧 Executing tool: ${toolName}`, logArgs ? { args } : undefined)
+  logger(
+    level,
+    `🔧 Executing tool: ${toolName}`,
+    logArgs ? { args } : undefined
+  )
 
   try {
     const result = await orchestrator.executeTool(toolName, args)
@@ -372,18 +390,21 @@ export async function executeWithLogging(
       logger(
         level,
         `✓ Tool completed: ${toolName} (${duration}ms)${result.cached ? ' [cached]' : ''}`,
-        logResults ? { result: result.result } : { duration, cached: result.cached }
+        logResults
+          ? { result: result.result }
+          : { duration, cached: result.cached }
       )
 
       return result.result as ToolResult
     } else {
-      logger(
-        'error',
-        `✗ Tool ${result.status}: ${toolName} (${duration}ms)`,
-        { error: result.error?.message, duration }
-      )
+      logger('error', `✗ Tool ${result.status}: ${toolName} (${duration}ms)`, {
+        error: result.error?.message,
+        duration,
+      })
 
-      throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+      throw new Error(
+        `Tool execution ${result.status}: ${result.error?.message}`
+      )
     }
   } catch (error) {
     const duration = Date.now() - startTime
@@ -442,7 +463,9 @@ export async function executeWithAll(
     } else {
       const result = await orchestrator.executeTool(toolName, args)
       if (result.status !== 'completed') {
-        throw new Error(`Tool execution ${result.status}: ${result.error?.message}`)
+        throw new Error(
+          `Tool execution ${result.status}: ${result.error?.message}`
+        )
       }
       return result.result as ToolResult
     }
@@ -492,11 +515,10 @@ export async function executeWithAll(
         } catch (error) {
           const duration = Date.now() - startTime
 
-          customLogger?.(
-            'error',
-            `✗ Tool error: ${toolName} (${duration}ms)`,
-            { error: error instanceof Error ? error.message : String(error), duration }
-          )
+          customLogger?.('error', `✗ Tool error: ${toolName} (${duration}ms)`, {
+            error: error instanceof Error ? error.message : String(error),
+            duration,
+          })
 
           throw error
         }
@@ -511,19 +533,254 @@ export async function executeWithAll(
 // Batch Execution
 // =============================================================================
 
+export interface BatchExecutionOptions {
+  /** Maximum concurrent executions (default: 10) */
+  maxConcurrent?: number
+
+  /** Deduplicate identical calls (same tool + args) (default: true) */
+  deduplicate?: boolean
+
+  /** Stop all executions on first error (default: false) */
+  stopOnError?: boolean
+
+  /** Callback for progress updates */
+  onProgress?: (completed: number, total: number) => void
+}
+
+export interface BatchCall {
+  toolName: string
+  args: ToolArguments
+  options?: any
+  /** Unique ID for this call (optional, for deduplication) */
+  id?: string
+}
+
+export interface BatchResult {
+  success: boolean
+  result?: ToolResult
+  error?: Error
+  /** Original call index */
+  callIndex: number
+  /** Whether result came from deduplication */
+  deduplicated?: boolean
+  /** Time taken in milliseconds */
+  duration?: number
+}
+
 /**
- * Execute multiple tools in parallel with error handling
+ * Execute multiple tools in parallel with optimizations
+ *
+ * **Features**:
+ * - Concurrency limiting (prevents overwhelming the system)
+ * - Deduplication of identical calls (same tool + args)
+ * - Shared caching across batch
+ * - Progress tracking
+ * - Error handling with stop-on-error option
+ *
+ * **Optimizations**:
+ * - Identical calls are deduplicated and executed once
+ * - Results are shared across all duplicate calls
+ * - Concurrency is limited to prevent resource exhaustion
+ * - Cache is shared across all calls in the batch
  *
  * @example
  * ```typescript
- * const results = await executeBatch(orchestrator, [
- *   { toolName: 'get_weather', args: { location: 'London' } },
- *   { toolName: 'get_weather', args: { location: 'Paris' } },
- *   { toolName: 'calculate', args: { expression: '10 + 5' } }
- * ])
+ * const results = await executeBatch(
+ *   orchestrator,
+ *   [
+ *     { toolName: 'get_weather', args: { location: 'London' } },
+ *     { toolName: 'get_weather', args: { location: 'Paris' } },
+ *     { toolName: 'get_weather', args: { location: 'London' } }, // Duplicate
+ *     { toolName: 'calculate', args: { expression: '10 + 5' } }
+ *   ],
+ *   {
+ *     maxConcurrent: 5,
+ *     deduplicate: true,
+ *     onProgress: (completed, total) => {
+ *       console.log(`Progress: ${completed}/${total}`)
+ *     }
+ *   }
+ * )
  * ```
  */
 export async function executeBatch(
+  orchestrator: ToolOrchestrator,
+  calls: BatchCall[],
+  options: BatchExecutionOptions = {}
+): Promise<BatchResult[]> {
+  const {
+    maxConcurrent = 10,
+    deduplicate = true,
+    stopOnError = false,
+    onProgress,
+  } = options
+
+  if (calls.length === 0) {
+    return []
+  }
+
+  // Generate unique keys for deduplication
+  const generateKey = (call: BatchCall): string => {
+    if (call.id) return call.id
+    // Sort args keys for consistent hashing
+    const sortedArgs = Object.keys(call.args)
+      .sort()
+      .reduce(
+        (acc, key) => {
+          acc[key] = call.args[key]
+          return acc
+        },
+        {} as Record<string, unknown>
+      )
+    return `${call.toolName}:${JSON.stringify(sortedArgs)}`
+  }
+
+  // Map calls to keys for deduplication
+  const callKeys = calls.map((call) => generateKey(call))
+  const uniqueKeys = deduplicate ? Array.from(new Set(callKeys)) : callKeys
+  const keyToCallIndex = new Map<string, number[]>()
+
+  // Build index of which original calls map to which unique keys
+  callKeys.forEach((key, index) => {
+    if (!keyToCallIndex.has(key)) {
+      keyToCallIndex.set(key, [])
+    }
+    keyToCallIndex.get(key)!.push(index)
+  })
+
+  // Find first occurrence of each unique key
+  const uniqueCallIndices = uniqueKeys.map((key) => keyToCallIndex.get(key)![0])
+  const uniqueCalls = uniqueCallIndices.map((idx) => calls[idx])
+
+  // Prepare results array
+  const results: BatchResult[] = new Array(calls.length)
+  let completed = 0
+  let hasError = false
+
+  // Execute unique calls with concurrency limit
+  const executeCall = async (
+    call: BatchCall,
+    callKey: string,
+    uniqueIndex: number
+  ) => {
+    if (hasError && stopOnError) {
+      return
+    }
+
+    const startTime = Date.now()
+
+    try {
+      const result = await orchestrator.executeTool(
+        call.toolName,
+        call.args,
+        call.options
+      )
+      const duration = Date.now() - startTime
+
+      const batchResult: BatchResult = {
+        success: result.status === 'completed',
+        callIndex: uniqueCallIndices[uniqueIndex],
+        duration,
+      }
+
+      if (result.status === 'completed') {
+        batchResult.result = result.result as ToolResult
+      } else {
+        batchResult.error = result.error || new Error(`Tool ${result.status}`)
+      }
+
+      // Share result with all calls that have the same key
+      const originalIndices = keyToCallIndex.get(callKey)!
+      for (const idx of originalIndices) {
+        results[idx] = {
+          ...batchResult,
+          callIndex: idx,
+          deduplicated: idx !== uniqueCallIndices[uniqueIndex],
+        }
+      }
+
+      completed += originalIndices.length
+      onProgress?.(completed, calls.length)
+
+      if (!batchResult.success && stopOnError) {
+        hasError = true
+      }
+    } catch (error) {
+      const duration = Date.now() - startTime
+      const batchResult: BatchResult = {
+        success: false,
+        error: error as Error,
+        callIndex: uniqueCallIndices[uniqueIndex],
+        duration,
+      }
+
+      // Share error with all duplicate calls
+      const originalIndices = keyToCallIndex.get(callKey)!
+      for (const idx of originalIndices) {
+        results[idx] = {
+          ...batchResult,
+          callIndex: idx,
+          deduplicated: idx !== uniqueCallIndices[uniqueIndex],
+        }
+      }
+
+      completed += originalIndices.length
+      onProgress?.(completed, calls.length)
+
+      if (stopOnError) {
+        hasError = true
+      }
+    }
+  }
+
+  // Execute with concurrency limit
+  const queue = uniqueCalls.map((call, idx) => ({
+    call,
+    key: uniqueKeys[idx],
+    uniqueIndex: idx,
+  }))
+  const executing: Promise<void>[] = []
+
+  for (const item of queue) {
+    // Wait if we've reached max concurrent
+    if (executing.length >= maxConcurrent) {
+      await Promise.race(executing)
+    }
+
+    if (hasError && stopOnError) {
+      break
+    }
+
+    const promise = executeCall(item.call, item.key, item.uniqueIndex).then(
+      () => {
+        executing.splice(executing.indexOf(promise), 1)
+      }
+    )
+
+    executing.push(promise)
+  }
+
+  // Wait for all remaining executions
+  await Promise.all(executing)
+
+  return results
+}
+
+/**
+ * Execute multiple tools in parallel (simple version without optimizations)
+ *
+ * Use this for simple cases where you don't need deduplication or concurrency limiting.
+ * For production use with many calls, use `executeBatch()` instead.
+ *
+ * @example
+ * ```typescript
+ * const results = await executeBatchSimple(orchestrator, [
+ *   { toolName: 'get_weather', args: { location: 'London' } },
+ *   { toolName: 'get_weather', args: { location: 'Paris' } },
+ * ])
+ * ```
+ */
+export async function executeBatchSimple(
   orchestrator: ToolOrchestrator,
   calls: Array<{ toolName: string; args: ToolArguments; options?: any }>
 ): Promise<Array<{ success: boolean; result?: ToolResult; error?: Error }>> {

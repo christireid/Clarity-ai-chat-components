@@ -44,6 +44,8 @@ export interface ComponentErrorOptions {
   expected?: string
   /** Code example showing the fix */
   example?: string
+  /** Quick fix suggestion */
+  suggestion?: string
   /** Path to documentation (appended to docs base) */
   docsPath?: string
   /** Original error if this wraps another error */

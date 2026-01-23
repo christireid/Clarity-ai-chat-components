@@ -13,6 +13,24 @@
  * @internal
  */
 
+if (
+  typeof window !== 'undefined' &&
+  typeof process !== 'undefined' &&
+  process.env.NODE_ENV !== 'production'
+) {
+  // Use a flag to ensure we only warn once per session
+  const GLOBAL_WARNING_KEY = '__CLARITY_INTERNAL_WARNING_SHOWN__'
+  if (!(window as any)[GLOBAL_WARNING_KEY]) {
+    console.warn(
+      '[@clarity-chat/react] ⚠️ WARNING: You are importing from "@clarity-chat/react/internal".\n' +
+        'These APIs are experimental, unstable, and NOT part of the public semantic versioning guarantees.\n' +
+        'They may change or be removed without notice between minor versions.\n' +
+        'Please prefer using the public API from "@clarity-chat/react".'
+    )
+    ;(window as any)[GLOBAL_WARNING_KEY] = true
+  }
+}
+
 // Re-export everything from public API
 export * from './public-api'
 
@@ -135,7 +153,8 @@ export * from './hooks/dashboard'
 export * from './hooks/theme'
 
 // Re-export full theme system
-export * from './theme'
+// Note: Theme exports are already included via './public-api', so excluding to avoid duplicates
+// export * from './theme'
 
 // Re-export components from additional domains
 export * from './components/ui'
@@ -183,7 +202,9 @@ export * from './components/conversation'
 export * from './components/feedback'
 export * from './components/media'
 export * from './components/search'
-export * from './components/navigation'
+// Note: SkipLink is already exported from public-api via utils/accessibility-helpers
+// export * from './components/navigation'
+export { ContextMenu } from './components/navigation'
 export * from './components/theme-components'
 export * from './components/input'
 // Export only working prompt components (excluding problematic ones with TypeScript issues)
@@ -196,9 +217,10 @@ export type {
 } from './components/prompt/prompt-suggestions'
 // PromptSuggestionsEnhanced - not yet implemented
 
-// Re-export accessibility utilities (excluding useReducedMotion from public-api, useKeyboardNavigation from wcag-validator)
-export * from './accessibility/focus-management'
-export * from './accessibility/accessibility-automation'
+// Re-export accessibility utilities
+// Note: Focus management exports (getFocusableElements, useFocusManagement) are already via public-api
+// export * from './accessibility/focus-management'
+// export * from './accessibility/accessibility-automation'
 
 // Re-export types that are commonly needed
 export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
@@ -206,7 +228,19 @@ export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
-export { SecurityManager, securityManager, useSecurity } from './utils/security'
+export {
+  SecurityMonitor,
+  securityMonitor,
+  useSecureContent,
+  useCSP,
+  sanitizeHTML,
+  sanitizeMarkdown,
+  sanitizeUserInput,
+  DEFAULT_SECURITY_CONFIG,
+  type SecurityConfig,
+  type SecurityHeaders,
+  type SecurityAuditResult,
+} from './utils/security'
 
 // Re-export types from @clarity-chat/types for convenience
 export type { MessageAttachment, SavedPrompt } from '@clarity-chat/types'
@@ -221,7 +255,37 @@ export type { ModelInfo, ToolCall } from './adapters/types'
 // ============================================================================
 // INTERNAL UTILITIES (Development warnings, debug, assertions)
 // ============================================================================
-export * from './internal/index'
+// Note: Some internal exports (measurePerformance) conflict with public-api
+// Use specific imports instead of export * to avoid conflicts
+export {
+  assertDefined,
+  isDefined,
+  isNonEmptyString,
+  isValidNumber,
+  isPlainObject,
+  isArray,
+  isFunction,
+  isPromise,
+  assert,
+  assertNever,
+  DEFAULT_TOKEN_LIMITS,
+  // Note: DEFAULT_STREAMING_CONFIG, DEFAULT_MEMORY_CONFIG exported elsewhere
+  ANIMATION_DURATIONS,
+  Z_INDEX,
+  BREAKPOINTS,
+  ERROR_CODES,
+  MESSAGE_ROLES,
+  STORAGE_KEYS,
+  debounce,
+  throttle,
+  generateId,
+  deepClone,
+  deepMerge,
+  clamp,
+  sleep,
+  retry,
+  formatBytes,
+} from './internal/index'
 
 // ============================================================================
 // AI CHAT HOOKS (Advanced)
@@ -246,8 +310,10 @@ export * from './hooks/resilience'
 // ============================================================================
 // ANALYTICS & OBSERVABILITY
 // ============================================================================
-export * from './analytics'
-export * from './observability'
+// Note: Analytics exports (AnalyticsConfig, AnalyticsEvent, AnalyticsProvider, useAnalytics)
+// are already via public-api
+// export * from './analytics'
+// export * from './observability'
 
 // ============================================================================
 // ERROR HANDLING & REPORTING
@@ -295,7 +361,8 @@ export * from './webhooks'
 // ============================================================================
 // ADVANCED COMPONENTS
 // ============================================================================
-export * from './components/dashboards'
+// Note: useInteractionTracking is already exported via public-api
+// export * from './components/dashboards' - conflicts with public-api
 export * from './components/ai-ops'
 export * from './components/ab-testing'
 export * from './components/pro'

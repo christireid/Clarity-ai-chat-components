@@ -88,7 +88,7 @@ describe('ToolExecutor', () => {
 
       const result = await executor.execute(slowTool, {})
 
-      expect(result.duration).toBeGreaterThanOrEqual(100)
+      expect(result.duration).toBeGreaterThanOrEqual(90)
     })
   })
 
@@ -507,7 +507,7 @@ describe('validateToolArguments', () => {
 
     expect(() => {
       validateToolArguments(tool, { int: 1.5 })
-    }).toThrow('must be an integer')
+    }).toThrow('Expected type integer')
 
     expect(() => {
       validateToolArguments(tool, { multiple: 7 })

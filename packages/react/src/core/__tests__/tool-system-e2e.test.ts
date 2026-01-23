@@ -25,6 +25,7 @@ function createWeatherTool(): ToolDefinition {
   return {
     name: 'get_weather',
     description: 'Get current weather for a location',
+    cacheable: true,
     parameters: {
       type: 'object',
       properties: {
@@ -40,12 +41,13 @@ function createWeatherTool(): ToolDefinition {
       },
       required: ['location'],
     },
-    handler: async ({ location, units = 'celsius' }) => {
+    execute: async ({ location, units = 'celsius' }) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 10))
 
       const tempCelsius = 22
-      const temp = units === 'fahrenheit' ? (tempCelsius * 9) / 5 + 32 : tempCelsius
+      const temp =
+        units === 'fahrenheit' ? (tempCelsius * 9) / 5 + 32 : tempCelsius
 
       return {
         location,
@@ -77,7 +79,7 @@ function createCalculatorTool(): ToolDefinition {
       },
       required: ['operation', 'a', 'b'],
     },
-    handler: async ({ operation, a, b }) => {
+    execute: async ({ operation, a, b }) => {
       await new Promise((resolve) => setTimeout(resolve, 5))
 
       switch (operation) {
@@ -112,7 +114,7 @@ function createDatabaseTool(): ToolDefinition {
       },
       required: ['query'],
     },
-    handler: async ({ query }) => {
+    execute: async ({ query }) => {
       await new Promise((resolve) => setTimeout(resolve, 15))
       return {
         rows: [
@@ -136,7 +138,7 @@ function createFailingTool(): ToolDefinition {
       type: 'object',
       properties: {},
     },
-    handler: async () => {
+    execute: async () => {
       await new Promise((resolve) => setTimeout(resolve, 5))
       throw new Error('Tool execution failed')
     },
@@ -162,13 +164,16 @@ describe('E2E: Complete Flow - Auto Approve', () => {
     }
 
     // 3. Execute tool through orchestrator
-    const result = await orchestrator.executeTool(toolCall.toolName, toolCall.args)
+    const result = await orchestrator.executeTool(
+      toolCall.toolName,
+      toolCall.args
+    )
 
     // 4. Verify result
     expect(result.status).toBe('completed')
     expect(result.result).toEqual({
       location: 'San Francisco',
-      temperature: 72, // 22°C = 72°F
+      temperature: 71.6, // 22°C = 71.6°F
       condition: 'sunny',
       humidity: 65,
       windSpeed: 10,
@@ -181,7 +186,16 @@ describe('E2E: Complete Flow - Auto Approve', () => {
     expect(lifecycleRecord.duration).toBeGreaterThan(0)
 
     // 6. Verify cache (second call should be faster)
-    const cachedResult = await orchestrator.executeTool(toolCall.toolName, toolCall.args)
+    const cachedResult = await orchestrator.executeTool(
+      toolCall.toolName,
+      toolCall.args
+    )
+
+    if (cachedResult.status !== 'completed') {
+      console.error('Cached result failed:', cachedResult.error)
+    }
+
+    expect(cachedResult.status).toBe('completed')
     expect(cachedResult.cached).toBe(true)
     expect(cachedResult.result).toEqual(result.result)
   })
@@ -233,7 +247,11 @@ describe('E2E: Complete Flow - Auto Approve', () => {
     const [weather1, weather2, calc] = await Promise.all([
       orchestrator.executeTool('get_weather', { location: 'London' }),
       orchestrator.executeTool('get_weather', { location: 'Paris' }),
-      orchestrator.executeTool('calculate', { operation: 'multiply', a: 5, b: 10 }),
+      orchestrator.executeTool('calculate', {
+        operation: 'multiply',
+        a: 5,
+        b: 10,
+      }),
     ])
 
     expect(weather1.status).toBe('completed')
@@ -259,11 +277,11 @@ describe('E2E: Manual Approval Flow', () => {
     })
 
     // Attempt to execute tool without approval
-    const executePromise = orchestrator.executeTool('query_database', {
+    const result = await orchestrator.executeTool('query_database', {
       query: 'SELECT * FROM users',
     })
 
-    await expect(executePromise).rejects.toThrow('Tool requires approval')
+    expect(result.status).toBe('pending_approval')
 
     // Verify call is in pending_approval state
     const pendingCalls = orchestrator.getPendingToolCalls()
@@ -282,16 +300,14 @@ describe('E2E: Manual Approval Flow', () => {
       approvedCalls.push(event.call.id)
     })
 
-    // Start execution (will fail due to approval requirement)
+    // Start execution (will return pending due to approval requirement)
     let callId: string | undefined
-    try {
-      await orchestrator.executeTool('query_database', {
-        query: 'SELECT * FROM users',
-      })
-    } catch (error) {
-      // Expected - capture the call ID from pending calls
-      const pending = orchestrator.getPendingToolCalls()
-      callId = pending[0]?.id
+    const result = await orchestrator.executeTool('query_database', {
+      query: 'SELECT * FROM users',
+    })
+
+    if (result.status === 'pending_approval') {
+      callId = result.callId
     }
 
     expect(callId).toBeDefined()
@@ -301,10 +317,10 @@ describe('E2E: Manual Approval Flow', () => {
     expect(approvedCalls).toContain(callId)
 
     // Execute approved tool
-    const result = await orchestrator.executeApprovedTool(callId!)
+    const approvedResult = await orchestrator.executeApprovedTool(callId!)
 
-    expect(result.status).toBe('completed')
-    expect(result.result).toEqual({
+    expect(approvedResult.status).toBe('completed')
+    expect(approvedResult.result).toEqual({
       rows: [
         { id: 1, name: 'Alice' },
         { id: 2, name: 'Bob' },
@@ -327,13 +343,12 @@ describe('E2E: Manual Approval Flow', () => {
 
     // Start execution
     let callId: string | undefined
-    try {
-      await orchestrator.executeTool('query_database', {
-        query: 'DELETE FROM users',
-      })
-    } catch (error) {
-      const pending = orchestrator.getPendingToolCalls()
-      callId = pending[0]?.id
+    const result = await orchestrator.executeTool('query_database', {
+      query: 'DELETE FROM users',
+    })
+
+    if (result.status === 'pending_approval') {
+      callId = result.callId
     }
 
     expect(callId).toBeDefined()
@@ -345,7 +360,7 @@ describe('E2E: Manual Approval Flow', () => {
     // Verify call is rejected
     const call = orchestrator.getToolCall(callId!)
     expect(call.status).toBe('rejected')
-    expect(call.error?.message).toContain('Dangerous query')
+    expect(call.rejectionReason).toContain('Dangerous query')
   })
 })
 
@@ -392,7 +407,7 @@ describe('E2E: Error Handling', () => {
     )
 
     expect(result.status).toBe('failed')
-    expect(result.error?.message).toContain('Validation failed')
+    expect(result.error?.message).toContain('Parameter validation failed')
   })
 
   it('should handle timeout', async () => {
@@ -400,7 +415,7 @@ describe('E2E: Error Handling', () => {
       name: 'slow_tool',
       description: 'A tool that takes too long',
       parameters: { type: 'object', properties: {} },
-      handler: async () => {
+      execute: async () => {
         await new Promise((resolve) => setTimeout(resolve, 200))
         return { done: true }
       },
@@ -426,7 +441,11 @@ describe('E2E: Error Handling', () => {
 describe('E2E: Tool Discovery', () => {
   it('should list available tools', () => {
     const orchestrator = new ToolOrchestrator({
-      tools: [createWeatherTool(), createCalculatorTool(), createDatabaseTool()],
+      tools: [
+        createWeatherTool(),
+        createCalculatorTool(),
+        createDatabaseTool(),
+      ],
     })
 
     const tools = orchestrator.getAllTools()
@@ -465,7 +484,7 @@ describe('E2E: Lifecycle Events', () => {
 
     const events: string[] = []
 
-    orchestrator.lifecycle.on('tool_call_created', () => events.push('created'))
+    orchestrator.lifecycle.on('tool_requested', () => events.push('created'))
     orchestrator.lifecycle.on('tool_approved', () => events.push('approved'))
     orchestrator.lifecycle.on('tool_executing', () => events.push('executing'))
     orchestrator.lifecycle.on('tool_completed', () => events.push('completed'))
@@ -483,7 +502,7 @@ describe('E2E: Lifecycle Events', () => {
 
     const events: string[] = []
 
-    orchestrator.lifecycle.on('tool_call_created', () => events.push('created'))
+    orchestrator.lifecycle.on('tool_requested', () => events.push('created'))
     orchestrator.lifecycle.on('tool_approved', () => events.push('approved'))
     orchestrator.lifecycle.on('tool_executing', () => events.push('executing'))
     orchestrator.lifecycle.on('tool_failed', () => events.push('failed'))
@@ -507,14 +526,19 @@ describe('E2E: Statistics', () => {
 
     // Execute some tools
     await orchestrator.executeTool('get_weather', { location: 'Berlin' })
-    await orchestrator.executeTool('calculate', { operation: 'add', a: 2, b: 3 })
+    await orchestrator.executeTool('calculate', {
+      operation: 'add',
+      a: 2,
+      b: 3,
+    })
     await orchestrator.executeTool('get_weather', { location: 'Berlin' }) // Cached
 
     const stats = orchestrator.getStats()
 
     expect(stats.registry.totalTools).toBe(2)
     expect(stats.calls.total).toBe(3)
-    expect(stats.calls.byStatus.completed).toBe(3)
+    expect(stats.calls.byStatus.completed).toBe(2)
+    expect(stats.calls.byStatus.cached).toBe(1)
     expect(stats.cache.hits).toBe(1)
   })
 
@@ -593,6 +617,7 @@ describe('E2E: Real-World Scenario', () => {
       location: 'San Francisco',
       units: 'fahrenheit',
     })
+    expect(cachedWeather.status).toBe('completed')
     expect(cachedWeather.cached).toBe(true)
 
     // Verify statistics

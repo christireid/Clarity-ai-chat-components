@@ -222,6 +222,7 @@ export {
 
 export { Avatar } from './components/avatar'
 export type { AvatarProps } from './components/avatar'
+export { AvatarImage, AvatarFallback } from './components/ui/avatar'
 
 export { Badge } from './components/badge'
 export type { BadgeProps } from './components/badge'
@@ -244,7 +245,25 @@ export type { InputProps } from './components/input'
 
 export { Label } from './components/label'
 
+export { Switch } from './components/switch'
+export type { SwitchProps } from './components/switch'
+
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from './components/select'
+
 export { ScrollArea } from './components/scroll-area'
+
+export { Separator } from './components/ui/separator'
 
 export { Textarea } from './components/textarea'
 export type { TextareaProps } from './components/textarea'

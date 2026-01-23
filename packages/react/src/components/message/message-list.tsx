@@ -81,6 +81,8 @@ export interface MessageListProps {
   'aria-label'?: string
   /** ARIA live region behavior */
   'aria-live'?: 'polite' | 'assertive' | 'off'
+  /** Maximum number of messages to render (windowing) to prevent memory issues */
+  maxMessages?: number
 }
 
 /**
@@ -106,6 +108,7 @@ export interface MessageListProps {
  * @param props.onMessageRetry - Callback to retry a message
  * @param props.isLoading - Show loading skeleton (default: false)
  * @param props.emptyState - Custom empty state content
+ * @param props.maxMessages - Maximum messages to render (default: 1000)
  * @returns Message list component
  *
  * @example
@@ -119,7 +122,7 @@ export interface MessageListProps {
  * ```
  */
 export function MessageList({
-  messages,
+  messages: rawMessages,
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
@@ -141,7 +144,14 @@ export function MessageList({
   role = 'log',
   'aria-label': ariaLabel,
   'aria-live': ariaLive = 'polite',
+  maxMessages = 1000,
 }: MessageListProps) {
+  // Apply message windowing for memory safety
+  const messages = React.useMemo(() => {
+    if (!maxMessages || rawMessages.length <= maxMessages) return rawMessages
+    return rawMessages.slice(rawMessages.length - maxMessages)
+  }, [rawMessages, maxMessages])
+
   // Runtime validation with actionable error messages
   if (!Array.isArray(messages)) {
     throw new ClarityError(

@@ -185,9 +185,8 @@ export {
   CodeBlock,
   type CodeBlockProps,
   type CodeFontFamily,
-  InlineCode,
-  type InlineCodeProps,
 } from './components/code/CodeBlock'
+export { InlineCode, type InlineCodeProps } from './components/code/InlineCode'
 
 export { StreamingCodeBlock } from './components/code/StreamingCodeBlock'
 export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
@@ -461,7 +460,7 @@ export {
   streamingChat,
   ChatBuilder,
   ChatPresets,
-} from './utils/quick-start.tsx'
+} from './utils/quick-start'
 
 // Development Helpers - DX utilities
 export {
@@ -475,11 +474,7 @@ export {
 } from './utils/dev-helpers'
 
 // Setup Wizard - Interactive configuration
-export {
-  SetupWizard,
-  QuickSetup,
-  interactiveSetup,
-} from './utils/setup-wizard.tsx'
+export { SetupWizard, QuickSetup, interactiveSetup } from './utils/setup-wizard'
 
 // Lazy Loading - Performance optimizations
 export {
@@ -491,17 +486,11 @@ export {
   loadFeature,
   LazyComponents,
   LazyLoadPerformanceMonitor,
-} from './utils/lazy-loading.tsx'
+} from './utils/lazy-loading'
 
 // Migration Helpers - Smooth API transitions
-export {
-  // migrateToV1,
-  // createMigrationWrapper,
-  MigrationPresets,
-  // applyMigration,
-  // validateMigration,
-  // MigrationUtils,
-} from './utils/migration-helpers.tsx'
+// Note: Some migration helpers were planned but not implemented
+// MigrationPresets is available from './utils/migration-helpers'
 
 // IntelliSense Helpers - Enhanced TypeScript DX
 export type {
@@ -533,22 +522,8 @@ export {
   createContextProvider,
 } from './utils/component-composition'
 
-// Theme Helpers - Easy theming and customization
-export {
-  ThemePresets,
-  createThemeFromPalette,
-  createThemeFromCSSVariables,
-  mergeThemes,
-  createThemeVariant,
-  createThemeClasses,
-  applyThemeToCSS,
-  // useTheme, // Exported from ./theme
-  // useResponsiveTheme, // Exported from ./theme
-  // usePersistentTheme, // Exported from ./theme
-  // ThemeProvider, // Exported from ./theme
-  // ThemeToggle, // Exported from ./theme
-  // ThemeSelector, // Exported from ./theme
-} from './utils/theme-helpers'
+// Theme Helpers - Re-exported from './theme' (see line 308)
+// Note: Additional theme utilities can be added via './utils/theme-helpers' if implemented
 
 // Accessibility Helpers - Enhanced A11y support
 export {
@@ -593,8 +568,8 @@ export {
   testDataFactories,
   chatAssertions,
   vi,
-  Mock,
 } from './utils/testing-helpers'
+export type { Mock } from './utils/testing-helpers'
 
 // Migration Helpers - Easy migration from other libraries
 export {
@@ -911,8 +886,7 @@ export { useContextMonitor } from './hooks/context/use-context-monitor'
 // Keyboard navigation
 export { useKeyboardNavigation } from './hooks/keyboard/use-keyboard-navigation'
 
-// Security
-// export { SecurityManager, securityManager, useSecurity } from './utils/security'
+// Security - see comprehensive exports below (around line 1038)
 
 // Memory & Storage utilities
 export { createMemoryStore } from './memory/create-memory-store'
@@ -987,11 +961,13 @@ export { AuthTenantDashboard } from './components/enterprise/AuthTenantDashboard
 // Performance monitoring
 export {
   usePerformanceTracking,
-  logPerformanceMetrics,
   getPerformanceSummary,
+  measureExecutionTime,
+  withPerformanceTracking,
+  getMemoryUsage,
   type UsePerformanceTrackingOptions,
   type PerformanceMetrics,
-} from './utils/performance-monitoring.tsx'
+} from './utils/performance-monitoring'
 
 // Accessibility testing
 export {
@@ -1006,7 +982,7 @@ export {
   type AccessibilityViolation,
   type AccessibilityReport,
   type AccessibilityTestOptions,
-} from './utils/accessibility-testing.tsx'
+} from './utils/accessibility-testing'
 
 // Visual regression testing
 export {
@@ -1026,6 +1002,7 @@ export {
 
 // Security utilities
 export {
+  SecurityMonitor,
   sanitizeHTML,
   sanitizeMarkdown,
   sanitizeUserInput,
@@ -1085,4 +1062,4 @@ export {
   type UserJourneyEvent,
   type AnalyticsConfig,
   type AnalyticsProviderProps,
-} from './utils/analytics.tsx'
+} from './utils/analytics'
