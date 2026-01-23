@@ -635,7 +635,8 @@ export type {
 } from './types/clarity-chat-types'
 
 // Security utilities
-export { SecurityMonitor, securityMonitor } from './utils/security'
+// NOTE: SecurityMonitor and securityMonitor don't exist in utils/security
+// export { SecurityMonitor, securityMonitor } from './utils/security'
 
 // Testing utilities (for test files only)
 export {

@@ -9,7 +9,9 @@ import {
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
-import { useRenderPerformance, useMemoryUsage } from '../../utils/analytics'
+import { useRenderPerformance } from '../../utils/analytics'
+// NOTE: useMemoryUsage doesn't exist in analytics
+// import { useMemoryUsage } from '../../utils/analytics'
 
 interface PerformanceDashboardProps {
   className?: string
@@ -292,7 +294,8 @@ PerformanceDashboard.displayName = 'PerformanceDashboard'
 
 export function PerformanceBadge({ className }: { className?: string }) {
   const performanceMetrics = useRenderPerformance('PerformanceBadge')
-  const memoryInfo = useMemoryUsage()
+  // const memoryInfo = useMemoryUsage() // NOTE: useMemoryUsage doesn't exist
+  const memoryInfo = { usedJSHeapSize: 0, totalJSHeapSize: 0 } as any // Fallback
 
   const status = React.useMemo(() => {
     if (performanceMetrics.lastRenderTime > 50) return 'poor'

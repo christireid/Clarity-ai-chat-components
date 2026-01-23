@@ -53,11 +53,11 @@ export type {
   ExecutionResult,
   ExecutorConfig,
   ToolResultCacheConfig,
-  CacheStats,
-  RateLimitConfig,
-  RateLimitStats,
-  ConcurrencyConfig,
-  ConcurrencyStats,
+  // CacheStats, // NOTE: Type doesn't exist in tool-executor
+  // RateLimitConfig, // NOTE: Type doesn't exist in tool-executor
+  // RateLimitStats, // NOTE: Type doesn't exist in tool-executor
+  // ConcurrencyConfig, // NOTE: Type doesn't exist in tool-executor
+  // ConcurrencyStats, // NOTE: Type doesn't exist in tool-executor
 } from './tool-executor'
 
 export {
