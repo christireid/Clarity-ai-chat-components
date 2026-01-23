@@ -9,7 +9,7 @@
  * - Historical optimization data
  */
 
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 // Model families with different token efficiency characteristics
 export type ModelFamily =
@@ -273,8 +273,8 @@ export class DynamicOptimizer {
     )
 
     // Calculate results
-    const originalTokens = await TokenCounter.count(text)
-    const optimizedTokens = await TokenCounter.count(optimizedText)
+    const originalTokens = await AccurateTokenCounter.count(text)
+    const optimizedTokens = await AccurateTokenCounter.count(optimizedText)
     const compressionRatio = optimizedTokens / originalTokens
     const costSavings = this.calculateCostSavings(
       originalTokens,
@@ -335,7 +335,7 @@ export class DynamicOptimizer {
     modelContext: ModelContext,
     contentContext: ContentContext
   ): Promise<any> {
-    const tokens = await TokenCounter.count(text)
+    const tokens = await AccurateTokenCounter.count(text)
     const words = text.split(/\s+/).length
     const sentences = text.split(/[.!?]+/).length
 
@@ -431,7 +431,9 @@ export class DynamicOptimizer {
 
     // Smart truncation
     const targetRatio = config.targetReduction || 0.2 // 80% reduction
-    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
+    const maxTokens = Math.floor(
+      (await AccurateTokenCounter.count(text)) * targetRatio
+    )
 
     // Use extractive summarization for aggressive reduction
     const { truncateText } = await import('./smart-truncation')
@@ -449,7 +451,9 @@ export class DynamicOptimizer {
     contentContext: ContentContext
   ): Promise<string> {
     const targetRatio = config.targetReduction || 0.5 // 50% reduction
-    const maxTokens = Math.floor((await TokenCounter.count(text)) * targetRatio)
+    const maxTokens = Math.floor(
+      (await AccurateTokenCounter.count(text)) * targetRatio
+    )
 
     // Use semantic compression for moderate reduction
     const { compressText } = await import('./text-compression')
@@ -537,9 +541,10 @@ export class DynamicOptimizer {
     )
 
     // If still over budget, apply gentle semantic compression
-    const currentTokens = await TokenCounter.count(optimized)
+    const currentTokens = await AccurateTokenCounter.count(optimized)
     const targetTokens =
-      config.budgetTokens || Math.floor((await TokenCounter.count(text)) * 0.8)
+      config.budgetTokens ||
+      Math.floor((await AccurateTokenCounter.count(text)) * 0.8)
 
     if (currentTokens > targetTokens) {
       const { compressText } = await import('./text-compression')
@@ -906,7 +911,7 @@ export async function optimizeForCost(
     throw new Error(`Unknown model: ${modelName}`)
   }
 
-  const tokens = await TokenCounter.count(text)
+  const tokens = await AccurateTokenCounter.count(text)
   const currentCost = (tokens / 1000) * modelContext.inputTokenCost
   const targetRatio = targetCost / currentCost
 

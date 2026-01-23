@@ -1,4 +1,4 @@
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 
 export interface MigrationRule {
   from: string
@@ -58,27 +58,28 @@ export class TokenMigrationAssistant {
     {
       name: 'estimateTokens',
       pattern: /estimateTokens\s*\(\s*([^)]+)\s*\)/g,
-      replacement: 'TokenCounter.count($1)',
-      description: 'Replace estimateTokens with TokenCounter.count',
+      replacement: 'AccurateTokenCounter.count($1)',
+      description: 'Replace estimateTokens with AccurateTokenCounter.count',
     },
     {
       name: 'estimateTokensByProvider',
       pattern: /estimateTokensByProvider\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)/g,
-      replacement: 'TokenCounter.count($2)',
+      replacement: 'AccurateTokenCounter.count($2)',
       description:
-        'Replace estimateTokensByProvider with TokenCounter.count (model parameter removed)',
+        'Replace estimateTokensByProvider with AccurateTokenCounter.count (model parameter removed)',
     },
     {
       name: 'countTokens',
       pattern: /countTokens\s*\(\s*([^)]+)\s*\)/g,
-      replacement: 'TokenCounter.count($1)',
-      description: 'Replace countTokens with TokenCounter.count',
+      replacement: 'AccurateTokenCounter.count($1)',
+      description: 'Replace countTokens with AccurateTokenCounter.count',
     },
     {
       name: 'countConversationTokens',
       pattern: /countConversationTokens\s*\(\s*([^)]+)\s*\)/g,
-      replacement: 'TokenCounter.count($1)',
-      description: 'Replace countConversationTokens with TokenCounter.count',
+      replacement: 'AccurateTokenCounter.count($1)',
+      description:
+        'Replace countConversationTokens with AccurateTokenCounter.count',
     },
     {
       name: 'legacyTokenCounter',
@@ -89,61 +90,61 @@ export class TokenMigrationAssistant {
     {
       name: 'tiktoken',
       pattern: /tiktoken\.encode\s*\(\s*([^)]+)\s*\)\.length/g,
-      replacement: 'TokenCounter.count($1)',
-      description: 'Replace tiktoken encoding with TokenCounter.count',
+      replacement: 'AccurateTokenCounter.count($1)',
+      description: 'Replace tiktoken encoding with AccurateTokenCounter.count',
     },
   ]
 
   private migrationRules: MigrationRule[] = [
     {
       from: 'estimateTokens(text)',
-      to: 'TokenCounter.count(text)',
+      to: 'AccurateTokenCounter.count(text)',
       description: 'Simple token estimation function',
       severity: 'low',
       autoFixable: true,
       examples: [
         {
           before: 'const tokens = estimateTokens(userInput);',
-          after: 'const tokens = TokenCounter.count(userInput);',
+          after: 'const tokens = AccurateTokenCounter.count(userInput);',
         },
       ],
     },
     {
       from: 'estimateTokensByProvider(model, text)',
-      to: 'TokenCounter.count(text)',
+      to: 'AccurateTokenCounter.count(text)',
       description: 'Model-specific token estimation',
       severity: 'medium',
       autoFixable: true,
       examples: [
         {
           before: 'const tokens = estimateTokensByProvider("gpt-4", text);',
-          after: 'const tokens = TokenCounter.count(text);',
+          after: 'const tokens = AccurateTokenCounter.count(text);',
         },
       ],
     },
     {
       from: 'countTokens(text)',
-      to: 'TokenCounter.count(text)',
+      to: 'AccurateTokenCounter.count(text)',
       description: 'Accurate token counting function',
       severity: 'low',
       autoFixable: true,
       examples: [
         {
           before: 'const tokens = countTokens(conversationText);',
-          after: 'const tokens = TokenCounter.count(conversationText);',
+          after: 'const tokens = AccurateTokenCounter.count(conversationText);',
         },
       ],
     },
     {
       from: 'countConversationTokens(messages)',
-      to: 'TokenCounter.count(messages)',
+      to: 'AccurateTokenCounter.count(messages)',
       description: 'Conversation token counting',
       severity: 'medium',
       autoFixable: true,
       examples: [
         {
           before: 'const tokens = countConversationTokens(messageHistory);',
-          after: 'const tokens = TokenCounter.count(messageHistory);',
+          after: 'const tokens = AccurateTokenCounter.count(messageHistory);',
         },
       ],
     },
@@ -454,27 +455,36 @@ ${analysis.recommendations.map((rec) => `- ${rec}`).join('\n')}
     if (rule.from.includes('estimateTokens')) {
       return line.replace(
         /estimateTokens\s*\([^)]+\)/g,
-        rule.to.replace('TokenCounter.count(text)', 'TokenCounter.count($1)')
+        rule.to.replace(
+          'AccurateTokenCounter.count(text)',
+          'AccurateTokenCounter.count($1)'
+        )
       )
     }
     if (rule.from.includes('estimateTokensByProvider')) {
       return line.replace(
         /estimateTokensByProvider\s*\([^,]+,\s*[^)]+\)/g,
-        rule.to.replace('TokenCounter.count(text)', 'TokenCounter.count($2)')
+        rule.to.replace(
+          'AccurateTokenCounter.count(text)',
+          'AccurateTokenCounter.count($2)'
+        )
       )
     }
     if (rule.from.includes('countTokens')) {
       return line.replace(
         /countTokens\s*\([^)]+\)/g,
-        rule.to.replace('TokenCounter.count(text)', 'TokenCounter.count($1)')
+        rule.to.replace(
+          'AccurateTokenCounter.count(text)',
+          'AccurateTokenCounter.count($1)'
+        )
       )
     }
     if (rule.from.includes('countConversationTokens')) {
       return line.replace(
         /countConversationTokens\s*\([^)]+\)/g,
         rule.to.replace(
-          'TokenCounter.count(messages)',
-          'TokenCounter.count($1)'
+          'AccurateTokenCounter.count(messages)',
+          'AccurateTokenCounter.count($1)'
         )
       )
     }

@@ -12,7 +12,7 @@
  * @module
  */
 
-import { AccurateTokenCounter as TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
 import {
   AdvancedCompressionOrchestrator,
   compressWithAdvanced,
@@ -205,7 +205,7 @@ const MODEL_EFFICIENCY_PROFILES: Record<string, ModelEfficiencyProfile> = {
  * Adaptive Token Optimizer that learns from context and performance
  */
 export class AdaptiveTokenOptimizer {
-  private tokenCounter: TokenCounter
+  private tokenCounter: AccurateTokenCounter
   private compressionOrchestrator: AdvancedCompressionOrchestrator
   private performanceHistory: Map<string, PerformanceHistoryEntry[]>
   private contextProfiles: Map<string, ContextProfile>
@@ -213,7 +213,7 @@ export class AdaptiveTokenOptimizer {
   private learningRate: number
 
   constructor(learningRate = 0.01) {
-    this.tokenCounter = new TokenCounter()
+    this.tokenCounter = new AccurateTokenCounter()
     this.compressionOrchestrator = new AdvancedCompressionOrchestrator()
     this.performanceHistory = new Map()
     this.contextProfiles = new Map()
@@ -281,7 +281,7 @@ export class AdaptiveTokenOptimizer {
 
     return {
       optimizedText: optimizedResult.compressedText,
-      originalTokens: await TokenCounter.count(text),
+      originalTokens: await AccurateTokenCounter.count(text),
       optimizedTokens: optimizedResult.compressedTokens,
       reductionRatio: optimizedResult.compressionRatio,
       estimatedQuality: optimizedResult.estimatedQuality,
@@ -306,7 +306,7 @@ export class AdaptiveTokenOptimizer {
     const words = text.split(/\s+/).length
     const characters = text.length
     const tokenDensity =
-      (await TokenCounter.count(text)) / Math.max(characters, 1)
+      (await AccurateTokenCounter.count(text)) / Math.max(characters, 1)
 
     const domain = this.detectDomain(text)
     const complexity = this.assessComplexity(text)
@@ -482,8 +482,8 @@ export class AdaptiveTokenOptimizer {
     costSavings: number
     performanceScore: number
   }> {
-    const originalTokens = await TokenCounter.count(originalText)
-    const optimizedTokens = await TokenCounter.count(optimizedText)
+    const originalTokens = await AccurateTokenCounter.count(originalText)
+    const optimizedTokens = await AccurateTokenCounter.count(optimizedText)
 
     const inputCost = (originalTokens / 1000) * modelProfile.costPerInputToken
     const optimizedInputCost =
@@ -612,7 +612,7 @@ export class AdaptiveTokenOptimizer {
           strategy.qualityThreshold
         )
 
-        const tokens = await TokenCounter.count(compressedText)
+        const tokens = await AccurateTokenCounter.count(compressedText)
         const cost = (tokens / 1000) * modelProfile.costPerInputToken
 
         return {
