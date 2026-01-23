@@ -24,10 +24,10 @@ import {
 
 import { useOptimalAnimation, useResponsiveSize } from '../skeleton-advanced'
 
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   prefersReducedMotion,
   getAccessibleAnimation,
-  useReducedMotion,
 } from '../../../animations/zero-dependency'
 
 // Mock matchMedia for accessibility testing

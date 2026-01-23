@@ -27,7 +27,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { usePromptArchitect } from './hooks/usePromptArchitect'
 import { PromptEditor } from './components/PromptEditor'
 import { VariableForm } from './components/VariableForm'

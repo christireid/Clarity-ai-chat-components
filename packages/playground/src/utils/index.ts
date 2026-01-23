@@ -26,4 +26,5 @@ export {
   copyToClipboard,
 } from './export'
 
-export { cn } from './cn'
+// Re-export cn from primitives for backward compatibility
+export { cn } from '@clarity-chat/primitives'

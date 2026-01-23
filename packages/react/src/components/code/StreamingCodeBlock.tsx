@@ -3,7 +3,7 @@
 import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { normalizeLanguage, escapeHtml } from './utils'
 import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'

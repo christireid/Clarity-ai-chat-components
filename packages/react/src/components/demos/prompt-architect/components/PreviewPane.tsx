@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import type {
   PreviewMessage as PreviewMessageType,
   DebugViewMode,

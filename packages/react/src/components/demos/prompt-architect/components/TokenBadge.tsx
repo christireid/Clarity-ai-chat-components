@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import type { TokenStats } from '../types'
 import { formatCost } from '../types'
 

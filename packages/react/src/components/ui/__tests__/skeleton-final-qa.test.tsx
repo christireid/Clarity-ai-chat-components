@@ -1,6 +1,6 @@
 /**
  * Final Integration Test - Comprehensive QA Testing
- * 
+ *
  * Tests the complete integration of all skeleton enhancements
  * including all 10 enhancement options, performance monitoring,
  * accessibility features, and smart loading predictions.
@@ -32,6 +32,7 @@ import {
   useResponsiveSize,
 } from '../skeleton-advanced'
 
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   cssKeyframes,
   easings,
@@ -42,7 +43,6 @@ import {
   createAnimation,
   createTransition,
   injectKeyframes,
-  useReducedMotion,
   useAnimations,
 } from '../../../animations/zero-dependency'
 
@@ -61,7 +61,7 @@ Object.defineProperty(window, 'performance', {
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: query === '(prefers-reduced-motion: reduce)' ? false : true,
     media: query,
     onchange: null,
@@ -108,7 +108,10 @@ class MockAudioContext {
   createGain() {
     return {
       connect: jest.fn(),
-      gain: { setValueAtTime: jest.fn(), exponentialRampToValueAtTime: jest.fn() },
+      gain: {
+        setValueAtTime: jest.fn(),
+        exponentialRampToValueAtTime: jest.fn(),
+      },
     }
   }
   get currentTime() {
@@ -143,7 +146,8 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
         const [isLoading, setIsLoading] = React.useState(true)
         const [currentStep, setCurrentStep] = React.useState(0)
         const [predictedTime, setPredictedTime] = React.useState(0)
-        const [performanceMetrics, setPerformanceMetrics] = React.useState<any>(null)
+        const [performanceMetrics, setPerformanceMetrics] =
+          React.useState<any>(null)
 
         // Simulate realistic multi-step loading process
         React.useEffect(() => {
@@ -151,28 +155,30 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
             { duration: 800, type: 'user-data' },
             { duration: 1200, type: 'content' },
             { duration: 600, type: 'images' },
-            { duration: 400, type: 'finalization' }
+            { duration: 400, type: 'finalization' },
           ]
 
           const loadStep = async () => {
             if (currentStep < steps.length) {
               const step = steps[currentStep]
-              
+
               // Record loading time for prediction learning
               const startTime = Date.now()
-              
+
               setTimeout(() => {
                 const actualDuration = Date.now() - startTime
-                
+
                 // Simulate step completion
-                setCurrentStep(prev => prev + 1)
-                
+                setCurrentStep((prev) => prev + 1)
+
                 // Record for prediction learning
                 if (actualDuration > 0) {
                   // This would normally update the predictor
-                  console.log(`Step ${currentStep + 1} completed in ${actualDuration}ms`)
+                  console.log(
+                    `Step ${currentStep + 1} completed in ${actualDuration}ms`
+                  )
                 }
-                
+
                 // Check if all steps are complete
                 if (currentStep + 1 >= steps.length) {
                   setIsLoading(false)
@@ -247,10 +253,22 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
                           composition={{
                             layout: 'card',
                             components: [
-                              { type: 'skeleton', props: { height: 200, variant: 'shimmer' } },
-                              { type: 'text', props: { lines: 3, variant: 'pulse' } },
-                              { type: 'text', props: { lines: 2, variant: 'wave' } },
-                              { type: 'button', props: { width: 120, height: 40 } },
+                              {
+                                type: 'skeleton',
+                                props: { height: 200, variant: 'shimmer' },
+                              },
+                              {
+                                type: 'text',
+                                props: { lines: 3, variant: 'pulse' },
+                              },
+                              {
+                                type: 'text',
+                                props: { lines: 2, variant: 'wave' },
+                              },
+                              {
+                                type: 'button',
+                                props: { width: 120, height: 40 },
+                              },
                             ],
                           }}
                           variant="gradient"
@@ -259,18 +277,22 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
                         {/* Advanced animations showcase */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {Object.keys(advancedVariants).slice(0, 8).map((variant) => (
-                            <div key={variant} className="text-center">
-                              <AdvancedSkeleton
-                                variant={variant as any}
-                                size={60}
-                                enablePerformanceMonitoring={true}
-                                enableMicroInteractions={true}
-                                className="mb-2"
-                              />
-                              <span className="text-xs text-gray-500">{variant}</span>
-                            </div>
-                          ))}
+                          {Object.keys(advancedVariants)
+                            .slice(0, 8)
+                            .map((variant) => (
+                              <div key={variant} className="text-center">
+                                <AdvancedSkeleton
+                                  variant={variant as any}
+                                  size={60}
+                                  enablePerformanceMonitoring={true}
+                                  enableMicroInteractions={true}
+                                  className="mb-2"
+                                />
+                                <span className="text-xs text-gray-500">
+                                  {variant}
+                                </span>
+                              </div>
+                            ))}
                         </div>
 
                         {/* Micro-interactions demo */}
@@ -284,8 +306,13 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
                           enableHaptics={true}
                         >
                           <div className="p-4 bg-gray-100 rounded-lg text-center cursor-pointer hover:bg-gray-200 transition-colors">
-                            <h3 className="font-semibold mb-2">Interactive Demo</h3>
-                            <p className="text-sm text-gray-600">Hover, focus, or click to experience micro-interactions</p>
+                            <h3 className="font-semibold mb-2">
+                              Interactive Demo
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              Hover, focus, or click to experience
+                              micro-interactions
+                            </p>
                           </div>
                         </MicroInteractionSkeleton>
                       </div>
@@ -299,14 +326,24 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
                     staggerDelay={100}
                   >
                     {/* Final loaded content */}
-                    <div className="space-y-6 p-6 max-w-4xl mx-auto" data-testid="final-content">
+                    <div
+                      className="space-y-6 p-6 max-w-4xl mx-auto"
+                      data-testid="final-content"
+                    >
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <h2 className="text-green-800 font-semibold mb-2">✅ All Systems Integrated Successfully!</h2>
-                        <p className="text-green-700">This comprehensive test demonstrates all 10 enhancement options working together.</p>
+                        <h2 className="text-green-800 font-semibold mb-2">
+                          ✅ All Systems Integrated Successfully!
+                        </h2>
+                        <p className="text-green-700">
+                          This comprehensive test demonstrates all 10
+                          enhancement options working together.
+                        </p>
                       </div>
 
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <h3 className="text-blue-800 font-semibold mb-2">📊 Performance Metrics</h3>
+                        <h3 className="text-blue-800 font-semibold mb-2">
+                          📊 Performance Metrics
+                        </h3>
                         <div className="text-blue-700 text-sm space-y-1">
                           <div>Predicted Duration: {predictedTime}ms</div>
                           <div>Actual Steps: {currentStep}/4</div>
@@ -315,10 +352,14 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
                       </div>
 
                       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <h3 className="text-purple-800 font-semibold mb-2">🎯 Features Demonstrated</h3>
+                        <h3 className="text-purple-800 font-semibold mb-2">
+                          🎯 Features Demonstrated
+                        </h3>
                         <ul className="text-purple-700 text-sm space-y-1">
                           <li>✅ Skeleton-to-Content Transition System</li>
-                          <li>✅ Advanced Animation Variants (25+ animations)</li>
+                          <li>
+                            ✅ Advanced Animation Variants (25+ animations)
+                          </li>
                           <li>✅ Responsive Skeleton Sizing System</li>
                           <li>✅ Skeleton Composition System</li>
                           <li>✅ Performance Monitoring Integration</li>
@@ -346,7 +387,9 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
       expect(screen.getAllByLabelText('Loading...').length).toBeGreaterThan(5)
 
       // Verify performance monitoring is active
-      expect(mockPerformance.mark).toHaveBeenCalledWith('complete-integration-test-start')
+      expect(mockPerformance.mark).toHaveBeenCalledWith(
+        'complete-integration-test-start'
+      )
 
       // Simulate loading completion
       act(() => {
@@ -355,11 +398,15 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('final-content')).toBeInTheDocument()
-        expect(screen.getByText('✅ All Systems Integrated Successfully!')).toBeInTheDocument()
+        expect(
+          screen.getByText('✅ All Systems Integrated Successfully!')
+        ).toBeInTheDocument()
       })
 
       // Verify performance reporting
-      expect(mockPerformance.mark).toHaveBeenCalledWith('complete-integration-test-end')
+      expect(mockPerformance.mark).toHaveBeenCalledWith(
+        'complete-integration-test-end'
+      )
       expect(mockPerformance.measure).toHaveBeenCalled()
     })
 
@@ -368,13 +415,15 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
         return (
           <div className="space-y-4 p-4">
             <h2 className="text-xl font-bold mb-4">Animation Variants Test</h2>
-            
+
             {/* Test all advanced variants */}
             {Object.entries(advancedVariants).map(([key, variant]) => (
               <div key={key} className="flex items-center gap-4">
                 <AdvancedSkeleton variant={key as any} size={40} />
                 <span className="text-sm font-medium">{variant.name}</span>
-                <span className="text-xs text-gray-500">{variant.duration} {variant.easing}</span>
+                <span className="text-xs text-gray-500">
+                  {variant.duration} {variant.easing}
+                </span>
               </div>
             ))}
           </div>
@@ -402,7 +451,7 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
         return (
           <div className="space-y-4 p-4">
-            <button 
+            <button
               onClick={() => setReducedMotion(!reducedMotion)}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
@@ -442,7 +491,9 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
       expect(screen.getByRole('progressbar')).toBeInTheDocument()
 
       // Verify ARIA attributes
-      const skeleton = screen.getByLabelText('Loading content with shimmer animation')
+      const skeleton = screen.getByLabelText(
+        'Loading content with shimmer animation'
+      )
       expect(skeleton).toHaveAttribute('aria-busy', 'true')
     })
 
@@ -460,9 +511,18 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
           >
             <div className="space-y-4 p-4">
               <h3>Performance Testing</h3>
-              <EnhancedSkeleton performanceId="perf-skeleton-1" variant="pulse" />
-              <EnhancedSkeleton performanceId="perf-skeleton-2" variant="shimmer" />
-              <AdvancedSkeleton variant="shimmerRainbow" enablePerformanceMonitoring={true} />
+              <EnhancedSkeleton
+                performanceId="perf-skeleton-1"
+                variant="pulse"
+              />
+              <EnhancedSkeleton
+                performanceId="perf-skeleton-2"
+                variant="shimmer"
+              />
+              <AdvancedSkeleton
+                variant="shimmerRainbow"
+                enablePerformanceMonitoring={true}
+              />
             </div>
           </PerformanceSkeleton>
         )
@@ -471,7 +531,9 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
       render(<TestPerformance />)
 
       // Verify performance monitoring is active
-      expect(mockPerformance.mark).toHaveBeenCalledWith('detailed-performance-test-start')
+      expect(mockPerformance.mark).toHaveBeenCalledWith(
+        'detailed-performance-test-start'
+      )
 
       // Verify detailed metrics will be reported
       expect(onReport).not.toHaveBeenCalled() // Not yet unmounted
@@ -483,7 +545,9 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
       const TestPredictions = () => {
         const [isLoading, setIsLoading] = React.useState(true)
-        const [predictionAccuracy, setPredictionAccuracy] = React.useState<number | null>(null)
+        const [predictionAccuracy, setPredictionAccuracy] = React.useState<
+          number | null
+        >(null)
 
         React.useEffect(() => {
           // Simulate realistic loading with prediction
@@ -492,7 +556,13 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
           setTimeout(() => {
             const actualDuration = Date.now() - startTime
-            const accuracy = Math.max(0, 100 - Math.abs(actualDuration - predictedDuration) / predictedDuration * 100)
+            const accuracy = Math.max(
+              0,
+              100 -
+                (Math.abs(actualDuration - predictedDuration) /
+                  predictedDuration) *
+                  100
+            )
             setPredictionAccuracy(Math.round(accuracy))
             setIsLoading(false)
           }, predictedDuration)
@@ -511,9 +581,13 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
           >
             <div className="p-4 space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-blue-800 font-semibold">Smart Prediction Test</h4>
+                <h4 className="text-blue-800 font-semibold">
+                  Smart Prediction Test
+                </h4>
                 {predictionAccuracy && (
-                  <p className="text-blue-700 text-sm">Prediction Accuracy: {predictionAccuracy}%</p>
+                  <p className="text-blue-700 text-sm">
+                    Prediction Accuracy: {predictionAccuracy}%
+                  </p>
                 )}
               </div>
               <div>Content loaded with intelligent predictions!</div>
@@ -538,7 +612,9 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
       })
 
       waitFor(() => {
-        expect(screen.getByText('Content loaded with intelligent predictions!')).toBeInTheDocument()
+        expect(
+          screen.getByText('Content loaded with intelligent predictions!')
+        ).toBeInTheDocument()
       })
     })
 
@@ -555,7 +631,7 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
               enableSound={true}
               enableHaptics={true}
             >
-              <button 
+              <button
                 className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 transition-all"
                 data-testid="interactive-button"
               >
@@ -622,30 +698,28 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
           <div className="space-y-4 p-4">
             {/* Test negative values */}
             <EnhancedSkeleton width={-100} height={-50} />
-            
+
             {/* Test zero values */}
             <EnhancedSkeleton width={0} height={0} />
-            
+
             {/* Test very large values */}
             <EnhancedSkeleton width={99999} height={99999} />
-            
+
             {/* Test null/undefined props */}
             <EnhancedSkeleton
               variant={null as any}
               width={null as any}
               height={undefined as any}
             />
-            
+
             {/* Test invalid composition */}
             <SkeletonComposer
               composition={{
                 layout: 'invalid-layout' as any,
-                components: [
-                  { type: 'invalid-type' as any },
-                ],
+                components: [{ type: 'invalid-type' as any }],
               }}
             />
-            
+
             {/* Test missing dependencies */}
             <AccessibleSkeleton
               isLoading={true}
@@ -717,7 +791,11 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
             {Array.from({ length: 100 }, (_, i) => (
               <AdvancedSkeleton
                 key={i}
-                variant={Object.keys(advancedVariants)[i % Object.keys(advancedVariants).length] as any}
+                variant={
+                  Object.keys(advancedVariants)[
+                    i % Object.keys(advancedVariants).length
+                  ] as any
+                }
                 size={20}
                 enablePerformanceMonitoring={true}
               />
@@ -744,8 +822,8 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
 
         React.useEffect(() => {
           const interval = setInterval(() => {
-            setIsLoading(prev => !prev)
-            setCounter(prev => prev + 1)
+            setIsLoading((prev) => !prev)
+            setCounter((prev) => prev + 1)
           }, 50)
 
           return () => clearInterval(interval)
@@ -886,7 +964,7 @@ describe('🎯 Final Integration Test - Complete QA Suite', () => {
         return (
           <div className="space-y-4 p-4">
             <h2>📚 Complete Documentation</h2>
-            
+
             {/* Example usage for each component */}
             <div className="bg-gray-50 p-4 rounded">
               <h3>EnhancedSkeleton</h3>
@@ -938,7 +1016,7 @@ describe('🎉 Final Summary', () => {
     ]
 
     // All enhancements are confirmed to be working through the comprehensive tests above
-    enhancements.forEach(enhancement => {
+    enhancements.forEach((enhancement) => {
       expect(enhancement).toBeTruthy()
     })
 

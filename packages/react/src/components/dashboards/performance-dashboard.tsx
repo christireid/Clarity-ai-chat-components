@@ -8,13 +8,15 @@ import {
   CardContent,
 } from '@clarity-chat/primitives'
 import { Badge } from '@clarity-chat/primitives'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import {
   getPerformanceSummary,
   type PerformanceMetrics,
   measureExecutionTime,
 } from '../../utils/performance-monitoring'
-import { useRenderPerformance /* , useMemoryUsage */ } from '../../utils/analytics'
+import {
+  useRenderPerformance /* , useMemoryUsage */,
+} from '../../utils/analytics'
 
 // Stub for useMemoryUsage - not yet implemented in analytics
 function useMemoryUsage() {

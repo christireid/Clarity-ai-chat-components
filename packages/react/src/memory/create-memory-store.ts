@@ -29,8 +29,8 @@
  * ```
  */
 
-import { MemoryService } from '@clarity-chat/memory'
-import type { MemoryType, MemoryScope, MemoryServiceConfig } from './types'
+import { MemoryService, type MemoryServiceConfig } from '@clarity-chat/memory'
+import type { MemoryType, MemoryScope } from './types'
 
 /**
  * Options for creating a memory store

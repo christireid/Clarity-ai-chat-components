@@ -61,7 +61,8 @@
   },
   "dependencies": {
     "react-error-boundary": "^5.0.0",
-    "@clarity-chat/utils": "workspace:*"
+    "@clarity-chat/utils": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

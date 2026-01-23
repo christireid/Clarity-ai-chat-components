@@ -19,7 +19,8 @@
  */
 
 // Core Utilities (remain at root)
-export { cn } from './cn'
+// Re-export cn from primitives for backward compatibility
+export { cn } from '@clarity-chat/primitives'
 export * from './mobile'
 export * from './export-utils'
 

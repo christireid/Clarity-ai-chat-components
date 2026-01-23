@@ -4,7 +4,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import { usePerformanceTracking } from '../../utils/performance-monitoring'
 import {
   parseLineRanges,
@@ -405,7 +405,9 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
                 'focus-visible:opacity-100',
                 'transition-opacity duration-200'
               )}
-              aria-label={enableKeyboardShortcuts ? 'Copy code (Cmd+Shift+C)' : undefined}
+              aria-label={
+                enableKeyboardShortcuts ? 'Copy code (Cmd+Shift+C)' : undefined
+              }
             />
           )}
         </div>

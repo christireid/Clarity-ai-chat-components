@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 import type { PromptPreset } from '../types'
 import { PROMPT_PRESETS, getPresetCategories } from '../utils/presets'
 

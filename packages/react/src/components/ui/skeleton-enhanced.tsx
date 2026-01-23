@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@clarity-chat/primitives'
 
 // Duration constants (local to avoid external dependencies)
 const durations = {

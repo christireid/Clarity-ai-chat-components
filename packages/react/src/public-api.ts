@@ -380,7 +380,8 @@ export type {
 // ============================================================================
 
 // CSS class utility
-export { cn } from './utils/cn'
+// Re-export cn from primitives for backward compatibility
+export { cn } from '@clarity-chat/primitives'
 
 // Message helpers
 export {
