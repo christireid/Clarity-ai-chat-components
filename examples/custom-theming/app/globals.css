@@ -1,55 +1,30 @@
+/**
+ * Custom Theming Example - Global Styles
+ *
+ * This example demonstrates extending the canonical theme system.
+ * The --clarity-bubble-* variables show how to add custom tokens
+ * for white-label/customization use cases.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --user-bubble: 222.2 47.4% 11.2%;
-    --user-bubble-foreground: 210 40% 98%;
-    --assistant-bubble: 210 40% 96.1%;
-    --assistant-bubble-foreground: 222.2 84% 4.9%;
+    /* Custom chat bubble tokens - extends the canonical system */
+    --clarity-bubble-user: var(--primary);
+    --clarity-bubble-user-foreground: var(--primary-foreground);
+    --clarity-bubble-assistant: var(--muted);
+    --clarity-bubble-assistant-foreground: var(--foreground);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --user-bubble: 210 40% 98%;
-    --user-bubble-foreground: 222.2 47.4% 11.2%;
-    --assistant-bubble: 217.2 32.6% 17.5%;
-    --assistant-bubble-foreground: 210 40% 98%;
+    /* Dark mode overrides for custom tokens */
+    --clarity-bubble-user: var(--primary);
+    --clarity-bubble-user-foreground: var(--primary-foreground);
+    --clarity-bubble-assistant: var(--muted);
+    --clarity-bubble-assistant-foreground: var(--foreground);
   }
 }
 
@@ -57,20 +32,10 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
   }
-}
-
-/* Smooth theme transitions */
-* {
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
 }
 
 /* Custom scrollbar */
@@ -89,4 +54,11 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/50;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
 }

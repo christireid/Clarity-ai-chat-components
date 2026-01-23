@@ -1,187 +1,27 @@
+/**
+ * Root Global Styles
+ *
+ * This file provides baseline styles and imports the canonical Clarity theme.
+ * All theme tokens are defined in packages/react/src/theme/theme.css
+ *
+ * @see packages/react/src/theme/theme.css for canonical theme tokens
+ * @see .style-audit/customization.md for customization guide
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --primary-rgb: 59, 130, 246;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 76.2% 36.3%;
-    --success-foreground: 0 0% 100%;
-    --warning: 45.4 93.4% 47.5%;
-    --warning-foreground: 0 0% 0%;
-    --info: 217.2 91.2% 59.8%;
-    --info-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.75rem;
-    
-    /* Refined shadow system */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.03);
-    --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.04);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06);
-
-    /* Glass effect variables */
-    --glass-bg-opacity: 0.6;
-    --glass-blur: 12px;
-    --glass-saturate: 150%;
-    --glass-border-opacity: 0.2;
-
-    /* Animated gradient properties */
-    --gradient-angle: 135deg;
-    --gradient-animation-speed: 8s;
-
-    /* Pastel gradient colors (OKLCH format) */
-    --pastel-blue-start: oklch(95% 0.02 240);
-    --pastel-blue-end: oklch(97% 0.015 260);
-    --pastel-purple-start: oklch(95% 0.025 280);
-    --pastel-purple-end: oklch(97% 0.02 300);
-    --pastel-pink-start: oklch(96% 0.03 350);
-    --pastel-pink-end: oklch(98% 0.02 340);
-    --pastel-green-start: oklch(95% 0.03 160);
-    --pastel-green-end: oklch(97% 0.02 140);
-    --pastel-amber-start: oklch(96% 0.04 80);
-    --pastel-amber-end: oklch(98% 0.025 70);
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --primary-rgb: 96, 165, 250;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 70.6% 45.3%;
-    --success-foreground: 0 0% 100%;
-    --warning: 45.4 93.4% 47.5%;
-    --warning-foreground: 0 0% 0%;
-    --info: 217.2 91.2% 59.8%;
-    --info-foreground: 222.2 47.4% 11.2%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    
-    /* Dark mode refined shadows */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
-    --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
-
-    /* Dark mode glass effect variables */
-    --glass-bg-opacity: 0.6;
-    --glass-blur: 16px;
-    --glass-saturate: 150%;
-    --glass-border-opacity: 0.2;
-
-    /* Dark mode pastel gradient colors (OKLCH format) */
-    --pastel-blue-start: oklch(18% 0.04 240);
-    --pastel-blue-end: oklch(20% 0.035 260);
-    --pastel-purple-start: oklch(18% 0.045 280);
-    --pastel-purple-end: oklch(20% 0.04 300);
-    --pastel-pink-start: oklch(19% 0.05 350);
-    --pastel-pink-end: oklch(21% 0.04 340);
-    --pastel-green-start: oklch(18% 0.05 160);
-    --pastel-green-end: oklch(20% 0.04 140);
-    --pastel-amber-start: oklch(19% 0.06 80);
-    --pastel-amber-end: oklch(21% 0.045 70);
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
-    font-smooth: always;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* =========================================================================
-   GLASSMORPHISM UTILITIES
-   Premium glass effects with animated gradients
-   ========================================================================= */
-
-@layer utilities {
-  .glass-panel {
-    background: linear-gradient(
-      var(--gradient-angle),
-      oklch(from var(--background) l c h / var(--glass-bg-opacity)) 0%,
-      oklch(from var(--card) l c h / calc(var(--glass-bg-opacity) - 0.1)) 100%
-    );
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid oklch(from var(--border) l c h / var(--glass-border-opacity));
-    background-size: 200% 200%;
-  }
-
-  .glass-animated {
-    animation: gradient-shift var(--gradient-animation-speed) ease infinite;
-  }
-
-  .glass-glow {
-    animation: glow-pulse 3s ease-in-out infinite;
-  }
-
-  .glass-subtle {
-    --glass-bg-opacity: 0.4;
-    --glass-blur: 8px;
-  }
-
-  .glass-strong {
-    --glass-bg-opacity: 0.8;
-    --glass-blur: 20px;
-  }
-}
-
-/* Accessibility - High contrast mode */
-@media (prefers-contrast: high) {
-  .glass-panel {
-    backdrop-filter: none;
-    background: var(--card) !important;
-    border: 2px solid var(--border) !important;
-  }
-}
-
-/* Accessibility - Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .glass-panel,
-  .glass-animated,
-  .glass-glow {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
   }
 }
 
@@ -204,100 +44,14 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Accessibility enhancements */
-.high-contrast {
-  filter: contrast(1.5) !important;
-}
-
-.high-contrast * {
-  color: inherit !important;
-  background-color: inherit !important;
-}
-
-.high-contrast .bg-bg-primary {
-  background-color: #000 !important;
-  color: #fff !important;
-}
-
-.high-contrast .bg-bg-secondary {
-  background-color: #333 !important;
-  color: #fff !important;
-}
-
-.high-contrast .text-text-primary {
-  color: #fff !important;
-}
-
-.high-contrast .text-text-secondary {
-  color: #ccc !important;
-}
-
-.high-contrast .border-border {
-  border-color: #fff !important;
-}
-
-.high-contrast button,
-.high-contrast .button {
-  border: 2px solid #fff !important;
-  background-color: #000 !important;
-  color: #fff !important;
-}
-
-.high-contrast button:hover,
-.high-contrast .button:hover {
-  background-color: #fff !important;
-  color: #000 !important;
-}
-
-/* Reduced motion */
-.reduced-motion * {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
-}
-
-.reduced-motion .motion-reduce\:hidden {
-  display: none !important;
-}
-
-/* Larger text */
-.larger-text {
-  font-size: 1.25rem !important;
-  line-height: 1.6 !important;
-}
-
-.larger-text * {
-  font-size: inherit !important;
-  line-height: inherit !important;
-}
-
-.larger-text h1 { font-size: 2.5rem !important; }
-.larger-text h2 { font-size: 2rem !important; }
-.larger-text h3 { font-size: 1.75rem !important; }
-.larger-text h4 { font-size: 1.5rem !important; }
-.larger-text h5 { font-size: 1.25rem !important; }
-.larger-text h6 { font-size: 1.125rem !important; }
-
-/* Screen reader optimizations */
-.screen-reader-mode .sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
-
-.screen-reader-mode .focus\:outline-none:focus {
-  outline: 2px solid #3b82f6 !important;
-  outline-offset: 2px !important;
-}
-
-.screen-reader-mode *:focus {
-  outline: 2px solid #3b82f6 !important;
-  outline-offset: 2px !important;
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

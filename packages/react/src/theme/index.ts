@@ -1,21 +1,17 @@
 /**
  * Clarity Chat - Theme System
  *
- * Modern, flexible theming for Clarity Chat components.
- * World-class theming capabilities with 24 built-in presets,
- * advanced color utilities, and comprehensive accessibility support.
+ * A consolidated, minimal theme system with exactly TWO built-in themes:
+ * - Light (default)
+ * - Dark
  *
  * Features:
- * - 24 built-in theme presets (12 light/dark pairs)
- * - Simple API for custom themes
+ * - Two built-in themes only (light/dark)
+ * - Safe customer customization API
  * - CSS custom properties for runtime customization
+ * - Premium glassmorphism with accessibility fallbacks
+ * - WCAG AA accessibility compliance
  * - Full TypeScript support
- * - WCAG accessibility compliance (AA/AAA)
- * - Color blindness simulation
- * - Harmonious palette generation
- * - Theme composition with mixins
- * - Interactive theme customizer component
- * - Export to CSS/JSON/Tailwind
  *
  * @example
  * // Zero config - just works
@@ -23,30 +19,26 @@
  * <ClarityChat api="/api/chat" />
  *
  * @example
- * // Theme preset selection (24 presets available)
- * <ThemeProvider defaultTheme={{ preset: 'ocean-dark' }}>
+ * // Theme toggle (light/dark only)
+ * <ThemeProvider defaultTheme="light">
  *   <ClarityChat api="/api/chat" />
+ *   <ThemeToggle />
  * </ThemeProvider>
  *
  * @example
- * // Simple brand customization
- * import { createTheme } from '@clarity-chat/react'
- * const theme = createTheme({ brandColor: '#6366f1' })
+ * // Customer customization via runtime API
+ * import { applyThemeOverrides } from '@clarity-chat/react'
+ * applyThemeOverrides({
+ *   colors: { primary: '#6366f1' },
+ *   radius: '0.75rem',
+ *   glass: { opacity: 0.8, blur: '16px' },
+ * }, { persist: true });
  *
  * @example
- * // Advanced theme composition
- * import { ThemeBuilder, ColorMixins, BorderMixins } from '@clarity-chat/react'
- * const theme = new ThemeBuilder()
- *   .extend('neutral')
- *   .mode('dark')
- *   .colors(ColorMixins.brand('#6366f1'))
- *   .borders(BorderMixins.extraRounded())
- *   .build()
- *
- * @example
- * // Pure CSS override (simplest)
+ * // Customer customization via CSS (recommended)
+ * // In your-brand-theme.css (import after clarity styles):
  * :root {
- *   --clarity-primary: 239 84% 67%;
+ *   --clarity-primary: 60% 0.2 265;
  *   --clarity-radius: 0.75rem;
  * }
  */
@@ -402,9 +394,40 @@ export {
   getThemesByCategory,
   getLightThemes,
   getDarkThemes,
-  // Industry-specific aliases
+  // Industry-specific aliases (deprecated - all now point to light/dark)
   financeTheme,
   healthcareTheme,
   ecommerceTheme,
   lifestyleTheme,
 } from './modern-presets'
+
+// ============================================================================
+// Theme Customization API
+// ============================================================================
+
+// Safe customer theming with validated overrides
+export {
+  // Application functions
+  applyThemeOverrides,
+  clearThemeOverrides,
+  getPersistedOverrides,
+  loadPersistedOverrides,
+  generateOverrideCSS,
+  // Validation functions
+  validateThemeOverrides,
+  validateColor,
+  validateLength,
+  validateNumber,
+  validateGlassOverrides,
+  // Types
+  type ThemeOverrides,
+  type ColorOverrides,
+  type GlassOverrides,
+  type ApplyOptions,
+  type ValidationResult as CustomizationValidationResult,
+  type CustomizableToken,
+  // Constants
+  CUSTOMIZABLE_TOKENS,
+  GLASS_BOUNDS,
+  DEFAULT_STORAGE_KEY,
+} from './customization'

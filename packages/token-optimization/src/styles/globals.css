@@ -1,119 +1,32 @@
+/**
+ * Token Optimization Package Styles
+ *
+ * Uses standard Tailwind/shadcn variables for consistency.
+ * Theme tokens are defined in packages/react/src/theme/theme.css
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --success: 142 76% 36%;
-    --success-foreground: 210 40% 98%;
-
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221.2 83.2% 53.3%;
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 40% 98%;
-
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* Glass effect custom properties */
-:root {
-  --glass-bg-opacity: 0.6;
-  --glass-blur: 12px;
-  --glass-saturate: 150%;
-  --glass-border-opacity: 0.2;
-  --gradient-angle: 135deg;
-  --gradient-animation-speed: 8s;
-}
-
-.dark {
-  --glass-bg-opacity: 0.6;
-  --glass-blur: 16px;
-  --glass-saturate: 150%;
-  --glass-border-opacity: 0.2;
-}
-
-/* Glass utility classes */
+/* Glass utilities using Tailwind classes */
 @layer utilities {
   .glass-panel {
-    background: linear-gradient(
-      var(--gradient-angle),
-      oklch(from var(--background) l c h / var(--glass-bg-opacity)) 0%,
-      oklch(from var(--card) l c h / calc(var(--glass-bg-opacity) - 0.1)) 100%
-    );
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid
-      oklch(from var(--border) l c h / var(--glass-border-opacity));
-    background-size: 200% 200%;
+    @apply bg-card/60 backdrop-blur-lg border border-border/20;
   }
 
   .glass-animated {
-    animation: gradient-shift var(--gradient-animation-speed) ease infinite;
+    animation: gradient-shift 8s ease infinite;
   }
 
   .glass-glow {
@@ -121,12 +34,20 @@
   }
 }
 
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
 /* Accessibility - high contrast mode */
 @media (prefers-contrast: high) {
   .glass-panel {
-    backdrop-filter: none;
-    background: var(--card) !important;
-    border: 2px solid var(--border) !important;
+    @apply backdrop-blur-none bg-card border-2 border-border;
   }
 }
 
