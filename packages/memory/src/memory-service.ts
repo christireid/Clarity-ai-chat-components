@@ -1345,13 +1345,15 @@ export class MemoryService {
 
   private getRetentionForScope(scope: MemoryScope): number {
     const policy = this.config.retentionPolicy
+    if (!policy) return 0
+
     switch (scope) {
       case 'session':
-        return policy.session
+        return policy.session ?? 0
       case 'thread':
-        return policy.thread
+        return policy.thread ?? 0
       case 'global':
-        return policy.global
+        return policy.global ?? 0
       case 'user':
         return policy.user ?? 0
       default:

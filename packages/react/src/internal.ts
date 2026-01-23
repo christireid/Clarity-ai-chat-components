@@ -227,18 +227,29 @@ export * from './types/chat-types'
 export * from './utils/tools'
 export * from './utils/streaming'
 export { convertCoreMessagesToMessages } from './utils/message/message-conversion'
+// Security utilities (available exports only)
 export {
-  SecurityMonitor,
-  securityMonitor,
-  useSecureContent,
-  useCSP,
-  sanitizeHTML,
-  sanitizeMarkdown,
-  sanitizeUserInput,
-  DEFAULT_SECURITY_CONFIG,
-  type SecurityConfig,
-  type SecurityHeaders,
-  type SecurityAuditResult,
+  safeEvaluate,
+  detectDangerousPatterns,
+  formatEvaluateResult,
+  sanitizeCodeHtml,
+  escapeHtmlEntities,
+  createSafeCodeHtml,
+  detectDangerousHtml,
+  sanitizeSQL,
+  sanitizeSQLIdentifier,
+  sanitizeShellArg,
+  detectCommandInjection,
+  sanitizePath,
+  sanitizeFilename,
+  sanitizeLDAP,
+  sanitizeXML,
+  sanitizeURLParam,
+  isSafeInput,
+  truncateInput,
+  sanitization,
+  type SafeEvaluateResult,
+  type SafeEvaluateOptions,
 } from './utils/security'
 
 // Re-export types from @clarity-chat/types for convenience
