@@ -1,0 +1,38 @@
+{
+  "name": "@clarity-chat/ai-infrastructure",
+  "version": "0.1.0",
+  "description": "AI infrastructure utilities for Clarity Chat including multi-provider streaming",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openai": "^4.104.0",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@google/generative-ai": "^0.24.1"
+  },
+  "devDependencies": {
+    "@clarity-chat/typescript-config": "workspace:*",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

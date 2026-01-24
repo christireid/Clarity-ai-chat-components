@@ -1,8 +1,18 @@
 /**
- * Advanced streaming parser utilities
- * 
- * Handles various streaming formats from different AI providers
+ * Advanced Streaming Parser Utilities
+ *
+ * Provides specialized parsing for AI provider streaming formats with tool support.
+ * Uses core SSE parsing from streaming-helpers.ts while adding tool invocation parsing.
+ *
+ * @module streaming-parser
  */
+
+import {
+  parseSSELine,
+  safeParseJSON,
+  extractStreamContent,
+  createStreamReader,
+} from './streaming-helpers'
 
 export interface StreamingChunk {
   content?: string
@@ -27,50 +37,21 @@ export interface StreamingChunk {
  * Parse streaming chunk from various formats
  */
 export function parseStreamingChunk(data: string): StreamingChunk | null {
-  try {
-    const parsed = JSON.parse(data)
-    return parsed as StreamingChunk
-  } catch {
-    // Not JSON, return as plain text
-    return { content: data, text: data, delta: data }
+  const parsed = safeParseJSON<StreamingChunk>(data)
+  if (parsed) {
+    return parsed
   }
+
+  // Not JSON, return as plain text
+  return { content: data, text: data, delta: data }
 }
 
 /**
  * Extract content from streaming chunk
+ * (Re-export from streaming-helpers with type compatibility)
  */
 export function extractContentFromChunk(chunk: StreamingChunk): string {
-  // OpenAI chat completions format
-  if (chunk.choices?.[0]?.delta?.content) {
-    return chunk.choices[0].delta.content
-  }
-
-  // OpenAI completions format
-  if (chunk.choices?.[0]?.text) {
-    return chunk.choices[0].text
-  }
-
-  // Direct content field
-  if (chunk.content) {
-    return typeof chunk.content === 'string' ? chunk.content : ''
-  }
-
-  // Text field
-  if (chunk.text) {
-    return chunk.text
-  }
-
-  // Delta field
-  if (chunk.delta) {
-    return typeof chunk.delta === 'string' ? chunk.delta : ''
-  }
-
-  // Message wrapper format
-  if (chunk.message?.content) {
-    return chunk.message.content
-  }
-
-  return ''
+  return extractStreamContent(chunk)
 }
 
 /**
@@ -83,14 +64,19 @@ export function hasToolInvocation(chunk: StreamingChunk): boolean {
 /**
  * Extract tool invocation from chunk
  */
-export function extractToolInvocation(chunk: StreamingChunk): StreamingChunk['toolInvocation'] | null {
+export function extractToolInvocation(
+  chunk: StreamingChunk
+): StreamingChunk['toolInvocation'] | null {
   return chunk.toolInvocation || null
 }
 
 /**
  * Parse SSE data line
+ * (Re-export from streaming-helpers with compatible signature)
  */
-export function parseSSEDataLine(line: string): { data: string; event?: string; id?: string } | null {
+export function parseSSEDataLine(
+  line: string
+): { data: string; event?: string; id?: string } | null {
   if (!line.startsWith('data: ')) {
     return null
   }
@@ -106,39 +92,20 @@ export function parseSSEDataLine(line: string): { data: string; event?: string; 
 
 /**
  * Create streaming reader helper
+ * (Wrapper around core createStreamReader with buffering)
  */
 export async function* createStreamingReader(
   stream: ReadableStream<Uint8Array>
 ): AsyncGenerator<string, void, unknown> {
-  const reader = stream.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read()
-
-      if (done) {
-        break
-      }
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || ''
-
-      for (const line of lines) {
-        if (line.trim()) {
-          yield line
-        }
+  for await (const chunk of createStreamReader(stream)) {
+    // Split by newlines and yield non-empty lines
+    const lines = chunk.split('\n')
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (trimmed) {
+        yield trimmed
       }
     }
-
-    // Yield remaining buffer
-    if (buffer.trim()) {
-      yield buffer
-    }
-  } finally {
-    reader.releaseLock()
   }
 }
 
@@ -162,7 +129,7 @@ export async function* parseStreamingResponse(
 }
 
 /**
- * Accumulate streaming chunks
+ * Accumulate streaming chunks with tool invocation support
  */
 export class StreamingAccumulator {
   private content = ''
@@ -187,7 +154,9 @@ export class StreamingAccumulator {
   }
 
   getToolInvocations(): Array<StreamingChunk['toolInvocation']> {
-    return this.toolInvocations.filter((ti): ti is NonNullable<typeof ti> => ti !== null)
+    return this.toolInvocations.filter(
+      (ti): ti is NonNullable<typeof ti> => ti !== null
+    )
   }
 
   reset(): void {
