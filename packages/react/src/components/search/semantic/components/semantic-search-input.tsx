@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Input, Button, cn } from '@clarity-chat/primitives'
+import { Input, Button, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { Search, X } from 'lucide-react'
 import { DURATION_SECONDS as durations } from '../../../../animations/constants'
 
@@ -36,6 +36,8 @@ export const SemanticSearchInput = React.forwardRef<
     },
     ref
   ) => {
+    const prefersReducedMotion = useReducedMotion()
+
     return (
       <div className="relative">
         <div className="relative group">
@@ -44,11 +46,12 @@ export const SemanticSearchInput = React.forwardRef<
               'absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors z-10',
               query && 'text-violet-500'
             )}
-            animate={isSearching ? { scale: [1, 1.1, 1] } : {}}
+            animate={isSearching && !prefersReducedMotion ? { scale: [1, 1.1, 1] } : {}}
             transition={{
               duration: durations.slower,
-              repeat: isSearching ? Infinity : 0,
+              repeat: isSearching && !prefersReducedMotion ? Infinity : 0,
             }}
+            viewport={{ once: true }}
           >
             <SearchIcon className="h-4 w-4" />
           </motion.div>
@@ -78,25 +81,27 @@ export const SemanticSearchInput = React.forwardRef<
           {/* Right controls */}
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {/* Loading indicator */}
-            <AnimatePresence>
-              {isSearching && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
-                />
-              )}
-            </AnimatePresence>
+            {prefersReducedMotion ? (
+              isSearching && (
+                <div className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+              )
+            ) : (
+              <AnimatePresence>
+                {isSearching && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
+                  />
+                )}
+              </AnimatePresence>
+            )}
 
             {/* Clear button */}
-            <AnimatePresence>
-              {query && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
+            {prefersReducedMotion ? (
+              query && (
+                <div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -105,9 +110,28 @@ export const SemanticSearchInput = React.forwardRef<
                   >
                     <XIcon className="h-3.5 w-3.5" />
                   </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              )
+            ) : (
+              <AnimatePresence>
+                {query && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onQueryChange('')}
+                      className="h-6 w-6 p-0 hover:bg-transparent hover:text-destructive"
+                    >
+                      <XIcon className="h-3.5 w-3.5" />
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
 
             {/* Additional controls (history, config, etc.) */}
             {children}
@@ -115,27 +139,35 @@ export const SemanticSearchInput = React.forwardRef<
         </div>
 
         {/* Progress bar */}
-        <AnimatePresence>
-          {isSearching && (
-            <motion.div
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+        {prefersReducedMotion ? (
+          isSearching && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md">
+              <div className="h-full w-1/3 bg-gradient-to-r from-violet-500 to-purple-500" />
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {isSearching && (
               <motion.div
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{
-                  duration: durations.slower,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
     )
   }

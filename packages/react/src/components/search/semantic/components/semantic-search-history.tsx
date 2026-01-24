@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
   Button,
   Badge,
+  useReducedMotion,
 } from '@clarity-chat/primitives'
 import { Clock } from 'lucide-react'
 import type { SearchHistoryEntry } from '../../shared/types'
@@ -27,6 +28,7 @@ export function SemanticSearchHistory({
   onClearHistory,
 }: SemanticSearchHistoryProps) {
   const [showHistory, setShowHistory] = React.useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   return (
     <Popover open={showHistory} onOpenChange={setShowHistory}>
@@ -56,24 +58,43 @@ export function SemanticSearchHistory({
           </div>
           {history.length > 0 ? (
             <div className="space-y-1 max-h-48 overflow-y-auto">
-              {history.map((entry, index) => (
-                <motion.button
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  onClick={() => {
-                    onSelectQuery(entry.query)
-                    setShowHistory(false)
-                  }}
-                  className="w-full text-left px-2 py-1.5 rounded hover:bg-accent flex items-center justify-between"
-                >
-                  <span className="text-sm truncate">{entry.query}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {entry.resultCount}
-                  </Badge>
-                </motion.button>
-              ))}
+              {prefersReducedMotion ? (
+                history.map((entry, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      onSelectQuery(entry.query)
+                      setShowHistory(false)
+                    }}
+                    className="w-full text-left px-2 py-1.5 rounded hover:bg-accent flex items-center justify-between"
+                  >
+                    <span className="text-sm truncate">{entry.query}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {entry.resultCount}
+                    </Badge>
+                  </button>
+                ))
+              ) : (
+                history.map((entry, index) => (
+                  <motion.button
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    viewport={{ once: true }}
+                    onClick={() => {
+                      onSelectQuery(entry.query)
+                      setShowHistory(false)
+                    }}
+                    className="w-full text-left px-2 py-1.5 rounded hover:bg-accent flex items-center justify-between"
+                  >
+                    <span className="text-sm truncate">{entry.query}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {entry.resultCount}
+                    </Badge>
+                  </motion.button>
+                ))
+              )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground text-center py-4">

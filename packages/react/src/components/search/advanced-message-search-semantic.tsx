@@ -15,6 +15,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  useReducedMotion,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import {
@@ -359,6 +360,7 @@ export function SemanticMessageSearch({
     [userConfig]
   )
 
+  const prefersReducedMotion = useReducedMotion()
   const [query, setQuery] = React.useState('')
   const [results, setResults] = React.useState<SemanticSearchResult[]>([])
   const [isSearching, setIsSearching] = React.useState(false)
@@ -742,6 +744,7 @@ export function SemanticMessageSearch({
                   duration: durations.slower,
                   repeat: isSearching ? Infinity : 0,
                 }}
+                viewport={{ once: true }}
               >
                 <SearchIcon className="h-4 w-4" />
               </motion.div>
@@ -769,25 +772,27 @@ export function SemanticMessageSearch({
               {/* Right controls */}
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 {/* Loading indicator */}
-                <AnimatePresence>
-                  {isSearching && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
-                    />
-                  )}
-                </AnimatePresence>
+                {prefersReducedMotion ? (
+                  isSearching && (
+                    <div className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+                  )
+                ) : (
+                  <AnimatePresence>
+                    {isSearching && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
+                      />
+                    )}
+                  </AnimatePresence>
+                )}
 
                 {/* Clear button */}
-                <AnimatePresence>
-                  {query && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                    >
+                {prefersReducedMotion ? (
+                  query && (
+                    <div>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -799,9 +804,31 @@ export function SemanticMessageSearch({
                       >
                         <XIcon className="h-3.5 w-3.5" />
                       </Button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
+                  )
+                ) : (
+                  <AnimatePresence>
+                    {query && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setQuery('')
+                            setResults([])
+                          }}
+                          className="h-6 w-6 p-0 hover:bg-transparent hover:text-destructive"
+                        >
+                          <XIcon className="h-3.5 w-3.5" />
+                        </Button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
 
                 {/* History button */}
                 {showHistory && (
@@ -846,6 +873,7 @@ export function SemanticMessageSearch({
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.03 }}
+                                viewport={{ once: true }}
                                 onClick={() => {
                                   setQuery(entry.query)
                                   setShowHistoryPanel(false)
@@ -1018,76 +1046,116 @@ export function SemanticMessageSearch({
             </div>
 
             {/* Progress bar */}
-            <AnimatePresence>
-              {isSearching && (
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+            {prefersReducedMotion ? (
+              isSearching && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md">
+                  <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 w-full" />
+                </div>
+              )
+            ) : (
+              <AnimatePresence>
+                {isSearching && (
                   <motion.div
-                    className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
-                    initial={{ x: '-100%' }}
-                    animate={{ x: '100%' }}
-                    transition={{
-                      duration: durations.slower,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
+                      initial={{ x: '-100%' }}
+                      animate={{ x: '100%' }}
+                      transition={{
+                        duration: durations.slower,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
           </div>
 
           {/* Query expansion preview */}
-          <AnimatePresence>
-            {localConfig.queryExpansion &&
-              expandedQueries.length > 1 &&
-              query && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
+          {prefersReducedMotion ? (
+            localConfig.queryExpansion &&
+            expandedQueries.length > 1 &&
+            query && (
+              <div>
+                <button
+                  onClick={() => setShowExpansions(!showExpansions)}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <button
-                    onClick={() => setShowExpansions(!showExpansions)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  <WandIcon className="h-3 w-3" />
+                  {showExpansions ? 'Hide' : 'Show'} related terms (
+                  {expandedQueries.length - 1})
+                  {showExpansions ? (
+                    <ChevronUpIcon className="h-3 w-3" />
+                  ) : (
+                    <ChevronDownIcon className="h-3 w-3" />
+                  )}
+                </button>
+                {showExpansions && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {expandedQueries.slice(1).map((term, i) => (
+                      <Badge key={i} variant="outline" className="text-xs">
+                        {term}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          ) : (
+            <AnimatePresence>
+              {localConfig.queryExpansion &&
+                expandedQueries.length > 1 &&
+                query && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
                   >
-                    <WandIcon className="h-3 w-3" />
-                    {showExpansions ? 'Hide' : 'Show'} related terms (
-                    {expandedQueries.length - 1})
-                    {showExpansions ? (
-                      <ChevronUpIcon className="h-3 w-3" />
-                    ) : (
-                      <ChevronDownIcon className="h-3 w-3" />
-                    )}
-                  </button>
-                  <AnimatePresence>
-                    {showExpansions && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-2 flex flex-wrap gap-1"
-                      >
-                        {expandedQueries.slice(1).map((term, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {term}
-                          </Badge>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-          </AnimatePresence>
+                    <button
+                      onClick={() => setShowExpansions(!showExpansions)}
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <WandIcon className="h-3 w-3" />
+                      {showExpansions ? 'Hide' : 'Show'} related terms (
+                      {expandedQueries.length - 1})
+                      {showExpansions ? (
+                        <ChevronUpIcon className="h-3 w-3" />
+                      ) : (
+                        <ChevronDownIcon className="h-3 w-3" />
+                      )}
+                    </button>
+                    <AnimatePresence>
+                      {showExpansions && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-2 flex flex-wrap gap-1"
+                        >
+                          {expandedQueries.slice(1).map((term, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {term}
+                            </Badge>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+            </AnimatePresence>
+          )}
 
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               className="text-sm text-destructive flex items-center gap-2"
             >
               <XIcon className="h-4 w-4" />
@@ -1098,59 +1166,32 @@ export function SemanticMessageSearch({
       </Card>
 
       {/* Search Results */}
-      <AnimatePresence mode="wait">
-        {isSearching ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="shadow-sm">
-              <CardContent className="p-8 flex flex-col items-center justify-center">
-                <motion.div
-                  className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: durations.slower,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
-                <motion.p
-                  className="mt-4 text-sm text-muted-foreground"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  Analyzing semantic meaning...
-                </motion.p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : results.length > 0 ? (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-3"
-          >
-            {/* Results header */}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-2">
-                <motion.span
-                  className="inline-block w-2 h-2 rounded-full bg-green-500"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: durations.slower, repeat: Infinity }}
-                />
-                Found{' '}
-                <span className="font-semibold text-foreground">
-                  {results.length}
-                </span>{' '}
-                semantically relevant messages
-              </span>
+      {prefersReducedMotion ? (
+        <>
+          {isSearching ? (
+            <div key="loading">
+              <Card className="shadow-sm">
+                <CardContent className="p-8 flex flex-col items-center justify-center">
+                  <div className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500 animate-spin" />
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Analyzing semantic meaning...
+                  </p>
+                </CardContent>
+              </Card>
             </div>
+          ) : results.length > 0 ? (
+            <div key="results" className="space-y-3">
+              {/* Results header */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+                  Found{' '}
+                  <span className="font-semibold text-foreground">
+                    {results.length}
+                  </span>{' '}
+                  semantically relevant messages
+                </span>
+              </div>
 
             {/* Result cards */}
             {results.map((result, index) => {
@@ -1158,12 +1199,7 @@ export function SemanticMessageSearch({
               const isExpanded = expandedResults.has(result.message.id)
 
               return (
-                <motion.div
-                  key={result.message.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
+                <div key={result.message.id}>
                   <Card
                     className={cn(
                       'shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden',
@@ -1284,57 +1320,292 @@ export function SemanticMessageSearch({
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               )
             })}
-          </motion.div>
-        ) : query && !isSearching ? (
-          <motion.div
-            key="no-results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="shadow-sm">
-              <CardContent className="p-8 text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    <SearchIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+          ) : query && !isSearching ? (
+            <div key="no-results">
+              <Card className="shadow-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <SearchIcon className="h-6 w-6 text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-lg font-medium mb-2">No Results Found</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  No messages match your search "{query}"
-                </p>
-                <div className="flex justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuery('')}
+                  <h3 className="text-lg font-medium mb-2">No Results Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No messages match your search "{query}"
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setQuery('')}
+                    >
+                      Clear Search
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setLocalConfig((prev) => ({
+                          ...prev,
+                          similarityThreshold: Math.max(
+                            0.3,
+                            (prev.similarityThreshold || 0.6) - 0.1
+                          ),
+                        }))
+                      }
+                    >
+                      Lower Threshold
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <AnimatePresence mode="wait">
+          {isSearching ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Card className="shadow-sm">
+                <CardContent className="p-8 flex flex-col items-center justify-center">
+                  <motion.div
+                    className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: durations.slower,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                  />
+                  <motion.p
+                    className="mt-4 text-sm text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
                   >
-                    Clear Search
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setLocalConfig((prev) => ({
-                        ...prev,
-                        similarityThreshold: Math.max(
-                          0.3,
-                          (prev.similarityThreshold || 0.6) - 0.1
-                        ),
-                      }))
-                    }
+                    Analyzing semantic meaning...
+                  </motion.p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : results.length > 0 ? (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-3"
+            >
+              {/* Results header */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <motion.span
+                    className="inline-block w-2 h-2 rounded-full bg-green-500"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: durations.slower, repeat: Infinity }}
+                  />
+                  Found{' '}
+                  <span className="font-semibold text-foreground">
+                    {results.length}
+                  </span>{' '}
+                  semantically relevant messages
+                </span>
+              </div>
+
+              {/* Result cards */}
+              {results.map((result, index) => {
+                const quality = getMatchQuality(result.score)
+                const isExpanded = expandedResults.has(result.message.id)
+
+                return (
+                  <motion.div
+                    key={result.message.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    viewport={{ once: true }}
                   >
-                    Lower Threshold
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+                    <Card
+                      className={cn(
+                        'shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden',
+                        'border-l-4',
+                        result.score >= 0.9
+                          ? 'border-l-green-500'
+                          : result.score >= 0.8
+                            ? 'border-l-emerald-500'
+                            : result.score >= 0.7
+                              ? 'border-l-blue-500'
+                              : result.score >= 0.6
+                                ? 'border-l-yellow-500'
+                                : 'border-l-orange-500'
+                      )}
+                      onClick={() => onResultSelect?.(result)}
+                    >
+                      <CardContent className="p-4">
+                        {/* Result header */}
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Score badge */}
+                            <Badge
+                              className={cn(
+                                'text-xs gap-1 text-white',
+                                quality.color
+                              )}
+                            >
+                              {quality.icon}
+                              {Math.round(result.score * 100)}%
+                            </Badge>
+
+                            {/* Match type badge */}
+                            <Badge variant="outline" className="text-xs gap-1">
+                              {result.matchType === 'semantic' && (
+                                <BrainIcon className="h-3 w-3" />
+                              )}
+                              {result.matchType === 'keyword' && (
+                                <SearchIcon className="h-3 w-3" />
+                              )}
+                              {result.matchType === 'hybrid' && (
+                                <ZapIcon className="h-3 w-3" />
+                              )}
+                              {result.matchType}
+                            </Badge>
+
+                            {/* Role badge */}
+                            <Badge variant="secondary" className="text-xs">
+                              {result.message.role}
+                            </Badge>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleCopy(result)
+                              }}
+                              className="h-7 w-7 p-0"
+                            >
+                              {copiedId === result.message.id ? (
+                                <CheckIcon className="h-3.5 w-3.5 text-green-500" />
+                              ) : (
+                                <CopyIcon className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                toggleExpanded(result.message.id)
+                              }}
+                              className="h-7 w-7 p-0"
+                            >
+                              {isExpanded ? (
+                                <EyeOffIcon className="h-3.5 w-3.5" />
+                              ) : (
+                                <EyeIcon className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Content preview */}
+                        <div
+                          className={cn(
+                            'text-sm mb-2',
+                            !isExpanded && 'line-clamp-2'
+                          )}
+                        >
+                          {result.message.content}
+                        </div>
+
+                        {/* Highlights */}
+                        {result.highlights && result.highlights.length > 0 && (
+                          <div className="space-y-1 mt-3">
+                            {result.highlights.map((highlight, i) => (
+                              <div
+                                key={i}
+                                className="text-xs bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded"
+                              >
+                                ...{highlight}...
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Quality indicator */}
+                        <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            {quality.icon}
+                            {quality.label} match
+                          </span>
+                          <span>{result.explanation}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          ) : query && !isSearching ? (
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Card className="shadow-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <SearchIcon className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No Results Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No messages match your search "{query}"
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setQuery('')}
+                    >
+                      Clear Search
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setLocalConfig((prev) => ({
+                          ...prev,
+                          similarityThreshold: Math.max(
+                            0.3,
+                            (prev.similarityThreshold || 0.6) - 0.1
+                          ),
+                        }))
+                      }
+                    >
+                      Lower Threshold
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      )}
     </div>
   )
 }

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message } from '@clarity-chat/types'
-import { Input, Badge, Button, cn } from '@clarity-chat/primitives'
+import { Input, Badge, Button, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
 import { SearchIcon } from '../ui/icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
@@ -88,6 +88,7 @@ export function MessageSearch({
   minSearchLength = 1,
   size = 'md',
 }: MessageSearchProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [searchQuery, setSearchQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -337,6 +338,7 @@ export function MessageSearch({
             duration: durations.slower,
             repeat: isPending ? Infinity : 0,
           }}
+          viewport={{ once: true }}
         >
           <SearchIcon className="h-full w-full" />
         </motion.div>
@@ -376,14 +378,9 @@ export function MessageSearch({
         {/* Right side controls */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           {/* Loading spinner */}
-          <AnimatePresence mode="wait">
-            {isPending && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="relative"
-              >
+          {prefersReducedMotion ? (
+            isPending && (
+              <div className="relative">
                 <div
                   className={cn(
                     'rounded-full border-2 border-primary/30 border-t-primary animate-spin',
@@ -394,18 +391,37 @@ export function MessageSearch({
                         : 'h-4 w-4'
                   )}
                 />
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            )
+          ) : (
+            <AnimatePresence mode="wait">
+              {isPending && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  viewport={{ once: true }}
+                  className="relative"
+                >
+                  <div
+                    className={cn(
+                      'rounded-full border-2 border-primary/30 border-t-primary animate-spin',
+                      size === 'sm'
+                        ? 'h-3.5 w-3.5'
+                        : size === 'lg'
+                          ? 'h-5 w-5'
+                          : 'h-4 w-4'
+                    )}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
 
           {/* Clear button */}
-          <AnimatePresence mode="wait">
-            {searchQuery && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-              >
+          {prefersReducedMotion ? (
+            searchQuery && (
+              <div>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -418,15 +434,40 @@ export function MessageSearch({
                 >
                   <XIcon className="h-3.5 w-3.5" />
                 </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            )
+          ) : (
+            <AnimatePresence mode="wait">
+              {searchQuery && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  viewport={{ once: true }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClear}
+                    className={cn(
+                      'p-0 hover:bg-transparent hover:text-destructive',
+                      currentSize.clearBtn
+                    )}
+                    aria-label="Clear search"
+                  >
+                    <XIcon className="h-3.5 w-3.5" />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
 
           {/* Keyboard shortcut hint */}
           {showShortcutHint && !searchQuery && !isFocused && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.6 }}
+              viewport={{ once: true }}
               className="hidden sm:flex items-center gap-0.5 text-xs text-muted-foreground"
             >
               <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono border border-border/50">
@@ -440,37 +481,42 @@ export function MessageSearch({
         </div>
 
         {/* Progress bar for search */}
-        <AnimatePresence>
-          {isPending && (
-            <motion.div
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+        {prefersReducedMotion ? (
+          isPending && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md">
+              <div className="h-full bg-primary w-full" />
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {isPending && (
               <motion.div
-                className="h-full bg-primary"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{
-                  duration: durations.slower,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                viewport={{ once: true }}
+              >
+                <motion.div
+                  className="h-full bg-primary"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Search History Dropdown */}
-      <AnimatePresence>
-        {showHistory && searchHistory.length > 0 && !searchQuery && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: durations.fast }}
+      {prefersReducedMotion ? (
+        showHistory && searchHistory.length > 0 && !searchQuery && (
+          <div
             className="absolute z-50 top-full mt-1 w-full bg-popover border rounded-lg shadow-lg overflow-hidden"
             role="listbox"
             aria-label="Search history"
@@ -490,7 +536,7 @@ export function MessageSearch({
             </div>
             <div className="max-h-48 overflow-y-auto">
               {searchHistory.map((query, index) => (
-                <motion.button
+                <button
                   key={query}
                   onClick={() => handleHistoryItemClick(query)}
                   className={cn(
@@ -499,16 +545,13 @@ export function MessageSearch({
                   )}
                   role="option"
                   aria-selected={selectedHistoryIndex === index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.03 }}
                 >
                   <SearchIcon className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="truncate flex-1">{query}</span>
                   <span className="text-xs text-muted-foreground">
                     <EnterIcon className="h-3 w-3" />
                   </span>
-                </motion.button>
+                </button>
               ))}
             </div>
             <div className="p-2 border-t bg-muted/30 text-[10px] text-muted-foreground flex items-center gap-3">
@@ -528,36 +571,92 @@ export function MessageSearch({
                 close
               </span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        )
+      ) : (
+        <AnimatePresence>
+          {showHistory && searchHistory.length > 0 && !searchQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: durations.fast }}
+              viewport={{ once: true }}
+              className="absolute z-50 top-full mt-1 w-full bg-popover border rounded-lg shadow-lg overflow-hidden"
+              role="listbox"
+              aria-label="Search history"
+            >
+              <div className="p-2 border-b flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Recent Searches
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearHistory}
+                  className="h-6 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Clear
+                </Button>
+              </div>
+              <div className="max-h-48 overflow-y-auto">
+                {searchHistory.map((query, index) => (
+                  <motion.button
+                    key={query}
+                    onClick={() => handleHistoryItemClick(query)}
+                    className={cn(
+                      'w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors flex items-center gap-2',
+                      selectedHistoryIndex === index && 'bg-accent'
+                    )}
+                    role="option"
+                    aria-selected={selectedHistoryIndex === index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    viewport={{ once: true }}
+                  >
+                    <SearchIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="truncate flex-1">{query}</span>
+                    <span className="text-xs text-muted-foreground">
+                      <EnterIcon className="h-3 w-3" />
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
+              <div className="p-2 border-t bg-muted/30 text-[10px] text-muted-foreground flex items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <ArrowUpIcon className="h-2.5 w-2.5" />
+                  <ArrowDownIcon className="h-2.5 w-2.5" />
+                  navigate
+                </span>
+                <span className="flex items-center gap-1">
+                  <EnterIcon className="h-2.5 w-2.5" />
+                  select
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1 bg-background rounded border text-[8px]">
+                    esc
+                  </kbd>
+                  close
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Results Summary */}
-      <AnimatePresence mode="wait">
-        {searchQuery && showResultCount && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: durations.normal }}
-            className="mt-2 flex items-center justify-between text-sm"
-          >
+      {prefersReducedMotion ? (
+        searchQuery && showResultCount && (
+          <div className="mt-2 flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               {noResults ? (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-muted-foreground flex items-center gap-2"
-                >
+                <span className="text-muted-foreground flex items-center gap-2">
                   <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
                   {emptyMessage}
-                </motion.span>
+                </span>
               ) : (
-                <motion.span
-                  className="text-muted-foreground flex items-center gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
+                <span className="text-muted-foreground flex items-center gap-2">
                   <span
                     className={cn(
                       'inline-block w-2 h-2 rounded-full',
@@ -565,16 +664,11 @@ export function MessageSearch({
                     )}
                   />
                   Found{' '}
-                  <motion.span
-                    key={filteredMessages.length}
-                    initial={{ scale: 1.2 }}
-                    animate={{ scale: 1 }}
-                    className="font-semibold text-foreground"
-                  >
+                  <span className="font-semibold text-foreground">
                     {filteredMessages.length}
-                  </motion.span>{' '}
+                  </span>{' '}
                   of {messages.length} messages
-                </motion.span>
+                </span>
               )}
             </div>
 
@@ -594,19 +688,83 @@ export function MessageSearch({
                 </Badge>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        )
+      ) : (
+        <AnimatePresence mode="wait">
+          {searchQuery && showResultCount && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: durations.normal }}
+              viewport={{ once: true }}
+              className="mt-2 flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-2">
+                {noResults ? (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="text-muted-foreground flex items-center gap-2"
+                  >
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
+                    {emptyMessage}
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    className="text-muted-foreground flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    <span
+                      className={cn(
+                        'inline-block w-2 h-2 rounded-full',
+                        hasResults ? 'bg-green-500' : 'bg-muted'
+                      )}
+                    />
+                    Found{' '}
+                    <motion.span
+                      key={filteredMessages.length}
+                      initial={{ scale: 1.2 }}
+                      animate={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      className="font-semibold text-foreground"
+                    >
+                      {filteredMessages.length}
+                    </motion.span>{' '}
+                    of {messages.length} messages
+                  </motion.span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {isPending && (
+                  <Badge
+                    variant="secondary"
+                    className={cn('animate-pulse', currentSize.badge)}
+                  >
+                    Searching...
+                  </Badge>
+                )}
+
+                {selectedResultIndex >= 0 && (
+                  <Badge variant="outline" className={currentSize.badge}>
+                    {selectedResultIndex + 1} / {filteredMessages.length}
+                  </Badge>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       {/* Keyboard navigation hint when results exist */}
-      <AnimatePresence>
-        {searchQuery && hasResults && isFocused && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="mt-1.5 text-[10px] text-muted-foreground flex items-center gap-3"
-          >
+      {prefersReducedMotion ? (
+        searchQuery && hasResults && isFocused && (
+          <div className="mt-1.5 text-[10px] text-muted-foreground flex items-center gap-3">
             <span className="flex items-center gap-1">
               <ArrowUpIcon className="h-2.5 w-2.5" />
               <ArrowDownIcon className="h-2.5 w-2.5" />
@@ -616,9 +774,31 @@ export function MessageSearch({
               <EnterIcon className="h-2.5 w-2.5" />
               select
             </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        )
+      ) : (
+        <AnimatePresence>
+          {searchQuery && hasResults && isFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              viewport={{ once: true }}
+              className="mt-1.5 text-[10px] text-muted-foreground flex items-center gap-3"
+            >
+              <span className="flex items-center gap-1">
+                <ArrowUpIcon className="h-2.5 w-2.5" />
+                <ArrowDownIcon className="h-2.5 w-2.5" />
+                navigate results
+              </span>
+              <span className="flex items-center gap-1">
+                <EnterIcon className="h-2.5 w-2.5" />
+                select
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
   )
 }

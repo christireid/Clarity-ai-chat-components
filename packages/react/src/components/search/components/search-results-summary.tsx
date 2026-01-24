@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   cn,
+  useReducedMotion,
 } from '@clarity-chat/primitives'
 import { Download, Check, Copy } from 'lucide-react'
 import type { Message } from '@clarity-chat/types'
@@ -42,6 +43,7 @@ export const SearchResultsSummary = React.memo(function SearchResultsSummary({
   onExport,
   onCopyResults,
 }: SearchResultsSummaryProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [copied, setCopied] = React.useState(false)
   const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -69,12 +71,77 @@ export const SearchResultsSummary = React.memo(function SearchResultsSummary({
     }, 2000)
   }, [onCopyResults])
 
-  return (
+  return prefersReducedMotion ? (
+    <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <span
+          className={cn(
+            'inline-block w-2 h-2 rounded-full',
+            results.length > 0 ? 'bg-green-500' : 'bg-amber-500'
+          )}
+        />
+        <span>
+          Found <span className="font-semibold text-foreground">{results.length}</span> of{' '}
+          {totalMessages} messages
+        </span>
+        {sortOption !== 'relevance' && (
+          <Badge variant="outline" className="text-xs">
+            Sorted by {sortOption}
+          </Badge>
+        )}
+      </div>
+
+      {/* Export Actions */}
+      {enableExport && results.length > 0 && onExport && onCopyResults && (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopy}
+            className="h-7 text-xs gap-1"
+          >
+            {copied ? (
+              <CheckIcon className="h-3.5 w-3.5 text-green-500" />
+            ) : (
+              <CopyIcon className="h-3.5 w-3.5" />
+            )}
+            {copied ? 'Copied!' : 'Copy'}
+          </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                <DownloadIcon className="h-3.5 w-3.5" />
+                Export
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-2" align="end">
+              <div className="space-y-1">
+                {(['json', 'csv', 'md'] as const).map((format) => (
+                  <button
+                    key={format}
+                    onClick={() => onExport(format)}
+                    className="w-full px-2 py-1.5 text-sm text-left rounded hover:bg-accent flex items-center justify-between"
+                  >
+                    Export as .{format}
+                    <Badge variant="outline" className="text-[10px]">
+                      {format.toUpperCase()}
+                    </Badge>
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
+    </div>
+  ) : (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -5 }}
+        viewport={{ once: true }}
         className="flex items-center justify-between text-sm"
       >
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -88,6 +155,7 @@ export const SearchResultsSummary = React.memo(function SearchResultsSummary({
               duration: durations.slower,
               repeat: isPending ? Infinity : 0,
             }}
+            viewport={{ once: true }}
           />
           <span>
             Found{' '}
@@ -95,6 +163,7 @@ export const SearchResultsSummary = React.memo(function SearchResultsSummary({
               key={results.length}
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
+              viewport={{ once: true }}
               className="font-semibold text-foreground"
             >
               {results.length}

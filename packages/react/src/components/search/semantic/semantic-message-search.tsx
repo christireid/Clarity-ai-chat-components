@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent, cn } from '@clarity-chat/primitives'
+import { Card, CardContent, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { Search, X } from 'lucide-react'
 import { DURATION_SECONDS as durations } from '../../../animations/constants'
 
@@ -69,6 +69,7 @@ export function SemanticMessageSearch({
   compact = false,
   className,
 }: SemanticMessageSearchProps) {
+  const prefersReducedMotion = useReducedMotion()
   const config = React.useMemo(
     () => ({ ...defaultConfig, ...userConfig }),
     [userConfig]
@@ -290,8 +291,9 @@ export function SemanticMessageSearch({
           {/* Error display */}
           {error && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
+              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               className="text-sm text-destructive flex items-center gap-2"
             >
               <XIcon className="h-4 w-4" />
@@ -302,97 +304,161 @@ export function SemanticMessageSearch({
       </Card>
 
       {/* Search Results */}
-      <AnimatePresence mode="wait">
-        {isSearching ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="shadow-sm">
-              <CardContent className="p-8 flex flex-col items-center justify-center">
-                <motion.div
-                  className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: durations.slower,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
-                <motion.p
-                  className="mt-4 text-sm text-muted-foreground"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  Analyzing semantic meaning...
-                </motion.p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : results.length > 0 ? (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-3"
-          >
-            {/* Results header */}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground flex items-center gap-2">
-                <motion.span
-                  className="inline-block w-2 h-2 rounded-full bg-green-500"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: durations.slower, repeat: Infinity }}
-                />
-                Found{' '}
-                <span className="font-semibold text-foreground">
-                  {results.length}
-                </span>{' '}
-                semantically relevant messages
-              </span>
+      {prefersReducedMotion ? (
+        <div>
+          {isSearching ? (
+            <div key="loading">
+              <Card className="shadow-sm">
+                <CardContent className="p-8 flex flex-col items-center justify-center">
+                  <div className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500 animate-spin" />
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Analyzing semantic meaning...
+                  </p>
+                </CardContent>
+              </Card>
             </div>
+          ) : results.length > 0 ? (
+            <div key="results" className="space-y-3">
+              {/* Results header */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+                  Found{' '}
+                  <span className="font-semibold text-foreground">
+                    {results.length}
+                  </span>{' '}
+                  semantically relevant messages
+                </span>
+              </div>
 
-            {/* Result cards */}
-            {results.map((result, index) => (
-              <ResultCard
-                key={result.message.id}
-                result={result}
-                index={index}
-                isExpanded={expandedResults.has(result.message.id)}
-                isCopied={copiedId === result.message.id}
-                onExpand={() => toggleExpanded(result.message.id)}
-                onCopy={() => handleCopy(result)}
-                onSelect={() => onResultSelect?.(result)}
-              />
-            ))}
-          </motion.div>
-        ) : query && !isSearching ? (
-          <motion.div
-            key="no-results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <Card className="shadow-sm">
-              <CardContent className="p-8 text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    <SearchIcon className="h-6 w-6 text-muted-foreground" />
+              {/* Result cards */}
+              {results.map((result, index) => (
+                <ResultCard
+                  key={result.message.id}
+                  result={result}
+                  index={index}
+                  isExpanded={expandedResults.has(result.message.id)}
+                  isCopied={copiedId === result.message.id}
+                  onExpand={() => toggleExpanded(result.message.id)}
+                  onCopy={() => handleCopy(result)}
+                  onSelect={() => onResultSelect?.(result)}
+                />
+              ))}
+            </div>
+          ) : query && !isSearching ? (
+            <div key="no-results">
+              <Card className="shadow-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <SearchIcon className="h-6 w-6 text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-lg font-medium mb-2">No Results Found</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  No messages match your search "{query}"
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+                  <h3 className="text-lg font-medium mb-2">No Results Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No messages match your search "{query}"
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {isSearching ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              viewport={{ once: true }}
+            >
+              <Card className="shadow-sm">
+                <CardContent className="p-8 flex flex-col items-center justify-center">
+                  <motion.div
+                    className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: durations.slower,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                  />
+                  <motion.p
+                    className="mt-4 text-sm text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    Analyzing semantic meaning...
+                  </motion.p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : results.length > 0 ? (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              viewport={{ once: true }}
+              className="space-y-3"
+            >
+              {/* Results header */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <motion.span
+                    className="inline-block w-2 h-2 rounded-full bg-green-500"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: durations.slower, repeat: Infinity }}
+                  />
+                  Found{' '}
+                  <span className="font-semibold text-foreground">
+                    {results.length}
+                  </span>{' '}
+                  semantically relevant messages
+                </span>
+              </div>
+
+              {/* Result cards */}
+              {results.map((result, index) => (
+                <ResultCard
+                  key={result.message.id}
+                  result={result}
+                  index={index}
+                  isExpanded={expandedResults.has(result.message.id)}
+                  isCopied={copiedId === result.message.id}
+                  onExpand={() => toggleExpanded(result.message.id)}
+                  onCopy={() => handleCopy(result)}
+                  onSelect={() => onResultSelect?.(result)}
+                />
+              ))}
+            </motion.div>
+          ) : query && !isSearching ? (
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              viewport={{ once: true }}
+            >
+              <Card className="shadow-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      <SearchIcon className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No Results Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No messages match your search "{query}"
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      )}
     </div>
   )
 }

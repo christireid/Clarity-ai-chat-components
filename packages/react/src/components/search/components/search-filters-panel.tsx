@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Input, Button } from '@clarity-chat/primitives'
+import { Input, Button, useReducedMotion } from '@clarity-chat/primitives'
 import {
   Filter,
   RefreshCw,
@@ -55,6 +55,7 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
   onClearFilters,
   onApplyPreset,
 }: SearchFiltersPanelProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [expandedSections, setExpandedSections] = React.useState<Set<string>>(
     new Set(['role', 'quick'])
   )
@@ -127,14 +128,9 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
             <ChevronDownIcon className="h-4 w-4" />
           )}
         </button>
-        <AnimatePresence>
-          {expandedSections.has('quick') && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
+        {prefersReducedMotion ? (
+          expandedSections.has('quick') && (
+            <div className="overflow-hidden">
               <div className="flex flex-wrap gap-1.5">
                 {filterPresets.map((preset) => (
                   <Button
@@ -149,9 +145,36 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
                   </Button>
                 ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {expandedSections.has('quick') && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                viewport={{ once: true }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap gap-1.5">
+                  {filterPresets.map((preset) => (
+                    <Button
+                      key={preset.id}
+                      variant={isPresetActive(preset) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => onApplyPreset(preset)}
+                      className="h-7 text-xs gap-1"
+                    >
+                      {preset.icon}
+                      {preset.name}
+                    </Button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Role Filter */}
@@ -170,14 +193,9 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
             <ChevronDownIcon className="h-4 w-4" />
           )}
         </button>
-        <AnimatePresence>
-          {expandedSections.has('role') && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
+        {prefersReducedMotion ? (
+          expandedSections.has('role') && (
+            <div className="overflow-hidden">
               <div className="flex gap-1.5">
                 {(['all', 'user', 'assistant', 'system'] as const).map((role) => (
                   <Button
@@ -201,9 +219,45 @@ export const SearchFiltersPanel = React.memo(function SearchFiltersPanel({
                   </Button>
                 ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {expandedSections.has('role') && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                viewport={{ once: true }}
+                className="overflow-hidden"
+              >
+                <div className="flex gap-1.5">
+                  {(['all', 'user', 'assistant', 'system'] as const).map((role) => (
+                    <Button
+                      key={role}
+                      variant={
+                        (role === 'all' && !filters.role) || filters.role === role
+                          ? 'default'
+                          : 'outline'
+                      }
+                      size="sm"
+                      onClick={() =>
+                        onUpdateFilters({
+                          role: role === 'all' ? undefined : role,
+                        })
+                      }
+                      className="h-7 text-xs flex-1"
+                    >
+                      {role === 'all'
+                        ? 'All'
+                        : role.charAt(0).toUpperCase() + role.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Model Filter */}

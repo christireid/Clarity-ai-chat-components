@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   cn,
+  useReducedMotion,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { SearchIcon } from '../ui/icons'
@@ -132,6 +133,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
   size = 'md',
   className,
 }: AdvancedMessageSearchProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [filters, setFilters] = React.useState<SearchFilters>({ query: '' })
   const [showFilters, setShowFilters] = React.useState(false)
   const [sortOption, setSortOption] = React.useState<SortOption>('relevance')
@@ -337,25 +339,28 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
           {/* Right side controls */}
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {/* Loading indicator */}
-            <AnimatePresence>
-              {isPending && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="h-4 w-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin"
-                />
-              )}
-            </AnimatePresence>
+            {prefersReducedMotion ? (
+              isPending && (
+                <div className="h-4 w-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+              )
+            ) : (
+              <AnimatePresence>
+                {isPending && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    viewport={{ once: true }}
+                    className="h-4 w-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin"
+                  />
+                )}
+              </AnimatePresence>
+            )}
 
             {/* Clear button */}
-            <AnimatePresence>
-              {filters.query && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
+            {prefersReducedMotion ? (
+              filters.query && (
+                <div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -364,9 +369,29 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
                   >
                     <XIcon className="h-3.5 w-3.5" />
                   </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              )
+            ) : (
+              <AnimatePresence>
+                {filters.query && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    viewport={{ once: true }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => updateFilters({ query: '' })}
+                      className="h-6 w-6 p-0 hover:bg-transparent hover:text-destructive"
+                    >
+                      <XIcon className="h-3.5 w-3.5" />
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
 
             {/* Sorting */}
             {enableSorting && (
@@ -483,27 +508,36 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
         </div>
 
         {/* Progress bar */}
-        <AnimatePresence>
-          {isPending && (
-            <motion.div
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+        {prefersReducedMotion ? (
+          isPending && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md">
+              <div className="h-full bg-primary w-full" />
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {isPending && (
               <motion.div
-                className="h-full bg-primary"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{
-                  duration: durations.slower,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted overflow-hidden rounded-b-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                viewport={{ once: true }}
+              >
+                <motion.div
+                  className="h-full bg-primary"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Active Filters Pills */}

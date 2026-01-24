@@ -16,12 +16,14 @@ export interface QueryExpansionPreviewProps {
   queries: string[]
   query: string
   enabled: boolean
+  prefersReducedMotion?: boolean
 }
 
 export function QueryExpansionPreview({
   queries,
   query,
   enabled,
+  prefersReducedMotion = false,
 }: QueryExpansionPreviewProps) {
   const [showExpansions, setShowExpansions] = React.useState(false)
 
@@ -29,9 +31,10 @@ export function QueryExpansionPreview({
 
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+      animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto' }}
+      transition={{ duration: prefersReducedMotion ? 0.1 : 0.2 }}
+      viewport={{ once: true }}
     >
       <button
         onClick={() => setShowExpansions(!showExpansions)}
@@ -45,22 +48,36 @@ export function QueryExpansionPreview({
           <ChevronDownIcon className="h-3 w-3" />
         )}
       </button>
-      <AnimatePresence>
-        {showExpansions && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mt-2 flex flex-wrap gap-1"
-          >
+      {prefersReducedMotion ? (
+        showExpansions && (
+          <div className="mt-2 flex flex-wrap gap-1">
             {queries.slice(1).map((term, i) => (
               <Badge key={i} variant="outline" className="text-xs">
                 {term}
               </Badge>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        )
+      ) : (
+        <AnimatePresence>
+          {showExpansions && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              viewport={{ once: true }}
+              className="mt-2 flex flex-wrap gap-1"
+            >
+              {queries.slice(1).map((term, i) => (
+                <Badge key={i} variant="outline" className="text-xs">
+                  {term}
+                </Badge>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </motion.div>
   )
 }

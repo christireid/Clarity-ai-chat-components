@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
+import { Card, CardContent, Badge, Button, cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   Copy,
   Check,
@@ -43,6 +43,7 @@ export function SemanticSearchResultCard({
   onCopy,
   onSelect,
 }: SemanticSearchResultProps) {
+  const prefersReducedMotion = useReducedMotion()
   const quality = getMatchQuality(result.score, {
     target: <span className="h-3 w-3" />,
     trending: <span className="h-3 w-3" />,
@@ -53,9 +54,10 @@ export function SemanticSearchResultCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
+      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -20 }}
+      animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
+      transition={{ delay: prefersReducedMotion ? 0 : index * 0.05 }}
+      viewport={{ once: true }}
     >
       <Card
         className={cn(
