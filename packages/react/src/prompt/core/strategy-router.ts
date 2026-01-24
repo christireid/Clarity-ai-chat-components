@@ -10,7 +10,8 @@
 import type { ModelProfile } from './model-profiles'
 import { getModelProfileOrDefault, MODEL_PROFILES } from './model-profiles'
 import type { OptimizationStrategy } from './optimizer'
-import type { CompressionStrategy } from './compression-chain'
+// Import stub type from prompt-optimizer until compression-chain is added back
+import type { CompressionStrategy } from './engine/prompt-optimizer'
 
 /**
  * Strategy selection result

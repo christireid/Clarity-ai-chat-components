@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * useClarityChat - Top-Level Chat State Hook
  *

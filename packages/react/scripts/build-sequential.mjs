@@ -77,4 +77,17 @@ for (let i = 0; i < entries.length; i++) {
   }
 }
 
+// Ensure CSS is copied to dist/styles/ (tsup loader may not work consistently)
+console.log('📦 Copying CSS files to dist/styles/...')
+try {
+  execSync('mkdir -p dist/styles && cp src/styles/*.css dist/styles/', {
+    cwd: resolve(__dirname, '..'),
+    stdio: 'inherit',
+  })
+  console.log('✓ CSS files copied successfully\n')
+} catch (error) {
+  console.error('✗ Failed to copy CSS files')
+  process.exit(1)
+}
+
 console.log('✨ All packages built successfully!')

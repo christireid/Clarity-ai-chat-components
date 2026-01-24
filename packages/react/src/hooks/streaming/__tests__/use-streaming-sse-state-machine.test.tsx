@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * State machine validation tests
  *

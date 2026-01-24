@@ -166,13 +166,40 @@ const chat = createChatHook('/api/chat')
 All APIs are fully typed with excellent autocomplete:
 
 ```tsx
+// React package types
 import type {
   ClarityChatProps,
   UseChatOptions,
   UseChatReturn,
   ChatFeatures,
+  Message,
+  CoreMessage,
 } from '@clarity-chat/react'
+
+// Utility types (from @clarity-chat/utils)
+import type {
+  LogLevel,
+  RetryOptions,
+  MemoizeOptions,
+} from '@clarity-chat/utils'
+
+// Token optimization types (from @clarity-chat/token-optimization)
+import type {
+  TokenizerConfig,
+  ModelId,
+  TokenBudgetConfig,
+  CompressionStrategy,
+} from '@clarity-chat/token-optimization'
+
+// Primitive types (from @clarity-chat/primitives)
+import type {
+  ButtonProps,
+  DialogProps,
+  TooltipProps,
+} from '@clarity-chat/primitives'
 ```
+
+> **Best Practice:** Import types from their canonical packages for better IDE support and to avoid circular dependencies.
 
 ## Migration Guide
 

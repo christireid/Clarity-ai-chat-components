@@ -240,7 +240,7 @@ export function MessageThreadView({
             </Badge>
           )}
           <span className="text-xs text-muted-foreground">
-            {formatRelativeTime(thread.lastActivity)}
+            {formatRelativeTime(new Date(thread.lastActivity))}
           </span>
         </div>
 
@@ -407,7 +407,7 @@ export function MessageThreadView({
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatRelativeTime(
-                        Date.now() - (thread.messages.length - index) * 60000
+                        new Date(Date.now() - (thread.messages.length - index) * 60000)
                       )}
                     </span>
                   </div>
@@ -658,7 +658,7 @@ export function ThreadList({
                         </Badge>
                         <span>{thread.participants.length} participants</span>
                       </div>
-                      <span>{formatRelativeTime(thread.lastActivity)}</span>
+                      <span>{formatRelativeTime(new Date(thread.lastActivity))}</span>
                     </div>
                   </CardContent>
                 </Card>

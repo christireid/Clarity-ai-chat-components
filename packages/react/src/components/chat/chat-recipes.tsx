@@ -194,8 +194,17 @@ export function ChatWithErrorHandling({
   onError,
   ...props
 }: ChatWithErrorHandlingProps) {
+  // Handle both ReactNode and function fallbacks
+  // FallbackComponent expects FallbackProps = { error, resetErrorBoundary }
+  const fallbackProps = typeof errorFallback === 'function'
+    ? {
+        FallbackComponent: ({ error, resetErrorBoundary }: any) =>
+          errorFallback(error, resetErrorBoundary)
+      }
+    : { fallback: errorFallback }
+
   return (
-    <ErrorBoundary fallback={errorFallback} onError={onError}>
+    <ErrorBoundary {...fallbackProps} onError={onError}>
       <ClarityChat {...props} />
     </ErrorBoundary>
   )

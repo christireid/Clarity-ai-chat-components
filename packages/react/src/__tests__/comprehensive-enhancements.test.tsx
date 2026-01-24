@@ -49,7 +49,7 @@ import {
 import { duration, ANIMATION_PRESETS } from '../animations/constants'
 import { useQuantumVoice } from '../hooks/use-quantum-voice'
 import { SecurityManager } from '../utils/security'
-import { PerformanceMonitor, memoryManager } from '../utils/performance'
+import { PerformanceMonitor } from '@clarity-chat/utils'
 
 /**
  * Test Utilities

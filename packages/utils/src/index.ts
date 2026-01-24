@@ -222,6 +222,8 @@ export {
   isValidJSON,
   isValidJson,
   parseJSON,
+  sanitizeUrl,
+  getDomain,
   // Backward compatibility aliases
   isEmail,
   isUrl,
@@ -230,6 +232,9 @@ export {
   hasKeys,
   pick,
   omit,
+  // Types
+  type EmailValidationOptions,
+  type UrlValidationOptions,
 } from './validation/index.js'
 
 // ============================================================================
@@ -364,6 +369,7 @@ export {
 export {
   UnifiedPerformanceMonitor,
   UnifiedPerformanceMonitor as PerformanceMonitor, // Backward compatibility alias
+  performanceMonitor,
   measurePerformance,
   measurePerformanceAsync,
   startPerformanceTimer,
@@ -380,6 +386,9 @@ export {
   createDebouncedFunction,
   createThrottledFunction,
   checkPerformanceTarget,
+  MemoryManager,
+  memoryManager,
+  ObjectPool,
   type PerformanceMetrics,
   type OperationTiming,
   type PerformanceOptions,
@@ -389,6 +398,7 @@ export {
   type MemorySnapshot,
   type RenderTiming,
   type FPSMetrics,
+  type PerformanceObserverMetrics,
 } from './performance-unified.js'
 
 // ============================================================================

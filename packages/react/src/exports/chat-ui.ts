@@ -39,14 +39,7 @@ export {
 // MID-LEVEL: Composable Building Blocks
 // ============================================================================
 
-// Simplified unified hook
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from '../hooks/use-chat-unified'
-
-// Main chat hook
+// Main chat hook (useChat was removed in v2.0)
 export {
   useClarityChat,
   type UseClarityChatOptions,

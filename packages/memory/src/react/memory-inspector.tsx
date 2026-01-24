@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Memory, MemoryType, MemoryScope } from '../types'
-import type { ClarityMemory } from '../memory-service'
+import type { ClarityMemory } from '../memory-service/core'
 
 export interface MemoryInspectorProps {
   memory: ClarityMemory

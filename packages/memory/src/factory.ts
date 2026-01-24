@@ -12,7 +12,7 @@
  * - Performance monitoring
  */
 
-import { ClarityMemory } from './memory-service'
+import { ClarityMemory } from './memory-service/core'
 import type { MemoryConfig } from './types'
 import { detectEnvironment, getRecommendedStorageType } from './utils/environment'
 import { validateConfig, formatValidationResult } from './utils/validation'

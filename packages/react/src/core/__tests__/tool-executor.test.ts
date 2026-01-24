@@ -507,7 +507,7 @@ describe('validateToolArguments', () => {
 
     expect(() => {
       validateToolArguments(tool, { int: 1.5 })
-    }).toThrow('Expected type integer')
+    }).toThrow('Value must be an integer')
 
     expect(() => {
       validateToolArguments(tool, { multiple: 7 })

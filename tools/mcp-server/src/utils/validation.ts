@@ -1,7 +1,16 @@
 /**
  * Input validation utilities
+ *
+ * Delegates primitive validation to @clarity-chat/utils
+ * while providing MCP-specific validation helpers
  */
 
+import {
+  isString,
+  isNumber,
+  validateString as utilsValidateString,
+  validateNumber as utilsValidateNumber,
+} from '@clarity-chat/utils/validation'
 import { ValidationError } from './errors.js'
 
 /**
@@ -12,7 +21,7 @@ export function validateRequired<T extends Record<string, any>>(
   required: Array<keyof T>
 ): void {
   const missing: string[] = []
-  
+
   for (const key of required) {
     if (args[key] === undefined || args[key] === null || args[key] === '') {
       missing.push(String(key))
@@ -46,31 +55,34 @@ export function validateEnum<T extends string>(
 
 /**
  * Validate string parameter
+ * Uses @clarity-chat/utils for primitive validation
  */
 export function validateString(
   value: unknown,
   paramName: string,
   minLength = 1
 ): string {
-  if (typeof value !== 'string') {
+  if (!isString(value)) {
     throw new ValidationError(
       `Invalid ${paramName}: must be a string`,
       { paramName, value }
     )
   }
 
-  if (value.length < minLength) {
+  const result = utilsValidateString(value, { minLength, required: true })
+  if (!result.success) {
     throw new ValidationError(
-      `Invalid ${paramName}: must be at least ${minLength} characters`,
+      `Invalid ${paramName}: ${result.errors.join(', ')}`,
       { paramName, value, minLength }
     )
   }
 
-  return value
+  return result.data
 }
 
 /**
  * Validate number parameter
+ * Uses @clarity-chat/utils for primitive validation
  */
 export function validateNumber(
   value: unknown,
@@ -78,26 +90,20 @@ export function validateNumber(
   min?: number,
   max?: number
 ): number {
-  if (typeof value !== 'number' || isNaN(value)) {
+  if (!isNumber(value)) {
     throw new ValidationError(
       `Invalid ${paramName}: must be a number`,
       { paramName, value }
     )
   }
 
-  if (min !== undefined && value < min) {
+  const result = utilsValidateNumber(value, { min, max, required: true })
+  if (!result.success) {
     throw new ValidationError(
-      `Invalid ${paramName}: must be at least ${min}`,
-      { paramName, value, min }
+      `Invalid ${paramName}: ${result.errors.join(', ')}`,
+      { paramName, value, min, max }
     )
   }
 
-  if (max !== undefined && value > max) {
-    throw new ValidationError(
-      `Invalid ${paramName}: must be at most ${max}`,
-      { paramName, value, max }
-    )
-  }
-
-  return value
+  return result.data
 }

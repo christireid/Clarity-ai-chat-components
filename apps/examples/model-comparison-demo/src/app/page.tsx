@@ -3,13 +3,19 @@
 import { useState } from 'react'
 import {
   ModelSelector,
-  StreamingTextRenderer as StreamingMessage,
+  // TODO: Fix build system - entry points overwrite each other
+  // StreamingTextRenderer as StreamingMessage,
 } from '@clarity-chat/react'
 import {
   useStreamingChat,
   type ChatMessage,
   type ModelMetadata,
 } from '@/hooks/useStreamingChat'
+
+// Temporary stub until build system is fixed
+const StreamingMessage = ({ text, isStreaming }: { text: string; isStreaming: boolean }) => (
+  <div>{text}{isStreaming && '...'}</div>
+)
 
 // Stub for missing exports
 const allModels: ModelMetadata[] = []

@@ -47,7 +47,9 @@ export function MessageHeader({
             className="text-xs text-muted-foreground whitespace-nowrap"
           >
             {formatRelativeTime(
-              typeof timestamp === 'string' ? new Date(timestamp) : timestamp
+              typeof timestamp === 'string' || typeof timestamp === 'number'
+                ? new Date(timestamp)
+                : timestamp
             )}
           </motion.span>
         </>

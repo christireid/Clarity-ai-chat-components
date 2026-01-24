@@ -29,3 +29,7 @@ export type {
   ErrorLogger,
   LogOptions,
 } from './error-logger'
+
+// Error reporter
+export { errorReporter } from './error-reporter'
+export type { ErrorReport } from './error-reporter'

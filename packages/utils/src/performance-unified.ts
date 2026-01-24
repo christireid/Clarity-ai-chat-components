@@ -73,6 +73,13 @@ export interface FPSMetrics {
   longTasks: number // Tasks > 50ms
 }
 
+export interface PerformanceObserverMetrics {
+  id: string
+  entries: PerformanceEntry[]
+  marks: PerformanceMark[]
+  measures: PerformanceMeasure[]
+}
+
 export interface VirtualScrollConfig {
   itemHeight: number
   containerHeight: number
@@ -112,6 +119,23 @@ export class UnifiedPerformanceMonitor {
 
   private static renders: RenderTiming[] = []
   private static memorySnapshots: MemorySnapshot[] = []
+  private static observers: Map<string, PerformanceObserver> = new Map()
+  private static observerMetrics: Map<string, PerformanceEntry[]> = new Map()
+
+  // FPS monitoring state
+  private static fpsMonitoring = false
+  private static fpsMetrics: FPSMetrics = {
+    current: 60,
+    average: 60,
+    min: 60,
+    max: 60,
+    samples: [],
+    jankyFrames: 0,
+    longTasks: 0,
+  }
+  private static lastFPSFrameTime = 0
+  private static fpsFrameCount = 0
+  private static fpsRafId: number | null = null
 
   /**
    * Configure performance monitoring
@@ -535,6 +559,188 @@ export class UnifiedPerformanceMonitor {
       }
     }
   }
+
+  /**
+   * Start monitoring with Performance Observer API
+   */
+  static startObserver(
+    id: string,
+    entryTypes: string[] = ['measure', 'navigation', 'resource']
+  ): void {
+    if (typeof window === 'undefined') return
+
+    // Clean up existing observer if any
+    this.stopObserver(id)
+
+    const observer = new PerformanceObserver((list) => {
+      const entries = list.getEntries()
+      if (!this.observerMetrics.has(id)) {
+        this.observerMetrics.set(id, [])
+      }
+      this.observerMetrics.get(id)!.push(...entries)
+    })
+
+    try {
+      observer.observe({ entryTypes })
+      this.observers.set(id, observer)
+
+      // Start measurement mark
+      performance.mark(`${id}-start`)
+    } catch (error) {
+      this.logger.warn(`Failed to start observer for ${id}:`, error)
+    }
+  }
+
+  /**
+   * Stop monitoring and return collected metrics
+   */
+  static stopObserver(id: string): PerformanceEntry[] {
+    if (typeof window === 'undefined') return []
+
+    // End measurement
+    try {
+      performance.mark(`${id}-end`)
+      performance.measure(id, `${id}-start`, `${id}-end`)
+    } catch (_error) {
+      // Marks might not exist, ignore
+    }
+
+    // Clean up observer
+    const observer = this.observers.get(id)
+    if (observer) {
+      observer.disconnect()
+      this.observers.delete(id)
+    }
+
+    // Return and clear metrics
+    const metrics = this.observerMetrics.get(id) || []
+    this.observerMetrics.delete(id)
+    return metrics
+  }
+
+  /**
+   * Get observer metrics without stopping
+   */
+  static getObserverMetrics(id: string): PerformanceEntry[] {
+    return this.observerMetrics.get(id) || []
+  }
+
+  /**
+   * Start FPS monitoring
+   */
+  static startFPSMonitoring(): void {
+    if (this.fpsMonitoring || typeof window === 'undefined') return
+
+    this.fpsMonitoring = true
+    this.lastFPSFrameTime = performance.now()
+    this.fpsFrameCount = 0
+
+    const measureFPS = () => {
+      if (!this.fpsMonitoring) return
+
+      const now = performance.now()
+      const delta = now - this.lastFPSFrameTime
+
+      // Calculate FPS every second
+      this.fpsFrameCount++
+      if (delta >= 1000) {
+        const fps = Math.round((this.fpsFrameCount * 1000) / delta)
+        this.fpsMetrics.current = fps
+        this.fpsMetrics.samples.push(fps)
+
+        // Keep last 60 samples (1 minute at 1 sample/second)
+        if (this.fpsMetrics.samples.length > 60) {
+          this.fpsMetrics.samples.shift()
+        }
+
+        // Update stats
+        this.fpsMetrics.average =
+          this.fpsMetrics.samples.reduce((a, b) => a + b, 0) /
+          this.fpsMetrics.samples.length
+        this.fpsMetrics.min = Math.min(...this.fpsMetrics.samples)
+        this.fpsMetrics.max = Math.max(...this.fpsMetrics.samples)
+
+        // Track janky frames (< 60fps)
+        if (fps < 60) {
+          this.fpsMetrics.jankyFrames++
+        }
+
+        this.fpsFrameCount = 0
+        this.lastFPSFrameTime = now
+      }
+
+      this.fpsRafId = requestAnimationFrame(measureFPS)
+    }
+
+    this.fpsRafId = requestAnimationFrame(measureFPS)
+  }
+
+  /**
+   * Stop FPS monitoring
+   */
+  static stopFPSMonitoring(): void {
+    this.fpsMonitoring = false
+    if (this.fpsRafId !== null) {
+      cancelAnimationFrame(this.fpsRafId)
+      this.fpsRafId = null
+    }
+  }
+
+  /**
+   * Get current FPS metrics
+   */
+  static getFPSMetrics(): FPSMetrics {
+    return { ...this.fpsMetrics }
+  }
+
+  /**
+   * Check if FPS is acceptable (>= 30fps)
+   */
+  static isFPSAcceptable(): boolean {
+    return this.fpsMetrics.current >= 30
+  }
+
+  /**
+   * Measure async operation (compatible with memory package API)
+   */
+  static async measure<T>(
+    operation: string,
+    fn: () => Promise<T>,
+    metadata?: Record<string, any>
+  ): Promise<T> {
+    const startTime = performance.now()
+
+    try {
+      const result = await fn()
+      const duration = performance.now() - startTime
+
+      this.recordTiming(operation, startTime, startTime + duration)
+
+      if (metadata) {
+        const timing = this.operations.get(operation)
+        if (timing) {
+          ;(timing as any).metadata = metadata
+        }
+      }
+
+      return result
+    } catch (error) {
+      const duration = performance.now() - startTime
+      this.recordTiming(operation, startTime, startTime + duration)
+
+      if (metadata || error) {
+        const timing = this.operations.get(operation)
+        if (timing) {
+          ;(timing as any).metadata = {
+            ...metadata,
+            error: error instanceof Error ? error.message : String(error),
+          }
+        }
+      }
+
+      throw error
+    }
+  }
 }
 
 // ============================================================================
@@ -871,6 +1077,122 @@ export function checkPerformanceTarget(
   return { met, deviation, percentage }
 }
 
+// ============================================================================
+// MEMORY MANAGEMENT
+// ============================================================================
+
+/**
+ * Memory management utilities
+ */
+export class MemoryManager {
+  private cleanupCallbacks: Set<() => void> = new Set()
+  private maxMemoryUsage: number
+
+  constructor(maxMemoryUsage: number = 512) {
+    this.maxMemoryUsage = maxMemoryUsage
+  }
+
+  /**
+   * Register a cleanup callback
+   */
+  registerCleanup(callback: () => void): () => void {
+    this.cleanupCallbacks.add(callback)
+    return () => this.cleanupCallbacks.delete(callback)
+  }
+
+  /**
+   * Perform memory cleanup
+   */
+  cleanup(): void {
+    this.cleanupCallbacks.forEach((callback) => {
+      try {
+        callback()
+      } catch (error) {
+        console.error('Memory cleanup error:', error)
+      }
+    })
+
+    // Force garbage collection (if available)
+    if (typeof global !== 'undefined' && (global as any).gc) {
+      ;(global as any).gc()
+    }
+  }
+
+  /**
+   * Check if memory usage is acceptable
+   */
+  isMemoryUsageAcceptable(): boolean {
+    if (typeof performance === 'undefined') return true
+    // @ts-expect-error - memory is Chrome-specific
+    if (!performance.memory) return true
+
+    // @ts-expect-error - memory is Chrome-specific
+    const usedMemory = Math.round((performance.memory.usedJSHeapSize || 0) / 1024 / 1024)
+    return usedMemory < this.maxMemoryUsage
+  }
+
+  /**
+   * Create a memory-efficient object pool
+   */
+  createObjectPool<T>(
+    createFn: () => T,
+    resetFn: (obj: T) => void,
+    maxSize: number = 100
+  ): ObjectPool<T> {
+    return new ObjectPool(createFn, resetFn, maxSize)
+  }
+}
+
+/**
+ * Object pool for memory efficiency
+ */
+export class ObjectPool<T> {
+  private pool: T[] = []
+  private createFn: () => T
+  private resetFn: (obj: T) => void
+  private maxSize: number
+
+  constructor(createFn: () => T, resetFn: (obj: T) => void, maxSize: number) {
+    this.createFn = createFn
+    this.resetFn = resetFn
+    this.maxSize = maxSize
+  }
+
+  /**
+   * Acquire an object from the pool
+   */
+  acquire(): T {
+    if (this.pool.length > 0) {
+      return this.pool.pop()!
+    }
+    return this.createFn()
+  }
+
+  /**
+   * Release an object back to the pool
+   */
+  release(obj: T): void {
+    if (this.pool.length < this.maxSize) {
+      this.resetFn(obj)
+      this.pool.push(obj)
+    }
+  }
+
+  /**
+   * Clear the pool
+   */
+  clear(): void {
+    this.pool.length = 0
+  }
+}
+
+// ============================================================================
+// EXPORTS
+// ============================================================================
+
 // Export the main monitor
 export const PerformanceMonitor = UnifiedPerformanceMonitor
 export const performanceMonitor = UnifiedPerformanceMonitor
+
+// Export memory manager singleton
+export const memoryManager = new MemoryManager()

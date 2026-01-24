@@ -156,7 +156,7 @@ export {
   type VirtualScrollConfig,
   type DebounceConfig,
   type ThrottleConfig,
-} from '@clarity-chat/utils/performance-unified'
+} from '@clarity-chat/utils'
 
 // Note: MemoryManager and calculateMessageDiff removed - use domain-specific implementations
 // PerformanceTracker removed - use PerformanceMonitor.getStats() instead

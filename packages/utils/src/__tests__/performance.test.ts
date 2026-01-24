@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { PerformanceMonitor, measurePerformance } from '../performance.js'
+import { UnifiedPerformanceMonitor as PerformanceMonitor, measurePerformance } from '../performance-unified.js'
 
 describe('PerformanceMonitor', () => {
   beforeEach(() => {

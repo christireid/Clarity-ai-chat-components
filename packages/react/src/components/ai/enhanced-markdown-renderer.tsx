@@ -5,9 +5,11 @@ import ReactMarkdown from 'react-markdown'
 // rehypeHighlight is now loaded async (react-markdown v10 feature)
 import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
-import { usePerformanceTracking } from '../../utils/performance-monitoring'
+import { usePerformanceTracking } from '../../hooks/performance/usePerformanceMonitoring'
 import { ContentErrorBoundary } from '../ui/error-boundary'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
+import { MarkdownCodeBlock } from '../message/markdown-code-block'
+import { CopyButton } from '../message/copy-button'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 /** Mermaid theme types */
@@ -60,6 +62,10 @@ export interface EnhancedMarkdownConfig {
   className?: string
   /** Theme for code blocks */
   codeTheme?: 'light' | 'dark'
+  /** Enable copy buttons on code blocks */
+  enableCopyButton?: boolean
+  /** Enable lazy/deferred rendering for performance during streaming */
+  enableLazyRendering?: boolean
 }
 
 /**
@@ -115,6 +121,8 @@ const EnhancedMarkdownRendererComponent = React.memo(
       enableSyntaxHighlight = true,
       className,
       codeTheme = 'light',
+      enableCopyButton = true,
+      enableLazyRendering = false,
     } = config
 
     // Analytics tracking
@@ -123,6 +131,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
 
     const containerRef = React.useRef<HTMLDivElement>(null)
     const mermaidInitialized = React.useRef(false)
+    const [renderedContent, setRenderedContent] = React.useState<React.ReactNode | null>(null)
 
     // Initialize Mermaid after component mounts
     React.useEffect(() => {
@@ -209,6 +218,172 @@ const EnhancedMarkdownRendererComponent = React.memo(
       ])
     }
 
+    // Custom markdown components with copy button support
+    const customComponents = React.useMemo(() => {
+      return {
+        // Custom code block rendering for Mermaid and copy buttons
+        code({ node: _node, inline: _inline, className, children, ...props }: MarkdownCodeProps) {
+          const match = /language-(\w+)/.exec(className || '')
+          const language = match ? match[1] : ''
+          const codeString = String(children).replace(/\n$/, '')
+
+          if (language === 'mermaid' && enableMermaid) {
+            return (
+              <div className="mermaid-container my-4 p-4 bg-muted rounded-lg overflow-x-auto">
+                <pre className="language-mermaid m-0 bg-transparent">
+                  <code className="language-mermaid">{codeString}</code>
+                </pre>
+              </div>
+            )
+          }
+
+          // Use MarkdownCodeBlock for syntax highlighting
+          if (!_inline) {
+            return <MarkdownCodeBlock inline={_inline} className={className} {...props}>{children}</MarkdownCodeBlock>
+          }
+
+          return (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          )
+        },
+        // Custom pre handler with copy button
+        pre: ({ children, ...props }: ComponentPropsWithoutRef<'pre'>) => {
+          if (!enableCopyButton) {
+            return <pre {...props}>{children}</pre>
+          }
+
+          // Extract code string for copy button
+          let codeString = ''
+          React.Children.forEach(children, (child) => {
+            if (React.isValidElement(child) && child.props) {
+              const props = child.props as Record<string, unknown>
+              codeString = (props['data-code-string'] as string) || ''
+              if (!codeString && props.children) {
+                const extractText = (node: React.ReactNode): string => {
+                  if (typeof node === 'string') return node
+                  if (Array.isArray(node)) return node.map(extractText).join('')
+                  if (React.isValidElement(node)) {
+                    const nodeProps = node.props as { children?: React.ReactNode }
+                    if (nodeProps?.children) {
+                      return extractText(nodeProps.children)
+                    }
+                  }
+                  return ''
+                }
+                codeString = extractText(props.children as React.ReactNode)
+              }
+            }
+          })
+
+          return (
+            <div className="relative group/code my-4">
+              <pre
+                className={cn(
+                  'relative overflow-x-auto p-4',
+                  'bg-gradient-to-br from-muted/60 to-muted/40',
+                  'border border-border/50',
+                  'rounded-xl',
+                  'shadow-sm',
+                  'transition-shadow duration-200',
+                  'group-hover/code:shadow-md'
+                )}
+                {...props}
+              >
+                {children}
+              </pre>
+              {codeString && (
+                <CopyButton
+                  text={codeString}
+                  className="absolute top-2.5 right-2.5 opacity-0 group-hover/code:opacity-100 transition-all duration-200 translate-y-1 group-hover/code:translate-y-0"
+                />
+              )}
+            </div>
+          )
+        },
+        // Custom math rendering for KaTeX
+        p({ children, ...props }: MarkdownParagraphProps) {
+          // Check if paragraph contains math delimiters
+          const contentStr = React.Children.toArray(children).join('')
+          if (enableKaTeX && (contentStr.includes('$$') || contentStr.includes('\\('))) {
+            // Would render with KaTeX here
+            // For now, return standard paragraph
+          }
+          // Safe paragraph rendering (div instead of p to avoid hydration issues)
+          return <div className="mb-4 leading-relaxed" {...props}>{children}</div>
+        },
+        // Table styling
+        table: ({ children, ...props }: MarkdownTableProps) => (
+          <div className="overflow-x-auto my-4 w-full">
+            <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
+              {children}
+            </table>
+          </div>
+        ),
+        thead: ({ children, ...props }: MarkdownElementProps) => (
+          <thead className="bg-muted" {...props}>
+            {children}
+          </thead>
+        ),
+        tbody: ({ children, ...props }: MarkdownElementProps) => (
+          <tbody className="bg-background divide-y divide-border" {...props}>
+            {children}
+          </tbody>
+        ),
+        th: ({ children, ...props }: MarkdownCellProps) => (
+          <th
+            className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
+            {...props}
+          >
+            {children}
+          </th>
+        ),
+        td: ({ children, ...props }: MarkdownTdProps) => (
+          <td className="px-6 py-4 text-sm border border-border" {...props}>
+            {children}
+          </td>
+        ),
+        tr: ({ children, ...props }: MarkdownTrProps) => (
+          <tr className="hover:bg-muted/50 transition-colors" {...props}>
+            {children}
+          </tr>
+        ),
+      }
+    }, [enableMermaid, enableCopyButton, enableKaTeX])
+
+    // Lazy rendering effect for streaming performance
+    React.useEffect(() => {
+      if (enableLazyRendering) {
+        // Defer expensive markdown rendering to prevent blocking UI
+        const timer = setTimeout(() => {
+          setRenderedContent(
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={rehypePlugins}
+              components={customComponents}
+            >
+              {content}
+            </ReactMarkdown>
+          )
+        }, 0)
+
+        return () => clearTimeout(timer)
+      } else {
+        // Render immediately
+        setRenderedContent(
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={rehypePlugins}
+            components={customComponents}
+          >
+            {content}
+          </ReactMarkdown>
+        )
+        return undefined
+      }
+    }, [content, enableLazyRendering, rehypePlugins, customComponents])
+
     return (
       <div
         ref={containerRef}
@@ -219,85 +394,32 @@ const EnhancedMarkdownRendererComponent = React.memo(
           'prose-pre:bg-muted prose-pre:border',
           codeTheme === 'dark' && 'prose-invert',
           isStreaming && 'animate-pulse',
+          // Apply streaming-specific optimizations
+          isStreaming && 'clarity-streaming-markdown',
           className
         )}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={rehypePlugins}
-          components={{
-            // Custom code block rendering for Mermaid
-            code({ node: _node, inline: _inline, className, children, ...props }: MarkdownCodeProps) {
-              const match = /language-(\w+)/.exec(className || '')
-              const language = match ? match[1] : ''
-              const codeString = String(children).replace(/\n$/, '')
-
-              if (language === 'mermaid' && enableMermaid) {
-                return (
-                  <div className="mermaid-container my-4 p-4 bg-muted rounded-lg overflow-x-auto">
-                    <pre className="language-mermaid m-0 bg-transparent">
-                      <code className="language-mermaid">{codeString}</code>
-                    </pre>
-                  </div>
-                )
-              }
-
-              return (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              )
-            },
-            // Custom math rendering for KaTeX
-            p({ children, ...props }: MarkdownParagraphProps) {
-              // Check if paragraph contains math delimiters
-              const contentStr = React.Children.toArray(children).join('')
-              if (enableKaTeX && (contentStr.includes('$$') || contentStr.includes('\\('))) {
-                // Would render with KaTeX here
-                // For now, return standard paragraph
-              }
-              return <p {...props}>{children}</p>
-            },
-            // Table styling
-            table: ({ children, ...props }: MarkdownTableProps) => (
-              <div className="overflow-x-auto my-4 w-full">
-                <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
-                  {children}
-                </table>
+        {/* Render content (lazy or immediate) */}
+        {enableLazyRendering ? (
+          <>
+            {renderedContent || (
+              <div className={cn(isStreaming && 'clarity-streaming-text')}>
+                {content.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    {i < content.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
               </div>
-            ),
-            thead: ({ children, ...props }: MarkdownElementProps) => (
-              <thead className="bg-muted" {...props}>
-                {children}
-              </thead>
-            ),
-            tbody: ({ children, ...props }: MarkdownElementProps) => (
-              <tbody className="bg-background divide-y divide-border" {...props}>
-                {children}
-              </tbody>
-            ),
-            th: ({ children, ...props }: MarkdownCellProps) => (
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
-                {...props}
-              >
-                {children}
-              </th>
-            ),
-            td: ({ children, ...props }: MarkdownTdProps) => (
-              <td className="px-6 py-4 text-sm border border-border" {...props}>
-                {children}
-              </td>
-            ),
-            tr: ({ children, ...props }: MarkdownTrProps) => (
-              <tr className="hover:bg-muted/50 transition-colors" {...props}>
-                {children}
-              </tr>
-            ),
-          }}
-        >
-          {content}
-        </ReactMarkdown>
+            )}
+            {/* Cursor inside the streaming wrapper for proper inline positioning */}
+            {isStreaming && (
+              <span aria-hidden="true" className="clarity-streaming-cursor" />
+            )}
+          </>
+        ) : (
+          renderedContent
+        )}
 
         {/* KaTeX styles - loaded conditionally */}
         {enableKaTeX && (
@@ -334,10 +456,7 @@ export function useMarkdownFeatures(content: string) {
  * Enhanced Markdown Renderer with error boundary
  */
 export const EnhancedMarkdownRenderer = (props: EnhancedMarkdownRendererProps) => (
-  <ContentErrorBoundary
-    componentName="EnhancedMarkdownRenderer"
-    showErrorDetails={process.env['NODE_ENV'] === 'development'}
-  >
+  <ContentErrorBoundary variant="minimal">
     <EnhancedMarkdownRendererComponent {...props} />
   </ContentErrorBoundary>
 )

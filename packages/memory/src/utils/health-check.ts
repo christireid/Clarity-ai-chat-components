@@ -4,7 +4,7 @@
  * Verify system health and provide diagnostics
  */
 
-import type { ClarityMemory } from '../memory-service'
+import type { ClarityMemory } from '../memory-service/core'
 
 export interface HealthCheckResult {
   healthy: boolean

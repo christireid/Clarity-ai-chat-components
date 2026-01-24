@@ -700,133 +700,254 @@ const chat = useClarityChatApp({ api: '/api/chat' })
 - 200+ UI components (messages, inputs, bubbles, etc.)
 - 95+ hooks (`useClarityChatApp`, `useMessages`, `useStreaming`, etc.)
 - Built-in themes and animations
-- Memory, token optimization, and safety features
+- Memory, token optimization, and safety features (via re-exports)
 - Full accessibility (WCAG AAA)
 
 **Exports:** Components, hooks, contexts, types for building chat UIs
 
 ---
 
+### **@clarity-chat/primitives** - Core UI Primitives
+
+**Use this when:** You need base UI components and utilities.
+
+```tsx
+import { Button, Dialog, Tooltip, cn } from '@clarity-chat/primitives'
+
+// Accessible UI primitives
+<Button variant="primary">Click me</Button>
+<Dialog open={isOpen}>...</Dialog>
+
+// Class name utility
+className={cn('base-class', isActive && 'active-class')}
+```
+
+**What you get:**
+
+- Accessible UI components (Button, Dialog, Tooltip, etc.)
+- `cn` utility for class name merging
+- ARIA utilities and animation helpers
+- No heavy dependencies (just Radix UI + Tailwind)
+
+**Exports:** UI primitives, accessibility utilities, core UI helpers
+
+---
+
+### **@clarity-chat/utils** - General Utilities
+
+**Use this when:** You need formatting, validation, caching, or logging utilities.
+
+```tsx
+import { formatBytes, debounce, LRUCache, getLogger } from '@clarity-chat/utils'
+
+// Formatting
+const size = formatBytes(1024) // "1 KB"
+
+// Async utilities
+const debouncedFn = debounce(fn, 300)
+
+// Caching
+const cache = new LRUCache({ maxSize: 1000 })
+
+// Logging
+const logger = getLogger('MyComponent')
+logger.info('Hello')
+```
+
+**What you get:**
+
+- Formatting utilities (bytes, duration, numbers, etc.)
+- Validation helpers (type guards, assertions)
+- Async utilities (debounce, throttle, retry)
+- Caching (LRUCache, TTLCache, memoize)
+- Logging system
+- Environment detection
+
+**Exports:** General-purpose utilities (formatting, validation, caching, logging)
+
+---
+
 ### **@clarity-chat/token-optimization** - Advanced Token Management
 
-**Use this when:** You need token counting, compression, or optimization without UI.
+**Use this when:** You need token counting, compression, or optimization.
 
 ```tsx
-import { TokenCounter, PromptCompressor, BudgetMonitor } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
 
 // Count tokens accurately
-const counter = new TokenCounter({ model: 'gpt-4o' })
+const counter = new AccurateTokenCounter({ model: 'gpt-4o' })
 const tokens = counter.count(text)
 
-// Compress prompts
-const compressor = new PromptCompressor()
-const result = await compressor.compress(longText, { targetTokens: 1000 })
+// Budget monitoring hook
+const { usage, isWarning } = useTokenBudgetMonitor({
+  maxInputTokens: 128000,
+  reservedForOutput: 4096,
+})
 
-// Monitor budgets
-const monitor = new BudgetMonitor({ maxTokens: 128000 })
+// Compress prompts
+import { compressAdaptively } from '@clarity-chat/token-optimization'
+const result = await compressAdaptively(longText, { targetTokens: 1000 })
 ```
 
 **What you get:**
 
-- Token counting (15+ model families)
-- Prompt compression (4 strategies: LLMLingua, TOON, extractive, truncation)
-- Budget monitoring and alerts
+- Token counting (`AccurateTokenCounter` - canonical implementation)
+- Budget monitoring hooks and components
+- Compression strategies (LLMLingua, Extractive, Adaptive)
+- Model registry and pricing
 - Cost calculation
-- Model registry
 - Caching and routing
 
-**Exports:** Classes and utilities for token optimization (no React components)
+**Exports:** Token optimization tools, hooks, and utilities
 
 ---
 
-### **@clarity-chat/primitives** - Core Logic (Advanced)
+### **@clarity-chat/memory** - Conversation Memory
 
-**Use this when:** You're building custom implementations or need low-level utilities.
+**Use this when:** You need conversation persistence and context management.
 
 ```tsx
-import { Message, createMessageId } from '@clarity-chat/primitives'
+import { MemoryService, useMemory } from '@clarity-chat/memory'
 
-// Core types and utilities
-const message: Message = {
-  id: createMessageId(),
-  role: 'user',
-  content: 'Hello',
-}
+// Core memory service
+const memory = new MemoryService()
+await memory.add('User prefers dark mode')
+
+// React hook
+const { add, search } = useMemory()
+const results = await search('preferences')
 ```
 
 **What you get:**
 
-- Core types (`Message`, `ChatOptions`, etc.)
-- Utility functions
-- Validation helpers
-- No UI, no heavy dependencies
+- Conversation memory service
+- Vector store integration
+- Semantic search
+- Memory strategies
 
-**Exports:** Core types and utilities (foundation for other packages)
-
----
-
-### Common Confusion: Overlapping Exports
-
-Some functionality appears in multiple packages. Here's when to use each:
-
-#### Token Counting & Optimization
-
-```tsx
-// ❌ Don't import from @clarity-chat/react for token features
-import { TokenCounter } from '@clarity-chat/react'
-
-// ✅ Use @clarity-chat/token-optimization instead
-import { TokenCounter } from '@clarity-chat/token-optimization'
-```
-
-**Why:** `@clarity-chat/react` re-exports token features for convenience, but
-`@clarity-chat/token-optimization` is the canonical source with full API.
-
-#### Core Types
-
-```tsx
-// ❌ Don't import from @clarity-chat/react for basic types
-import { Message } from '@clarity-chat/react'
-
-// ✅ Use @clarity-chat/primitives for core types
-import { Message } from '@clarity-chat/primitives'
-```
-
-**Why:** `@clarity-chat/primitives` is the source of truth for core types. Importing from React adds
-unnecessary bundle weight.
+**Exports:** Memory management APIs and React hooks
 
 ---
 
-### Migration Path
+### **@clarity-chat/error-handling** - Error Recovery
 
-If you're using deprecated patterns:
+**Use this when:** You need robust error handling and recovery.
 
 ```tsx
-// Old (still works, but not recommended)
-import { TokenCounter } from '@clarity-chat/react'
+import { ErrorBoundary, useErrorHandler } from '@clarity-chat/error-handling'
 
-// New (cleaner, better tree-shaking)
+// Error boundary
+<ErrorBoundary fallback={<ErrorUI />}>
+  <ChatComponent />
+</ErrorBoundary>
+
+// Error hook
+const { error, retry } = useErrorHandler()
+```
+
+**What you get:**
+
+- Error boundary components
+- Error handling hooks
+- Recovery strategies
+
+**Exports:** Error handling components and hooks
+
+---
+
+### Package Import Best Practices
+
+Follow these guidelines for optimal bundle size and code clarity:
+
+#### ✅ Recommended Import Patterns
+
+```tsx
+// UI Components - from @clarity-chat/react
+import { ClarityChatApp, ChatWindow } from '@clarity-chat/react'
+
+// UI Primitives - from @clarity-chat/primitives
+import { Button, Dialog, cn } from '@clarity-chat/primitives'
+
+// General Utilities - from @clarity-chat/utils
+import { formatBytes, debounce, LRUCache } from '@clarity-chat/utils'
+
+// Token Optimization - from @clarity-chat/token-optimization
+import { AccurateTokenCounter, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+
+// Memory - from @clarity-chat/memory
+import { MemoryService, useMemory } from '@clarity-chat/memory'
+```
+
+#### ❌ Avoid These Patterns
+
+```tsx
+// ❌ Don't import utilities from React package
+import { formatBytes, debounce } from '@clarity-chat/react'
+
+// ✅ Import from utils package instead
+import { formatBytes, debounce } from '@clarity-chat/utils'
+
+// ❌ Don't import token counting from React package
+import { AccurateTokenCounter } from '@clarity-chat/react'
+
+// ✅ Import from token-optimization package
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+// ❌ Don't import primitives from React package
+import { cn } from '@clarity-chat/react'
+
+// ✅ Import from primitives package
+import { cn } from '@clarity-chat/primitives'
+```
+
+**Why?**
+
+- **Better tree-shaking:** Smaller bundle sizes
+- **Clearer dependencies:** Easier to understand what your code needs
+- **Better TypeScript support:** More accurate autocomplete and type checking
+- **Follows package semantics:** Each package has a clear responsibility
+
+---
+
+### Migration from Deprecated Patterns
+
+If you're using old import patterns, update them:
+
+```tsx
+// ❌ Old (deprecated, adds bundle weight)
+import { TokenCounter, formatBytes, cn } from '@clarity-chat/react'
+
+// ✅ New (recommended, better tree-shaking)
 import { ClarityChatApp } from '@clarity-chat/react'
-import { TokenCounter } from '@clarity-chat/token-optimization'
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+import { formatBytes, debounce } from '@clarity-chat/utils'
+import { cn } from '@clarity-chat/primitives'
 ```
-
-**Benefits:**
-
-- Smaller bundle size (better tree-shaking)
-- Clearer intent (UI vs logic separation)
-- Better TypeScript support
-- Follows package semantics
 
 ---
 
 ### Quick Decision Tree
 
 ```
-Need UI components?
-  ├─ Yes → @clarity-chat/react
-  └─ No → Need token features?
-            ├─ Yes → @clarity-chat/token-optimization
-            └─ No → @clarity-chat/primitives
+What do you need?
+
+UI Components for chat?
+  └─ @clarity-chat/react
+
+Token counting/optimization?
+  └─ @clarity-chat/token-optimization
+
+General utilities (format, validate, cache)?
+  └─ @clarity-chat/utils
+
+Base UI components (Button, Dialog)?
+  └─ @clarity-chat/primitives
+
+Conversation memory?
+  └─ @clarity-chat/memory
+
+Error handling?
+  └─ @clarity-chat/error-handling
 ```
 
 <br />

@@ -299,24 +299,129 @@ const bundle = await context({ maxTokens: 1000, query: 'preferences' })
 
 ## Utilities
 
-### convertCoreMessagesToMessages
+### Core Utilities (@clarity-chat/utils)
+
+For general-purpose utilities, import from the dedicated utils package:
+
+```tsx
+import {
+  // Formatting
+  formatBytes,
+  formatDuration,
+  formatNumber,
+  formatPercent,
+  truncate,
+
+  // Validation
+  isString,
+  isNumber,
+  isValidEmail,
+  isValidUrl,
+  assertDefined,
+
+  // Async operations
+  debounce,
+  throttle,
+  retry,
+  sleep,
+
+  // Caching
+  LRUCache,
+  TTLCache,
+  memoize,
+
+  // Logging
+  getLogger,
+  logger,
+
+  // Environment
+  isBrowser,
+  isNode,
+  isDev,
+  isProd,
+} from '@clarity-chat/utils'
+```
+
+See the [@clarity-chat/utils documentation](../packages/utils/README.md) for complete API reference.
+
+---
+
+### Token Optimization (@clarity-chat/token-optimization)
+
+For token counting, budgeting, and optimization:
+
+```tsx
+import {
+  // Token counting
+  AccurateTokenCounter,
+  countTokens,
+  estimateTokens,
+
+  // Budget monitoring
+  useTokenBudgetMonitor,
+  createModelBudgetMonitor,
+
+  // Cost calculation
+  calculateCost,
+  estimateTokenCost,
+
+  // Model registry
+  MODEL_REGISTRY,
+  isValidModelId,
+
+  // Compression
+  LLMLinguaCompressor,
+  AdaptiveCompressor,
+  compressAdaptively,
+} from '@clarity-chat/token-optimization'
+```
+
+See the [@clarity-chat/token-optimization documentation](../packages/token-optimization/README.md) for complete API reference.
+
+---
+
+### Primitives (@clarity-chat/primitives)
+
+For UI utilities and core functions:
+
+```tsx
+import {
+  // Class name merging
+  cn,
+
+  // ARIA utilities
+  generateAriaId,
+  announce,
+  getFocusableElements,
+
+  // Animation utilities
+  useReducedMotion,
+  fadeVariants,
+  springPresets,
+} from '@clarity-chat/primitives'
+```
+
+---
+
+### React Package Utilities
+
+Message conversion utilities specific to the React package:
+
+```tsx
+import { convertCoreMessagesToMessages, convertMessagesToCoreMessages } from '@clarity-chat/react'
+```
+
+#### convertCoreMessagesToMessages
 
 Convert CoreMessage[] to Message[] format.
 
-```tsx
-import { convertCoreMessagesToMessages } from '@clarity-chat/react'
-```
-
-#### Parameters
-
+**Parameters:**
 - `coreMessages: CoreMessage[]` - Array of core messages
 - `chatId?: string` - Optional chat ID (default: 'default')
 
-#### Returns
+**Returns:** `Message[]`
 
-- `Message[]` - Array of messages in ChatWindow format
-
-#### Example
+**Example:**
 
 ```tsx
 import { useMemo } from 'react'
@@ -327,24 +432,15 @@ const messages = useMemo(
 )
 ```
 
----
-
-### convertMessagesToCoreMessages
+#### convertMessagesToCoreMessages
 
 Convert Message[] to CoreMessage[] format.
 
-```tsx
-import { convertMessagesToCoreMessages } from '@clarity-chat/react'
-```
-
-#### Parameters
-
+**Parameters:**
 - `messages: Message[]` - Array of messages
 - `chatId?: string` - Optional chat ID (default: 'default')
 
-#### Returns
-
-- `CoreMessage[]` - Array of core messages
+**Returns:** `CoreMessage[]`
 
 ---
 
@@ -418,11 +514,87 @@ import { ErrorBoundary } from '@clarity-chat/react'
 
 ---
 
+## Package Import Guide
+
+Clarity Chat is organized into focused packages. Here's the recommended import strategy:
+
+### @clarity-chat/react
+**Use for:** Complete chat UI components and hooks
+```tsx
+import { ClarityChatApp, useClarityChat, ChatWindow } from '@clarity-chat/react'
+```
+
+### @clarity-chat/primitives
+**Use for:** Core UI primitives (buttons, dialogs, tooltips)
+```tsx
+import { Button, Dialog, Tooltip, cn } from '@clarity-chat/primitives'
+```
+
+### @clarity-chat/utils
+**Use for:** General utilities (formatting, validation, caching, logging)
+```tsx
+import { formatBytes, debounce, LRUCache, getLogger } from '@clarity-chat/utils'
+```
+
+### @clarity-chat/token-optimization
+**Use for:** Token counting, budgeting, cost optimization
+```tsx
+import { AccurateTokenCounter, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+```
+
+### @clarity-chat/memory
+**Use for:** Conversation memory and context management
+```tsx
+import { MemoryService, useMemory } from '@clarity-chat/memory'
+```
+
+### @clarity-chat/error-handling
+**Use for:** Error handling and recovery
+```tsx
+import { ErrorBoundary, useErrorHandler } from '@clarity-chat/error-handling'
+```
+
+---
+
+## Migration from Deprecated Patterns
+
+If you're using deprecated import patterns, update them as follows:
+
+### Token Counting
+```tsx
+// ❌ Old (deprecated)
+import { TokenCounter } from '@clarity-chat/react'
+
+// ✅ New (recommended)
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+```
+
+### Utilities
+```tsx
+// ❌ Old (deprecated)
+import { formatBytes, debounce } from '@clarity-chat/react'
+
+// ✅ New (recommended)
+import { formatBytes, debounce } from '@clarity-chat/utils'
+```
+
+### Core Types
+```tsx
+// ❌ Old (adds unnecessary bundle weight)
+import { Message } from '@clarity-chat/react'
+
+// ✅ New (smaller bundle)
+import { Message } from '@clarity-chat/primitives'
+```
+
+---
+
 ## Related Documentation
 
 - [Getting Started Guide](./getting-started.md) - Step-by-step setup
 - [Cookbook](./cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
+- [Package Documentation](../packages/) - Individual package docs
 - [Storybook](http://localhost:6006) - Interactive examples
 
 ---

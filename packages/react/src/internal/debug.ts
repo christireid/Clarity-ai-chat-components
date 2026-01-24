@@ -386,7 +386,7 @@ export async function measurePerformanceAsync<T>(
 }
 
 // Note: These are debug-enhanced versions that integrate with the debug logging system.
-// For general performance monitoring, use @clarity-chat/utils/performance-unified
+// For general performance monitoring, use @clarity-chat/utils
 
 /**
  * Global debug interface for browser console access

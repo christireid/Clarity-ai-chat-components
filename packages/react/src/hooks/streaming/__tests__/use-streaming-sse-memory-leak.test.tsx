@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Memory leak tests for SSE reconnection cycles
  *

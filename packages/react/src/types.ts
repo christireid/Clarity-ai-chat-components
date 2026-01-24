@@ -57,10 +57,8 @@ export type {
   ClarityChatTokenStats,
 } from './hooks/chat/use-clarity-chat'
 
-export type {
-  UseChatOptions,
-  UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// UseChatOptions and UseChatReturn were removed in v2.0
+// Use UseClarityChatOptions and UseClarityChatReturn instead
 
 export type {
   UseClarityObjectOptions,

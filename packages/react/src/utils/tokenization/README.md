@@ -1,13 +1,19 @@
 # Token Optimization System
 
-Comprehensive token management utilities for LLM applications, providing accurate counting, cost
-estimation, and budget monitoring.
+> **Important:** This documentation describes the canonical token optimization APIs located in `@clarity-chat/token-optimization`. The React package re-exports these for convenience, but the source of truth is the token-optimization package.
+
+Comprehensive token management utilities for LLM applications, providing accurate counting, cost estimation, and budget monitoring.
 
 ## Quick Start
 
+### Recommended: Import from Token Optimization Package
+
 ```typescript
 import {
-  // Token counting
+  // Token counting (canonical implementation)
+  AccurateTokenCounter,
+
+  // Convenience functions
   countTokens,
   estimateTokens,
 
@@ -22,32 +28,69 @@ import {
   // Model registry
   MODEL_REGISTRY,
   isValidModelId,
+
+  // Compression
+  LLMLinguaCompressor,
+  AdaptiveCompressor,
+  compressAdaptively,
+} from '@clarity-chat/token-optimization'
+```
+
+### Alternative: Import from React Package (Re-exports)
+
+```typescript
+import {
+  // Re-exported from @clarity-chat/token-optimization
+  AccurateTokenCounter,
+  useTokenBudgetMonitor,
+  calculateCost,
 } from '@clarity-chat/react'
 ```
+
+> **Note:** Importing from `@clarity-chat/token-optimization` is recommended for better tree-shaking and explicit dependency management.
 
 ## Features
 
 ### 1. Token Counting
 
-#### Accurate Counting (with tiktoken)
+#### Canonical Implementation: AccurateTokenCounter
+
+The `AccurateTokenCounter` is the canonical implementation for token counting:
 
 ```typescript
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+const counter = new AccurateTokenCounter({
+  model: 'gpt-4o',
+  enableCaching: true,
+})
+
+// Count tokens
+const count = counter.count('Hello, world!')
+// 4
+
+// Count message tokens (includes message formatting overhead)
+const messageTokens = counter.countMessages([
+  { role: 'user', content: 'Hello, world!' }
+])
+```
+
+#### Convenience Functions
+
+For simpler use cases:
+
+```typescript
+import { countTokens, estimateTokens } from '@clarity-chat/token-optimization'
+
+// Accurate counting (uses tiktoken)
 const count = await countTokens('Hello, world!', { model: 'gpt-4o' })
 // { total: 4, model: 'gpt-4o', method: 'accurate' }
-```
 
-#### Fast Estimation (no dependencies)
-
-```typescript
+// Fast estimation (no dependencies)
 const tokens = estimateTokens('Hello, world!', 'gpt-4o')
 // 4 (estimated)
-```
 
-#### CJK-Aware Estimation
-
-The estimator automatically adjusts for CJK characters which typically use more tokens:
-
-```typescript
+// CJK-aware estimation
 const tokens = estimateTokens('你好世界', 'gpt-4o')
 // Higher count due to CJK character handling
 ```
@@ -55,6 +98,8 @@ const tokens = estimateTokens('你好世界', 'gpt-4o')
 ### 2. Budget Monitoring Hook
 
 ```typescript
+import { useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+
 function ChatInput() {
   const {
     usage,
@@ -94,6 +139,8 @@ function ChatInput() {
 ### 3. Pre-configured Model Monitors
 
 ```typescript
+import { createModelBudgetMonitor, useTokenBudgetMonitor } from '@clarity-chat/token-optimization'
+
 // Quick setup for common models
 const config = createModelBudgetMonitor('gpt-4o')
 const { usage } = useTokenBudgetMonitor(config)
@@ -110,7 +157,7 @@ const config = createModelBudgetMonitor('claude-sonnet-4', {
 Share budget state across components without prop drilling:
 
 ```typescript
-import { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/react'
+import { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/token-optimization'
 
 // Wrap your app with the provider
 function App() {
@@ -147,7 +194,7 @@ function OptionalDisplay() {
 ### 5. Cost Estimation
 
 ```typescript
-import { calculateCost, estimateTokenCost } from '@clarity-chat/react'
+import { calculateCost, estimateTokenCost } from '@clarity-chat/token-optimization'
 
 // Calculate actual cost
 const cost = calculateCost({
@@ -165,7 +212,7 @@ const estimate = estimateTokenCost(usage, 'gpt-4o')
 ### 6. Visual Components
 
 ```typescript
-import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/react'
+import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/token-optimization'
 
 // Full progress bar with labels and accessibility features
 <TokenBudgetBar
@@ -185,8 +232,7 @@ import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/react'
 
 #### Accessibility Features
 
-- **ARIA attributes**: Progress bar has `role="progressbar"` with `aria-valuenow`, `aria-valuemin`,
-  `aria-valuemax`
+- **ARIA attributes**: Progress bar has `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`
 - **Screen reader support**: Status descriptions are announced via `aria-live` regions
 - **Keyboard navigation**: Focusable with Tab, activatable with Enter/Space, dismissible with Escape
 - **Focus indicators**: Visible focus rings for keyboard users
@@ -197,7 +243,7 @@ import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/react'
 The `MODEL_REGISTRY` provides a single source of truth for all model configurations:
 
 ```typescript
-import { MODEL_REGISTRY, getModelsByProvider, isValidModelId } from '@clarity-chat/react'
+import { MODEL_REGISTRY, getModelsByProvider, isValidModelId } from '@clarity-chat/token-optimization'
 
 // Get model config
 const config = MODEL_REGISTRY['gpt-4o']
@@ -233,23 +279,49 @@ if (isValidModelId(userInput)) {
 
 ## Architecture
 
+### Canonical Location: @clarity-chat/token-optimization
+
+All token optimization functionality is now located in the `@clarity-chat/token-optimization` package:
+
 ```
-tokenization/
-├── accurate-counter.ts    # Tiktoken-based accurate counting with LRU cache
-├── estimator.ts           # Fast estimation without dependencies
-├── model-pricing.ts       # Cost calculation (derives from MODEL_REGISTRY)
-├── model-registry.ts      # Single source of truth for model configs
-└── index.ts              # Public exports
-
-hooks/
-└── use-token-budget-monitor.tsx  # React hook for budget tracking
-
-context/
-└── token-budget-context.tsx  # React Context provider for shared budget state
-
-components/
-└── token-budget-bar.tsx   # Visual components with accessibility
+@clarity-chat/token-optimization/
+├── tokenizers/
+│   ├── accurate-counter.ts           # AccurateTokenCounter (CANONICAL)
+│   └── provider-native-counter.ts    # Provider-specific counting
+├── models/
+│   ├── model-registry.ts             # Single source of truth for model configs
+│   └── model-pricing.ts              # Cost calculation
+├── compression/
+│   ├── strategies/
+│   │   ├── llmlingua.ts              # LLMLingua compression
+│   │   ├── extractive.ts             # Extractive summarization
+│   │   └── adaptive.ts               # Adaptive compression
+│   └── index.ts
+├── hooks/
+│   ├── use-token-count.ts            # Simple token counting hook
+│   ├── use-token-budget-monitor.ts   # Budget tracking hook
+│   └── use-token-optimization.ts     # Full optimization pipeline
+├── cache/
+│   ├── exact-cache.ts                # Exact match caching
+│   ├── smart-cache.ts                # Semantic similarity caching
+│   └── tiered-cache.ts               # Multi-tier caching strategy
+└── index.ts                          # Public exports
 ```
+
+### React Package Integration
+
+The React package provides thin wrappers and re-exports for convenience:
+
+```
+@clarity-chat/react/
+├── src/utils/tokenization/
+│   ├── index.ts                      # Re-exports from token-optimization
+│   └── README.md                     # This file (usage guide)
+└── src/hooks/token/
+    └── index.ts                      # Re-exports token hooks
+```
+
+> **Migration Note:** If you're importing from `@clarity-chat/react/utils/tokenization`, consider updating to import directly from `@clarity-chat/token-optimization` for better tree-shaking and clarity of dependencies.
 
 ## Performance
 
@@ -260,7 +332,7 @@ components/
 - ~95%+ hit rate for repeated content
 
 ```typescript
-import { getTokenizerStats, clearTokenCache } from '@clarity-chat/react'
+import { getTokenizerStats, clearTokenCache } from '@clarity-chat/token-optimization'
 
 const stats = getTokenizerStats()
 console.log(`Hit rate: ${stats.cacheHitRate}`)
@@ -269,8 +341,7 @@ console.log(`Hit rate: ${stats.cacheHitRate}`)
 
 ### Debounced Updates
 
-The budget monitor debounces token calculations (default 300ms) to prevent excessive recalculation
-during rapid typing.
+The budget monitor debounces token calculations (default 300ms) to prevent excessive recalculation during rapid typing.
 
 ### Parallel Processing
 
@@ -278,8 +349,7 @@ Token counts for multiple messages are calculated in parallel using `Promise.all
 
 ### Abort Controller
 
-In-flight calculations are automatically aborted when new updates arrive, preventing stale state
-updates.
+In-flight calculations are automatically aborted when new updates arrive, preventing stale state updates.
 
 ## Best Practices
 
@@ -305,6 +375,48 @@ updates.
      const config = createModelBudgetMonitor(userSelectedModel)
    }
    ```
+
+6. **Import from canonical package** for better tree-shaking:
+   ```typescript
+   // ✅ Recommended
+   import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+   // ⚠️ Works but adds bundle weight
+   import { AccurateTokenCounter } from '@clarity-chat/react'
+   ```
+
+## Migration from Deprecated APIs
+
+If you're using deprecated patterns, update them as follows:
+
+### TokenCounter → AccurateTokenCounter
+
+```typescript
+// ❌ Old (deprecated)
+import { TokenCounter } from '@clarity-chat/react'
+const counter = new TokenCounter()
+
+// ✅ New (canonical)
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+const counter = new AccurateTokenCounter({ model: 'gpt-4o' })
+```
+
+### Text Compression APIs
+
+```typescript
+// ❌ Old (removed)
+import { compressText } from '@clarity-chat/react/utils/tokenization'
+
+// ✅ New (canonical)
+import { compressAdaptively, LLMLinguaCompressor } from '@clarity-chat/token-optimization'
+
+// Simple compression
+const result = await compressAdaptively(text, { targetTokens: 1000 })
+
+// Advanced compression
+const compressor = new LLMLinguaCompressor()
+const result = await compressor.compress(text, { targetRatio: 0.5 })
+```
 
 ## Types Reference
 
@@ -333,3 +445,10 @@ interface TokenBudgetConfig {
   onExceeded?: (usage: TokenUsage) => void
 }
 ```
+
+## See Also
+
+- [@clarity-chat/token-optimization package documentation](../../../../token-optimization/README.md)
+- [Model Registry documentation](../../../../token-optimization/docs/MODEL_REGISTRY.md)
+- [Compression strategies documentation](../../../../token-optimization/docs/COMPRESSION.md)
+- [Main API reference](../../../../../docs/api-reference.md)

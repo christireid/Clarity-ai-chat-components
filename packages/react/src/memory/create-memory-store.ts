@@ -122,8 +122,6 @@ export function createMemoryStore(
       thread: 604800,
       global: 0,
     },
-    maxTokens: maxTokens || 8000,
-    strategy,
   }
   const service = customService || new MemoryService(serviceConfig)
 

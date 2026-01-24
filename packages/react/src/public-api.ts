@@ -423,7 +423,7 @@ export {
   MessageSearch,
   MessageSearchWithSuspense,
 } from './components/search/message-search'
-export { SemanticMessageSearch } from './components/search/advanced-message-search-semantic'
+// SemanticMessageSearch is already exported via 'export * from ./components/search' in internal.ts
 export { AdvancedMessageSearch } from './components/search/advanced-message-search'
 
 // Prompts and Suggestions
@@ -882,8 +882,6 @@ export { useStreamingChat } from './hooks/streaming/use-streaming-chat'
 export { useDebounce } from './hooks/ui/use-debounce'
 export { useWindowSize } from './hooks/ui/use-window-size'
 export { usePrevious } from './hooks/ui/use-previous'
-// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
-// export { useAnimatedValue, AnimatedNumber } from './hooks/ui/use-animated-value'
 
 // Message operations
 export { useMessageOperations } from './hooks/message/use-message-operations'
@@ -913,35 +911,6 @@ export { createRAGEngine } from './app-api/rag-engine'
 export { createToolsEngine } from './app-api/tools-engine'
 
 // ============================================================================
-// ANIMATION COMPONENTS (UI Feedback & Presence)
-// ============================================================================
-
-// TEMPORARILY COMMENTED OUT TO DEBUG STORYBOOK BUILD
-// Feedback Animations - Visual feedback components for user actions
-// export {
-//   FeedbackAnimation,
-//   SuccessCheckmark,
-//   ErrorShake,
-//   PulseAttention,
-//   RippleEffect,
-//   ConfettiEffect,
-//   GlowEffect,
-//   BounceIn,
-//   SlideNotification,
-// } from './components/ui/feedback-animation'
-
-// Animated Lists & Presence - List animations and mount/unmount transitions
-// export {
-//   AnimatedList,
-//   AnimatedListItem,
-//   FadePresence,
-//   SlidePresence,
-//   ScalePresence,
-//   StaggerContainer,
-//   AnimatedGrid,
-// } from './components/ui/animated-list'
-
-// ============================================================================
 // AI OPERATIONS COMPONENTS (Prompt Testing & Safety)
 // ============================================================================
 
@@ -955,34 +924,40 @@ export {
 // Enterprise Components
 export { SeatInviteDialog } from './components/enterprise/SeatInviteDialog'
 export { SSOConfigWizard } from './components/enterprise/SSOConfigWizard'
-// export { ApiTokenManager } from './components/enterprise/api-token-manager'
-// export { AuthTenantDashboard } from './components/enterprise/auth-tenant-dashboard'
-
-// ============================================================================
-// THEME COMPONENTS (Theme Preview & Testing)
-// ============================================================================
-
-// Theme Components - Visual theme preview and contrast testing tools
-// TEMPORARILY COMMENTED OUT TO FIX STORYBOOK BUILD
-// export { ThemeContrastChecker } from './components/theme-components/theme-contrast-checker'
-// export { ThemePreview } from './components/theme-components/theme-preview'
-// export {
-//   ThemePreviewGrid,
-//   ThemePreviewThumbnail,
-// } from './components/theme-components/theme-preview-thumbnail'
 
 // ============================================================================
 // UTILITIES (Performance & Accessibility Testing)
 // ============================================================================
 
-// Performance monitoring
+// Performance monitoring (React hooks)
 export {
   usePerformanceTracking,
-  logPerformanceMetrics,
-  getPerformanceSummary,
+  usePerformanceMonitoring,
+  useRenderOptimization,
+  use60FPSAnimation,
+  withComponentPerformanceTracking,
+  createProfilerCallback,
+  animationFrame,
+  AnimationFrame,
+  FPSOptimizer,
   type UsePerformanceTrackingOptions,
+  type UsePerformanceMonitoringOptions,
+} from './hooks/performance/usePerformanceMonitoring'
+
+// Performance monitoring (utilities - re-exported from @clarity-chat/utils)
+export {
+  UnifiedPerformanceMonitor as PerformanceMonitor,
+  performanceMonitor,
+  memoryManager,
   type PerformanceMetrics,
-} from './utils/performance-monitoring'
+  type FPSMetrics,
+  type OperationTiming,
+  measurePerformance,
+  measurePerformanceAsync,
+  getPerformanceMetrics,
+  getPerformanceSummary,
+  formatPerformanceMetrics,
+} from '@clarity-chat/utils'
 
 // Accessibility testing
 export {
@@ -1067,7 +1042,7 @@ export {
   useInteractionTracking,
   useInteractionLatency,
   createEventHandler,
-  measurePerformance,
+  // measurePerformance removed - use the one from @clarity-chat/utils
   batchAnalyticsEvents,
   type AnalyticsEvent,
   type ComponentUsageEvent,

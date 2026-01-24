@@ -41,6 +41,21 @@ export type {
 export { ChatErrorBoundary } from './components/ChatErrorBoundary'
 export type { ChatErrorBoundaryProps } from './components/ChatErrorBoundary'
 
+// Specialized ErrorBoundaries
+export {
+  DashboardErrorBoundary,
+  useDashboardErrorHandler,
+  MediaErrorBoundary,
+  InlineErrorBoundary,
+  PanelErrorBoundary,
+  PreviewErrorBoundary,
+} from './components/SpecializedErrorBoundaries'
+export type {
+  DashboardErrorBoundaryProps,
+  PanelErrorBoundaryProps,
+  PreviewErrorBoundaryProps,
+} from './components/SpecializedErrorBoundaries'
+
 // =============================================================================
 // Hooks
 // =============================================================================

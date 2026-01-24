@@ -1,74 +1,73 @@
 /**
  * Structured logging utility for MCP server
  *
- * Uses console.error for stdio transport compatibility
+ * Uses console.error for stdio transport compatibility.
+ * Re-exports the canonical logger from @clarity-chat/utils with MCP-specific adaptations.
  */
 
-export enum LogLevel {
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
-}
+import { getLogger as utilsGetLogger } from '@clarity-chat/utils/logger'
 
-interface LogEntry {
-  level: LogLevel
-  message: string
-  timestamp: string
-  requestId?: string
-  error?: string
-  stack?: string
-  metadata?: Record<string, unknown>
-}
+// Re-export standard logger types
+export { LogLevel } from '@clarity-chat/utils/logger'
+export type { Logger, LogEntry, LoggerOptions } from '@clarity-chat/utils/logger'
 
-class Logger {
+/**
+ * MCP Server Logger
+ *
+ * Uses console.error for logging to ensure stdio transport compatibility
+ * (MCP uses stdin/stdout for communication, so we need stderr for logs)
+ */
+class MCPLogger {
   private requestId?: string
+  private baseLogger = utilsGetLogger('mcp-server')
 
-  setRequestId(requestId: string) {
+  setRequestId(requestId: string): void {
     this.requestId = requestId
   }
 
-  clearRequestId() {
+  clearRequestId(): void {
     this.requestId = undefined
   }
 
-  private log(
-    level: LogLevel,
-    message: string,
-    error?: Error,
-    metadata?: Record<string, unknown>
-  ) {
-    const entry: LogEntry = {
+  private formatMessage(level: string, message: string, metadata?: Record<string, unknown>): string {
+    const entry = {
       level,
       message,
       timestamp: new Date().toISOString(),
       ...(this.requestId && { requestId: this.requestId }),
+      ...(metadata && { metadata }),
+    }
+    return JSON.stringify(entry)
+  }
+
+  debug(message: string, metadata?: Record<string, unknown>): void {
+    console.error(this.formatMessage('debug', message, metadata))
+  }
+
+  info(message: string, metadata?: Record<string, unknown>): void {
+    console.error(this.formatMessage('info', message, metadata))
+  }
+
+  warn(message: string, metadata?: Record<string, unknown>): void {
+    console.error(this.formatMessage('warn', message, metadata))
+  }
+
+  error(message: string, error?: Error, metadata?: Record<string, unknown>): void {
+    const entry = this.formatMessage('error', message, {
+      ...metadata,
       ...(error && {
         error: error.message,
         ...(error.stack && { stack: error.stack }),
       }),
-      ...(metadata && { metadata }),
-    }
-
-    // Use console.error for stdio transport (stderr)
-    console.error(JSON.stringify(entry))
-  }
-
-  debug(message: string, metadata?: Record<string, unknown>) {
-    this.log(LogLevel.DEBUG, message, undefined, metadata)
-  }
-
-  info(message: string, metadata?: Record<string, unknown>) {
-    this.log(LogLevel.INFO, message, undefined, metadata)
-  }
-
-  warn(message: string, metadata?: Record<string, unknown>) {
-    this.log(LogLevel.WARN, message, undefined, metadata)
-  }
-
-  error(message: string, error?: Error, metadata?: Record<string, unknown>) {
-    this.log(LogLevel.ERROR, message, error, metadata)
+    })
+    console.error(entry)
   }
 }
 
-export const logger = new Logger()
+/**
+ * Global MCP logger instance
+ *
+ * This logger always uses stderr for output to avoid interfering
+ * with the MCP protocol communication on stdout.
+ */
+export const logger = new MCPLogger()

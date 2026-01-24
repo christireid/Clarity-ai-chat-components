@@ -6,9 +6,13 @@
  * @deprecated Import environment detection from @clarity-chat/utils/env instead
  */
 
-// Re-export from canonical source
-export type { RuntimeEnvironment } from '@clarity-chat/utils/env'
-export { detectEnvironment } from '@clarity-chat/utils/env'
+// Import from canonical source
+import { detectEnvironment } from '@clarity-chat/utils/env'
+import type { RuntimeEnvironment } from '@clarity-chat/utils/env'
+
+// Re-export for backwards compatibility
+export { detectEnvironment }
+export type { RuntimeEnvironment }
 
 /**
  * Check if IndexedDB is available

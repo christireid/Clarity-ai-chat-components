@@ -70,14 +70,9 @@ export {
 } from './hooks/chat/use-clarity-chat'
 
 /**
- * Unified chat hook with enhanced features.
- * Use this for more control over chat behavior.
+ * @deprecated useChat was removed in v2.0. Use useClarityChat instead.
+ * Import from '@clarity-chat/react': import { useClarityChat } from '@clarity-chat/react'
  */
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
 
 /**
  * Hook for generating structured JSON objects with AI.

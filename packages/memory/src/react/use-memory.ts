@@ -1,9 +1,11 @@
+'use client'
+
 /**
  * React Hook for Clarity Memory
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { ClarityMemory } from '../memory-service'
+import { ClarityMemory } from '../memory-service/core'
 import type {
   MemoryConfig,
   Memory,

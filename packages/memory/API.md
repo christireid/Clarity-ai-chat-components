@@ -523,11 +523,32 @@ const summary = extractiveSummarize(text, {
 
 ## TokenCounter
 
-Utility for token counting and text manipulation.
+> **⚠️ DEPRECATED: Token counting has moved to `@clarity-chat/token-optimization`**
+>
+> The `TokenCounter` class and related utilities have been consolidated to the `@clarity-chat/token-optimization` package. Use `AccurateTokenCounter` instead:
+>
+> ```typescript
+> // ❌ OLD - Deprecated
+> import { TokenCounter } from '@clarity-chat/memory'
+> const count = TokenCounter.count(text)
+>
+> // ✅ NEW - Use canonical implementation
+> import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+> const counter = new AccurateTokenCounter({ model: 'gpt-4o' })
+> const count = counter.count(text)
+>
+> // Or use the simple API
+> import { countTokens } from '@clarity-chat/token-optimization/simple'
+> const count = countTokens(text)
+> ```
+>
+> See the [Consolidation Migration Guide](../../CONSOLIDATION_MIGRATION_GUIDE.md#1-token-counter-consolidation) for full details.
 
-### Static Methods
+### Static Methods (Deprecated)
 
 #### `count()`
+
+> **Deprecated:** Use `AccurateTokenCounter.count()` from `@clarity-chat/token-optimization`
 
 Count tokens in text.
 
@@ -537,6 +558,8 @@ static count(text: string): number
 
 #### `countBatch()`
 
+> **Deprecated:** Use `AccurateTokenCounter.countBatch()` from `@clarity-chat/token-optimization`
+
 Count tokens in multiple texts.
 
 ```typescript
@@ -545,6 +568,8 @@ static countBatch(texts: string[]): number
 
 #### `truncate()`
 
+> **Deprecated:** Use `AccurateTokenCounter.truncate()` from `@clarity-chat/token-optimization`
+
 Truncate text to fit token budget.
 
 ```typescript
@@ -552,6 +577,8 @@ static truncate(text: string, maxTokens: number): string
 ```
 
 #### `splitSentences()`
+
+> **Deprecated:** Use text processing utilities from `@clarity-chat/utils`
 
 Split text into sentences.
 
@@ -651,9 +678,28 @@ compressMemory(
 
 ## SemanticChunker
 
+> **⚠️ DEPRECATED: Text chunking has moved to `@clarity-chat/token-optimization`**
+>
+> The `SemanticChunker` class has been consolidated to the `@clarity-chat/token-optimization` package:
+>
+> ```typescript
+> // ❌ OLD - Deprecated
+> import { SemanticChunker } from '@clarity-chat/memory'
+>
+> // ✅ NEW - Use canonical implementation
+> import { TextChunker } from '@clarity-chat/token-optimization'
+> const chunker = new TextChunker({
+>   chunkSize: 200,
+>   overlap: 50,
+>   strategy: 'semantic'
+> })
+> ```
+>
+> See the [Consolidation Migration Guide](../../CONSOLIDATION_MIGRATION_GUIDE.md) for full details.
+
 Chunk text for semantic retrieval.
 
-### Constructor
+### Constructor (Deprecated)
 
 ```typescript
 new SemanticChunker(
@@ -662,9 +708,11 @@ new SemanticChunker(
 )
 ```
 
-### Methods
+### Methods (Deprecated)
 
 #### `chunkConversation()`
+
+> **Deprecated:** Use `TextChunker` from `@clarity-chat/token-optimization`
 
 Chunk conversation into semantic pieces.
 
@@ -673,6 +721,8 @@ chunkConversation(conversation: string): MemoryChunk[]
 ```
 
 #### `retrieveOptimalChunks()`
+
+> **Deprecated:** Use `TextChunker` from `@clarity-chat/token-optimization`
 
 Retrieve chunks within budget.
 
@@ -685,6 +735,8 @@ retrieveOptimalChunks(
 ```
 
 #### `extractTopic()`
+
+> **Deprecated:** Use `TextChunker` from `@clarity-chat/token-optimization`
 
 Extract topic from chunk.
 

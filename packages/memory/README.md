@@ -1,5 +1,9 @@
 # @clarity-chat/memory
 
+> **⚠️ IMPORTANT: Token counting APIs have moved**
+>
+> Token counting utilities (`TokenCounter`, `countTokens`, `SemanticChunker`) have been consolidated to `@clarity-chat/token-optimization`. See [Migration Guide](../../CONSOLIDATION_MIGRATION_GUIDE.md#1-token-counter-consolidation) for details.
+
 > **Zero-config AI memory system** - Drop-in memory management for any LLM application
 
 Framework-agnostic AI memory and context management. Works with **any JavaScript/TypeScript application** - React, Node.js, serverless, browser, or any AI SDK.

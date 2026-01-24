@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Comprehensive Streaming Tests
  *

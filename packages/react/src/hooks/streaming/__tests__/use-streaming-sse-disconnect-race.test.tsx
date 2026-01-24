@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Disconnect race condition tests
  *

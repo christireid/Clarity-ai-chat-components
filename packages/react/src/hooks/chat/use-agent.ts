@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * useAgent - Top-level hook for AI agents
  *

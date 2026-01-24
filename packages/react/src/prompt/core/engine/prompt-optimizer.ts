@@ -13,7 +13,8 @@ import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from '../toon'
 import type { ModelProfile } from '../model-profiles'
 import type { OptimizationStrategy } from '../optimizer'
-import type { CompressionStrategy } from '../compression-chain'
+// import type { CompressionStrategy } from '../compression-chain'
+export type CompressionStrategy = 'truncate' | 'summarize' | 'extract' | 'adaptive' | 'semantic-grouping' | 'tool-condensing' | 'intent-summarization' // Temp stub
 import { toonToMessages } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'
 import {
@@ -22,7 +23,26 @@ import {
   estimateCost,
 } from '../tokenizer'
 import { optimizeMessagesForBudget } from '../optimizer'
-import { compressContext } from '../compression-chain'
+// import { compressContext } from '../compression-chain' // TODO: Re-enable when compression-chain exists
+
+// Temporary stub types for compression-chain
+interface CompressionLog {
+  strategy: CompressionStrategy
+  description: string
+}
+
+// Temporary stub for compressContext until compression-chain is added back
+async function compressContext(messages: any, _options: any): Promise<{
+  messages: any
+  logs: CompressionLog[]
+  totalTokensSaved: number
+}> {
+  return {
+    messages,
+    logs: [],
+    totalTokensSaved: 0,
+  }
+}
 import { chooseOptimizationStrategy } from '../strategy-router'
 
 /**

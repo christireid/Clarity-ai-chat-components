@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * useCompletion - Mid-Level Completion Hook
  *

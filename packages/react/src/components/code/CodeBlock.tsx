@@ -5,7 +5,7 @@ import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
 import { cn } from '@clarity-chat/primitives'
-import { usePerformanceTracking } from '../../utils/performance-monitoring'
+import { usePerformanceTracking } from '../../hooks/performance/usePerformanceMonitoring'
 import {
   parseLineRanges,
   escapeHtml,
@@ -516,10 +516,7 @@ CodeBlockComponent.displayName = 'CodeBlock'
  * CodeBlock with error boundary
  */
 export const CodeBlock = (props: CodeBlockProps) => (
-  <ContentErrorBoundary
-    componentName="CodeBlock"
-    showErrorDetails={process.env['NODE_ENV'] === 'development'}
-  >
+  <ContentErrorBoundary variant="minimal">
     <CodeBlockComponent {...props} />
   </ContentErrorBoundary>
 )

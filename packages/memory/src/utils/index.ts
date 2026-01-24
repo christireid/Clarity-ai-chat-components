@@ -9,7 +9,7 @@ export * from './health-check'
 // Retry utilities moved to @clarity-chat/utils
 export * from './rate-limiter'
 export * from './batch'
-export * from './performance'
+// Performance utilities moved to @clarity-chat/utils/performance-unified
 export * from './token-counter'
 // Note: validation-helpers not exported to avoid conflicts with validation.ts
 // Logger removed - use @clarity-chat/utils/logger instead

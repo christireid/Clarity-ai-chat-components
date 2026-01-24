@@ -186,7 +186,7 @@ export function ClarityToolResult({
     return (
       <div className={className}>
         <ErrorBoundary
-          fallback={(error, resetError) => (
+          FallbackComponent={({ error }) => (
             <ErrorFallback error={error} toolCall={toolCall} />
           )}
           resetKeys={[toolCall.id ?? toolCall.name, toolCall.name]}

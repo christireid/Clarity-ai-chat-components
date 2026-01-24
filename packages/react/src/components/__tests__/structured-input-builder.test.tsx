@@ -11,7 +11,7 @@ import {
   PRESET_FIELDS,
   type StructuredInputField,
   type StructuredInputResult,
-} from '../structured-input-builder'
+} from '../input/structured-input-builder'
 import { renderHook, act } from '@testing-library/react'
 
 describe('StructuredInputBuilder', () => {

@@ -47,6 +47,7 @@ export function classifyError(error: Error): ErrorType {
 
 /**
  * Retry an async operation with exponential backoff
+ * @deprecated Import retry from @clarity-chat/utils/async instead
  *
  * @internal
  * @param operation - The async operation to retry
@@ -58,24 +59,12 @@ export async function retryOperation<T>(
   maxAttempts: number = 2,
   delayMs: number = 1000
 ): Promise<T> {
-  let lastError: Error | null = null
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await operation()
-    } catch (error) {
-      lastError = error as Error
-
-      // Don't retry on last attempt
-      if (attempt < maxAttempts) {
-        // Exponential backoff: delayMs * 2^(attempt-1)
-        const delay = delayMs * Math.pow(2, attempt - 1)
-        await new Promise((resolve) => setTimeout(resolve, delay))
-      }
-    }
-  }
-
-  throw lastError || new Error('Operation failed after retries')
+  const { retry } = await import('@clarity-chat/utils/async')
+  return retry(operation, {
+    retries: maxAttempts - 1, // retry() counts retries, not total attempts
+    delay: delayMs,
+    backoffFactor: 2,
+  })
 }
 
 /**

@@ -9,7 +9,7 @@ import {
   EASING_FRAMER,
   duration,
 } from '../../animations/constants'
-import { LazyMarkdownRenderer } from './markdown-renderer'
+import { EnhancedMarkdownRenderer } from '../ai/enhanced-markdown-renderer'
 import { MessageActions } from './message-actions'
 import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
@@ -333,9 +333,14 @@ export function Message({
               </p>
             )
           ) : (
-            <LazyMarkdownRenderer
+            <EnhancedMarkdownRenderer
               content={message.content}
               isStreaming={isStreaming}
+              config={{
+                enableSyntaxHighlight: true,
+                enableCopyButton: true,
+                enableLazyRendering: true,
+              }}
             />
           )}
         </div>

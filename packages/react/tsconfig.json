@@ -29,6 +29,7 @@
     "src/**/__tests__/**",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
+    "src/**/__benchmarks__/**",
     "src/examples/**",
     "src/**/*.stories.ts",
     "src/**/*.stories.tsx",

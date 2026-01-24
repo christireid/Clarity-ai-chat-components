@@ -168,7 +168,7 @@ export function ChatSyncStatus({
                 <div className="text-muted-foreground">Last Sync</div>
                 <div className="font-medium">
                   {status.lastSyncTime > 0
-                    ? formatRelativeTime(status.lastSyncTime)
+                    ? formatRelativeTime(new Date(status.lastSyncTime))
                     : 'Never'}
                 </div>
               </div>

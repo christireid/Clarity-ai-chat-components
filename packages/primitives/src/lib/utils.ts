@@ -201,26 +201,19 @@ export function sleep(ms: number): Promise<void> {
 
 /**
  * Retry function with exponential backoff
+ * @deprecated Import retry from @clarity-chat/utils/async instead
  */
 export async function retry<T>(
   fn: () => Promise<T>,
   retries: number = 3,
   delay: number = 1000
 ): Promise<T> {
-  let lastError: Error
-
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error as Error
-      if (i < retries - 1) {
-        await sleep(delay * Math.pow(2, i))
-      }
-    }
-  }
-
-  throw lastError!
+  const { retry: retryUtil } = await import('@clarity-chat/utils/async')
+  return retryUtil(fn, {
+    retries: retries - 1, // retry() counts retries, not total attempts
+    delay,
+    backoffFactor: 2,
+  })
 }
 
 /**

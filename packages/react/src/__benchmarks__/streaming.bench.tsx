@@ -10,11 +10,11 @@
 import { describe, bench, beforeEach, afterEach } from 'vitest'
 import { render, cleanup, act } from '@testing-library/react'
 import * as React from 'react'
-import { PerformanceProfiler } from '../utils/profiling/performance-profiler'
+import { PerformanceProfiler } from '@clarity-chat/dev-tools'
 import {
   createDeviceSimulator,
   DEVICE_PROFILES,
-} from '../utils/profiling/device-simulation'
+} from '@clarity-chat/dev-tools'
 
 // Mock streaming text generator
 async function* streamText(

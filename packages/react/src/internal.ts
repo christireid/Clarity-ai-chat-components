@@ -292,10 +292,12 @@ export {
   deepClone,
   deepMerge,
   clamp,
-  sleep,
   retry,
   formatBytes,
 } from './internal/index'
+
+// Re-export sleep from utils for backward compatibility
+export { sleep } from '@clarity-chat/utils/async'
 
 // ============================================================================
 // AI CHAT HOOKS (Advanced)

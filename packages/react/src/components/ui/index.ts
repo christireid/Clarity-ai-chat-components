@@ -8,11 +8,12 @@ export * from './animated-dots'
 export * from './animated-list'
 export { BatteryIndicator } from './battery-indicator'
 export * from './collapsible-section'
+// Re-export DashboardErrorBoundary from canonical location
 export {
   DashboardErrorBoundary,
   useDashboardErrorHandler,
   type DashboardErrorBoundaryProps,
-} from './dashboard-error-boundary'
+} from '@clarity-chat/error-handling'
 export {
   DashboardProgress,
   CircularProgress,
@@ -76,7 +77,7 @@ export {
   type UseLinkPreviewReturn,
   type MetadataFetcherConfig,
   type EmbedType,
-} from './link-preview'
+} from './link-preview/'
 export * from './progress'
 export * from './ripple'
 export * from './skeleton'

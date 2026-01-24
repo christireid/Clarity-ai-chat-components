@@ -51,48 +51,15 @@ export { generateId } from '@clarity-chat/utils'
 
 /**
  * Sleep for a given number of milliseconds
+ * @deprecated Import from @clarity-chat/utils/async instead
  */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+export { sleep } from '@clarity-chat/utils/async'
 
 /**
  * Retry a function with exponential backoff
+ * @deprecated Import from @clarity-chat/utils/async instead
  */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: {
-    maxAttempts?: number
-    initialDelay?: number
-    maxDelay?: number
-    factor?: number
-  } = {}
-): Promise<T> {
-  const {
-    maxAttempts = 3,
-    initialDelay = 1000,
-    maxDelay = 10000,
-    factor = 2,
-  } = options
-
-  let lastError: Error | undefined
-  let delay = initialDelay
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error))
-
-      if (attempt < maxAttempts) {
-        await sleep(delay)
-        delay = Math.min(delay * factor, maxDelay)
-      }
-    }
-  }
-
-  throw lastError || new Error('Retry failed')
-}
+export { retry } from '@clarity-chat/utils/async'
 
 /**
  * Debounce a function

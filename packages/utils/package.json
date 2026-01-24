@@ -52,6 +52,11 @@
       "types": "./dist/math/index.d.ts",
       "import": "./dist/math/index.js",
       "require": "./dist/math/index.cjs"
+    },
+    "./env": {
+      "types": "./dist/env/index.d.ts",
+      "import": "./dist/env/index.js",
+      "require": "./dist/env/index.cjs"
     }
   },
   "files": [

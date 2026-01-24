@@ -52,11 +52,7 @@ export { Message, type MessageProps } from './components/message/message'
 // CORE HOOKS - Essential chat state management
 // ============================================================================
 
-export {
-  useChat,
-  type UseChatOptions,
-  type UseChatReturn,
-} from './hooks/chat/use-chat-unified'
+// useChat was removed in v2.0 - use useClarityChat instead
 export {
   useClarityChat,
   type UseClarityChatOptions,

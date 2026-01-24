@@ -96,6 +96,7 @@ export { clamp } from '@clarity-chat/utils'
 
 /**
  * Retry an async operation with exponential backoff
+ * @deprecated Import retry from @clarity-chat/utils/async instead
  */
 export async function retry<T>(
   fn: () => Promise<T>,
@@ -106,6 +107,7 @@ export async function retry<T>(
     shouldRetry?: (error: unknown) => boolean
   } = {}
 ): Promise<T> {
+  const { retry: retryUtil } = await import('@clarity-chat/utils/async')
   const {
     maxAttempts = 3,
     baseDelay = 1000,
@@ -113,25 +115,13 @@ export async function retry<T>(
     shouldRetry = () => true,
   } = options
 
-  let lastError: unknown
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error
-
-      if (attempt === maxAttempts || !shouldRetry(error)) {
-        throw error
-      }
-
-      const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), maxDelay)
-      // Use inline sleep to avoid circular dependency
-      await new Promise((resolve) => setTimeout(resolve, delay))
-    }
-  }
-
-  throw lastError
+  return retryUtil(fn, {
+    retries: maxAttempts - 1, // retry() counts retries, not total attempts
+    delay: baseDelay,
+    backoffFactor: 2,
+    maxDelay,
+    shouldRetry: (error) => shouldRetry(error),
+  })
 }
 
 /**

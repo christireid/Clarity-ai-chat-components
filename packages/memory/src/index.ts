@@ -33,7 +33,7 @@ export { clarityMemory, clarityMemoryHelpers } from './factory'
 export * from './types'
 
 // Memory service (framework-agnostic)
-export { MemoryService } from './memory-service'
+export { MemoryService } from './memory-service/core'
 
 // Consent management (GDPR/CCPA compliance)
 export {

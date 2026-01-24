@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * useRAGPipeline - Top-level hook for RAG pipeline
  *

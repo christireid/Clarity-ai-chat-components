@@ -29,9 +29,7 @@ export function isBrowser(): boolean {
   // Use globalThis to avoid TypeScript errors when DOM types are not available
   return (
     typeof globalThis !== 'undefined' &&
-    // @ts-expect-error - window may not be defined in Node.js environments
     typeof globalThis.window !== 'undefined' &&
-    // @ts-expect-error - document may not be defined in Node.js environments
     typeof globalThis.window.document !== 'undefined'
   )
 }
