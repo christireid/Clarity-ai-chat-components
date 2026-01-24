@@ -84,6 +84,7 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
         ease: EASING_FRAMER.out,
         delay: index * STAGGER_TIMING.faster,
       }}
+      viewport={{ once: true }}
       className={cn(
         'inline-flex items-center rounded-md border border-border/60',
         'bg-background hover:bg-muted/50 hover:border-primary/40',
@@ -129,13 +130,9 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
       />
 
       {/* Hover tooltip with snippet */}
-      <AnimatePresence>
-        {expandOnHover && isHovered && source.snippet && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: durations.fast }}
+      {prefersReducedMotion ? (
+        expandOnHover && isHovered && source.snippet && (
+          <div
             className={cn(
               'absolute z-50 top-full left-0 mt-1.5 p-2.5 rounded-lg',
               'bg-popover border border-border shadow-lg',
@@ -146,9 +143,30 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
             <p className="text-xs text-muted-foreground line-clamp-3">
               {source.snippet}
             </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        )
+      ) : (
+        <AnimatePresence>
+          {expandOnHover && isHovered && source.snippet && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: durations.fast }}
+              className={cn(
+                'absolute z-50 top-full left-0 mt-1.5 p-2.5 rounded-lg',
+                'bg-popover border border-border shadow-lg',
+                'max-w-xs w-max'
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-xs text-muted-foreground line-clamp-3">
+                {source.snippet}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </motion.a>
   )
 }

@@ -70,6 +70,7 @@ export const CardSourceItem: React.FC<CardSourceItemProps> = ({
         ease: EASING_FRAMER.out,
         delay: index * STAGGER_TIMING.fast,
       }}
+      viewport={{ once: true }}
       className={cn(
         'group relative rounded-lg border border-border/60 bg-card',
         'hover:border-primary/40 hover:shadow-sm transition-all duration-150',

@@ -59,6 +59,7 @@ export const ListSourceItem: React.FC<ListSourceItemProps> = ({
         ease: EASING_FRAMER.out,
         delay: index * STAGGER_TIMING.faster,
       }}
+      viewport={{ once: true }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
@@ -119,22 +120,35 @@ export const ListSourceItem: React.FC<ListSourceItemProps> = ({
         </div>
 
         {/* Snippet preview */}
-        <AnimatePresence>
-          {(expandOnHover ? isHovered : true) && source.snippet && (
-            <motion.p
-              initial={expandOnHover ? { opacity: 0, height: 0 } : false}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: durations.fast }}
+        {prefersReducedMotion ? (
+          (expandOnHover ? isHovered : true) && source.snippet && (
+            <p
               className={cn(
                 sizeConfig.snippet,
                 'text-muted-foreground mt-0.5 line-clamp-2'
               )}
             >
               {source.snippet}
-            </motion.p>
-          )}
-        </AnimatePresence>
+            </p>
+          )
+        ) : (
+          <AnimatePresence>
+            {(expandOnHover ? isHovered : true) && source.snippet && (
+              <motion.p
+                initial={expandOnHover ? { opacity: 0, height: 0 } : false}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: durations.fast }}
+                className={cn(
+                  sizeConfig.snippet,
+                  'text-muted-foreground mt-0.5 line-clamp-2'
+                )}
+              >
+                {source.snippet}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* External link */}
