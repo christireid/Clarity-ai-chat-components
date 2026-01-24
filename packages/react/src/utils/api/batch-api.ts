@@ -225,12 +225,8 @@ const BATCH_PRICING: Record<
   'claude-3-opus': { inputPer1M: 7.5, outputPer1M: 37.5 },
 }
 
-/**
- * Generate unique ID
- */
-function generateId(): string {
-  return `batch_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
+// Import batch ID generator from canonical utils package
+import { generateBatchId as generateId } from '@clarity-chat/utils'
 
 /**
  * Batch Request Manager

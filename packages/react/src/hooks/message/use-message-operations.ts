@@ -115,12 +115,8 @@ export interface UseMessageOperationsReturn {
   clear: () => void
 }
 
-/**
- * Generate unique ID
- */
-function generateId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
+// Import message ID generator from canonical utils package
+import { generateMessageId as generateId } from '@clarity-chat/utils'
 
 /**
  * Production-ready Message Operations hook for advanced chat features.

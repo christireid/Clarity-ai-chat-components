@@ -5,67 +5,49 @@
 
 /**
  * Format date to relative time (e.g., "2 hours ago")
- * Accepts Date objects, ISO strings, or timestamps
+ * @deprecated Import from @clarity-chat/utils/format instead
  */
-export function formatRelativeTime(
-  date: Date | string | number | undefined | null
-): string {
-  if (!date) return ''
-
-  // Convert to Date if needed
-  let dateObj: Date
-  if (date instanceof Date) {
-    dateObj = date
-  } else if (typeof date === 'string' || typeof date === 'number') {
-    dateObj = new Date(date)
-  } else {
-    return ''
-  }
-
-  // Check for invalid date
-  if (isNaN(dateObj.getTime())) {
-    return ''
-  }
-
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000)
-
-  if (diffInSeconds < 60) return 'just now'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
-
-  return dateObj.toLocaleDateString()
-}
+export { formatRelativeTime } from '@clarity-chat/utils/format'
 
 /**
- * Copy text to clipboard
+ * Copy text to clipboard with fallback for older browsers
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
+    // Try modern Clipboard API first
     if (
       typeof navigator !== 'undefined' &&
       navigator.clipboard &&
-      navigator.clipboard.writeText
+      typeof navigator.clipboard.writeText === 'function'
     ) {
       await navigator.clipboard.writeText(text)
       return true
     }
-    // Fallback for older browsers or non-secure contexts
+
+    // Fallback for older browsers using execCommand
     if (typeof document !== 'undefined') {
       const textarea = document.createElement('textarea')
       textarea.value = text
       textarea.setAttribute('readonly', '')
+
+      // Avoid scrolling to bottom and hide element
       textarea.style.position = 'fixed'
-      textarea.style.left = '-9999px'
+      textarea.style.top = '0'
+      textarea.style.left = '0'
+      textarea.style.opacity = '0'
+      textarea.style.pointerEvents = 'none'
+
       document.body.appendChild(textarea)
+      textarea.focus()
       textarea.select()
+
       const success = document.execCommand
         ? document.execCommand('copy')
         : false
       document.body.removeChild(textarea)
       return success
     }
+
     return false
   } catch (error) {
     console.error('Failed to copy to clipboard:', error)
@@ -75,40 +57,21 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 
 /**
  * Generate unique ID
+ * @deprecated Import from @clarity-chat/utils instead
  */
-export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
-
-/**
- * Truncate text with ellipsis
- */
-export function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength - 3) + '...'
-}
+export { generateId } from '@clarity-chat/utils'
 
 /**
  * Format file size
- * Enhanced version with better precision and consistency
+ * @deprecated Import from @clarity-chat/utils/format instead
  */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
-
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
-}
+export { formatBytes as formatFileSize } from '@clarity-chat/utils/format'
 
 /**
  * Format bytes to human readable string
- * Alias for formatFileSize for consistency across codebase
+ * @deprecated Import from @clarity-chat/utils/format instead
  */
-export function formatBytes(bytes: number): string {
-  return formatFileSize(bytes)
-}
+export { formatBytes } from '@clarity-chat/utils/format'
 
 /**
  * Format timestamp to ISO string
@@ -131,10 +94,9 @@ export function calculatePercentage(
 
 /**
  * Clamp value between min and max
+ * @deprecated Import from @clarity-chat/utils instead
  */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
+export { clamp } from '@clarity-chat/utils'
 
 /**
  * Debounce function
@@ -247,33 +209,15 @@ export function getFileExtension(filename: string): string {
 
 /**
  * Check if running in browser environment
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.document !== 'undefined'
-}
+export { isBrowser } from '@clarity-chat/utils/env'
 
 /**
  * Check if running in Node.js environment
+ * @deprecated Import from @clarity-chat/utils/env instead
  */
-export function isNode(): boolean {
-  // Check for Node.js environment without relying on @types/node
-  return (
-    typeof globalThis !== 'undefined' &&
-    typeof (globalThis as { process?: { versions?: { node?: string } } })
-      .process?.versions?.node === 'string'
-  )
-}
-
-/**
- * Safe JSON parse with fallback
- */
-export function safeJsonParse<T = any>(jsonString: string, fallback: T): T {
-  try {
-    return JSON.parse(jsonString)
-  } catch {
-    return fallback
-  }
-}
+export { isNode } from '@clarity-chat/utils/env'
 
 /**
  * Format number with commas
@@ -326,28 +270,6 @@ export async function retry<T>(
 }
 
 /**
- * Memoize function
- */
-export function memoize<T extends (...args: any[]) => any>(
-  fn: T,
-  keyFn?: (...args: Parameters<T>) => string
-): T {
-  const cache = new Map<string, ReturnType<T>>()
-
-  return ((...args: Parameters<T>): ReturnType<T> => {
-    const key = keyFn ? keyFn(...args) : JSON.stringify(args)
-
-    if (cache.has(key)) {
-      return cache.get(key)!
-    }
-
-    const result = fn(...args)
-    cache.set(key, result)
-    return result
-  }) as T
-}
-
-/**
  * Throttle function
  */
 export function throttle<T extends (...args: any[]) => any>(
@@ -394,54 +316,10 @@ export function unescapeHtml(html: string): string {
 }
 
 /**
- * Convert string to kebab-case
- */
-export function kebabCase(str: string): string {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
-    .toLowerCase()
-}
-
-/**
- * Convert string to camelCase
- */
-export function camelCase(str: string): string {
-  return str
-    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''))
-    .replace(/^(.)/, (char) => char.toLowerCase())
-}
-
-/**
- * Convert string to PascalCase
- */
-export function pascalCase(str: string): string {
-  return str
-    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''))
-    .replace(/^(.)/, (char) => char.toUpperCase())
-}
-
-/**
- * Convert string to snake_case
- */
-export function snakeCase(str: string): string {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1_$2')
-    .replace(/[\s-]+/g, '_')
-    .toLowerCase()
-}
-
-/**
  * Check if string is valid JSON
+ * @deprecated Import from @clarity-chat/utils/validation instead
  */
-export function isValidJson(str: string): boolean {
-  try {
-    JSON.parse(str)
-    return true
-  } catch {
-    return false
-  }
-}
+export { isValidJson } from '@clarity-chat/utils/validation'
 
 /**
  * Get nested object value safely
@@ -553,36 +431,6 @@ export function flatten<T>(array: (T | T[])[]): T[] {
 }
 
 /**
- * Pick properties from object
- */
-export function pick<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Pick<T, K> {
-  const result = {} as Pick<T, K>
-  for (const key of keys) {
-    if (key in obj) {
-      result[key] = obj[key]
-    }
-  }
-  return result
-}
-
-/**
- * Omit properties from object
- */
-export function omit<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Omit<T, K> {
-  const result = { ...obj }
-  for (const key of keys) {
-    delete result[key]
-  }
-  return result
-}
-
-/**
  * Check if object has property
  */
 export function hasProperty<T extends object>(
@@ -613,51 +461,6 @@ export function entries<T extends object>(
   obj: T
 ): Array<[keyof T, T[keyof T]]> {
   return Object.entries(obj) as Array<[keyof T, T[keyof T]]>
-}
-
-/**
- * Check if value is object
- */
-export function isObject(value: any): value is Record<string, any> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-}
-
-/**
- * Check if value is array
- */
-export function isArray(value: any): value is any[] {
-  return Array.isArray(value)
-}
-
-/**
- * Check if value is string
- */
-export function isString(value: any): value is string {
-  return typeof value === 'string'
-}
-
-/**
- * Check if value is number
- */
-export function isNumber(value: any): value is number {
-  return typeof value === 'number' && !isNaN(value)
-}
-
-/**
- * Check if value is boolean
- */
-export function isBoolean(value: any): value is boolean {
-  return typeof value === 'boolean'
-}
-
-/**
- * Check if value is function
- */
-
-export function isFunction(
-  value: unknown
-): value is (...args: unknown[]) => unknown {
-  return typeof value === 'function'
 }
 
 /**
@@ -974,23 +777,15 @@ export function notMatches(str: string, regex: RegExp): boolean {
 
 /**
  * Check if string is email
+ * @deprecated Import from @clarity-chat/utils/validation instead
  */
-export function isEmail(str: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(str)
-}
+export { isValidEmail as isEmail } from '@clarity-chat/utils/validation'
 
 /**
  * Check if string is URL
+ * @deprecated Import from @clarity-chat/utils/validation instead
  */
-export function isUrl(str: string): boolean {
-  try {
-    new URL(str)
-    return true
-  } catch {
-    return false
-  }
-}
+export { isValidUrl as isUrl } from '@clarity-chat/utils/validation'
 
 /**
  * Check if string is numeric

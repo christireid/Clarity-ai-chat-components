@@ -39,16 +39,14 @@ const VECTOR_STORE_VARS = {
   supabase: ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
 } as const
 
-/**
- * Check if running in browser environment
- */
-const isBrowser = typeof window !== 'undefined'
+// Import environment detection utilities from canonical source
+import { isBrowser, isProd } from '@clarity-chat/utils/env'
 
 /**
  * Safely get environment variable value
  */
 function getEnvVar(key: string): string | undefined {
-  if (isBrowser) {
+  if (isBrowser()) {
     // Check for NEXT_PUBLIC_ prefix in browser
     return (window as any).__ENV__?.[key] || undefined
   }
@@ -59,7 +57,7 @@ function getEnvVar(key: string): string | undefined {
  * Check if we're in production environment
  */
 function isProduction(): boolean {
-  return getEnvVar('NODE_ENV') === 'production'
+  return isProd()
 }
 
 /**

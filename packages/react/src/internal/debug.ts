@@ -332,7 +332,7 @@ export const debug = {
 }
 
 /**
- * Measure performance of a function
+ * Measure performance of a function (debug-enhanced version)
  *
  * @param name - Name for the measurement
  * @param fn - Function to measure
@@ -362,7 +362,7 @@ export function measurePerformance<T>(name: string, fn: () => T): T {
 }
 
 /**
- * Measure performance of an async function
+ * Measure performance of an async function (debug-enhanced version)
  *
  * @param name - Name for the measurement
  * @param fn - Async function to measure
@@ -384,6 +384,9 @@ export async function measurePerformanceAsync<T>(
 
   return result
 }
+
+// Note: These are debug-enhanced versions that integrate with the debug logging system.
+// For general performance monitoring, use @clarity-chat/utils/performance-unified
 
 /**
  * Global debug interface for browser console access

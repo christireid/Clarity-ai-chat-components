@@ -16,6 +16,14 @@ import {
   modernThemeMetadata,
   type ModernThemePresetName,
 } from './modern-presets'
+import {
+  hslToRGB,
+  rgbToHSL,
+  rgbToHex,
+  adjustLightness as adjustLightnessUtil,
+  getContrastRatio as getContrastRatioUtil,
+  getLuminance,
+} from './color-utils'
 
 // Re-export for backwards compatibility
 export type ThemePresetName = ModernThemePresetName
@@ -65,93 +73,19 @@ export function createTheme(
 }
 
 /**
- * Convert HSL string to RGB object
+ * Convert HSL string to RGB object (wrapper for color-utils)
  */
 function hslToRgb(hsl: string): { r: number; g: number; b: number } {
   const [hVal, sVal, lVal] = hsl.split(' ').map((v) => parseFloat(v))
-  const h = hVal ?? 0
-  const s = sVal ?? 0
-  const l = lVal ?? 0
-  const sNorm = s / 100
-  const lNorm = l / 100
-
-  const c = (1 - Math.abs(2 * lNorm - 1)) * sNorm
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
-  const m = lNorm - c / 2
-
-  let r = 0,
-    g = 0,
-    b = 0
-
-  if (h >= 0 && h < 60) {
-    r = c
-    g = x
-    b = 0
-  } else if (h >= 60 && h < 120) {
-    r = x
-    g = c
-    b = 0
-  } else if (h >= 120 && h < 180) {
-    r = 0
-    g = c
-    b = x
-  } else if (h >= 180 && h < 240) {
-    r = 0
-    g = x
-    b = c
-  } else if (h >= 240 && h < 300) {
-    r = x
-    g = 0
-    b = c
-  } else if (h >= 300 && h < 360) {
-    r = c
-    g = 0
-    b = x
-  }
-
-  return {
-    r: Math.round((r + m) * 255),
-    g: Math.round((g + m) * 255),
-    b: Math.round((b + m) * 255),
-  }
+  return hslToRGB({ h: hVal ?? 0, s: sVal ?? 0, l: lVal ?? 0 })
 }
 
 /**
- * Convert RGB to HSL string
+ * Convert RGB to HSL string (wrapper for color-utils)
  */
 function rgbToHsl(r: number, g: number, b: number): string {
-  r /= 255
-  g /= 255
-  b /= 255
-
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  let h = 0,
-    s = 0
-  const l = (max + min) / 2
-
-  if (max !== min) {
-    const d = max - min
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-
-    switch (max) {
-      case r:
-        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
-        break
-      case g:
-        h = ((b - r) / d + 2) / 6
-        break
-      case b:
-        h = ((r - g) / d + 4) / 6
-        break
-    }
-  }
-
-  h = Math.round(h * 360)
-  s = Math.round(s * 100)
-  const lRounded = Math.round(l * 100)
-
-  return `${h} ${s}% ${lRounded}%`
+  const hsl = rgbToHSL({ r, g, b })
+  return `${hsl.h} ${hsl.s}% ${hsl.l}%`
 }
 
 /**
@@ -185,35 +119,17 @@ export function hslToHex(hsl: string): string {
 }
 
 /**
- * Lighten or darken an HSL color
+ * Lighten or darken an HSL color (wrapper for color-utils)
  */
 export function adjustLightness(hsl: string, amount: number): string {
-  const [h, s, l] = hsl.split(' ').map((v) => parseFloat(v))
-  const newL = Math.max(0, Math.min(100, (l ?? 0) + amount))
-  return `${h ?? 0} ${s ?? 0}% ${newL}%`
+  return adjustLightnessUtil(hsl, amount)
 }
 
 /**
- * Calculate contrast ratio between two HSL colors
+ * Calculate contrast ratio between two HSL colors (wrapper for color-utils)
  */
 export function getContrastRatio(hsl1: string, hsl2: string): number {
-  const rgb1 = hslToRgb(hsl1)
-  const rgb2 = hslToRgb(hsl2)
-
-  const luminance = (rgb: { r: number; g: number; b: number }) => {
-    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((v) => {
-      v /= 255
-      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
-    })
-    return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0)
-  }
-
-  const l1 = luminance(rgb1)
-  const l2 = luminance(rgb2)
-  const lighter = Math.max(l1, l2)
-  const darker = Math.min(l1, l2)
-
-  return (lighter + 0.05) / (darker + 0.05)
+  return getContrastRatioUtil(hsl1, hsl2)
 }
 
 /**

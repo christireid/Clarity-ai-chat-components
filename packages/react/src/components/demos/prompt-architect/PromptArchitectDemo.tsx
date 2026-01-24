@@ -28,6 +28,7 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { sleep } from '@clarity-chat/utils'
 import { usePromptArchitect } from './hooks/usePromptArchitect'
 import { PromptEditor } from './components/PromptEditor'
 import { VariableForm } from './components/VariableForm'
@@ -81,13 +82,6 @@ function isRetryableError(status: number): boolean {
     status === 503 ||
     status === 504
   )
-}
-
-/**
- * Sleep for a specified duration
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**

@@ -50,7 +50,9 @@ interface RollbarLike {
     codeVersion?: string
     payload?: { person?: { id: string; email?: string } }
   }) => void
-  [key: string]: ((arg: Error | string, custom?: Record<string, unknown>) => void) | unknown
+  [key: string]:
+    | ((arg: Error | string, custom?: Record<string, unknown>) => void)
+    | unknown
 }
 
 /** Bugsnag SDK mock interface */
@@ -72,11 +74,8 @@ interface BugsnagLike {
   leaveBreadcrumb: (message: string, metadata?: Record<string, unknown>) => void
 }
 
-function isDev(): boolean {
-  return (
-    typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
-  )
-}
+// Import environment detection from canonical source
+import { isDev } from '@clarity-chat/utils/env'
 
 function safeDevLog(...args: unknown[]): void {
   if (!isDev()) return
@@ -396,7 +395,11 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
     ) => {
       if (!Bugsnag) return
       const name = userData?.['name']
-      Bugsnag.setUser(userId, email, typeof name === 'string' ? name : undefined)
+      Bugsnag.setUser(
+        userId,
+        email,
+        typeof name === 'string' ? name : undefined
+      )
       if (userData) {
         Bugsnag.addMetadata('user', userData)
       }

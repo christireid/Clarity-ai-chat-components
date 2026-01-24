@@ -486,28 +486,4 @@ export function getDiagnostics(): {
   }
 }
 
-/**
- * Format bytes to human readable string
- */
-export function formatBytes(bytes: number): string {
-  const units = ['B', 'KB', 'MB', 'GB']
-  let unitIndex = 0
-  let value = bytes
-
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024
-    unitIndex++
-  }
-
-  return `${value.toFixed(2)} ${units[unitIndex]}`
-}
-
-/**
- * Format duration to human readable string
- */
-export function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
-  if (ms < 3600000) return `${(ms / 60000).toFixed(1)}m`
-  return `${(ms / 3600000).toFixed(1)}h`
-}
+// formatBytes and formatDuration removed - import from @clarity-chat/utils/format instead if needed

@@ -1,6 +1,6 @@
 /**
  * Batch Processing Utilities
- * 
+ *
  * Efficient batching for bulk operations
  */
 
@@ -33,18 +33,18 @@ export async function parallelBatchProcess<T, R>(
   concurrency: number = 3
 ): Promise<R[]> {
   const batches: T[][] = []
-  
+
   for (let i = 0; i < items.length; i += batchSize) {
     batches.push(items.slice(i, i + batchSize))
   }
 
   const results: R[] = []
-  
+
   // Process batches with concurrency limit
   for (let i = 0; i < batches.length; i += concurrency) {
     const batchGroup = batches.slice(i, i + concurrency)
     const batchResults = await Promise.all(
-      batchGroup.map(batch => processor(batch))
+      batchGroup.map((batch) => processor(batch))
     )
     results.push(...batchResults.flat())
   }
@@ -57,10 +57,10 @@ export async function parallelBatchProcess<T, R>(
  */
 export function chunk<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = []
-  
+
   for (let i = 0; i < array.length; i += size) {
     chunks.push(array.slice(i, i + size))
   }
-  
+
   return chunks
 }

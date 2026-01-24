@@ -254,7 +254,7 @@ export function createUserMessage(
   }
 ): UIMessage {
   return {
-    id: options?.id ?? generateId(),
+    id: options?.id ?? generateMessageId(),
     role: 'user',
     parts: [{ type: 'text', text: content }],
     createdAt: new Date(),
@@ -272,7 +272,7 @@ export function createAssistantMessage(options?: {
   metadata?: UIMessageMetadata
 }): UIMessage {
   return {
-    id: options?.id ?? generateId(),
+    id: options?.id ?? generateMessageId(),
     role: 'assistant',
     parts: [],
     createdAt: new Date(),
@@ -380,9 +380,5 @@ export function isUIThinkingPart(part: UIMessagePart): part is UIThinkingPart {
 // HELPERS
 // =============================================================================
 
-/**
- * Generate a unique message ID
- */
-function generateId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-}
+// Import ID generator from canonical utils package
+import { generateMessageId } from '@clarity-chat/utils'

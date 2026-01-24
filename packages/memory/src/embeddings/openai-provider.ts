@@ -5,8 +5,7 @@
  */
 
 import type { EmbeddingProvider } from './embedding-provider'
-import { LRUCache, TTLCache } from '@clarity-chat/utils'
-import { retry, isRetryableError } from '../utils/retry'
+import { LRUCache, TTLCache, retry } from '@clarity-chat/utils'
 import { RateLimiter } from '../utils/rate-limiter'
 
 export interface OpenAIProviderConfig {
@@ -84,13 +83,6 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
             .json()
             .catch(() => ({ error: 'Unknown error' }))
           const errorMessage = `OpenAI embedding failed: ${JSON.stringify(error)}`
-
-          // Check if retryable
-          if (isRetryableError(new Error(errorMessage))) {
-            throw new Error(errorMessage)
-          }
-
-          // Non-retryable errors (e.g., invalid API key)
           throw new Error(errorMessage)
         }
 
@@ -104,9 +96,18 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
         return result
       },
       {
-        maxAttempts: 3,
-        initialDelay: 1000,
-        retryableErrors: ['network', 'timeout', '503', '502', '504'],
+        retries: 3,
+        delay: 1000,
+        shouldRetry: (error) => {
+          const message = error.message.toLowerCase()
+          return (
+            message.includes('network') ||
+            message.includes('timeout') ||
+            message.includes('503') ||
+            message.includes('502') ||
+            message.includes('504')
+          )
+        },
       }
     )
 
@@ -170,9 +171,18 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
         return data.data.map((item: any) => item.embedding)
       },
       {
-        maxAttempts: 3,
-        initialDelay: 1000,
-        retryableErrors: ['network', 'timeout', '503', '502', '504'],
+        retries: 3,
+        delay: 1000,
+        shouldRetry: (error) => {
+          const message = error.message.toLowerCase()
+          return (
+            message.includes('network') ||
+            message.includes('timeout') ||
+            message.includes('503') ||
+            message.includes('502') ||
+            message.includes('504')
+          )
+        },
       }
     )
 

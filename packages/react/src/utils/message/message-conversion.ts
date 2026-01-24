@@ -13,10 +13,8 @@ import type {
 } from '../../hooks/chat/use-chat-enhanced'
 import type { Message, MessageRole } from '@clarity-chat/types'
 
-// Simple ID generator (inline to avoid circular deps)
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-}
+// Import ID generator from canonical utils package
+import { generateId } from '@clarity-chat/utils'
 
 /**
  * Extract text content from CoreMessageContent

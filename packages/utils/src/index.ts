@@ -24,6 +24,12 @@
  */
 
 // ============================================================================
+// Math Utilities
+// ============================================================================
+
+export { clamp } from './math/index.js'
+
+// ============================================================================
 // Format Utilities
 // ============================================================================
 
@@ -214,7 +220,11 @@ export {
   isValidUrl,
   isValidUUID,
   isValidJSON,
+  isValidJson,
   parseJSON,
+  // Backward compatibility aliases
+  isEmail,
+  isUrl,
   // Object utilities
   hasKey,
   hasKeys,
@@ -299,6 +309,34 @@ export {
 } from './typescript-strict.js'
 
 // ============================================================================
+// ID Generation Utilities
+// ============================================================================
+
+export {
+  generateId,
+  generateMessageId,
+  generateSessionId,
+  generateBatchId,
+} from './id/index.js'
+
+// ============================================================================
+// Environment Detection
+// ============================================================================
+
+export {
+  isBrowser,
+  isNode,
+  isServer,
+  detectEnvironment,
+  isDev,
+  isProd,
+  isTest,
+  isCi,
+  getEnv,
+  type RuntimeEnvironment,
+} from './env/index.js'
+
+// ============================================================================
 // File System Utilities
 // ============================================================================
 
@@ -324,7 +362,8 @@ export {
 // ============================================================================
 
 export {
-  PerformanceMonitor,
+  UnifiedPerformanceMonitor,
+  UnifiedPerformanceMonitor as PerformanceMonitor, // Backward compatibility alias
   measurePerformance,
   measurePerformanceAsync,
   startPerformanceTimer,
@@ -332,10 +371,25 @@ export {
   getPerformanceMetrics,
   formatPerformanceMetrics,
   getPerformanceSummary,
+  // Note: throttle and debounce are exported from async/index.ts
+  Batcher,
+  BatchProcessor,
+  lazyLoad,
+  optimizeArray,
+  calculateVisibleRange,
+  createDebouncedFunction,
+  createThrottledFunction,
+  checkPerformanceTarget,
   type PerformanceMetrics,
   type OperationTiming,
   type PerformanceOptions,
-} from './performance.js'
+  type VirtualScrollConfig,
+  type DebounceConfig,
+  type ThrottleConfig,
+  type MemorySnapshot,
+  type RenderTiming,
+  type FPSMetrics,
+} from './performance-unified.js'
 
 // ============================================================================
 // Unified Error Handler

@@ -7,9 +7,21 @@
  */
 
 // Core utilities
-export { Cache, CacheKeys, projectCache, modelCache, exampleCache, stopCacheCleanup } from './cache.js'
+export {
+  Cache,
+  CacheKeys,
+  projectCache,
+  modelCache,
+  exampleCache,
+  stopCacheCleanup,
+} from './cache.js'
 export { logger, LogLevel } from './logger.js'
-export { validateRequired, validateString, validateEnum, validateNumber } from './validation.js'
+export {
+  validateRequired,
+  validateString,
+  validateEnum,
+  validateNumber,
+} from './validation.js'
 
 // Error handling
 export {
@@ -40,11 +52,13 @@ export {
   healthChecker,
   getServerHealth,
   getDiagnostics,
-  formatBytes,
-  formatDuration,
   HealthStatus,
 } from './health.js'
-export type { HealthCheckResult, ServerHealth, ServerMetrics } from './health.js'
+export type {
+  HealthCheckResult,
+  ServerHealth,
+  ServerMetrics,
+} from './health.js'
 
 // Rate limiting
 export {
@@ -55,7 +69,11 @@ export {
   createRateLimitError,
   withRateLimit,
 } from './rate-limiter.js'
-export type { RateLimitConfig, RequestContext, RateLimitResult } from './rate-limiter.js'
+export type {
+  RateLimitConfig,
+  RequestContext,
+  RateLimitResult,
+} from './rate-limiter.js'
 
 // Search utilities
 export {

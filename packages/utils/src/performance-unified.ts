@@ -543,37 +543,11 @@ export class UnifiedPerformanceMonitor {
 
 /**
  * Throttle function calls
+ *
+ * Re-exported from async utilities for convenience in performance context.
+ * Uses the canonical implementation with leading and trailing support.
  */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  let lastCall = 0
-
-  return function throttled(...args: Parameters<T>) {
-    const now = Date.now()
-    const timeSinceLastCall = now - lastCall
-
-    if (timeSinceLastCall >= wait) {
-      lastCall = now
-      func(...args)
-    } else {
-      if (timeout) {
-        clearTimeout(timeout)
-      }
-      const remainingTime = wait - timeSinceLastCall
-      timeout = setTimeout(
-        () => {
-          lastCall = Date.now()
-          func(...args)
-          timeout = null
-        },
-        Math.max(0, remainingTime)
-      )
-    }
-  }
-}
+export { throttle } from './async/index.js'
 
 /**
  * Debounce function calls

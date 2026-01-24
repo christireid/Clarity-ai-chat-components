@@ -50,6 +50,7 @@
     "url": "https://github.com/clarity-chat/mcp-server/issues"
   },
   "dependencies": {
+    "@clarity-chat/utils": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.24.3",
     "zod": "^3.24.0"
   },

@@ -1,6 +1,6 @@
 /**
  * Clarity Memory - Error Utilities
- * 
+ *
  * Error handling utilities and helpers.
  */
 
@@ -16,7 +16,10 @@ export function createStoreError(message: string, cause?: Error): MemoryError {
 /**
  * Create an embedding error
  */
-export function createEmbeddingError(message: string, cause?: Error): MemoryError {
+export function createEmbeddingError(
+  message: string,
+  cause?: Error
+): MemoryError {
   return new MemoryError(message, MemoryErrorCodes.EMBEDDING_ERROR, cause)
 }
 
@@ -57,25 +60,5 @@ export function isMemoryError(error: unknown): error is MemoryError {
   return error instanceof MemoryError
 }
 
-/**
- * Get error message safely
- */
-export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-  if (typeof error === 'string') {
-    return error
-  }
-  return 'Unknown error'
-}
-
-/**
- * Get error code safely
- */
-export function getErrorCode(error: unknown): string | undefined {
-  if (isMemoryError(error)) {
-    return error.code
-  }
-  return undefined
-}
+// getErrorMessage and getErrorCode utilities moved to @clarity-chat/utils/errors
+// Import them with: import { getErrorMessage } from '@clarity-chat/utils/errors'

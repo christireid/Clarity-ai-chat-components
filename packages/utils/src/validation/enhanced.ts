@@ -583,6 +583,10 @@ export function isValidJson(jsonString: unknown): boolean {
   }
 }
 
+// Backward compatibility aliases for primitives package
+export const isEmail = isValidEmail
+export const isUrl = isValidUrl
+
 /**
  * Parse JSON with validation
  */

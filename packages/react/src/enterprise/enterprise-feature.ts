@@ -10,7 +10,7 @@ import {
   formatBytes,
   formatTimestamp,
   ensureDirectories,
-} from '../primitives/src/lib/enterprise-utils'
+} from '@clarity-chat/primitives/lib/enterprise-utils'
 
 /**
  * Base enterprise configuration

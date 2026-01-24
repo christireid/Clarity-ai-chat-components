@@ -138,27 +138,25 @@ export {
   type BatchingOptions,
 } from './token-optimization'
 
-// Performance (explicit exports to avoid conflicts)
+// Performance utilities (re-export from @clarity-chat/utils)
 export {
   throttle,
   debounce,
   Batcher,
+  BatchProcessor,
   measurePerformance,
-  PerformanceMonitor,
+  measurePerformanceAsync,
+  UnifiedPerformanceMonitor as PerformanceMonitor,
   lazyLoad,
   optimizeArray,
-} from './performance'
-
-export {
   calculateVisibleRange,
   createDebouncedFunction,
   createThrottledFunction,
-  MemoryManager,
-  calculateMessageDiff,
-  BatchProcessor,
-  PerformanceTracker,
   checkPerformanceTarget,
   type VirtualScrollConfig,
   type DebounceConfig,
   type ThrottleConfig,
-} from './performance-optimization'
+} from '@clarity-chat/utils/performance-unified'
+
+// Note: MemoryManager and calculateMessageDiff removed - use domain-specific implementations
+// PerformanceTracker removed - use PerformanceMonitor.getStats() instead

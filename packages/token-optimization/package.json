@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
     "fflate": "^0.8.2",
     "gpt-tokenizer": "^2.8.0",
     "llm-splitter": "^0.2.0",

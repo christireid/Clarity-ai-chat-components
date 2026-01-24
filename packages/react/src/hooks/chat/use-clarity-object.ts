@@ -116,6 +116,8 @@ export interface UseClarityObjectReturn<TObject, TInput = any> {
 
 /**
  * Parse JSON from stream chunks
+ * This is a specialized streaming-specific implementation that handles partial JSON.
+ * It's not a duplicate of the standard parseJSON utilities since it handles incremental parsing.
  */
 function parseJSONChunks(chunks: string[]): any | null {
   try {
@@ -126,7 +128,7 @@ function parseJSONChunks(chunks: string[]): any | null {
       return JSON.parse(jsonMatch[0])
     }
 
-    // Try incremental parsing
+    // Try incremental parsing for streaming use case
     for (let i = chunks.length; i > 0; i--) {
       const attempt = chunks.slice(0, i).join('')
       const match = attempt.match(/\{[\s\S]*\}/)

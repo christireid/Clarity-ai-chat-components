@@ -13,6 +13,8 @@
  * @module memory-budget
  */
 
+import { clamp } from '@clarity-chat/utils'
+
 /**
  * Memory type for budget allocation
  */
@@ -85,19 +87,6 @@ export interface MemoryBudgetContext {
   hasRecent: boolean
   /** Memory richness score (0-1) */
   memoryRichness: number
-}
-
-/**
- * Clamp a number to a range, handling NaN/Infinity
- *
- * @param value - Value to clamp
- * @param min - Minimum value
- * @param max - Maximum value
- * @returns Clamped value
- */
-function clamp(value: number, min: number, max: number): number {
-  if (!Number.isFinite(value)) return min
-  return Math.max(min, Math.min(max, value))
 }
 
 /**

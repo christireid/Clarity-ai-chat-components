@@ -1,43 +1,21 @@
 /**
  * Environment Detection Utilities
- * 
+ *
  * Auto-detect runtime environment and provide helpful defaults
+ *
+ * @deprecated Import environment detection from @clarity-chat/utils/env instead
  */
 
-export type RuntimeEnvironment = 'browser' | 'node' | 'serverless' | 'unknown'
-
-/**
- * Detect the current runtime environment
- */
-export function detectEnvironment(): RuntimeEnvironment {
-  // Check for browser
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    return 'browser'
-  }
-
-  // Check for Node.js
-  if (typeof process !== 'undefined' && process.versions?.node) {
-    // Check for serverless environments
-    if (
-      process.env.VERCEL ||
-      process.env.AWS_LAMBDA_FUNCTION_NAME ||
-      process.env.CLOUDFLARE_WORKERS ||
-      process.env.NETLIFY
-    ) {
-      return 'serverless'
-    }
-    return 'node'
-  }
-
-  return 'unknown'
-}
+// Re-export from canonical source
+export type { RuntimeEnvironment } from '@clarity-chat/utils/env'
+export { detectEnvironment } from '@clarity-chat/utils/env'
 
 /**
  * Check if IndexedDB is available
  */
 export function isIndexedDBAvailable(): boolean {
   if (typeof window === 'undefined') return false
-  
+
   try {
     return typeof indexedDB !== 'undefined' && indexedDB !== null
   } catch {
@@ -55,9 +33,13 @@ export function isFetchAvailable(): boolean {
 /**
  * Get recommended storage type for environment
  */
-export function getRecommendedStorageType(): 'in-memory' | 'indexeddb' | 'redis' | 'postgres' {
+export function getRecommendedStorageType():
+  | 'in-memory'
+  | 'indexeddb'
+  | 'redis'
+  | 'postgres' {
   const env = detectEnvironment()
-  
+
   switch (env) {
     case 'browser':
       return isIndexedDBAvailable() ? 'indexeddb' : 'in-memory'

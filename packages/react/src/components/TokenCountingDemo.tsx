@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { TokenCounter } from '@clarity-chat/token-optimization'
 import { smartCountTokens } from './smart-fallback'
-import { tokenAnalyticsMonitor } from './token-analytics'
+import { tokenAnalyticsMonitor } from '../utils/tokenization/token-analytics'
 
 export interface TokenDemoProps {
   defaultText?: string

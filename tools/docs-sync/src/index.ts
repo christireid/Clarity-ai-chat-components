@@ -58,8 +58,8 @@ import {
   failSpinner,
   ProgressTracker,
   printSummary,
-  formatDuration,
 } from './utils/logger.js'
+import { formatDuration } from '@clarity-chat/utils/format'
 import {
   validateConfigFull,
   formatValidationErrors,
