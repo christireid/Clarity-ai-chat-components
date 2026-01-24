@@ -119,11 +119,15 @@ export function useSemanticCache<T = string>(
     setIsReady(true)
     updateStatsFromCache()
 
+    // Copy ref.current to local variables for cleanup
+    const currentCache = cacheRef.current
+    const currentResponseMap = responseMapRef.current
+
     return () => {
-      if (cacheRef.current) {
-        cacheRef.current.clear()
+      if (currentCache) {
+        currentCache.clear()
       }
-      responseMapRef.current.clear()
+      currentResponseMap.clear()
     }
   }, [
     config.embeddingModel,

@@ -411,13 +411,17 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       refetchAll()
     }
 
+    // Copy refs to local variables for cleanup
+    const staleTimeouts = staleTimeoutsRef.current
+    const clockRef = clock
+
     return () => {
       isMountedRef.current = false
       // Clear all stale timeouts
-      for (const timeout of staleTimeoutsRef.current.values()) {
-        clock.clearTimeout(timeout)
+      for (const timeout of staleTimeouts.values()) {
+        clockRef.clearTimeout(timeout)
       }
-      staleTimeoutsRef.current.clear()
+      staleTimeouts.clear()
     }
   }, [])
 
@@ -472,8 +476,10 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
       if (state.lastFetchedAt === null) continue
 
+      // Copy ref to local variable for timeout callback
+      const isMounted = isMountedRef
       const timeout = clock.setTimeout(() => {
-        if (!isMountedRef.current) return
+        if (!isMounted.current) return
         log(`Source ${key} marked as stale`)
         dispatch({ type: 'SET_STALE', key })
       }, staleTime)

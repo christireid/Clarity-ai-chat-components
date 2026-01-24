@@ -87,6 +87,9 @@ export function usePerformanceTracking({
       mountTimeRef.current = performance.now()
     }
 
+    // Copy ref value to local variable for cleanup
+    const currentRenderCount = renderCountRef.current
+
     return () => {
       cleanupRender()
 
@@ -97,7 +100,7 @@ export function usePerformanceTracking({
       if (logToConsole && timing.duration && timing.duration > thresholds.slowRender) {
         console.warn(
           `Slow render: ${componentName} took ${timing.duration.toFixed(2)}ms`,
-          { metadata, renderCount: renderCountRef.current }
+          { metadata, renderCount: currentRenderCount }
         )
       }
 

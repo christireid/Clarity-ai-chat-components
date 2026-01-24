@@ -289,6 +289,7 @@ export function useRealisticTyping(
       cleanup,
       onTypingStart,
       onStageChange,
+      currentStage,
     ]
   )
 
