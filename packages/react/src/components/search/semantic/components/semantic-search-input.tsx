@@ -4,7 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input, Button, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { Search, X } from 'lucide-react'
-import { DURATION_SECONDS as durations } from '../../../../animations/constants'
+import {
+  ANIMATION_PRESETS,
+  DURATION_SECONDS as durations
+} from '../../../../animations/constants'
 
 // Type assertions for icons
 const SearchIcon = Search as React.ComponentType<{ className?: string }>
@@ -89,9 +92,7 @@ export const SemanticSearchInput = React.forwardRef<
               <AnimatePresence>
                 {isSearching && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    {...ANIMATION_PRESETS.pop}
                     className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
                   />
                 )}
@@ -116,9 +117,7 @@ export const SemanticSearchInput = React.forwardRef<
               <AnimatePresence>
                 {query && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    {...ANIMATION_PRESETS.pop}
                   >
                     <Button
                       variant="ghost"

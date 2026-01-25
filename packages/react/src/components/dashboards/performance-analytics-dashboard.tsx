@@ -13,7 +13,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { formatBytes } from '../../internal/helpers'
-import { DURATION_SECONDS } from '../../animations/constants'
+import { DURATION_SECONDS, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
@@ -431,11 +431,7 @@ export function PerformanceAnalyticsDashboard({
                 <motion.div
                   key={vital.name}
                   className="flex flex-col items-center rounded-lg border p-4"
-                  initial={{
-                    opacity: 0,
-                    y: getMotionSafeValue(prefersReducedMotion, 20, 0),
-                  }}
-                  animate={{ opacity: 1, y: 0 }}
+                  {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                   transition={{
                     duration: getMotionSafeDuration(
                       prefersReducedMotion,

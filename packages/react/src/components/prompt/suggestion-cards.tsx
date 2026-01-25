@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Card, CardContent } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * A single suggestion card
@@ -249,8 +249,7 @@ export function SuggestionCards({
           {Array.from({ length: loadingCount }).map((_, i) => (
             <motion.div
               key={i}
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ duration: durations.normal, delay: i * 0.05 }}
               viewport={{ once: true }}
             >
@@ -281,8 +280,7 @@ export function SuggestionCards({
   if (filteredCards.length === 0) {
     return (
       <motion.div
-        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        {...ANIMATION_PRESETS.scale}
         transition={{ duration: durations.normal }}
         viewport={{ once: true }}
         className={cn('rounded-xl border border-dashed border-border/40 bg-muted/20 p-8 text-center', className)}
@@ -322,8 +320,7 @@ export function SuggestionCards({
       {showCategoryFilter && categories && categories.length > 0 && (
         <div className="flex flex-wrap gap-2">
           <motion.button
-            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            {...ANIMATION_PRESETS.scale}
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
             viewport={{ once: true }}
             onClick={() => onCategoryChange?.(null)}
@@ -342,8 +339,7 @@ export function SuggestionCards({
           {categories.map((category, index) => (
             <motion.button
               key={category.id}
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{
                 type: 'spring',
                 damping: 20,
@@ -378,9 +374,7 @@ export function SuggestionCards({
           <motion.div
             key={card.id || `${card.title}-${index}`}
             layout
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
+            {...ANIMATION_PRESETS.slideUp}
             transition={{
               type: 'spring',
               damping: 25,
@@ -509,8 +503,7 @@ export function SuggestionCards({
       {/* Show more button */}
       {(hasMore || remainingCount > 0) && onShowMore && (
         <motion.div
-          initial={prefersReducedMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
+          {...ANIMATION_PRESETS.fadeIn}
           transition={{ duration: durations.normal, delay: 0.2 }}
           viewport={{ once: true }}
           className="text-center pt-2"

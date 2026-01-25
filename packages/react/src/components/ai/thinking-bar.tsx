@@ -52,6 +52,7 @@ import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   DURATION_SECONDS as durations,
   EASING_FRAMER,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { AnimatedDots } from '../ui/animated-dots'
 
@@ -306,10 +307,10 @@ const IndeterminateProgress: React.FC<IndeterminateProgressProps> = ({
 }) => (
   <motion.div
     className={cn('h-full rounded-full', barColor)}
-    initial={{ x: '-100%', width: '30%' }}
+    {...ANIMATION_PRESETS.fadeIn}
     animate={
       prefersReducedMotion
-        ? { x: '0%', width: '100%', opacity: [0.5, 1, 0.5] }
+        ? { ...ANIMATION_PRESETS.fadeIn.animate, x: '0%', width: '100%', opacity: [0.5, 1, 0.5] }
         : { x: ['0%', '200%', '0%'] }
     }
     transition={
@@ -342,14 +343,35 @@ const DeterminateProgress: React.FC<DeterminateProgressProps> = ({
 }) => (
   <motion.div
     className={cn('h-full rounded-full', barColor)}
-    initial={{ width: 0 }}
-    animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+    {...ANIMATION_PRESETS.slideRight}
+    animate={{ ...ANIMATION_PRESETS.slideRight.animate, width: `${Math.min(100, Math.max(0, progress))}%` }}
     transition={{
       duration: prefersReducedMotion ? 0.1 : durations.slow,
       ease: EASING_FRAMER.out,
     }}
   />
 )
+
+// =============================================================================
+// ANIMATION CONSTANTS
+// =============================================================================
+
+// Pulse ring animations for detailed variant
+const PULSE_RING_PRIMARY = {
+  scale: [1, 1.6, 1.6],
+  opacity: [0.5, 0, 0],
+}
+
+const PULSE_RING_SECONDARY = {
+  scale: [1, 1.3, 1.3],
+  opacity: [0.3, 0, 0],
+}
+
+// Icon animation for active states
+const ICON_ACTIVE_ANIMATION = {
+  scale: [1, 1.1, 1],
+  rotate: [0, 5, -5, 0],
+}
 
 // =============================================================================
 // MAIN COMPONENT
@@ -401,23 +423,16 @@ export function ThinkingBar({
 
   // Animation variants based on reduced motion preference
   const containerVariants = prefersReducedMotion
-    ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-      }
-    : {
-        initial: { opacity: 0, y: 8 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -8 },
-      }
+    ? ANIMATION_PRESETS.fadeIn
+    : ANIMATION_PRESETS.slideUp
 
   const iconVariants = prefersReducedMotion
-    ? {}
+    ? ANIMATION_PRESETS.fadeIn
     : {
+        ...ANIMATION_PRESETS.scale,
         animate: status === 'thinking' || status === 'searching' || status === 'generating'
-          ? { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }
-          : {},
+          ? { ...ANIMATION_PRESETS.scale.animate, ...ICON_ACTIVE_ANIMATION }
+          : ANIMATION_PRESETS.scale.animate,
       }
 
   // Render minimal variant
@@ -486,12 +501,14 @@ export function ThinkingBar({
               {!prefersReducedMotion && status !== 'complete' && status !== 'idle' && (
                 <>
                   <motion.div
-                    animate={{ scale: [1, 1.6, 1.6], opacity: [0.5, 0, 0] }}
+                    {...ANIMATION_PRESETS.scale}
+                    animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_PRIMARY }}
                     transition={{ duration: durations.slower, repeat: Infinity, ease: 'easeOut' }}
                     className={cn('absolute inset-0 rounded-full', config.bgColor)}
                   />
                   <motion.div
-                    animate={{ scale: [1, 1.3, 1.3], opacity: [0.3, 0, 0] }}
+                    {...ANIMATION_PRESETS.scale}
+                    animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_SECONDARY }}
                     transition={{ duration: durations.slower, repeat: Infinity, ease: 'easeOut', delay: 0.2 }}
                     className={cn('absolute inset-0 rounded-full', config.bgColor)}
                   />

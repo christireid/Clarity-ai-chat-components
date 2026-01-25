@@ -21,6 +21,7 @@ import {
 import { DashboardProgress } from '../ui/dashboard-progress'
 import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
 import { Skeleton } from '../ui/skeleton'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
 
 /**
@@ -510,8 +511,7 @@ export function ABTestingDashboard({
         ) : (
           <motion.div
             key={experiment.experimentId}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...ANIMATION_PRESETS.slideDown}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             viewport={{ once: true }}
@@ -604,8 +604,7 @@ export function ABTestingDashboard({
             </Card>
           ) : (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideDown}
               viewport={{ once: true }}
             >
               <Card className="border-green-500 bg-green-50 dark:bg-green-950">
@@ -808,8 +807,7 @@ export function ABTestingDashboard({
             ) : (
               <motion.div
                 key={variant.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                {...ANIMATION_PRESETS.slideRight}
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >

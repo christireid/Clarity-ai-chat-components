@@ -13,6 +13,7 @@ import {
 } from '@clarity-chat/primitives'
 import { type SignificanceResult } from './use-statistical-significance'
 import { DashboardProgress } from '../ui/dashboard-progress'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
@@ -116,8 +117,7 @@ export function VariantCard({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideRight)}
       transition={{ delay: prefersReducedMotion ? 0 : animationDelay }}
       viewport={{ once: true }}
     >

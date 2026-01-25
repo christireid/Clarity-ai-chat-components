@@ -3,12 +3,27 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { BotIcon, SparklesIcon } from '../ui/icons'
-import { duration } from '../../animations/constants'
+import { duration, ANIMATION_PRESETS } from '../../animations/constants'
 import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+
+// Animation constants for decorative rings
+const OUTER_RING_ANIMATION = {
+  scale: [1, 1.05, 1],
+  opacity: [0.5, 0.8, 0.5],
+}
+
+const MIDDLE_RING_ANIMATION = {
+  scale: [1, 1.03, 1],
+  opacity: [0.6, 1, 0.6],
+}
+
+const SPARKLES_ANIMATION = {
+  rotate: [0, 15, -15, 0],
+}
 
 export interface DefaultEmptyStateProps {
   starterPrompts?: PromptSuggestion[]
@@ -26,8 +41,7 @@ export function DefaultEmptyState({
   return (
     <motion.div
       className="text-center space-y-8 px-4 py-8"
-      initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={{ duration: prefersReducedMotion ? 0 : duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
       viewport={{ once: true }}
     >
@@ -39,9 +53,10 @@ export function DefaultEmptyState({
         ) : (
           <motion.div
             className="absolute w-32 h-32 rounded-full border border-primary/10"
+            {...ANIMATION_PRESETS.scale}
             animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.5, 0.8, 0.5],
+              ...ANIMATION_PRESETS.scale.animate,
+              ...OUTER_RING_ANIMATION,
             }}
             transition={{
               duration: duration('slower'),
@@ -56,9 +71,10 @@ export function DefaultEmptyState({
         ) : (
           <motion.div
             className="absolute w-28 h-28 rounded-full border border-primary/20"
+            {...ANIMATION_PRESETS.scale}
             animate={{
-              scale: [1, 1.03, 1],
-              opacity: [0.6, 1, 0.6],
+              ...ANIMATION_PRESETS.scale.animate,
+              ...MIDDLE_RING_ANIMATION,
             }}
             transition={{
               duration: duration('slower'),
@@ -109,8 +125,7 @@ export function DefaultEmptyState({
           ) : (
             <motion.div
               className="pt-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{
                 delay: 0.2,
                 duration: duration('slow'),
@@ -119,7 +134,8 @@ export function DefaultEmptyState({
             >
               <div className="flex items-center justify-center gap-2 mb-5">
                 <motion.div
-                  animate={{ rotate: [0, 15, -15, 0] }}
+                  {...ANIMATION_PRESETS.scaleRotate}
+                  animate={{ ...ANIMATION_PRESETS.scaleRotate.animate, ...SPARKLES_ANIMATION }}
                   transition={{
                     duration: duration('slower'),
                     repeat: Infinity,

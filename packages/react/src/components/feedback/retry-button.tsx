@@ -6,6 +6,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Error type for different retry strategies
@@ -349,8 +350,7 @@ export function RetryButton({
           </p>
         ) : (
           <motion.p
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            {...ANIMATION_PRESETS.slideRight}
             viewport={{ once: true }}
             className="text-sm text-destructive flex items-center gap-1.5 animate-[shake-x_0.4s_ease-in-out]"
           >

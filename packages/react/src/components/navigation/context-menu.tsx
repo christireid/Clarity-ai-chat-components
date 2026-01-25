@@ -4,7 +4,7 @@ import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   useFocusTrap,
@@ -314,8 +314,7 @@ export function ContextMenu({
             aria-haspopup={hasSubmenu ? 'menu' : undefined}
             aria-expanded={hasSubmenu ? isSubmenuOpen : undefined}
             tabIndex={isFocused ? 0 : -1}
-            initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
             transition={{
               delay: prefersReducedMotion ? 0 : index * 0.03,
               ease: EASING_FRAMER.out,
@@ -404,17 +403,7 @@ export function ContextMenu({
               <motion.div
                 role="menu"
                 aria-label={`${item.label} submenu`}
-                initial={
-                  prefersReducedMotion
-                    ? false
-                    : { opacity: 0, x: -10, scale: 0.95 }
-                }
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={
-                  prefersReducedMotion
-                    ? { opacity: 0 }
-                    : { opacity: 0, x: -10, scale: 0.95 }
-                }
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
                 transition={{
                   type: prefersReducedMotion ? 'tween' : 'spring',
                   duration: prefersReducedMotion ? 0.1 : undefined,
@@ -455,17 +444,7 @@ export function ContextMenu({
               id={menuId}
               role="menu"
               aria-label={ariaLabel}
-              initial={
-                prefersReducedMotion
-                  ? false
-                  : { opacity: 0, scale: 0.9, y: -10 }
-              }
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={
-                prefersReducedMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, scale: 0.9, y: -10 }
-              }
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideDown)}
               transition={{
                 duration: prefersReducedMotion
                   ? 0.1

@@ -12,6 +12,7 @@ import {
 } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Supported document platforms
@@ -517,8 +518,7 @@ export function DocumentIntegration({
                   ) : (
                     <motion.div
                       key={doc.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...ANIMATION_PRESETS.slideUp}
                       transition={{ delay: index * 0.02 }}
                       viewport={{ once: true }}
                       className={cn(

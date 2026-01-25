@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, cn, Textarea } from '@clarity-chat/primitives'
 import { CheckIcon, CloseIcon } from '../ui/icons'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /** Maximum recommended content length before warning */
@@ -108,8 +108,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
 
     return isEditing ? (
       <motion.div
-        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
+        {...ANIMATION_PRESETS.scale}
         transition={{ duration: prefersReducedMotion ? 0 : durations.fast }}
         viewport={{ once: true }}
         className={cn('space-y-3', className)}
@@ -165,8 +164,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
 
             {/* Action buttons */}
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideDown}
               transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : durations.fast }}
               viewport={{ once: true }}
               className="flex items-center justify-end gap-2"

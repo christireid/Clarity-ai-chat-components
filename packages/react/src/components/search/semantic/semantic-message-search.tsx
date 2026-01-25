@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { Search, X } from 'lucide-react'
-import { DURATION_SECONDS as durations } from '../../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../../animations/constants'
 
 import type {
   SemanticMessageSearchProps,
@@ -291,8 +291,7 @@ export function SemanticMessageSearch({
           {/* Error display */}
           {error && (
             <motion.div
-              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
-              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideDown}
               viewport={{ once: true }}
               className="text-sm text-destructive flex items-center gap-2"
             >
@@ -368,9 +367,7 @@ export function SemanticMessageSearch({
           {isSearching ? (
             <motion.div
               key="loading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
             >
               <Card className="shadow-sm">
@@ -398,9 +395,7 @@ export function SemanticMessageSearch({
           ) : results.length > 0 ? (
             <motion.div
               key="results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
               className="space-y-3"
             >
@@ -437,9 +432,7 @@ export function SemanticMessageSearch({
           ) : query && !isSearching ? (
             <motion.div
               key="no-results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
             >
               <Card className="shadow-sm">

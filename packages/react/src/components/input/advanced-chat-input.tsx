@@ -14,6 +14,7 @@ import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 import { useMergedRef } from '../../hooks/ui/use-merged-ref'
 import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 export interface InputSuggestion {
   id: string
@@ -447,17 +448,13 @@ export function AdvancedChatInput({
         ) : (
           <AnimatePresence>
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              {...ANIMATION_PRESETS.collapse}
               className="flex gap-2 p-4 pb-0 overflow-x-auto"
             >
               {attachments.map((attachment) => (
                 <motion.div
                   key={attachment.id}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
+                  {...ANIMATION_PRESETS.pop}
                   viewport={{ once: true }}
                   className="relative flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
                 >
@@ -550,9 +547,7 @@ export function AdvancedChatInput({
         ) : (
           <AnimatePresence>
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
+              {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
               className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
               role="listbox"

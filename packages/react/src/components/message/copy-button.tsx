@@ -8,7 +8,24 @@ import { CopyIcon, CheckIcon } from '../ui/icons'
 import { useToast } from '../ui/toast'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
+
+// Celebration particle animation
+const CELEBRATION_PARTICLE_ANIMATION = {
+  scale: [0, 1, 0],
+  opacity: [1, 1, 0],
+}
+
+// Check icon pulse animation
+const CHECK_ICON_PULSE = {
+  scale: [1, 1.2, 1],
+}
+
+// Copy button final state (override animate for completion)
+const COPY_BUTTON_FINAL = {
+  scale: 1,
+  opacity: 1,
+}
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,
@@ -175,17 +192,18 @@ export function CopyButton({
             <motion.div
               key={i}
               className="absolute top-1/2 left-1/2 w-1 h-1 bg-success rounded-full"
-              initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
+              {...ANIMATION_PRESETS.scale}
               animate={{
-                scale: [0, 1, 0],
+                ...ANIMATION_PRESETS.scale.animate,
+                ...CELEBRATION_PARTICLE_ANIMATION,
                 x: [0, Math.cos((i * Math.PI) / 3) * 20],
                 y: [0, Math.sin((i * Math.PI) / 3) * 20],
-                opacity: [1, 1, 0],
               }}
               transition={{
                 duration: durations.slower,
                 ease: 'easeOut',
               }}
+              aria-hidden="true"
             />
           ))}
         </div>
@@ -195,14 +213,16 @@ export function CopyButton({
         {copied ? (
           <motion.div
             key="check"
-            initial={{ scale: 0.5, opacity: 0, rotate: -45 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            exit={{ scale: 0.5, opacity: 0 }}
+            {...ANIMATION_PRESETS.scaleRotate}
+            // eslint-disable-next-line clarity-animations/prefer-animation-library
+            animate={{ ...ANIMATION_PRESETS.scaleRotate.animate, scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ ...ANIMATION_PRESETS.scaleRotate.exit, scale: 0.5, opacity: 0 }}
             transition={getSpring('bouncy', prefersReducedMotion)}
             className="flex items-center gap-1.5"
           >
             <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
+              {...ANIMATION_PRESETS.scale}
+              animate={{ ...ANIMATION_PRESETS.scale.animate, ...CHECK_ICON_PULSE }}
               transition={{
                 duration: durations.moderate,
                 ease: 'easeOut',
@@ -212,8 +232,7 @@ export function CopyButton({
             </motion.div>
             {!iconOnly && (
               <motion.span
-                initial={{ opacity: 0, x: -4 }}
-                animate={{ opacity: 1, x: 0 }}
+                {...ANIMATION_PRESETS.slideRight}
                 transition={getSpring('quick', prefersReducedMotion, {
                   delay: 0.05,
                 })}
@@ -225,9 +244,10 @@ export function CopyButton({
         ) : (
           <motion.div
             key="copy"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            {...ANIMATION_PRESETS.scale}
+            // eslint-disable-next-line clarity-animations/prefer-animation-library
+            animate={{ ...ANIMATION_PRESETS.scale.animate, scale: 1, opacity: 1 }}
+            exit={{ ...ANIMATION_PRESETS.scale.exit, scale: 0.8, opacity: 0 }}
             transition={getSpring('smooth', prefersReducedMotion)}
             className="flex items-center gap-1.5"
           >

@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, Badge } from '@clarity-chat/primitives'
 import { BotIcon } from '../ui/icons'
-import { duration } from '../../animations/constants'
+import { duration, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ChatWindowHeaderProps {
@@ -37,8 +37,7 @@ export function ChatWindowHeader({
   return (
     <motion.div
       className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
-      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideDown)}
       transition={{
         duration: prefersReducedMotion ? 0 : duration('slow'),
         ease: [0.25, 0.1, 0.25, 1],

@@ -33,7 +33,7 @@ const SortIcon = ArrowUpDown as React.ComponentType<{ className?: string }>
 const CheckIcon = Check as React.ComponentType<{ className?: string }>
 
 import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import {
   useFilteredMessages,
   useSavedSearches,
@@ -347,9 +347,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
               <AnimatePresence>
                 {isPending && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    {...ANIMATION_PRESETS.pop}
                     viewport={{ once: true }}
                     className="h-4 w-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin"
                   />
@@ -375,9 +373,7 @@ export const AdvancedMessageSearch = React.memo(function AdvancedMessageSearch({
               <AnimatePresence>
                 {filters.query && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    {...ANIMATION_PRESETS.pop}
                     viewport={{ once: true }}
                   >
                     <Button

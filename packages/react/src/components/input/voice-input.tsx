@@ -7,9 +7,26 @@ import { useVoiceInput } from '../../hooks/input/use-voice-input'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import type { ReactNode } from 'react'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+
+// Animation constants for pulse rings
+const PULSE_RING_PRIMARY = {
+  scale: 1.8,
+  opacity: 0,
+}
+
+const PULSE_RING_SECONDARY = {
+  scale: 1.5,
+  opacity: 0,
+}
+
+// Waveform bar animation
+const WAVEFORM_BAR_ANIMATION = {
+  height: ['12px', '32px', '12px'],
+}
 
 /**
  * Voice input component props
@@ -263,8 +280,8 @@ export function VoiceInput({
             <>
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
-                initial={{ scale: 1, opacity: 0.5 }}
-                animate={{ scale: 1.8, opacity: 0 }}
+                {...ANIMATION_PRESETS.scale}
+                animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_PRIMARY }}
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
@@ -273,8 +290,8 @@ export function VoiceInput({
               />
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
-                initial={{ scale: 1, opacity: 0.3 }}
-                animate={{ scale: 1.5, opacity: 0 }}
+                {...ANIMATION_PRESETS.scale}
+                animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_SECONDARY }}
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
@@ -458,8 +475,7 @@ export function VoiceInput({
           </div>
         ) : (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            {...ANIMATION_PRESETS.slideUp}
             transition={{
               type: 'spring',
               damping: 20,
@@ -520,8 +536,10 @@ export function VoiceInput({
                   <motion.div
                     key={i}
                     className="w-1 bg-destructive rounded-full"
+                    {...ANIMATION_PRESETS.scale}
                     animate={{
-                      height: ['12px', '32px', '12px'],
+                      ...ANIMATION_PRESETS.scale.animate,
+                      ...WAVEFORM_BAR_ANIMATION,
                     }}
                     transition={{
                       duration: durations.slower,
@@ -558,8 +576,7 @@ export function VoiceInput({
             {/* Error message */}
             {voice.error && (
               <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...ANIMATION_PRESETS.slideDown}
                 viewport={{ once: true }}
                 className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl"
               >
@@ -616,14 +633,13 @@ export function VoiceInput({
                 <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${voice.confidence * 100}%` }}
+                    {...ANIMATION_PRESETS.slideRight}
+                    animate={{ ...ANIMATION_PRESETS.slideRight.animate, width: `${voice.confidence * 100}%` }}
                     transition={{
                       type: 'spring',
                       damping: 28,
                       stiffness: 250,
                     }}
-                    viewport={{ once: true }}
                   />
                 </div>
               </div>

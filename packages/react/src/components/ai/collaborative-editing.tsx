@@ -10,6 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
@@ -433,11 +434,7 @@ export function CollaborativeEditor({
                     return (
                       <CursorWrapper
                         key={user.id}
-                        {...(!prefersReducedMotion && {
-                          initial: { opacity: 0 },
-                          animate: { opacity: 1 },
-                          exit: { opacity: 0 },
-                        })}
+                        {...(!prefersReducedMotion && ANIMATION_PRESETS.fadeIn)}
                         className="absolute pointer-events-none"
                         style={{
                           borderLeft: `2px solid ${user.color}`,
@@ -749,9 +746,7 @@ export function PresenceIndicator({
           {displayUsers.map((user, index) => (
             <motion.div
               key={user.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              {...ANIMATION_PRESETS.pop}
               transition={{ delay: index * 0.05 }}
               className="relative"
               title={`${user.name} (${user.status})`}

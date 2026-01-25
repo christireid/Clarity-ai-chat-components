@@ -35,7 +35,7 @@ import {
   getMotionSafeValue,
 } from '../../animations/motion-safe'
 import { getSpring } from '../../animations/spring-presets'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -80,8 +80,7 @@ export function EmptyState({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={getSpring('smooth', prefersReducedMotion)}
       className={cn(
         'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8',
@@ -102,8 +101,7 @@ export function EmptyState({
 
       {/* Content */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        {...ANIMATION_PRESETS.slideUp}
         transition={getSpring('gentle', prefersReducedMotion, { delay: 0.25 })}
         className="space-y-3.5 max-w-lg"
       >
@@ -120,8 +118,7 @@ export function EmptyState({
       {/* Actions */}
       {(action || secondaryAction) && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          {...ANIMATION_PRESETS.slideUp}
           transition={getSpring('quick', prefersReducedMotion, { delay: 0.35 })}
           className="flex flex-wrap gap-3 justify-center"
         >
@@ -216,8 +213,7 @@ export function EmptyChatState({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={{
         duration: getMotionSafeDuration(prefersReducedMotion, 0.5),
         ease: [0.25, 0.1, 0.25, 1],
@@ -249,11 +245,7 @@ export function EmptyChatState({
 
       {/* Content */}
       <motion.div
-        initial={{
-          opacity: 0,
-          y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-        }}
-        animate={{ opacity: 1, y: 0 }}
+        {...ANIMATION_PRESETS.slideUp}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
           ease: [0.25, 0.1, 0.25, 1],
@@ -274,11 +266,7 @@ export function EmptyChatState({
       {/* Suggested Prompts */}
       {showSuggestions && suggestions.length > 0 && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-          }}
-          animate={{ opacity: 1, y: 0 }}
+          {...ANIMATION_PRESETS.slideUp}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
             ease: [0.25, 0.1, 0.25, 1],
@@ -299,11 +287,7 @@ export function EmptyChatState({
       {/* Optional "Start Chat" button */}
       {onStartChat && !showSuggestions && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-          }}
-          animate={{ opacity: 1, y: 0 }}
+          {...ANIMATION_PRESETS.slideUp}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
             ease: [0.25, 0.1, 0.25, 1],
@@ -547,8 +531,7 @@ export function LoadingState({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      {...ANIMATION_PRESETS.scale}
       transition={getSpring('quick', prefersReducedMotion)}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
@@ -568,8 +551,7 @@ export function LoadingState({
 
       {/* Content */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        {...ANIMATION_PRESETS.fadeIn}
         transition={getSpring('quick', prefersReducedMotion, { delay: 0.1 })}
         className="space-y-2 max-w-sm"
       >

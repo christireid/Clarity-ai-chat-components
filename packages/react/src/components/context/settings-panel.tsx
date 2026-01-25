@@ -14,6 +14,7 @@ import {
   ScrollArea,
   cn,
 } from '@clarity-chat/primitives'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 import type {
   UserSettings,
   AIPersonality,
@@ -116,8 +117,7 @@ export function SettingsPanel({
         <ScrollArea className="h-full">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: prefersReducedMotion ? 0 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideLeft)}
             transition={{
               // Framer Motion 12: Spring tab transition
               type: prefersReducedMotion ? 'tween' : 'spring',

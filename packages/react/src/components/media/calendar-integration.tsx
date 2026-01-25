@@ -8,6 +8,7 @@ import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { ClockIcon, RefreshIcon, CloseIcon } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Calendar event
@@ -486,8 +487,7 @@ export function CalendarIntegration({
                   ) : (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      {...ANIMATION_PRESETS.slideRight}
                       transition={{ delay: index * 0.05 }}
                       viewport={{ once: true }}
                       className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
@@ -604,8 +604,7 @@ export function CalendarIntegration({
                     ) : (
                       <motion.div
                         key={event.id}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        {...ANIMATION_PRESETS.slideUp}
                         transition={{ delay: index * 0.03 }}
                         viewport={{ once: true }}
                         className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group"

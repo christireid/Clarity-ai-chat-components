@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../../../animations/constants'
+import { duration, ANIMATION_PRESETS } from '../../../animations/constants'
 import type { LinkPreviewProps } from './types'
 import { getDomain, isValidUrl, sanitizeUrl } from './url-utils'
 import { detectEmbedType } from './embed-detection'
@@ -308,9 +308,7 @@ export function LinkPreview({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={{ duration: duration('normal') }}
       className={className}
     >

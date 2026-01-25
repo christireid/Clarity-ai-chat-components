@@ -12,7 +12,7 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import type { Message } from '@clarity-chat/types'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
@@ -795,8 +795,7 @@ export function ConversationAnalyticsDashboard({
                     ) : (
                       <motion.div
                         key={topic.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        {...ANIMATION_PRESETS.slideRight}
                         transition={{ delay: index * 0.1 }}
                         viewport={{ once: true }}
                         className="flex items-center justify-between"
@@ -975,8 +974,7 @@ export function ConversationAnalyticsDashboard({
           <AnimatePresence mode="wait">
             <motion.div
               key="analytics"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideUp}
               viewport={{ once: true }}
               className="space-y-4"
             >
@@ -1040,8 +1038,7 @@ export function ConversationAnalyticsDashboard({
                     {analytics.topics.map((topic, index) => (
                       <motion.div
                         key={topic.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        {...ANIMATION_PRESETS.slideRight}
                         transition={{ delay: index * 0.1 }}
                         viewport={{ once: true }}
                         className="flex items-center justify-between"

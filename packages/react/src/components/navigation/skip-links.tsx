@@ -20,6 +20,7 @@ import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 
 export interface SkipLink {
@@ -115,52 +116,57 @@ export function SkipLinks({
       role="navigation"
       aria-label="Skip links"
     >
-      {sortedLinks.map((link, index) => (
-        <motion.a
-          key={link.targetId}
-          href={`#${link.targetId}`}
-          onClick={(e) => {
-            e.preventDefault()
-            handleClick(link.targetId)
-          }}
-          onFocus={() => setFocusedIndex(index)}
-          onBlur={() => setFocusedIndex(null)}
-          onKeyDown={(e) => handleKeyDown(e, index)}
-          className={cn(
-            // Base styles - hidden by default
-            'block mb-1 px-4 py-3 rounded-lg font-semibold text-sm',
-            'bg-primary text-primary-foreground',
-            'shadow-lg border-2 border-primary-foreground/20',
-            'outline-none pointer-events-auto',
-            'transform transition-all duration-200',
-            // Hidden until focused
-            'sr-only focus:not-sr-only',
-            'focus:translate-y-0 focus:opacity-100',
-            // Visible styles
-            focusedIndex === index && [
-              'ring-4 ring-primary-foreground/30',
-              'scale-105',
-            ]
-          )}
-          initial={prefersReducedMotion ? false : { y: -100, opacity: 0 }}
-          animate={{
-            y: focusedIndex === index ? 0 : -100,
-            opacity: focusedIndex === index ? 1 : 0,
-          }}
-          exit={prefersReducedMotion ? false : { y: -100, opacity: 0 }}
-          transition={{
-            duration: durations.normal,
-            ease: EASING_FRAMER.sharp,
-          }}
-          viewport={{ once: true }}
-          tabIndex={0}
-        >
-          {link.label}
-          <span className="ml-2 text-primary-foreground/70">
-            ({index + 1}/{sortedLinks.length})
-          </span>
-        </motion.a>
-      ))}
+      {sortedLinks.map((link, index) => {
+        const isActive = focusedIndex === index
+        const animateValues = {
+          ...ANIMATION_PRESETS.slideDown.animate,
+          y: isActive ? 0 : -100,
+          opacity: isActive ? 1 : 0,
+        }
+
+        return (
+          <motion.a
+            key={link.targetId}
+            href={`#${link.targetId}`}
+            onClick={(e) => {
+              e.preventDefault()
+              handleClick(link.targetId)
+            }}
+            onFocus={() => setFocusedIndex(index)}
+            onBlur={() => setFocusedIndex(null)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            className={cn(
+              // Base styles - hidden by default
+              'block mb-1 px-4 py-3 rounded-lg font-semibold text-sm',
+              'bg-primary text-primary-foreground',
+              'shadow-lg border-2 border-primary-foreground/20',
+              'outline-none pointer-events-auto',
+              'transform transition-all duration-200',
+              // Hidden until focused
+              'sr-only focus:not-sr-only',
+              'focus:translate-y-0 focus:opacity-100',
+              // Visible styles
+              isActive && [
+                'ring-4 ring-primary-foreground/30',
+                'scale-105',
+              ]
+            )}
+            {...ANIMATION_PRESETS.slideDown}
+            animate={animateValues}
+            transition={{
+              duration: durations.normal,
+              ease: EASING_FRAMER.sharp,
+            }}
+            viewport={{ once: true }}
+            tabIndex={0}
+          >
+            {link.label}
+            <span className="ml-2 text-primary-foreground/70">
+              ({index + 1}/{sortedLinks.length})
+            </span>
+          </motion.a>
+        )
+      })}
     </div>
   )
 }

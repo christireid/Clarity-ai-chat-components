@@ -11,6 +11,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
@@ -76,8 +77,7 @@ export function ExperimentCard({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideDown)}
       whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
       whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
       viewport={{ once: true }}

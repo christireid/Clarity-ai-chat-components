@@ -22,7 +22,7 @@ import {
   getMotionSafeValue,
 } from '../animations/motion-safe'
 import { cn } from '@clarity-chat/primitives'
-import { DURATION_SECONDS } from '../animations/constants'
+import { DURATION_SECONDS, ANIMATION_PRESETS } from '../animations/constants'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -939,18 +939,18 @@ export function ThemeToggle({
         <motion.div
           key={mode}
           initial={{
+            ...ANIMATION_PRESETS.scaleRotate.initial,
             rotate: getMotionSafeValue(prefersReducedMotion, -90, 0),
-            opacity: 0,
             scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
           animate={{
+            ...ANIMATION_PRESETS.scaleRotate.animate,
             rotate: 0,
-            opacity: 1,
             scale: 1,
           }}
           exit={{
+            ...ANIMATION_PRESETS.scaleRotate.exit,
             rotate: getMotionSafeValue(prefersReducedMotion, 90, 0),
-            opacity: 0,
             scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
           transition={{
@@ -1002,9 +1002,7 @@ export function ThemeToggle({
       {/* Loading indicator */}
       {isTransitioning && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          {...ANIMATION_PRESETS.fadeIn}
           className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg"
         >
           <motion.div

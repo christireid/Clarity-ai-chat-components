@@ -17,7 +17,7 @@ import type {
   UsageLimit,
   UsageMetrics,
 } from '@clarity-chat/types'
-import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
+import { DURATION_SECONDS, EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface UsageDashboardProps {
@@ -216,8 +216,8 @@ export function UsageDashboard({
                       <MetricWrapper
                         key={key}
                         {...(prefersReducedMotion ? {} : {
+                          ...ANIMATION_PRESETS.scale,
                           initial: { opacity: 0, scale: 0.95, y: 10 },
-                          animate: { opacity: 1, scale: 1, y: 0 },
                           transition: {
                             delay: baseDelay,
                             duration: DURATION_SECONDS.normal,
@@ -317,8 +317,8 @@ export function UsageDashboard({
                     <CostWrapper
                       key={index}
                       {...(prefersReducedMotion ? {} : {
+                        ...ANIMATION_PRESETS.slideRight,
                         initial: { opacity: 0, x: -20, scale: 0.95 },
-                        animate: { opacity: 1, x: 0, scale: 1 },
                         transition: {
                           delay: index * 0.05,
                           duration: DURATION_SECONDS.normal,
@@ -380,8 +380,7 @@ export function UsageDashboard({
               </div>
             ) : (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...ANIMATION_PRESETS.slideUp}
                 transition={{
                   duration: DURATION_SECONDS.normal,
                   ease: EASING_FRAMER.sharp,

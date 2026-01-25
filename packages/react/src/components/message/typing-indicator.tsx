@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { cn, Avatar, useReducedMotion } from '@clarity-chat/primitives'
 import { getMotionSafeDuration } from '../../animations/motion-safe'
 import { AnimatedDots } from '../ui/animated-dots'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * Typing indicator variant styles
@@ -79,9 +80,7 @@ export function TypingIndicator({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={{
         // Framer Motion 12: Enhanced spring physics for smoother entrance
         type: 'spring',
@@ -97,8 +96,7 @@ export function TypingIndicator({
       {/* Avatar */}
       {showAvatar && (
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
           transition={{
             // Framer Motion 12: Spring physics for avatar entrance
             type: 'spring',
@@ -118,8 +116,7 @@ export function TypingIndicator({
 
       {/* Typing Bubble */}
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
         transition={{
           // Framer Motion 12: Smoother bubble entrance with spring
           type: 'spring',

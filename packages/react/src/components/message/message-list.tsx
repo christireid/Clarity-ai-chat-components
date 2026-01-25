@@ -22,6 +22,7 @@ import {
 import {
   INTERACTION_VARIANTS,
   DURATION_SECONDS,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import {
   getMotionSafeDuration,
@@ -350,11 +351,7 @@ export function MessageList({
                 return (
                   <motion.div
                     key={message.id}
-                    initial={{
-                      opacity: 0,
-                      y: prefersReducedMotion ? 0 : 10,
-                    }}
-                    animate={{ opacity: 1, y: 0 }}
+                    {...ANIMATION_PRESETS.slideUp}
                     transition={{
                       duration: prefersReducedMotion
                         ? DURATION_SECONDS.fast
@@ -400,11 +397,7 @@ export function MessageList({
               {/* Show loading skeleton for new messages while fetching */}
               {isLoading && (
                 <motion.div
-                  initial={{
-                    opacity: 0,
-                    y: prefersReducedMotion ? 0 : 10,
-                  }}
-                  animate={{ opacity: 1, y: 0 }}
+                  {...ANIMATION_PRESETS.slideUp}
                   transition={{
                     duration: prefersReducedMotion
                       ? DURATION_SECONDS.fast
@@ -428,17 +421,7 @@ export function MessageList({
         {!isNearBottom && messages.length > 0 && (
           <motion.div
             className="absolute bottom-6 right-6 z-10"
-            initial={{
-              opacity: 0,
-              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-              scale: getMotionSafeScale(prefersReducedMotion, 0.9),
-            }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{
-              opacity: 0,
-              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-              scale: getMotionSafeScale(prefersReducedMotion, 0.9),
-            }}
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
             transition={{
               duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
               ease: [0.25, 0.1, 0.25, 1],
@@ -469,15 +452,7 @@ export function MessageList({
               <AnimatePresence>
                 {newMessageCount > 0 && (
                   <motion.div
-                    initial={{
-                      scale: getMotionSafeScale(prefersReducedMotion, 0),
-                      opacity: 0,
-                    }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{
-                      scale: getMotionSafeScale(prefersReducedMotion, 0),
-                      opacity: 0,
-                    }}
+                    {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
                     transition={{
                       duration: getMotionSafeDuration(
                         prefersReducedMotion,

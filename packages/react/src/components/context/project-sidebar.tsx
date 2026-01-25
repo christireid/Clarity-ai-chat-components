@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Input, ScrollArea, cn } from '@clarity-chat/primitives'
 import { formatRelativeTime } from '../../internal/helpers'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 import type { Project } from '@clarity-chat/types'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
@@ -109,9 +110,7 @@ export function ProjectSidebar({
           <AnimatePresence>
             {filteredProjects.length === 0 ? (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                {...ANIMATION_PRESETS.fadeIn}
                 transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
                 viewport={{ once: true }}
                 className="flex flex-col items-center justify-center py-12 text-center px-4"
@@ -133,9 +132,7 @@ export function ProjectSidebar({
                 return (
                   <motion.div
                     key={project.id}
-                    initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }}
+                    {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
                     transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
                     viewport={{ once: true }}
                   >
@@ -232,6 +229,7 @@ export function ProjectSidebar({
                       <AnimatePresence>
                         {isExpanded && (
                           <motion.div
+                            {...ANIMATION_PRESETS.collapse}
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}

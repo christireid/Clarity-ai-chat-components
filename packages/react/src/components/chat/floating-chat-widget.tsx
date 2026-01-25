@@ -19,6 +19,7 @@ import type {
   ClarityMemoryOptions,
   ClarityPromptOptimizationOptions,
 } from '../../hooks/use-clarity-chat/types'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface FloatingChatWidgetProps {
@@ -186,8 +187,7 @@ export function FloatingChatWidget({
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
               {messages.map((msg) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  {...ANIMATION_PRESETS.slideUp}
                   key={msg.id}
                   className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
@@ -216,8 +216,7 @@ export function FloatingChatWidget({
               {/* Error Message */}
               {error && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  {...ANIMATION_PRESETS.fadeIn}
                   className="flex justify-center my-2"
                 >
                   <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs px-3 py-2 rounded-lg max-w-[90%] text-center">
@@ -301,9 +300,7 @@ export function FloatingChatWidget({
         <AnimatePresence>
           {isHovered && !isOpen && (
             <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              {...ANIMATION_PRESETS.slideLeft}
               className="absolute right-16 top-1/2 -translate-y-1/2 bg-popover text-popover-foreground text-xs font-semibold px-3 py-1.5 rounded-lg border border-border whitespace-nowrap shadow-xl"
             >
               Chat with {title}

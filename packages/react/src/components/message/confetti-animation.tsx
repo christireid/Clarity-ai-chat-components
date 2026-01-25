@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface ConfettiAnimationProps {
@@ -9,6 +9,12 @@ export interface ConfettiAnimationProps {
 }
 
 const CONFETTI_COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'] as const
+
+// Confetti particle base animation
+const CONFETTI_BASE_ANIMATION = {
+  opacity: 0,
+  scale: 1,
+}
 
 /**
  * Confetti animation component for positive feedback
@@ -26,15 +32,10 @@ export const ConfettiAnimation = React.memo<ConfettiAnimationProps>(
         {Array.from({ length: particleCount }).map((_, i) => (
           <motion.div
             key={i}
-            initial={{
-              opacity: 1,
-              scale: 0,
-              x: 0,
-              y: 0,
-            }}
+            {...ANIMATION_PRESETS.scale}
             animate={{
-              opacity: 0,
-              scale: 1,
+              ...ANIMATION_PRESETS.scale.animate,
+              ...CONFETTI_BASE_ANIMATION,
               x: Math.cos((i * Math.PI * 2) / particleCount) * 30,
               y: Math.sin((i * Math.PI * 2) / particleCount) * 30,
             }}

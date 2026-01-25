@@ -14,6 +14,7 @@
 import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // ============================================================================
@@ -180,9 +181,7 @@ function BranchNodeComponent({
     <div className="relative">
       {/* Branch Node */}
       <motion.div
-        initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 10 }}
+        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
         transition={prefersReducedMotion ? { duration: 0 } : undefined}
         viewport={{ once: true }}
         className={cn(
@@ -286,9 +285,7 @@ function BranchNodeComponent({
           ) : (
             <AnimatePresence>
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                {...ANIMATION_PRESETS.pop}
                 className="flex gap-1"
                 onClick={(e) => e.stopPropagation()}
               >

@@ -9,6 +9,7 @@ import { Skeleton } from '../ui/skeleton'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 
 /**
@@ -191,9 +192,7 @@ export function PromptSuggestions({
           {processedSuggestions.map((suggestion, index) => (
             <motion.div
               key={suggestion.id}
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{
                 // Framer Motion 12: Spring entrance for suggestions
                 type: 'spring',
@@ -244,9 +243,7 @@ export function PromptSuggestions({
         {processedSuggestions.map((suggestion, index) => (
           <motion.div
             key={suggestion.id}
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
+            {...ANIMATION_PRESETS.slideUp}
             transition={{
               // Framer Motion 12: Spring cards entrance
               type: 'spring',
@@ -337,9 +334,7 @@ export function PromptSuggestions({
       {processedSuggestions.map((suggestion, index) => (
         <motion.div
           key={suggestion.id}
-          initial={prefersReducedMotion ? false : { opacity: 0, x: -10, scale: 0.98 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={prefersReducedMotion ? false : { opacity: 0, x: 10, scale: 0.98 }}
+          {...ANIMATION_PRESETS.slideRight}
           transition={{
             duration: durations.normal,
             delay: index * 0.03,

@@ -14,6 +14,7 @@ import {
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
@@ -208,9 +209,7 @@ export function PersonaPanel({
                 return (
                   <motion.li
                     key={persona.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
+                    {...ANIMATION_PRESETS.slideUp}
                     transition={{
                       duration: durations.normal,
                       ease: EASING_FRAMER.default,

@@ -14,7 +14,7 @@ import {
 import { Download, Check, Copy } from 'lucide-react'
 import type { Message } from '@clarity-chat/types'
 import type { SortOption, ExportFormat } from '../types'
-import { DURATION_SECONDS as durations } from '../../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../../animations/constants'
 
 // Type assertions for icons
 const DownloadIcon = Download as React.ComponentType<{ className?: string }>
@@ -138,9 +138,7 @@ export const SearchResultsSummary = React.memo(function SearchResultsSummary({
   ) : (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -5 }}
+        {...ANIMATION_PRESETS.slideDown}
         viewport={{ once: true }}
         className="flex items-center justify-between text-sm"
       >

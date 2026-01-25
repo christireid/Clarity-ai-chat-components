@@ -898,8 +898,7 @@ export const ConversationList = memo(function ConversationList({
                   return (
                     <motion.div
                       key={conversation.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...ANIMATION_PRESETS.slideUp}
                       exit={{ opacity: 0, x: -100, height: 0 }}
                       transition={{
                         duration: durations.normal,

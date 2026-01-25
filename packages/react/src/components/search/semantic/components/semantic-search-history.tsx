@@ -12,6 +12,7 @@ import {
 } from '@clarity-chat/primitives'
 import { Clock } from 'lucide-react'
 import type { SearchHistoryEntry } from '../../shared/types'
+import { ANIMATION_PRESETS } from '../../../../animations/constants'
 
 // Type assertions for icons
 const ClockIcon = Clock as React.ComponentType<{ className?: string }>
@@ -78,8 +79,7 @@ export function SemanticSearchHistory({
                 history.map((entry, index) => (
                   <motion.button
                     key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    {...ANIMATION_PRESETS.slideLeft}
                     transition={{ delay: index * 0.03 }}
                     viewport={{ once: true }}
                     onClick={() => {

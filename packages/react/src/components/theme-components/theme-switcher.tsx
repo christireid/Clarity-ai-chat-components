@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
@@ -152,11 +152,7 @@ export function ThemeSwitcher({
               onClick={() => handleThemeChange(theme.name)}
               onMouseEnter={() => setHoveredTheme(theme.name)}
               onMouseLeave={() => setHoveredTheme(null)}
-              initial={{
-                opacity: 0,
-                y: getMotionSafeValue(prefersReducedMotion, 20, 0),
-              }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{
                 delay: getMotionSafeDuration(
                   prefersReducedMotion,
@@ -239,17 +235,7 @@ export function ThemeSwitcher({
         <AnimatePresence mode="wait">
           <motion.div
             key={hoveredTheme || currentTheme}
-            initial={{
-              opacity: 0,
-              scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-            }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{
-              opacity: 0,
-              scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-              y: getMotionSafeValue(prefersReducedMotion, -10, 0),
-            }}
+            {...ANIMATION_PRESETS.slideUp}
             transition={{
               duration: getMotionSafeDuration(
                 prefersReducedMotion,

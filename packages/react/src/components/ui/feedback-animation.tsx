@@ -20,6 +20,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
   // createSuccessAnimation, // Reserved for future use
   // createErrorAnimation, // Reserved for future use
 } from '../../animations'
@@ -120,8 +121,7 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
 
           {message && (
             <motion.p
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
               transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
               className="text-sm font-medium"
             >
@@ -325,6 +325,22 @@ export const ConfettiEffect: React.FC<{
     return null
   }
 
+  const confettiColors = [
+    '#ef4444',
+    '#f59e0b',
+    '#10b981',
+    '#3b82f6',
+    '#8b5cf6',
+    '#ec4899',
+  ]
+
+  const confettiInitial = {
+    x: '50%',
+    y: '50%',
+    scale: 0,
+    opacity: 1,
+  }
+
   return (
     <div
       className={cn(
@@ -333,39 +349,37 @@ export const ConfettiEffect: React.FC<{
       )}
     >
       <AnimatePresence>
-        {particles.map((i) => (
-          <motion.div
-            key={i}
-            initial={{
-              x: '50%',
-              y: '50%',
-              scale: 0,
-              opacity: 1,
-            }}
-            animate={{
-              x: `${50 + (Math.random() - 0.5) * 200}%`,
-              y: `${50 + (Math.random() - 0.5) * 200}%`,
-              scale: 1,
-              opacity: 0,
-              rotate: Math.random() * 360,
-            }}
-            transition={{
-              duration: 1 + Math.random(),
-              ease: EASING_FRAMER.out,
-            }}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              backgroundColor: [
-                '#ef4444',
-                '#f59e0b',
-                '#10b981',
-                '#3b82f6',
-                '#8b5cf6',
-                '#ec4899',
-              ][Math.floor(Math.random() * 6)],
-            }}
-          />
-        ))}
+        {particles.map((i) => {
+          const randomX = 50 + (Math.random() - 0.5) * 200
+          const randomY = 50 + (Math.random() - 0.5) * 200
+          const randomRotate = Math.random() * 360
+          const randomDuration = 1 + Math.random()
+          const randomColor = confettiColors[Math.floor(Math.random() * 6)]
+
+          const particleAnimate = {
+            x: `${randomX}%`,
+            y: `${randomY}%`,
+            scale: 1,
+            opacity: 0,
+            rotate: randomRotate,
+          }
+
+          return (
+            <motion.div
+              key={i}
+              initial={confettiInitial}
+              animate={particleAnimate}
+              transition={{
+                duration: randomDuration,
+                ease: EASING_FRAMER.out,
+              }}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                backgroundColor: randomColor,
+              }}
+            />
+          )
+        })}
       </AnimatePresence>
     </div>
   )
@@ -476,18 +490,11 @@ export const SlideNotification: React.FC<{
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: prefersReducedMotion ? 0 : position === 'top' ? -20 : 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            y: prefersReducedMotion ? 0 : position === 'top' ? -20 : 20,
-          }}
+          {...(prefersReducedMotion
+            ? ANIMATION_PRESETS.fadeIn
+            : position === 'top'
+              ? ANIMATION_PRESETS.slideDown
+              : ANIMATION_PRESETS.slideUp)}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
             ease: EASING_FRAMER.spring,

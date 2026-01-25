@@ -6,6 +6,7 @@ import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { RefreshIcon, CloseIcon } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Email provider types
@@ -553,8 +554,7 @@ export function EmailIntegration({
                 ) : (
                   <motion.div
                     key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    {...ANIMATION_PRESETS.slideUp}
                     transition={{ delay: index * 0.05 }}
                     viewport={{ once: true }}
                     className="border-l-2 border-muted pl-3"
@@ -699,8 +699,7 @@ export function EmailIntegration({
                     ) : (
                       <motion.div
                         key={thread.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        {...ANIMATION_PRESETS.slideUp}
                         transition={{ delay: index * 0.02 }}
                         viewport={{ once: true }}
                         className={cn(
@@ -807,8 +806,7 @@ export function EmailIntegration({
                 ) : (
                   <motion.div
                     key={notification.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    {...ANIMATION_PRESETS.slideRight}
                     transition={{ delay: index * 0.05 }}
                     viewport={{ once: true }}
                     className={cn(

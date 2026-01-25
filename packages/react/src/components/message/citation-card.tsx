@@ -18,7 +18,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import type { Citation } from '../../adapters/types'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
@@ -91,8 +91,7 @@ export function CitationCard({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={{ duration: prefersReducedMotion ? 0 : durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
       viewport={{ once: true }}
     >

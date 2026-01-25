@@ -11,6 +11,7 @@ import {
   DURATION_SECONDS as durations,
   EASING_FRAMER,
   STAGGER_TIMING,
+  ANIMATION_PRESETS,
 } from '../../../../animations/constants'
 import { SIZE_CONFIG } from '../constants'
 import { extractDomain } from '../utils'
@@ -77,8 +78,7 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-      animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={{
         duration: prefersReducedMotion ? 0.1 : durations.fast,
         ease: EASING_FRAMER.out,
@@ -149,9 +149,7 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
         <AnimatePresence>
           {expandOnHover && isHovered && source.snippet && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: durations.fast }}
               viewport={{ once: true }}
               className={cn(

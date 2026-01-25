@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import type { PanInfo } from 'framer-motion'
 import { Card, CardContent, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { DURATION_SECONDS } from '../../animations/constants'
+import { DURATION_SECONDS, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
@@ -285,15 +285,7 @@ export function MobileOptimizedMessage({
       {/* Action menu (long press) */}
       {showActions && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-          }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{
-            opacity: 0,
-            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-          }}
+          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
           transition={{
             duration: getMotionSafeDuration(
               prefersReducedMotion,

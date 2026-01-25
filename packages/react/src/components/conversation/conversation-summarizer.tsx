@@ -14,7 +14,7 @@ import {
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
@@ -510,8 +510,7 @@ Generation Time: ${summary.generationTime}ms
               </div>
             ) : (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...ANIMATION_PRESETS.slideDown}
                 transition={{ duration: 0 }}
                 className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive"
               >
@@ -635,8 +634,8 @@ Generation Time: ${summary.generationTime}ms
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSummary.id}
+              {...ANIMATION_PRESETS.scale}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: durations.moderate }}
               viewport={{ once: true }}

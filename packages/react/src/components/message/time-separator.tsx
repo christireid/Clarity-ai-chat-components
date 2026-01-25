@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface TimeSeparatorProps {
   /** The text to display (e.g., "Today", "Yesterday", "Monday") */
@@ -41,8 +42,7 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideDown)}
       transition={
         prefersReducedMotion
           ? { duration: 0 }
@@ -63,8 +63,7 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
 
       {/* Text */}
       <motion.div
-        initial={prefersReducedMotion ? false : { scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
         transition={
           prefersReducedMotion
             ? { duration: 0 }

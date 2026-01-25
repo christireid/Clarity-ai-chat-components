@@ -10,7 +10,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface SessionSummaryHighlights {
@@ -120,8 +120,7 @@ export function SessionSummaryCard({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={prefersReducedMotion ? { duration: 0 } : {
         // Framer Motion 12: Spring entrance for summary card
         type: 'spring',
@@ -196,8 +195,7 @@ export function SessionSummaryCard({
               {summary.highlights.map((highlight, index) => (
                 <motion.li
                   key={highlight}
-                  initial={prefersReducedMotion ? undefined : { opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
                   transition={prefersReducedMotion ? { duration: 0 } : {
                     // Framer Motion 12: Spring staggered list items
                     type: 'spring',
@@ -221,8 +219,7 @@ export function SessionSummaryCard({
             {metrics.map((metric, index) => (
               <motion.div
                 key={metric.label}
-                initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
                 transition={{ duration: prefersReducedMotion ? 0 : durations.normal, delay: prefersReducedMotion ? 0 : index * 0.05 }}
                 viewport={{ once: true }}
                 className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-xs hover:shadow-md hover:-translate-y-px transition-all duration-150 ease-out"
@@ -279,8 +276,7 @@ export function SessionSummaryCard({
                 {summary.nextActions.map((action, index) => (
                   <motion.div
                     key={action}
-                    initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.pop)}
                     transition={{
                       duration: prefersReducedMotion ? 0 : durations.fast,
                       delay: prefersReducedMotion ? 0 : index * 0.05,

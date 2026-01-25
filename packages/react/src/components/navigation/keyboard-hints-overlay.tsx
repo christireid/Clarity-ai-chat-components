@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
-import { EASING_FRAMER } from '../../animations/constants'
+import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface KeyboardHint {
   /** Unique identifier */
@@ -130,9 +130,7 @@ export function KeyboardHintsOverlay({
             'fixed inset-0 z-[9997] pointer-events-none',
             className
           )}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          {...ANIMATION_PRESETS.fadeIn}
           transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
         >
           {/* Subtle overlay */}
@@ -152,21 +150,7 @@ export function KeyboardHintsOverlay({
                   top: pos.y,
                   transform: 'translate(-50%, -50%)',
                 }}
-                initial={{
-                  opacity: 0,
-                  scale: prefersReducedMotion ? 1 : 0.8,
-                  y: prefersReducedMotion ? 0 : -10,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: prefersReducedMotion ? 1 : 0.8,
-                  y: prefersReducedMotion ? 0 : -10,
-                }}
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                 transition={{
                   duration: prefersReducedMotion ? 0 : 0.2,
                   delay: prefersReducedMotion ? 0 : index * 0.03,

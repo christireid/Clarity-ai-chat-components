@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Badge } from '@clarity-chat/primitives'
 import { X } from 'lucide-react'
 import type { SearchFilters } from '../types'
+import { ANIMATION_PRESETS } from '../../../animations/constants'
 
 // Type assertion for icon
 const XIcon = X as React.ComponentType<{ className?: string }>
@@ -118,9 +119,7 @@ export const ActiveFiltersPills = React.memo(function ActiveFiltersPills({
   ) : (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
+        {...ANIMATION_PRESETS.slideDown}
         viewport={{ once: true }}
         className="flex flex-wrap gap-1.5"
       >

@@ -22,6 +22,7 @@ import {
   EASING_FRAMER,
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import ReactMarkdown from 'react-markdown'
@@ -205,8 +206,7 @@ function MessageOptimizedInner({
   return (
     <motion.div
       ref={ref}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...ANIMATION_PRESETS.slideUp}
       exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
       transition={{
         duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.normal / 1000,
@@ -305,8 +305,7 @@ function MessageOptimizedInner({
         {/* Actions */}
         {isAssistant && (isHovered || feedbackGiven) && (
           <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...ANIMATION_PRESETS.slideDown}
             exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
             transition={{
               duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.fast / 1000,

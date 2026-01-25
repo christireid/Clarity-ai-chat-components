@@ -8,6 +8,7 @@ import type { MessageAttachment } from '@clarity-chat/types'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
@@ -260,8 +261,7 @@ export function FileUpload({
               {acceptedFileTypes.slice(0, 4).map((type, i) => (
                 <motion.div
                   key={type}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  {...ANIMATION_PRESETS.scale}
                   transition={{ delay: i * 0.05, duration: durations.normal }}
                   viewport={{ once: true }}
                 >
@@ -301,8 +301,7 @@ export function FileUpload({
           </div>
         ) : (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            {...ANIMATION_PRESETS.slideDown}
             transition={{
               duration: durations.normal,
               ease: EASING_FRAMER.sharp,
@@ -401,8 +400,7 @@ export function FileUpload({
           </div>
         ) : (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            {...ANIMATION_PRESETS.collapse}
             viewport={{ once: true }}
             className="space-y-2.5"
           >
@@ -424,8 +422,7 @@ export function FileUpload({
               {files.map((file, index) => (
                 <motion.div
                   key={`${file.name}-${index}`}
-                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  {...ANIMATION_PRESETS.slideRight}
                   transition={{
                     delay: index * 0.05,
                     duration: durations.normal,
@@ -436,8 +433,7 @@ export function FileUpload({
                 >
                   <motion.span
                     className="text-2xl"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
+                    {...ANIMATION_PRESETS.pop}
                     transition={{
                       delay: index * 0.05 + 0.1,
                       type: 'spring',

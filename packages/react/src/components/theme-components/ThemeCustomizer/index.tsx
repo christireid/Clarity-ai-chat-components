@@ -34,6 +34,7 @@ import type {
   SizeScale,
 } from './types'
 import { FONT_FAMILIES, SIZE_SCALES } from './types'
+import { ANIMATION_PRESETS } from '../../../animations/constants'
 
 /**
  * Main Theme Customizer Component
@@ -302,9 +303,7 @@ export function ThemeCustomizer({
               id="tabpanel-presets"
               role="tabpanel"
               aria-labelledby="tab-presets"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
               className="space-y-4"
             >
@@ -371,9 +370,7 @@ export function ThemeCustomizer({
               id="tabpanel-colors"
               role="tabpanel"
               aria-labelledby="tab-colors"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
               className="space-y-6"
             >
@@ -444,9 +441,7 @@ export function ThemeCustomizer({
               id="tabpanel-typography"
               role="tabpanel"
               aria-labelledby="tab-typography"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
               className="space-y-6"
             >
@@ -574,9 +569,7 @@ export function ThemeCustomizer({
               id="tabpanel-accessibility"
               role="tabpanel"
               aria-labelledby="tab-accessibility"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
               className="space-y-6"
             >
@@ -636,9 +629,7 @@ export function ThemeCustomizer({
               id="tabpanel-export"
               role="tabpanel"
               aria-labelledby="tab-export"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
               className="space-y-4"
             >

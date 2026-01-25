@@ -13,6 +13,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Interaction event types
@@ -516,9 +517,8 @@ export function UserInteractionAnalytics({
             {metrics?.topFeatures.map((feature, index) => (
               <motion.div
                 key={feature.featureId}
-                initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
-                animate={prefersReducedMotion ? false : { opacity: 1, x: 0 }}
-                transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }}
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
+                transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
                 className="flex items-center justify-between p-3 border rounded-lg"
               >
@@ -558,9 +558,8 @@ export function UserInteractionAnalytics({
             {events.slice(-10).reverse().map((event, index) => (
               <motion.div
                 key={event.id}
-                initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
-                animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
-                transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.03 }}
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideDown)}
+                transition={{ delay: index * 0.03 }}
                 viewport={{ once: true }}
                 className="flex items-start gap-3 p-2 border-l-2 border-primary/20 pl-3"
               >
@@ -708,9 +707,7 @@ export function UserInteractionAnalytics({
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedView}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{
                 // Framer Motion 12: Spring view transitions
                 type: 'spring',

@@ -9,6 +9,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import {
@@ -202,12 +203,8 @@ export function CommandPalette({
 
   // Animation config respecting reduced motion preference
   const motionProps = prefersReducedMotion
-    ? { initial: false, animate: { opacity: 1 } }
-    : {
-        initial: { opacity: 0, scale: 0.95, y: -20 },
-        animate: { opacity: 1, scale: 1, y: 0 },
-        exit: { opacity: 0, scale: 0.95, y: -20 },
-      }
+    ? ANIMATION_PRESETS.fadeIn
+    : ANIMATION_PRESETS.slideDown
 
   // Screen reader live region for announcements
   const liveRegionContent = useMemo(() => {
@@ -231,9 +228,7 @@ export function CommandPalette({
 
             {/* Backdrop */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...ANIMATION_PRESETS.fadeIn}
               transition={{
                 duration: prefersReducedMotion
                   ? 0
@@ -325,12 +320,7 @@ export function CommandPalette({
                   />
                   {search && (
                     <motion.button
-                      initial={
-                        prefersReducedMotion
-                          ? false
-                          : { opacity: 0, scale: 0.8 }
-                      }
-                      animate={{ opacity: 1, scale: 1 }}
+                      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.pop)}
                       onClick={() => setSearch('')}
                       className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted transition-colors"
                       aria-label="Clear search"
@@ -364,10 +354,7 @@ export function CommandPalette({
               >
                 {filteredItems.length === 0 ? (
                   <motion.div
-                    initial={
-                      prefersReducedMotion ? false : { opacity: 0, y: 10 }
-                    }
-                    animate={{ opacity: 1, y: 0 }}
+                    {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                     className="py-12 text-center"
                     role="status"
                     aria-live="polite"
@@ -401,10 +388,7 @@ export function CommandPalette({
                           key={category}
                           role="group"
                           aria-labelledby={`${listboxId}-group-${groupIndex}`}
-                          initial={
-                            prefersReducedMotion ? false : { opacity: 0, y: 10 }
-                          }
-                          animate={{ opacity: 1, y: 0 }}
+                          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                           transition={{
                             delay: prefersReducedMotion ? 0 : groupIndex * 0.05,
                           }}
@@ -523,8 +507,7 @@ export function CommandPalette({
 
               {/* Footer Hint - using Kbd component */}
               <motion.div
-                initial={prefersReducedMotion ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
+                {...ANIMATION_PRESETS.fadeIn}
                 transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
                 className="px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between bg-muted/50"
               >

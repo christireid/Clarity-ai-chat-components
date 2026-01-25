@@ -17,7 +17,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@clarity-chat/primitives'
-import { EASING_FRAMER } from '../../animations/constants'
+import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface FocusIndicatorProps {
   /** Whether to show the focus indicator */
@@ -185,22 +185,14 @@ export function FocusIndicator({
             'border-solid',
             className
           )}
-          initial={{
-            opacity: 0,
-            scale: prefersReducedMotion ? 1 : 0.95,
-          }}
+          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
           animate={{
-            opacity: 1,
-            scale: 1,
+            ...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn.animate : ANIMATION_PRESETS.scale.animate),
             x: focusRect.x,
             y: focusRect.y,
             width: focusRect.width,
             height: focusRect.height,
             borderRadius: focusRect.borderRadius,
-          }}
-          exit={{
-            opacity: 0,
-            scale: prefersReducedMotion ? 1 : 0.95,
           }}
           transition={{
             duration: animationDuration / 1000,

@@ -18,6 +18,7 @@ import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
 import { formatBytes, formatRelativeTime } from '../../internal/helpers'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Resource item for batch export
@@ -263,8 +264,7 @@ export function BatchExportDialog({
                   ) : (
                     <motion.div
                       key={resource.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      {...ANIMATION_PRESETS.slideUp}
                       transition={{ delay: index * 0.02 }}
                       viewport={{ once: true }}
                       className={cn(
@@ -406,8 +406,7 @@ export function BatchExportDialog({
                 </div>
               ) : (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  {...ANIMATION_PRESETS.collapse}
                   viewport={{ once: true }}
                   className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2"
                 >

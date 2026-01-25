@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
@@ -366,8 +366,7 @@ export function MentionInput({
         ) : (
           <motion.div
             ref={suggestionsRef}
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            {...ANIMATION_PRESETS.slideDown}
             transition={{ duration: durations.fast }}
             viewport={{ once: true }}
             className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
@@ -590,8 +589,7 @@ export function MentionList({
             ) : (
               <motion.div
                 key={mention.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                {...ANIMATION_PRESETS.slideRight}
                 transition={{ delay: index * 0.03 }}
                 viewport={{ once: true }}
               >

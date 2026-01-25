@@ -14,7 +14,7 @@ import {
   validateStringProp,
   validateFunctionProp,
 } from '../../utils/config/runtime-validation'
-import { DURATION_SECONDS } from '../../animations/constants'
+import { DURATION_SECONDS, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 /** Button state for submit button */
@@ -381,9 +381,7 @@ export function ChatInput({
                   role="status"
                   aria-live="polite"
                   aria-atomic="true"
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 5 }}
+                  {...ANIMATION_PRESETS.slideUp}
                   className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5"
                 >
                   {/* Progress bar */}
@@ -462,9 +460,7 @@ export function ChatInput({
               {buttonState === 'idle' && (
                 <motion.div
                   key="send"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
+                  {...ANIMATION_PRESETS.pop}
                   transition={{ duration: DURATION_SECONDS.fast }}
                 >
                   <SendIcon size={19} />
@@ -493,9 +489,7 @@ export function ChatInput({
               id="char-limit-error"
               role="alert"
               aria-live="assertive"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+              {...ANIMATION_PRESETS.collapse}
               className="text-xs text-destructive px-1 font-medium"
             >
               Message exceeds maximum length by {charCount - validMaxLength}{' '}
@@ -522,9 +516,7 @@ export function ChatInput({
         ) : (
           <AnimatePresence>
             <motion.p
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
+              {...ANIMATION_PRESETS.slideDown}
               className="text-xs text-muted-foreground/80 px-1 mt-1"
             >
               Press{' '}

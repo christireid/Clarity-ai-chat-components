@@ -24,7 +24,7 @@ import {
   formatShortcutDisplay,
   useIsMac,
 } from '../../hooks/keyboard/use-keyboard-navigation'
-import { EASING_FRAMER } from '../../animations/constants'
+import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface ShortcutItem {
   id: string
@@ -205,9 +205,7 @@ export function KeyboardShortcutsModal({
         <>
           {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            {...ANIMATION_PRESETS.fadeIn}
             transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             onClick={onClose}
@@ -217,17 +215,7 @@ export function KeyboardShortcutsModal({
           {/* Modal */}
           <motion.div
             ref={focusTrapRef}
-            initial={{
-              opacity: 0,
-              scale: prefersReducedMotion ? 1 : 0.95,
-              y: prefersReducedMotion ? 0 : -20,
-            }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{
-              opacity: 0,
-              scale: prefersReducedMotion ? 1 : 0.95,
-              y: prefersReducedMotion ? 0 : -20,
-            }}
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
             transition={{
               duration: prefersReducedMotion ? 0 : 0.25,
               ease: EASING_FRAMER.sharp,
@@ -248,8 +236,7 @@ export function KeyboardShortcutsModal({
             <div className="flex flex-col gap-4 p-5 border-b border-border/60 bg-muted/30">
               <div className="flex items-center justify-between">
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  {...ANIMATION_PRESETS.slideRight}
                   transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
                 >
                   <h2
@@ -304,8 +291,7 @@ export function KeyboardShortcutsModal({
 
               {/* Search */}
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...ANIMATION_PRESETS.slideDown}
                 transition={{ delay: prefersReducedMotion ? 0 : 0.15 }}
                 className="relative"
               >
@@ -340,8 +326,7 @@ export function KeyboardShortcutsModal({
                 />
                 {searchQuery && (
                   <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    {...ANIMATION_PRESETS.pop}
                     onClick={() => setSearchQuery('')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-accent rounded transition-colors"
                     aria-label="Clear search"
@@ -369,8 +354,7 @@ export function KeyboardShortcutsModal({
             <div className="flex-1 overflow-y-auto p-5">
               {groupedShortcuts.length === 0 ? (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  {...ANIMATION_PRESETS.slideUp}
                   className="text-center py-12"
                 >
                   <svg
@@ -397,8 +381,7 @@ export function KeyboardShortcutsModal({
                     ([category, categoryShortcuts], categoryIndex) => (
                       <motion.div
                         key={category}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        {...ANIMATION_PRESETS.slideUp}
                         transition={{
                           delay: prefersReducedMotion
                             ? 0
@@ -415,8 +398,7 @@ export function KeyboardShortcutsModal({
                           {categoryShortcuts.map((shortcut, index) => (
                             <motion.div
                               key={shortcut.id}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
+                              {...ANIMATION_PRESETS.slideRight}
                               transition={{
                                 delay: prefersReducedMotion
                                   ? 0
@@ -447,8 +429,7 @@ export function KeyboardShortcutsModal({
 
             {/* Footer */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              {...ANIMATION_PRESETS.fadeIn}
               transition={{ delay: prefersReducedMotion ? 0 : 0.3 }}
               className="px-5 py-3.5 border-t border-border/60 bg-muted/30 text-xs text-muted-foreground flex items-center justify-between"
             >

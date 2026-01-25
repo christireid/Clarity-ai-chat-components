@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Card,
@@ -780,9 +780,7 @@ export function SemanticMessageSearch({
                   <AnimatePresence>
                     {isSearching && (
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
+                        {...ANIMATION_PRESETS.pop}
                         className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin"
                       />
                     )}
@@ -810,9 +808,7 @@ export function SemanticMessageSearch({
                   <AnimatePresence>
                     {query && (
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
+                        {...ANIMATION_PRESETS.pop}
                       >
                         <Button
                           variant="ghost"
@@ -870,8 +866,7 @@ export function SemanticMessageSearch({
                             {searchHistory.map((entry, index) => (
                               <motion.button
                                 key={index}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
+                                {...ANIMATION_PRESETS.slideLeft}
                                 transition={{ delay: index * 0.03 }}
                                 viewport={{ once: true }}
                                 onClick={() => {
@@ -1153,8 +1148,7 @@ export function SemanticMessageSearch({
 
           {error && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              {...ANIMATION_PRESETS.slideDown}
               viewport={{ once: true }}
               className="text-sm text-destructive flex items-center gap-2"
             >
@@ -1371,9 +1365,7 @@ export function SemanticMessageSearch({
           {isSearching ? (
             <motion.div
               key="loading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
             >
               <Card className="shadow-sm">
                 <CardContent className="p-8 flex flex-col items-center justify-center">
@@ -1400,9 +1392,7 @@ export function SemanticMessageSearch({
           ) : results.length > 0 ? (
             <motion.div
               key="results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
               className="space-y-3"
             >
               {/* Results header */}
@@ -1429,8 +1419,7 @@ export function SemanticMessageSearch({
                 return (
                   <motion.div
                     key={result.message.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    {...ANIMATION_PRESETS.slideLeft}
                     transition={{ delay: index * 0.05 }}
                     viewport={{ once: true }}
                   >
@@ -1561,9 +1550,7 @@ export function SemanticMessageSearch({
           ) : query && !isSearching ? (
             <motion.div
               key="no-results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              {...ANIMATION_PRESETS.slideUp}
             >
               <Card className="shadow-sm">
                 <CardContent className="p-8 text-center">

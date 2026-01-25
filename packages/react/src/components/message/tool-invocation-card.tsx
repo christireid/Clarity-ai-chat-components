@@ -27,7 +27,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { ToolCall } from '../../adapters/types'
 
@@ -141,8 +141,7 @@ export function ToolInvocationCard({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
       transition={
         prefersReducedMotion
           ? { duration: 0 }

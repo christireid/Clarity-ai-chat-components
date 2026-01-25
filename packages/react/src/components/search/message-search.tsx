@@ -7,7 +7,7 @@ import { Input, Badge, Button, cn, useReducedMotion } from '@clarity-chat/primit
 import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
 import { SearchIcon } from '../ui/icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 const { Suspense, useCallback, useEffect, useRef, useState, useMemo } = React
 
@@ -397,9 +397,7 @@ export function MessageSearch({
             <AnimatePresence mode="wait">
               {isPending && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  {...ANIMATION_PRESETS.pop}
                   viewport={{ once: true }}
                   className="relative"
                 >
@@ -440,9 +438,7 @@ export function MessageSearch({
             <AnimatePresence mode="wait">
               {searchQuery && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  {...ANIMATION_PRESETS.pop}
                   viewport={{ once: true }}
                 >
                   <Button
@@ -577,9 +573,7 @@ export function MessageSearch({
         <AnimatePresence>
           {showHistory && searchHistory.length > 0 && !searchQuery && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              {...ANIMATION_PRESETS.slideDown}
               transition={{ duration: durations.fast }}
               viewport={{ once: true }}
               className="absolute z-50 top-full mt-1 w-full bg-popover border rounded-lg shadow-lg overflow-hidden"
@@ -610,8 +604,7 @@ export function MessageSearch({
                     )}
                     role="option"
                     aria-selected={selectedHistoryIndex === index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    {...ANIMATION_PRESETS.slideLeft}
                     transition={{ delay: index * 0.03 }}
                     viewport={{ once: true }}
                   >
@@ -694,9 +687,7 @@ export function MessageSearch({
         <AnimatePresence mode="wait">
           {searchQuery && showResultCount && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
+              {...ANIMATION_PRESETS.slideDown}
               transition={{ duration: durations.normal }}
               viewport={{ once: true }}
               className="mt-2 flex items-center justify-between text-sm"
@@ -704,8 +695,7 @@ export function MessageSearch({
               <div className="flex items-center gap-2">
                 {noResults ? (
                   <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    {...ANIMATION_PRESETS.fadeIn}
                     viewport={{ once: true }}
                     className="text-muted-foreground flex items-center gap-2"
                   >
@@ -780,9 +770,7 @@ export function MessageSearch({
         <AnimatePresence>
           {searchQuery && hasResults && isFocused && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
+              {...ANIMATION_PRESETS.slideDown}
               viewport={{ once: true }}
               className="mt-1.5 text-[10px] text-muted-foreground flex items-center gap-3"
             >

@@ -14,7 +14,7 @@ import {
 } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface FollowUpSuggestion {
   id: string
@@ -68,9 +68,7 @@ export function FollowUpSuggestions({
     <motion.li
       key={suggestion.id}
       className="h-full"
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={{
         // Framer Motion 12: Spring follow-up cards
         type: 'spring',
@@ -145,8 +143,7 @@ export function FollowUpSuggestions({
       {Array.from({ length: loadingCount }).map((_, index) => (
         <motion.li
           key={`skeleton-${index}`}
-          initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          {...ANIMATION_PRESETS.scale}
           transition={{ duration: durations.normal, delay: index * 0.05 }}
           viewport={{ once: true }}
           className="rounded-lg border bg-muted/50 p-4 shadow-sm"
@@ -169,8 +166,7 @@ export function FollowUpSuggestions({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...ANIMATION_PRESETS.slideUp}
       transition={{ duration: durations.normal }}
       viewport={{ once: true }}
     >
@@ -221,8 +217,7 @@ export function FollowUpSuggestions({
 
           {!isLoading && !hasSuggestions && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ duration: durations.normal }}
               viewport={{ once: true }}
               className="rounded-lg border border-dashed bg-muted/50 p-8 text-center"

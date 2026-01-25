@@ -61,14 +61,7 @@ import {
 import type { SharedTemplate } from '../../prompts/sharing'
 import { templateMarketplace } from '../../prompts/sharing'
 
-/**
- * Animation duration presets (in seconds for framer-motion)
- */
-const durations = {
-  fast: 0.15,
-  normal: 0.3,
-  slow: 0.5,
-} as const
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 export interface TemplateMarketplaceProps {
   /** Current user info */
@@ -121,9 +114,7 @@ function MarketplaceTemplateCard({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+      {...ANIMATION_PRESETS.scale}
       transition={{ duration: durations.normal }}
       viewport={{ once: true }}
     >
@@ -250,9 +241,7 @@ function MarketplaceTemplateCard({
           <AnimatePresence>
             {showRating && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+                {...ANIMATION_PRESETS.collapse}
                 className="mt-3 p-3 bg-muted/50 rounded-lg space-y-3"
                 viewport={{ once: true }}
               >

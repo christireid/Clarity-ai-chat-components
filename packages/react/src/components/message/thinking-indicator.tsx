@@ -15,6 +15,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { AnimatedDots } from '../ui/animated-dots'
 
@@ -84,12 +85,8 @@ export function ThinkingIndicator({
 
   // Animation variants that respect reduced motion
   const containerVariants = prefersReducedMotion
-    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
-    : {
-        initial: { opacity: 0, y: 10 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -10 },
-      }
+    ? ANIMATION_PRESETS.fadeIn
+    : ANIMATION_PRESETS.slideUp
 
   const iconAnimation = prefersReducedMotion
     ? {} // No animation for reduced motion
@@ -111,9 +108,7 @@ export function ThinkingIndicator({
       role="status"
       aria-live="polite"
       aria-label={ariaLabel}
-      initial={containerVariants.initial}
-      animate={containerVariants.animate}
-      exit={containerVariants.exit}
+      {...containerVariants}
       transition={{
         duration: prefersReducedMotion ? 0.1 : ANIMATION_DURATION.normal / 1000,
         ease: EASING_FRAMER.out,
@@ -131,6 +126,7 @@ export function ThinkingIndicator({
       {/* Animated Icon with Pulse Ring - Fixed size container for stability */}
       <div className="relative flex-shrink-0 flex items-center justify-center w-[32px] h-[32px]">
         {/* Pulse Ring Animation */}
+        {/* eslint-disable clarity-animations/prefer-animation-library -- Custom keyframe pulse animation */}
         {!prefersReducedMotion && (
           <>
             <motion.div
@@ -160,6 +156,7 @@ export function ThinkingIndicator({
             />
           </>
         )}
+        {/* eslint-enable clarity-animations/prefer-animation-library */}
         {/* Icon Container */}
         <motion.div
           animate={iconAnimation}
@@ -193,12 +190,7 @@ export function ThinkingIndicator({
         {/* Topic/Detail */}
         {status?.topic && (
           <motion.p
-            initial={
-              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 3 }
-            }
-            animate={
-              prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-            }
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
             transition={{
               duration: prefersReducedMotion
                 ? 0.1
@@ -232,12 +224,7 @@ export function ThinkingIndicator({
       {/* Estimated Time */}
       {estimatedSeconds !== null && (
         <motion.span
-          initial={
-            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }
-          }
-          animate={
-            prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-          }
+          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
           transition={{ duration: prefersReducedMotion ? 0.1 : 0.2 }}
           className="flex-shrink-0 text-xs font-medium text-muted-foreground/90 tabular-nums"
         >

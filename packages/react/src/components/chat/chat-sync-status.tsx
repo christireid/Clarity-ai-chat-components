@@ -27,6 +27,7 @@ import {
   EyeSlashIcon,
 } from '../ui/icons'
 import { formatRelativeTime } from '../../internal/helpers'
+import { ANIMATION_PRESETS } from '../../animations/constants'
 import type { ChatSyncReturn } from '../../hooks/chat/use-chat-sync'
 
 export interface ChatSyncStatusProps {
@@ -96,8 +97,7 @@ export function ChatSyncStatus({
   if (compact) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        {...ANIMATION_PRESETS.scale}
         viewport={{ once: true }}
         className={`flex items-center gap-2 px-3 py-2 bg-muted/50 border rounded-lg ${className}`}
       >
@@ -128,9 +128,7 @@ export function ChatSyncStatus({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
+        {...ANIMATION_PRESETS.slideDown}
         viewport={{ once: true }}
         className={className}
       >
@@ -260,9 +258,7 @@ export function ChatSyncStatus({
                 <AnimatePresence>
                   {showErrors && (
                     <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
+                      {...ANIMATION_PRESETS.collapse}
                       viewport={{ once: true }}
                       className="space-y-2"
                     >

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 export interface KeyboardHintShortcut {
@@ -66,9 +66,7 @@ export function KeyboardHint({
       {/* Backdrop (only for center position) */}
       {position === 'center' && (
         <motion.div
-          initial={prefersReducedMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={prefersReducedMotion ? false : { opacity: 0 }}
+          {...ANIMATION_PRESETS.fadeIn}
           onClick={onClose}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
         />
@@ -77,25 +75,7 @@ export function KeyboardHint({
       {/* Keyboard Hints Panel */}
       <motion.div
         ref={ref}
-        initial={
-          prefersReducedMotion
-            ? false
-            : {
-                opacity: 0,
-                scale: 0.9,
-                y: position.includes('bottom') ? 20 : -20,
-              }
-        }
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={
-          prefersReducedMotion
-            ? false
-            : {
-                opacity: 0,
-                scale: 0.9,
-                y: position.includes('bottom') ? 20 : -20,
-              }
-        }
+        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : (position.includes('bottom') ? ANIMATION_PRESETS.slideUp : ANIMATION_PRESETS.slideDown))}
         transition={{
           duration: ANIMATION_DURATION.normal / 1000,
           ease: EASING_FRAMER.out,
@@ -110,8 +90,7 @@ export function KeyboardHint({
         {/* Header */}
         <div className="px-4 py-3.5 border-b flex items-center justify-between bg-muted/60">
           <motion.h3
-            initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
             transition={{ delay: 0.1 }}
             className="font-bold"
           >
@@ -150,8 +129,7 @@ export function KeyboardHint({
               ([category, categoryShortcuts], groupIndex) => (
                 <motion.div
                   key={category}
-                  initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
                   transition={{ delay: groupIndex * 0.05 + 0.1 }}
                   viewport={{ once: true }}
                 >
@@ -162,8 +140,7 @@ export function KeyboardHint({
                     {categoryShortcuts.map((shortcut, index) => (
                       <motion.div
                         key={index}
-                        initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                         transition={{
                           delay: groupIndex * 0.05 + index * 0.03 + 0.15,
                         }}
@@ -206,8 +183,7 @@ export function KeyboardHint({
 
         {/* Footer */}
         <motion.div
-          initial={prefersReducedMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
+          {...ANIMATION_PRESETS.fadeIn}
           transition={{ delay: 0.3 }}
           className="px-4 py-3.5 border-t text-xs text-muted-foreground/90 bg-muted/60"
         >

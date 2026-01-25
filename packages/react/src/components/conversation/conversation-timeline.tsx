@@ -21,6 +21,7 @@ import {
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
@@ -243,8 +244,8 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                 return (
                   <motion.li
                     key={event.id}
+                    {...ANIMATION_PRESETS.slideUp}
                     initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -12 }}
                     transition={{
                       duration: durations.normal,

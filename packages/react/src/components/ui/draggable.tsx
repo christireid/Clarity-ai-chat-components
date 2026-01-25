@@ -7,6 +7,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
@@ -133,6 +134,11 @@ export interface DropZoneProps {
   ref?: React.Ref<HTMLDivElement>
 }
 
+const pulseAnimation = {
+  scale: [1, 1.05, 1],
+  opacity: [0.5, 0.8, 0.5],
+}
+
 export function DropZone({
   children,
   onDrop,
@@ -205,17 +211,12 @@ export function DropZone({
           </div>
         ) : (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            {...ANIMATION_PRESETS.fadeIn}
             className="absolute inset-0 pointer-events-none"
             viewport={{ once: true }}
           >
             <motion.div
-              animate={{
-                scale: [1, 1.05, 1],
-                opacity: [0.5, 0.8, 0.5],
-              }}
+              animate={pulseAnimation}
               transition={{
                 repeat: Infinity,
                 duration: durations.slower,

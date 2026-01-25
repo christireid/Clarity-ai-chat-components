@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * A single suggestion category with items
@@ -220,9 +220,7 @@ export function PromptContainer({
           {/* Suggestions area */}
           {hasSuggestions && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: durations.normal }}
               className="mb-4 space-y-3"
             >
@@ -235,8 +233,7 @@ export function PromptContainer({
                 return (
                   <motion.div
                     key={category.title}
-                    initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    {...ANIMATION_PRESETS.slideUp}
                     transition={{
                       type: 'spring',
                       damping: 25,
@@ -287,18 +284,14 @@ export function PromptContainer({
                     {/* Suggestion items */}
                     {isExpanded && (
                       <motion.div
-                        initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                        {...ANIMATION_PRESETS.collapse}
                         transition={{ duration: durations.fast }}
                         className="flex flex-wrap gap-2 pl-7"
                       >
                         {displayItems.map((item, itemIndex) => (
                           <motion.button
                             key={item}
-                            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                            {...ANIMATION_PRESETS.scale}
                             transition={{
                               type: 'spring',
                               damping: 22,
@@ -337,18 +330,14 @@ export function PromptContainer({
           {/* File attachments area */}
           {hasAttachments && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+              {...ANIMATION_PRESETS.slideUp}
               transition={{ duration: durations.fast }}
               className="mb-3 flex flex-wrap gap-2"
             >
               {attachments.map((attachment) => (
                 <motion.div
                   key={attachment.id}
-                  initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                  {...ANIMATION_PRESETS.scale}
                   transition={{ type: 'spring', damping: 20, stiffness: 300 }}
                   viewport={{ once: true }}
                   className={cn(
@@ -439,9 +428,7 @@ export function PromptContainer({
           {(showDropZone || isDragging) && (
             <motion.div
               ref={dropZoneRef}
-              initial={prefersReducedMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={prefersReducedMotion ? false : { opacity: 0 }}
+              {...ANIMATION_PRESETS.fadeIn}
               transition={{ duration: durations.fast }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}

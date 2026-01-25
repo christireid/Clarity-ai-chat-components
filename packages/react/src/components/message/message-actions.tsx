@@ -13,6 +13,7 @@ import {
 } from '../ui/icons'
 import {
   ANIMATION_DURATION,
+  ANIMATION_PRESETS,
   DURATION_SECONDS as durations,
   EASING_FRAMER,
 } from '../../animations/constants'
@@ -517,12 +518,12 @@ export const MessageActions = React.memo<MessageActionsProps>(
             <motion.div
               ref={actionsRef}
               variants={containerVariants}
-              initial={{ opacity: 0, y: 8 }}
+              {...ANIMATION_PRESETS.slideUp}
               animate={{
+                ...ANIMATION_PRESETS.slideUp.animate,
                 opacity: alwaysVisible || show ? 1 : 0.6,
-                y: 0,
               }}
-              exit={{ opacity: 0, y: 8 }}
+              exit={ANIMATION_PRESETS.slideUp.exit}
               transition={{
                 duration: ANIMATION_DURATION.fast / 1000,
                 ease: EASING_FRAMER.out,
@@ -538,9 +539,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               {isStreaming && isAssistantMessage && onStopGeneration && (
                 <Tooltip content="Stop generating" side="top" delay={100}>
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    {...ANIMATION_PRESETS.pop}
                     transition={{ duration: durations.fast }}
                   >
                     <Button

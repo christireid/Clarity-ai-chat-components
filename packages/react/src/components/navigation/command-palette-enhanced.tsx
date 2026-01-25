@@ -25,7 +25,7 @@ import {
 } from '../../accessibility/focus-management'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
-import { EASING_FRAMER } from '../../animations/constants'
+import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -602,9 +602,7 @@ export function CommandPaletteEnhanced({
           <>
             {/* Backdrop */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.fadeIn)}
               transition={{ duration: prefersReducedMotion ? 0 : 0.15 }}
               onClick={onClose}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
@@ -614,17 +612,7 @@ export function CommandPaletteEnhanced({
             {/* Palette */}
             <motion.div
               ref={focusTrapRef}
-              initial={{
-                opacity: 0,
-                scale: prefersReducedMotion ? 1 : 0.95,
-                y: prefersReducedMotion ? 0 : -20,
-              }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{
-                opacity: 0,
-                scale: prefersReducedMotion ? 1 : 0.95,
-                y: prefersReducedMotion ? 0 : -20,
-              }}
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
               transition={{
                 duration: prefersReducedMotion ? 0 : 0.2,
                 ease: EASING_FRAMER.sharp,
@@ -644,8 +632,7 @@ export function CommandPaletteEnhanced({
               {/* Breadcrumb for nested commands */}
               {commandStack.length > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.collapse)}
                   className="px-4 py-2 border-b border-border/40 bg-muted/30"
                 >
                   <div className="flex items-center gap-2 text-sm">
@@ -737,8 +724,7 @@ export function CommandPaletteEnhanced({
                   />
                   {search && (
                     <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.pop)}
                       onClick={() => setSearch('')}
                       className="p-1.5 hover:bg-accent rounded-full transition-colors"
                       aria-label="Clear search"
@@ -770,8 +756,7 @@ export function CommandPaletteEnhanced({
               >
                 {flatItems.length === 0 ? (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                     className="py-12 text-center"
                   >
                     {emptyState || (
@@ -804,8 +789,7 @@ export function CommandPaletteEnhanced({
                       ([category, items], groupIndex) => (
                         <motion.div
                           key={category}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
                           transition={{
                             delay: prefersReducedMotion ? 0 : groupIndex * 0.05,
                           }}
@@ -929,8 +913,7 @@ export function CommandPaletteEnhanced({
 
               {/* Footer */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                {...ANIMATION_PRESETS.fadeIn}
                 transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
                 className="px-4 py-3 border-t border-border/40 bg-muted/30 text-xs text-muted-foreground"
               >

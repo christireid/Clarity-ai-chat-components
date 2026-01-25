@@ -14,6 +14,7 @@ import {
 import { formatRelativeTime } from '../../internal/helpers'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { Message } from '@clarity-chat/types'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
  * Thread configuration
@@ -226,9 +227,7 @@ export function MessageThreadView({
 
     return (
       <motion.div
-        initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: 'auto' }}
-        exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+        {...ANIMATION_PRESETS.collapse}
         viewport={{ once: true }}
         className="mt-2 p-3 border-l-2 border-primary/30 bg-accent/20 rounded-r-lg cursor-pointer hover:bg-accent/30 transition-colors"
         onClick={handleExpand}
@@ -279,25 +278,11 @@ export function MessageThreadView({
 
     return (
       <motion.div
-        initial={
-          prefersReducedMotion
-            ? false
-            : {
-                opacity: 0,
-                x: layout === 'sidebar' ? 300 : 0,
-                y: layout === 'inline' ? 20 : 0,
-              }
-        }
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={
-          prefersReducedMotion
-            ? false
-            : {
-                opacity: 0,
-                x: layout === 'sidebar' ? 300 : 0,
-                y: layout === 'inline' ? 20 : 0,
-              }
-        }
+        {...(prefersReducedMotion
+          ? ANIMATION_PRESETS.fadeIn
+          : layout === 'sidebar'
+            ? ANIMATION_PRESETS.slideRight
+            : ANIMATION_PRESETS.slideUp)}
         viewport={{ once: true }}
         className={cn(
           layout === 'sidebar' &&
@@ -400,8 +385,7 @@ export function MessageThreadView({
             thread.messages.map((message, index) => (
               <motion.div
                 key={message.id}
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                {...ANIMATION_PRESETS.slideUp}
                 exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
                 transition={
                   prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }
@@ -629,8 +613,7 @@ export function ThreadList({
           return (
             <motion.div
               key={thread.id}
-              initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              {...ANIMATION_PRESETS.slideRight}
               exit={prefersReducedMotion ? false : { opacity: 0, x: 20 }}
               transition={
                 prefersReducedMotion ? { duration: 0 } : { delay: index * 0.03 }

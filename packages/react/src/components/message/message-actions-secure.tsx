@@ -45,10 +45,27 @@ import {
   EASING_FRAMER,
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
 import { useToast } from '../ui/toast'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+
+// Animation constants for feedback interactions
+const THUMBS_UP_CELEBRATION = {
+  scale: [1, 1.2, 1],
+  rotate: [0, -15, 15, -15, 0],
+}
+
+const THUMBS_DOWN_SHAKE = {
+  scale: [1, 1.1, 1],
+  rotate: [0, 15, -15, 15, 0],
+}
+
+const DELETE_SHAKE = {
+  rotate: [0, 10, -10, 10, 0],
+  scale: [1, 0.9, 0.9, 0.9, 0.8],
+}
 
 export interface SecurityInfo {
   /** Whether message passed security validation */
@@ -149,8 +166,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
 
     return (
       <motion.div
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 10, height: 0 }}
-        animate={{ opacity: 1, y: 0, height: 'auto' }}
+        {...ANIMATION_PRESETS.slideUp}
         transition={{
           duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.fast / 1000,
           ease: EASING_FRAMER.out,
@@ -161,8 +177,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Security Status Indicator */}
           {showSecurityIndicators && securityInfo && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0, duration: prefersReducedMotion ? 0 : durations.normal }}
               viewport={{ once: true }}
               className="relative"
@@ -190,8 +205,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
               {/* Security Details Tooltip */}
               {showSecurityDetails && (
                 <motion.div
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 5, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  {...ANIMATION_PRESETS.slideDown}
                   viewport={{ once: true }}
                   className="absolute bottom-full left-0 mb-2 z-50"
                 >
@@ -299,8 +313,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* PII Indicator */}
           {showSecurityIndicators && hasPiiDetected && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.05, duration: prefersReducedMotion ? 0 : durations.normal }}
               viewport={{ once: true }}
               title={`${securityInfo.piiCount || 1} PII item(s) redacted`}
@@ -314,8 +327,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
 
           {/* Copy button */}
           <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            {...ANIMATION_PRESETS.scale}
             transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : durations.normal }}
             viewport={{ once: true }}
           >
@@ -330,8 +342,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Thumbs Up with Confetti */}
           <motion.div
             className="relative"
-            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            {...ANIMATION_PRESETS.scale}
             transition={{ delay: prefersReducedMotion ? 0 : 0.15, duration: prefersReducedMotion ? 0 : durations.normal }}
             viewport={{ once: true }}
           >
@@ -341,13 +352,14 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                 rotate: feedbackGiven === 'up' ? 0 : -12,
               }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.85 }}
+              {...(feedbackGiven === 'up' && !prefersReducedMotion ? ANIMATION_PRESETS.scaleRotate : {})}
               animate={
                 feedbackGiven === 'up' && !prefersReducedMotion
                   ? {
-                      scale: [1, 1.2, 1],
-                      rotate: [0, -15, 15, -15, 0],
+                      ...ANIMATION_PRESETS.scaleRotate.animate,
+                      ...THUMBS_UP_CELEBRATION,
                     }
-                  : {}
+                  : ANIMATION_PRESETS.scaleRotate.animate
               }
               transition={{ duration: prefersReducedMotion ? 0 : durations.slow }}
               viewport={{ once: true }}
@@ -371,8 +383,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
 
           {/* Thumbs Down */}
           <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            {...ANIMATION_PRESETS.scale}
             transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : durations.normal }}
             whileHover={prefersReducedMotion ? undefined : {
               scale: 1.15,
@@ -382,13 +393,14 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             viewport={{ once: true }}
           >
             <motion.div
+              {...(feedbackGiven === 'down' && !prefersReducedMotion ? ANIMATION_PRESETS.scaleRotate : {})}
               animate={
                 feedbackGiven === 'down' && !prefersReducedMotion
                   ? {
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 15, -15, 15, 0],
+                      ...ANIMATION_PRESETS.scaleRotate.animate,
+                      ...THUMBS_DOWN_SHAKE,
                     }
-                  : {}
+                  : ANIMATION_PRESETS.scaleRotate.animate
               }
               transition={{ duration: prefersReducedMotion ? 0 : durations.slow }}
               viewport={{ once: true }}
@@ -412,8 +424,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Report Button */}
           {onReport && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.25, duration: prefersReducedMotion ? 0 : durations.normal }}
               viewport={{ once: true }}
               className="relative"
@@ -431,8 +442,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
               {/* Report Menu */}
               {showReportMenu && (
                 <motion.div
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 5, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  {...ANIMATION_PRESETS.slideDown}
                   viewport={{ once: true }}
                   className="absolute bottom-full left-0 mb-2 z-50"
                 >
@@ -479,8 +489,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Retry button */}
           {hasError && onRetry && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : durations.normal }}
               whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
@@ -501,8 +510,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Edit button for user messages */}
           {isUserMessage && onEdit && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : durations.normal }}
               whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
@@ -523,8 +531,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Regenerate button for assistant messages */}
           {isAssistantMessage && onRegenerate && !hasError && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : durations.normal }}
               whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
@@ -545,8 +552,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           {/* Delete button */}
           {onDelete && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : durations.normal }}
               whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
@@ -564,13 +570,14 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                 aria-label="Delete message"
               >
                 <motion.div
+                  {...(isDeleting && !prefersReducedMotion ? ANIMATION_PRESETS.scaleRotate : {})}
                   animate={
                     isDeleting && !prefersReducedMotion
                       ? {
-                          rotate: [0, 10, -10, 10, 0],
-                          scale: [1, 0.9, 0.9, 0.9, 0.8],
+                          ...ANIMATION_PRESETS.scaleRotate.animate,
+                          ...DELETE_SHAKE,
                         }
-                      : {}
+                      : ANIMATION_PRESETS.scaleRotate.animate
                   }
                   transition={{ duration: prefersReducedMotion ? 0 : durations.moderate }}
                   viewport={{ once: true }}

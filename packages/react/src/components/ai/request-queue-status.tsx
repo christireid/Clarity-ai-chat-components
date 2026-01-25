@@ -20,6 +20,7 @@ import {
   XMarkIcon,
   PauseIcon,
 } from '../ui/icons'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface RequestQueueStatusProps {
@@ -111,9 +112,7 @@ export function RequestQueueStatus({
   if (compact) {
     return (
       <motion.div
-        initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
+        {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.scale)}
         viewport={{ once: true }}
         className={`flex items-center gap-2 px-3 py-2 bg-muted/50 border rounded-lg ${className}`}
       >
@@ -136,9 +135,7 @@ export function RequestQueueStatus({
   return (
     <AnimatePresence>
       <motion.div
-        initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+        {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideDown)}
         viewport={{ once: true }}
         className={className}
       >
@@ -159,8 +156,7 @@ export function RequestQueueStatus({
             {/* Rate limit warning */}
             {isRateLimited && timeUntilReset !== null && (
               <motion.div
-                initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-                animate={{ opacity: 1 }}
+                {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.fadeIn)}
                 viewport={{ once: true }}
                 className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
               >
@@ -236,8 +232,7 @@ export function RequestQueueStatus({
             {/* Queue full warning */}
             {isQueueFull && (
               <motion.div
-                initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.scale)}
                 viewport={{ once: true }}
                 className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
               >

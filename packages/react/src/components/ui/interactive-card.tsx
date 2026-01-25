@@ -13,6 +13,7 @@ import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations'
 
 export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -34,6 +35,11 @@ export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElemen
   children: React.ReactNode
   /** Ref forwarding */
   ref?: React.Ref<HTMLDivElement>
+}
+
+const rippleAnimation = {
+  initial: { scale: 0, opacity: 0.5 },
+  animate: { scale: 4, opacity: 0 },
 }
 
 /**
@@ -193,8 +199,7 @@ export const InteractiveCard = React.memo(function InteractiveCard({
           {ripples.map((ripple) => (
             <motion.div
               key={ripple.id}
-              initial={{ scale: 0, opacity: 0.5 }}
-              animate={{ scale: 4, opacity: 0 }}
+              {...rippleAnimation}
               transition={{ duration: durations.slower }}
               className="absolute w-20 h-20 -ml-10 -mt-10 rounded-full bg-primary/20"
               style={{ left: ripple.x, top: ripple.y }}

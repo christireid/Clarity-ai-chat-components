@@ -21,7 +21,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../../adapters/types'
-import { DURATION_SECONDS } from '../../animations/constants'
+import { DURATION_SECONDS, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface StreamingMessageProps {
@@ -142,8 +142,7 @@ const ErrorDisplay = React.memo(function ErrorDisplay({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={
         prefersReducedMotion
           ? { duration: 0 }
@@ -221,9 +220,7 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.collapse)}
       viewport={{ once: true }}
       className="bg-info/5 border border-info/20 rounded-lg p-4 shadow-xs"
     >
@@ -255,8 +252,7 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
           {thinkingSteps.map((step, index) => (
             <motion.div
               key={`step-${index}`}
-              initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
               transition={
                 prefersReducedMotion ? { duration: 0 } : { delay: index * 0.1 }
               }
@@ -280,8 +276,7 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
           ))}
           {currentThinkingStep && (
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              {...ANIMATION_PRESETS.fadeIn}
               viewport={{ once: true }}
               className="text-sm text-muted-foreground flex items-center gap-2"
             >
@@ -323,9 +318,7 @@ const ToolCallItem = React.memo(function ToolCallItem({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={prefersReducedMotion ? false : { opacity: 0, x: 10 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
       viewport={{ once: true }}
       className="bg-accent/50 border rounded-lg p-4 shadow-xs"
     >
@@ -400,9 +393,7 @@ const CitationItem = React.memo(function CitationItem({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
       transition={
         prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }
       }
@@ -636,8 +627,7 @@ export function StreamingMessage({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
       transition={{
         duration: prefersReducedMotion ? 0 : DURATION_SECONDS.normal,
       }}

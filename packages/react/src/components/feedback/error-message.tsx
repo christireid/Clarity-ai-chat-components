@@ -15,7 +15,7 @@ import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 
 /**
  * Error severity levels
@@ -223,12 +223,7 @@ export function ErrorMessage({
   if (compact) {
     return (
       <motion.div
-        initial={{
-          opacity: 0,
-          y: getMotionSafeValue(prefersReducedMotion, -10, 0),
-        }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideDown)}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
         }}
@@ -258,13 +253,7 @@ export function ErrorMessage({
 
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-        scale: 0.98,
-      }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.scale)}
       transition={{
         // Framer Motion 12: Spring entrance for full error displays
         type: 'spring',
@@ -283,8 +272,7 @@ export function ErrorMessage({
       {/* Header */}
       <div className="flex items-start gap-3.5">
         <motion.div
-          initial={{ scale: 0, rotate: -90 }}
-          animate={{ scale: 1, rotate: 0 }}
+          {...ANIMATION_PRESETS.scaleRotate}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
             type: 'spring',
@@ -328,8 +316,7 @@ export function ErrorMessage({
       {/* Suggestions */}
       {errorDetails.suggestions && errorDetails.suggestions.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          {...ANIMATION_PRESETS.collapse}
           transition={{
             delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
           }}
@@ -342,11 +329,7 @@ export function ErrorMessage({
             {errorDetails.suggestions.map((suggestion, index) => (
               <motion.li
                 key={index}
-                initial={{
-                  opacity: 0,
-                  x: getMotionSafeValue(prefersReducedMotion, -10, 0),
-                }}
-                animate={{ opacity: 1, x: 0 }}
+                {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideRight)}
                 transition={{
                   delay: getMotionSafeDuration(
                     prefersReducedMotion,
@@ -376,7 +359,8 @@ export function ErrorMessage({
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              animate={{ rotate: showDetails ? 90 : 0 }}
+              {...ANIMATION_PRESETS.scaleRotate}
+              animate={{ ...ANIMATION_PRESETS.scaleRotate.animate, rotate: showDetails ? 90 : 0 }}
               transition={{ duration: durations.normal }}
             >
               <path
@@ -392,9 +376,7 @@ export function ErrorMessage({
           <AnimatePresence>
             {showDetails && (
               <motion.pre
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+                {...ANIMATION_PRESETS.collapse}
                 className="text-xs bg-muted/50 rounded p-3 overflow-x-auto font-mono"
               >
                 {errorDetails.technicalDetails}
@@ -407,11 +389,7 @@ export function ErrorMessage({
       {/* Retry Button */}
       {errorDetails.canRetry && onRetry && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
-          }}
-          animate={{ opacity: 1, y: 0 }}
+          {...ANIMATION_PRESETS.slideUp}
           transition={{
             delay: getMotionSafeDuration(prefersReducedMotion, 0.2),
           }}

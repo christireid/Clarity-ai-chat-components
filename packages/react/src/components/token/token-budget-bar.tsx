@@ -12,7 +12,7 @@ import {
   formatTokenUsage,
   estimateTokenCost,
 } from '../../hooks/token/use-token-budget-monitor'
-import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface TokenBudgetBarProps {
@@ -399,9 +399,8 @@ export function TokenBudgetBar({
         ) : (
           <motion.div
             className={cn('flex items-center', sizeStyles.gap)}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            {...ANIMATION_PRESETS.collapse}
+            animate={{ opacity: 1, scaleY: 1 }}
             role="alert"
             aria-live="assertive"
             viewport={{ once: true }}
@@ -521,9 +520,7 @@ export function TokenBudgetBar({
             <motion.div
               id={tooltipId}
               role="tooltip"
-              initial={{ opacity: 0, y: 4, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              {...ANIMATION_PRESETS.scale}
               transition={{ duration: durations.fast }}
               className="absolute left-0 right-0 z-50 mt-2 rounded-lg border bg-popover p-3 shadow-lg"
             >

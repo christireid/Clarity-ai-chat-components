@@ -16,6 +16,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { KnowledgeBase, KnowledgeSection } from '@clarity-chat/types'
+import { ANIMATION_PRESETS } from '@/animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface KnowledgeBaseViewerProps {
@@ -63,9 +64,7 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
 }: KnowledgeSectionItemProps) {
   return (
     <motion.div
-      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+      {...(prefersReducedMotion ? {} : ANIMATION_PRESETS.slideDown)}
       transition={{ delay: prefersReducedMotion ? 0 : index * 0.05 }}
       viewport={{ once: true }}
     >

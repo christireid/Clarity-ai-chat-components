@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { duration } from '../../../animations/constants'
+import { duration, ANIMATION_PRESETS } from '../../../animations/constants'
 import type { InlineLinkProps } from './types'
 import { isValidUrl, sanitizeUrl } from './url-utils'
 import { useLinkPreview } from './use-link-preview'
@@ -105,9 +105,7 @@ export function InlineLink({
             <motion.div
               id={`preview-${url.replace(/[^a-z0-9]/gi, '-')}`}
               role="tooltip"
-              initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
+              {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
               transition={{ duration: duration('fast') }}
               className="absolute bottom-full left-0 mb-2 w-80 z-50"
               onMouseEnter={() => setShowPreview(true)}
