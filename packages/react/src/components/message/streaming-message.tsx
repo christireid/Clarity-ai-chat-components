@@ -18,10 +18,11 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../../adapters/types'
 import { DURATION_SECONDS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface StreamingMessageProps {
   /** Accumulated message content */
@@ -100,16 +101,23 @@ function parsePartialJSON(text: string): {
  * Streaming cursor component for indicating active streaming
  */
 const StreamingCursor = React.memo(function StreamingCursor() {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.span
-      animate={{ opacity: [1, 0.3, 1] }}
-      transition={{
-        // Framer Motion 12: Smoother pulse using spring
-        type: 'spring',
-        damping: 15,
-        stiffness: 100,
-        repeat: Infinity,
-      }}
+      animate={prefersReducedMotion ? {} : { opacity: [1, 0.3, 1] }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              // Framer Motion 12: Smoother pulse using spring
+              type: 'spring',
+              damping: 15,
+              stiffness: 100,
+              repeat: Infinity,
+            }
+      }
+      viewport={{ once: true }}
       className="inline-block ml-1"
       aria-hidden="true"
     >
@@ -130,16 +138,23 @@ const ErrorDisplay = React.memo(function ErrorDisplay({
   error: string
   onRetry?: () => void
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        // Framer Motion 12: Spring entrance for errors
-        type: 'spring',
-        damping: 20,
-        stiffness: 300,
-      }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              // Framer Motion 12: Spring entrance for errors
+              type: 'spring',
+              damping: 20,
+              stiffness: 300,
+            }
+      }
+      viewport={{ once: true }}
       className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 shadow-xs"
       role="alert"
     >
@@ -202,11 +217,14 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
   thinkingSteps: string[]
   currentThinkingStep?: string
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+      exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+      viewport={{ once: true }}
       className="bg-info/5 border border-info/20 rounded-lg p-4 shadow-xs"
     >
       <div className="flex items-start gap-3">
@@ -237,9 +255,12 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
           {thinkingSteps.map((step, index) => (
             <motion.div
               key={`step-${index}`}
-              initial={{ opacity: 0, x: -10 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={
+                prefersReducedMotion ? { duration: 0 } : { delay: index * 0.1 }
+              }
+              viewport={{ once: true }}
               className="text-sm text-muted-foreground flex items-center gap-2"
             >
               <svg
@@ -259,8 +280,9 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
           ))}
           {currentThinkingStep && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
+              viewport={{ once: true }}
               className="text-sm text-muted-foreground flex items-center gap-2"
             >
               <div
@@ -290,6 +312,7 @@ const ToolCallItem = React.memo(function ToolCallItem({
   onToolApprove?: (toolCall: ToolCall) => void
   onToolReject?: (toolCall: ToolCall) => void
 }) {
+  const prefersReducedMotion = useReducedMotion()
   const handleApprove = React.useCallback(() => {
     onToolApprove?.(tool)
   }, [tool, onToolApprove])
@@ -300,9 +323,10 @@ const ToolCallItem = React.memo(function ToolCallItem({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 10 }}
+      exit={prefersReducedMotion ? false : { opacity: 0, x: 10 }}
+      viewport={{ once: true }}
       className="bg-accent/50 border rounded-lg p-4 shadow-xs"
     >
       <div className="flex items-start justify-between gap-4">
@@ -366,6 +390,7 @@ const CitationItem = React.memo(function CitationItem({
   citation: Citation
   index: number
 }) {
+  const prefersReducedMotion = useReducedMotion()
   const confidenceVariant = React.useMemo(() => {
     if (citation.confidence === undefined) return 'secondary'
     if (citation.confidence >= 0.9) return 'success'
@@ -375,10 +400,13 @@ const CitationItem = React.memo(function CitationItem({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ delay: index * 0.05 }}
+      exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+      transition={
+        prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }
+      }
+      viewport={{ once: true }}
       className="bg-muted/50 border rounded-lg p-3 shadow-xs hover:shadow-md hover:-translate-y-px transition-all duration-150 ease-out cursor-pointer"
     >
       <div className="flex items-start gap-3">
@@ -528,6 +556,7 @@ export function StreamingMessage({
   smoothStreaming = false,
   streamingSpeed = 'normal',
 }: StreamingMessageProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isVisible, setIsVisible] = React.useState(false)
 
   // Use smooth streaming hook for polished text rendering
@@ -607,9 +636,12 @@ export function StreamingMessage({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
-      transition={{ duration: DURATION_SECONDS.normal }}
+      transition={{
+        duration: prefersReducedMotion ? 0 : DURATION_SECONDS.normal,
+      }}
+      viewport={{ once: true }}
       className={cn('space-y-4', className)}
     >
       {/* Error State */}
@@ -626,16 +658,14 @@ export function StreamingMessage({
       {/* Tool Calls */}
       {showTools && toolCalls.length > 0 && (
         <div className="space-y-2">
-          <AnimatePresence>
-            {toolCalls.map((tool, index) => (
-              <ToolCallItem
-                key={tool.id || `tool-${index}`}
-                tool={tool}
-                onToolApprove={handleToolApprove}
-                onToolReject={handleToolReject}
-              />
-            ))}
-          </AnimatePresence>
+          {toolCalls.map((tool, index) => (
+            <ToolCallItem
+              key={tool.id || `tool-${index}`}
+              tool={tool}
+              onToolApprove={handleToolApprove}
+              onToolReject={handleToolReject}
+            />
+          ))}
         </div>
       )}
 
@@ -658,15 +688,13 @@ export function StreamingMessage({
             <Badge variant="secondary">{citations.length}</Badge>
           </div>
           <div className="grid gap-2">
-            <AnimatePresence>
-              {citations.map((citation, index) => (
-                <CitationItem
-                  key={citation.id || `citation-${index}`}
-                  citation={citation}
-                  index={index}
-                />
-              ))}
-            </AnimatePresence>
+            {citations.map((citation, index) => (
+              <CitationItem
+                key={citation.id || `citation-${index}`}
+                citation={citation}
+                index={index}
+              />
+            ))}
           </div>
         </div>
       )}

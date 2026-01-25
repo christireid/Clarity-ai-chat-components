@@ -14,6 +14,7 @@ import {
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { Message } from '@clarity-chat/types'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Topic cluster
@@ -521,6 +522,7 @@ export function ConversationAnalyticsDashboard({
   isLoading: externalLoading = false,
   externalError = null,
 }: ConversationAnalyticsDashboardProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [analytics, setAnalytics] =
     React.useState<ConversationAnalytics | null>(externalAnalytics || null)
   const [isGenerating, setIsGenerating] = React.useState(false)
@@ -673,28 +675,28 @@ export function ConversationAnalyticsDashboard({
       {isLoading && !analytics ? (
         <Card className="shadow-sm">
           <CardContent className="p-8 text-center">
-            <motion.div
-              className="inline-block h-8 w-8 rounded-full border-2 border-primary border-t-transparent"
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: durations.slower,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-            />
+            {prefersReducedMotion ? (
+              <div className="inline-block h-8 w-8 rounded-full border-2 border-primary border-t-transparent" />
+            ) : (
+              <motion.div
+                className="inline-block h-8 w-8 rounded-full border-2 border-primary border-t-transparent"
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: durations.slower,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }}
+                viewport={{ once: true }}
+              />
+            )}
             <div className="mt-3 text-sm text-muted-foreground">
               Analyzing conversation...
             </div>
           </CardContent>
         </Card>
       ) : analytics ? (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="analytics"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
-          >
+        prefersReducedMotion ? (
+          <div className="space-y-4">
             {/* Quality Score */}
             <Card className="shadow-sm">
               <CardHeader>
@@ -715,15 +717,23 @@ export function ConversationAnalyticsDashboard({
                       aria-valuemax={100}
                       aria-valuetext={`Quality score: ${Math.round(analytics.quality.score)} out of 100`}
                     >
-                      <motion.div
-                        className="h-full bg-primary"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${analytics.quality.score}%` }}
-                        transition={{
-                          duration: durations.slower,
-                          ease: 'easeOut',
-                        }}
-                      />
+                      {prefersReducedMotion ? (
+                        <div
+                          className="h-full bg-primary"
+                          style={{ width: `${analytics.quality.score}%` }}
+                        />
+                      ) : (
+                        <motion.div
+                          className="h-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${analytics.quality.score}%` }}
+                          transition={{
+                            duration: durations.slower,
+                            ease: 'easeOut',
+                          }}
+                          viewport={{ once: true }}
+                        />
+                      )}
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-3 text-xs">
                       {Object.entries(analytics.quality.factors).map(
@@ -751,14 +761,12 @@ export function ConversationAnalyticsDashboard({
                   <CardTitle className="text-sm">Topics Discussed</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {analytics.topics.map((topic, index) => (
-                    <motion.div
-                      key={topic.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between"
-                    >
+                  {analytics.topics.map((topic, index) =>
+                    prefersReducedMotion ? (
+                      <div
+                        key={topic.name}
+                        className="flex items-center justify-between"
+                      >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-sm">
@@ -780,11 +788,46 @@ export function ConversationAnalyticsDashboard({
                           ))}
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-muted-foreground">
-                        {Math.round(topic.confidence * 100)}%
+                        <div className="text-2xl font-bold text-muted-foreground">
+                          {Math.round(topic.confidence * 100)}%
+                        </div>
                       </div>
-                    </motion.div>
-                  ))}
+                    ) : (
+                      <motion.div
+                        key={topic.name}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-sm">
+                              {topic.name}
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              {topic.messageCount} messages
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {topic.keywords.map((kw) => (
+                              <Badge
+                                key={kw}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {kw}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-2xl font-bold text-muted-foreground">
+                          {Math.round(topic.confidence * 100)}%
+                        </div>
+                      </motion.div>
+                    )
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -927,8 +970,253 @@ export function ConversationAnalyticsDashboard({
                 )}
               </CardContent>
             </Card>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="analytics"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-4"
+            >
+              {/* Quality Score */}
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm">Conversation Quality</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl font-bold" aria-hidden="true">
+                      {Math.round(analytics.quality.score)}
+                    </div>
+                    <div className="flex-1">
+                      <div
+                        className="h-2 w-full rounded-full bg-muted overflow-hidden"
+                        role="progressbar"
+                        aria-label="Conversation quality score"
+                        aria-valuenow={Math.round(analytics.quality.score)}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuetext={`Quality score: ${Math.round(analytics.quality.score)} out of 100`}
+                      >
+                        <motion.div
+                          className="h-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${analytics.quality.score}%` }}
+                          transition={{
+                            duration: durations.slower,
+                            ease: 'easeOut',
+                          }}
+                          viewport={{ once: true }}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-3 text-xs">
+                        {Object.entries(analytics.quality.factors).map(
+                          ([key, value]) => (
+                            <div key={key}>
+                              <div className="text-muted-foreground capitalize">
+                                {key}
+                              </div>
+                              <div className="font-semibold">
+                                {Math.round(value)}
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Topics */}
+              {analytics.topics.length > 0 && (
+                <Card className="shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-sm">Topics Discussed</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {analytics.topics.map((topic, index) => (
+                      <motion.div
+                        key={topic.name}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-sm">
+                              {topic.name}
+                            </span>
+                            <Badge variant="secondary" className="text-xs">
+                              {topic.messageCount} messages
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {topic.keywords.map((kw) => (
+                              <Badge
+                                key={kw}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {kw}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-2xl font-bold text-muted-foreground">
+                          {Math.round(topic.confidence * 100)}%
+                        </div>
+                      </motion.div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Sentiment */}
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm">Sentiment Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4 mb-4">
+                    <Badge
+                      variant={
+                        analytics.sentiment.overall === 'positive'
+                          ? 'success'
+                          : analytics.sentiment.overall === 'negative'
+                            ? 'destructive'
+                            : 'secondary'
+                      }
+                      className="text-lg px-4 py-2"
+                    >
+                      {analytics.sentiment.overall}
+                    </Badge>
+                    <div className="text-sm text-muted-foreground">
+                      {Math.round(analytics.sentiment.confidence * 100)}%
+                      confidence
+                    </div>
+                  </div>
+
+                  {detailed && (
+                    <div
+                      className="h-20 flex items-end gap-1"
+                      role="img"
+                      aria-label={`Sentiment timeline showing ${analytics.sentiment.timeline.length} data points with overall ${analytics.sentiment.overall} sentiment`}
+                    >
+                      {analytics.sentiment.timeline.map((point, index) => (
+                        <div
+                          key={index}
+                          className={cn(
+                            'flex-1 rounded-t',
+                            point.label === 'positive' && 'bg-green-500',
+                            point.label === 'neutral' && 'bg-gray-400',
+                            point.label === 'negative' && 'bg-red-500'
+                          )}
+                          style={{
+                            height: `${((point.score + 1) / 2) * 100}%`,
+                          }}
+                          title={`${point.label}: ${point.score.toFixed(2)}`}
+                          role="presentation"
+                          aria-hidden="true"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Key Moments */}
+              {detailed && analytics.keyMoments.length > 0 && (
+                <Card className="shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-sm">Key Moments</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {analytics.keyMoments.map((moment, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 p-2 rounded-lg border"
+                      >
+                        <Badge
+                          variant={
+                            moment.type === 'breakthrough'
+                              ? 'success'
+                              : moment.type === 'decision'
+                                ? 'default'
+                                : 'secondary'
+                          }
+                          className="mt-1"
+                        >
+                          {moment.type}
+                        </Badge>
+                        <div className="flex-1 text-sm">{moment.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {Math.round(moment.importance * 100)}%
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Summary */}
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm">Conversation Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {analytics.summary.keyPoints.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Key Points</h4>
+                      <ul className="space-y-1 text-sm">
+                        {analytics.summary.keyPoints.map((point, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {analytics.summary.nextSteps.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Next Steps</h4>
+                      <ul className="space-y-1 text-sm">
+                        {analytics.summary.nextSteps.map((step, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-primary">→</span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {analytics.summary.openQuestions.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">
+                        Open Questions
+                      </h4>
+                      <ul className="space-y-1 text-sm">
+                        {analytics.summary.openQuestions.map((question, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-primary">?</span>
+                            <span>{question}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
+        )
       ) : null}
     </div>
   )

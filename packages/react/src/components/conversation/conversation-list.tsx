@@ -7,6 +7,7 @@ import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Folder for organizing conversations
@@ -206,6 +207,7 @@ export const ConversationList = memo(function ConversationList({
   onSelectionChange,
   className = '',
 }: ConversationListProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('recent')
   const [filterTags] = useState<string[]>([])
@@ -412,46 +414,84 @@ export const ConversationList = memo(function ConversationList({
 
       {/* Create folder input */}
       {showCreateFolder && onCreateFolder && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="p-3 border-b border-border"
-        >
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Folder name..."
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleCreateFolder()
-                } else if (e.key === 'Escape') {
+        prefersReducedMotion ? (
+          <div className="p-3 border-b border-border">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Folder name..."
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateFolder()
+                  } else if (e.key === 'Escape') {
+                    setShowCreateFolder(false)
+                    setNewFolderName('')
+                  }
+                }}
+                className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
+                autoFocus
+              />
+              <button
+                onClick={handleCreateFolder}
+                className="px-3 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:opacity-90 transition-opacity"
+              >
+                Create
+              </button>
+              <button
+                onClick={() => {
                   setShowCreateFolder(false)
                   setNewFolderName('')
-                }
-              }}
-              className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
-              autoFocus
-            />
-            <button
-              onClick={handleCreateFolder}
-              className="px-3 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:opacity-90 transition-opacity"
-            >
-              Create
-            </button>
-            <button
-              onClick={() => {
-                setShowCreateFolder(false)
-                setNewFolderName('')
-              }}
-              className="px-3 py-2 bg-muted text-muted-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
-            >
-              Cancel
-            </button>
+                }}
+                className="px-3 py-2 bg-muted text-muted-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="p-3 border-b border-border"
+          >
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Folder name..."
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateFolder()
+                  } else if (e.key === 'Escape') {
+                    setShowCreateFolder(false)
+                    setNewFolderName('')
+                  }
+                }}
+                className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
+                autoFocus
+              />
+              <button
+                onClick={handleCreateFolder}
+                className="px-3 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:opacity-90 transition-opacity"
+              >
+                Create
+              </button>
+              <button
+                onClick={() => {
+                  setShowCreateFolder(false)
+                  setNewFolderName('')
+                }}
+                className="px-3 py-2 bg-muted text-muted-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        )
       )}
 
       {/* Folder list */}
@@ -513,26 +553,44 @@ export const ConversationList = memo(function ConversationList({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <motion.svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      animate={{ rotate: isExpanded ? 90 : 0 }}
-                      transition={{
-                        // Framer Motion 12: Spring folder icon rotation
-                        type: 'spring',
-                        damping: 20,
-                        stiffness: 300,
-                      }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </motion.svg>
+                    {prefersReducedMotion ? (
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    ) : (
+                      <motion.svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        animate={{ rotate: isExpanded ? 90 : 0 }}
+                        transition={{
+                          // Framer Motion 12: Spring folder icon rotation
+                          type: 'spring',
+                          damping: 20,
+                          stiffness: 300,
+                        }}
+                        viewport={{ once: true }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </motion.svg>
+                    )}
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -658,8 +716,8 @@ export const ConversationList = memo(function ConversationList({
 
       {/* Conversation list */}
       <div className="flex-1 overflow-y-auto">
-        <AnimatePresence initial={false}>
-          {filteredConversations.length === 0 ? (
+        {prefersReducedMotion ? (
+          filteredConversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-6 text-center">
               <svg
                 className="w-12 h-12 text-muted-foreground/70 mb-3"
@@ -694,22 +752,27 @@ export const ConversationList = memo(function ConversationList({
                 const isActive = activeId === conversation.id
                 const isSelected = selectedIds.includes(conversation.id)
 
+                const ConversationWrapper = prefersReducedMotion ? 'div' : motion.div
+
                 return (
-                  <motion.div
+                  <ConversationWrapper
                     key={conversation.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -100, height: 0 }}
-                    transition={{
-                      duration: durations.normal,
-                      delay: index * 0.05, // Stagger: 50ms between items
-                      ease: EASING_FRAMER.default,
-                    }}
-                    whileHover={{
-                      y: -2,
-                      transition: { duration: durations.fast },
-                    }}
-                    layout
+                    {...(prefersReducedMotion ? {} : {
+                      initial: { opacity: 0, y: 20 },
+                      animate: { opacity: 1, y: 0 },
+                      exit: { opacity: 0, x: -100, height: 0 },
+                      transition: {
+                        duration: durations.normal,
+                        delay: index * 0.05, // Stagger: 50ms between items
+                        ease: EASING_FRAMER.default,
+                      },
+                      whileHover: {
+                        y: -2,
+                        transition: { duration: durations.fast },
+                      },
+                      layout: true,
+                      viewport: { once: true },
+                    })}
                     onClick={() => handleSelect(conversation.id)}
                     className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
                       isActive
@@ -789,142 +852,285 @@ export const ConversationList = memo(function ConversationList({
                           </div>
                         )}
                       </div>
-
-                      {/* Actions */}
-                      <div
-                        className="flex flex-col gap-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {showFolders && onMoveToFolder && (
-                          <motion.button
-                            onClick={() => {
-                              // Simple implementation: move to first folder or remove from folder
-                              const currentFolderId = conversation.folderId
-                              const newFolderId = currentFolderId
-                                ? null
-                                : folders[0]?.id || null
-                              onMoveToFolder(conversation.id, newFolderId)
-                            }}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
-                            aria-label={
-                              conversation.folderId
-                                ? 'Remove from folder'
-                                : 'Move to folder'
-                            }
-                            title={
-                              conversation.folderId
-                                ? 'Remove from folder'
-                                : 'Move to folder'
-                            }
-                          >
-                            <svg
-                              className="w-4 h-4 text-muted-foreground"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              {conversation.folderId ? (
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                                />
-                              ) : (
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                                />
-                              )}
-                            </svg>
-                          </motion.button>
-                        )}
-                        {onTogglePin && (
-                          <motion.button
-                            onClick={() => onTogglePin(conversation.id)}
-                            whileHover={{
-                              scale: 1.2,
-                              rotate: conversation.isPinned ? 0 : 15,
-                            }}
-                            whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
-                            aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
-                          >
-                            <motion.span
-                              className="text-sm"
-                              animate={
-                                conversation.isPinned
-                                  ? { rotate: [0, -10, 10, -10, 0] }
-                                  : {}
-                              }
-                              transition={{ duration: durations.slow }}
-                            >
-                              {conversation.isPinned ? '📌' : '📍'}
-                            </motion.span>
-                          </motion.button>
-                        )}
-
-                        {onToggleFavorite && (
-                          <motion.button
-                            onClick={() => onToggleFavorite(conversation.id)}
-                            whileHover={{ scale: 1.2 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
-                            aria-label={
-                              conversation.isFavorite
-                                ? 'Unfavorite'
-                                : 'Favorite'
-                            }
-                          >
-                            <motion.span
-                              className="text-sm"
-                              animate={
-                                conversation.isFavorite
-                                  ? { scale: [1, 1.3, 1] }
-                                  : {}
-                              }
-                              transition={{ duration: durations.moderate }}
-                            >
-                              {conversation.isFavorite ? '⭐' : '☆'}
-                            </motion.span>
-                          </motion.button>
-                        )}
-
-                        {onDelete && (
-                          <motion.button
-                            onClick={() => onDelete(conversation.id)}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-destructive/10 rounded transition-all duration-150 ease-out"
-                            aria-label="Delete conversation"
-                          >
-                            <svg
-                              className="w-4 h-4 text-destructive"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
-                            </svg>
-                          </motion.button>
-                        )}
-                      </div>
                     </div>
-                  </motion.div>
+                  </ConversationWrapper>
                 )
               })}
             </div>
-          )}
-        </AnimatePresence>
+          )
+        ) : (
+          <AnimatePresence initial={false}>
+            {filteredConversations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                <svg
+                  className="w-12 h-12 text-muted-foreground/70 mb-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+                <p className="text-sm text-muted-foreground">
+                  {searchQuery
+                    ? 'No conversations found'
+                    : 'No conversations yet'}
+                </p>
+                {onCreate && !searchQuery && (
+                  <button
+                    onClick={onCreate}
+                    className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-150 ease-out hover:shadow-md hover:-translate-y-px"
+                  >
+                    Start a conversation
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {filteredConversations.map((conversation, index) => {
+                  const isActive = activeId === conversation.id
+                  const isSelected = selectedIds.includes(conversation.id)
+
+                  return (
+                    <motion.div
+                      key={conversation.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100, height: 0 }}
+                      transition={{
+                        duration: durations.normal,
+                        delay: index * 0.05,
+                        ease: EASING_FRAMER.default,
+                      }}
+                      whileHover={{
+                        y: -2,
+                        transition: { duration: durations.fast },
+                      }}
+                      layout
+                      viewport={{ once: true }}
+                      onClick={() => handleSelect(conversation.id)}
+                      className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
+                        isActive
+                          ? 'bg-primary/10 border-l-4 border-primary'
+                          : isSelected
+                            ? 'bg-primary/5'
+                            : 'hover:bg-muted/50'
+                      }`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Select conversation: ${conversation.title}`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {/* Checkbox for multi-select */}
+                            {multiSelect && (
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => {}}
+                                className="w-4 h-4 text-primary rounded"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                            )}
+
+                            {/* Title */}
+                            <h3 className="text-sm font-medium text-foreground truncate">
+                              {conversation.title}
+                            </h3>
+
+                            {/* Pin indicator */}
+                            {conversation.isPinned && (
+                              <span className="text-xs">📌</span>
+                            )}
+
+                            {/* Favorite indicator */}
+                            {conversation.isFavorite && (
+                              <span className="text-xs">⭐</span>
+                            )}
+
+                            {/* Unread badge */}
+                            {conversation.unreadCount &&
+                              conversation.unreadCount > 0 && (
+                                <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+                                  {conversation.unreadCount}
+                                </span>
+                              )}
+                          </div>
+
+                          {/* Preview */}
+                          <p className="text-xs text-muted-foreground truncate mb-1">
+                            {conversation.preview}
+                          </p>
+
+                          {/* Meta info */}
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                            <span>
+                              {formatRelativeTime(new Date(conversation.timestamp))}
+                            </span>
+                            <span>•</span>
+                            <span>{conversation.messageCount} messages</span>
+                          </div>
+
+                          {/* Tags */}
+                          {conversation.tags && conversation.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {conversation.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        <div
+                          className="flex flex-col gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {showFolders && onMoveToFolder && (
+                            <motion.button
+                              onClick={() => {
+                                const currentFolderId = conversation.folderId
+                                const newFolderId = currentFolderId
+                                  ? null
+                                  : folders[0]?.id || null
+                                onMoveToFolder(conversation.id, newFolderId)
+                              }}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              viewport={{ once: true }}
+                              className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
+                              aria-label={
+                                conversation.folderId
+                                  ? 'Remove from folder'
+                                  : 'Move to folder'
+                              }
+                              title={
+                                conversation.folderId
+                                  ? 'Remove from folder'
+                                  : 'Move to folder'
+                              }
+                            >
+                              <svg
+                                className="w-4 h-4 text-muted-foreground"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                {conversation.folderId ? (
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                                  />
+                                ) : (
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                  />
+                                )}
+                              </svg>
+                            </motion.button>
+                          )}
+                          {onTogglePin && (
+                            <motion.button
+                              onClick={() => onTogglePin(conversation.id)}
+                              whileHover={{
+                                scale: 1.2,
+                                rotate: conversation.isPinned ? 0 : 15,
+                              }}
+                              whileTap={{ scale: 0.9 }}
+                              viewport={{ once: true }}
+                              className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
+                              aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
+                            >
+                              <motion.span
+                                className="text-sm"
+                                animate={
+                                  conversation.isPinned
+                                    ? { rotate: [0, -10, 10, -10, 0] }
+                                    : {}
+                                }
+                                transition={{ duration: durations.slow }}
+                              >
+                                {conversation.isPinned ? '📌' : '📍'}
+                              </motion.span>
+                            </motion.button>
+                          )}
+
+                          {onToggleFavorite && (
+                            <motion.button
+                              onClick={() => onToggleFavorite(conversation.id)}
+                              whileHover={{ scale: 1.2 }}
+                              whileTap={{ scale: 0.9 }}
+                              viewport={{ once: true }}
+                              className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
+                              aria-label={
+                                conversation.isFavorite
+                                  ? 'Unfavorite'
+                                  : 'Favorite'
+                              }
+                            >
+                              <motion.span
+                                className="text-sm"
+                                animate={
+                                  conversation.isFavorite
+                                    ? { scale: [1, 1.3, 1] }
+                                    : {}
+                                }
+                                transition={{ duration: durations.moderate }}
+                              >
+                                {conversation.isFavorite ? '⭐' : '☆'}
+                              </motion.span>
+                            </motion.button>
+                          )}
+
+                          {onDelete && (
+                            <motion.button
+                              onClick={() => onDelete(conversation.id)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              viewport={{ once: true }}
+                              className="p-1 hover:bg-destructive/10 rounded transition-all duration-150 ease-out"
+                              aria-label="Delete conversation"
+                            >
+                              <svg
+                                className="w-4 h-4 text-destructive"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </motion.button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Footer with stats */}

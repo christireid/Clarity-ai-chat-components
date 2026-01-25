@@ -20,6 +20,7 @@ import { ConfettiAnimation } from './confetti-animation'
 import { FeedbackDialog } from './feedback-dialog'
 import { DeleteButton } from './delete-button'
 import { useToast } from '../ui/toast'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface MessageActionsProps {
   messageContent: string
@@ -99,16 +100,19 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
     },
     ref
   ) => {
+    const prefersReducedMotion = useReducedMotion()
+
     return (
       <Tooltip content={tooltipContent} side="top" delay={300}>
         <motion.div
-          variants={buttonVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          whileHover={disabled ? undefined : 'hover'}
-          whileTap={disabled ? undefined : 'tap'}
-          transition={{ delay, duration: durations.fast }}
+          variants={prefersReducedMotion ? {} : buttonVariants}
+          initial={prefersReducedMotion ? false : "initial"}
+          animate={prefersReducedMotion ? false : "animate"}
+          exit={prefersReducedMotion ? false : "exit"}
+          whileHover={disabled || prefersReducedMotion ? undefined : 'hover'}
+          whileTap={disabled || prefersReducedMotion ? undefined : 'tap'}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay, duration: durations.fast }}
+          viewport={{ once: true }}
         >
           <Button
             ref={ref}
@@ -168,6 +172,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
     alwaysVisible = false,
     editButtonRef,
   }) => {
+    const prefersReducedMotion = useReducedMotion()
     const [isDeleting, setIsDeleting] = React.useState(false)
     const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false)
     const toast = useToast()
@@ -325,20 +330,9 @@ export const MessageActions = React.memo<MessageActionsProps>(
 
     return (
       <>
-        <AnimatePresence mode="wait">
-          <motion.div
+        {prefersReducedMotion ? (
+          <div
             ref={actionsRef}
-            variants={containerVariants}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{
-              opacity: alwaysVisible || show ? 1 : 0.6,
-              y: 0,
-            }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{
-              duration: ANIMATION_DURATION.fast / 1000,
-              ease: EASING_FRAMER.out,
-            }}
             role="toolbar"
             aria-label="Message actions"
             tabIndex={0}
@@ -349,12 +343,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             {/* Stop button - shown during streaming for assistant messages */}
             {isStreaming && isAssistantMessage && onStopGeneration && (
               <Tooltip content="Stop generating" side="top" delay={100}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: durations.fast }}
-                >
+                <div>
                   <Button
                     variant="destructive"
                     size="sm"
@@ -362,29 +351,16 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     className="h-8 px-3 gap-1.5 rounded-lg font-medium"
                     aria-label="Stop generating"
                   >
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{
-                        duration: durations.slower,
-                        repeat: Infinity,
-                      }}
-                    >
-                      <StopIcon size={14} />
-                    </motion.div>
+                    <StopIcon size={14} />
                     <span>Stop</span>
                   </Button>
-                </motion.div>
+                </div>
               </Tooltip>
             )}
 
             {/* Copy button - always shown when not streaming */}
             {!isStreaming && (
-              <motion.div
-                variants={buttonVariants}
-                initial="initial"
-                animate="animate"
-                transition={{ delay: 0.02, duration: durations.fast }}
-              >
+              <div>
                 <CopyButton
                   text={messageContent}
                   size="icon"
@@ -393,7 +369,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                   tooltipText="Copy message"
                   className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-gray-600 hover:bg-accent/50 transition-all"
                 />
-              </motion.div>
+              </div>
             )}
 
             {/* User message actions: Edit, Delete */}
@@ -438,45 +414,23 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     side="top"
                     delay={300}
                   >
-                    <motion.div
-                      variants={buttonVariants}
-                      initial="initial"
-                      animate="animate"
-                      whileHover={{
-                        scale: 1.1,
-                        rotate: feedbackGiven === 'up' ? 0 : -8,
-                      }}
-                      whileTap={{ scale: 0.9 }}
-                      transition={{ delay: 0.06, duration: durations.fast }}
-                    >
-                      <motion.div
-                        animate={
-                          feedbackGiven === 'up'
-                            ? {
-                                scale: [1, 1.25, 1],
-                                rotate: [0, -12, 12, -8, 0],
-                              }
-                            : {}
-                        }
-                        transition={{ duration: durations.slow }}
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleThumbsUp}
+                        className={cn(
+                          'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                          'hover:text-success hover:bg-success/10',
+                          feedbackGiven === 'up' &&
+                            'text-success bg-success/15 hover:bg-success/20'
+                        )}
+                        aria-label="Good response"
+                        aria-pressed={feedbackGiven === 'up'}
                       >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={handleThumbsUp}
-                          className={cn(
-                            'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
-                            'hover:text-success hover:bg-success/10',
-                            feedbackGiven === 'up' &&
-                              'text-success bg-success/15 hover:bg-success/20'
-                          )}
-                          aria-label="Good response"
-                          aria-pressed={feedbackGiven === 'up'}
-                        >
-                          <ThumbsUpIcon size={15} />
-                        </Button>
-                      </motion.div>
-                    </motion.div>
+                        <ThumbsUpIcon size={15} />
+                      </Button>
+                    </div>
                   </Tooltip>
                   <ConfettiAnimation show={showConfetti} />
                 </div>
@@ -491,58 +445,29 @@ export const MessageActions = React.memo<MessageActionsProps>(
                   side="top"
                   delay={300}
                 >
-                  <motion.div
-                    variants={buttonVariants}
-                    initial="initial"
-                    animate="animate"
-                    whileHover={{
-                      scale: 1.1,
-                      rotate: feedbackGiven === 'down' ? 0 : 8,
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                    transition={{ delay: 0.1, duration: durations.fast }}
-                  >
-                    <motion.div
-                      animate={
-                        feedbackGiven === 'down'
-                          ? {
-                              scale: [1, 1.15, 1],
-                              rotate: [0, 12, -12, 8, 0],
-                            }
-                          : {}
-                      }
-                      transition={{ duration: durations.slow }}
+                  <div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleThumbsDown}
+                      className={cn(
+                        'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                        'hover:text-destructive hover:bg-destructive/10',
+                        feedbackGiven === 'down' &&
+                          'text-destructive bg-destructive/15 hover:bg-destructive/20'
+                      )}
+                      aria-label="Poor response"
+                      aria-pressed={feedbackGiven === 'down'}
                     >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleThumbsDown}
-                        className={cn(
-                          'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
-                          'hover:text-destructive hover:bg-destructive/10',
-                          feedbackGiven === 'down' &&
-                            'text-destructive bg-destructive/15 hover:bg-destructive/20'
-                        )}
-                        aria-label="Poor response"
-                        aria-pressed={feedbackGiven === 'down'}
-                      >
-                        <ThumbsDownIcon size={15} />
-                      </Button>
-                    </motion.div>
-                  </motion.div>
+                      <ThumbsDownIcon size={15} />
+                    </Button>
+                  </div>
                 </Tooltip>
 
                 {/* Regenerate button */}
                 {onRegenerate && !hasError && (
                   <Tooltip content="Regenerate response" side="top" delay={300}>
-                    <motion.div
-                      variants={buttonVariants}
-                      initial="initial"
-                      animate="animate"
-                      whileHover={{ scale: 1.1, rotate: -15 }}
-                      whileTap={{ scale: 0.9, rotate: -30 }}
-                      transition={{ delay: 0.14, duration: durations.fast }}
-                    >
+                    <div>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -552,21 +477,14 @@ export const MessageActions = React.memo<MessageActionsProps>(
                       >
                         <RefreshIcon size={15} />
                       </Button>
-                    </motion.div>
+                    </div>
                   </Tooltip>
                 )}
 
                 {/* Retry button - shown on error */}
                 {hasError && onRetry && (
                   <Tooltip content="Retry" side="top" delay={300}>
-                    <motion.div
-                      variants={buttonVariants}
-                      initial="initial"
-                      animate="animate"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      transition={{ delay: 0.14, duration: durations.fast }}
-                    >
+                    <div>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -576,7 +494,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                       >
                         <RefreshIcon size={15} />
                       </Button>
-                    </motion.div>
+                    </div>
                   </Tooltip>
                 )}
 
@@ -593,8 +511,279 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 )}
               </>
             )}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              ref={actionsRef}
+              variants={containerVariants}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{
+                opacity: alwaysVisible || show ? 1 : 0.6,
+                y: 0,
+              }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{
+                duration: ANIMATION_DURATION.fast / 1000,
+                ease: EASING_FRAMER.out,
+              }}
+              role="toolbar"
+              aria-label="Message actions"
+              tabIndex={0}
+              onKeyDown={handleKeyDown}
+              onFocus={handleFocus}
+              className="flex items-center gap-1 overflow-hidden mt-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
+            >
+              {/* Stop button - shown during streaming for assistant messages */}
+              {isStreaming && isAssistantMessage && onStopGeneration && (
+                <Tooltip content="Stop generating" side="top" delay={100}>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: durations.fast }}
+                  >
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleStopGeneration}
+                      className="h-8 px-3 gap-1.5 rounded-lg font-medium"
+                      aria-label="Stop generating"
+                    >
+                      <motion.div
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{
+                          duration: durations.slower,
+                          repeat: Infinity,
+                        }}
+                      >
+                        <StopIcon size={14} />
+                      </motion.div>
+                      <span>Stop</span>
+                    </Button>
+                  </motion.div>
+                </Tooltip>
+              )}
+
+              {/* Copy button - always shown when not streaming */}
+              {!isStreaming && (
+                <motion.div
+                  variants={buttonVariants}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ delay: 0.02, duration: durations.fast }}
+                >
+                  <CopyButton
+                    text={messageContent}
+                    size="icon"
+                    iconOnly
+                    showTooltip
+                    tooltipText="Copy message"
+                    className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-gray-600 hover:bg-accent/50 transition-all"
+                  />
+                </motion.div>
+              )}
+
+              {/* User message actions: Edit, Delete */}
+              {isUserMessage && !isStreaming && (
+                <>
+                  {onEdit && (
+                    <ActionButton
+                      ref={editButtonRef}
+                      onClick={() => onEdit(messageId)}
+                      icon={<EditIcon size={15} />}
+                      label="Edit message"
+                      tooltipContent="Edit message"
+                      hoverClassName="hover:text-primary hover:bg-primary/10"
+                      delay={0.06}
+                    />
+                  )}
+
+                  {onDelete && (
+                    <DeleteButton
+                      onDelete={handleDelete}
+                      isDeleting={isDeleting}
+                      delay={0.1}
+                      showConfirmation={true}
+                      messageType="user"
+                      showToast={handleDeleteToast}
+                    />
+                  )}
+                </>
+              )}
+
+              {/* Assistant message actions: Feedback, Regenerate, Delete */}
+              {isAssistantMessage && !isStreaming && (
+                <>
+                  {/* Thumbs Up with Confetti */}
+                  <div className="relative">
+                    <Tooltip
+                      content={
+                        feedbackGiven === 'up'
+                          ? 'You liked this'
+                          : 'Good response'
+                      }
+                      side="top"
+                      delay={300}
+                    >
+                      <motion.div
+                        variants={buttonVariants}
+                        initial="initial"
+                        animate="animate"
+                        whileHover={{
+                          scale: 1.1,
+                          rotate: feedbackGiven === 'up' ? 0 : -8,
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ delay: 0.06, duration: durations.fast }}
+                      >
+                        <motion.div
+                          animate={
+                            feedbackGiven === 'up'
+                              ? {
+                                  scale: [1, 1.25, 1],
+                                  rotate: [0, -12, 12, -8, 0],
+                                }
+                              : {}
+                          }
+                          transition={{ duration: durations.slow }}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleThumbsUp}
+                            className={cn(
+                              'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                              'hover:text-success hover:bg-success/10',
+                              feedbackGiven === 'up' &&
+                                'text-success bg-success/15 hover:bg-success/20'
+                            )}
+                            aria-label="Good response"
+                            aria-pressed={feedbackGiven === 'up'}
+                          >
+                            <ThumbsUpIcon size={15} />
+                          </Button>
+                        </motion.div>
+                      </motion.div>
+                    </Tooltip>
+                    <ConfettiAnimation show={showConfetti} />
+                  </div>
+
+                  {/* Thumbs Down */}
+                  <Tooltip
+                    content={
+                      feedbackGiven === 'down'
+                        ? 'You disliked this'
+                        : 'Poor response'
+                    }
+                    side="top"
+                    delay={300}
+                  >
+                    <motion.div
+                      variants={buttonVariants}
+                      initial="initial"
+                      animate="animate"
+                      whileHover={{
+                        scale: 1.1,
+                        rotate: feedbackGiven === 'down' ? 0 : 8,
+                      }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ delay: 0.1, duration: durations.fast }}
+                    >
+                      <motion.div
+                        animate={
+                          feedbackGiven === 'down'
+                            ? {
+                                scale: [1, 1.15, 1],
+                                rotate: [0, 12, -12, 8, 0],
+                              }
+                            : {}
+                        }
+                        transition={{ duration: durations.slow }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleThumbsDown}
+                          className={cn(
+                            'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                            'hover:text-destructive hover:bg-destructive/10',
+                            feedbackGiven === 'down' &&
+                              'text-destructive bg-destructive/15 hover:bg-destructive/20'
+                          )}
+                          aria-label="Poor response"
+                          aria-pressed={feedbackGiven === 'down'}
+                        >
+                          <ThumbsDownIcon size={15} />
+                        </Button>
+                      </motion.div>
+                    </motion.div>
+                  </Tooltip>
+
+                  {/* Regenerate button */}
+                  {onRegenerate && !hasError && (
+                    <Tooltip content="Regenerate response" side="top" delay={300}>
+                      <motion.div
+                        variants={buttonVariants}
+                        initial="initial"
+                        animate="animate"
+                        whileHover={{ scale: 1.1, rotate: -15 }}
+                        whileTap={{ scale: 0.9, rotate: -30 }}
+                        transition={{ delay: 0.14, duration: durations.fast }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleRegenerate}
+                          className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-primary hover:bg-primary/10 transition-all"
+                          aria-label="Regenerate response"
+                        >
+                          <RefreshIcon size={15} />
+                        </Button>
+                      </motion.div>
+                    </Tooltip>
+                  )}
+
+                  {/* Retry button - shown on error */}
+                  {hasError && onRetry && (
+                    <Tooltip content="Retry" side="top" delay={300}>
+                      <motion.div
+                        variants={buttonVariants}
+                        initial="initial"
+                        animate="animate"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ delay: 0.14, duration: durations.fast }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={onRetry}
+                          className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-warning hover:bg-warning/10 transition-all"
+                          aria-label="Retry"
+                        >
+                          <RefreshIcon size={15} />
+                        </Button>
+                      </motion.div>
+                    </Tooltip>
+                  )}
+
+                  {/* Delete button */}
+                  {onDelete && (
+                    <DeleteButton
+                      onDelete={handleDelete}
+                      isDeleting={isDeleting}
+                      delay={0.18}
+                      showConfirmation={true}
+                      messageType="assistant"
+                      showToast={handleDeleteToast}
+                    />
+                  )}
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        )}
 
         {/* Feedback Dialog */}
         <FeedbackDialog

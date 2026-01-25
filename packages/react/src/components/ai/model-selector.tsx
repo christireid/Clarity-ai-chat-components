@@ -10,6 +10,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../../adapters/types'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface ModelSelectorProps {
   /** Available models */
@@ -37,6 +38,7 @@ export function ModelSelector({
   disabled = false,
   showDescription = true,
 }: ModelSelectorProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isOpen, setIsOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
@@ -160,15 +162,16 @@ export function ModelSelector({
             aria-hidden="true"
           />
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{
+            exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
+            transition={prefersReducedMotion ? { duration: 0 } : {
               // Framer Motion 12: Spring dropdown menu
               type: 'spring',
               damping: 24,
               stiffness: 300,
             }}
+            viewport={{ once: true }}
             role="listbox"
             className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
           >

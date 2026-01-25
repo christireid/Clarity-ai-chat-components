@@ -16,6 +16,7 @@ import {
 import type { Context, ContextType } from '@clarity-chat/types'
 import { ContextCard } from './context-card'
 import { FileUpload } from '../input/file-upload'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ContextManagerProps {
   contexts: Context[]
@@ -40,6 +41,7 @@ export function ContextManager({
 }: ContextManagerProps) {
   const [showUpload, setShowUpload] = React.useState(false)
   const [filter, setFilter] = React.useState<ContextType | 'all'>('all')
+  const prefersReducedMotion = useReducedMotion()
 
   const filteredContexts = React.useMemo(() => {
     if (filter === 'all') return contexts
@@ -168,14 +170,9 @@ export function ContextManager({
 
       <CardContent className="flex-1 overflow-hidden">
         {/* Upload Section */}
-        <AnimatePresence>
-          {showUpload && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-4"
-            >
+        {showUpload && (
+          prefersReducedMotion ? (
+            <div className="mb-4">
               <FileUpload
                 onUpload={handleUpload}
                 maxFiles={maxContexts - contexts.length}
@@ -194,9 +191,37 @@ export function ContextManager({
                   }
                 })}
               />
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          ) : (
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4"
+              >
+                <FileUpload
+                  onUpload={handleUpload}
+                  maxFiles={maxContexts - contexts.length}
+                  acceptedFileTypes={allowedTypes.map((type) => {
+                    switch (type) {
+                      case 'image':
+                        return 'image/*'
+                      case 'video':
+                        return 'video/*'
+                      case 'audio':
+                        return 'audio/*'
+                      case 'document':
+                        return 'application/pdf,.doc,.docx,.txt'
+                      default:
+                        return '*'
+                    }
+                  })}
+                />
+              </motion.div>
+            </AnimatePresence>
+          )
+        )}
 
         {/* Contexts List */}
         <ScrollArea className="h-full">
@@ -218,8 +243,8 @@ export function ContextManager({
             </div>
           ) : (
             <div className="space-y-3 pb-4">
-              <AnimatePresence>
-                {filteredContexts.map((context) => (
+              {prefersReducedMotion ? (
+                filteredContexts.map((context) => (
                   <ContextCard
                     key={context.id}
                     context={context}
@@ -227,8 +252,20 @@ export function ContextManager({
                     onToggle={onToggle}
                     onPreview={onPreview}
                   />
-                ))}
-              </AnimatePresence>
+                ))
+              ) : (
+                <AnimatePresence>
+                  {filteredContexts.map((context) => (
+                    <ContextCard
+                      key={context.id}
+                      context={context}
+                      onRemove={onRemove}
+                      onToggle={onToggle}
+                      onPreview={onPreview}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
             </div>
           )}
         </ScrollArea>

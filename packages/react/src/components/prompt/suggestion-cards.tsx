@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Card, CardContent } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
@@ -216,6 +217,7 @@ export function SuggestionCards({
   hasMore = false,
   className,
 }: SuggestionCardsProps) {
+  const prefersReducedMotion = useReducedMotion()
   const sizeClasses = getSizeClasses(size)
   const gridClasses = getGridClasses(columns)
 
@@ -247,9 +249,10 @@ export function SuggestionCards({
           {Array.from({ length: loadingCount }).map((_, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: durations.normal, delay: i * 0.05 }}
+              viewport={{ once: true }}
             >
               <Card className={cn('overflow-hidden', sizeClasses.card)}>
                 <CardContent className="p-0">
@@ -278,9 +281,10 @@ export function SuggestionCards({
   if (filteredCards.length === 0) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: durations.normal }}
+        viewport={{ once: true }}
         className={cn('rounded-xl border border-dashed border-border/40 bg-muted/20 p-8 text-center', className)}
       >
         {emptyState || (
@@ -318,9 +322,10 @@ export function SuggestionCards({
       {showCategoryFilter && categories && categories.length > 0 && (
         <div className="flex flex-wrap gap-2">
           <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            viewport={{ once: true }}
             onClick={() => onCategoryChange?.(null)}
             className={cn(
               'px-3 py-1.5 rounded-full text-sm font-medium',
@@ -337,7 +342,7 @@ export function SuggestionCards({
           {categories.map((category, index) => (
             <motion.button
               key={category.id}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{
                 type: 'spring',
@@ -345,6 +350,7 @@ export function SuggestionCards({
                 stiffness: 300,
                 delay: (index + 1) * 0.03,
               }}
+              viewport={{ once: true }}
               onClick={() => onCategoryChange?.(category.id)}
               className={cn(
                 'px-3 py-1.5 rounded-full text-sm font-medium',
@@ -368,57 +374,57 @@ export function SuggestionCards({
 
       {/* Cards grid */}
       <div className={cn('grid gap-4', gridClasses)}>
-        <AnimatePresence mode="popLayout">
-          {displayCards.map((card, index) => (
-            <motion.div
-              key={card.id || `${card.title}-${index}`}
-              layout
-              initial={{ opacity: 0, y: 10, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.96 }}
-              transition={{
-                type: 'spring',
-                damping: 25,
-                stiffness: 300,
-                delay: index * 0.03,
-              }}
+        {displayCards.map((card, index) => (
+          <motion.div
+            key={card.id || `${card.title}-${index}`}
+            layout
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
+            transition={{
+              type: 'spring',
+              damping: 25,
+              stiffness: 300,
+              delay: index * 0.03,
+            }}
+            viewport={{ once: true }}
+          >
+            <Card
+              hoverable={!card.disabled}
+              className={cn(
+                'group cursor-pointer overflow-hidden',
+                'bg-gradient-to-br from-card to-card/95',
+                'border-border/40',
+                'shadow-sm',
+                'transition-all duration-200 ease-out',
+                !card.disabled && [
+                  'hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]',
+                  'hover:border-primary/30',
+                  'hover:-translate-y-1 hover:scale-[1.01]',
+                  'active:scale-[0.99] active:translate-y-0',
+                ],
+                card.disabled && 'opacity-50 cursor-not-allowed'
+              )}
+              onClick={() => !card.disabled && onCardClick?.(card)}
             >
-              <Card
-                hoverable={!card.disabled}
-                className={cn(
-                  'group cursor-pointer overflow-hidden',
-                  'bg-gradient-to-br from-card to-card/95',
-                  'border-border/40',
-                  'shadow-sm',
-                  'transition-all duration-200 ease-out',
-                  !card.disabled && [
-                    'hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]',
-                    'hover:border-primary/30',
-                    'hover:-translate-y-1 hover:scale-[1.01]',
-                    'active:scale-[0.99] active:translate-y-0',
-                  ],
-                  card.disabled && 'opacity-50 cursor-not-allowed'
-                )}
-                onClick={() => !card.disabled && onCardClick?.(card)}
-              >
-                {/* Hover gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              {/* Hover gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-                <CardContent className={cn('relative', sizeClasses.card)}>
-                  <div className="flex items-start gap-3">
-                    {/* Icon */}
-                    <motion.div
-                      className={cn(
-                        'flex-shrink-0 rounded-xl',
-                        'bg-primary/10 flex items-center justify-center',
-                        'text-primary',
-                        'group-hover:bg-primary group-hover:text-primary-foreground',
-                        'transition-colors duration-200',
-                        sizeClasses.icon
-                      )}
-                      whileHover={{ scale: 1.05, rotate: 3 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                    >
+              <CardContent className={cn('relative', sizeClasses.card)}>
+                <div className="flex items-start gap-3">
+                  {/* Icon */}
+                  <motion.div
+                    className={cn(
+                      'flex-shrink-0 rounded-xl',
+                      'bg-primary/10 flex items-center justify-center',
+                      'text-primary',
+                      'group-hover:bg-primary group-hover:text-primary-foreground',
+                      'transition-colors duration-200',
+                      sizeClasses.icon
+                    )}
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.05, rotate: 3 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  >
                       {card.icon}
                     </motion.div>
 
@@ -493,20 +499,20 @@ export function SuggestionCards({
                         />
                       </svg>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Show more button */}
       {(hasMore || remainingCount > 0) && onShowMore && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: durations.normal, delay: 0.2 }}
+          viewport={{ once: true }}
           className="text-center pt-2"
         >
           <button

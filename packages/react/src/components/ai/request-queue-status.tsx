@@ -20,6 +20,7 @@ import {
   XMarkIcon,
   PauseIcon,
 } from '../ui/icons'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface RequestQueueStatusProps {
   /** Queue status */
@@ -67,6 +68,7 @@ export function RequestQueueStatus({
   compact = false,
   className,
 }: RequestQueueStatusProps) {
+  const prefersReducedMotion = useReducedMotion()
   const { queueLength, activeCount, maxConcurrent, maxQueueSize } = queueStatus
 
   // Calculate progress percentages
@@ -109,9 +111,10 @@ export function RequestQueueStatus({
   if (compact) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
+        viewport={{ once: true }}
         className={`flex items-center gap-2 px-3 py-2 bg-muted/50 border rounded-lg ${className}`}
       >
         <QueueListIcon className="w-4 h-4 text-muted-foreground" />
@@ -133,9 +136,10 @@ export function RequestQueueStatus({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
+        exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
+        viewport={{ once: true }}
         className={className}
       >
         <Card className="border-muted">
@@ -155,8 +159,9 @@ export function RequestQueueStatus({
             {/* Rate limit warning */}
             {isRateLimited && timeUntilReset !== null && (
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                 animate={{ opacity: 1 }}
+                viewport={{ once: true }}
                 className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
               >
                 <ExclamationTriangleIcon className="w-4 h-4 text-destructive flex-shrink-0" />
@@ -201,7 +206,7 @@ export function RequestQueueStatus({
                   <Progress
                     value={activeProgress}
                     className="h-2"
-                    // @ts-ignore - Progress component may not have indicator props
+                    // @ts-expect-error - Progress component may not have indicator props
                     indicatorClassName={isAtCapacity ? 'bg-warning' : 'bg-primary'}
                   />
                 )}
@@ -221,7 +226,7 @@ export function RequestQueueStatus({
                   <Progress
                     value={queueProgress}
                     className="h-2"
-                    // @ts-ignore
+                    // @ts-expect-error - Progress component may not have indicator props
                     indicatorClassName={isQueueFull ? 'bg-destructive' : 'bg-secondary'}
                   />
                 )}
@@ -231,8 +236,9 @@ export function RequestQueueStatus({
             {/* Queue full warning */}
             {isQueueFull && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
                 className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
               >
                 <PauseIcon className="w-4 h-4 text-destructive" />

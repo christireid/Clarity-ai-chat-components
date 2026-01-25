@@ -15,6 +15,7 @@ import {
   validateFunctionProp,
 } from '../../utils/config/runtime-validation'
 import { DURATION_SECONDS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 /** Button state for submit button */
 type ButtonState = 'idle' | 'loading' | 'success' | 'error'
@@ -170,6 +171,7 @@ export function ChatInput({
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   // Request deduplication to prevent double-submit on rapid clicks
   const { execute: dedupeExecute, isPending } = useRequestDeduplication({
@@ -279,7 +281,7 @@ export function ChatInput({
     idle: {
       boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
     },
-    focused: glowOnFocus
+    focused: glowOnFocus && !prefersReducedMotion
       ? {
           boxShadow: [
             '0 0 0 0 hsl(var(--primary) / 0)',
@@ -310,14 +312,16 @@ export function ChatInput({
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
+      viewport={{ once: true }}
       tabIndex={-1} // Allow focus for skip link targeting
     >
       <div className="flex gap-3 items-end">
         {/* Textarea Container with smooth expand/contract */}
         <motion.div
           className="flex-1 relative"
-          layout={animateHeight}
-          transition={{ duration: DURATION_SECONDS.normal, ease: 'easeOut' }}
+          layout={animateHeight && !prefersReducedMotion}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION_SECONDS.normal, ease: 'easeOut' }}
+          viewport={{ once: true }}
         >
           <Textarea
             ref={textareaRef}
@@ -346,9 +350,32 @@ export function ChatInput({
           />
 
           {/* Character Counter with progress bar */}
-          {validMaxLength && showCharCounter && (
-            <AnimatePresence>
-              {charCount > 0 && (
+          {validMaxLength && showCharCounter && charCount > 0 && (
+            prefersReducedMotion ? (
+              <div
+                id="char-counter"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5"
+              >
+                {/* Progress bar */}
+                <div className="w-20 h-1.5 bg-muted/60 rounded-full overflow-hidden shadow-inner">
+                  <div
+                    className={cn('h-full', progressColor)}
+                    style={{
+                      width: `${validMaxLength ? Math.min((charCount / validMaxLength) * 100, 100) : 0}%`,
+                    }}
+                  />
+                </div>
+
+                {/* Counter text */}
+                <div className={cn('text-xs tabular-nums', counterColor)}>
+                  {charCount}/{validMaxLength ?? 0}
+                </div>
+              </div>
+            ) : (
+              <AnimatePresence>
                 <motion.div
                   id="char-counter"
                   role="status"
@@ -390,8 +417,8 @@ export function ChatInput({
                     {charCount}/{validMaxLength ?? 0}
                   </motion.div>
                 </motion.div>
-              )}
-            </AnimatePresence>
+              </AnimatePresence>
+            )
           )}
         </motion.div>
 
@@ -428,49 +455,60 @@ export function ChatInput({
             validMaxLength && showCharCounter ? 'char-counter' : undefined
           }
         >
-          <AnimatePresence mode="wait">
-            {buttonState === 'idle' && (
-              <motion.div
-                key="send"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: DURATION_SECONDS.fast }}
-              >
-                <SendIcon size={19} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {prefersReducedMotion ? (
+            buttonState === 'idle' && <SendIcon size={19} />
+          ) : (
+            <AnimatePresence mode="wait">
+              {buttonState === 'idle' && (
+                <motion.div
+                  key="send"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: DURATION_SECONDS.fast }}
+                >
+                  <SendIcon size={19} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </Button>
       </div>
 
       {/* Error message */}
-      <AnimatePresence>
-        {isOverLimit && validMaxLength && (
-          <motion.p
+      {isOverLimit && validMaxLength && (
+        prefersReducedMotion ? (
+          <p
             id="char-limit-error"
             role="alert"
             aria-live="assertive"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
             className="text-xs text-destructive px-1 font-medium"
           >
             Message exceeds maximum length by {charCount - validMaxLength}{' '}
             characters
-          </motion.p>
-        )}
-      </AnimatePresence>
+          </p>
+        ) : (
+          <AnimatePresence>
+            <motion.p
+              id="char-limit-error"
+              role="alert"
+              aria-live="assertive"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-xs text-destructive px-1 font-medium"
+            >
+              Message exceeds maximum length by {charCount - validMaxLength}{' '}
+              characters
+            </motion.p>
+          </AnimatePresence>
+        )
+      )}
 
       {/* Hint text - increased spacing to prevent crowding with focus ring */}
-      <AnimatePresence>
-        {isFocused && !hasContent && (
-          <motion.p
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="text-xs text-muted-foreground/80 px-1 mt-1"
-          >
+      {isFocused && !hasContent && (
+        prefersReducedMotion ? (
+          <p className="text-xs text-muted-foreground/80 px-1 mt-1">
             Press{' '}
             <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
               Enter
@@ -480,9 +518,28 @@ export function ChatInput({
               Shift + Enter
             </kbd>{' '}
             for new line
-          </motion.p>
-        )}
-      </AnimatePresence>
+          </p>
+        ) : (
+          <AnimatePresence>
+            <motion.p
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="text-xs text-muted-foreground/80 px-1 mt-1"
+            >
+              Press{' '}
+              <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
+                Enter
+              </kbd>{' '}
+              to send •{' '}
+              <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
+                Shift + Enter
+              </kbd>{' '}
+              for new line
+            </motion.p>
+          </AnimatePresence>
+        )
+      )}
     </motion.div>
   )
 }

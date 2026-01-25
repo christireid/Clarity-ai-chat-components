@@ -14,6 +14,7 @@
 import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // ============================================================================
 // Types
@@ -154,6 +155,7 @@ function BranchNodeComponent({
   onCreateChild,
   compact = false,
 }: BranchNodeProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(node.title || 'Untitled Branch')
   const [isHovered, setIsHovered] = useState(false)
@@ -178,9 +180,11 @@ function BranchNodeComponent({
     <div className="relative">
       {/* Branch Node */}
       <motion.div
-        initial={{ opacity: 0, x: -10 }}
+        initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 10 }}
+        exit={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 10 }}
+        transition={prefersReducedMotion ? { duration: 0 } : undefined}
+        viewport={{ once: true }}
         className={cn(
           'group relative flex items-center gap-2 p-2 rounded-lg border transition-all duration-150 ease-out',
           'hover:shadow-md cursor-pointer',
@@ -242,12 +246,9 @@ function BranchNodeComponent({
         )}
 
         {/* Action Buttons (shown on hover) */}
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
+        {isHovered && (
+          prefersReducedMotion ? (
+            <div
               className="flex gap-1"
               onClick={(e) => e.stopPropagation()}
             >
@@ -281,9 +282,50 @@ function BranchNodeComponent({
                   🗑️
                 </button>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          ) : (
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="flex gap-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {onRename && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
+                    title="Rename branch"
+                    aria-label="Rename branch"
+                  >
+                    ✏️
+                  </button>
+                )}
+                {onCreateChild && (
+                  <button
+                    onClick={() => onCreateChild(node.id)}
+                    className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
+                    title="Create child branch"
+                    aria-label="Create child branch"
+                  >
+                    ➕
+                  </button>
+                )}
+                {onDelete && node.children.length === 0 && (
+                  <button
+                    onClick={() => onDelete(node.id)}
+                    className="p-1 rounded hover:bg-red-200 dark:hover:bg-red-900"
+                    title="Delete branch"
+                    aria-label="Delete branch"
+                  >
+                    🗑️
+                  </button>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )
+        )}
       </motion.div>
 
       {/* Children */}

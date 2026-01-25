@@ -7,7 +7,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Badge,
   Button,
@@ -20,6 +20,7 @@ import {
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { Citation } from '../../adapters/types'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // Helper to safely render metadata values
 const renderMetadataValue = (value: unknown): React.ReactNode => {
@@ -56,6 +57,7 @@ export function CitationCard({
   className = '',
 }: CitationCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(defaultExpanded)
+  const prefersReducedMotion = useReducedMotion()
 
   const truncatedText =
     citation.chunkText.length > previewLength
@@ -89,9 +91,10 @@ export function CitationCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: prefersReducedMotion ? 0 : durations.moderate, ease: [0.25, 0.1, 0.25, 1] }}
+      viewport={{ once: true }}
     >
       <Card
         className={cn(
@@ -177,28 +180,15 @@ export function CitationCard({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            <AnimatePresence mode="wait">
-              {isExpanded ? (
-                <motion.div
-                  key="expanded"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="whitespace-pre-wrap text-foreground"
-                >
-                  {citation.chunkText}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="collapsed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {truncatedText}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isExpanded ? (
+              <div className="whitespace-pre-wrap text-foreground">
+                {citation.chunkText}
+              </div>
+            ) : (
+              <div>
+                {truncatedText}
+              </div>
+            )}
           </div>
 
           {citation.chunkText.length > previewLength && (

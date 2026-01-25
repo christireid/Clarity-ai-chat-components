@@ -11,6 +11,7 @@ import {
   CloseIcon,
 } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
  * Supported document platforms
@@ -189,6 +190,7 @@ export function DocumentIntegration({
   ref,
   ...props
 }: DocumentIntegrationProps) {
+  const prefersReducedMotion = useReducedMotion()
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<DocumentIntegrationState>({
     documents: initialDocuments,
@@ -424,19 +426,101 @@ export function DocumentIntegration({
         <Card>
           <CardContent className="p-0">
             <div className="divide-y">
-              <AnimatePresence>
-                {state.documents.map((doc, index) => {
+              {state.documents.map((doc, index) => {
                   const isSelected = selectedIds.has(doc.id)
                   const config =
                     PLATFORM_CONFIG[doc.platform] || PLATFORM_CONFIG['local']
 
-                  return (
+                  return prefersReducedMotion ? (
+                    <div
+                      key={doc.id}
+                      className={cn(
+                        'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
+                        isSelected && 'bg-primary/10'
+                      )}
+                      onClick={() => {
+                        if (multiSelect) {
+                          toggleSelection(doc.id)
+                        } else {
+                          selectDocument(doc)
+                        }
+                      }}
+                    >
+                      {/* Selection checkbox for multi-select */}
+                      {multiSelect && (
+                        <div
+                          className={cn(
+                            'w-5 h-5 rounded border-2 flex items-center justify-center',
+                            isSelected
+                              ? 'bg-primary border-primary'
+                              : 'border-muted-foreground'
+                          )}
+                        >
+                          {isSelected && (
+                            <CheckIcon className="w-3 h-3 text-primary-foreground" />
+                          )}
+                        </div>
+                      )}
+
+                      {/* Document icon */}
+                      <div
+                        className="w-10 h-10 rounded flex items-center justify-center text-lg"
+                        style={{ backgroundColor: `${config.color}20` }}
+                      >
+                        {doc.thumbnail ? (
+                          <img
+                            src={doc.thumbnail}
+                            alt=""
+                            className="w-full h-full object-cover rounded"
+                          />
+                        ) : (
+                          <FileIcon
+                            className="w-5 h-5"
+                            style={{ color: config.color }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Document info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{doc.title}</div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-2">
+                          <span>{formatFileSize(doc.size)}</span>
+                          <span>-</span>
+                          <span>{formatDate(doc.modifiedAt)}</span>
+                          {doc.shared && (
+                            <Badge variant="secondary" className="text-xs">
+                              Shared
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1">
+                        {onExport && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              exportDocument(doc.id, { format: 'pdf' })
+                            }}
+                            disabled={state.syncing}
+                            aria-label="Export document"
+                          >
+                            <DownloadIcon className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
                     <motion.div
                       key={doc.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
                       transition={{ delay: index * 0.02 }}
+                      viewport={{ once: true }}
                       className={cn(
                         'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
                         isSelected && 'bg-primary/10'
@@ -519,7 +603,6 @@ export function DocumentIntegration({
                     </motion.div>
                   )
                 })}
-              </AnimatePresence>
             </div>
           </CardContent>
         </Card>

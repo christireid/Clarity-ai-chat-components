@@ -8,6 +8,7 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface FollowUpSuggestionsProps {
   showFollowUp: boolean
@@ -20,18 +21,21 @@ export function FollowUpSuggestions({
   followUpSuggestions,
   onPromptSelect,
 }: FollowUpSuggestionsProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   if (!showFollowUp || !followUpSuggestions?.length) return null
 
   return (
     <motion.div
       className="flex flex-col gap-3 px-5 py-4 sm:px-6 border-t border-border/60"
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
+      exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
       transition={{
-        duration: duration('normal'),
+        duration: prefersReducedMotion ? 0 : duration('normal'),
         ease: [0.25, 0.1, 0.25, 1],
       }}
+      viewport={{ once: true }}
     >
       <div className="flex items-center gap-2">
         <SparklesIcon size={14} className="text-primary" />

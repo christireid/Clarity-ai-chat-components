@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { ClockIcon, RefreshIcon, CloseIcon } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
  * Calendar event
@@ -221,6 +222,7 @@ export function CalendarIntegration({
   ref,
   ...props
 }: CalendarIntegrationProps) {
+  const prefersReducedMotion = useReducedMotion()
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<CalendarIntegrationState>({
     events: initialEvents,
@@ -449,16 +451,45 @@ export function CalendarIntegration({
               </Badge>
             </div>
             <div className="space-y-2">
-              <AnimatePresence>
-                {state.actionItems
-                  .filter((a) => a.status !== 'completed')
-                  .map((item, index) => (
+              {state.actionItems
+                .filter((a) => a.status !== 'completed')
+                .map((item, index) =>
+                  prefersReducedMotion ? (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={getPriorityColor(item.priority) as 'default'}
+                        >
+                          {item.priority}
+                        </Badge>
+                        <span className="text-sm">{item.title}</span>
+                        {item.dueDate && (
+                          <span className="text-xs text-muted-foreground">
+                            Due {formatDate(item.dueDate)}
+                          </span>
+                        )}
+                      </div>
+                      {onActionToEvent && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => convertActionToEvent(item)}
+                          disabled={state.loading}
+                        >
+                          Schedule
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
                       transition={{ delay: index * 0.05 }}
+                      viewport={{ once: true }}
                       className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
                     >
                       <div className="flex items-center gap-2">
@@ -485,8 +516,8 @@ export function CalendarIntegration({
                         </Button>
                       )}
                     </motion.div>
-                  ))}
-              </AnimatePresence>
+                  )
+                )}
             </div>
           </CardContent>
         </Card>
@@ -500,14 +531,85 @@ export function CalendarIntegration({
               <CardContent className="p-4">
                 <div className="text-sm font-medium mb-3">{dateKey}</div>
                 <div className="space-y-2">
-                  {events.map((event, index) => (
-                    <motion.div
-                      key={event.id}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group"
-                    >
+                  {events.map((event, index) =>
+                    prefersReducedMotion ? (
+                      <div
+                        key={event.id}
+                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group"
+                      >
+                        {/* Time indicator */}
+                        <div
+                          className="w-1 h-full rounded-full self-stretch min-h-[40px]"
+                          style={{ backgroundColor: getEventColor(event) }}
+                        />
+
+                        {/* Event details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">
+                            {event.title}
+                          </div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            <ClockIcon className="w-3 h-3" />
+                            {event.isAllDay ? (
+                              'All day'
+                            ) : (
+                              <>
+                                {formatTime(event.start)} -{' '}
+                                {formatTime(event.end)}
+                                <span>
+                                  ({formatDuration(event.start, event.end)})
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          {event.location && (
+                            <div className="text-xs text-muted-foreground truncate">
+                              {event.location}
+                            </div>
+                          )}
+                          {event.attendees && event.attendees.length > 0 && (
+                            <div className="flex items-center gap-1 mt-1">
+                              {event.attendees.slice(0, 3).map((attendee) => (
+                                <div
+                                  key={attendee.email}
+                                  className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs"
+                                  title={attendee.name || attendee.email}
+                                >
+                                  {(attendee.name ||
+                                    attendee.email)[0].toUpperCase()}
+                                </div>
+                              ))}
+                              {event.attendees.length > 3 && (
+                                <span className="text-xs text-muted-foreground">
+                                  +{event.attendees.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        {onEventDelete && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => deleteEvent(event.id)}
+                            aria-label="Delete event"
+                          >
+                            Delete
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        viewport={{ once: true }}
+                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors group"
+                      >
                       {/* Time indicator */}
                       <div
                         className="w-1 h-full rounded-full self-stretch min-h-[40px]"
@@ -572,7 +674,8 @@ export function CalendarIntegration({
                         </Button>
                       )}
                     </motion.div>
-                  ))}
+                    )
+                  )}
                 </div>
               </CardContent>
             </Card>

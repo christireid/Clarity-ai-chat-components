@@ -18,7 +18,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Card,
   CardContent,
@@ -28,6 +28,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { ToolCall } from '../../adapters/types'
 
 export type ToolStatus =
@@ -113,6 +114,7 @@ export function ToolInvocationCard({
   expandableResult = true,
   className = '',
 }: ToolInvocationCardProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isResultExpanded, setIsResultExpanded] = React.useState(false)
   const [isArgsExpanded, setIsArgsExpanded] = React.useState(false)
 
@@ -139,14 +141,19 @@ export function ToolInvocationCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        // Framer Motion 12: Spring entrance for tool card
-        type: 'spring',
-        damping: 22,
-        stiffness: 300,
-      }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              // Framer Motion 12: Spring entrance for tool card
+              type: 'spring',
+              damping: 22,
+              stiffness: 300,
+            }
+      }
+      viewport={{ once: true }}
       className={className}
     >
       <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 ease-out">
@@ -270,23 +277,24 @@ export function ToolInvocationCard({
               </svg>
             </button>
 
-            <AnimatePresence>
-              {isArgsExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: durations.normal }}
-                  className="overflow-hidden"
-                >
-                  <pre className="rounded-lg border bg-muted/50 p-3 text-xs overflow-x-auto">
-                    <code className="text-foreground font-mono">
-                      {parseArguments()}
-                    </code>
-                  </pre>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isArgsExpanded && (
+              <motion.div
+                initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                transition={{
+                  duration: prefersReducedMotion ? 0 : durations.normal,
+                }}
+                viewport={{ once: true }}
+                className="overflow-hidden"
+              >
+                <pre className="rounded-lg border bg-muted/50 p-3 text-xs overflow-x-auto">
+                  <code className="text-foreground font-mono">
+                    {parseArguments()}
+                  </code>
+                </pre>
+              </motion.div>
+            )}
           </div>
 
           {/* Result Section */}
@@ -353,15 +361,17 @@ export function ToolInvocationCard({
                     </svg>
                   </button>
 
-                  <AnimatePresence>
-                    {isResultExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: durations.normal }}
-                        className="overflow-hidden space-y-3.5"
-                      >
+                  {isResultExpanded && (
+                    <motion.div
+                      initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0 : durations.normal,
+                      }}
+                      viewport={{ once: true }}
+                      className="overflow-hidden space-y-3.5"
+                    >
                         <pre
                           className={cn(
                             'rounded-lg border p-3 text-sm overflow-x-auto',
@@ -405,7 +415,6 @@ export function ToolInvocationCard({
                         )}
                       </motion.div>
                     )}
-                  </AnimatePresence>
                 </>
               ) : (
                 <div className="space-y-3.5">

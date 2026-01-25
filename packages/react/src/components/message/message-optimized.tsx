@@ -11,7 +11,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Avatar, Button, Badge, cn } from '@clarity-chat/primitives'
 import { formatRelativeTime } from '../../internal/helpers'
@@ -23,6 +23,7 @@ import {
   INTERACTION_VARIANTS,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import ReactMarkdown from 'react-markdown'
 import type { Components, ExtraProps } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -148,6 +149,7 @@ function MessageOptimizedInner({
   className,
   ref,
 }: MessageOptimizedProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isHovered, setIsHovered] = React.useState(false)
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
@@ -203,13 +205,14 @@ function MessageOptimizedInner({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
       transition={{
-        duration: ANIMATION_DURATION.normal / 1000,
+        duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.normal / 1000,
         ease: EASING_FRAMER.out,
       }}
+      viewport={{ once: true }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
@@ -275,9 +278,14 @@ function MessageOptimizedInner({
 
           {isStreaming && (
             <motion.span
-              initial={{ opacity: 0 }}
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ repeat: Infinity, duration: durations.slower }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { repeat: Infinity, duration: durations.slower }
+              }
+              viewport={{ once: true }}
               className="inline-block w-2 h-4 bg-current ml-1"
             />
           )}
@@ -295,79 +303,93 @@ function MessageOptimizedInner({
         )}
 
         {/* Actions */}
-        <AnimatePresence>
-          {isAssistant && (isHovered || feedbackGiven) && (
+        {isAssistant && (isHovered || feedbackGiven) && (
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.fast / 1000,
+              ease: EASING_FRAMER.out,
+            }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2"
+          >
+            <CopyButton text={message.content} size="sm" />
+
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{
-                duration: ANIMATION_DURATION.fast / 1000,
-                ease: EASING_FRAMER.out,
-              }}
-              className="flex items-center gap-2"
+              whileHover={
+                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.hover
+              }
+              whileTap={
+                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.tap
+              }
+              transition={INTERACTION_VARIANTS.iconButton.transition}
+              viewport={{ once: true }}
             >
-              <CopyButton text={message.content} size="sm" />
-
-              <motion.div
-                whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                transition={INTERACTION_VARIANTS.iconButton.transition}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleFeedback('up')}
+                className={cn(
+                  'transition-colors',
+                  feedbackGiven === 'up' && 'text-success bg-success/10'
+                )}
+                aria-label="Good response"
               >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFeedback('up')}
-                  className={cn(
-                    'transition-colors',
-                    feedbackGiven === 'up' && 'text-success bg-success/10'
-                  )}
-                  aria-label="Good response"
-                >
-                  <ThumbsUpIcon size={6} />
-                </Button>
-              </motion.div>
-
-              <motion.div
-                whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                transition={INTERACTION_VARIANTS.iconButton.transition}
-              >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFeedback('down')}
-                  className={cn(
-                    'transition-colors',
-                    feedbackGiven === 'down' &&
-                      'text-destructive bg-destructive/10'
-                  )}
-                  aria-label="Poor response"
-                >
-                  <ThumbsDownIcon size={6} />
-                </Button>
-              </motion.div>
-
-              {message.status === 'error' && onRetry && (
-                <motion.div
-                  whileHover={INTERACTION_VARIANTS.button.hover}
-                  whileTap={INTERACTION_VARIANTS.button.tap}
-                  transition={INTERACTION_VARIANTS.button.transition}
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRetry}
-                    className="gap-1.5"
-                  >
-                    <RefreshIcon size={6} />
-                    Retry
-                  </Button>
-                </motion.div>
-              )}
+                <ThumbsUpIcon size={6} />
+              </Button>
             </motion.div>
-          )}
-        </AnimatePresence>
+
+            <motion.div
+              whileHover={
+                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.hover
+              }
+              whileTap={
+                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.tap
+              }
+              transition={INTERACTION_VARIANTS.iconButton.transition}
+              viewport={{ once: true }}
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleFeedback('down')}
+                className={cn(
+                  'transition-colors',
+                  feedbackGiven === 'down' &&
+                    'text-destructive bg-destructive/10'
+                )}
+                aria-label="Poor response"
+              >
+                <ThumbsDownIcon size={6} />
+              </Button>
+            </motion.div>
+
+            {message.status === 'error' && onRetry && (
+              <motion.div
+                whileHover={
+                  prefersReducedMotion ? {} : INTERACTION_VARIANTS.button.hover
+                }
+                whileTap={
+                  prefersReducedMotion ? {} : INTERACTION_VARIANTS.button.tap
+                }
+                transition={INTERACTION_VARIANTS.button.transition}
+                viewport={{ once: true }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRetry}
+                  className="gap-1.5"
+                >
+                  <RefreshIcon size={6} />
+                  Retry
+                </Button>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
         {/* Metadata */}
         {message.metadata && (

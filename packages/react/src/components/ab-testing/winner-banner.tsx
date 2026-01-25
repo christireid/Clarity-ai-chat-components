@@ -10,6 +10,7 @@ import {
   Button,
 } from '@clarity-chat/primitives'
 import { type SignificanceResult } from './use-statistical-significance'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Props for WinnerBanner component
@@ -60,10 +61,13 @@ export function WinnerBanner({
   onDeclareWinner,
   className,
 }: WinnerBannerProps): React.ReactElement {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       className={className}
     >
       <Card className="border-green-500 bg-green-50 dark:bg-green-950">

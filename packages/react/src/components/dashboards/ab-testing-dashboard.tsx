@@ -21,6 +21,7 @@ import {
 import { DashboardProgress } from '../ui/dashboard-progress'
 import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
 import { Skeleton } from '../ui/skeleton'
+import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
 
 /**
  * Experiment variant
@@ -145,6 +146,7 @@ export function ABTestingDashboard({
   enableKeyboardShortcuts = true,
 }: ABTestingDashboardProps) {
   const config = { ...defaultConfig, ...userConfig }
+  const prefersReducedMotion = useReducedMotion()
 
   const [selectedExperiment, setSelectedExperiment] =
     React.useState<ExperimentResult | null>(experiments[0] || null)
@@ -437,73 +439,80 @@ export function ABTestingDashboard({
           selectedExperiment?.experimentId === experiment.experimentId
         const winner = determineWinner(experiment)
 
-        return (
+        const cardElement = (
+          <Card
+            className={cn(
+              'cursor-pointer transition-colors',
+              'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
+              isSelected && 'border-primary'
+            )}
+            onClick={() => handleSelectExperiment(experiment)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleSelectExperiment(experiment)
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Select experiment ${experiment.experimentName}`}
+            aria-pressed={isSelected}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-base">
+                    {experiment.experimentName}
+                  </CardTitle>
+                  {experiment.description && (
+                    <CardDescription className="text-xs mt-1">
+                      {experiment.description}
+                    </CardDescription>
+                  )}
+                </div>
+
+                <Badge
+                  variant={
+                    experiment.status === 'running'
+                      ? 'default'
+                      : experiment.status === 'completed'
+                        ? 'secondary'
+                        : 'outline'
+                  }
+                >
+                  {experiment.status}
+                </Badge>
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {experiment.variants.length} variants
+                </span>
+
+                {winner && (
+                  <Badge variant="success" className="text-xs">
+                    Winner found
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )
+
+        return prefersReducedMotion ? (
+          <div key={experiment.experimentId}>{cardElement}</div>
+        ) : (
           <motion.div
             key={experiment.experimentId}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
+            viewport={{ once: true }}
           >
-            <Card
-              className={cn(
-                'cursor-pointer transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
-                isSelected && 'border-primary'
-              )}
-              onClick={() => handleSelectExperiment(experiment)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  handleSelectExperiment(experiment)
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label={`Select experiment ${experiment.experimentName}`}
-              aria-pressed={isSelected}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-base">
-                      {experiment.experimentName}
-                    </CardTitle>
-                    {experiment.description && (
-                      <CardDescription className="text-xs mt-1">
-                        {experiment.description}
-                      </CardDescription>
-                    )}
-                  </div>
-
-                  <Badge
-                    variant={
-                      experiment.status === 'running'
-                        ? 'default'
-                        : experiment.status === 'completed'
-                          ? 'secondary'
-                          : 'outline'
-                    }
-                  >
-                    {experiment.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {experiment.variants.length} variants
-                  </span>
-
-                  {winner && (
-                    <Badge variant="success" className="text-xs">
-                      Winner found
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {cardElement}
           </motion.div>
         )
       })}
@@ -553,10 +562,7 @@ export function ABTestingDashboard({
 
         {/* Winner recommendation */}
         {winner && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          prefersReducedMotion ? (
             <Card className="border-green-500 bg-green-50 dark:bg-green-950">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -592,7 +598,49 @@ export function ABTestingDashboard({
                 )}
               </CardContent>
             </Card>
-          </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="border-green-500 bg-green-50 dark:bg-green-950">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    🏆 Winner Detected
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm mb-2">
+                    <strong>{winner.variant.name}</strong> is performing
+                    significantly better with{' '}
+                    {formatPercent(winner.metrics.conversionRate)} conversion rate
+                    ({winner.significance.effectSize.toFixed(1)}% improvement)
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    p-value: {winner.significance.pValue.toFixed(4)} (
+                    {formatPercent(winner.significance.confidenceLevel)}{' '}
+                    confidence)
+                  </p>
+
+                  {!selectedExperiment.winner && (
+                    <Button
+                      size="sm"
+                      className="mt-3"
+                      onClick={() =>
+                        handleDeclareWinner(
+                          selectedExperiment.experimentId,
+                          winner.variant.id
+                        )
+                      }
+                    >
+                      Declare Winner
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )
         )}
 
         {/* Variant cards */}
@@ -606,155 +654,162 @@ export function ABTestingDashboard({
                 ? calculateSignificance(control.metrics!, metrics)
                 : null
 
-            return (
+            const cardElement = (
+              <Card className={cn(isWinner && 'border-green-500')}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        {variant.name}
+                        {variant.isControl && (
+                          <Badge variant="outline" className="text-xs">
+                            Control
+                          </Badge>
+                        )}
+                        {isWinner && (
+                          <Badge variant="success" className="text-xs">
+                            Winner
+                          </Badge>
+                        )}
+                      </CardTitle>
+                      {variant.description && (
+                        <CardDescription className="text-xs mt-1">
+                          {variant.description}
+                        </CardDescription>
+                      )}
+                    </div>
+
+                    <Badge variant="outline">{index + 1}</Badge>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="space-y-3">
+                    {/* Main metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Conversion Rate
+                        </div>
+                        <div className="text-2xl font-bold">
+                          {formatPercent(metrics.conversionRate)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {metrics.conversions} / {metrics.impressions}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Avg Engagement
+                        </div>
+                        <div className="text-2xl font-bold">
+                          {formatDuration(metrics.avgEngagementTime)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {metrics.users} users
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div>
+                      <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                        <span>Sample Size</span>
+                        <span>
+                          {metrics.impressions} / {config.minSampleSize}
+                        </span>
+                      </div>
+                      <DashboardProgress
+                        value={
+                          (metrics.impressions / config.minSampleSize) * 100
+                        }
+                        size="sm"
+                        aria-label={`Sample size progress: ${metrics.impressions} of ${config.minSampleSize} required`}
+                      />
+                    </div>
+
+                    {/* Additional metrics */}
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Bounce Rate
+                        </span>
+                        <span>{formatPercent(metrics.bounceRate)}</span>
+                      </div>
+                      {metrics.revenue !== undefined && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            Revenue
+                          </span>
+                          <span>${metrics.revenue.toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Statistical significance */}
+                    {showStatistics && significance && (
+                      <div className="pt-2 border-t">
+                        <div className="text-xs space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              vs Control
+                            </span>
+                            <Badge
+                              variant={
+                                significance.isSignificant
+                                  ? 'success'
+                                  : 'secondary'
+                              }
+                              className="text-xs"
+                            >
+                              {significance.isSignificant
+                                ? 'Significant'
+                                : 'Not Significant'}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              Effect Size
+                            </span>
+                            <span
+                              className={cn(
+                                'font-medium',
+                                significance.effectSize > 0
+                                  ? 'text-green-700 dark:text-green-400'
+                                  : 'text-red-700 dark:text-red-400'
+                              )}
+                              aria-label={`Effect size: ${significance.effectSize > 0 ? 'positive' : 'negative'} ${Math.abs(significance.effectSize).toFixed(1)} percent`}
+                            >
+                              {significance.effectSize > 0 ? '+' : ''}
+                              {significance.effectSize.toFixed(1)}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              p-value
+                            </span>
+                            <span>{significance.pValue.toFixed(4)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+
+            return prefersReducedMotion ? (
+              <div key={variant.id}>{cardElement}</div>
+            ) : (
               <motion.div
                 key={variant.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
+                viewport={{ once: true }}
               >
-                <Card className={cn(isWinner && 'border-green-500')}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-base flex items-center gap-2">
-                          {variant.name}
-                          {variant.isControl && (
-                            <Badge variant="outline" className="text-xs">
-                              Control
-                            </Badge>
-                          )}
-                          {isWinner && (
-                            <Badge variant="success" className="text-xs">
-                              Winner
-                            </Badge>
-                          )}
-                        </CardTitle>
-                        {variant.description && (
-                          <CardDescription className="text-xs mt-1">
-                            {variant.description}
-                          </CardDescription>
-                        )}
-                      </div>
-
-                      <Badge variant="outline">{index + 1}</Badge>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="space-y-3">
-                      {/* Main metrics */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-xs text-muted-foreground mb-1">
-                            Conversion Rate
-                          </div>
-                          <div className="text-2xl font-bold">
-                            {formatPercent(metrics.conversionRate)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {metrics.conversions} / {metrics.impressions}
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-xs text-muted-foreground mb-1">
-                            Avg Engagement
-                          </div>
-                          <div className="text-2xl font-bold">
-                            {formatDuration(metrics.avgEngagementTime)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {metrics.users} users
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Progress bar */}
-                      <div>
-                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                          <span>Sample Size</span>
-                          <span>
-                            {metrics.impressions} / {config.minSampleSize}
-                          </span>
-                        </div>
-                        <DashboardProgress
-                          value={
-                            (metrics.impressions / config.minSampleSize) * 100
-                          }
-                          size="sm"
-                          aria-label={`Sample size progress: ${metrics.impressions} of ${config.minSampleSize} required`}
-                        />
-                      </div>
-
-                      {/* Additional metrics */}
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Bounce Rate
-                          </span>
-                          <span>{formatPercent(metrics.bounceRate)}</span>
-                        </div>
-                        {metrics.revenue !== undefined && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              Revenue
-                            </span>
-                            <span>${metrics.revenue.toFixed(2)}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Statistical significance */}
-                      {showStatistics && significance && (
-                        <div className="pt-2 border-t">
-                          <div className="text-xs space-y-1">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">
-                                vs Control
-                              </span>
-                              <Badge
-                                variant={
-                                  significance.isSignificant
-                                    ? 'success'
-                                    : 'secondary'
-                                }
-                                className="text-xs"
-                              >
-                                {significance.isSignificant
-                                  ? 'Significant'
-                                  : 'Not Significant'}
-                              </Badge>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">
-                                Effect Size
-                              </span>
-                              <span
-                                className={cn(
-                                  'font-medium',
-                                  significance.effectSize > 0
-                                    ? 'text-green-700 dark:text-green-400'
-                                    : 'text-red-700 dark:text-red-400'
-                                )}
-                                aria-label={`Effect size: ${significance.effectSize > 0 ? 'positive' : 'negative'} ${Math.abs(significance.effectSize).toFixed(1)} percent`}
-                              >
-                                {significance.effectSize > 0 ? '+' : ''}
-                                {significance.effectSize.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">
-                                p-value
-                              </span>
-                              <span>{significance.pValue.toFixed(4)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                {cardElement}
               </motion.div>
             )
           })}

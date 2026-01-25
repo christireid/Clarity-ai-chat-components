@@ -10,6 +10,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import {
   KeyboardNavigationProvider,
   useKeyboardNavigation,
@@ -230,6 +231,8 @@ interface MessageItemProps {
 }
 
 function MessageItem({ message, isFocused, itemProps }: MessageItemProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       {...itemProps}
@@ -238,8 +241,9 @@ function MessageItem({ message, isFocused, itemProps }: MessageItemProps) {
         message.role === 'user' ? 'bg-primary/10 ml-8' : 'bg-muted/50 mr-8',
         isFocused && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
       )}
-      initial={{ opacity: 0, y: 10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       tabIndex={itemProps.tabIndex}
       role="article"
       aria-label={`Message from ${message.role}`}
@@ -271,6 +275,7 @@ function MessageItem({ message, isFocused, itemProps }: MessageItemProps) {
 // ============================================================================
 
 function KeyboardNavigationDemoInner() {
+  const prefersReducedMotion = useReducedMotion()
   const [showShortcuts, setShowShortcuts] = React.useState(false)
   const [showCommandPalette, setShowCommandPalette] = React.useState(false)
   const [notification, setNotification] = React.useState<string | null>(null)
@@ -553,18 +558,16 @@ function KeyboardNavigationDemoInner() {
       </Landmark>
 
       {/* Notification Toast */}
-      <AnimatePresence>
-        {notification && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-foreground text-background rounded-lg shadow-lg text-sm font-medium"
-          >
-            {notification}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {notification && (
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={prefersReducedMotion ? false : { opacity: 0, y: 50, scale: 0.95 }}
+          className="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-foreground text-background rounded-lg shadow-lg text-sm font-medium"
+        >
+          {notification}
+        </motion.div>
+      )}
 
       {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcutsModal

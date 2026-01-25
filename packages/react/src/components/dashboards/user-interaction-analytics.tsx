@@ -12,6 +12,7 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Interaction event types
@@ -182,6 +183,7 @@ export function UserInteractionAnalytics({
   className,
 }: UserInteractionAnalyticsProps) {
   const config = { ...defaultConfig, ...userConfig }
+  const prefersReducedMotion = useReducedMotion()
 
   const [events, setEvents] = React.useState<InteractionEvent[]>(initialEvents)
   const [sessions, setSessions] = React.useState<SessionAnalytics[]>([])
@@ -514,9 +516,10 @@ export function UserInteractionAnalytics({
             {metrics?.topFeatures.map((feature, index) => (
               <motion.div
                 key={feature.featureId}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
+                animate={prefersReducedMotion ? false : { opacity: 1, x: 0 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }}
+                viewport={{ once: true }}
                 className="flex items-center justify-between p-3 border rounded-lg"
               >
                 <div className="flex items-center gap-3">
@@ -555,9 +558,10 @@ export function UserInteractionAnalytics({
             {events.slice(-10).reverse().map((event, index) => (
               <motion.div
                 key={event.id}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+                animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.03 }}
+                viewport={{ once: true }}
                 className="flex items-start gap-3 p-2 border-l-2 border-primary/20 pl-3"
               >
                 <Badge variant="secondary" className="mt-0.5">
@@ -693,25 +697,34 @@ export function UserInteractionAnalytics({
       </CardHeader>
 
       <CardContent>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedView}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ 
-              // Framer Motion 12: Spring view transitions
-              type: 'spring',
-              damping: 25,
-              stiffness: 300,
-            }}
-          >
+        {prefersReducedMotion ? (
+          <div key={selectedView}>
             {selectedView === 'overview' && renderOverview()}
             {selectedView === 'features' && renderFeatures()}
             {selectedView === 'journey' && renderJourney()}
             {selectedView === 'heatmap' && renderHeatmap()}
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedView}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{
+                // Framer Motion 12: Spring view transitions
+                type: 'spring',
+                damping: 25,
+                stiffness: 300,
+              }}
+            >
+              {selectedView === 'overview' && renderOverview()}
+              {selectedView === 'features' && renderFeatures()}
+              {selectedView === 'journey' && renderJourney()}
+              {selectedView === 'heatmap' && renderHeatmap()}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </CardContent>
     </Card>
   )

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Input, ScrollArea, cn } from '@clarity-chat/primitives'
 import { formatRelativeTime } from '../../internal/helpers'
 import type { Project } from '@clarity-chat/types'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ProjectSidebarProps {
   projects: Project[]
@@ -39,6 +40,7 @@ export function ProjectSidebar({
   const [expandedProjects, setExpandedProjects] = React.useState<Set<string>>(
     new Set(selectedProjectId ? [selectedProjectId] : [])
   )
+  const prefersReducedMotion = useReducedMotion()
 
   const filteredProjects = React.useMemo(() => {
     if (!searchQuery) return projects
@@ -110,6 +112,8 @@ export function ProjectSidebar({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                viewport={{ once: true }}
                 className="flex flex-col items-center justify-center py-12 text-center px-4"
               >
                 <div className="text-4xl mb-2">📁</div>
@@ -129,9 +133,11 @@ export function ProjectSidebar({
                 return (
                   <motion.div
                     key={project.id}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                    viewport={{ once: true }}
                   >
                     {/* Project Item */}
                     <div
@@ -229,6 +235,7 @@ export function ProjectSidebar({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
                             className="ml-7 mr-2 mb-1 space-y-1"
                           >
                             {/* New Chat Button */}

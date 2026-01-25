@@ -153,6 +153,7 @@ export const InlineSourceItem: React.FC<InlineSourceItemProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
               transition={{ duration: durations.fast }}
+              viewport={{ once: true }}
               className={cn(
                 'absolute z-50 top-full left-0 mt-1.5 p-2.5 rounded-lg',
                 'bg-popover border border-border shadow-lg',

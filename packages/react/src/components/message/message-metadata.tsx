@@ -10,6 +10,7 @@ import {
   TrendingUp as TrendingUpIcon,
   Shield as ShieldIcon,
 } from 'lucide-react'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // Type assertions to fix React 18/19 compatibility
 const ClockIconComponent = ClockIcon as React.ComponentType<{
@@ -82,6 +83,7 @@ export function MessageMetadata({
   const metadata =
     (message as Message & { metadata?: Record<string, unknown> }).metadata || {}
   const [expanded, setExpanded] = React.useState(!compact)
+  const prefersReducedMotion = useReducedMotion()
 
   // Type guard helpers
   const asNumber = (val: unknown): number | undefined =>
@@ -172,9 +174,9 @@ export function MessageMetadata({
 
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+      viewport={{ once: true }}
       className={cn(
         'flex flex-wrap items-center gap-2 pt-2 border-t text-xs',
         className

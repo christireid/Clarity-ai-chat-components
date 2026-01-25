@@ -139,6 +139,7 @@ export const ListSourceItem: React.FC<ListSourceItemProps> = ({
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: durations.fast }}
+                viewport={{ once: true }}
                 className={cn(
                   sizeConfig.snippet,
                   'text-muted-foreground mt-0.5 line-clamp-2'

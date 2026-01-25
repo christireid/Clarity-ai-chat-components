@@ -15,6 +15,7 @@ import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export type PersonaRole =
   | 'strategist'
@@ -77,6 +78,8 @@ export function PersonaPanel({
   showTemperature = true,
   className,
 }: PersonaPanelProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <Card
       className={cn(
@@ -96,20 +99,11 @@ export function PersonaPanel({
       </CardHeader>
       <CardContent>
         <ul className="flex flex-col gap-3" role="list">
-          <AnimatePresence initial={false}>
-            {personas.map((persona) => {
+          {prefersReducedMotion ? (
+            personas.map((persona) => {
               const isActive = persona.id === activePersonaId
               return (
-                <motion.li
-                  key={persona.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{
-                    duration: durations.normal,
-                    ease: EASING_FRAMER.default,
-                  }}
-                >
+                <li key={persona.id}>
                   <Button
                     variant={isActive ? 'surface' : 'outline'}
                     className={cn(
@@ -204,10 +198,123 @@ export function PersonaPanel({
                       </Button>
                     )}
                   </Button>
-                </motion.li>
+                </li>
               )
-            })}
-          </AnimatePresence>
+            })
+          ) : (
+            <AnimatePresence initial={false}>
+              {personas.map((persona) => {
+                const isActive = persona.id === activePersonaId
+                return (
+                  <motion.li
+                    key={persona.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{
+                      duration: durations.normal,
+                      ease: EASING_FRAMER.default,
+                    }}
+                  >
+                    <Button
+                      variant={isActive ? 'surface' : 'outline'}
+                      className={cn(
+                        'group flex w-full items-start gap-4 rounded-lg border border-border/50 p-4 text-left transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40 hover:shadow-md',
+                        isActive &&
+                          'border-primary/50 shadow-md'
+                      )}
+                      onClick={() => onSelect?.(persona)}
+                      data-state={isActive ? 'active' : 'inactive'}
+                    >
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary shadow-inner">
+                        {persona.avatarUrl ? (
+                          <Avatar
+                            size="lg"
+                            src={persona.avatarUrl}
+                            alt={`${persona.name} avatar`}
+                            className="h-12 w-12 border-none shadow-none"
+                          />
+                        ) : (
+                          persona.name.slice(0, 2).toUpperCase()
+                        )}
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-base font-semibold text-foreground">
+                              {persona.name}
+                            </span>
+                            <span
+                              className={cn(
+                                'rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide',
+                                roleAccent[persona.role]
+                              )}
+                            >
+                              {roleLabels[persona.role]}
+                            </span>
+                          </div>
+                          {isActive && (
+                            <Badge
+                              variant="success"
+                              className="uppercase tracking-wide"
+                            >
+                              Active
+                            </Badge>
+                          )}
+                          {showTemperature &&
+                            persona.temperature !== undefined && (
+                              <span className="text-xs font-medium text-muted-foreground">
+                                Temperature {persona.temperature.toFixed(2)}
+                              </span>
+                            )}
+                        </div>
+
+                        <p className="text-sm text-muted-foreground/80">
+                          {persona.summary}
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                          {persona.expertise.map((area) => (
+                            <Badge
+                              key={area}
+                              variant="subtle"
+                              className="text-xs"
+                            >
+                              {area}
+                            </Badge>
+                          ))}
+                          {persona.tags?.map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {onConfigure && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-shrink-0 text-muted-foreground hover:text-primary"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onConfigure?.(persona)
+                          }}
+                        >
+                          Configure
+                        </Button>
+                      )}
+                    </Button>
+                  </motion.li>
+                )
+              })}
+            </AnimatePresence>
+          )}
         </ul>
       </CardContent>
     </Card>

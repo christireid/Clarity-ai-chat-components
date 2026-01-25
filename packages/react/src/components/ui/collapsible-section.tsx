@@ -10,6 +10,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface CollapsibleSectionProps {
   /** Whether the section is open */
@@ -49,6 +50,7 @@ export function CollapsibleSection({
   duration = 0.3,
   disabled = false,
 }: CollapsibleSectionProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
 
@@ -79,41 +81,76 @@ export function CollapsibleSection({
         aria-expanded={isOpen}
       >
         {trigger}
-        
+
         {/* Chevron icon */}
-        <motion.svg
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
-          className="w-5 h-5 flex-shrink-0 text-muted-foreground"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </motion.svg>
+        {prefersReducedMotion ? (
+          <svg
+            className="w-5 h-5 flex-shrink-0 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        ) : (
+          <motion.svg
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
+            className="w-5 h-5 flex-shrink-0 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            viewport={{ once: true }}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </motion.svg>
+        )}
       </motion.button>
 
       {/* Content */}
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
-            className="overflow-hidden"
-          >
-            <div className={cn('p-4 pt-0 border-t border-border/40', contentClassName)}>
+      {isOpen &&
+        (prefersReducedMotion ? (
+          <div className="overflow-hidden">
+            <div
+              className={cn(
+                'p-4 pt-0 border-t border-border/40',
+                contentClassName
+              )}
+            >
               {children}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
+              className="overflow-hidden"
+            >
+              <div
+                className={cn(
+                  'p-4 pt-0 border-t border-border/40',
+                  contentClassName
+                )}
+              >
+                {children}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        ))}
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
 import type { ReactNode } from 'react'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
  * Voice input component props
@@ -139,6 +140,7 @@ export function VoiceInput({
   onStop,
   onError,
 }: VoiceInputProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [showTranscript, setShowTranscript] = React.useState(false)
   const lastFinalTranscriptRef = React.useRef('')
 
@@ -257,7 +259,7 @@ export function VoiceInput({
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
           {/* Enhanced pulse animation when listening */}
-          {voice.isListening && (
+          {voice.isListening && !prefersReducedMotion && (
             <>
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
@@ -311,18 +313,159 @@ export function VoiceInput({
       </div>
 
       {/* Transcript popup */}
-      <AnimatePresence>
-        {showTranscript && (voice.transcript || voice.isListening) && (
+      {showTranscript && (voice.transcript || voice.isListening) && (
+        prefersReducedMotion ? (
+          <div className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                {voice.isListening && (
+                  <Badge variant="destructive" pulse>
+                    Recording
+                  </Badge>
+                )}
+                {!voice.isListening && (
+                  <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <svg
+                      className="h-4 w-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
+                    </svg>
+                    Voice Input
+                  </span>
+                )}
+              </div>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleCancel}
+                className="h-6 w-6 p-0"
+                aria-label="Cancel"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Button>
+            </div>
+
+            {/* Waveform visualization when listening */}
+            {voice.isListening && (
+              <div className="mb-3 flex items-center justify-center gap-1.5 h-12">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1 bg-destructive rounded-full h-6"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Transcript text */}
+            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/30 border border-border/40 rounded-xl">
+              {voice.transcript ? (
+                <p className="text-sm text-foreground">
+                  {voice.finalTranscript && (
+                    <span className="font-medium">{voice.finalTranscript}</span>
+                  )}
+                  {voice.interimTranscript && (
+                    <span className="text-muted-foreground italic">
+                      {' '}
+                      {voice.interimTranscript}
+                    </span>
+                  )}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  Start speaking...
+                </p>
+              )}
+            </div>
+
+            {/* Error message */}
+            {voice.error && (
+              <div className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl">
+                <div className="flex items-start gap-2">
+                  <svg
+                    className="h-4 w-4 text-destructive shrink-0 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-sm text-destructive">{voice.error}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            {!autoSubmit && voice.transcript && (
+              <div className="flex gap-2.5">
+                <Button size="sm" onClick={handleSubmit} className="flex-1">
+                  Send
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </div>
+            )}
+
+            {/* Confidence indicator */}
+            {voice.confidence > 0 && (
+              <div className="mt-3 pt-3 border-t border-border/40 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Confidence
+                  </span>
+                  <Badge
+                    variant={
+                      voice.confidence >= 0.8
+                        ? 'success'
+                        : voice.confidence >= 0.5
+                          ? 'warning'
+                          : 'secondary'
+                    }
+                  >
+                    {Math.round(voice.confidence * 100)}%
+                  </Badge>
+                </div>
+                <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full transition-all duration-300"
+                    style={{ width: `${voice.confidence * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.96 }}
             transition={{
-              // Framer Motion 12: Spring entrance for voice panel
               type: 'spring',
               damping: 20,
               stiffness: 300,
             }}
+            viewport={{ once: true }}
             className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg"
           >
             {/* Header */}
@@ -417,6 +560,7 @@ export function VoiceInput({
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl"
               >
                 <div className="flex items-start gap-2">
@@ -475,18 +619,18 @@ export function VoiceInput({
                     initial={{ width: 0 }}
                     animate={{ width: `${voice.confidence * 100}%` }}
                     transition={{
-                      // Framer Motion 12: Spring confidence bar
                       type: 'spring',
                       damping: 28,
                       stiffness: 250,
                     }}
+                    viewport={{ once: true }}
                   />
                 </div>
               </div>
             )}
           </motion.div>
-        )}
-      </AnimatePresence>
+        )
+      )}
 
       {/* Tooltip */}
       {showTooltip && !voice.isListening && !showTranscript && (

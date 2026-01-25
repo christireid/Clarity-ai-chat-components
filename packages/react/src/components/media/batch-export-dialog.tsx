@@ -17,6 +17,7 @@ import {
 import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
 import { formatBytes, formatRelativeTime } from '../../internal/helpers'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
  * Resource item for batch export
@@ -92,6 +93,7 @@ export function BatchExportDialog({
   progress = [],
   className,
 }: BatchExportDialogProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [format, setFormat] = React.useState<ExportFormat>('markdown')
   const [options, setOptions] = React.useState({
@@ -196,8 +198,7 @@ export function BatchExportDialog({
             </div>
 
             <div className="max-h-64 overflow-y-auto border rounded-lg divide-y">
-              <AnimatePresence>
-                {resources.map((resource, index) => {
+              {resources.map((resource, index) => {
                   const isSelected = selectedIds.has(resource.id)
                   const resourceProgress = progress.find(
                     (p) => p.resourceId === resource.id
@@ -206,13 +207,66 @@ export function BatchExportDialog({
                   const isCompleted = resourceProgress?.status === 'completed'
                   const hasError = resourceProgress?.status === 'error'
 
-                  return (
+                  return prefersReducedMotion ? (
+                    <div
+                      key={resource.id}
+                      className={cn(
+                        'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
+                        isSelected && 'bg-primary/5'
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleToggleResource(resource.id)}
+                        disabled={isExporting}
+                        className="h-4 w-4 rounded border"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium truncate">
+                            {resource.name}
+                          </p>
+                          {resource.messageCount && (
+                            <Badge variant="secondary" className="text-xs">
+                              {resource.messageCount} messages
+                            </Badge>
+                          )}
+                          {resource.size && (
+                            <Badge variant="outline" className="text-xs">
+                              {formatBytes(resource.size)}
+                            </Badge>
+                          )}
+                        </div>
+                        {resource.lastModified && (
+                          <p className="text-xs text-muted-foreground">
+                            Modified {formatRelativeTime(resource.lastModified)}
+                          </p>
+                        )}
+                      </div>
+                      {isExporting && (
+                        <div className="w-24">
+                          <Progress value={resourceProgress?.progress || 0} />
+                        </div>
+                      )}
+                      {isCompleted && (
+                        <Badge variant="success" className="text-xs">
+                          ✓ Done
+                        </Badge>
+                      )}
+                      {hasError && (
+                        <Badge variant="destructive" className="text-xs">
+                          ✗ Error
+                        </Badge>
+                      )}
+                    </div>
+                  ) : (
                     <motion.div
                       key={resource.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
                       transition={{ delay: index * 0.02 }}
+                      viewport={{ once: true }}
                       className={cn(
                         'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
                         isSelected && 'bg-primary/5'
@@ -265,7 +319,6 @@ export function BatchExportDialog({
                     </motion.div>
                   )
                 })}
-              </AnimatePresence>
             </div>
           </div>
 
@@ -344,17 +397,26 @@ export function BatchExportDialog({
               {showCloudOptions ? '▼' : '▶'} Cloud Storage Options
             </Button>
             {showCloudOptions && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2"
-              >
+              prefersReducedMotion ? (
+                <div className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Cloud storage integration coming soon. For now, exports will
+                    be downloaded to your device.
+                  </p>
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  viewport={{ once: true }}
+                  className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2"
+                >
                 <p className="text-xs text-muted-foreground">
                   Cloud storage integration coming soon. For now, exports will
-                  be downloaded to your device.
-                </p>
-              </motion.div>
+                    be downloaded to your device.
+                  </p>
+                </motion.div>
+              )
             )}
           </div>
 

@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { Skeleton } from '../ui/skeleton'
 import {
   EASING_FRAMER,
@@ -99,6 +100,7 @@ export function PromptSuggestions({
   showCategories = false,
   className,
 }: PromptSuggestionsProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [selectedCategory, setSelectedCategory] = React.useState<
     string | 'all'
   >('all')
@@ -186,21 +188,21 @@ export function PromptSuggestions({
           </div>
         )}
         <div className="flex flex-wrap gap-2.5">
-          <AnimatePresence mode="popLayout">
-            {processedSuggestions.map((suggestion, index) => (
-              <motion.div
-                key={suggestion.id}
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                transition={{
-                  // Framer Motion 12: Spring entrance for suggestions
-                  type: 'spring',
-                  damping: 22,
-                  stiffness: 300,
-                  delay: index * 0.05,
-                }}
-              >
+          {processedSuggestions.map((suggestion, index) => (
+            <motion.div
+              key={suggestion.id}
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9, y: -10 }}
+              transition={{
+                // Framer Motion 12: Spring entrance for suggestions
+                type: 'spring',
+                damping: 22,
+                stiffness: 300,
+                delay: index * 0.05,
+              }}
+              viewport={{ once: true }}
+            >
                 <Button
                   variant="outline"
                   size="sm"
@@ -227,10 +229,9 @@ export function PromptSuggestions({
                       {Math.round(suggestion.confidence * 100)}%
                     </Badge>
                   )}
-                </Button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </Button>
+            </motion.div>
+          ))}
         </div>
       </div>
     )
@@ -240,50 +241,50 @@ export function PromptSuggestions({
   if (layout === 'cards') {
     return (
       <div className={cn('grid grid-cols-1 md:grid-cols-2 gap-3.5', className)}>
-        <AnimatePresence mode="popLayout">
-          {processedSuggestions.map((suggestion, index) => (
-            <motion.div
-              key={suggestion.id}
-              initial={{ opacity: 0, y: 10, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.96 }}
-              transition={{
-                // Framer Motion 12: Spring cards entrance
-                type: 'spring',
-                damping: 25,
-                stiffness: 280,
-                delay: index * 0.05,
-              }}
+        {processedSuggestions.map((suggestion, index) => (
+          <motion.div
+            key={suggestion.id}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
+            transition={{
+              // Framer Motion 12: Spring cards entrance
+              type: 'spring',
+              damping: 25,
+              stiffness: 280,
+              delay: index * 0.05,
+            }}
+            viewport={{ once: true }}
+          >
+            <Card
+              hoverable
+              className={cn(
+                'cursor-pointer transition-all duration-200 ease-out',
+                'bg-gradient-to-br from-card to-card/95',
+                'border-border/40',
+                'shadow-sm',
+                'hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]',
+                'hover:border-primary/30',
+                'hover:-translate-y-1 hover:scale-[1.01]',
+                'active:scale-[0.99] active:translate-y-0',
+                'group overflow-hidden'
+              )}
+              onClick={() => onSelect(suggestion)}
             >
-              <Card
-                hoverable
-                className={cn(
-                  'cursor-pointer transition-all duration-200 ease-out',
-                  'bg-gradient-to-br from-card to-card/95',
-                  'border-border/40',
-                  'shadow-sm',
-                  'hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]',
-                  'hover:border-primary/30',
-                  'hover:-translate-y-1 hover:scale-[1.01]',
-                  'active:scale-[0.99] active:translate-y-0',
-                  'group overflow-hidden'
-                )}
-                onClick={() => onSelect(suggestion)}
-              >
-                {/* Subtle gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                <CardContent className="px-4 py-4 relative">
-                  <div className="flex items-start gap-3.5">
-                    {suggestion.icon && (
-                      <motion.div
-                        className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200"
-                        whileHover={{ scale: 1.05, rotate: 3 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 25,
-                        }}
-                      >
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <CardContent className="px-4 py-4 relative">
+                <div className="flex items-start gap-3.5">
+                  {suggestion.icon && (
+                    <motion.div
+                      className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200"
+                      whileHover={prefersReducedMotion ? {} : { scale: 1.05, rotate: 3 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 25,
+                      }}
+                    >
                         {suggestion.icon}
                       </motion.div>
                     )}
@@ -321,12 +322,11 @@ export function PromptSuggestions({
                         />
                       </svg>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     )
   }
@@ -334,19 +334,19 @@ export function PromptSuggestions({
   // Render list layout
   return (
     <div className={cn('space-y-2.5', className)}>
-      <AnimatePresence mode="popLayout">
-        {processedSuggestions.map((suggestion, index) => (
-          <motion.div
-            key={suggestion.id}
-            initial={{ opacity: 0, x: -10, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 10, scale: 0.98 }}
-            transition={{
-              duration: durations.normal,
-              delay: index * 0.03,
-              ease: EASING_FRAMER.sharp,
-            }}
-          >
+      {processedSuggestions.map((suggestion, index) => (
+        <motion.div
+          key={suggestion.id}
+          initial={prefersReducedMotion ? false : { opacity: 0, x: -10, scale: 0.98 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={prefersReducedMotion ? false : { opacity: 0, x: 10, scale: 0.98 }}
+          transition={{
+            duration: durations.normal,
+            delay: index * 0.03,
+            ease: EASING_FRAMER.sharp,
+          }}
+          viewport={{ once: true }}
+        >
             <Button
               variant="ghost"
               className={cn(
@@ -368,10 +368,9 @@ export function PromptSuggestions({
                   </div>
                 )}
               </div>
-            </Button>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+          </Button>
+        </motion.div>
+      ))}
     </div>
   )
 }

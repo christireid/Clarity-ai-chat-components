@@ -17,6 +17,7 @@ import {
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { ExportOptions, ExportFormat } from '@clarity-chat/types'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 export interface ExportDialogProps {
   open: boolean
@@ -35,6 +36,7 @@ export function ExportDialog({
   resourceName,
   className,
 }: ExportDialogProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [format, setFormat] = React.useState<ExportFormat>('pdf')
   const [options, setOptions] = React.useState<Partial<ExportOptions>>({
     includeMetadata: true,
@@ -128,44 +130,70 @@ export function ExportDialog({
           <div>
             <h3 className="text-sm font-semibold mb-3">Select Format</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {formats.map((fmt, index) => (
-                <motion.button
-                  key={fmt.value}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: durations.normal,
-                    delay: index * 0.05,
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setFormat(fmt.value)}
-                  className={cn(
-                    'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
-                    format === fmt.value
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-border/50 hover:border-primary/50'
-                  )}
-                >
-                  <motion.span
-                    className="text-3xl"
-                    animate={format === fmt.value ? { scale: [1, 1.2, 1] } : {}}
-                    transition={{ duration: durations.moderate }}
+              {formats.map((fmt, index) =>
+                prefersReducedMotion ? (
+                  <button
+                    key={fmt.value}
+                    onClick={() => setFormat(fmt.value)}
+                    className={cn(
+                      'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
+                      format === fmt.value
+                        ? 'border-primary bg-primary/5 shadow-md'
+                        : 'border-border/50 hover:border-primary/50'
+                    )}
                   >
-                    {fmt.icon}
-                  </motion.span>
-                  <span className="text-xs font-medium">{fmt.label}</span>
-                </motion.button>
-              ))}
+                    <span className="text-3xl">{fmt.icon}</span>
+                    <span className="text-xs font-medium">{fmt.label}</span>
+                  </button>
+                ) : (
+                  <motion.button
+                    key={fmt.value}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: durations.normal,
+                      delay: index * 0.05,
+                    }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setFormat(fmt.value)}
+                    className={cn(
+                      'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
+                      format === fmt.value
+                        ? 'border-primary bg-primary/5 shadow-md'
+                        : 'border-border/50 hover:border-primary/50'
+                    )}
+                  >
+                    <motion.span
+                      className="text-3xl"
+                      animate={
+                        format === fmt.value ? { scale: [1, 1.2, 1] } : {}
+                      }
+                      transition={{ duration: durations.moderate }}
+                    >
+                      {fmt.icon}
+                    </motion.span>
+                    <span className="text-xs font-medium">{fmt.label}</span>
+                  </motion.button>
+                )
+              )}
             </div>
-            <motion.p
-              key={format}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-xs text-muted-foreground mt-2"
-            >
-              {formats.find((f) => f.value === format)?.description}
-            </motion.p>
+            {prefersReducedMotion ? (
+              <p className="text-xs text-muted-foreground mt-2">
+                {formats.find((f) => f.value === format)?.description}
+              </p>
+            ) : (
+              <motion.p
+                key={format}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-xs text-muted-foreground mt-2"
+              >
+                {formats.find((f) => f.value === format)?.description}
+              </motion.p>
+            )}
           </div>
 
           {/* Export Options */}
@@ -188,17 +216,39 @@ export function ExportDialog({
                   label: 'Include Attachments',
                   description: 'Separate attachment files',
                 },
-              ].map(({ key, label, description }, index) => (
-                <motion.label
-                  key={key}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: durations.normal,
-                    delay: 0.3 + index * 0.05,
-                  }}
-                  className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
-                >
+              ].map(({ key, label, description }, index) =>
+                prefersReducedMotion ? (
+                  <label
+                    key={key}
+                    className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={options[key as keyof ExportOptions] as boolean}
+                      onChange={(e) =>
+                        setOptions({ ...options, [key]: e.target.checked })
+                      }
+                      className="w-4 h-4 mt-1 accent-primary cursor-pointer"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {description}
+                      </p>
+                    </div>
+                  </label>
+                ) : (
+                  <motion.label
+                    key={key}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      duration: durations.normal,
+                      delay: 0.3 + index * 0.05,
+                    }}
+                    viewport={{ once: true }}
+                    className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                  >
                   <input
                     type="checkbox"
                     checked={options[key as keyof ExportOptions] as boolean}
@@ -213,18 +263,16 @@ export function ExportDialog({
                       {description}
                     </p>
                   </div>
-                </motion.label>
-              ))}
+                  </motion.label>
+                )
+              )}
             </div>
           </div>
 
           {/* Date Range (if applicable) */}
-          {resourceType === 'chat' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: durations.normal, delay: 0.5 }}
-            >
+          {resourceType === 'chat' &&
+            (prefersReducedMotion ? (
+              <div>
               <h3 className="text-sm font-semibold mb-3">
                 Date Range (Optional)
               </h3>
@@ -242,26 +290,70 @@ export function ExportDialog({
                   <Input type="date" />
                 </div>
               </div>
-            </motion.div>
-          )}
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: durations.normal, delay: 0.5 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-sm font-semibold mb-3">
+                  Date Range (Optional)
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      From
+                    </label>
+                    <Input type="date" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      To
+                    </label>
+                    <Input type="date" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
 
           {/* File Preview */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: durations.normal, delay: 0.6 }}
-            className="p-4 bg-muted/50 rounded-lg"
-          >
-            <div className="flex items-center gap-3">
-              <motion.span
-                key={format}
-                initial={{ scale: 0.8, rotate: -15 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="text-4xl"
-              >
-                {formats.find((f) => f.value === format)?.icon}
-              </motion.span>
+          {prefersReducedMotion ? (
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <span className="text-4xl">
+                  {formats.find((f) => f.value === format)?.icon}
+                </span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {resourceName}.{format}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Estimated size: ~{Math.ceil(Math.random() * 500 + 100)} KB
+                  </p>
+                </div>
+                <Badge variant="outline">Ready</Badge>
+              </div>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: durations.normal, delay: 0.6 }}
+              viewport={{ once: true }}
+              className="p-4 bg-muted/50 rounded-lg"
+            >
+              <div className="flex items-center gap-3">
+                <motion.span
+                  key={format}
+                  initial={{ scale: 0.8, rotate: -15 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                  viewport={{ once: true }}
+                  className="text-4xl"
+                >
+                  {formats.find((f) => f.value === format)?.icon}
+                </motion.span>
               <div className="flex-1">
                 <p className="text-sm font-medium">
                   {resourceName}.{format}
@@ -270,51 +362,80 @@ export function ExportDialog({
                   Estimated size: ~{Math.ceil(Math.random() * 500 + 100)} KB
                 </p>
               </div>
-              <Badge variant="outline">Ready</Badge>
-            </div>
-          </motion.div>
-
-          {/* Progress Bar */}
-          {exporting && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2 overflow-hidden"
-            >
-              <div className="flex items-center justify-between text-sm">
-                <span>Exporting...</span>
-                <motion.span
-                  key={progress}
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  {progress}%
-                </motion.span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: durations.moderate, ease: 'easeOut' }}
-                  className="h-full bg-primary rounded-full"
-                />
+                <Badge variant="outline">Ready</Badge>
               </div>
             </motion.div>
           )}
 
+          {/* Progress Bar */}
+          {exporting &&
+            (prefersReducedMotion ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Exporting...</span>
+                  <span>{progress}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                viewport={{ once: true }}
+                className="space-y-2 overflow-hidden"
+              >
+                <div className="flex items-center justify-between text-sm">
+                  <span>Exporting...</span>
+                  <motion.span
+                    key={progress}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    {progress}%
+                  </motion.span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{
+                      duration: durations.moderate,
+                      ease: 'easeOut',
+                    }}
+                    className="h-full bg-primary rounded-full"
+                  />
+                </div>
+              </motion.div>
+            ))}
+
           {/* Tips */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: durations.normal, delay: 0.7 }}
-            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
-          >
+          {prefersReducedMotion ? (
+            <div className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm">
+              <p className="text-xs text-muted-foreground">
+                💡 <strong>Tip:</strong> PDF and DOCX formats preserve
+                formatting best. Markdown is great for editing later.
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: durations.normal, delay: 0.7 }}
+              viewport={{ once: true }}
+              className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
+            >
             <p className="text-xs text-muted-foreground">
               💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting
               best. Markdown is great for editing later.
-            </p>
-          </motion.div>
+              </p>
+            </motion.div>
+          )}
         </DialogBody>
 
         <DialogFooter>

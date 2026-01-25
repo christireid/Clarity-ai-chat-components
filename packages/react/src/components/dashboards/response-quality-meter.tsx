@@ -9,6 +9,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface ResponseQualityMetric {
   id: string
@@ -42,6 +43,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
   subtitle = defaultSubtitle,
   scaleLabel = 'Confidence index',
 }) => {
+  const prefersReducedMotion = useReducedMotion()
   const normalizedMetrics = metrics.map((metric) => ({
     ...metric,
     score: clampScore(metric.score),
@@ -86,17 +88,25 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
                 </span>
               </div>
               <div className="relative h-3 overflow-hidden rounded-full bg-background">
-                <motion.div
-                  className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${metric.score * 100}%` }}
-                  transition={{ 
-                    // Framer Motion 12: Spring-based progress animation
-                    type: 'spring',
-                    damping: 25,
-                    stiffness: 200,
-                  }}
-                />
+                {prefersReducedMotion ? (
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                    style={{ width: `${metric.score * 100}%` }}
+                  />
+                ) : (
+                  <motion.div
+                    className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${metric.score * 100}%` }}
+                    transition={{
+                      // Framer Motion 12: Spring-based progress animation
+                      type: 'spring',
+                      damping: 25,
+                      stiffness: 200,
+                    }}
+                    viewport={{ once: true }}
+                  />
+                )}
                 {metric.target !== undefined && (
                   <span
                     className="absolute inset-y-0 w-[2px] bg-success"

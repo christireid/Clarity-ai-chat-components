@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 export interface KeyboardHintShortcut {
   keys: string[]
@@ -41,6 +42,8 @@ export function KeyboardHint({
   className,
   ref,
 }: KeyboardHintProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   // Group shortcuts by category
   const groupedShortcuts = React.useMemo(() => {
     const groups: Record<string, KeyboardHintShortcut[]> = {}
@@ -56,64 +59,72 @@ export function KeyboardHint({
     return groups
   }, [shortcuts])
 
-  return (
-    <AnimatePresence>
-      {visible && (
-        <>
-          {/* Backdrop (only for center position) */}
-          {position === 'center' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onClose}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            />
-          )}
+  if (!visible) return null
 
-          {/* Keyboard Hints Panel */}
-          <motion.div
-            ref={ref}
-            initial={{
-              opacity: 0,
-              scale: 0.9,
-              y: position.includes('bottom') ? 20 : -20,
-            }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{
-              opacity: 0,
-              scale: 0.9,
-              y: position.includes('bottom') ? 20 : -20,
-            }}
-            transition={{
-              duration: ANIMATION_DURATION.normal / 1000,
-              ease: EASING_FRAMER.out,
-            }}
-            className={cn(
-              'fixed bg-background border border-border/40 rounded-lg shadow-md z-50 backdrop-blur-md',
-              'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
-              positionClasses[position],
-              className
-            )}
+  return (
+    <>
+      {/* Backdrop (only for center position) */}
+      {position === 'center' && (
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={prefersReducedMotion ? false : { opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        />
+      )}
+
+      {/* Keyboard Hints Panel */}
+      <motion.div
+        ref={ref}
+        initial={
+          prefersReducedMotion
+            ? false
+            : {
+                opacity: 0,
+                scale: 0.9,
+                y: position.includes('bottom') ? 20 : -20,
+              }
+        }
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={
+          prefersReducedMotion
+            ? false
+            : {
+                opacity: 0,
+                scale: 0.9,
+                y: position.includes('bottom') ? 20 : -20,
+              }
+        }
+        transition={{
+          duration: ANIMATION_DURATION.normal / 1000,
+          ease: EASING_FRAMER.out,
+        }}
+        className={cn(
+          'fixed bg-background border border-border/40 rounded-lg shadow-md z-50 backdrop-blur-md',
+          'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
+          positionClasses[position],
+          className
+        )}
+      >
+        {/* Header */}
+        <div className="px-4 py-3.5 border-b flex items-center justify-between bg-muted/60">
+          <motion.h3
+            initial={prefersReducedMotion ? false : { opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="font-bold"
           >
-            {/* Header */}
-            <div className="px-4 py-3.5 border-b flex items-center justify-between bg-muted/60">
-              <motion.h3
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="font-bold"
-              >
-                Keyboard Shortcuts
-              </motion.h3>
-              {onClose && (
-                <motion.button
-                  onClick={onClose}
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="p-1.5 rounded-lg hover:bg-muted/40 transition-all duration-200 hover:shadow-sm"
-                  aria-label="Close"
-                >
+            Keyboard Shortcuts
+          </motion.h3>
+          {onClose && (
+            <motion.button
+              onClick={onClose}
+              whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 90 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+              className="p-1.5 rounded-lg hover:bg-muted/40 transition-all duration-200 hover:shadow-sm"
+              aria-label="Close"
+            >
                   <svg
                     width="16"
                     height="16"
@@ -132,82 +143,82 @@ export function KeyboardHint({
               )}
             </div>
 
-            {/* Shortcuts List */}
-            <div className="overflow-y-auto flex-1 p-4">
-              <div className="space-y-4">
-                {Object.entries(groupedShortcuts).map(
-                  ([category, categoryShortcuts], groupIndex) => (
-                    <motion.div
-                      key={category}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: groupIndex * 0.05 + 0.1 }}
-                    >
-                      <div className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wide mb-2.5">
-                        {category}
-                      </div>
-                      <div className="space-y-2.5">
-                        {categoryShortcuts.map((shortcut, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              delay: groupIndex * 0.05 + index * 0.03 + 0.15,
-                            }}
-                            whileHover={{ x: 4, scale: 1.02 }}
-                            className="flex items-center justify-between gap-4 p-2.5 rounded-lg hover:bg-muted/40 transition-all duration-200"
-                          >
-                            <span className="text-sm text-foreground/90">
-                              {shortcut.description}
-                            </span>
-                            <div className="flex gap-1.5 flex-shrink-0">
-                              {shortcut.keys.map((key, keyIndex) => (
-                                <React.Fragment key={keyIndex}>
-                                  {keyIndex > 0 && (
-                                    <span className="text-muted-foreground px-1">
-                                      +
-                                    </span>
-                                  )}
-                                  <motion.kbd
-                                    whileHover={{ scale: 1.1 }}
-                                    className={cn(
-                                      'px-2 py-1 text-xs font-mono rounded-md ring-1',
-                                      'bg-muted border-border/40 shadow-sm',
-                                      'inline-flex items-center justify-center min-w-[24px]'
-                                    )}
-                                  >
-                                    {key}
-                                  </motion.kbd>
-                                </React.Fragment>
-                              ))}
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )
-                )}
-              </div>
-            </div>
+        {/* Shortcuts List */}
+        <div className="overflow-y-auto flex-1 p-4">
+          <div className="space-y-4">
+            {Object.entries(groupedShortcuts).map(
+              ([category, categoryShortcuts], groupIndex) => (
+                <motion.div
+                  key={category}
+                  initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: groupIndex * 0.05 + 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wide mb-2.5">
+                    {category}
+                  </div>
+                  <div className="space-y-2.5">
+                    {categoryShortcuts.map((shortcut, index) => (
+                      <motion.div
+                        key={index}
+                        initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: groupIndex * 0.05 + index * 0.03 + 0.15,
+                        }}
+                        whileHover={prefersReducedMotion ? {} : { x: 4, scale: 1.02 }}
+                        viewport={{ once: true }}
+                        className="flex items-center justify-between gap-4 p-2.5 rounded-lg hover:bg-muted/40 transition-all duration-200"
+                      >
+                        <span className="text-sm text-foreground/90">
+                          {shortcut.description}
+                        </span>
+                        <div className="flex gap-1.5 flex-shrink-0">
+                          {shortcut.keys.map((key, keyIndex) => (
+                            <React.Fragment key={keyIndex}>
+                              {keyIndex > 0 && (
+                                <span className="text-muted-foreground px-1">
+                                  +
+                                </span>
+                              )}
+                              <motion.kbd
+                                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+                                className={cn(
+                                  'px-2 py-1 text-xs font-mono rounded-md ring-1',
+                                  'bg-muted border-border/40 shadow-sm',
+                                  'inline-flex items-center justify-center min-w-[24px]'
+                                )}
+                              >
+                                {key}
+                              </motion.kbd>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )
+            )}
+          </div>
+        </div>
 
-            {/* Footer */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="px-4 py-3.5 border-t text-xs text-muted-foreground/90 bg-muted/60"
-            >
-              Press{' '}
-              <kbd className="px-1.5 py-0.5 bg-background rounded border mx-1">
-                ?
-              </kbd>{' '}
-              to toggle this panel
-            </motion.div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        {/* Footer */}
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="px-4 py-3.5 border-t text-xs text-muted-foreground/90 bg-muted/60"
+        >
+          Press{' '}
+          <kbd className="px-1.5 py-0.5 bg-background rounded border mx-1">
+            ?
+          </kbd>{' '}
+          to toggle this panel
+        </motion.div>
+      </motion.div>
+    </>
   )
 }
 

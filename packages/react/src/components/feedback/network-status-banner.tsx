@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
 import { duration, EASING_FRAMER } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 
@@ -88,13 +89,7 @@ const STATUS_CONFIG: Record<
   reconnecting: {
     message: 'Reconnecting...',
     icon: (
-      <motion.svg
-        animate={{ rotate: 360 }}
-        transition={{
-          duration: duration('slower'),
-          repeat: Infinity,
-          ease: 'linear',
-        }}
+      <svg
         className="h-4 w-4"
         fill="none"
         stroke="currentColor"
@@ -106,7 +101,7 @@ const STATUS_CONFIG: Record<
           strokeWidth={2}
           d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
         />
-      </motion.svg>
+      </svg>
     ),
     className:
       'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300',
@@ -164,6 +159,7 @@ export function NetworkStatusBanner({
   autoHideMs,
   className,
 }: NetworkStatusBannerProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isVisible, setIsVisible] = React.useState(true)
 
   // Determine if banner should be shown
@@ -195,20 +191,14 @@ export function NetworkStatusBanner({
   const displayMessage = message || config.message
 
   return (
-    <AnimatePresence>
+    <>
       {shouldShow && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{
-            duration: duration('normal'),
-            ease: EASING_FRAMER.sharp,
-          }}
-          className={cn('border-b', config.className, className)}
-          role="status"
-          aria-live="polite"
-        >
+        prefersReducedMotion ? (
+          <div
+            className={cn('border-b', config.className, className)}
+            role="status"
+            aria-live="polite"
+          >
           <div className="flex items-center justify-between gap-3 px-4 py-2.5">
             <div className="flex items-center gap-2.5">
               {config.icon}
@@ -253,9 +243,67 @@ export function NetworkStatusBanner({
               )}
             </div>
           </div>
-        </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              duration: duration('normal'),
+              ease: EASING_FRAMER.sharp,
+            }}
+            className={cn('border-b', config.className, className)}
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-2.5">
+              <div className="flex items-center gap-2.5">
+                {config.icon}
+                <span className="text-sm font-medium">{displayMessage}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {status === 'offline' && onRetry && (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={onRetry}
+                    className="h-7 px-3 text-xs font-medium"
+                  >
+                    Retry
+                  </Button>
+                )}
+                {onDismiss && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsVisible(false)
+                      onDismiss()
+                    }}
+                    className="h-7 w-7 p-0"
+                    aria-label="Dismiss"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )
       )}
-    </AnimatePresence>
+    </>
   )
 }
 

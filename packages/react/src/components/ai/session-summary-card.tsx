@@ -11,6 +11,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface SessionSummaryHighlights {
   title: string
@@ -115,16 +116,19 @@ export function SessionSummaryCard({
   title = defaultTitle,
   subtitle = defaultSubtitle,
 }: SessionSummaryCardProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
+      transition={prefersReducedMotion ? { duration: 0 } : {
         // Framer Motion 12: Spring entrance for summary card
         type: 'spring',
         damping: 22,
         stiffness: 280,
       }}
+      viewport={{ once: true }}
     >
       <Card
         className={cn(
@@ -192,15 +196,16 @@ export function SessionSummaryCard({
               {summary.highlights.map((highlight, index) => (
                 <motion.li
                   key={highlight}
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{
+                  transition={prefersReducedMotion ? { duration: 0 } : {
                     // Framer Motion 12: Spring staggered list items
                     type: 'spring',
                     damping: 25,
                     stiffness: 300,
                     delay: index * 0.05,
                   }}
+                  viewport={{ once: true }}
                   className="flex items-start gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-xs"
                 >
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
@@ -216,9 +221,10 @@ export function SessionSummaryCard({
             {metrics.map((metric, index) => (
               <motion.div
                 key={metric.label}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: durations.normal, delay: index * 0.05 }}
+                transition={{ duration: prefersReducedMotion ? 0 : durations.normal, delay: prefersReducedMotion ? 0 : index * 0.05 }}
+                viewport={{ once: true }}
                 className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-xs hover:shadow-md hover:-translate-y-px transition-all duration-150 ease-out"
               >
                 <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -273,12 +279,13 @@ export function SessionSummaryCard({
                 {summary.nextActions.map((action, index) => (
                   <motion.div
                     key={action}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{
-                      duration: durations.fast,
-                      delay: index * 0.05,
+                      duration: prefersReducedMotion ? 0 : durations.fast,
+                      delay: prefersReducedMotion ? 0 : index * 0.05,
                     }}
+                    viewport={{ once: true }}
                   >
                     <Button
                       variant="secondary"

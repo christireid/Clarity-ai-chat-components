@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface TimeSeparatorProps {
   /** The text to display (e.g., "Today", "Yesterday", "Monday") */
@@ -36,16 +37,23 @@ export interface TimeSeparatorProps {
  * ```
  */
 export function TimeSeparator({ children, className }: TimeSeparatorProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        // Framer Motion 12: Spring entrance for time separator
-        type: 'spring',
-        damping: 20,
-        stiffness: 280,
-      }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              // Framer Motion 12: Spring entrance for time separator
+              type: 'spring',
+              damping: 20,
+              stiffness: 280,
+            }
+      }
+      viewport={{ once: true }}
       className={cn('relative flex items-center justify-center py-4', className)}
       role="separator"
       aria-label={`Messages from ${children}`}
@@ -55,15 +63,20 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
 
       {/* Text */}
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
+        initial={prefersReducedMotion ? false : { scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ 
-          // Framer Motion 12: Spring scale for badge
-          type: 'spring',
-          damping: 18,
-          stiffness: 300,
-          delay: 0.1,
-        }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : {
+                // Framer Motion 12: Spring scale for badge
+                type: 'spring',
+                damping: 18,
+                stiffness: 300,
+                delay: 0.1,
+              }
+        }
+        viewport={{ once: true }}
         className={cn(
           'px-4 py-1.5 mx-4',
           'text-xs font-bold uppercase tracking-wider',

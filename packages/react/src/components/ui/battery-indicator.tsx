@@ -8,6 +8,7 @@ import {
   type BatteryAwareConfig,
 } from '../../hooks/performance/use-battery-aware'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface BatteryIndicatorProps {
   /** Battery-aware configuration */
@@ -51,6 +52,7 @@ export function BatteryIndicator({
   compact = false,
   className,
 }: BatteryIndicatorProps) {
+  const prefersReducedMotion = useReducedMotion()
   const {
     batteryStatus,
     isSupported,
@@ -111,19 +113,30 @@ export function BatteryIndicator({
           className={cn(getColor())}
         />
         {/* Charging indicator */}
-        {charging && (
-          <motion.path
-            d="M13 11l-2 3h2l-2 3"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            stroke="currentColor"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: durations.slower, repeat: Infinity }}
-          />
-        )}
+        {charging &&
+          (prefersReducedMotion ? (
+            <path
+              d="M13 11l-2 3h2l-2 3"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              stroke="currentColor"
+            />
+          ) : (
+            <motion.path
+              d="M13 11l-2 3h2l-2 3"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              stroke="currentColor"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: durations.slower, repeat: Infinity }}
+              viewport={{ once: true }}
+            />
+          ))}
       </svg>
     )
   }
@@ -137,7 +150,55 @@ export function BatteryIndicator({
     inline: 'inline-flex',
   }
 
-  const content = (
+  const contentElement = prefersReducedMotion ? (
+    <div
+      className={cn(
+        'flex items-center gap-2 rounded-lg bg-background/95 backdrop-blur-sm',
+        position !== 'inline' && 'shadow-lg border p-2',
+        positionClasses[position],
+        className
+      )}
+      onMouseEnter={() => showTooltip && setShowDetails(true)}
+      onMouseLeave={() => showTooltip && setShowDetails(false)}
+    >
+      <BatteryIcon />
+
+      {!compact && showLabel && (
+        <div className="flex items-center gap-2">
+          <span className={cn('text-sm font-medium', getColor())}>
+            {percentage}%
+          </span>
+
+          {shouldEnableBatterySaver && (
+            <Badge variant="warning" className="text-xs">
+              Low
+            </Badge>
+          )}
+
+          {charging && (
+            <Badge variant="default" className="text-xs">
+              Charging
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {recommendations.level !== 'none' && !compact && (
+        <Badge
+          variant={
+            recommendations.level === 'aggressive'
+              ? 'destructive'
+              : recommendations.level === 'moderate'
+                ? 'warning'
+                : 'secondary'
+          }
+          className="text-xs"
+        >
+          {recommendations.level}
+        </Badge>
+      )}
+    </div>
+  ) : (
     <motion.div
       className={cn(
         'flex items-center gap-2 rounded-lg bg-background/95 backdrop-blur-sm',
@@ -150,6 +211,7 @@ export function BatteryIndicator({
       transition={{ duration: durations.normal }}
       onMouseEnter={() => showTooltip && setShowDetails(true)}
       onMouseLeave={() => showTooltip && setShowDetails(false)}
+      viewport={{ once: true }}
     >
       <BatteryIcon />
 
@@ -191,21 +253,17 @@ export function BatteryIndicator({
   )
 
   if (!showTooltip) {
-    return content
+    return contentElement
   }
 
   return (
     <div className="relative">
-      {content}
+      {contentElement}
 
       {/* Tooltip with details */}
-      <AnimatePresence>
-        {showDetails && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: durations.normal }}
+      {showDetails &&
+        (prefersReducedMotion ? (
+          <div
             className={cn(
               'absolute z-50 min-w-[200px] rounded-lg border bg-popover p-3 shadow-lg',
               position.includes('right') ? 'right-0' : 'left-0',
@@ -255,9 +313,68 @@ export function BatteryIndicator({
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: durations.normal }}
+              className={cn(
+                'absolute z-50 min-w-[200px] rounded-lg border bg-popover p-3 shadow-lg',
+                position.includes('right') ? 'right-0' : 'left-0',
+                position.includes('top') ? 'top-full mt-2' : 'bottom-full mb-2'
+              )}
+            >
+              <div className="space-y-2">
+                <div className="text-sm font-semibold">
+                  {batteryDescription}
+                </div>
+
+                {batteryStatus.dischargingTime &&
+                  batteryStatus.dischargingTime !== Infinity &&
+                  !charging && (
+                    <div className="text-xs text-muted-foreground">
+                      ~{Math.round(batteryStatus.dischargingTime / 3600)} hours
+                      remaining
+                    </div>
+                  )}
+
+                {batteryStatus.chargingTime &&
+                  batteryStatus.chargingTime !== Infinity &&
+                  charging && (
+                    <div className="text-xs text-muted-foreground">
+                      ~{Math.round(batteryStatus.chargingTime / 3600)} hours to
+                      full
+                    </div>
+                  )}
+
+                {recommendations.level !== 'none' && (
+                  <div className="border-t pt-2 space-y-1">
+                    <div className="text-xs font-medium">
+                      Optimizations Active:
+                    </div>
+                    <ul className="text-xs text-muted-foreground space-y-0.5">
+                      {recommendations.disableAnimations && (
+                        <li>• Animations reduced</li>
+                      )}
+                      {recommendations.throttleUpdates && (
+                        <li>• Updates throttled</li>
+                      )}
+                      {recommendations.deferNonCritical && (
+                        <li>• Non-critical tasks deferred</li>
+                      )}
+                      {recommendations.reduceStreaming && (
+                        <li>• Streaming quality reduced</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        ))}
     </div>
   )
 }

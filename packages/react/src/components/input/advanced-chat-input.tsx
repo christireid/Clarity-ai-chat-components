@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 import { useMergedRef } from '../../hooks/ui/use-merged-ref'
+import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
 
 export interface InputSuggestion {
   id: string
@@ -112,6 +113,7 @@ export function AdvancedChatInput({
   className,
   ref,
 }: AdvancedChatInputProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [attachments, setAttachments] = useState<MessageAttachment[]>([])
   const [suggestions, setSuggestions] = useState<InputSuggestion[]>([])
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -407,20 +409,12 @@ export function AdvancedChatInput({
   return (
     <div className={cn('relative border-t bg-background', className)}>
       {/* Attachments Preview */}
-      <AnimatePresence>
-        {attachments.length > 0 && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="flex gap-2 p-4 pb-0 overflow-x-auto"
-          >
+      {attachments.length > 0 && (
+        prefersReducedMotion ? (
+          <div className="flex gap-2 p-4 pb-0 overflow-x-auto">
             {attachments.map((attachment) => (
-              <motion.div
+              <div
                 key={attachment.id}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
                 className="relative flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
               >
                 {attachment.type === 'image' && attachment.url && (
@@ -447,19 +441,61 @@ export function AdvancedChatInput({
                 >
                   ✕
                 </button>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="flex gap-2 p-4 pb-0 overflow-x-auto"
+            >
+              {attachments.map((attachment) => (
+                <motion.div
+                  key={attachment.id}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  viewport={{ once: true }}
+                  className="relative flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
+                >
+                  {attachment.type === 'image' && attachment.url && (
+                    <img
+                      src={attachment.url}
+                      alt={attachment.name}
+                      className="w-8 h-8 object-cover rounded"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {attachment.name}
+                    </p>
+                    {attachment.size && (
+                      <p className="text-xs text-muted-foreground">
+                        {(attachment.size / 1024).toFixed(1)} KB
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => removeAttachment(attachment.id)}
+                    className="text-muted-foreground hover:text-destructive"
+                    aria-label={`Remove ${attachment.name}`}
+                  >
+                    ✕
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        )
+      )}
 
       {/* Suggestions Dropdown */}
-      <AnimatePresence>
-        {showSuggestions && suggestions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+      {showSuggestions && suggestions.length > 0 && (
+        prefersReducedMotion ? (
+          <div
             className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
             role="listbox"
             aria-label="Suggestions"
@@ -510,9 +546,68 @@ export function AdvancedChatInput({
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              viewport={{ once: true }}
+              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
+              role="listbox"
+              aria-label="Suggestions"
+            >
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={suggestion.id}
+                  onClick={() => selectSuggestion(suggestion)}
+                  className={cn(
+                    'w-full text-left px-4 py-2 hover:bg-accent transition-colors',
+                    index === selectedIndex && 'bg-accent'
+                  )}
+                  aria-selected={index === selectedIndex}
+                  role="option"
+                >
+                  <div className="flex items-center gap-2">
+                    {suggestion.icon && <span>{suggestion.icon}</span>}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{suggestion.label}</p>
+                      {suggestion.description && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {suggestion.description}
+                        </p>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      {triggerChar}
+                      {suggestion.label}
+                    </Badge>
+                  </div>
+                </button>
+              ))}
+              <div className="px-4 py-2 text-xs text-muted-foreground border-t bg-muted/50 flex items-center justify-between">
+                <div>
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">Tab</kbd>{' '}
+                  or{' '}
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">
+                    Enter
+                  </kbd>{' '}
+                  to select •{' '}
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">↑↓</kbd>{' '}
+                  to navigate
+                </div>
+                {isPending && (
+                  <div className="flex items-center gap-1 text-xs">
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span>Loading...</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )
+      )}
 
       {/* Input Area */}
       <div

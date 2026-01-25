@@ -15,6 +15,7 @@ import {
 import type { Message } from '@clarity-chat/types'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Summary detail level
@@ -158,6 +159,7 @@ export function ConversationSummarizer({
   emptyState,
   className,
 }: ConversationSummarizerProps) {
+  const prefersReducedMotion = useReducedMotion()
   const config = { ...defaultConfig, ...userConfig }
 
   const [currentSummary, setCurrentSummary] =
@@ -480,15 +482,20 @@ Generation Time: ${summary.generationTime}ms
           >
             {isGenerating ? (
               <>
-                <motion.div
-                  className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: durations.slower,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
+                {prefersReducedMotion ? (
+                  <div className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <motion.div
+                    className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: durations.slower,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                    viewport={{ once: true }}
+                  />
+                )}
                 Generating...
               </>
             ) : (
@@ -497,27 +504,28 @@ Generation Time: ${summary.generationTime}ms
           </Button>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive"
-            >
-              {error}
-            </motion.div>
+            prefersReducedMotion ? (
+              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {error}
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0 }}
+                className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive"
+              >
+                {error}
+              </motion.div>
+            )
           )}
         </CardContent>
       </Card>
 
       {/* Current Summary */}
-      <AnimatePresence mode="wait">
-        {currentSummary && (
-          <motion.div
-            key={currentSummary.id}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: durations.moderate }}
-          >
+      {currentSummary && (
+        prefersReducedMotion ? (
+          <div key={currentSummary.id}>
             <Card className="shadow-md">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -622,9 +630,125 @@ Generation Time: ${summary.generationTime}ms
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSummary.id}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: durations.moderate }}
+              viewport={{ once: true }}
+            >
+              <Card className="shadow-md">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="default">{currentSummary.level}</Badge>
+                        <Badge variant="outline">
+                          {new Date(
+                            currentSummary.timestamp
+                          ).toLocaleTimeString()}
+                        </Badge>
+                        {currentSummary.generationTime && (
+                          <Badge variant="secondary">
+                            {currentSummary.generationTime}ms
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => exportSummary(currentSummary)}
+                      aria-label="Export summary"
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Summary content */}
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {currentSummary.content}
+                    </p>
+                  </div>
+
+                  {/* Key Topics */}
+                  {currentSummary.keyTopics &&
+                    currentSummary.keyTopics.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2 text-foreground">
+                          Key Topics
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {currentSummary.keyTopics.map((topic, i) => (
+                            <Badge key={i} variant="secondary">
+                              {topic}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Action Items */}
+                  {currentSummary.actionItems &&
+                    currentSummary.actionItems.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2 text-foreground">
+                          Action Items
+                        </h4>
+                        <ul className="space-y-1 text-sm text-muted-foreground">
+                          {currentSummary.actionItems.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-primary">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                  {/* Code Snippets */}
+                  {currentSummary.codeSnippets &&
+                    currentSummary.codeSnippets.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2 text-foreground">
+                          Code Snippets ({currentSummary.codeSnippets.length})
+                        </h4>
+                        <div className="text-xs text-muted-foreground">
+                          View code examples in the conversation above
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Message range */}
+                  <div className="text-xs text-muted-foreground border-t pt-3">
+                    Summarizes messages {currentSummary.messageRange.start + 1} -{' '}
+                    {currentSummary.messageRange.end + 1} of{' '}
+                    {currentSummary.messageRange.totalMessages}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
+        )
+      )}
 
       {/* Loading state */}
       {isGenerating && !currentSummary && (
@@ -651,27 +775,48 @@ Generation Time: ${summary.generationTime}ms
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            {summaryHistory.slice(1, 4).map((summary) => (
-              <motion.button
-                key={summary.id}
-                className="w-full text-left rounded-lg border p-3 hover:bg-accent transition-colors"
-                onClick={() => setCurrentSummary(summary)}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <Badge variant="outline" className="text-xs">
-                    {summary.level}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(summary.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {summary.content}
-                </p>
-              </motion.button>
-            ))}
+            {summaryHistory.slice(1, 4).map((summary) =>
+              prefersReducedMotion ? (
+                <button
+                  key={summary.id}
+                  className="w-full text-left rounded-lg border p-3 hover:bg-accent transition-colors"
+                  onClick={() => setCurrentSummary(summary)}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <Badge variant="outline" className="text-xs">
+                      {summary.level}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(summary.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {summary.content}
+                  </p>
+                </button>
+              ) : (
+                <motion.button
+                  key={summary.id}
+                  className="w-full text-left rounded-lg border p-3 hover:bg-accent transition-colors"
+                  onClick={() => setCurrentSummary(summary)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <Badge variant="outline" className="text-xs">
+                      {summary.level}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(summary.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {summary.content}
+                  </p>
+                </motion.button>
+              )
+            )}
           </CardContent>
         </Card>
       )}

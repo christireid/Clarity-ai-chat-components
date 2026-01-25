@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button, Badge } from '@clarity-chat/primitives'
 import { BotIcon } from '../ui/icons'
 import { duration } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ChatWindowHeaderProps {
   show: boolean
@@ -29,17 +30,20 @@ export function ChatWindowHeader({
   onClear,
   normalizedMessagesLength,
 }: ChatWindowHeaderProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   if (!show) return null
 
   return (
     <motion.div
       className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: duration('slow'),
+        duration: prefersReducedMotion ? 0 : duration('slow'),
         ease: [0.25, 0.1, 0.25, 1],
       }}
+      viewport={{ once: true }}
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">

@@ -13,6 +13,7 @@ import {
 } from '@clarity-chat/primitives'
 import { type SignificanceResult } from './use-statistical-significance'
 import { DashboardProgress } from '../ui/dashboard-progress'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Variant metrics data
@@ -111,11 +112,14 @@ export function VariantCard({
   animationDelay = 0,
   className,
 }: VariantCardProps): React.ReactElement {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: animationDelay }}
+      transition={{ delay: prefersReducedMotion ? 0 : animationDelay }}
+      viewport={{ once: true }}
     >
       <Card className={cn(isWinner && 'border-green-500', className)}>
         <CardHeader className="pb-3">

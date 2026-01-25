@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
@@ -138,6 +139,7 @@ export function PromptContainer({
   variant = 'default',
   className,
 }: PromptContainerProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(
     () => new Set(collapsedSuggestions ? [] : suggestions.map((s) => s.title))
   )
@@ -216,34 +218,34 @@ export function PromptContainer({
         {/* Main content area */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Suggestions area */}
-          <AnimatePresence mode="popLayout">
-            {hasSuggestions && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: durations.normal }}
-                className="mb-4 space-y-3"
-              >
-                {suggestions.map((category, categoryIndex) => {
-                  const isExpanded = expandedCategories.has(category.title)
-                  const displayItems = isExpanded
-                    ? category.items
-                    : category.items.slice(0, maxSuggestionsPerCategory)
+          {hasSuggestions && (
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+              transition={{ duration: durations.normal }}
+              className="mb-4 space-y-3"
+            >
+              {suggestions.map((category, categoryIndex) => {
+                const isExpanded = expandedCategories.has(category.title)
+                const displayItems = isExpanded
+                  ? category.items
+                  : category.items.slice(0, maxSuggestionsPerCategory)
 
-                  return (
-                    <motion.div
-                      key={category.title}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        type: 'spring',
-                        damping: 25,
-                        stiffness: 300,
-                        delay: categoryIndex * 0.05,
-                      }}
-                      className="space-y-2"
-                    >
+                return (
+                  <motion.div
+                    key={category.title}
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      type: 'spring',
+                      damping: 25,
+                      stiffness: 300,
+                      delay: categoryIndex * 0.05,
+                    }}
+                    viewport={{ once: true }}
+                    className="space-y-2"
+                  >
                       {/* Category header */}
                       <button
                         onClick={() => toggleCategory(category.title)}
@@ -282,83 +284,81 @@ export function PromptContainer({
                         </svg>
                       </button>
 
-                      {/* Suggestion items */}
-                      <AnimatePresence mode="popLayout">
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: durations.fast }}
-                            className="flex flex-wrap gap-2 pl-7"
-                          >
-                            {displayItems.map((item, itemIndex) => (
-                              <motion.button
-                                key={item}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{
-                                  type: 'spring',
-                                  damping: 22,
-                                  stiffness: 300,
-                                  delay: itemIndex * 0.03,
-                                }}
-                                onClick={() => onSuggestionClick?.(item)}
-                                className={cn(
-                                  'group px-3 py-1.5 rounded-full text-sm',
-                                  'bg-muted/50 hover:bg-primary/10',
-                                  'border border-border/40 hover:border-primary/30',
-                                  'text-foreground/80 hover:text-primary',
-                                  'transition-all duration-200 ease-out',
-                                  'hover:-translate-y-0.5 hover:shadow-sm',
-                                  'active:scale-[0.98] active:translate-y-0',
-                                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
-                                )}
-                              >
-                                {item}
-                              </motion.button>
-                            ))}
-                            {!isExpanded && category.items.length > maxSuggestionsPerCategory && (
-                              <span className="text-xs text-muted-foreground self-center">
-                                +{category.items.length - maxSuggestionsPerCategory} more
-                              </span>
+                    {/* Suggestion items */}
+                    {isExpanded && (
+                      <motion.div
+                        initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                        transition={{ duration: durations.fast }}
+                        className="flex flex-wrap gap-2 pl-7"
+                      >
+                        {displayItems.map((item, itemIndex) => (
+                          <motion.button
+                            key={item}
+                            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                            transition={{
+                              type: 'spring',
+                              damping: 22,
+                              stiffness: 300,
+                              delay: itemIndex * 0.03,
+                            }}
+                            viewport={{ once: true }}
+                            onClick={() => onSuggestionClick?.(item)}
+                            className={cn(
+                              'group px-3 py-1.5 rounded-full text-sm',
+                              'bg-muted/50 hover:bg-primary/10',
+                              'border border-border/40 hover:border-primary/30',
+                              'text-foreground/80 hover:text-primary',
+                              'transition-all duration-200 ease-out',
+                              'hover:-translate-y-0.5 hover:shadow-sm',
+                              'active:scale-[0.98] active:translate-y-0',
+                              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
                             )}
-                          </motion.div>
+                          >
+                            {item}
+                          </motion.button>
+                        ))}
+                        {!isExpanded && category.items.length > maxSuggestionsPerCategory && (
+                          <span className="text-xs text-muted-foreground self-center">
+                            +{category.items.length - maxSuggestionsPerCategory} more
+                          </span>
                         )}
-                      </AnimatePresence>
-                    </motion.div>
-                  )
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          )}
 
           {/* File attachments area */}
-          <AnimatePresence mode="popLayout">
-            {hasAttachments && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: durations.fast }}
-                className="mb-3 flex flex-wrap gap-2"
-              >
-                {attachments.map((attachment) => (
-                  <motion.div
-                    key={attachment.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                    className={cn(
-                      'group relative flex items-center gap-2 px-3 py-2',
-                      'bg-muted/50 hover:bg-muted/70',
-                      'border border-border/40 rounded-xl',
-                      'transition-colors duration-150',
-                      attachment.status === 'error' && 'border-destructive/50 bg-destructive/5'
-                    )}
-                  >
+          {hasAttachments && (
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+              transition={{ duration: durations.fast }}
+              className="mb-3 flex flex-wrap gap-2"
+            >
+              {attachments.map((attachment) => (
+                <motion.div
+                  key={attachment.id}
+                  initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+                  transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                  viewport={{ once: true }}
+                  className={cn(
+                    'group relative flex items-center gap-2 px-3 py-2',
+                    'bg-muted/50 hover:bg-muted/70',
+                    'border border-border/40 rounded-xl',
+                    'transition-colors duration-150',
+                    attachment.status === 'error' && 'border-destructive/50 bg-destructive/5'
+                  )}
+                >
                     {/* File icon based on type */}
                     <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
                       {attachment.previewUrl ? (
@@ -398,64 +398,62 @@ export function PromptContainer({
                       </p>
                     </div>
 
-                    {/* Progress bar for uploading */}
-                    {attachment.status === 'uploading' && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-b-xl overflow-hidden">
-                        <motion.div
-                          className="h-full bg-primary"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${attachment.progress || 0}%` }}
-                          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        />
-                      </div>
-                    )}
+                  {/* Progress bar for uploading */}
+                  {attachment.status === 'uploading' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-b-xl overflow-hidden">
+                      <motion.div
+                        className="h-full bg-primary"
+                        initial={prefersReducedMotion ? false : { width: 0 }}
+                        animate={{ width: `${attachment.progress || 0}%` }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                      />
+                    </div>
+                  )}
 
-                    {/* Remove button */}
-                    {onRemoveAttachment && (
-                      <button
-                        onClick={() => onRemoveAttachment(attachment.id)}
-                        className={cn(
-                          'flex-shrink-0 w-6 h-6 rounded-full',
-                          'flex items-center justify-center',
-                          'opacity-0 group-hover:opacity-100',
-                          'bg-muted hover:bg-destructive/10',
-                          'text-muted-foreground hover:text-destructive',
-                          'transition-all duration-150',
-                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
-                        )}
-                        aria-label={`Remove ${attachment.name}`}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  {/* Remove button */}
+                  {onRemoveAttachment && (
+                    <button
+                      onClick={() => onRemoveAttachment(attachment.id)}
+                      className={cn(
+                        'flex-shrink-0 w-6 h-6 rounded-full',
+                        'flex items-center justify-center',
+                        'opacity-0 group-hover:opacity-100',
+                        'bg-muted hover:bg-destructive/10',
+                        'text-muted-foreground hover:text-destructive',
+                        'transition-all duration-150',
+                        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+                      )}
+                      aria-label={`Remove ${attachment.name}`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
 
           {/* Drop zone overlay */}
-          <AnimatePresence>
-            {(showDropZone || isDragging) && (
-              <motion.div
-                ref={dropZoneRef}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: durations.fast }}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                className={cn(
-                  'absolute inset-0 z-10',
-                  'flex items-center justify-center',
-                  'bg-primary/5 backdrop-blur-sm',
-                  'border-2 border-dashed border-primary/30',
-                  'rounded-xl',
-                  isDragging && 'border-primary/50 bg-primary/10'
-                )}
-              >
+          {(showDropZone || isDragging) && (
+            <motion.div
+              ref={dropZoneRef}
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={prefersReducedMotion ? false : { opacity: 0 }}
+              transition={{ duration: durations.fast }}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              className={cn(
+                'absolute inset-0 z-10',
+                'flex items-center justify-center',
+                'bg-primary/5 backdrop-blur-sm',
+                'border-2 border-dashed border-primary/30',
+                'rounded-xl',
+                isDragging && 'border-primary/50 bg-primary/10'
+              )}
+            >
                 <div className="text-center p-6">
                   <svg
                     className="w-12 h-12 mx-auto mb-3 text-primary/60"
@@ -476,10 +474,9 @@ export function PromptContainer({
                   <p className="text-xs text-muted-foreground mt-1">
                     or click to browse
                   </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
 
           {/* Input area with slots */}
           <div className="relative">

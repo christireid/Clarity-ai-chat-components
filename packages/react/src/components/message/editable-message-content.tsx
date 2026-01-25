@@ -1,10 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Button, cn, Textarea } from '@clarity-chat/primitives'
 import { CheckIcon, CloseIcon } from '../ui/icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /** Maximum recommended content length before warning */
 const MAX_CONTENT_LENGTH = 10000
@@ -44,6 +45,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
   }) => {
     const [editValue, setEditValue] = React.useState(content)
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+    const prefersReducedMotion = useReducedMotion()
 
     // Detect if user is on Mac for keyboard hint
     // Note: navigator.platform is deprecated but navigator.userAgentData is not
@@ -104,17 +106,14 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
     const isEmpty = !editValue.trim()
     const isOverLimit = editValue.length > maxLength
 
-    return (
-      <AnimatePresence mode="wait">
-        {isEditing ? (
-          <motion.div
-            key="editing"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: durations.fast }}
-            className={cn('space-y-3', className)}
-          >
+    return isEditing ? (
+      <motion.div
+        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: prefersReducedMotion ? 0 : durations.fast }}
+        viewport={{ once: true }}
+        className={cn('space-y-3', className)}
+      >
             {/* Edit textarea */}
             <Textarea
               ref={textareaRef}
@@ -166,9 +165,10 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
 
             {/* Action buttons */}
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: durations.fast }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : durations.fast }}
+              viewport={{ once: true }}
               className="flex items-center justify-end gap-2"
             >
               {/* Keyboard hint - OS-appropriate modifier key */}
@@ -207,9 +207,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               </Button>
             </motion.div>
           </motion.div>
-        ) : null}
-      </AnimatePresence>
-    )
+        ) : null
   }
 )
 

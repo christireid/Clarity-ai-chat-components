@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { formatRelativeTime } from '../../internal/helpers'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -165,6 +166,7 @@ export function MessageThreadView({
   layout = 'inline',
   className,
 }: MessageThreadViewProps) {
+  const prefersReducedMotion = useReducedMotion()
   const config = { ...defaultConfig, ...userConfig }
 
   const [isExpanded, setIsExpanded] = React.useState(false)
@@ -224,9 +226,10 @@ export function MessageThreadView({
 
     return (
       <motion.div
-        initial={{ opacity: 0, height: 0 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0, height: 0 }}
+        exit={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+        viewport={{ once: true }}
         className="mt-2 p-3 border-l-2 border-primary/30 bg-accent/20 rounded-r-lg cursor-pointer hover:bg-accent/30 transition-colors"
         onClick={handleExpand}
       >
@@ -276,17 +279,26 @@ export function MessageThreadView({
 
     return (
       <motion.div
-        initial={{
-          opacity: 0,
-          x: layout === 'sidebar' ? 300 : 0,
-          y: layout === 'inline' ? 20 : 0,
-        }}
+        initial={
+          prefersReducedMotion
+            ? false
+            : {
+                opacity: 0,
+                x: layout === 'sidebar' ? 300 : 0,
+                y: layout === 'inline' ? 20 : 0,
+              }
+        }
         animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{
-          opacity: 0,
-          x: layout === 'sidebar' ? 300 : 0,
-          y: layout === 'inline' ? 20 : 0,
-        }}
+        exit={
+          prefersReducedMotion
+            ? false
+            : {
+                opacity: 0,
+                x: layout === 'sidebar' ? 300 : 0,
+                y: layout === 'inline' ? 20 : 0,
+              }
+        }
+        viewport={{ once: true }}
         className={cn(
           layout === 'sidebar' &&
             'fixed right-0 top-0 bottom-0 w-96 bg-background border-l shadow-lg z-50 flex flex-col',
@@ -374,48 +386,49 @@ export function MessageThreadView({
             layout === 'inline' && 'max-h-96'
           )}
         >
-          <AnimatePresence>
-            {isCollapsed ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsCollapsed(false)}
-                className="w-full"
+          {isCollapsed ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsCollapsed(false)}
+              className="w-full"
+            >
+              Show {messageCount - 2} more{' '}
+              {messageCount - 2 === 1 ? 'message' : 'messages'}
+            </Button>
+          ) : (
+            thread.messages.map((message, index) => (
+              <motion.div
+                key={message.id}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+                transition={
+                  prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }
+                }
+                viewport={{ once: true }}
+                className={cn(
+                  'p-3 rounded-lg',
+                  message.role === 'user'
+                    ? 'bg-primary/10 ml-4'
+                    : 'bg-muted mr-4'
+                )}
               >
-                Show {messageCount - 2} more{' '}
-                {messageCount - 2 === 1 ? 'message' : 'messages'}
-              </Button>
-            ) : (
-              thread.messages.map((message, index) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={cn(
-                    'p-3 rounded-lg',
-                    message.role === 'user'
-                      ? 'bg-primary/10 ml-4'
-                      : 'bg-muted mr-4'
-                  )}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium">
-                      {thread.participants.find((p) => p.role === message.role)
-                        ?.name || message.role}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatRelativeTime(
-                        new Date(Date.now() - (thread.messages.length - index) * 60000)
-                      )}
-                    </span>
-                  </div>
-                  <div className="text-sm">{message.content}</div>
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium">
+                    {thread.participants.find((p) => p.role === message.role)
+                      ?.name || message.role}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatRelativeTime(
+                      new Date(Date.now() - (thread.messages.length - index) * 60000)
+                    )}
+                  </span>
+                </div>
+                <div className="text-sm">{message.content}</div>
+              </motion.div>
+            ))
+          )}
 
           {isCollapsed && thread.messages.length > config.collapseThreshold && (
             <div className="text-center">
@@ -489,9 +502,7 @@ export function MessageThreadView({
       )}
 
       {/* Expanded thread */}
-      <AnimatePresence>
-        <ExpandedThread />
-      </AnimatePresence>
+      <ExpandedThread />
     </div>
   )
 }
@@ -524,6 +535,7 @@ export function ThreadList({
   showArchived = false,
   className,
 }: ThreadListProps) {
+  const prefersReducedMotion = useReducedMotion()
   const config = { ...defaultConfig, ...userConfig }
 
   const [searchQuery, setSearchQuery] = React.useState('')
@@ -608,21 +620,23 @@ export function ThreadList({
 
       {/* Thread list */}
       <div className="space-y-2">
-        <AnimatePresence mode="popLayout">
-          {processedThreads.map((thread, index) => {
-            const parentMessage = parentMessages.get(thread.parentMessageId)
-            if (!parentMessage) return null
+        {processedThreads.map((thread, index) => {
+          const parentMessage = parentMessages.get(thread.parentMessageId)
+          if (!parentMessage) return null
 
-            const isSelected = thread.id === selectedThreadId
+          const isSelected = thread.id === selectedThreadId
 
-            return (
-              <motion.div
-                key={thread.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ delay: index * 0.03 }}
-              >
+          return (
+            <motion.div
+              key={thread.id}
+              initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={prefersReducedMotion ? false : { opacity: 0, x: 20 }}
+              transition={
+                prefersReducedMotion ? { duration: 0 } : { delay: index * 0.03 }
+              }
+              viewport={{ once: true }}
+            >
                 <Card
                   className={cn(
                     'cursor-pointer transition-all hover:shadow-md',
@@ -665,7 +679,6 @@ export function ThreadList({
               </motion.div>
             )
           })}
-        </AnimatePresence>
 
         {processedThreads.length === 0 && (
           <Card className="shadow-sm">

@@ -9,6 +9,7 @@ import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => Promise<MessageAttachment[]>
@@ -39,6 +40,7 @@ export function FileUpload({
   ],
   className,
 }: FileUploadProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isDragging, setIsDragging] = React.useState(false)
   const [files, setFiles] = React.useState<File[]>([])
   const [uploading, setUploading] = React.useState(false)
@@ -193,32 +195,57 @@ export function FileUpload({
           className="hidden"
         />
 
-        <motion.div
-          className="space-y-3.5"
-          animate={{
-            scale: isDragging ? 1.05 : 1,
-          }}
-          transition={{
-            // Framer Motion 12: Spring scale on drag
-            type: 'spring',
-            damping: 18,
-            stiffness: 280,
-          }}
-        >
+        {prefersReducedMotion ? (
+          <div className="space-y-3.5">
+            <div className="text-5xl">📁</div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {isDragging
+                  ? 'Drop files here'
+                  : 'Click to upload or drag and drop'}
+              </p>
+              <p className="text-xs text-muted-foreground/90 mt-1">
+                Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-1.5 justify-center">
+              {acceptedFileTypes.slice(0, 4).map((type) => (
+                <Badge key={type} variant="outline" className="text-xs">
+                  {type.replace('*', 'all')}
+                </Badge>
+              ))}
+              {acceptedFileTypes.length > 4 && (
+                <Badge variant="outline" className="text-xs">
+                  +{acceptedFileTypes.length - 4} more
+                </Badge>
+              )}
+            </div>
+          </div>
+        ) : (
           <motion.div
-            className="text-5xl"
+            className="space-y-3.5"
             animate={{
-              y: isDragging ? -4 : 0,
+              scale: isDragging ? 1.05 : 1,
             }}
             transition={{
-              // Framer Motion 12: Spring bounce on drag
               type: 'spring',
-              damping: 15,
-              stiffness: 250,
+              damping: 18,
+              stiffness: 280,
             }}
           >
-            📁
-          </motion.div>
+            <motion.div
+              className="text-5xl"
+              animate={{
+                y: isDragging ? -4 : 0,
+              }}
+              transition={{
+                type: 'spring',
+                damping: 15,
+                stiffness: 250,
+              }}
+            >
+              📁
+            </motion.div>
           <div>
             <p className="text-sm font-semibold text-foreground">
               {isDragging
@@ -229,39 +256,58 @@ export function FileUpload({
               Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
             </p>
           </div>
-          <div className="flex flex-wrap gap-1.5 justify-center">
-            {acceptedFileTypes.slice(0, 4).map((type, i) => (
-              <motion.div
-                key={type}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.05, duration: durations.normal }}
-              >
+            <div className="flex flex-wrap gap-1.5 justify-center">
+              {acceptedFileTypes.slice(0, 4).map((type, i) => (
+                <motion.div
+                  key={type}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.05, duration: durations.normal }}
+                  viewport={{ once: true }}
+                >
+                  <Badge variant="outline" className="text-xs">
+                    {type.replace('*', 'all')}
+                  </Badge>
+                </motion.div>
+              ))}
+              {acceptedFileTypes.length > 4 && (
                 <Badge variant="outline" className="text-xs">
-                  {type.replace('*', 'all')}
+                  +{acceptedFileTypes.length - 4} more
                 </Badge>
-              </motion.div>
-            ))}
-            {acceptedFileTypes.length > 4 && (
-              <Badge variant="outline" className="text-xs">
-                +{acceptedFileTypes.length - 4} more
-              </Badge>
-            )}
-          </div>
-        </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Error Message */}
-      <AnimatePresence>
-        {error && (
+      {error && (
+        prefersReducedMotion ? (
+          <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm">
+            <div className="flex items-start gap-2">
+              <svg
+                className="h-4 w-4 shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              {error}
+            </div>
+          </div>
+        ) : (
           <motion.div
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{
               duration: durations.normal,
               ease: EASING_FRAMER.sharp,
             }}
+            viewport={{ once: true }}
             className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
             <div className="flex items-start gap-2">
@@ -279,16 +325,85 @@ export function FileUpload({
               {error}
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        )
+      )}
 
       {/* Files List */}
-      <AnimatePresence>
-        {files.length > 0 && (
+      {files.length > 0 && (
+        prefersReducedMotion ? (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium">
+                Files to upload ({files.length}/{maxFiles})
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFiles([])}
+                disabled={uploading}
+              >
+                Clear all
+              </Button>
+            </div>
+
+            <div className="space-y-2.5">
+              {files.map((file, index) => (
+                <div
+                  key={`${file.name}-${index}`}
+                  className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
+                >
+                  <span className="text-2xl">{getFileIcon(file)}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      {file.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground/90">
+                      {formatFileSize(file.size)} •{' '}
+                      {file.type || 'Unknown type'}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFile(index)}
+                    disabled={uploading}
+                    className="flex-shrink-0 h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
+                    aria-label="Remove file"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              onClick={handleUpload}
+              disabled={uploading}
+              loading={uploading}
+              className="w-full"
+            >
+              {uploading
+                ? 'Uploading...'
+                : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
+            </Button>
+          </div>
+        ) : (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            viewport={{ once: true }}
             className="space-y-2.5"
           >
             <div className="flex items-center justify-between">
@@ -311,12 +426,12 @@ export function FileUpload({
                   key={`${file.name}-${index}`}
                   initial={{ opacity: 0, x: -20, scale: 0.95 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
                   transition={{
                     delay: index * 0.05,
                     duration: durations.normal,
                     ease: EASING_FRAMER.sharp,
                   }}
+                  viewport={{ once: true }}
                   className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
                 >
                   <motion.span
@@ -329,6 +444,7 @@ export function FileUpload({
                       stiffness: 500,
                       damping: 30,
                     }}
+                    viewport={{ once: true }}
                   >
                     {getFileIcon(file)}
                   </motion.span>
@@ -378,8 +494,8 @@ export function FileUpload({
                 : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
             </Button>
           </motion.div>
-        )}
-      </AnimatePresence>
+        )
+      )}
     </div>
   )
 }

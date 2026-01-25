@@ -11,6 +11,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Props for ExperimentCard component
@@ -64,6 +65,8 @@ export function ExperimentCard({
   onSelect,
   className,
 }: ExperimentCardProps): React.ReactElement {
+  const prefersReducedMotion = useReducedMotion()
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -73,10 +76,11 @@ export function ExperimentCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
+      whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
+      viewport={{ once: true }}
     >
       <Card
         className={cn(

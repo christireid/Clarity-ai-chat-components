@@ -10,6 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * User presence status
@@ -206,6 +207,7 @@ export function CollaborativeEditor({
   onCursorMove,
   className,
 }: CollaborativeEditorProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [content, setContent] = React.useState(message.content)
   const [isEditing, setIsEditing] = React.useState(false)
   const [hasLock, setHasLock] = React.useState(false)
@@ -426,12 +428,16 @@ export function CollaborativeEditor({
                   {showCursors && activeEditors.map(user => {
                     if (!user.cursorPosition) return null
 
+                    const CursorWrapper = prefersReducedMotion ? 'div' : motion.div
+
                     return (
-                      <motion.div
+                      <CursorWrapper
                         key={user.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        {...(!prefersReducedMotion && {
+                          initial: { opacity: 0 },
+                          animate: { opacity: 1 },
+                          exit: { opacity: 0 },
+                        })}
                         className="absolute pointer-events-none"
                         style={{
                           borderLeft: `2px solid ${user.color}`,
@@ -446,7 +452,7 @@ export function CollaborativeEditor({
                         >
                           {user.name}
                         </div>
-                      </motion.div>
+                      </CursorWrapper>
                     )
                   })}
                 </div>
@@ -691,6 +697,7 @@ export function PresenceIndicator({
   showStatus = true,
   className,
 }: PresenceIndicatorProps) {
+  const prefersReducedMotion = useReducedMotion()
   const activeUsers = users.filter(u => u.status === 'online')
   const displayUsers = activeUsers.slice(0, maxDisplay)
   const remaining = Math.max(0, activeUsers.length - maxDisplay)
@@ -712,14 +719,10 @@ export function PresenceIndicator({
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
-      <AnimatePresence mode="popLayout">
-        {displayUsers.map((user, index) => (
-          <motion.div
+      {prefersReducedMotion ? (
+        displayUsers.map((user, index) => (
+          <div
             key={user.id}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ delay: index * 0.05 }}
             className="relative"
             title={`${user.name} (${user.status})`}
             style={{ zIndex: displayUsers.length - index }}
@@ -739,9 +742,40 @@ export function PresenceIndicator({
                 )}
               />
             )}
-          </motion.div>
-        ))}
-      </AnimatePresence>
+          </div>
+        ))
+      ) : (
+        <AnimatePresence mode="popLayout">
+          {displayUsers.map((user, index) => (
+            <motion.div
+              key={user.id}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="relative"
+              title={`${user.name} (${user.status})`}
+              style={{ zIndex: displayUsers.length - index }}
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium border-2 border-background"
+                style={{ backgroundColor: user.color }}
+              >
+                {user.name[0].toUpperCase()}
+              </div>
+
+              {showStatus && (
+                <div
+                  className={cn(
+                    'absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background',
+                    getStatusColor(user.status)
+                  )}
+                />
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      )}
 
       {remaining > 0 && (
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium bg-muted border-2 border-background">

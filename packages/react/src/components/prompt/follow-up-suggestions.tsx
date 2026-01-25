@@ -12,6 +12,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
@@ -60,15 +61,16 @@ export function FollowUpSuggestions({
   emptyState,
   className,
 }: FollowUpSuggestionsProps) {
+  const prefersReducedMotion = useReducedMotion()
   const containerRef = React.useRef<HTMLDivElement | null>(null)
 
   const renderSuggestion = (suggestion: FollowUpSuggestion, index: number) => (
     <motion.li
       key={suggestion.id}
       className="h-full"
-      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.96 }}
+      exit={prefersReducedMotion ? false : { opacity: 0, y: -10, scale: 0.96 }}
       transition={{
         // Framer Motion 12: Spring follow-up cards
         type: 'spring',
@@ -76,6 +78,7 @@ export function FollowUpSuggestions({
         stiffness: 290,
         delay: index * 0.05,
       }}
+      viewport={{ once: true }}
     >
       <Button
         variant="outline"
@@ -142,9 +145,10 @@ export function FollowUpSuggestions({
       {Array.from({ length: loadingCount }).map((_, index) => (
         <motion.li
           key={`skeleton-${index}`}
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: durations.normal, delay: index * 0.05 }}
+          viewport={{ once: true }}
           className="rounded-lg border bg-muted/50 p-4 shadow-sm"
         >
           <div className="flex items-center gap-3.5">
@@ -165,9 +169,10 @@ export function FollowUpSuggestions({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: durations.normal }}
+      viewport={{ once: true }}
     >
       <Card
         ref={containerRef}
@@ -207,20 +212,19 @@ export function FollowUpSuggestions({
           {isLoading && renderLoading()}
 
           {!isLoading && hasSuggestions && (
-            <AnimatePresence initial={false}>
-              <ul className={cn(gridClasses[layout], 'list-none p-0')}>
-                {suggestions.map((suggestion, index) =>
-                  renderSuggestion(suggestion, index)
-                )}
-              </ul>
-            </AnimatePresence>
+            <ul className={cn(gridClasses[layout], 'list-none p-0')}>
+              {suggestions.map((suggestion, index) =>
+                renderSuggestion(suggestion, index)
+              )}
+            </ul>
           )}
 
           {!isLoading && !hasSuggestions && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: durations.normal }}
+              viewport={{ once: true }}
               className="rounded-lg border border-dashed bg-muted/50 p-8 text-center"
             >
               <svg

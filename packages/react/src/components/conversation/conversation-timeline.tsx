@@ -22,6 +22,7 @@ import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export type TimelineEventType =
   | 'user'
@@ -112,6 +113,7 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
   title = defaultTitle,
   subtitle = defaultSubtitle,
 }) => {
+  const prefersReducedMotion = useReducedMotion()
   const sortedEvents = React.useMemo(
     () =>
       [...events].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
@@ -143,8 +145,8 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
       </CardHeader>
       <CardContent>
         <ol className="relative space-y-4 before:absolute before:left-[15px] before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-border/70">
-          <AnimatePresence initial={false}>
-            {sortedEvents.map((event, index) => {
+          {prefersReducedMotion ? (
+            sortedEvents.map((event, index) => {
               const style = typeStyles[event.type]
               const isLast = index === sortedEvents.length - 1
               const timelineDotClasses = cn(
@@ -153,15 +155,8 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
               )
 
               return (
-                <motion.li
+                <li
                   key={event.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{
-                    duration: durations.normal,
-                    ease: EASING_FRAMER.default,
-                  }}
                   className="relative pl-12"
                 >
                   <span className={timelineDotClasses}>
@@ -232,10 +227,105 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   {!isLast && (
                     <span className="sr-only">Continues to next event</span>
                   )}
-                </motion.li>
+                </li>
               )
-            })}
-          </AnimatePresence>
+            })
+          ) : (
+            <AnimatePresence initial={false}>
+              {sortedEvents.map((event, index) => {
+                const style = typeStyles[event.type]
+                const isLast = index === sortedEvents.length - 1
+                const timelineDotClasses = cn(
+                  'absolute left-0 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border bg-[hsl(var(--surface-elevated))] shadow-[0_6px_16px_rgba(15,23,42,0.16)]',
+                  style.border
+                )
+
+                return (
+                  <motion.li
+                    key={event.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{
+                      duration: durations.normal,
+                      ease: EASING_FRAMER.default,
+                    }}
+                    viewport={{ once: true }}
+                    className="relative pl-12"
+                  >
+                    <span className={timelineDotClasses}>
+                      {event.icon ?? style.icon}
+                    </span>
+                    <div
+                      className={cn(
+                        'group flex flex-col gap-2 rounded-lg border bg-gradient-to-br p-4 text-sm shadow-md backdrop-blur-sm transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40',
+                        style.bg,
+                        style.border
+                      )}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-base font-semibold text-foreground">
+                            {event.title}
+                          </h3>
+                          <span className="text-xs font-medium text-muted-foreground/70">
+                            {formatTime(event.timestamp)}
+                          </span>
+                          {event.durationMs !== undefined && (
+                            <span className="text-xs font-medium text-muted-foreground/70">
+                              • {(event.durationMs / 1000).toFixed(1)}s
+                            </span>
+                          )}
+                        </div>
+
+                        {showStatusIndicators && event.status && (
+                          <Badge variant={statusVariant[event.status]}>
+                            {statusText[event.status]}
+                          </Badge>
+                        )}
+                      </div>
+
+                      {event.summary && (
+                        <p className="text-sm text-muted-foreground/85">
+                          {event.summary}
+                        </p>
+                      )}
+
+                      {event.metadata && event.metadata.length > 0 && (
+                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground/70">
+                          {event.metadata.map(({ label, value }) => (
+                            <div
+                              key={`${event.id}-${label}`}
+                              className="flex items-center gap-1"
+                            >
+                              <span className="font-medium text-muted-foreground/90">
+                                {label}:
+                              </span>
+                              <span>{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {onJumpToEvent && (
+                        <button
+                          type="button"
+                          onClick={() => onJumpToEvent(event)}
+                          className="self-start text-xs font-semibold text-primary transition-all hover:text-primary/80"
+                        >
+                          Jump to moment →
+                        </button>
+                      )}
+                    </div>
+
+                    {!isLast && (
+                      <span className="sr-only">Continues to next event</span>
+                    )}
+                  </motion.li>
+                )
+              })}
+            </AnimatePresence>
+          )}
         </ol>
       </CardContent>
     </Card>

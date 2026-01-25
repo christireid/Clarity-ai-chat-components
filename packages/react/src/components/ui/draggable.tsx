@@ -8,6 +8,7 @@ import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface DragInfo {
   point: { x: number; y: number }
@@ -40,6 +41,7 @@ export function Draggable({
   className,
   ref,
 }: DraggableProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isDragging, setIsDragging] = React.useState(false)
 
   const handleDragStart = () => {
@@ -74,21 +76,36 @@ export function Draggable({
       dragMomentum={false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      whileDrag={{
-        scale: 1.05,
-        opacity: showGhost ? 0.7 : 1,
-        zIndex: 50,
-        cursor: 'grabbing',
-      }}
-      animate={{
-        scale: isDragging ? 1.05 : 1,
-        rotate: isDragging ? 2 : 0,
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-      }}
+      whileDrag={
+        prefersReducedMotion
+          ? {
+              zIndex: 50,
+              cursor: 'grabbing',
+            }
+          : {
+              scale: 1.05,
+              opacity: showGhost ? 0.7 : 1,
+              zIndex: 50,
+              cursor: 'grabbing',
+            }
+      }
+      animate={
+        prefersReducedMotion
+          ? {}
+          : {
+              scale: isDragging ? 1.05 : 1,
+              rotate: isDragging ? 2 : 0,
+            }
+      }
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              type: 'spring',
+              stiffness: 300,
+              damping: 20,
+            }
+      }
       className={cn(
         'touch-none',
         !disabled && 'cursor-grab active:cursor-grabbing',
@@ -96,6 +113,7 @@ export function Draggable({
         className
       )}
       data-drag-id={dragId}
+      viewport={{ once: true }}
     >
       {children}
     </motion.div>
@@ -123,6 +141,7 @@ export function DropZone({
   activeClassName,
   ref,
 }: DropZoneProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [isHovered, setIsHovered] = React.useState(false)
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -155,42 +174,58 @@ export function DropZone({
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      animate={{
-        scale: isHovered ? 1.02 : 1,
-        borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
-      }}
-      transition={{
-        duration: ANIMATION_DURATION.fast / 1000,
-        ease: EASING_FRAMER.out,
-      }}
+      animate={
+        prefersReducedMotion
+          ? {}
+          : {
+              scale: isHovered ? 1.02 : 1,
+              borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
+            }
+      }
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : {
+              duration: ANIMATION_DURATION.fast / 1000,
+              ease: EASING_FRAMER.out,
+            }
+      }
       className={cn(
         'relative border-2 border-dashed rounded-lg transition-all',
         isHovered && (activeClassName || 'border-primary bg-primary/5'),
         className
       )}
+      viewport={{ once: true }}
     >
       {/* Drop Indicator */}
-      {isHovered && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 pointer-events-none"
-        >
+      {isHovered &&
+        (prefersReducedMotion ? (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 rounded-lg bg-primary/10" />
+          </div>
+        ) : (
           <motion.div
-            animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.5, 0.8, 0.5],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: durations.slower,
-              ease: 'easeInOut',
-            }}
-            className="absolute inset-0 rounded-lg bg-primary/10"
-          />
-        </motion.div>
-      )}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 pointer-events-none"
+            viewport={{ once: true }}
+          >
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: durations.slower,
+                ease: 'easeInOut',
+              }}
+              className="absolute inset-0 rounded-lg bg-primary/10"
+              viewport={{ once: true }}
+            />
+          </motion.div>
+        ))}
 
       {children}
     </motion.div>

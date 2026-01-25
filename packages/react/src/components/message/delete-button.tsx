@@ -15,6 +15,7 @@ import {
 } from '@clarity-chat/primitives'
 import { TrashIcon } from '../ui/icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // Animation variants for buttons
 const buttonVariants = {
@@ -57,6 +58,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
   showToast,
 }) => {
   const [showDialog, setShowDialog] = React.useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const handleClick = () => {
     if (showConfirmation) {
@@ -77,13 +79,13 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
     <>
       <Tooltip content="Delete message" side="top" delay={300}>
         <motion.div
-          variants={buttonVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          whileHover={isDeleting ? undefined : 'hover'}
-          whileTap={isDeleting ? undefined : 'tap'}
-          transition={{ delay, duration: durations.fast }}
+          variants={prefersReducedMotion ? {} : buttonVariants}
+          initial={prefersReducedMotion ? false : "initial"}
+          animate={prefersReducedMotion ? {} : "animate"}
+          whileHover={isDeleting || prefersReducedMotion ? undefined : 'hover'}
+          whileTap={isDeleting || prefersReducedMotion ? undefined : 'tap'}
+          transition={{ delay: prefersReducedMotion ? 0 : delay, duration: prefersReducedMotion ? 0 : durations.fast }}
+          viewport={{ once: true }}
         >
           <Button
             variant="ghost"
@@ -99,14 +101,15 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
           >
             <motion.div
               animate={
-                isDeleting
+                isDeleting && !prefersReducedMotion
                   ? {
                       rotate: [0, 10, -10, 10, 0],
                       scale: [1, 0.9, 0.9, 0.9, 0.8],
                     }
                   : {}
               }
-              transition={{ duration: durations.moderate }}
+              transition={{ duration: prefersReducedMotion ? 0 : durations.moderate }}
+              viewport={{ once: true }}
             >
               <TrashIcon size={15} />
             </motion.div>

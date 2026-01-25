@@ -16,6 +16,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { KnowledgeBase, KnowledgeSection } from '@clarity-chat/types'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface KnowledgeBaseViewerProps {
   knowledgeBase: KnowledgeBase
@@ -33,6 +34,7 @@ interface KnowledgeSectionItemProps {
   isEditing: boolean
   editable: boolean
   editContent: { title: string; content: string }
+  prefersReducedMotion: boolean
   onToggle: () => void
   onStartEdit: () => void
   onEditContentChange: (updates: { title?: string; content?: string }) => void
@@ -50,6 +52,7 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
   isEditing,
   editable,
   editContent,
+  prefersReducedMotion,
   onToggle,
   onStartEdit,
   onEditContentChange,
@@ -60,10 +63,11 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
 }: KnowledgeSectionItemProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ delay: index * 0.05 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+      transition={{ delay: prefersReducedMotion ? 0 : index * 0.05 }}
+      viewport={{ once: true }}
     >
       <Card className="overflow-hidden">
         {/* Header */}
@@ -160,14 +164,70 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
         </div>
 
         {/* Content */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="border-t"
-            >
+        {prefersReducedMotion ? (
+          isExpanded && (
+            <div className="border-t">
+              <div className="p-4 ml-9 space-y-3">
+                {isEditing ? (
+                  <>
+                    <Textarea
+                      value={editContent.content}
+                      onChange={(e) =>
+                        onEditContentChange({ content: e.target.value })
+                      }
+                      rows={6}
+                      placeholder="Section content"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={onSaveEdit}>
+                        Save
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={onCancelEdit}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-sm whitespace-pre-wrap">{section.content}</p>
+                    </div>
+
+                    {/* Sources */}
+                    {section.sources.length > 0 && (
+                      <div className="pt-3 border-t">
+                        <p className="text-xs font-semibold mb-2">Sources:</p>
+                        <div className="space-y-2">
+                          {section.sources.map((source, i) => (
+                            <div
+                              key={i}
+                              className="p-2 rounded bg-muted/50 text-xs"
+                            >
+                              <p className="text-muted-foreground truncate">
+                                "{source.excerpt}"
+                              </p>
+                              <p className="text-muted-foreground mt-1">
+                                {source.timestamp.toLocaleString()}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )
+        ) : (
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="border-t"
+              >
               <div className="p-4 ml-9 space-y-3">
                 {isEditing ? (
                   <>
@@ -221,6 +281,7 @@ const KnowledgeSectionItem = React.memo(function KnowledgeSectionItem({
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </Card>
     </motion.div>
   )
@@ -234,6 +295,7 @@ export function KnowledgeBaseViewer({
   editable = false,
   className,
 }: KnowledgeBaseViewerProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [searchQuery, setSearchQuery] = React.useState('')
   const [editingId, setEditingId] = React.useState<string | null>(null)
   const [editContent, setEditContent] = React.useState({
@@ -360,6 +422,30 @@ export function KnowledgeBaseViewer({
                   : 'Knowledge will be automatically generated as you chat'}
               </p>
             </div>
+          ) : prefersReducedMotion ? (
+            <div className="space-y-3 pb-4">
+              {filteredSections.map((section, index) => (
+                <KnowledgeSectionItem
+                  key={section.id}
+                  section={section}
+                  index={index}
+                  isExpanded={expandedSections.has(section.id)}
+                  isEditing={editingId === section.id}
+                  editable={editable}
+                  editContent={editContent}
+                  prefersReducedMotion={prefersReducedMotion}
+                  onToggle={() => toggleSection(section.id)}
+                  onStartEdit={() => startEditing(section)}
+                  onEditContentChange={(updates) =>
+                    setEditContent({ ...editContent, ...updates })
+                  }
+                  onSaveEdit={saveEdit}
+                  onCancelEdit={cancelEdit}
+                  onDelete={onDelete ? () => onDelete(section.id) : undefined}
+                  getConfidenceColor={getConfidenceColor}
+                />
+              ))}
+            </div>
           ) : (
             <div className="space-y-3 pb-4">
               <AnimatePresence>
@@ -372,6 +458,7 @@ export function KnowledgeBaseViewer({
                     isEditing={editingId === section.id}
                     editable={editable}
                     editContent={editContent}
+                    prefersReducedMotion={prefersReducedMotion}
                     onToggle={() => toggleSection(section.id)}
                     onStartEdit={() => startEditing(section)}
                     onEditContentChange={(updates) =>

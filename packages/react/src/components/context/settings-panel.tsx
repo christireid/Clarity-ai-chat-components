@@ -24,6 +24,7 @@ import type {
   MessageLayout,
 } from '@clarity-chat/types'
 import type { ThemeMode } from '../../theme/ThemeProvider'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface SettingsPanelProps {
   settings: UserSettings
@@ -42,6 +43,7 @@ export function SettingsPanel({
     'ai' | 'ui' | 'privacy' | 'notifications'
   >('ai')
   const [hasChanges, setHasChanges] = React.useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const tabs = [
     { id: 'ai' as const, label: 'AI Behavior', icon: '🤖' },
@@ -114,14 +116,16 @@ export function SettingsPanel({
         <ScrollArea className="h-full">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: prefersReducedMotion ? 0 : 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{
               // Framer Motion 12: Spring tab transition
-              type: 'spring',
+              type: prefersReducedMotion ? 'tween' : 'spring',
+              duration: prefersReducedMotion ? 0 : undefined,
               damping: 25,
               stiffness: 300,
             }}
+            viewport={{ once: true }}
             className="space-y-6 pb-4"
           >
             {/* AI Behavior Tab */}

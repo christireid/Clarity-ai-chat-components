@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { RefreshIcon, CloseIcon } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
+import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
 
 /**
  * Email provider types
@@ -257,6 +258,7 @@ export function EmailIntegration({
   ref,
   ...props
 }: EmailIntegrationProps) {
+  const prefersReducedMotion = useReducedMotion()
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<EmailIntegrationState>({
     accounts,
@@ -515,13 +517,46 @@ export function EmailIntegration({
 
             {/* Messages */}
             <div className="space-y-4 max-h-[400px] overflow-y-auto">
-              <AnimatePresence>
-                {selectedThread.messages?.map((message, index) => (
+              {selectedThread.messages?.map((message, index) =>
+                prefersReducedMotion ? (
+                  <div
+                    key={message.id}
+                    className="border-l-2 border-muted pl-3"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium">
+                        {message.from.isMe
+                          ? 'Me'
+                          : getParticipantName(message.from)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatTimestamp(message.timestamp)}
+                      </span>
+                    </div>
+                    <div className="text-sm whitespace-pre-wrap">
+                      {message.body}
+                    </div>
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {message.attachments.map((attachment) => (
+                          <Badge
+                            key={attachment.id}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {attachment.filename}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <motion.div
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
+                    viewport={{ once: true }}
                     className="border-l-2 border-muted pl-3"
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -551,8 +586,8 @@ export function EmailIntegration({
                       </div>
                     )}
                   </motion.div>
-                ))}
-              </AnimatePresence>
+                )
+              )}
             </div>
 
             {/* Reply box */}
@@ -593,14 +628,81 @@ export function EmailIntegration({
             <Card>
               <CardContent className="p-0">
                 <div className="divide-y">
-                  <AnimatePresence>
-                    {state.threads.map((thread, index) => (
+                  {state.threads.map((thread, index) =>
+                    prefersReducedMotion ? (
+                      <div
+                        key={thread.id}
+                        className={cn(
+                          'flex items-start gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
+                          thread.unread && 'bg-primary/5'
+                        )}
+                        onClick={() => selectThread(thread)}
+                      >
+                        {/* Unread indicator */}
+                        <div
+                          className={cn(
+                            'w-2 h-2 rounded-full mt-2 shrink-0',
+                            thread.unread ? 'bg-primary' : 'bg-transparent'
+                          )}
+                        />
+
+                        {/* Thread info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span
+                              className={cn(
+                                'truncate',
+                                thread.unread && 'font-semibold'
+                              )}
+                            >
+                              {getParticipantsDisplay(thread.participants)}
+                            </span>
+                            <span className="text-xs text-muted-foreground shrink-0">
+                              {formatTimestamp(thread.lastMessageAt)}
+                            </span>
+                          </div>
+                          <div
+                            className={cn(
+                              'text-sm truncate',
+                              thread.unread
+                                ? 'text-foreground'
+                                : 'text-muted-foreground'
+                            )}
+                          >
+                            {thread.subject}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {thread.snippet}
+                          </div>
+                          {thread.labels.length > 0 && (
+                            <div className="flex gap-1 mt-1">
+                              {thread.labels.slice(0, 3).map((label) => (
+                                <Badge
+                                  key={label}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {label}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Message count */}
+                        {thread.messageCount > 1 && (
+                          <Badge variant="secondary" className="shrink-0">
+                            {thread.messageCount}
+                          </Badge>
+                        )}
+                      </div>
+                    ) : (
                       <motion.div
                         key={thread.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
                         transition={{ delay: index * 0.02 }}
+                        viewport={{ once: true }}
                         className={cn(
                           'flex items-start gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
                           thread.unread && 'bg-primary/5'
@@ -665,8 +767,8 @@ export function EmailIntegration({
                           </Badge>
                         )}
                       </motion.div>
-                    ))}
-                  </AnimatePresence>
+                    )
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -688,23 +790,39 @@ export function EmailIntegration({
           <CardContent className="p-4">
             <div className="text-sm font-medium mb-3">Notifications</div>
             <div className="space-y-2">
-              {state.notifications.slice(0, 5).map((notification, index) => (
-                <motion.div
-                  key={notification.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={cn(
-                    'p-2 rounded-lg text-sm',
-                    notification.read ? 'bg-muted/50' : 'bg-primary/10'
-                  )}
-                >
+              {state.notifications.slice(0, 5).map((notification, index) =>
+                prefersReducedMotion ? (
+                  <div
+                    key={notification.id}
+                    className={cn(
+                      'p-2 rounded-lg text-sm',
+                      notification.read ? 'bg-muted/50' : 'bg-primary/10'
+                    )}
+                  >
+                    <div className="font-medium">{notification.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {notification.body}
+                    </div>
+                  </div>
+                ) : (
+                  <motion.div
+                    key={notification.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    viewport={{ once: true }}
+                    className={cn(
+                      'p-2 rounded-lg text-sm',
+                      notification.read ? 'bg-muted/50' : 'bg-primary/10'
+                    )}
+                  >
                   <div className="font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">
                     {notification.body}
                   </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                )
+              )}
             </div>
           </CardContent>
         </Card>

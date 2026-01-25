@@ -19,6 +19,7 @@ import type {
   ClarityMemoryOptions,
   ClarityPromptOptimizationOptions,
 } from '../../hooks/use-clarity-chat/types'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface FloatingChatWidgetProps {
   apiEndpoint?: string
@@ -43,6 +44,7 @@ export function FloatingChatWidget({
   const [isHovered, setIsHovered] = useState(false)
   const [userApiKey, setUserApiKey] = useState('')
   const [showKeyInput, setShowKeyInput] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -91,11 +93,17 @@ export function FloatingChatWidget({
   const windowVariants = animationPresets.tooltip.variants // Tooltip variants are simple fades/scales, good for chat
 
   // Custom variant combining slide-up with scale for a more "chat-like" entrance
-  const customChatVariants = {
-    initial: { opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' },
-    animate: { opacity: 1, scale: 1, y: 0 },
-    exit: { opacity: 0, scale: 0.9, y: 20 },
-  }
+  const customChatVariants = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.9, y: 20 },
+      }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
@@ -107,7 +115,8 @@ export function FloatingChatWidget({
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={springPresets.snappy}
+            transition={prefersReducedMotion ? { duration: 0 } : springPresets.snappy}
+            viewport={{ once: true }}
             className="mb-4 w-[min(95vw,350px)] sm:w-96 md:w-[400px] h-[min(70vh,500px)] max-h-[500px] bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
             {/* Header */}
@@ -268,8 +277,9 @@ export function FloatingChatWidget({
 
       {/* Floating Toggle Button */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
+        whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+        viewport={{ once: true }}
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
