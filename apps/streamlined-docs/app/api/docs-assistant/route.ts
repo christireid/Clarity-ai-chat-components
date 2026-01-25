@@ -153,7 +153,10 @@ export async function POST(request: NextRequest) {
           request.headers.get('user-agent') || undefined
         )
       } catch (error) {
-        console.error('Session error:', error)
+        console.error('Session error', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         // Continue without session if it fails
       }
     }
@@ -354,7 +357,10 @@ async function* streamWithRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          console.error('Failed to save session', {
+            errorType: error?.constructor?.name || 'Unknown',
+            timestamp: new Date().toISOString(),
+          })
         }
       }
 
@@ -417,7 +423,10 @@ async function* streamWithRAG(
           contextHash,
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        console.error('Failed to cache response', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         // Don't fail the request if caching fails
       }
     }
@@ -438,12 +447,18 @@ async function* streamWithRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        console.error('Failed to save session', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         // Don't fail the request if session save fails
       }
     }
   } catch (error) {
-    console.error('RAG streaming error:', error)
+    console.error('RAG streaming error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     yield handleStreamError(error)
   }
 }
@@ -539,7 +554,10 @@ async function* streamWithEnhancedRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          console.error('Failed to save session', {
+            errorType: error?.constructor?.name || 'Unknown',
+            timestamp: new Date().toISOString(),
+          })
         }
       }
 
@@ -606,7 +624,10 @@ async function* streamWithEnhancedRAG(
           contextHash,
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        console.error('Failed to cache response', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
       }
     }
 
@@ -626,11 +647,17 @@ async function* streamWithEnhancedRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        console.error('Failed to save session', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
       }
     }
   } catch (error) {
-    console.error('Enhanced RAG streaming error:', error)
+    console.error('Enhanced RAG streaming error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     yield handleStreamError(error)
   }
 }
@@ -684,7 +711,10 @@ async function* streamWithoutRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          console.error('Failed to save session', {
+            errorType: error?.constructor?.name || 'Unknown',
+            timestamp: new Date().toISOString(),
+          })
         }
       }
 
@@ -713,7 +743,10 @@ async function* streamWithoutRAG(
           model: modelOverride || process.env.AI_MODEL || 'unknown',
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        console.error('Failed to cache response', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         // Don't fail the request if caching fails
       }
     }
@@ -734,12 +767,18 @@ async function* streamWithoutRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        console.error('Failed to save session', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         // Don't fail the request if session save fails
       }
     }
   } catch (error) {
-    console.error('Streaming error:', error)
+    console.error('Streaming error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     yield handleStreamError(error)
   }
 }
@@ -855,11 +894,17 @@ Current page: ${currentPath || 'unknown'}`
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        console.error('Failed to save session', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
       }
     }
   } catch (error) {
-    console.error('Tool streaming error:', error)
+    console.error('Tool streaming error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     yield handleStreamError(error)
   }
 }
@@ -876,7 +921,10 @@ export async function GET() {
   try {
     cacheStats = await cache.getStats()
   } catch (error) {
-    console.error('Failed to get cache stats:', error)
+    console.error('Failed to get cache stats', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
   }
 
   // Get provider status for debugging and health checks
@@ -893,8 +941,8 @@ export async function GET() {
       isDemoMode: providerStatus.isDemoMode,
       summary: providerStatus.summary,
       available: providerStatus.providers
-        .filter(p => p.available && p.name !== 'demo')
-        .map(p => ({ name: p.name, model: p.model })),
+        .filter((p) => p.available && p.name !== 'demo')
+        .map((p) => ({ name: p.name, model: p.model })),
     },
     features: {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
@@ -943,7 +991,8 @@ export async function GET() {
     // Setup instructions if in demo mode
     ...(providerStatus.isDemoMode && {
       setup: {
-        message: 'Running in demo mode. To enable full AI functionality, configure an API key.',
+        message:
+          'Running in demo mode. To enable full AI functionality, configure an API key.',
         instructions: [
           '1. Copy .env.example to .env.local',
           '2. Add at least one API key:',

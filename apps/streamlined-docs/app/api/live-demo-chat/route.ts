@@ -82,7 +82,10 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        logger.error('Streaming error:', error)
+        logger.error('Streaming error', {
+          errorType: error?.constructor?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+        })
         controller.error(error)
       }
     },
@@ -135,7 +138,8 @@ export async function POST(request: NextRequest) {
       : message
 
     // Choose streaming function based on API key availability
-    const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+    const hasAnthropicKey =
+      !!process.env.ANTHROPIC_API_KEY &&
       process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
 
     let generator: AsyncGenerator<StreamChunk>
@@ -145,7 +149,7 @@ export async function POST(request: NextRequest) {
       generator = streamFromClaude(
         [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: messageWithContext }
+          { role: 'user', content: messageWithContext },
         ],
         { model: 'claude-sonnet-4-20250514' }
       )
@@ -177,7 +181,10 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    console.error('API error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -186,7 +193,8 @@ export async function POST(request: NextRequest) {
  * GET /api/live-demo-chat - Health check
  */
 export async function GET() {
-  const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY &&
+  const hasAnthropicKey =
+    !!process.env.ANTHROPIC_API_KEY &&
     process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')
   return Response.json({
     status: 'ok',

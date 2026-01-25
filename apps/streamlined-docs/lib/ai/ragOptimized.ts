@@ -203,7 +203,10 @@ async function performSemanticSearch(
       })
     })
   } catch (error) {
-    console.error('Semantic search error:', error)
+    console.error('Semantic search error', {
+      errorType: error?.constructor?.name || 'Unknown',
+      timestamp: new Date().toISOString(),
+    })
     // Return empty map on error - keyword search will still work
   }
 
