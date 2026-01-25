@@ -243,6 +243,7 @@ export function NetworkStatusBanner({
               )}
             </div>
           </div>
+          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, height: 0 }}

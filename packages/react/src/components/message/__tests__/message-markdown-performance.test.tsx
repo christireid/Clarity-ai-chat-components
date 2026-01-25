@@ -133,7 +133,7 @@ This is **bold** text with \`code\`.
 
       // Initially shows plain text
       expect(screen.getByText('Header')).toBeInTheDocument()
-      expect(screen.getByText('This is **bold** text with `code`.')).
+      expect(screen.getByText('This is **bold** text with `code`.')).toBeInTheDocument()
 
       // After lazy rendering delay, should show formatted content
       await waitFor(() => {

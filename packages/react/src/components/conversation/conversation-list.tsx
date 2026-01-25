@@ -760,7 +760,7 @@ export const ConversationList = memo(function ConversationList({
                     {...(prefersReducedMotion ? {} : {
                       initial: { opacity: 0, y: 20 },
                       animate: { opacity: 1, y: 0 },
-                      exit: { opacity: 0, x: -100, height: 0 },
+                      exit: { opacity: 0, x: -100, scaleY: 0 },
                       transition: {
                         duration: durations.normal,
                         delay: index * 0.05, // Stagger: 50ms between items

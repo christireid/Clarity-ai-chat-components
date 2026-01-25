@@ -77,7 +77,7 @@ describe('CommandPalette Performance Regression', () => {
         const actualReact = await vi.importActual('react')
         return {
           ...actualReact,
-          useMemo: (fn: Function, deps: any[]) => {
+          useMemo: (fn: () => unknown, deps: unknown[]) => {
             if (deps.includes('debouncedSearch')) {
               filterCount++
             }

@@ -290,6 +290,7 @@ export function ExportDialog({
                   <Input type="date" />
                 </div>
               </div>
+              </div>
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
