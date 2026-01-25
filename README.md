@@ -385,6 +385,31 @@ function TemplateSystem() {
 
 6 integration test suites with 100+ scenarios covering real-world usage patterns and edge cases.
 
+### ⚡ **Performance Benchmarking**
+
+Validate 60fps performance across all animations with our built-in benchmarking suite:
+
+```bash
+# Run all performance benchmarks
+pnpm perf:benchmark
+
+# Run specific benchmark suites
+pnpm bench:streaming   # Message streaming performance
+pnpm bench:animations  # Animation frame rates
+pnpm bench:layout      # Layout thrashing detection
+```
+
+**Features:**
+
+- Validates 60fps target for smooth animations
+- Compares normal vs reduced motion performance
+- Tests concurrent streaming scenarios
+- Generates detailed performance reports
+- CI/CD integration ready
+
+See [MIGRATION_GUIDES.md](./MIGRATION_GUIDES.md) and
+[TEST_PARALLELIZATION.md](./TEST_PARALLELIZATION.md) for more details.
+
 ---
 
 <br />
@@ -837,7 +862,7 @@ const results = await search('preferences')
 import { ErrorBoundary, useErrorHandler } from '@clarity-chat/error-handling'
 
 // Error boundary
-<ErrorBoundary fallback={<ErrorUI />}>
+;<ErrorBoundary fallback={<ErrorUI />}>
   <ChatComponent />
 </ErrorBoundary>
 

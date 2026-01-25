@@ -159,6 +159,7 @@
     "bench:concurrent": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench concurrent-streams",
     "bench:layout": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench layout-thrashing",
     "bench:json": "NODE_OPTIONS='--max-old-space-size=4096' vitest bench --reporter=json --outputFile=benchmark-results.json",
+    "perf:benchmark": "tsx scripts/performance-benchmark.ts",
     "size": "size-limit",
     "size:why": "size-limit --why",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
