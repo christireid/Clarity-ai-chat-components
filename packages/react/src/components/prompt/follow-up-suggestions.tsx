@@ -12,9 +12,12 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../../animations/constants'
 
 export interface FollowUpSuggestion {
   id: string

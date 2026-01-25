@@ -17,7 +17,7 @@ import {
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 import type { ExportOptions, ExportFormat } from '@clarity-chat/types'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface ExportDialogProps {
   open: boolean
@@ -249,20 +249,20 @@ export function ExportDialog({
                     viewport={{ once: true }}
                     className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
                   >
-                  <input
-                    type="checkbox"
-                    checked={options[key as keyof ExportOptions] as boolean}
-                    onChange={(e) =>
-                      setOptions({ ...options, [key]: e.target.checked })
-                    }
-                    className="w-4 h-4 mt-1 accent-primary cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{label}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {description}
-                    </p>
-                  </div>
+                    <input
+                      type="checkbox"
+                      checked={options[key as keyof ExportOptions] as boolean}
+                      onChange={(e) =>
+                        setOptions({ ...options, [key]: e.target.checked })
+                      }
+                      className="w-4 h-4 mt-1 accent-primary cursor-pointer"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {description}
+                      </p>
+                    </div>
                   </motion.label>
                 )
               )}
@@ -273,23 +273,23 @@ export function ExportDialog({
           {resourceType === 'chat' &&
             (prefersReducedMotion ? (
               <div>
-              <h3 className="text-sm font-semibold mb-3">
-                Date Range (Optional)
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    From
-                  </label>
-                  <Input type="date" />
+                <h3 className="text-sm font-semibold mb-3">
+                  Date Range (Optional)
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      From
+                    </label>
+                    <Input type="date" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      To
+                    </label>
+                    <Input type="date" />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    To
-                  </label>
-                  <Input type="date" />
-                </div>
-              </div>
               </div>
             ) : (
               <motion.div
@@ -355,14 +355,14 @@ export function ExportDialog({
                 >
                   {formats.find((f) => f.value === format)?.icon}
                 </motion.span>
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {resourceName}.{format}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Estimated size: ~{Math.ceil(Math.random() * 500 + 100)} KB
-                </p>
-              </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {resourceName}.{format}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Estimated size: ~{Math.ceil(Math.random() * 500 + 100)} KB
+                  </p>
+                </div>
                 <Badge variant="outline">Ready</Badge>
               </div>
             </motion.div>
@@ -431,9 +431,9 @@ export function ExportDialog({
               viewport={{ once: true }}
               className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
             >
-            <p className="text-xs text-muted-foreground">
-              💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting
-              best. Markdown is great for editing later.
+              <p className="text-xs text-muted-foreground">
+                💡 <strong>Tip:</strong> PDF and DOCX formats preserve
+                formatting best. Markdown is great for editing later.
               </p>
             </motion.div>
           )}
