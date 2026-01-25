@@ -485,7 +485,7 @@ export function CustomCompositionWorkflow() {
   // Custom logic using low-level utilities
   const normalizedMessages = React.useMemo(
     () => normalizeMessages(chat.messages),
-    [chat.messages]
+    [chat.messages, normalizeMessages]
   )
 
   const handleSend = async (content: string) => {

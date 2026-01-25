@@ -176,7 +176,7 @@ export function useDashboardPerformance(
       onMetricsUpdate?.(newMetrics)
       return newMetrics
     })
-  })
+  }, [slowRenderThreshold, log, onSlowRender, onMetricsUpdate])
 
   // Track memory usage (if available)
   React.useEffect(() => {

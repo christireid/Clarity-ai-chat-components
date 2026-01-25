@@ -400,7 +400,13 @@ export function useStreamingSSE(
         })
       }
     },
-    [parseEventData, onMessage, maxEventBufferSize, onEventBufferOverflow]
+    [
+      parseEventData,
+      onMessage,
+      maxEventBufferSize,
+      onEventBufferOverflow,
+      MAX_DATA_SIZE,
+    ]
   )
 
   /**
@@ -680,9 +686,11 @@ export function useStreamingSSE(
     resumeFromLastEventId,
     initialReconnectDelay,
     maxReconnectDelay,
+    reconnectSuccessThreshold,
     autoReconnect,
     maxReconnectAttempts,
     reconnectAttempt,
+    connectionTimeout,
     onOpen,
     onClose,
     onError,
@@ -768,9 +776,11 @@ export function useStreamingSSE(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
+      // Capture disconnect for cleanup to prevent stale closure
       disconnect()
     }
-  }, [disconnect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- disconnect function intentionally run only on unmount
+  }, [])
 
   return {
     status,

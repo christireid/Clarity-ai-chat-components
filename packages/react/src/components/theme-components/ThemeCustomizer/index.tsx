@@ -94,7 +94,8 @@ export function ThemeCustomizer({
         applyTypographyToDocument(persistentState.typography)
       }
     }
-  }, []) // Only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only on mount - intentionally empty to run once
 
   // Determine current preset - check customTheme first, then preset property
   const getCurrentPreset = (): ModernThemePresetName => {

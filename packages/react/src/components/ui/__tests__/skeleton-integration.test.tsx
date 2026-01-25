@@ -123,7 +123,7 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           // Simulate content loading
-          setTimeout(() => {
+          const timer = setTimeout(() => {
             setContent(
               <div data-testid="loaded-content" className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -142,6 +142,7 @@ describe('Skeleton Integration Tests', () => {
             )
             setIsLoading(false)
           }, 2000)
+          return () => clearTimeout(timer)
         }, [])
 
         return (
@@ -223,20 +224,22 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           // Simulate failed loading
-          setTimeout(() => {
+          const timer = setTimeout(() => {
             setHasError(true)
             setIsLoading(false)
           }, 1500)
+          return () => clearTimeout(timer)
         }, [])
 
-        const handleRetry = () => {
+        const handleRetry = React.useCallback(() => {
           setHasError(false)
           setIsLoading(true)
           // Simulate successful retry
-          setTimeout(() => {
+          const timer = setTimeout(() => {
             setIsLoading(false)
           }, 1000)
-        }
+          return () => clearTimeout(timer)
+        }, [])
 
         return (
           <AccessibleSkeleton
@@ -305,7 +308,8 @@ describe('Skeleton Integration Tests', () => {
         const [isLoading, setIsLoading] = React.useState(true)
 
         React.useEffect(() => {
-          setTimeout(() => setIsLoading(false), 1000)
+          const timer = setTimeout(() => setIsLoading(false), 1000)
+          return () => clearTimeout(timer)
         }, [])
 
         return (
@@ -356,13 +360,10 @@ describe('Skeleton Integration Tests', () => {
 
         React.useEffect(() => {
           // Simulate different loading times
-          const loadContent = () => {
-            setTimeout(() => {
-              setIsLoading(false)
-            }, Math.random() * 2000 + 500) // Random between 500-2500ms
-          }
-
-          loadContent()
+          const timer = setTimeout(() => {
+            setIsLoading(false)
+          }, Math.random() * 2000 + 500) // Random between 500-2500ms
+          return () => clearTimeout(timer)
         }, [])
 
         return (
@@ -400,7 +401,8 @@ describe('Skeleton Integration Tests', () => {
         const [isLoading, setIsLoading] = React.useState(true)
 
         React.useEffect(() => {
-          setTimeout(() => setIsLoading(false), 1000)
+          const timer = setTimeout(() => setIsLoading(false), 1000)
+          return () => clearTimeout(timer)
         }, [])
 
         return (
@@ -488,7 +490,8 @@ describe('Skeleton Integration Tests', () => {
             setCurrentVariant(prev => (prev + 1) % variants.length)
           }, 1000)
           return () => clearInterval(interval)
-        }, [])
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []) // variants.length is stable
 
         return (
           <div className="space-y-4">

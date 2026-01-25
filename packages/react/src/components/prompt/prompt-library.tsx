@@ -554,12 +554,25 @@ export function PromptLibrary({
   const deleteTemplate = templates.remove
   const searchTemplates = templates.search
 
-  // These functions provide compatibility with legacy API
-  const filterByCategory = (_category: string) => state.templates
-  const sortTemplates = (templatesList: PromptTemplate[], _sortBy: string) => templatesList
-  const importTemplates = (_templates: unknown[]) => { /* no-op */ }
-  const exportTemplates = () => state.templates
-  const shareTemplate = (_template: PromptTemplate, _options?: { public: boolean; allowFork: boolean }) => { /* no-op */ }
+  // These functions provide compatibility with legacy API - wrapped in useCallback
+  const filterByCategory = React.useCallback(
+    (_category: string) => state.templates,
+    [state.templates]
+  )
+  const sortTemplates = React.useCallback(
+    (templatesList: PromptTemplate[], _sortBy: string) => templatesList,
+    []
+  )
+  const importTemplates = React.useCallback((_templates: unknown[]) => {
+    /* no-op */
+  }, [])
+  const exportTemplates = React.useCallback(() => state.templates, [state.templates])
+  const shareTemplate = React.useCallback(
+    (_template: PromptTemplate, _options?: { public: boolean; allowFork: boolean }) => {
+      /* no-op */
+    },
+    []
+  )
 
   const [searchQuery, setSearchQuery] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState<string>('all')

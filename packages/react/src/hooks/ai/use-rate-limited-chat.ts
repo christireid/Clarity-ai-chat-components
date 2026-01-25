@@ -133,7 +133,7 @@ export function useRateLimitedChat(
         },
       })
     },
-    [enableRateLimiting, chat.append, queue, onRequestQueued, onRateLimited]
+    [enableRateLimiting, queue, onRequestQueued, chat]
   )
 
   // Clear rate limit status when appropriate

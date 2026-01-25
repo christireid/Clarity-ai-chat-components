@@ -91,8 +91,7 @@ export function useSuggestions(
       }
     }
   }, [
-    context.input,
-    context.cursorPosition,
+    context,
     getSuggestions,
     config,
     debounceMs,
@@ -266,11 +265,15 @@ export function useAutoComplete(options?: {
   onSelect?: (suggestion: Suggestion) => void
 }) {
   const [input, setInput] = React.useState('')
+
+  // Destructure to stabilize dependencies
+  const { debounceMs, minInputLength, onSelect } = options || {}
+
   const { suggestions, isLoading } = useSuggestions(
     { input },
     {
-      debounceMs: options?.debounceMs,
-      minInputLength: options?.minInputLength,
+      debounceMs,
+      minInputLength,
     }
   )
 
@@ -283,9 +286,9 @@ export function useAutoComplete(options?: {
   const selectCompletion = React.useCallback(
     (suggestion: Suggestion) => {
       setInput(suggestion.text)
-      options?.onSelect?.(suggestion)
+      onSelect?.(suggestion)
     },
-    [options]
+    [onSelect]
   )
 
   return {

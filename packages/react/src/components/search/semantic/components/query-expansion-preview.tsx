@@ -65,7 +65,7 @@ export function QueryExpansionPreview({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal }}
               viewport={{ once: true }}
               className="mt-2 flex flex-wrap gap-1"
             >

@@ -183,7 +183,9 @@ export function useClarityChat(
 
       return enrichedMessages
     },
-    [memory?.enabled, originalTransform, currentMemoryContext]
+    // memoryContextRef.current accessed directly in callback - no dependency needed
+    // currentMemoryContext not needed as dependency since we use the ref
+    [memory?.enabled, originalTransform]
   )
 
   // Enhanced onFinish callback to store messages in memory
@@ -293,18 +295,7 @@ export function useClarityChat(
         )
       }
     },
-    [
-      memory?.enabled,
-      memory?.autoCapture,
-      memory?.requireConsent,
-      memory?.onConsentRequired,
-      memoryContext?.service,
-      memory?.retryOnError,
-      memory?.maxRetryAttempts,
-      memory?.onMemoryError,
-      consentGranted,
-      originalOnFinish,
-    ]
+    [memoryContext, consentGranted, originalOnFinish, memory]
   )
 
   // Create the chat instance
@@ -415,15 +406,7 @@ export function useClarityChat(
 
       return originalAppend(message, options)
     },
-    [
-      memory?.enabled,
-      memoryContext?.service,
-      memory?.strategy,
-      memory?.retryOnError,
-      memory?.maxRetryAttempts,
-      memory?.onMemoryError,
-      originalAppend,
-    ]
+    [memoryContext, originalAppend, memory]
   )
 
   // Effect for prompt optimization
@@ -513,12 +496,7 @@ export function useClarityChat(
     } else {
       setMemoryStats({ count: 0, contextItems: 0 })
     }
-  }, [
-    memory?.enabled,
-    memoryContext?.service,
-    chat.messages.length,
-    currentMemoryContext,
-  ])
+  }, [memory?.enabled, memoryContext, chat.messages.length, currentMemoryContext])
 
   // Calculate memory info
   const memoryInfo: ClarityChatMemoryInfo = React.useMemo(() => {
@@ -540,7 +518,7 @@ export function useClarityChat(
           ? `Added ${memoryStats.contextItems} memory context items`
           : undefined,
     }
-  }, [memory?.enabled, memory?.strategy, memoryContext?.service, memoryStats])
+  }, [memory?.enabled, memory?.strategy, memoryContext, memoryStats])
 
   // Memory error info
   const memoryErrorInfo: ClarityChatErrorInfo = React.useMemo(

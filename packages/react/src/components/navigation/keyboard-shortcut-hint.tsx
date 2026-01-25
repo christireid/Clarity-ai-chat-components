@@ -136,10 +136,10 @@ export function KeyboardShortcutHint({
     forceShow,
   })
 
-  const handleDismiss = () => {
+  const handleDismiss = React.useCallback(() => {
     dismiss()
     onDismiss?.()
-  }
+  }, [dismiss, onDismiss])
 
   // Handle escape key to dismiss
   React.useEffect(() => {
@@ -153,7 +153,7 @@ export function KeyboardShortcutHint({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isVisible])
+  }, [isVisible, handleDismiss])
 
   if (!isVisible) return null
 

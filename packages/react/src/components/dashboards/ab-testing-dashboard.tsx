@@ -145,7 +145,11 @@ export function ABTestingDashboard({
   onRefresh,
   enableKeyboardShortcuts = true,
 }: ABTestingDashboardProps) {
-  const config = { ...defaultConfig, ...userConfig }
+  // Memoize config to prevent unnecessary re-renders
+  const config = React.useMemo(
+    () => ({ ...defaultConfig, ...userConfig }),
+    [userConfig]
+  )
   const prefersReducedMotion = useReducedMotion()
 
   const [selectedExperiment, setSelectedExperiment] =

@@ -43,24 +43,19 @@ export function useKeyboardShortcut(
     handlerRef.current(event)
   }, [])
 
-  React.useEffect(() => {
-    return registerShortcut({
+  // Memoize the shortcut config to avoid recreating on every render
+  const shortcutConfig = React.useMemo(
+    () => ({
       ...config,
       handler: stableHandler,
       id: idRef.current,
-    })
-  }, [
-    config.keys,
-    config.enabled,
-    config.scope,
-    config.description,
-    config.category,
-    config.priority,
-    config.enableInInput,
-    config.preventDefault,
-    stableHandler,
-    registerShortcut,
-  ])
+    }),
+    [config, stableHandler]
+  )
+
+  React.useEffect(() => {
+    return registerShortcut(shortcutConfig)
+  }, [shortcutConfig, registerShortcut])
 }
 
 /**

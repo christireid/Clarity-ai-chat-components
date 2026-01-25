@@ -275,7 +275,7 @@ export function UserInteractionAnalytics({
       window.removeEventListener('scroll', throttledScroll)
       clearTimeout(scrollTimeout)
     }
-  }, [isTracking, config, trackEvent])
+  }, [isTracking, config.trackClicks, config.trackScroll, trackEvent])
 
   // Generate analytics from events
   const generateAnalytics = React.useCallback(() => {

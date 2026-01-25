@@ -274,7 +274,7 @@ export function AdvancedChatInput({
         textareaRef.current?.focus()
       }, 0)
     },
-    [value, cursorPosition, triggerChar, onChange]
+    [value, cursorPosition, triggerChar, onChange, textareaRef]
   )
 
   // Memoize keyboard handler to prevent recreation on every render
@@ -312,7 +312,7 @@ export function AdvancedChatInput({
         handleSubmit()
       }
     },
-    [showSuggestions, suggestions, selectedIndex, selectSuggestion]
+    [showSuggestions, suggestions, selectedIndex, selectSuggestion, handleSubmit]
   )
 
   // Memoize cursor change handler

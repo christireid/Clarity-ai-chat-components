@@ -126,7 +126,7 @@ export function useCircuitBreaker(
   }, [breaker, updateStats])
 
   // Check if allowed
-  const isAllowed = React.useMemo(() => breaker.isAllowed(), [breaker, state])
+  const isAllowed = React.useMemo(() => breaker.isAllowed(), [breaker])
 
   return {
     execute,

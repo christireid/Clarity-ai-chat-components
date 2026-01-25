@@ -439,7 +439,7 @@ export function ClarityChat({
         // unless it's critical. For now, logging is sufficient as useClarityChat handles retry logic.
       }
     }
-  }, [memoryErrorInfo?.memoryError, memoryErrorInfo?.memoryErrorOperation])
+  }, [memoryErrorInfo])
 
   const handleSendMessage = React.useCallback(
     async (content: string) => {

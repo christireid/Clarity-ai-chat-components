@@ -423,7 +423,11 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       }
       staleTimeouts.clear()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
+
+  // Track if onAllSuccess has been called for current state
+  const onAllSuccessCalledRef = React.useRef(false)
 
   // Check for all success
   React.useEffect(() => {
@@ -434,12 +438,16 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       (key) => sourcesState[key]?.error === null
     )
 
-    if (allLoaded && noErrors && onAllSuccess) {
+    if (allLoaded && noErrors && onAllSuccess && !onAllSuccessCalledRef.current) {
       const data = {} as T
       for (const key of sourceKeys) {
         ;(data as Record<string, unknown>)[key] = sourcesState[key].data
       }
       onAllSuccess(data)
+      onAllSuccessCalledRef.current = true
+    } else if (!allLoaded || !noErrors) {
+      // Reset flag when state changes
+      onAllSuccessCalledRef.current = false
     }
   }, [sourcesState, sourceKeys, onAllSuccess])
 

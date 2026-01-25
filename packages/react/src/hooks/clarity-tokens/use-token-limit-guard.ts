@@ -274,7 +274,7 @@ export function useTokenLimitGuard(
         )
       }
     },
-    [config.summarizeFn, countTokens]
+    [countTokens, config]
   )
 
   /**

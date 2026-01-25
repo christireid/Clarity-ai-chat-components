@@ -195,6 +195,7 @@ export function PromptVariablesEditor({
       setEditableVariables(updated)
       shouldEmitRef.current = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detectedVarNames, autoDetect, template]) // Intentionally exclude editableVariables to avoid infinite loop
 
   // Emit changes after auto-detection updates

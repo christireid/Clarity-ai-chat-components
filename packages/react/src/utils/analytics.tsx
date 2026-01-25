@@ -666,6 +666,7 @@ export function AnalyticsProvider({
 
   React.useEffect(() => {
     analyticsManager.initialize(currentConfig)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, [])
 
   React.useEffect(() => {

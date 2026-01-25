@@ -615,16 +615,24 @@ export function useStreamingWebSocket(
     protocols,
     status,
     autoReconnect,
+    reconnectOnCleanClose,
     maxReconnectAttempts,
     reconnectAttempt,
     initialReconnectDelay,
     maxReconnectDelay,
+    reconnectSuccessThreshold,
+    connectionTimeout,
+    enableAcknowledgment,
+    ackMessageType,
+    maxMessageBufferSize,
     onOpen,
     onMessage,
     onError,
     onClose,
     onReconnecting,
     onMaxReconnectAttemptsReached,
+    onMessageBufferOverflow,
+    onAcknowledgmentSent,
     parseMessageData,
     startHeartbeat,
     stopHeartbeat,
@@ -745,14 +753,17 @@ export function useStreamingWebSocket(
     if (connectOnMount) {
       connect()
     }
-  }, [connectOnMount, connect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- connect function intentionally run only when connectOnMount flag changes
+  }, [connectOnMount])
 
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
+      // Capture disconnect for cleanup to prevent stale closure
       disconnect()
     }
-  }, [disconnect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- disconnect function intentionally run only on unmount
+  }, [])
 
   return {
     status,

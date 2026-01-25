@@ -53,15 +53,7 @@ export function useMemories(
   const [error, setError] = useState<Error | null>(null)
 
   // Memoize options to prevent unnecessary re-renders
-  const memoizedOptions = useMemo(
-    () => options,
-    [
-      (options as any)?.limit,
-      options?.scope,
-      options?.type,
-      (options as any)?.minImportanceScore,
-    ]
-  )
+  const memoizedOptions = useMemo(() => ({ ...options }), [options])
 
   const retrieve = useCallback(
     async (retrievalOptions?: Partial<MemoryRetrievalOptions>) => {
@@ -88,7 +80,7 @@ export function useMemories(
 
   useEffect(() => {
     retrieve()
-  }, [userId]) // Only re-fetch when userId changes
+  }, [userId, retrieve]) // Re-fetch when userId or retrieve changes
 
   const store = useCallback(
     async (

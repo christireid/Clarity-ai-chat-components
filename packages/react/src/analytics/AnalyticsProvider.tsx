@@ -179,7 +179,7 @@ export function AnalyticsProvider({
       window.history.pushState = originalPushState
       window.history.replaceState = originalReplaceState
     }
-  }, [isEnabled, config.autoTrackPageViews, isInitialized])
+  }, [isEnabled, config.autoTrackPageViews, isInitialized, page])
 
   // Auto-track errors
   React.useEffect(() => {
@@ -208,7 +208,7 @@ export function AnalyticsProvider({
       window.removeEventListener('error', handleError)
       window.removeEventListener('unhandledrejection', handleUnhandledRejection)
     }
-  }, [isEnabled, config.autoTrackErrors, isInitialized])
+  }, [isEnabled, config.autoTrackErrors, isInitialized, track])
 
   // Track function
   const track = React.useCallback(

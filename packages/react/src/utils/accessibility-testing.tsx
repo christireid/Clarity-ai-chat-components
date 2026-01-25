@@ -454,7 +454,7 @@ export function withAccessibilityTesting(Story: any, context: any) {
     if (context.viewMode === 'story') {
       testAccessibility(<Story {...context.args} />).then(setReport)
     }
-  }, [context])
+  }, [context, Story])
 
   return (
     <div>

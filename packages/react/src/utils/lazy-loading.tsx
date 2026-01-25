@@ -91,7 +91,8 @@ export function createLazyComponentWithBoundary<T extends React.ComponentType<an
 
       window.addEventListener('error', handleError)
       return () => window.removeEventListener('error', handleError)
-    }, [onError])
+       
+    }, [])
 
     if (hasError) {
       return <>{errorFallback}</>

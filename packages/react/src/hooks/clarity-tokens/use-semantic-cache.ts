@@ -134,6 +134,7 @@ export function useSemanticCache<T = string>(
     config.similarityThreshold,
     config.maxCacheSize,
     config.ttlMs,
+    updateStatsFromCache,
   ])
 
   /**

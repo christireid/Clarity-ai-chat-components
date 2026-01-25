@@ -416,7 +416,7 @@ export function usePromptArchitect(
         payload: currentValues,
       })
     }
-  }, [state.systemPrompt, state.userPromptTemplate])
+  }, [state.systemPrompt, state.userPromptTemplate, state.variableValues])
 
   // ==========================================================================
   // TOKEN COUNTING (debounced)
@@ -787,6 +787,7 @@ export function usePromptArchitect(
   // Load from storage on mount
   React.useEffect(() => {
     loadFromStorage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally only run once on mount
   }, [])
 
   // ==========================================================================

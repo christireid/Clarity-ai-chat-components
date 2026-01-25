@@ -232,6 +232,24 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
   const autoStopTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   /**
+   * Stop listening (defined before initRecognition to avoid dependency issues)
+   */
+  const stopListening = React.useCallback(() => {
+    if (recognitionRef.current && state.isListening) {
+      recognitionRef.current.stop()
+      setState((prev) => ({
+        ...prev,
+        isListening: false,
+        interimTranscript: '',
+      }))
+
+      if (autoStopTimeoutRef.current) {
+        clearTimeout(autoStopTimeoutRef.current)
+      }
+    }
+  }, [state.isListening])
+
+  /**
    * Initialize speech recognition
    */
   const initRecognition = React.useCallback(() => {
@@ -295,7 +313,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     // Handle speech end
     recognition.onspeechend = () => {
       onSpeechEnd?.()
-      
+
       if (!continuous) {
         stopListening()
       }
@@ -304,7 +322,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     // Handle errors
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       let errorMessage = 'Speech recognition error'
-      
+
       switch (event.error) {
         case 'no-speech':
           errorMessage = 'No speech detected'
@@ -358,6 +376,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     onSpeechStart,
     onSpeechEnd,
     onError,
+    stopListening,
   ])
 
   /**
@@ -396,23 +415,6 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
     }
   }, [state.isSupported, state.isListening, initRecognition, onError])
 
-  /**
-   * Stop listening
-   */
-  const stopListening = React.useCallback(() => {
-    if (recognitionRef.current && state.isListening) {
-      recognitionRef.current.stop()
-      setState((prev) => ({
-        ...prev,
-        isListening: false,
-        interimTranscript: '',
-      }))
-
-      if (autoStopTimeoutRef.current) {
-        clearTimeout(autoStopTimeoutRef.current)
-      }
-    }
-  }, [state.isListening])
 
   /**
    * Reset transcript
@@ -454,7 +456,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
         // Will auto-restart via the recognition reference
       }
     }
-  }, [lang, continuous, interimResults, maxAlternatives])
+  }, [lang, continuous, interimResults, maxAlternatives, state.isListening, initRecognition])
 
   return {
     ...state,
@@ -484,16 +486,19 @@ export function useSimpleVoiceInput(lang: string = 'en-US') {
     },
   })
 
+  // Destructure methods for stable references
+  const { stopListening, resetTranscript, startListening } = voice
+
   const toggle = React.useCallback(() => {
     if (isActive) {
-      voice.stopListening()
+      stopListening()
       setIsActive(false)
     } else {
-      voice.resetTranscript()
-      voice.startListening()
+      resetTranscript()
+      startListening()
       setIsActive(true)
     }
-  }, [isActive, voice])
+  }, [isActive, stopListening, resetTranscript, startListening])
 
   return {
     isActive,

@@ -84,7 +84,8 @@ export function MinimalStructuredOutput() {
 
   React.useEffect(() => {
     run({ prompt: 'Create a user profile' })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   return (
     <div>

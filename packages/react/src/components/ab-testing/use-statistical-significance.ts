@@ -129,8 +129,18 @@ export function useStatisticalSignificance(
     minEffect?: number
   } = {}
 ): SignificanceResult | null {
+  // Extract options to stable primitives for dependencies
+  const confidenceLevel = options.confidenceLevel
+  const minEffect = options.minEffect
+
+  // Memoize options object to avoid recalculating on every render
+  const memoizedOptions = React.useMemo(
+    () => ({ confidenceLevel, minEffect }),
+    [confidenceLevel, minEffect]
+  )
+
   return React.useMemo(() => {
     if (!control || !variant) return null
-    return calculateSignificance(control, variant, options)
-  }, [control, variant, options.confidenceLevel, options.minEffect])
+    return calculateSignificance(control, variant, memoizedOptions)
+  }, [control, variant, memoizedOptions])
 }

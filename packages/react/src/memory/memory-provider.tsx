@@ -679,6 +679,7 @@ export function useMemoryOptimization(options: {
   React.useEffect(() => {
     optimize()
   }, [
+    optimize,
     options.systemPrompt,
     options.userPreferences,
     options.recentMessages,

@@ -164,7 +164,8 @@ export function useAutoScroll(
         scrollToBottomRef.current()
       })
     }
-  }, [enabled, requestSafeAnimationFrame, ...dependencies]) // Functions accessed via refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, requestSafeAnimationFrame, ...dependencies]) // Functions accessed via refs, spread dependencies intentional
 
   return {
     scrollRef,

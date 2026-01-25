@@ -160,7 +160,7 @@ export function usePromptOptimizer(
     } finally {
       setIsOptimizing(false)
     }
-  }, [optimizeOptions, debug])
+  }, [optimizeOptions])
 
   // Auto-optimize when dependencies change
   useEffect(() => {

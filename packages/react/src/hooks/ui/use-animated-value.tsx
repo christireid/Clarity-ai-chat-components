@@ -173,11 +173,13 @@ export function useAnimatedValue(
     animationFrameRef.current = requestAnimationFrame(animateFrame)
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+      // Capture ref value for cleanup to prevent stale closure
+      const frameId = animationFrameRef.current
+      if (frameId) {
+        cancelAnimationFrame(frameId)
       }
     }
-  }, [value, duration, easing, shouldAnimate, onAnimationComplete])
+  }, [value, duration, easing, shouldAnimate, displayValue, onAnimationComplete])
 
   // Clean up on unmount
   React.useEffect(() => {

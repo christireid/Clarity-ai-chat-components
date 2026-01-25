@@ -101,7 +101,7 @@ export function EnhancedCodeBlock({
     // Simple language detection logic could go here or use utility
     // For now, default to text if not provided
     return 'text'
-  }, [code, language])
+  }, [language])
 
   return (
     <div

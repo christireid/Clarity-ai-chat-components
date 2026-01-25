@@ -176,7 +176,7 @@ const DynamicHeightVirtualList: React.FC<DynamicHeightVirtualListProps> = ({
     if (hasChanges) {
       setHeights(newHeights)
     }
-  }, [visibleMessages])
+  }, [visibleMessages, heights])
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollTop(e.currentTarget.scrollTop)

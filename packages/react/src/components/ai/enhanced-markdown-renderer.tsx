@@ -152,9 +152,10 @@ const EnhancedMarkdownRendererComponent = React.memo(
           mermaidInitialized.current = true
 
           // Render any existing mermaid diagrams
-          if (containerRef.current) {
+          const currentContainer = containerRef.current
+          if (currentContainer) {
             mermaid.run({
-              nodes: containerRef.current.querySelectorAll('.language-mermaid'),
+              nodes: currentContainer.querySelectorAll('.language-mermaid'),
             })
           }
         }).catch((err: unknown) => {
@@ -166,11 +167,12 @@ const EnhancedMarkdownRendererComponent = React.memo(
     // Render Mermaid diagrams after content updates
     // Mermaid v11: Improved error handling with suppressErrorRendering
     React.useEffect(() => {
-      if (enableMermaid && mermaidInitialized.current && containerRef.current) {
+      const currentContainer = containerRef.current
+      if (enableMermaid && mermaidInitialized.current && currentContainer) {
         // mermaid is an optional peer dependency
         import('mermaid').then((mermaidModule) => {
           const mermaid = mermaidModule.default
-          const mermaidElements = containerRef.current?.querySelectorAll('.language-mermaid')
+          const mermaidElements = currentContainer?.querySelectorAll('.language-mermaid')
           if (mermaidElements && mermaidElements.length > 0) {
             try {
               mermaid.run({
@@ -220,6 +222,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
 
     // Custom markdown components with copy button support
     const customComponents = React.useMemo(() => {
+       
       return {
         // Custom code block rendering for Mermaid and copy buttons
         code({ node: _node, inline: _inline, className, children, ...props }: MarkdownCodeProps) {
@@ -382,7 +385,10 @@ const EnhancedMarkdownRendererComponent = React.memo(
         )
         return undefined
       }
-    }, [content, enableLazyRendering, rehypePlugins, customComponents])
+      // Note: rehypePlugins is an array of async functions, deeply stable but not referentially stable
+      // We intentionally omit it to prevent re-renders on every content change
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [content, enableLazyRendering, customComponents])
 
     return (
       <div

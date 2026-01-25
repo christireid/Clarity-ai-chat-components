@@ -143,6 +143,7 @@ export function OfflineChatSync({
         clearInterval(syncIntervalRef.current)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadPendingOperations and loadMessages are stable functions that don't need to trigger re-initialization
   }, [config.dbName, config.storeName])
 
   // Monitor online/offline status
@@ -171,6 +172,7 @@ export function OfflineChatSync({
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- syncPendingOperations is a stable function and onStatusChange is intentionally excluded to prevent re-registration on callback changes
   }, [onStatusChange])
 
   // Auto-sync interval
@@ -186,6 +188,7 @@ export function OfflineChatSync({
         clearInterval(syncIntervalRef.current)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- syncPendingOperations is a stable function that doesn't need to be in deps
   }, [status, pendingOps.length, config.syncInterval])
 
   // Save messages to IndexedDB
@@ -343,6 +346,7 @@ export function OfflineChatSync({
     if (messages.length > 0) {
       saveMessages(messages)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- saveMessages is a stable function that doesn't need to be in deps
   }, [messages])
 
   const getStatusColor = () => {

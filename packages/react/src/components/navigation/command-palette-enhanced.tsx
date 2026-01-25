@@ -336,11 +336,14 @@ export function CommandPaletteEnhanced({
   // Recent commands
   const [recents, addRecent] = useRecentCommands(storageKey, maxRecents)
 
-  // Current commands (support nested navigation)
-  const currentCommands =
-    commandStack.length > 0
-      ? commandStack[commandStack.length - 1].children || []
-      : commands
+  // Current commands (support nested navigation) - memoized to prevent dependency issues
+  const currentCommands = React.useMemo(
+    () =>
+      commandStack.length > 0
+        ? commandStack[commandStack.length - 1].children || []
+        : commands,
+    [commandStack, commands]
+  )
 
   // Fuzzy search results
   const searchResults = React.useMemo(
@@ -442,7 +445,7 @@ export function CommandPaletteEnhanced({
   // Reset selection when results change
   React.useEffect(() => {
     setSelectedIndex(0)
-  }, [displayItems.length])
+  }, [displayItems])
 
   // Scroll selected item into view
   React.useEffect(() => {

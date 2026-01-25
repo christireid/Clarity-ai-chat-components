@@ -83,6 +83,7 @@ export function useMemoizedCallback<T extends (...args: unknown[]) => unknown>(
     } as T;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- deps controls when to recreate the callback
   return useMemo(() => memoizedCallback.current!, deps);
 }
 
@@ -161,6 +162,7 @@ export function useUpdateEffect(
     } else {
       return effect();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps is user-provided and controls when effect runs
   }, deps);
 }
 
@@ -198,7 +200,8 @@ export function useThrottledEffect(
         cleanupRef.current = undefined;
       }
     };
-  }, deps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps is user-provided and controls when effect runs
+  }, [...deps, delay]);
 }
 
 /**
@@ -237,7 +240,8 @@ export function useDebouncedEffect(
         cleanupRef.current = undefined;
       }
     };
-  }, deps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps is user-provided and controls when effect runs
+  }, [...deps, delay]);
 }
 
 // ============================================================================
@@ -274,7 +278,8 @@ export function useMemoizedSelector<T, R>(
     console.log('MemoizedSelector recomputed', { stateChanged: stateRef.current !== state });
   }
 
-  return useMemo(() => resultRef.current!, deps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- deps controls when to recompute the selector
+  return useMemo(() => resultRef.current!, [...deps, state]);
 }
 
 /**
@@ -479,30 +484,42 @@ export function useEventDelegation(
   containerRef: React.RefObject<HTMLElement>,
   options?: AddEventListenerOptions
 ): void {
+  // Store handler in ref to avoid recreating listener on every handler change
+  const handlerRef = useRef(handler);
+  useLayoutEffect(() => {
+    handlerRef.current = handler;
+  }, [handler]);
+
+  // Memoize options to prevent unnecessary listener recreation
+  const memoizedOptions = useDeepMemo(
+    () => ({
+      passive: true,
+      ...options,
+    }),
+    [options]
+  );
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const delegatedHandler = (event: Event) => {
       // Check if event target matches our criteria
-      handler(event);
+      handlerRef.current(event);
     };
 
-    container.addEventListener(eventType, delegatedHandler, { 
-      passive: true,
-      ...options 
-    });
+    container.addEventListener(eventType, delegatedHandler, memoizedOptions);
 
-    console.log('Event delegation set up', { 
-      eventType, 
+    console.log('Event delegation set up', {
+      eventType,
       container: container.tagName,
-      options 
+      options: memoizedOptions
     });
 
     return () => {
       container.removeEventListener(eventType, delegatedHandler);
     };
-  }, [eventType, handler, containerRef, options]);
+  }, [eventType, containerRef, memoizedOptions]);
 }
 
 /**
@@ -519,23 +536,40 @@ export function useIntersectionObserver(
   const elementRef = useRef<HTMLElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  useEffect(() => {
-    if (!elementRef.current) return;
+  // Store callback in ref to avoid recreating observer on every callback change
+  const callbackRef = useRef(callback);
+  useLayoutEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
-    observerRef.current = new IntersectionObserver(callback, {
+  // Memoize options to prevent unnecessary observer recreation
+  const memoizedOptions = useDeepMemo(
+    () => ({
       rootMargin: '50px', // Start loading 50px before visible
       threshold: 0.01, // Trigger when 1% visible
-      ...options
-    });
+      ...options,
+    }),
+    [options]
+  );
 
-    observerRef.current.observe(elementRef.current);
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const stableCallback: IntersectionObserverCallback = (entries, observer) => {
+      callbackRef.current(entries, observer);
+    };
+
+    observerRef.current = new IntersectionObserver(stableCallback, memoizedOptions);
+
+    observerRef.current.observe(element);
 
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
     };
-  }, [callback, options]);
+  }, [memoizedOptions]);
 
   return elementRef;
 }
@@ -557,13 +591,20 @@ export function useContextSelector<T, R>(
   selector: (value: T) => R
 ): R {
   const contextValue = useContext(context);
-  const selectedValue = useMemo(() => selector(contextValue), [contextValue, selector]);
-  
+
+  // Store selector in ref to avoid unnecessary recalculations
+  const selectorRef = useRef(selector);
+  useLayoutEffect(() => {
+    selectorRef.current = selector;
+  }, [selector]);
+
+  const selectedValue = useMemo(() => selectorRef.current(contextValue), [contextValue]);
+
   console.log('Context selector computed', {
     contextChanged: contextValue !== selectedValue,
     selectorName: selector.name || 'anonymous'
   });
-  
+
   return selectedValue;
 }
 
