@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 import { useMergedRef } from '../../hooks/ui/use-merged-ref'
-import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '@/animations/constants'
 
 export interface InputSuggestion {
@@ -158,7 +158,9 @@ export function AdvancedChatInput({
           // Default suggestions - filter from potentially large arrays
           if (trigger === '@') {
             const filtered = savedPrompts
-              .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .filter((p) =>
+                p.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
               .map((p) => ({
                 id: p.id,
                 type: 'prompt' as const,
@@ -241,7 +243,10 @@ export function AdvancedChatInput({
       if (!query.includes(' ')) {
         loadSuggestions(query, '@', false) // Already debounced
       }
-    } else if (lastSlashIndex > lastSpaceIndex && lastSlashIndex < beforeCursor.length - 1) {
+    } else if (
+      lastSlashIndex > lastSpaceIndex &&
+      lastSlashIndex < beforeCursor.length - 1
+    ) {
       const query = beforeCursor.slice(lastSlashIndex + 1)
       if (!query.includes(' ')) {
         loadSuggestions(query, '/', false) // Already debounced
@@ -278,6 +283,15 @@ export function AdvancedChatInput({
     [value, cursorPosition, triggerChar, onChange, textareaRef]
   )
 
+  // Memoize submit handler
+  const handleSubmit = useCallback(() => {
+    if (value.trim() || attachments.length > 0) {
+      onSubmit(value, attachments.length > 0 ? attachments : undefined)
+      onChange('')
+      setAttachments([])
+    }
+  }, [value, attachments, onSubmit, onChange])
+
   // Memoize keyboard handler to prevent recreation on every render
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -313,7 +327,13 @@ export function AdvancedChatInput({
         handleSubmit()
       }
     },
-    [showSuggestions, suggestions, selectedIndex, selectSuggestion, handleSubmit]
+    [
+      showSuggestions,
+      suggestions,
+      selectedIndex,
+      selectSuggestion,
+      handleSubmit,
+    ]
   )
 
   // Memoize cursor change handler
@@ -387,15 +407,6 @@ export function AdvancedChatInput({
     setAttachments((prev) => prev.filter((a) => a.id !== id))
   }, [])
 
-  // Memoize submit handler
-  const handleSubmit = useCallback(() => {
-    if (value.trim() || attachments.length > 0) {
-      onSubmit(value, attachments.length > 0 ? attachments : undefined)
-      onChange('')
-      setAttachments([])
-    }
-  }, [value, attachments, onSubmit, onChange])
-
   // Memoized computed values
   const charCount = useMemo(() => value.length, [value])
   const isOverLimit = useMemo(
@@ -410,8 +421,8 @@ export function AdvancedChatInput({
   return (
     <div className={cn('relative border-t bg-background', className)}>
       {/* Attachments Preview */}
-      {attachments.length > 0 && (
-        prefersReducedMotion ? (
+      {attachments.length > 0 &&
+        (prefersReducedMotion ? (
           <div className="flex gap-2 p-4 pb-0 overflow-x-auto">
             {attachments.map((attachment) => (
               <div
@@ -486,12 +497,12 @@ export function AdvancedChatInput({
               ))}
             </motion.div>
           </AnimatePresence>
-        )
-      )}
+        ))}
 
       {/* Suggestions Dropdown */}
-      {showSuggestions && suggestions.length > 0 && (
-        prefersReducedMotion ? (
+      {showSuggestions &&
+        suggestions.length > 0 &&
+        (prefersReducedMotion ? (
           <div
             className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-2xl max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
             role="listbox"
@@ -583,7 +594,9 @@ export function AdvancedChatInput({
               ))}
               <div className="px-4 py-2 text-xs text-muted-foreground border-t bg-muted/50 flex items-center justify-between">
                 <div>
-                  <kbd className="px-1.5 py-0.5 text-xs border rounded">Tab</kbd>{' '}
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">
+                    Tab
+                  </kbd>{' '}
                   or{' '}
                   <kbd className="px-1.5 py-0.5 text-xs border rounded">
                     Enter
@@ -601,8 +614,7 @@ export function AdvancedChatInput({
               </div>
             </motion.div>
           </AnimatePresence>
-        )
-      )}
+        ))}
 
       {/* Input Area */}
       <div

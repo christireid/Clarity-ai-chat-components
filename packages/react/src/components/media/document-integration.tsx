@@ -11,7 +11,7 @@ import {
   CloseIcon,
 } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
@@ -428,181 +428,181 @@ export function DocumentIntegration({
           <CardContent className="p-0">
             <div className="divide-y">
               {state.documents.map((doc, index) => {
-                  const isSelected = selectedIds.has(doc.id)
-                  const config =
-                    PLATFORM_CONFIG[doc.platform] || PLATFORM_CONFIG['local']
+                const isSelected = selectedIds.has(doc.id)
+                const config =
+                  PLATFORM_CONFIG[doc.platform] || PLATFORM_CONFIG['local']
 
-                  return prefersReducedMotion ? (
-                    <div
-                      key={doc.id}
-                      className={cn(
-                        'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
-                        isSelected && 'bg-primary/10'
-                      )}
-                      onClick={() => {
-                        if (multiSelect) {
-                          toggleSelection(doc.id)
-                        } else {
-                          selectDocument(doc)
-                        }
-                      }}
-                    >
-                      {/* Selection checkbox for multi-select */}
-                      {multiSelect && (
-                        <div
-                          className={cn(
-                            'w-5 h-5 rounded border-2 flex items-center justify-center',
-                            isSelected
-                              ? 'bg-primary border-primary'
-                              : 'border-muted-foreground'
-                          )}
-                        >
-                          {isSelected && (
-                            <CheckIcon className="w-3 h-3 text-primary-foreground" />
-                          )}
-                        </div>
-                      )}
-
-                      {/* Document icon */}
+                return prefersReducedMotion ? (
+                  <div
+                    key={doc.id}
+                    className={cn(
+                      'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
+                      isSelected && 'bg-primary/10'
+                    )}
+                    onClick={() => {
+                      if (multiSelect) {
+                        toggleSelection(doc.id)
+                      } else {
+                        selectDocument(doc)
+                      }
+                    }}
+                  >
+                    {/* Selection checkbox for multi-select */}
+                    {multiSelect && (
                       <div
-                        className="w-10 h-10 rounded flex items-center justify-center text-lg"
-                        style={{ backgroundColor: `${config.color}20` }}
+                        className={cn(
+                          'w-5 h-5 rounded border-2 flex items-center justify-center',
+                          isSelected
+                            ? 'bg-primary border-primary'
+                            : 'border-muted-foreground'
+                        )}
                       >
-                        {doc.thumbnail ? (
-                          <img
-                            src={doc.thumbnail}
-                            alt=""
-                            className="w-full h-full object-cover rounded"
-                          />
-                        ) : (
-                          <FileIcon
-                            className="w-5 h-5"
-                            style={{ color: config.color }}
-                          />
+                        {isSelected && (
+                          <CheckIcon className="w-3 h-3 text-primary-foreground" />
                         )}
                       </div>
+                    )}
 
-                      {/* Document info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{doc.title}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-2">
-                          <span>{formatFileSize(doc.size)}</span>
-                          <span>-</span>
-                          <span>{formatDate(doc.modifiedAt)}</span>
-                          {doc.shared && (
-                            <Badge variant="secondary" className="text-xs">
-                              Shared
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                    {/* Document icon */}
+                    <div
+                      className="w-10 h-10 rounded flex items-center justify-center text-lg"
+                      style={{ backgroundColor: `${config.color}20` }}
+                    >
+                      {doc.thumbnail ? (
+                        <img
+                          src={doc.thumbnail}
+                          alt=""
+                          className="w-full h-full object-cover rounded"
+                        />
+                      ) : (
+                        <FileIcon
+                          className="w-5 h-5"
+                          style={{ color: config.color }}
+                        />
+                      )}
+                    </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center gap-1">
-                        {onExport && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              exportDocument(doc.id, { format: 'pdf' })
-                            }}
-                            disabled={state.syncing}
-                            aria-label="Export document"
-                          >
-                            <DownloadIcon className="w-4 h-4" />
-                          </Button>
+                    {/* Document info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{doc.title}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span>{formatFileSize(doc.size)}</span>
+                        <span>-</span>
+                        <span>{formatDate(doc.modifiedAt)}</span>
+                        {doc.shared && (
+                          <Badge variant="secondary" className="text-xs">
+                            Shared
+                          </Badge>
                         )}
                       </div>
                     </div>
-                  ) : (
-                    <motion.div
-                      key={doc.id}
-                      {...ANIMATION_PRESETS.slideUp}
-                      transition={{ delay: index * 0.02 }}
-                      viewport={{ once: true }}
-                      className={cn(
-                        'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
-                        isSelected && 'bg-primary/10'
-                      )}
-                      onClick={() => {
-                        if (multiSelect) {
-                          toggleSelection(doc.id)
-                        } else {
-                          selectDocument(doc)
-                        }
-                      }}
-                    >
-                      {/* Selection checkbox for multi-select */}
-                      {multiSelect && (
-                        <div
-                          className={cn(
-                            'w-5 h-5 rounded border-2 flex items-center justify-center',
-                            isSelected
-                              ? 'bg-primary border-primary'
-                              : 'border-muted-foreground'
-                          )}
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1">
+                      {onExport && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            exportDocument(doc.id, { format: 'pdf' })
+                          }}
+                          disabled={state.syncing}
+                          aria-label="Export document"
                         >
-                          {isSelected && (
-                            <CheckIcon className="w-3 h-3 text-primary-foreground" />
-                          )}
-                        </div>
+                          <DownloadIcon className="w-4 h-4" />
+                        </Button>
                       )}
-
-                      {/* Document icon */}
+                    </div>
+                  </div>
+                ) : (
+                  <motion.div
+                    key={doc.id}
+                    {...ANIMATION_PRESETS.slideUp}
+                    transition={{ delay: index * 0.02 }}
+                    viewport={{ once: true }}
+                    className={cn(
+                      'flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors',
+                      isSelected && 'bg-primary/10'
+                    )}
+                    onClick={() => {
+                      if (multiSelect) {
+                        toggleSelection(doc.id)
+                      } else {
+                        selectDocument(doc)
+                      }
+                    }}
+                  >
+                    {/* Selection checkbox for multi-select */}
+                    {multiSelect && (
                       <div
-                        className="w-10 h-10 rounded flex items-center justify-center text-lg"
-                        style={{ backgroundColor: `${config.color}20` }}
+                        className={cn(
+                          'w-5 h-5 rounded border-2 flex items-center justify-center',
+                          isSelected
+                            ? 'bg-primary border-primary'
+                            : 'border-muted-foreground'
+                        )}
                       >
-                        {doc.thumbnail ? (
-                          <img
-                            src={doc.thumbnail}
-                            alt=""
-                            className="w-full h-full object-cover rounded"
-                          />
-                        ) : (
-                          <FileIcon
-                            className="w-5 h-5"
-                            style={{ color: config.color }}
-                          />
+                        {isSelected && (
+                          <CheckIcon className="w-3 h-3 text-primary-foreground" />
                         )}
                       </div>
+                    )}
 
-                      {/* Document info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{doc.title}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-2">
-                          <span>{formatFileSize(doc.size)}</span>
-                          <span>-</span>
-                          <span>{formatDate(doc.modifiedAt)}</span>
-                          {doc.shared && (
-                            <Badge variant="secondary" className="text-xs">
-                              Shared
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                    {/* Document icon */}
+                    <div
+                      className="w-10 h-10 rounded flex items-center justify-center text-lg"
+                      style={{ backgroundColor: `${config.color}20` }}
+                    >
+                      {doc.thumbnail ? (
+                        <img
+                          src={doc.thumbnail}
+                          alt=""
+                          className="w-full h-full object-cover rounded"
+                        />
+                      ) : (
+                        <FileIcon
+                          className="w-5 h-5"
+                          style={{ color: config.color }}
+                        />
+                      )}
+                    </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center gap-1">
-                        {onExport && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              exportDocument(doc.id, { format: 'pdf' })
-                            }}
-                            disabled={state.syncing}
-                            aria-label="Export document"
-                          >
-                            <DownloadIcon className="w-4 h-4" />
-                          </Button>
+                    {/* Document info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{doc.title}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span>{formatFileSize(doc.size)}</span>
+                        <span>-</span>
+                        <span>{formatDate(doc.modifiedAt)}</span>
+                        {doc.shared && (
+                          <Badge variant="secondary" className="text-xs">
+                            Shared
+                          </Badge>
                         )}
                       </div>
-                    </motion.div>
-                  )
-                })}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1">
+                      {onExport && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            exportDocument(doc.id, { format: 'pdf' })
+                          }}
+                          disabled={state.syncing}
+                          aria-label="Export document"
+                        >
+                          <DownloadIcon className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
           </CardContent>
         </Card>

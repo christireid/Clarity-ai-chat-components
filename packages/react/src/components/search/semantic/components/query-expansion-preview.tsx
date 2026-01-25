@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Badge } from '@clarity-chat/primitives'
 import { Wand2, ChevronDown, ChevronUp } from 'lucide-react'
+import { DURATION_SECONDS as durations } from '@/animations/constants'
 
 // Type assertions for icons
 const WandIcon = Wand2 as React.ComponentType<{ className?: string }>
@@ -31,8 +32,12 @@ export function QueryExpansionPreview({
 
   return (
     <motion.div
-      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-      animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto' }}
+      initial={
+        prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }
+      }
+      animate={
+        prefersReducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto' }
+      }
       transition={{ duration: prefersReducedMotion ? 0.1 : 0.2 }}
       viewport={{ once: true }}
     >

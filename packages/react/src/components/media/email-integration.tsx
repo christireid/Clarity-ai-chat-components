@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { RefreshIcon, CloseIcon } from '../ui/icons'
 import { useIsMounted } from '../../hooks/ui/use-is-mounted'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
@@ -814,10 +814,10 @@ export function EmailIntegration({
                       notification.read ? 'bg-muted/50' : 'bg-primary/10'
                     )}
                   >
-                  <div className="font-medium">{notification.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {notification.body}
-                  </div>
+                    <div className="font-medium">{notification.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {notification.body}
+                    </div>
                   </motion.div>
                 )
               )}

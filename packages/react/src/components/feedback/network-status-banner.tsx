@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
 import { duration, EASING_FRAMER } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 
@@ -192,57 +192,57 @@ export function NetworkStatusBanner({
 
   return (
     <>
-      {shouldShow && (
-        prefersReducedMotion ? (
+      {shouldShow &&
+        (prefersReducedMotion ? (
           <div
             className={cn('border-b', config.className, className)}
             role="status"
             aria-live="polite"
           >
-          <div className="flex items-center justify-between gap-3 px-4 py-2.5">
-            <div className="flex items-center gap-2.5">
-              {config.icon}
-              <span className="text-sm font-medium">{displayMessage}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {status === 'offline' && onRetry && (
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={onRetry}
-                  className="h-7 px-3 text-xs font-medium"
-                >
-                  Retry
-                </Button>
-              )}
-              {onDismiss && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setIsVisible(false)
-                    onDismiss()
-                  }}
-                  className="h-7 w-7 p-0"
-                  aria-label="Dismiss"
-                >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            <div className="flex items-center justify-between gap-3 px-4 py-2.5">
+              <div className="flex items-center gap-2.5">
+                {config.icon}
+                <span className="text-sm font-medium">{displayMessage}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {status === 'offline' && onRetry && (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={onRetry}
+                    className="h-7 px-3 text-xs font-medium"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </Button>
-              )}
+                    Retry
+                  </Button>
+                )}
+                {onDismiss && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsVisible(false)
+                      onDismiss()
+                    }}
+                    className="h-7 w-7 p-0"
+                    aria-label="Dismiss"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
           </div>
         ) : (
           <motion.div
@@ -302,8 +302,7 @@ export function NetworkStatusBanner({
               </div>
             </div>
           </motion.div>
-        )
-      )}
+        ))}
     </>
   )
 }

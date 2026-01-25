@@ -10,7 +10,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import {
   KeyboardNavigationProvider,
   useKeyboardNavigation,
@@ -242,7 +242,9 @@ function MessageItem({ message, isFocused, itemProps }: MessageItemProps) {
         message.role === 'user' ? 'bg-primary/10 ml-8' : 'bg-muted/50 mr-8',
         isFocused && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
       )}
-      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
+      {...(prefersReducedMotion
+        ? ANIMATION_PRESETS.fadeIn
+        : ANIMATION_PRESETS.slideUp)}
       viewport={{ once: true }}
       tabIndex={itemProps.tabIndex}
       role="article"
@@ -560,7 +562,9 @@ function KeyboardNavigationDemoInner() {
       {/* Notification Toast */}
       {notification && (
         <motion.div
-          {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.pop)}
+          {...(prefersReducedMotion
+            ? ANIMATION_PRESETS.fadeIn
+            : ANIMATION_PRESETS.pop)}
           className="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-foreground text-background rounded-lg shadow-lg text-sm font-medium"
         >
           {notification}

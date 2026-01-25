@@ -16,7 +16,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
@@ -146,10 +146,7 @@ export function SkipLinks({
               'sr-only focus:not-sr-only',
               'focus:translate-y-0 focus:opacity-100',
               // Visible styles
-              isActive && [
-                'ring-4 ring-primary-foreground/30',
-                'scale-105',
-              ]
+              isActive && ['ring-4 ring-primary-foreground/30', 'scale-105']
             )}
             {...ANIMATION_PRESETS.slideDown}
             animate={animateValues}

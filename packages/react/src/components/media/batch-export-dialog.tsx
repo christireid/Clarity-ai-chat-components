@@ -17,7 +17,7 @@ import {
 import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
 import { formatBytes, formatRelativeTime } from '../../internal/helpers'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
@@ -200,125 +200,125 @@ export function BatchExportDialog({
 
             <div className="max-h-64 overflow-y-auto border rounded-lg divide-y">
               {resources.map((resource, index) => {
-                  const isSelected = selectedIds.has(resource.id)
-                  const resourceProgress = progress.find(
-                    (p) => p.resourceId === resource.id
-                  )
-                  const isExporting = resourceProgress?.status === 'exporting'
-                  const isCompleted = resourceProgress?.status === 'completed'
-                  const hasError = resourceProgress?.status === 'error'
+                const isSelected = selectedIds.has(resource.id)
+                const resourceProgress = progress.find(
+                  (p) => p.resourceId === resource.id
+                )
+                const isExporting = resourceProgress?.status === 'exporting'
+                const isCompleted = resourceProgress?.status === 'completed'
+                const hasError = resourceProgress?.status === 'error'
 
-                  return prefersReducedMotion ? (
-                    <div
-                      key={resource.id}
-                      className={cn(
-                        'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
-                        isSelected && 'bg-primary/5'
-                      )}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleToggleResource(resource.id)}
-                        disabled={isExporting}
-                        className="h-4 w-4 rounded border"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {resource.name}
-                          </p>
-                          {resource.messageCount && (
-                            <Badge variant="secondary" className="text-xs">
-                              {resource.messageCount} messages
-                            </Badge>
-                          )}
-                          {resource.size && (
-                            <Badge variant="outline" className="text-xs">
-                              {formatBytes(resource.size)}
-                            </Badge>
-                          )}
-                        </div>
-                        {resource.lastModified && (
-                          <p className="text-xs text-muted-foreground">
-                            Modified {formatRelativeTime(resource.lastModified)}
-                          </p>
+                return prefersReducedMotion ? (
+                  <div
+                    key={resource.id}
+                    className={cn(
+                      'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
+                      isSelected && 'bg-primary/5'
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleResource(resource.id)}
+                      disabled={isExporting}
+                      className="h-4 w-4 rounded border"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">
+                          {resource.name}
+                        </p>
+                        {resource.messageCount && (
+                          <Badge variant="secondary" className="text-xs">
+                            {resource.messageCount} messages
+                          </Badge>
+                        )}
+                        {resource.size && (
+                          <Badge variant="outline" className="text-xs">
+                            {formatBytes(resource.size)}
+                          </Badge>
                         )}
                       </div>
-                      {isExporting && (
-                        <div className="w-24">
-                          <Progress value={resourceProgress?.progress || 0} />
-                        </div>
-                      )}
-                      {isCompleted && (
-                        <Badge variant="success" className="text-xs">
-                          ✓ Done
-                        </Badge>
-                      )}
-                      {hasError && (
-                        <Badge variant="destructive" className="text-xs">
-                          ✗ Error
-                        </Badge>
+                      {resource.lastModified && (
+                        <p className="text-xs text-muted-foreground">
+                          Modified {formatRelativeTime(resource.lastModified)}
+                        </p>
                       )}
                     </div>
-                  ) : (
-                    <motion.div
-                      key={resource.id}
-                      {...ANIMATION_PRESETS.slideUp}
-                      transition={{ delay: index * 0.02 }}
-                      viewport={{ once: true }}
-                      className={cn(
-                        'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
-                        isSelected && 'bg-primary/5'
-                      )}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleToggleResource(resource.id)}
-                        disabled={isExporting}
-                        className="h-4 w-4 rounded border"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {resource.name}
-                          </p>
-                          {resource.messageCount && (
-                            <Badge variant="secondary" className="text-xs">
-                              {resource.messageCount} messages
-                            </Badge>
-                          )}
-                          {resource.size && (
-                            <Badge variant="outline" className="text-xs">
-                              {formatBytes(resource.size)}
-                            </Badge>
-                          )}
-                        </div>
-                        {resource.lastModified && (
-                          <p className="text-xs text-muted-foreground">
-                            Modified {formatRelativeTime(resource.lastModified)}
-                          </p>
+                    {isExporting && (
+                      <div className="w-24">
+                        <Progress value={resourceProgress?.progress || 0} />
+                      </div>
+                    )}
+                    {isCompleted && (
+                      <Badge variant="success" className="text-xs">
+                        ✓ Done
+                      </Badge>
+                    )}
+                    {hasError && (
+                      <Badge variant="destructive" className="text-xs">
+                        ✗ Error
+                      </Badge>
+                    )}
+                  </div>
+                ) : (
+                  <motion.div
+                    key={resource.id}
+                    {...ANIMATION_PRESETS.slideUp}
+                    transition={{ delay: index * 0.02 }}
+                    viewport={{ once: true }}
+                    className={cn(
+                      'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
+                      isSelected && 'bg-primary/5'
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleResource(resource.id)}
+                      disabled={isExporting}
+                      className="h-4 w-4 rounded border"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">
+                          {resource.name}
+                        </p>
+                        {resource.messageCount && (
+                          <Badge variant="secondary" className="text-xs">
+                            {resource.messageCount} messages
+                          </Badge>
+                        )}
+                        {resource.size && (
+                          <Badge variant="outline" className="text-xs">
+                            {formatBytes(resource.size)}
+                          </Badge>
                         )}
                       </div>
-                      {isExporting && (
-                        <div className="w-24">
-                          <Progress value={resourceProgress?.progress || 0} />
-                        </div>
+                      {resource.lastModified && (
+                        <p className="text-xs text-muted-foreground">
+                          Modified {formatRelativeTime(resource.lastModified)}
+                        </p>
                       )}
-                      {isCompleted && (
-                        <Badge variant="success" className="text-xs">
-                          ✓ Done
-                        </Badge>
-                      )}
-                      {hasError && (
-                        <Badge variant="destructive" className="text-xs">
-                          ✗ Error
-                        </Badge>
-                      )}
-                    </motion.div>
-                  )
-                })}
+                    </div>
+                    {isExporting && (
+                      <div className="w-24">
+                        <Progress value={resourceProgress?.progress || 0} />
+                      </div>
+                    )}
+                    {isCompleted && (
+                      <Badge variant="success" className="text-xs">
+                        ✓ Done
+                      </Badge>
+                    )}
+                    {hasError && (
+                      <Badge variant="destructive" className="text-xs">
+                        ✗ Error
+                      </Badge>
+                    )}
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
 
@@ -396,8 +396,8 @@ export function BatchExportDialog({
             >
               {showCloudOptions ? '▼' : '▶'} Cloud Storage Options
             </Button>
-            {showCloudOptions && (
-              prefersReducedMotion ? (
+            {showCloudOptions &&
+              (prefersReducedMotion ? (
                 <div className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2">
                   <p className="text-xs text-muted-foreground">
                     Cloud storage integration coming soon. For now, exports will
@@ -410,13 +410,12 @@ export function BatchExportDialog({
                   viewport={{ once: true }}
                   className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2"
                 >
-                <p className="text-xs text-muted-foreground">
-                  Cloud storage integration coming soon. For now, exports will
+                  <p className="text-xs text-muted-foreground">
+                    Cloud storage integration coming soon. For now, exports will
                     be downloaded to your device.
                   </p>
                 </motion.div>
-              )
-            )}
+              ))}
           </div>
 
           {/* Batch Progress */}

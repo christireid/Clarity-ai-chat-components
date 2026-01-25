@@ -3,8 +3,11 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Mentionable user
@@ -316,8 +319,8 @@ export function MentionInput({
       />
 
       {/* Mention suggestions dropdown */}
-      {showSuggestions && (
-        prefersReducedMotion ? (
+      {showSuggestions &&
+        (prefersReducedMotion ? (
           <div
             ref={suggestionsRef}
             className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
@@ -412,8 +415,7 @@ export function MentionInput({
               </button>
             ))}
           </motion.div>
-        )
-      )}
+        ))}
     </div>
   )
 }
@@ -522,136 +524,134 @@ export function MentionList({
       {/* Mention list */}
       <div className="space-y-2">
         {userMentions.map((mention, index) => {
-            const message = messages.get(mention.messageId)
-            const mentioner = users.get(mention.userId)
+          const message = messages.get(mention.messageId)
+          const mentioner = users.get(mention.userId)
 
-            if (!message || !mentioner) return null
+          if (!message || !mentioner) return null
 
-            return prefersReducedMotion ? (
-              <div key={mention.id}>
-                <Card
-                  className={cn(
-                    'cursor-pointer transition-all hover:shadow-md',
-                    !mention.isRead &&
-                      'border-l-4 border-l-primary bg-accent/20'
-                  )}
-                  onClick={() => onMentionClick?.(mention)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {/* Avatar */}
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
-                        {mentioner.name[0].toUpperCase()}
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">
-                            {mentioner.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            mentioned you
-                          </span>
-                          {!mention.isRead && (
-                            <Badge variant="destructive" className="text-xs">
-                              New
-                            </Badge>
-                          )}
-                        </div>
-
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {message.content}
-                        </p>
-
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(message.timestamp).toLocaleString()}
-                          </span>
-
-                          {!mention.isRead && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                onMarkAsRead?.(mention.id)
-                              }}
-                              className="text-xs text-primary hover:underline"
-                            >
-                              Mark as read
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <motion.div
-                key={mention.id}
-                {...ANIMATION_PRESETS.slideRight}
-                transition={{ delay: index * 0.03 }}
-                viewport={{ once: true }}
+          return prefersReducedMotion ? (
+            <div key={mention.id}>
+              <Card
+                className={cn(
+                  'cursor-pointer transition-all hover:shadow-md',
+                  !mention.isRead && 'border-l-4 border-l-primary bg-accent/20'
+                )}
+                onClick={() => onMentionClick?.(mention)}
               >
-                <Card
-                  className={cn(
-                    'cursor-pointer transition-all hover:shadow-md',
-                    !mention.isRead &&
-                      'border-l-4 border-l-primary bg-accent/20'
-                  )}
-                  onClick={() => onMentionClick?.(mention)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {/* Avatar */}
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
-                        {mentioner.name[0].toUpperCase()}
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                      {mentioner.name[0].toUpperCase()}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">
+                          {mentioner.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          mentioned you
+                        </span>
+                        {!mention.isRead && (
+                          <Badge variant="destructive" className="text-xs">
+                            New
+                          </Badge>
+                        )}
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">
-                            {mentioner.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            mentioned you
-                          </span>
-                          {!mention.isRead && (
-                            <Badge variant="destructive" className="text-xs">
-                              New
-                            </Badge>
-                          )}
-                        </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {message.content}
+                      </p>
 
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {message.content}
-                        </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(message.timestamp).toLocaleString()}
+                        </span>
 
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(message.timestamp).toLocaleString()}
-                          </span>
-
-                          {!mention.isRead && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                onMarkAsRead?.(mention.id)
-                              }}
-                              className="text-xs text-primary hover:underline"
-                            >
-                              Mark as read
-                            </button>
-                          )}
-                        </div>
+                        {!mention.isRead && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onMarkAsRead?.(mention.id)
+                            }}
+                            className="text-xs text-primary hover:underline"
+                          >
+                            Mark as read
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )
-          })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <motion.div
+              key={mention.id}
+              {...ANIMATION_PRESETS.slideRight}
+              transition={{ delay: index * 0.03 }}
+              viewport={{ once: true }}
+            >
+              <Card
+                className={cn(
+                  'cursor-pointer transition-all hover:shadow-md',
+                  !mention.isRead && 'border-l-4 border-l-primary bg-accent/20'
+                )}
+                onClick={() => onMentionClick?.(mention)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0">
+                      {mentioner.name[0].toUpperCase()}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">
+                          {mentioner.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          mentioned you
+                        </span>
+                        {!mention.isRead && (
+                          <Badge variant="destructive" className="text-xs">
+                            New
+                          </Badge>
+                        )}
+                      </div>
+
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {message.content}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(message.timestamp).toLocaleString()}
+                        </span>
+
+                        {!mention.isRead && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onMarkAsRead?.(mention.id)
+                            }}
+                            className="text-xs text-primary hover:underline"
+                          >
+                            Mark as read
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )
+        })}
 
         {userMentions.length === 0 && (
           <Card className="shadow-sm">

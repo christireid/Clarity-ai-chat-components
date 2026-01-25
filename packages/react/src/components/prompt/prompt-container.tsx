@@ -3,8 +3,11 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
-import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../../animations/constants'
 
 /**
  * A single suggestion category with items
@@ -140,9 +143,9 @@ export function PromptContainer({
   className,
 }: PromptContainerProps) {
   const prefersReducedMotion = useReducedMotion()
-  const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(
-    () => new Set(collapsedSuggestions ? [] : suggestions.map((s) => s.title))
-  )
+  const [expandedCategories, setExpandedCategories] = React.useState<
+    Set<string>
+  >(() => new Set(collapsedSuggestions ? [] : suggestions.map((s) => s.title)))
   const dropZoneRef = React.useRef<HTMLDivElement>(null)
 
   // Handle file drop
@@ -208,7 +211,9 @@ export function PromptContainer({
           <aside
             className={cn(
               'flex-shrink-0 w-64 border-border/40',
-              sidebarPosition === 'left' ? 'border-r pr-4 mr-4' : 'border-l pl-4 ml-4'
+              sidebarPosition === 'left'
+                ? 'border-r pr-4 mr-4'
+                : 'border-l pl-4 ml-4'
             )}
           >
             {sidebar}
@@ -243,43 +248,45 @@ export function PromptContainer({
                     viewport={{ once: true }}
                     className="space-y-2"
                   >
-                      {/* Category header */}
-                      <button
-                        onClick={() => toggleCategory(category.title)}
-                        className={cn(
-                          'flex items-center gap-2 w-full text-left',
-                          'px-2 py-1 -mx-2 rounded-lg',
-                          'hover:bg-muted/50 transition-colors duration-150',
-                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
-                        )}
-                        aria-expanded={isExpanded}
-                      >
-                        <span className="flex-shrink-0 text-lg">{category.icon}</span>
-                        <span className="text-sm font-semibold text-foreground">
-                          {category.title}
+                    {/* Category header */}
+                    <button
+                      onClick={() => toggleCategory(category.title)}
+                      className={cn(
+                        'flex items-center gap-2 w-full text-left',
+                        'px-2 py-1 -mx-2 rounded-lg',
+                        'hover:bg-muted/50 transition-colors duration-150',
+                        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+                      )}
+                      aria-expanded={isExpanded}
+                    >
+                      <span className="flex-shrink-0 text-lg">
+                        {category.icon}
+                      </span>
+                      <span className="text-sm font-semibold text-foreground">
+                        {category.title}
+                      </span>
+                      {category.description && (
+                        <span className="text-xs text-muted-foreground hidden sm:inline">
+                          - {category.description}
                         </span>
-                        {category.description && (
-                          <span className="text-xs text-muted-foreground hidden sm:inline">
-                            - {category.description}
-                          </span>
+                      )}
+                      <svg
+                        className={cn(
+                          'w-4 h-4 text-muted-foreground ml-auto transition-transform duration-200',
+                          isExpanded && 'rotate-180'
                         )}
-                        <svg
-                          className={cn(
-                            'w-4 h-4 text-muted-foreground ml-auto transition-transform duration-200',
-                            isExpanded && 'rotate-180'
-                          )}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
 
                     {/* Suggestion items */}
                     {isExpanded && (
@@ -314,11 +321,15 @@ export function PromptContainer({
                             {item}
                           </motion.button>
                         ))}
-                        {!isExpanded && category.items.length > maxSuggestionsPerCategory && (
-                          <span className="text-xs text-muted-foreground self-center">
-                            +{category.items.length - maxSuggestionsPerCategory} more
-                          </span>
-                        )}
+                        {!isExpanded &&
+                          category.items.length > maxSuggestionsPerCategory && (
+                            <span className="text-xs text-muted-foreground self-center">
+                              +
+                              {category.items.length -
+                                maxSuggestionsPerCategory}{' '}
+                              more
+                            </span>
+                          )}
                       </motion.div>
                     )}
                   </motion.div>
@@ -345,47 +356,48 @@ export function PromptContainer({
                     'bg-muted/50 hover:bg-muted/70',
                     'border border-border/40 rounded-xl',
                     'transition-colors duration-150',
-                    attachment.status === 'error' && 'border-destructive/50 bg-destructive/5'
+                    attachment.status === 'error' &&
+                      'border-destructive/50 bg-destructive/5'
                   )}
                 >
-                    {/* File icon based on type */}
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
-                      {attachment.previewUrl ? (
-                        <img
-                          src={attachment.previewUrl}
-                          alt=""
-                          className="w-full h-full object-cover"
+                  {/* File icon based on type */}
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {attachment.previewUrl ? (
+                      <img
+                        src={attachment.previewUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <svg
+                        className="w-4 h-4 text-primary"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                         />
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-primary"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                          />
-                        </svg>
-                      )}
-                    </div>
+                      </svg>
+                    )}
+                  </div>
 
-                    {/* File info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {attachment.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {attachment.status === 'error'
-                          ? attachment.error || 'Upload failed'
-                          : attachment.status === 'uploading'
-                            ? `${attachment.progress || 0}%`
-                            : formatFileSize(attachment.size)}
-                      </p>
-                    </div>
+                  {/* File info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {attachment.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {attachment.status === 'error'
+                        ? attachment.error || 'Upload failed'
+                        : attachment.status === 'uploading'
+                          ? `${attachment.progress || 0}%`
+                          : formatFileSize(attachment.size)}
+                    </p>
+                  </div>
 
                   {/* Progress bar for uploading */}
                   {attachment.status === 'uploading' && (
@@ -394,7 +406,11 @@ export function PromptContainer({
                         className="h-full bg-primary"
                         initial={prefersReducedMotion ? false : { width: 0 }}
                         animate={{ width: `${attachment.progress || 0}%` }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        transition={{
+                          type: 'spring',
+                          damping: 25,
+                          stiffness: 200,
+                        }}
                       />
                     </div>
                   )}
@@ -414,8 +430,18 @@ export function PromptContainer({
                       )}
                       aria-label={`Remove ${attachment.name}`}
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   )}
@@ -441,26 +467,26 @@ export function PromptContainer({
                 isDragging && 'border-primary/50 bg-primary/10'
               )}
             >
-                <div className="text-center p-6">
-                  <svg
-                    className="w-12 h-12 mx-auto mb-3 text-primary/60"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <p className="text-sm font-medium text-foreground/80">
-                    Drop files here to attach
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    or click to browse
-                  </p>
+              <div className="text-center p-6">
+                <svg
+                  className="w-12 h-12 mx-auto mb-3 text-primary/60"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <p className="text-sm font-medium text-foreground/80">
+                  Drop files here to attach
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  or click to browse
+                </p>
               </div>
             </motion.div>
           )}
@@ -523,12 +549,17 @@ export function useFileAttachments(options?: {
 
         // Check file size
         if (file.size > maxSize) {
-          onError?.(`${file.name} exceeds maximum size of ${formatFileSize(maxSize)}`)
+          onError?.(
+            `${file.name} exceeds maximum size of ${formatFileSize(maxSize)}`
+          )
           continue
         }
 
         // Check file type
-        if (allowedTypes && !allowedTypes.some((type) => file.type.startsWith(type))) {
+        if (
+          allowedTypes &&
+          !allowedTypes.some((type) => file.type.startsWith(type))
+        ) {
           onError?.(`${file.name} is not an allowed file type`)
           continue
         }

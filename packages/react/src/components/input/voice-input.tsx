@@ -10,7 +10,7 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import type { ReactNode } from 'react'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // Animation constants for pulse rings
 const PULSE_RING_PRIMARY = {
@@ -281,7 +281,10 @@ export function VoiceInput({
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
                 {...ANIMATION_PRESETS.scale}
-                animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_PRIMARY }}
+                animate={{
+                  ...ANIMATION_PRESETS.scale.animate,
+                  ...PULSE_RING_PRIMARY,
+                }}
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
@@ -291,7 +294,10 @@ export function VoiceInput({
               <motion.div
                 className="absolute inset-0 rounded-full bg-destructive"
                 {...ANIMATION_PRESETS.scale}
-                animate={{ ...ANIMATION_PRESETS.scale.animate, ...PULSE_RING_SECONDARY }}
+                animate={{
+                  ...ANIMATION_PRESETS.scale.animate,
+                  ...PULSE_RING_SECONDARY,
+                }}
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
@@ -330,8 +336,9 @@ export function VoiceInput({
       </div>
 
       {/* Transcript popup */}
-      {showTranscript && (voice.transcript || voice.isListening) && (
-        prefersReducedMotion ? (
+      {showTranscript &&
+        (voice.transcript || voice.isListening) &&
+        (prefersReducedMotion ? (
           <div className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg">
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
@@ -634,7 +641,10 @@ export function VoiceInput({
                   <motion.div
                     className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full"
                     {...ANIMATION_PRESETS.slideRight}
-                    animate={{ ...ANIMATION_PRESETS.slideRight.animate, width: `${voice.confidence * 100}%` }}
+                    animate={{
+                      ...ANIMATION_PRESETS.slideRight.animate,
+                      width: `${voice.confidence * 100}%`,
+                    }}
                     transition={{
                       type: 'spring',
                       damping: 28,
@@ -645,8 +655,7 @@ export function VoiceInput({
               </div>
             )}
           </motion.div>
-        )
-      )}
+        ))}
 
       {/* Tooltip */}
       {showTooltip && !voice.isListening && !showTranscript && (

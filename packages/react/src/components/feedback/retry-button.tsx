@@ -5,7 +5,7 @@ import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { ANIMATION_PRESETS } from '@/animations/constants'
 
 /**
@@ -329,8 +329,8 @@ export function RetryButton({
       </p>
 
       {/* Max attempts reached */}
-      {attemptsRemaining === 0 && (
-        prefersReducedMotion ? (
+      {attemptsRemaining === 0 &&
+        (prefersReducedMotion ? (
           <p className="text-sm text-destructive flex items-center gap-1.5">
             <svg
               className="h-4 w-4 shrink-0"
@@ -354,24 +354,23 @@ export function RetryButton({
             viewport={{ once: true }}
             className="text-sm text-destructive flex items-center gap-1.5 animate-[shake-x_0.4s_ease-in-out]"
           >
-          <svg
-            className="h-4 w-4 shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+            <svg
+              className="h-4 w-4 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
             Maximum retry attempts reached. Please refresh the page or contact
             support.
           </motion.p>
-        )
-      )}
+        ))}
     </div>
   )
 }

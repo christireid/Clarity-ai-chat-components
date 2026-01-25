@@ -27,7 +27,10 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import type { ToolCall } from '../../adapters/types'
 
@@ -141,7 +144,9 @@ export function ToolInvocationCard({
 
   return (
     <motion.div
-      {...(prefersReducedMotion ? ANIMATION_PRESETS.fadeIn : ANIMATION_PRESETS.slideUp)}
+      {...(prefersReducedMotion
+        ? ANIMATION_PRESETS.fadeIn
+        : ANIMATION_PRESETS.slideUp)}
       transition={
         prefersReducedMotion
           ? { duration: 0 }
@@ -278,9 +283,13 @@ export function ToolInvocationCard({
 
             {isArgsExpanded && (
               <motion.div
-                initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                initial={
+                  prefersReducedMotion ? undefined : { height: 0, opacity: 0 }
+                }
                 animate={{ height: 'auto', opacity: 1 }}
-                exit={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                exit={
+                  prefersReducedMotion ? undefined : { height: 0, opacity: 0 }
+                }
                 transition={{
                   duration: prefersReducedMotion ? 0 : durations.normal,
                 }}
@@ -362,58 +371,66 @@ export function ToolInvocationCard({
 
                   {isResultExpanded && (
                     <motion.div
-                      initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                      initial={
+                        prefersReducedMotion
+                          ? undefined
+                          : { height: 0, opacity: 0 }
+                      }
                       animate={{ height: 'auto', opacity: 1 }}
-                      exit={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+                      exit={
+                        prefersReducedMotion
+                          ? undefined
+                          : { height: 0, opacity: 0 }
+                      }
                       transition={{
                         duration: prefersReducedMotion ? 0 : durations.normal,
                       }}
                       viewport={{ once: true }}
                       className="overflow-hidden space-y-3.5"
                     >
-                        <pre
+                      <pre
+                        className={cn(
+                          'rounded-lg border p-3 text-sm overflow-x-auto',
+                          error
+                            ? 'bg-destructive/10 border-destructive/30'
+                            : 'bg-muted/50'
+                        )}
+                      >
+                        <code
                           className={cn(
-                            'rounded-lg border p-3 text-sm overflow-x-auto',
-                            error
-                              ? 'bg-destructive/10 border-destructive/30'
-                              : 'bg-muted/50'
+                            'font-mono',
+                            error ? 'text-destructive' : 'text-foreground'
                           )}
                         >
-                          <code
-                            className={cn(
-                              'font-mono',
-                              error ? 'text-destructive' : 'text-foreground'
-                            )}
-                          >
-                            {formatResult()}
-                          </code>
-                        </pre>
+                          {formatResult()}
+                        </code>
+                      </pre>
 
-                        {error && onRetry && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => onRetry(toolCall)}
-                            className="gap-1.5"
+                      {error && onRetry && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => onRetry(toolCall)}
+                          className="gap-1.5"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            <svg
-                              className="h-4 w-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                              />
-                            </svg>
-                            Retry
-                          </Button>
-                        )}
-                      </motion.div>
-                    )}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                          </svg>
+                          Retry
+                        </Button>
+                      )}
+                    </motion.div>
+                  )}
                 </>
               ) : (
                 <div className="space-y-3.5">

@@ -6,6 +6,7 @@ import { formatRelativeTime } from '../../internal/helpers'
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
@@ -413,8 +414,9 @@ export const ConversationList = memo(function ConversationList({
       </div>
 
       {/* Create folder input */}
-      {showCreateFolder && onCreateFolder && (
-        prefersReducedMotion ? (
+      {showCreateFolder &&
+        onCreateFolder &&
+        (prefersReducedMotion ? (
           <div className="p-3 border-b border-border">
             <div className="flex gap-2">
               <input
@@ -491,8 +493,7 @@ export const ConversationList = memo(function ConversationList({
               </button>
             </div>
           </motion.div>
-        )
-      )}
+        ))}
 
       {/* Folder list */}
       {showFolders && folders.length > 0 && (
@@ -559,7 +560,11 @@ export const ConversationList = memo(function ConversationList({
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                        style={{
+                          transform: isExpanded
+                            ? 'rotate(90deg)'
+                            : 'rotate(0deg)',
+                        }}
                       >
                         <path
                           strokeLinecap="round"
@@ -752,27 +757,31 @@ export const ConversationList = memo(function ConversationList({
                 const isActive = activeId === conversation.id
                 const isSelected = selectedIds.includes(conversation.id)
 
-                const ConversationWrapper = prefersReducedMotion ? 'div' : motion.div
+                const ConversationWrapper = prefersReducedMotion
+                  ? 'div'
+                  : motion.div
 
                 return (
                   <ConversationWrapper
                     key={conversation.id}
-                    {...(prefersReducedMotion ? {} : {
-                      initial: { opacity: 0, y: 20 },
-                      animate: { opacity: 1, y: 0 },
-                      exit: { opacity: 0, x: -100, scaleY: 0 },
-                      transition: {
-                        duration: durations.normal,
-                        delay: index * 0.05, // Stagger: 50ms between items
-                        ease: EASING_FRAMER.default,
-                      },
-                      whileHover: {
-                        y: -2,
-                        transition: { duration: durations.fast },
-                      },
-                      layout: true,
-                      viewport: { once: true },
-                    })}
+                    {...(prefersReducedMotion
+                      ? {}
+                      : {
+                          initial: { opacity: 0, y: 20 },
+                          animate: { opacity: 1, y: 0 },
+                          exit: { opacity: 0, x: -100, scaleY: 0 },
+                          transition: {
+                            duration: durations.normal,
+                            delay: index * 0.05, // Stagger: 50ms between items
+                            ease: EASING_FRAMER.default,
+                          },
+                          whileHover: {
+                            y: -2,
+                            transition: { duration: durations.fast },
+                          },
+                          layout: true,
+                          viewport: { once: true },
+                        })}
                     onClick={() => handleSelect(conversation.id)}
                     className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
                       isActive
@@ -832,7 +841,9 @@ export const ConversationList = memo(function ConversationList({
                         {/* Meta info */}
                         <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                           <span>
-                            {formatRelativeTime(new Date(conversation.timestamp))}
+                            {formatRelativeTime(
+                              new Date(conversation.timestamp)
+                            )}
                           </span>
                           <span>•</span>
                           <span>{conversation.messageCount} messages</span>
@@ -970,25 +981,28 @@ export const ConversationList = memo(function ConversationList({
                           {/* Meta info */}
                           <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                             <span>
-                              {formatRelativeTime(new Date(conversation.timestamp))}
+                              {formatRelativeTime(
+                                new Date(conversation.timestamp)
+                              )}
                             </span>
                             <span>•</span>
                             <span>{conversation.messageCount} messages</span>
                           </div>
 
                           {/* Tags */}
-                          {conversation.tags && conversation.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {conversation.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          {conversation.tags &&
+                            conversation.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {conversation.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                         </div>
 
                         {/* Actions */}
@@ -1054,7 +1068,9 @@ export const ConversationList = memo(function ConversationList({
                               whileTap={{ scale: 0.9 }}
                               viewport={{ once: true }}
                               className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
-                              aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
+                              aria-label={
+                                conversation.isPinned ? 'Unpin' : 'Pin'
+                              }
                             >
                               <motion.span
                                 className="text-sm"

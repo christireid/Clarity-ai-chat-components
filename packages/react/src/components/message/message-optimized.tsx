@@ -31,7 +31,8 @@ import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 
 // Type for markdown component props that have children
-interface MarkdownElementProps extends React.HTMLAttributes<HTMLElement>, ExtraProps {
+interface MarkdownElementProps
+  extends React.HTMLAttributes<HTMLElement>, ExtraProps {
   children?: React.ReactNode
 }
 
@@ -168,8 +169,7 @@ function MessageOptimizedInner({
       <>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-           
-          rehypePlugins={[rehypeHighlight as unknown as (typeof remarkGfm)]}
+          rehypePlugins={[rehypeHighlight as unknown as typeof remarkGfm]}
           components={markdownComponents}
         >
           {message.content}
@@ -207,7 +207,7 @@ function MessageOptimizedInner({
     <motion.div
       ref={ref}
       {...ANIMATION_PRESETS.slideUp}
-      exit={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
       transition={{
         duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.normal / 1000,
         ease: EASING_FRAMER.out,
@@ -306,9 +306,11 @@ function MessageOptimizedInner({
         {isAssistant && (isHovered || feedbackGiven) && (
           <motion.div
             {...ANIMATION_PRESETS.slideDown}
-            exit={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, y: -10 }}
             transition={{
-              duration: prefersReducedMotion ? 0 : ANIMATION_DURATION.fast / 1000,
+              duration: prefersReducedMotion
+                ? 0
+                : ANIMATION_DURATION.fast / 1000,
               ease: EASING_FRAMER.out,
             }}
             viewport={{ once: true }}
@@ -318,7 +320,9 @@ function MessageOptimizedInner({
 
             <motion.div
               whileHover={
-                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.hover
+                prefersReducedMotion
+                  ? {}
+                  : INTERACTION_VARIANTS.iconButton.hover
               }
               whileTap={
                 prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.tap
@@ -342,7 +346,9 @@ function MessageOptimizedInner({
 
             <motion.div
               whileHover={
-                prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.hover
+                prefersReducedMotion
+                  ? {}
+                  : INTERACTION_VARIANTS.iconButton.hover
               }
               whileTap={
                 prefersReducedMotion ? {} : INTERACTION_VARIANTS.iconButton.tap

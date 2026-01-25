@@ -10,7 +10,7 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => Promise<MessageAttachment[]>
@@ -247,16 +247,16 @@ export function FileUpload({
             >
               📁
             </motion.div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              {isDragging
-                ? 'Drop files here'
-                : 'Click to upload or drag and drop'}
-            </p>
-            <p className="text-xs text-muted-foreground/90 mt-1">
-              Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
-            </p>
-          </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {isDragging
+                  ? 'Drop files here'
+                  : 'Click to upload or drag and drop'}
+              </p>
+              <p className="text-xs text-muted-foreground/90 mt-1">
+                Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
+              </p>
+            </div>
             <div className="flex flex-wrap gap-1.5 justify-center">
               {acceptedFileTypes.slice(0, 4).map((type, i) => (
                 <motion.div
@@ -281,8 +281,8 @@ export function FileUpload({
       </div>
 
       {/* Error Message */}
-      {error && (
-        prefersReducedMotion ? (
+      {error &&
+        (prefersReducedMotion ? (
           <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm">
             <div className="flex items-start gap-2">
               <svg
@@ -324,12 +324,11 @@ export function FileUpload({
               {error}
             </div>
           </motion.div>
-        )
-      )}
+        ))}
 
       {/* Files List */}
-      {files.length > 0 && (
-        prefersReducedMotion ? (
+      {files.length > 0 &&
+        (prefersReducedMotion ? (
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">
@@ -490,8 +489,7 @@ export function FileUpload({
                 : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
             </Button>
           </motion.div>
-        )
-      )}
+        ))}
     </div>
   )
 }

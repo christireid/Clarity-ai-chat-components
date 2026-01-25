@@ -139,6 +139,67 @@ export function AnalyticsProvider({
     initializeProviders()
   }, [isEnabled, config.providers, config.debug])
 
+  // Track function
+  const track = React.useCallback(
+    (eventName: string, properties?: Record<string, any>) => {
+      if (!isEnabled || !isInitialized) return
+
+      const event: AnalyticsEvent = {
+        name: config.eventPrefix
+          ? `${config.eventPrefix}${eventName}`
+          : eventName,
+        properties: {
+          ...properties,
+          session_id: sessionId,
+          timestamp: Date.now(),
+        },
+        timestamp: Date.now(),
+        userId: currentUserId.current,
+        sessionId,
+      }
+
+      if (config.debug) {
+        console.debug('[Analytics] Track:', event)
+      }
+
+      // Send to all providers
+      config.providers?.forEach((provider) => {
+        try {
+          provider.track(event)
+        } catch (error) {
+          console.error(
+            `[Analytics] Error in provider ${provider.name}:`,
+            error
+          )
+        }
+      })
+    },
+    [isEnabled, isInitialized, config, sessionId]
+  )
+
+  // Page function
+  const page = React.useCallback(
+    (pageView: PageView) => {
+      if (!isEnabled || !isInitialized) return
+
+      if (config.debug) {
+        console.debug('[Analytics] Page:', pageView)
+      }
+
+      config.providers?.forEach((provider) => {
+        try {
+          provider.page?.(pageView)
+        } catch (error) {
+          console.error(
+            `[Analytics] Error in provider ${provider.name}:`,
+            error
+          )
+        }
+      })
+    },
+    [isEnabled, isInitialized, config]
+  )
+
   // Auto-track page views
   React.useEffect(() => {
     if (!isEnabled || !config.autoTrackPageViews || !isInitialized) return
@@ -210,44 +271,6 @@ export function AnalyticsProvider({
     }
   }, [isEnabled, config.autoTrackErrors, isInitialized, track])
 
-  // Track function
-  const track = React.useCallback(
-    (eventName: string, properties?: Record<string, any>) => {
-      if (!isEnabled || !isInitialized) return
-
-      const event: AnalyticsEvent = {
-        name: config.eventPrefix
-          ? `${config.eventPrefix}${eventName}`
-          : eventName,
-        properties: {
-          ...properties,
-          session_id: sessionId,
-          timestamp: Date.now(),
-        },
-        timestamp: Date.now(),
-        userId: currentUserId.current,
-        sessionId,
-      }
-
-      if (config.debug) {
-        console.debug('[Analytics] Track:', event)
-      }
-
-      // Send to all providers
-      config.providers?.forEach((provider) => {
-        try {
-          provider.track(event)
-        } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
-        }
-      })
-    },
-    [isEnabled, isInitialized, config, sessionId]
-  )
-
   // Identify function
   const identify = React.useCallback(
     (user: AnalyticsUser) => {
@@ -262,29 +285,6 @@ export function AnalyticsProvider({
       config.providers?.forEach((provider) => {
         try {
           provider.identify?.(user)
-        } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
-        }
-      })
-    },
-    [isEnabled, isInitialized, config]
-  )
-
-  // Page function
-  const page = React.useCallback(
-    (pageView: PageView) => {
-      if (!isEnabled || !isInitialized) return
-
-      if (config.debug) {
-        console.debug('[Analytics] Page:', pageView)
-      }
-
-      config.providers?.forEach((provider) => {
-        try {
-          provider.page?.(pageView)
         } catch (error) {
           console.error(
             `[Analytics] Error in provider ${provider.name}:`,

@@ -3,9 +3,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Card, CardContent } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@/hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-import { DURATION_SECONDS as durations, ANIMATION_PRESETS } from '../../animations/constants'
+import {
+  DURATION_SECONDS as durations,
+  ANIMATION_PRESETS,
+} from '../../animations/constants'
 
 /**
  * A single suggestion card
@@ -228,7 +231,9 @@ export function SuggestionCards({
   )
 
   // Apply max cards limit
-  const displayCards = maxCards ? filteredCards.slice(0, maxCards) : filteredCards
+  const displayCards = maxCards
+    ? filteredCards.slice(0, maxCards)
+    : filteredCards
   const remainingCount = maxCards ? filteredCards.length - maxCards : 0
 
   // Loading skeleton
@@ -239,7 +244,13 @@ export function SuggestionCards({
         {showCategoryFilter && categories && (
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} width={80} height={32} rounded="full" variant="shimmer" />
+              <Skeleton
+                key={i}
+                width={80}
+                height={32}
+                rounded="full"
+                variant="shimmer"
+              />
             ))}
           </div>
         )}
@@ -283,7 +294,10 @@ export function SuggestionCards({
         {...ANIMATION_PRESETS.scale}
         transition={{ duration: durations.normal }}
         viewport={{ once: true }}
-        className={cn('rounded-xl border border-dashed border-border/40 bg-muted/20 p-8 text-center', className)}
+        className={cn(
+          'rounded-xl border border-dashed border-border/40 bg-muted/20 p-8 text-center',
+          className
+        )}
       >
         {emptyState || (
           <div className="space-y-3">
@@ -302,7 +316,9 @@ export function SuggestionCards({
                 />
               </svg>
             </div>
-            <p className="text-sm font-medium text-foreground/80">No suggestions found</p>
+            <p className="text-sm font-medium text-foreground/80">
+              No suggestions found
+            </p>
             <p className="text-xs text-muted-foreground">
               {searchQuery
                 ? 'Try adjusting your search query'
@@ -358,7 +374,9 @@ export function SuggestionCards({
                   : 'bg-muted/50 text-foreground/80 hover:bg-muted hover:text-foreground'
               )}
             >
-              {category.icon && <span className="text-sm">{category.icon}</span>}
+              {category.icon && (
+                <span className="text-sm">{category.icon}</span>
+              )}
               {category.label}
               {category.count !== undefined && (
                 <span className="text-xs opacity-70">({category.count})</span>
@@ -416,83 +434,85 @@ export function SuggestionCards({
                       'transition-colors duration-200',
                       sizeClasses.icon
                     )}
-                    whileHover={prefersReducedMotion ? {} : { scale: 1.05, rotate: 3 }}
+                    whileHover={
+                      prefersReducedMotion ? {} : { scale: 1.05, rotate: 3 }
+                    }
                     transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                   >
-                      {card.icon}
-                    </motion.div>
+                    {card.icon}
+                  </motion.div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3
-                          className={cn(
-                            'text-foreground group-hover:text-primary transition-colors duration-200',
-                            sizeClasses.title
-                          )}
-                        >
-                          {card.title}
-                        </h3>
-                        {card.badge && (
-                          <span
-                            className={cn(
-                              'flex-shrink-0 px-2 py-0.5 rounded-full',
-                              'text-[10px] font-semibold uppercase tracking-wide',
-                              'bg-primary/10 text-primary'
-                            )}
-                          >
-                            {card.badge}
-                          </span>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3
+                        className={cn(
+                          'text-foreground group-hover:text-primary transition-colors duration-200',
+                          sizeClasses.title
                         )}
-                      </div>
-                      {card.description && (
-                        <p
+                      >
+                        {card.title}
+                      </h3>
+                      {card.badge && (
+                        <span
                           className={cn(
-                            'text-muted-foreground/80 line-clamp-2 mt-1',
-                            sizeClasses.description
+                            'flex-shrink-0 px-2 py-0.5 rounded-full',
+                            'text-[10px] font-semibold uppercase tracking-wide',
+                            'bg-primary/10 text-primary'
                           )}
                         >
-                          {card.description}
-                        </p>
-                      )}
-                      {card.keywords && card.keywords.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {card.keywords.slice(0, 3).map((keyword) => (
-                            <span
-                              key={keyword}
-                              className="px-1.5 py-0.5 rounded text-[10px] bg-muted/50 text-muted-foreground"
-                            >
-                              {keyword}
-                            </span>
-                          ))}
-                        </div>
+                          {card.badge}
+                        </span>
                       )}
                     </div>
-
-                    {/* Arrow indicator */}
-                    <div
-                      className={cn(
-                        'flex-shrink-0 w-6 h-6 rounded-full',
-                        'bg-muted/50 flex items-center justify-center',
-                        'opacity-0 group-hover:opacity-100',
-                        'translate-x-1 group-hover:translate-x-0',
-                        'transition-all duration-200'
-                      )}
-                    >
-                      <svg
-                        className="w-3.5 h-3.5 text-muted-foreground"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                    {card.description && (
+                      <p
+                        className={cn(
+                          'text-muted-foreground/80 line-clamp-2 mt-1',
+                          sizeClasses.description
+                        )}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
+                        {card.description}
+                      </p>
+                    )}
+                    {card.keywords && card.keywords.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {card.keywords.slice(0, 3).map((keyword) => (
+                          <span
+                            key={keyword}
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-muted/50 text-muted-foreground"
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Arrow indicator */}
+                  <div
+                    className={cn(
+                      'flex-shrink-0 w-6 h-6 rounded-full',
+                      'bg-muted/50 flex items-center justify-center',
+                      'opacity-0 group-hover:opacity-100',
+                      'translate-x-1 group-hover:translate-x-0',
+                      'transition-all duration-200'
+                    )}
+                  >
+                    <svg
+                      className="w-3.5 h-3.5 text-muted-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -556,7 +576,10 @@ export function useSuggestionCards(
     const categoryMap = new Map<string, number>()
     cards.forEach((card) => {
       if (card.category) {
-        categoryMap.set(card.category, (categoryMap.get(card.category) || 0) + 1)
+        categoryMap.set(
+          card.category,
+          (categoryMap.get(card.category) || 0) + 1
+        )
       }
     })
     return Array.from(categoryMap.entries()).map(([id, count]) => ({
@@ -573,7 +596,9 @@ export function useSuggestionCards(
   )
 
   // Display cards with limit
-  const displayCards = maxCards ? filteredCards.slice(0, maxCards) : filteredCards
+  const displayCards = maxCards
+    ? filteredCards.slice(0, maxCards)
+    : filteredCards
   const hasMore = maxCards ? filteredCards.length > maxCards : false
 
   const handleShowMore = React.useCallback(() => {

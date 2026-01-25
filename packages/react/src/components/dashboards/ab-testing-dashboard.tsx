@@ -22,7 +22,7 @@ import { DashboardProgress } from '../ui/dashboard-progress'
 import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
 import { Skeleton } from '../ui/skeleton'
 import { ANIMATION_PRESETS } from '../../animations/constants'
-import { useReducedMotion } from '../../hooks/accessibility/use-reduced-motion'
+import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 /**
  * Experiment variant
@@ -565,8 +565,8 @@ export function ABTestingDashboard({
         </div>
 
         {/* Winner recommendation */}
-        {winner && (
-          prefersReducedMotion ? (
+        {winner &&
+          (prefersReducedMotion ? (
             <Card className="border-green-500 bg-green-50 dark:bg-green-950">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -617,8 +617,9 @@ export function ABTestingDashboard({
                   <p className="text-sm mb-2">
                     <strong>{winner.variant.name}</strong> is performing
                     significantly better with{' '}
-                    {formatPercent(winner.metrics.conversionRate)} conversion rate
-                    ({winner.significance.effectSize.toFixed(1)}% improvement)
+                    {formatPercent(winner.metrics.conversionRate)} conversion
+                    rate ({winner.significance.effectSize.toFixed(1)}%
+                    improvement)
                   </p>
                   <p className="text-xs text-muted-foreground">
                     p-value: {winner.significance.pValue.toFixed(4)} (
@@ -643,8 +644,7 @@ export function ABTestingDashboard({
                 </CardContent>
               </Card>
             </motion.div>
-          )
-        )}
+          ))}
 
         {/* Variant cards */}
         <div className="space-y-3">
@@ -742,9 +742,7 @@ export function ABTestingDashboard({
                       </div>
                       {metrics.revenue !== undefined && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Revenue
-                          </span>
+                          <span className="text-muted-foreground">Revenue</span>
                           <span>${metrics.revenue.toFixed(2)}</span>
                         </div>
                       )}
