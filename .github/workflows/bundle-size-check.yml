@@ -1,0 +1,482 @@
+name: Bundle Size Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/react/src/**'
+      - 'packages/react/package.json'
+      - 'packages/react/tsup.config.ts'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/react/src/**'
+      - 'packages/react/package.json'
+      - 'packages/react/tsup.config.ts'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
+  TURBO_TELEMETRY_DISABLED: 1
+  # Bundle size limits (in KB, gzipped)
+  MAX_BUNDLE_SIZE_KB: 800
+  MAX_CORE_SIZE_KB: 250
+  MAX_SLIM_SIZE_KB: 150
+  # Allowed growth percentage per PR
+  MAX_GROWTH_PERCENT: 5
+
+jobs:
+  # ============================================
+  # Measure current bundle sizes
+  # ============================================
+  measure-current:
+    name: Measure Current Bundle Size
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      total-size: ${{ steps.measure.outputs.total-size }}
+      total-gzip: ${{ steps.measure.outputs.total-gzip }}
+      core-size: ${{ steps.measure.outputs.core-size }}
+      core-gzip: ${{ steps.measure.outputs.core-gzip }}
+      slim-size: ${{ steps.measure.outputs.slim-size }}
+      slim-gzip: ${{ steps.measure.outputs.slim-gzip }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install required peer dependencies
+        working-directory: packages/react
+        run: node scripts/install-peers-ci.js minimal
+
+      - name: Build package
+        run: pnpm --filter @clarity-chat/react build
+
+      - name: Measure bundle sizes
+        id: measure
+        working-directory: packages/react
+        run: |
+          # Install gzip if not available
+          if ! command -v gzip &> /dev/null; then
+            echo "Installing gzip..."
+            sudo apt-get update && sudo apt-get install -y gzip
+          fi
+
+          # Function to get gzipped size
+          get_gzip_size() {
+            local file=$1
+            if [ -f "$file" ]; then
+              gzip -c "$file" | wc -c
+            else
+              echo "0"
+            fi
+          }
+
+          # Function to get file size
+          get_file_size() {
+            local file=$1
+            if [ -f "$file" ]; then
+              wc -c < "$file"
+            else
+              echo "0"
+            fi
+          }
+
+          # Measure main bundle
+          TOTAL_SIZE=$(get_file_size "dist/index.js")
+          TOTAL_GZIP=$(get_gzip_size "dist/index.js")
+
+          # Measure core bundle
+          CORE_SIZE=$(get_file_size "dist/core.js")
+          CORE_GZIP=$(get_gzip_size "dist/core.js")
+
+          # Measure slim bundle
+          SLIM_SIZE=$(get_file_size "dist/slim.js")
+          SLIM_GZIP=$(get_gzip_size "dist/slim.js")
+
+          # Output sizes in KB
+          TOTAL_SIZE_KB=$((TOTAL_SIZE / 1024))
+          TOTAL_GZIP_KB=$((TOTAL_GZIP / 1024))
+          CORE_SIZE_KB=$((CORE_SIZE / 1024))
+          CORE_GZIP_KB=$((CORE_GZIP / 1024))
+          SLIM_SIZE_KB=$((SLIM_SIZE / 1024))
+          SLIM_GZIP_KB=$((SLIM_GZIP / 1024))
+
+          echo "total-size=${TOTAL_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "total-gzip=${TOTAL_GZIP_KB}" >> $GITHUB_OUTPUT
+          echo "core-size=${CORE_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "core-gzip=${CORE_GZIP_KB}" >> $GITHUB_OUTPUT
+          echo "slim-size=${SLIM_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "slim-gzip=${SLIM_GZIP_KB}" >> $GITHUB_OUTPUT
+
+          echo "📊 Bundle Sizes (Current):" >> $GITHUB_STEP_SUMMARY
+          echo "| Bundle | Raw | Gzipped |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-----|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Main | ${TOTAL_SIZE_KB} KB | ${TOTAL_GZIP_KB} KB |" >> $GITHUB_STEP_SUMMARY
+          echo "| Core | ${CORE_SIZE_KB} KB | ${CORE_GZIP_KB} KB |" >> $GITHUB_STEP_SUMMARY
+          echo "| Slim | ${SLIM_SIZE_KB} KB | ${SLIM_GZIP_KB} KB |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload bundle artifacts
+        uses: actions/upload-artifact@ea165f8d65b6b781d13647fc573a5a49d8e7c63e # v4.6.2
+        with:
+          name: current-bundle
+          path: packages/react/dist/
+          retention-days: 7
+
+  # ============================================
+  # Measure base branch bundle sizes (for comparison)
+  # ============================================
+  measure-base:
+    name: Measure Base Bundle Size
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request'
+    outputs:
+      total-size: ${{ steps.measure.outputs.total-size }}
+      total-gzip: ${{ steps.measure.outputs.total-gzip }}
+      core-size: ${{ steps.measure.outputs.core-size }}
+      core-gzip: ${{ steps.measure.outputs.core-gzip }}
+      slim-size: ${{ steps.measure.outputs.slim-size }}
+      slim-gzip: ${{ steps.measure.outputs.slim-gzip }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout base branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install required peer dependencies
+        working-directory: packages/react
+        run: node scripts/install-peers-ci.js minimal
+
+      - name: Build package
+        run: pnpm --filter @clarity-chat/react build
+
+      - name: Measure bundle sizes
+        id: measure
+        working-directory: packages/react
+        run: |
+          get_gzip_size() {
+            local file=$1
+            if [ -f "$file" ]; then
+              gzip -c "$file" | wc -c
+            else
+              echo "0"
+            fi
+          }
+
+          get_file_size() {
+            local file=$1
+            if [ -f "$file" ]; then
+              wc -c < "$file"
+            else
+              echo "0"
+            fi
+          }
+
+          TOTAL_SIZE=$(get_file_size "dist/index.js")
+          TOTAL_GZIP=$(get_gzip_size "dist/index.js")
+          CORE_SIZE=$(get_file_size "dist/core.js")
+          CORE_GZIP=$(get_gzip_size "dist/core.js")
+          SLIM_SIZE=$(get_file_size "dist/slim.js")
+          SLIM_GZIP=$(get_gzip_size "dist/slim.js")
+
+          TOTAL_SIZE_KB=$((TOTAL_SIZE / 1024))
+          TOTAL_GZIP_KB=$((TOTAL_GZIP / 1024))
+          CORE_SIZE_KB=$((CORE_SIZE / 1024))
+          CORE_GZIP_KB=$((CORE_GZIP / 1024))
+          SLIM_SIZE_KB=$((SLIM_SIZE / 1024))
+          SLIM_GZIP_KB=$((SLIM_GZIP / 1024))
+
+          echo "total-size=${TOTAL_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "total-gzip=${TOTAL_GZIP_KB}" >> $GITHUB_OUTPUT
+          echo "core-size=${CORE_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "core-gzip=${CORE_GZIP_KB}" >> $GITHUB_OUTPUT
+          echo "slim-size=${SLIM_SIZE_KB}" >> $GITHUB_OUTPUT
+          echo "slim-gzip=${SLIM_GZIP_KB}" >> $GITHUB_OUTPUT
+
+  # ============================================
+  # Compare and report bundle size changes
+  # ============================================
+  compare-and-report:
+    name: Compare Bundle Sizes
+    runs-on: ubuntu-latest
+    needs: [measure-current, measure-base]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Calculate changes
+        id: calculate
+        run: |
+          # Current sizes
+          CURRENT_TOTAL=${{ needs.measure-current.outputs.total-gzip }}
+          CURRENT_CORE=${{ needs.measure-current.outputs.core-gzip }}
+          CURRENT_SLIM=${{ needs.measure-current.outputs.slim-gzip }}
+
+          # Base sizes
+          BASE_TOTAL=${{ needs.measure-base.outputs.total-gzip }}
+          BASE_CORE=${{ needs.measure-base.outputs.core-gzip }}
+          BASE_SLIM=${{ needs.measure-base.outputs.slim-gzip }}
+
+          # Calculate differences
+          TOTAL_DIFF=$((CURRENT_TOTAL - BASE_TOTAL))
+          CORE_DIFF=$((CURRENT_CORE - BASE_CORE))
+          SLIM_DIFF=$((CURRENT_SLIM - BASE_SLIM))
+
+          # Calculate percentages
+          if [ $BASE_TOTAL -gt 0 ]; then
+            TOTAL_PCT=$(awk "BEGIN {printf \"%.2f\", ($TOTAL_DIFF / $BASE_TOTAL) * 100}")
+          else
+            TOTAL_PCT="0.00"
+          fi
+
+          if [ $BASE_CORE -gt 0 ]; then
+            CORE_PCT=$(awk "BEGIN {printf \"%.2f\", ($CORE_DIFF / $BASE_CORE) * 100}")
+          else
+            CORE_PCT="0.00"
+          fi
+
+          if [ $BASE_SLIM -gt 0 ]; then
+            SLIM_PCT=$(awk "BEGIN {printf \"%.2f\", ($SLIM_DIFF / $BASE_SLIM) * 100}")
+          else
+            SLIM_PCT="0.00"
+          fi
+
+          echo "total-diff=${TOTAL_DIFF}" >> $GITHUB_OUTPUT
+          echo "core-diff=${CORE_DIFF}" >> $GITHUB_OUTPUT
+          echo "slim-diff=${SLIM_DIFF}" >> $GITHUB_OUTPUT
+          echo "total-pct=${TOTAL_PCT}" >> $GITHUB_OUTPUT
+          echo "core-pct=${CORE_PCT}" >> $GITHUB_OUTPUT
+          echo "slim-pct=${SLIM_PCT}" >> $GITHUB_OUTPUT
+
+          # Check if any bundle exceeded growth limit
+          FAILED=0
+          if (( $(echo "$TOTAL_PCT > ${{ env.MAX_GROWTH_PERCENT }}" | bc -l) )); then
+            echo "failed-total=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+          if (( $(echo "$CORE_PCT > ${{ env.MAX_GROWTH_PERCENT }}" | bc -l) )); then
+            echo "failed-core=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+          if (( $(echo "$SLIM_PCT > ${{ env.MAX_GROWTH_PERCENT }}" | bc -l) )); then
+            echo "failed-slim=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+
+          # Check absolute limits
+          if [ $CURRENT_TOTAL -gt ${{ env.MAX_BUNDLE_SIZE_KB }} ]; then
+            echo "exceeded-total=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+          if [ $CURRENT_CORE -gt ${{ env.MAX_CORE_SIZE_KB }} ]; then
+            echo "exceeded-core=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+          if [ $CURRENT_SLIM -gt ${{ env.MAX_SLIM_SIZE_KB }} ]; then
+            echo "exceeded-slim=true" >> $GITHUB_OUTPUT
+            FAILED=1
+          fi
+
+          echo "has-failures=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const currentTotal = ${{ needs.measure-current.outputs.total-gzip }};
+            const currentCore = ${{ needs.measure-current.outputs.core-gzip }};
+            const currentSlim = ${{ needs.measure-current.outputs.slim-gzip }};
+
+            const baseTotal = ${{ needs.measure-base.outputs.total-gzip }};
+            const baseCore = ${{ needs.measure-base.outputs.core-gzip }};
+            const baseSlim = ${{ needs.measure-base.outputs.slim-gzip }};
+
+            const totalDiff = ${{ steps.calculate.outputs.total-diff }};
+            const coreDiff = ${{ steps.calculate.outputs.core-diff }};
+            const slimDiff = ${{ steps.calculate.outputs.slim-diff }};
+
+            const totalPct = '${{ steps.calculate.outputs.total-pct }}';
+            const corePct = '${{ steps.calculate.outputs.core-pct }}';
+            const slimPct = '${{ steps.calculate.outputs.slim-pct }}';
+
+            const hasFailures = '${{ steps.calculate.outputs.has-failures }}' === '1';
+
+            function formatDiff(diff, pct) {
+              const sign = diff > 0 ? '+' : '';
+              const emoji = diff > 0 ? '📈' : diff < 0 ? '📉' : '➖';
+              return `${emoji} ${sign}${diff} KB (${sign}${pct}%)`;
+            }
+
+            function checkLimit(current, max, name) {
+              if (current > max) {
+                return `⚠️ **EXCEEDS LIMIT** (${max} KB)`;
+              }
+              return '✅';
+            }
+
+            const body = `## 📦 Bundle Size Report
+
+            | Bundle | Base | Current | Change | Status |
+            |--------|------|---------|--------|--------|
+            | **Main** | ${baseTotal} KB | ${currentTotal} KB | ${formatDiff(totalDiff, totalPct)} | ${checkLimit(currentTotal, ${{ env.MAX_BUNDLE_SIZE_KB }}, 'Main')} |
+            | **Core** | ${baseCore} KB | ${currentCore} KB | ${formatDiff(coreDiff, corePct)} | ${checkLimit(currentCore, ${{ env.MAX_CORE_SIZE_KB }}, 'Core')} |
+            | **Slim** | ${baseSlim} KB | ${currentSlim} KB | ${formatDiff(slimDiff, slimPct)} | ${checkLimit(currentSlim, ${{ env.MAX_SLIM_SIZE_KB }}, 'Slim')} |
+
+            ### Limits
+            - Maximum bundle size: **${{ env.MAX_BUNDLE_SIZE_KB }} KB** (gzipped)
+            - Maximum core size: **${{ env.MAX_CORE_SIZE_KB }} KB** (gzipped)
+            - Maximum slim size: **${{ env.MAX_SLIM_SIZE_KB }} KB** (gzipped)
+            - Maximum growth per PR: **${{ env.MAX_GROWTH_PERCENT }}%**
+
+            ${hasFailures ? `
+            ### ⚠️ Bundle Size Check Failed
+
+            One or more bundles have grown beyond acceptable limits. Please:
+            1. Review your changes for unnecessary imports
+            2. Ensure tree-shaking is working correctly
+            3. Consider code splitting or lazy loading
+            4. Check if dependencies can be externalized
+            ` : '### ✅ Bundle Size Check Passed'}
+
+            <details>
+            <summary>💡 Tips for reducing bundle size</summary>
+
+            - Use dynamic imports for heavy features
+            - Externalize large peer dependencies
+            - Remove unused code and dependencies
+            - Use tree-shakeable imports (\`import { specific } from 'lib'\`)
+            - Avoid default exports for large modules
+            - Use \`import type\` for TypeScript types
+
+            </details>
+            `;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.body.includes('Bundle Size Report')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Fail if bundle size exceeded
+        if: steps.calculate.outputs.has-failures == '1'
+        run: |
+          echo "❌ Bundle size check failed"
+          echo "One or more bundles exceeded size limits or growth thresholds"
+          exit 1
+
+  # ============================================
+  # Check absolute bundle size limits (non-PR)
+  # ============================================
+  check-size-limits:
+    name: Check Size Limits
+    runs-on: ubuntu-latest
+    needs: measure-current
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Check limits
+        run: |
+          CURRENT_TOTAL=${{ needs.measure-current.outputs.total-gzip }}
+          CURRENT_CORE=${{ needs.measure-current.outputs.core-gzip }}
+          CURRENT_SLIM=${{ needs.measure-current.outputs.slim-gzip }}
+
+          FAILED=0
+
+          echo "## Bundle Size Limits Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Bundle | Size | Limit | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ $CURRENT_TOTAL -gt ${{ env.MAX_BUNDLE_SIZE_KB }} ]; then
+            echo "| Main | ${CURRENT_TOTAL} KB | ${{ env.MAX_BUNDLE_SIZE_KB }} KB | ❌ EXCEEDED |" >> $GITHUB_STEP_SUMMARY
+            FAILED=1
+          else
+            echo "| Main | ${CURRENT_TOTAL} KB | ${{ env.MAX_BUNDLE_SIZE_KB }} KB | ✅ |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ $CURRENT_CORE -gt ${{ env.MAX_CORE_SIZE_KB }} ]; then
+            echo "| Core | ${CURRENT_CORE} KB | ${{ env.MAX_CORE_SIZE_KB }} KB | ❌ EXCEEDED |" >> $GITHUB_STEP_SUMMARY
+            FAILED=1
+          else
+            echo "| Core | ${CURRENT_CORE} KB | ${{ env.MAX_CORE_SIZE_KB }} KB | ✅ |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ $CURRENT_SLIM -gt ${{ env.MAX_SLIM_SIZE_KB }} ]; then
+            echo "| Slim | ${CURRENT_SLIM} KB | ${{ env.MAX_SLIM_SIZE_KB }} KB | ❌ EXCEEDED |" >> $GITHUB_STEP_SUMMARY
+            FAILED=1
+          else
+            echo "| Slim | ${CURRENT_SLIM} KB | ${{ env.MAX_SLIM_SIZE_KB }} KB | ✅ |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ $FAILED -eq 1 ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ One or more bundles exceeded size limits" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All bundles within size limits" >> $GITHUB_STEP_SUMMARY
