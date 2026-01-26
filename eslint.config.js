@@ -73,6 +73,11 @@ export default [
       '**/tsup.config.bundled_*.mjs',
       '**/tsup.config.bundled_*.d.mts',
       'apps/docs/.vitepress/examples/MarkdownDemo.tsx',
+      // Marketing site compiled output (TypeScript compiles .tsx to .js in same directory)
+      'apps/marketing-site/components/**/*.js',
+      'apps/marketing-site/components/**/*.d.ts',
+      'apps/marketing-site/lib/**/*.js',
+      'apps/marketing-site/lib/**/*.d.ts',
     ],
   },
 

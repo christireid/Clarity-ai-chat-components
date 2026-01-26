@@ -164,6 +164,7 @@
     "size:why": "size-limit --why",
     "size:analyze": "size-limit --json > size-report.json",
     "verify:externals": "node -e \"console.log('Verifying peer dependencies externalized...'); const pkg = require('./package.json'); const peers = Object.keys(pkg.peerDependencies); console.log('Required peers:', peers.filter(p => !pkg.peerDependenciesMeta[p]?.optional)); console.log('Optional peers:', peers.filter(p => pkg.peerDependenciesMeta[p]?.optional));\"",
+    "install-peers": "node scripts/install-peers.js",
     "prepublishOnly": "npm run clean && npm run build && npm run test && npm run verify:externals"
   },
   "peerDependencies": {

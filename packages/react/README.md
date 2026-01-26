@@ -4,6 +4,10 @@
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Peer Dependencies](https://img.shields.io/badge/peer_dependencies-15_total-blue)](#peer-dependencies)
+[![Required vs Optional](https://img.shields.io/badge/peer_deps-4_required_%7C_11_optional-success)](#peer-dependencies)
+[![Bundle Savings](https://img.shields.io/badge/bundle_savings-up_to_1.5MB-brightgreen)](#bundle-size-breakdown)
+[![Core Bundle](https://img.shields.io/badge/core_minimal-~30KB-orange)](#bundle-size)
 
 ---
 

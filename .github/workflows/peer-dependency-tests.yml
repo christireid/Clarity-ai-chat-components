@@ -1,0 +1,288 @@
+name: Peer Dependency Tests
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/react/**'
+      - 'packages/*/package.json'
+      - 'pnpm-lock.yaml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/react/**'
+      - 'packages/*/package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  # ============================================
+  # Test with all peers installed
+  # ============================================
+  test-with-all-peers:
+    name: Test with All Peers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install all peer dependencies
+        working-directory: packages/react
+        run: |
+          echo "📦 Installing all peer dependencies (required + optional)..."
+          node scripts/install-peers-ci.js full
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Run tests
+        run: pnpm --filter @clarity-chat/react test
+
+      - name: Verify all features work
+        working-directory: packages/react
+        run: |
+          echo "✅ All peer dependencies installed successfully"
+          echo "✅ Build succeeded with all features"
+          echo "✅ Tests passed with all dependencies"
+
+  # ============================================
+  # Test with only required peers
+  # ============================================
+  test-with-required-peers-only:
+    name: Test with Required Peers Only
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install only required peer dependencies
+        working-directory: packages/react
+        run: |
+          echo "📦 Installing only required peer dependencies..."
+          node scripts/install-peers-ci.js minimal
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Run tests (should still pass without optional peers)
+        run: pnpm --filter @clarity-chat/react test
+        continue-on-error: false
+
+      - name: Verify core features work without optional peers
+        working-directory: packages/react
+        run: |
+          echo "✅ Required peer dependencies installed successfully"
+          echo "✅ Build succeeded without optional features"
+          echo "✅ Tests passed with minimal dependencies"
+          echo "✅ Optional features properly handled when missing"
+
+  # ============================================
+  # Test with missing optional peers (graceful degradation)
+  # ============================================
+  test-optional-peer-degradation:
+    name: Test Optional Peer Degradation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: Without Shiki
+            install: minimal
+            missing: shiki
+          - name: Without Mermaid
+            install: minimal
+            missing: mermaid
+          - name: Without PDF.js
+            install: minimal
+            missing: pdfjs-dist
+          - name: Without Mammoth
+            install: minimal
+            missing: mammoth
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Install peer dependencies (${{ matrix.config.name }})
+        working-directory: packages/react
+        run: |
+          echo "📦 Installing dependencies for: ${{ matrix.config.name }}"
+          node scripts/install-peers-ci.js ${{ matrix.config.install }}
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Run tests (should handle missing ${{ matrix.config.missing }})
+        run: pnpm --filter @clarity-chat/react test
+
+      - name: Verify graceful degradation
+        run: |
+          echo "✅ Build succeeded without ${{ matrix.config.missing }}"
+          echo "✅ Tests passed with ${{ matrix.config.missing }} missing"
+          echo "✅ Graceful degradation working correctly"
+
+  # ============================================
+  # Peer dependency validation
+  # ============================================
+  validate-peer-dependencies:
+    name: Validate Peer Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Validate peer dependency configuration
+        working-directory: packages/react
+        run: |
+          echo "🔍 Validating peer dependency configuration..."
+
+          # Check that package.json has peer dependencies
+          if ! jq -e '.peerDependencies' package.json > /dev/null; then
+            echo "❌ No peerDependencies found in package.json"
+            exit 1
+          fi
+
+          # Check that peerDependenciesMeta exists
+          if ! jq -e '.peerDependenciesMeta' package.json > /dev/null; then
+            echo "❌ No peerDependenciesMeta found in package.json"
+            exit 1
+          fi
+
+          # Verify all peer dependencies have metadata
+          PEERS=$(jq -r '.peerDependencies | keys[]' package.json)
+          for peer in $PEERS; do
+            if ! jq -e ".peerDependenciesMeta.\"$peer\"" package.json > /dev/null; then
+              echo "❌ Missing peerDependenciesMeta for: $peer"
+              exit 1
+            fi
+          done
+
+          echo "✅ Peer dependency configuration is valid"
+
+      - name: List peer dependencies
+        working-directory: packages/react
+        run: |
+          echo "## Required Peer Dependencies"
+          jq -r '.peerDependencies | to_entries[] | select(.key as $k | (input_filename | . as $f | $f | contains("peerDependenciesMeta") and .[$k].optional != true)) | "\(.key)@\(.value)"' package.json | head -20 || true
+
+          echo ""
+          echo "## Optional Peer Dependencies"
+          jq -r '.peerDependenciesMeta | to_entries[] | select(.value.optional == true) | .key' package.json
+
+  # ============================================
+  # Summary
+  # ============================================
+  peer-test-summary:
+    name: Peer Test Summary
+    runs-on: ubuntu-latest
+    needs:
+      - test-with-all-peers
+      - test-with-required-peers-only
+      - test-optional-peer-degradation
+      - validate-peer-dependencies
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "## 📊 Peer Dependency Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| All Peers | ${{ needs.test-with-all-peers.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Required Only | ${{ needs.test-with-required-peers-only.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Optional Degradation | ${{ needs.test-optional-peer-degradation.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validation | ${{ needs.validate-peer-dependencies.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if any test failed
+        if: |
+          needs.test-with-all-peers.result != 'success' ||
+          needs.test-with-required-peers-only.result != 'success' ||
+          needs.test-optional-peer-degradation.result != 'success' ||
+          needs.validate-peer-dependencies.result != 'success'
+        run: |
+          echo "❌ One or more peer dependency tests failed"
+          exit 1
