@@ -4,6 +4,13 @@
  * Efficient rendering for large conversations (1000+ messages) using
  * react-window for virtual scrolling.
  *
+ * @requires react-window - Virtual scrolling library (direct dependency)
+ * @requires react-virtualized-auto-sizer - Auto-sizing container (direct dependency)
+ * @bundleImpact react-window ~8KB, react-virtualized-auto-sizer ~3KB (included in @clarity-chat/react)
+ * @note These are direct dependencies, not peer dependencies - no installation needed
+ * @alternative Consider TanStackMessageList for modern API and better TypeScript support
+ * @docs https://clarity-chat.dev/docs/components/virtualized-message-list
+ *
  * @blueprint Feature 6.1 - Virtual Scrolling
  * @priority HIGH
  * @status NEW - Implementation based on blueprint analysis

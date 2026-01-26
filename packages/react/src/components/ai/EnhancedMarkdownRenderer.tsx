@@ -94,6 +94,16 @@ export interface EnhancedMarkdownConfig {
  * - Mermaid diagrams
  * - Streaming content handling
  *
+ * @requires react-markdown - Core markdown rendering (optional peer dependency)
+ * @requires remark-gfm - GitHub Flavored Markdown support (optional peer dependency)
+ * @requires rehype-highlight - Syntax highlighting (optional peer dependency)
+ * @requires mermaid - Diagram rendering (optional peer dependency, only if enableMermaid=true)
+ * @installation npm install react-markdown remark-gfm rehype-highlight
+ * @installation npm install mermaid (for diagram support)
+ * @bundleImpact react-markdown ~50KB, remark-gfm ~15KB, rehype-highlight ~30KB, mermaid ~300KB
+ * @fallback Plain text rendering with basic formatting when react-markdown is not installed
+ * @docs https://clarity-chat.dev/docs/peer-dependencies
+ *
  * @example
  * ```tsx
  * <EnhancedMarkdownRenderer

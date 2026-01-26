@@ -1,0 +1,142 @@
+{
+  "timestamp": "2026-01-26T18:55:29.180Z",
+  "summary": {
+    "totalFiles": 30,
+    "totalRaw": 2564138,
+    "totalGzip": 690914,
+    "compressionRatio": "26.9%"
+  },
+  "entryPoints": [
+    {
+      "path": "index.js",
+      "format": "CJS",
+      "raw": 1208097,
+      "gzip": 311250,
+      "rawFormatted": "1.15 MB",
+      "gzipFormatted": "303.96 KB"
+    },
+    {
+      "path": "index.mjs",
+      "format": "ESM",
+      "raw": 1116004,
+      "gzip": 306492,
+      "rawFormatted": "1.06 MB",
+      "gzipFormatted": "299.31 KB"
+    },
+    {
+      "path": "magic-string.es-HK6MW32O.js",
+      "format": "CJS",
+      "raw": 21588,
+      "gzip": 6455,
+      "rawFormatted": "21.08 KB",
+      "gzipFormatted": "6.30 KB"
+    },
+    {
+      "path": "magic-string.es-EC3X5VXJ.mjs",
+      "format": "ESM",
+      "raw": 21511,
+      "gzip": 6419,
+      "rawFormatted": "21.01 KB",
+      "gzipFormatted": "6.27 KB"
+    },
+    {
+      "path": "TemplateMarketplace-AU3GVGOJ.js",
+      "format": "CJS",
+      "raw": 16248,
+      "gzip": 3961,
+      "rawFormatted": "15.87 KB",
+      "gzipFormatted": "3.87 KB"
+    },
+    {
+      "path": "TemplateMarketplace-BLLBU3WC.mjs",
+      "format": "ESM",
+      "raw": 13347,
+      "gzip": 3767,
+      "rawFormatted": "13.03 KB",
+      "gzipFormatted": "3.68 KB"
+    },
+    {
+      "path": "EnhancedMarkdownRenderer-GHENZTKY.js",
+      "format": "CJS",
+      "raw": 296,
+      "gzip": 218,
+      "rawFormatted": "296.00 B",
+      "gzipFormatted": "218.00 B"
+    },
+    {
+      "path": "ConversationAnalyticsDashboard-5Q2EMZ72.js",
+      "format": "CJS",
+      "raw": 189,
+      "gzip": 214,
+      "rawFormatted": "189.00 B",
+      "gzipFormatted": "214.00 B"
+    },
+    {
+      "path": "CodeBlock-XVTCDXID.js",
+      "format": "CJS",
+      "raw": 326,
+      "gzip": 208,
+      "rawFormatted": "326.00 B",
+      "gzipFormatted": "208.00 B"
+    },
+    {
+      "path": "PerformanceDashboard-2HNX3O4V.js",
+      "format": "CJS",
+      "raw": 179,
+      "gzip": 196,
+      "rawFormatted": "179.00 B",
+      "gzipFormatted": "196.00 B"
+    },
+    {
+      "path": "EnhancedMarkdownRenderer-TZCO7N4X.mjs",
+      "format": "ESM",
+      "raw": 89,
+      "gzip": 138,
+      "rawFormatted": "89.00 B",
+      "gzipFormatted": "138.00 B"
+    },
+    {
+      "path": "ConversationAnalyticsDashboard-NEUGSWCM.mjs",
+      "format": "ESM",
+      "raw": 70,
+      "gzip": 134,
+      "rawFormatted": "70.00 B",
+      "gzipFormatted": "134.00 B"
+    },
+    {
+      "path": "PerformanceDashboard-G7I55X5A.mjs",
+      "format": "ESM",
+      "raw": 60,
+      "gzip": 114,
+      "rawFormatted": "60.00 B",
+      "gzipFormatted": "114.00 B"
+    },
+    {
+      "path": "CodeBlock-VNR7QHID.mjs",
+      "format": "ESM",
+      "raw": 62,
+      "gzip": 102,
+      "rawFormatted": "62.00 B",
+      "gzipFormatted": "102.00 B"
+    }
+  ],
+  "chunks": 16,
+  "externalizations": {
+    "phase1": [
+      "shiki",
+      "lucide-react",
+      "jszip",
+      "mermaid",
+      "pdfjs-dist",
+      "mammoth",
+      "cohere-ai"
+    ],
+    "phase2": [
+      "react-markdown",
+      "remark-gfm",
+      "rehype-highlight",
+      "prismjs",
+      "zod"
+    ]
+  }
+}

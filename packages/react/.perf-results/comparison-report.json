@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-01-26T19:04:22.658Z",
+  "baselineSize": 306492,
+  "prePhase1Size": 920892,
+  "totalSavings": 614400,
+  "percentSavings": 66.7,
+  "scenarios": {
+    "basic": {
+      "size": 306492,
+      "description": "No optional features"
+    },
+    "withShiki": {
+      "size": 460092,
+      "description": "With syntax highlighting"
+    },
+    "fullFeatured": {
+      "size": 726332,
+      "description": "All optional features"
+    }
+  },
+  "phase1Savings": 419840,
+  "phase2Savings": 194560
+}

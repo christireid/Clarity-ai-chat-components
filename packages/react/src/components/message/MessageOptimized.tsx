@@ -183,11 +183,11 @@ function MessageOptimizedInner({
 
     return (
       <ReactMarkdown
-        remarkPlugins={remarkGfm ? [remarkGfm] : []}
+        remarkPlugins={remarkGfm ? [remarkGfm] : undefined}
         rehypePlugins={
           rehypeHighlight
-            ? [rehypeHighlight as unknown as typeof remarkGfm]
-            : []
+            ? ([rehypeHighlight] as unknown as (typeof remarkGfm)[])
+            : undefined
         }
         components={markdownComponents}
       >

@@ -4,8 +4,23 @@
  * Extracts text from PDF files preserving structure, headings, and metadata.
  * Supports both browser and Node.js environments.
  *
+ * @requires pdfjs-dist - PDF parsing library (optional peer dependency)
+ * @installation npm install pdfjs-dist
+ * @bundleImpact ~600KB (includes worker bundle)
+ * @note Requires additional setup for worker configuration
+ * @fallback Throws error if pdfjs-dist is not installed
+ * @docs https://clarity-chat.dev/docs/document-loaders#pdf-setup
+ *
  * @example
  * ```tsx
+ * // 1. Install pdfjs-dist
+ * // npm install pdfjs-dist
+ *
+ * // 2. Configure worker (browser)
+ * import * as pdfjsLib from 'pdfjs-dist'
+ * pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+ *
+ * // 3. Use loader
  * const loader = new PDFLoader()
  * const docs = await loader.load(pdfFile)
  *

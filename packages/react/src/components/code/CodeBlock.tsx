@@ -133,6 +133,12 @@ function getShikiTheme(theme: CodeThemeName | BundledTheme): BundledTheme {
  * - WCAG 2.1 AA accessible
  * - Keyboard navigable
  *
+ * @requires shiki - Syntax highlighting engine (optional peer dependency)
+ * @installation npm install shiki
+ * @bundleImpact ~200KB when shiki is installed
+ * @fallback Basic <pre><code> rendering without syntax highlighting
+ * @docs https://clarity-chat.dev/docs/peer-dependencies
+ *
  * @example
  * ```tsx
  * <CodeBlock

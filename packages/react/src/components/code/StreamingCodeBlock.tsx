@@ -63,6 +63,12 @@ export interface StreamingCodeBlockProps {
  * - Disabled copy during streaming
  * - Final highlight pass when stream completes
  *
+ * @requires shiki - Syntax highlighting engine (optional peer dependency)
+ * @installation npm install shiki
+ * @bundleImpact ~200KB when shiki is installed (lazy-loaded on demand)
+ * @fallback Basic plain text rendering without syntax highlighting
+ * @docs https://clarity-chat.dev/docs/peer-dependencies
+ *
  * @example
  * ```tsx
  * <StreamingCodeBlock

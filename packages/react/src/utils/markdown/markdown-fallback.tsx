@@ -182,12 +182,44 @@ function formatPlainTextMarkdown(content: string): string {
       const listTag = listType === 'ul' ? 'ul' : 'ol'
       elements.push(`<${listTag} class="my-2 pl-6">`)
       listItems.forEach((item) => {
-        elements.push(`<li>${escapeHtml(item)}</li>`)
+        // Process inline formatting in list items
+        const processedItem = processInlineFormatting(item)
+        elements.push(`<li>${processedItem}</li>`)
       })
       elements.push(`</${listTag}>`)
       listItems = []
       inList = false
     }
+  }
+
+  const processInlineFormatting = (text: string): string => {
+    let processed = text
+
+    // Handle inline code first (to avoid processing markdown inside code)
+    processed = processed.replace(
+      /`([^`]+)`/g,
+      '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>'
+    )
+
+    // Handle links
+    processed = processed.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" class="text-primary underline hover:no-underline" target="_blank" rel="noopener noreferrer">$1</a>'
+    )
+
+    // Handle bold (before italic to handle ** before *)
+    processed = processed.replace(
+      /\*\*([^*]+)\*\*/g,
+      '<strong class="font-semibold">$1</strong>'
+    )
+
+    // Handle italic
+    processed = processed.replace(
+      /(?<!\*)\*([^*]+)\*(?!\*)/g,
+      '<em class="italic">$1</em>'
+    )
+
+    return processed
   }
 
   for (let i = 0; i < lines.length; i++) {
@@ -260,31 +292,6 @@ function formatPlainTextMarkdown(content: string): string {
       flushList()
     }
 
-    // Handle inline code
-    let processedLine = line
-    processedLine = processedLine.replace(
-      /`([^`]+)`/g,
-      '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>'
-    )
-
-    // Handle links
-    processedLine = processedLine.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" class="text-primary underline hover:no-underline" target="_blank" rel="noopener noreferrer">$1</a>'
-    )
-
-    // Handle bold
-    processedLine = processedLine.replace(
-      /\*\*([^*]+)\*\*/g,
-      '<strong class="font-semibold">$1</strong>'
-    )
-
-    // Handle italic
-    processedLine = processedLine.replace(
-      /\*([^*]+)\*/g,
-      '<em class="italic">$1</em>'
-    )
-
     // Handle empty lines as paragraph breaks
     if (trimmed === '') {
       if (elements.length > 0 && elements[elements.length - 1] !== '<br>') {
@@ -293,8 +300,9 @@ function formatPlainTextMarkdown(content: string): string {
       continue
     }
 
-    // Regular text line
+    // Regular text line with inline formatting
     if (!inList) {
+      const processedLine = processInlineFormatting(escapeHtml(line))
       elements.push(`<p class="my-2">${processedLine}</p>`)
     }
   }

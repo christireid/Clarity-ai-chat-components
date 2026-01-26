@@ -4,8 +4,18 @@
  * Extracts text from Microsoft Word (.docx) files, preserving structure,
  * headings, lists, and tables. Works in both browser and Node.js.
  *
+ * @requires jszip - ZIP file parsing for .docx format (optional peer dependency)
+ * @installation npm install jszip
+ * @bundleImpact ~100KB (JSZip library)
+ * @fallback Returns error document with installation instructions if jszip is not installed
+ * @docs https://clarity-chat.dev/docs/document-loaders#docx-setup
+ *
  * @example
  * ```tsx
+ * // 1. Install jszip
+ * // npm install jszip
+ *
+ * // 2. Use loader
  * const loader = new DOCXLoader()
  * const docs = await loader.load(docxFile)
  *
@@ -17,7 +27,7 @@
  * })
  * ```
  *
- * @see https://clarity-ai-chat.vercel.app/docs/document-loaders#docx-loader
+ * @see https://clarity-chat.dev/docs/document-loaders#docx-loader
  */
 
 import type { Document, DocumentLoader, DocumentLoadOptions } from './types'
