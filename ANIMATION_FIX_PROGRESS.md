@@ -4,9 +4,9 @@
 Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}` to motion components for WCAG 2.1 AA compliance.
 
 ## Current Status
-- **Fixed**: 77/341 errors (23% complete)
-- **Remaining**: 264 errors (77%)
-- **Files Fixed**: 21 files
+- **Fixed**: 79/341 errors (23% complete)
+- **Remaining**: 262 errors (77%)
+- **Files Fixed**: 22 files
 
 ## Files Completed (14 total)
 
@@ -19,7 +19,7 @@ Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}`
 6. KeyboardShortcutsHelp.tsx - 1 motion component
 7. ComponentPreview.tsx - 1 motion component
 
-### Current Session (14 files, 43 errors)
+### Current Session (15 files, 45 errors)
 8. HeroSection.tsx - 13 motion components (commit: 000706801)
 9. not-found.tsx - 2 motion components (commit: 6c5dee82d)
 10. FeedbackButtons.tsx - 2 motion components (commit: 37283d6fa)
@@ -34,19 +34,22 @@ Fix all 341 animation accessibility errors by adding `viewport={{ once: true }}`
 19. SearchPalette.tsx - 2 motion components (commit: 766ba5424)
 20. AnalyticsDashboard.tsx - 1 motion component (commit: c04cb6d03)
 21. PropsTable.tsx - 7 motion components (commit: aa6562654)
+22. StreamingAnimation.tsx - 2 motion components (commit: 125ab560c)
 
 ## Remaining Work
-Estimated 100+ files remaining with 264 errors total.
+Estimated 100+ files remaining with 262 errors total.
 
-## Next Batch to Fix
-- SuggestionsPanel.tsx
-- SetupRequired.tsx
-- AgentOrchestrationDiagram.tsx
-- BudgetPieChart.tsx
-- BundleSizeAnalyzer.tsx
-- ChatWindowAnatomy.tsx
-- CodeFlowAnimation.tsx
-- (and many more...)
+## Next Batch to Fix (Top 10 by Error Count)
+1. AgentOrchestrationDiagram.tsx - 10 errors
+2. SuccessCelebration.tsx - 9 errors
+3. TaskList.tsx - 9 errors
+4. WeatherCard.tsx - 9 errors
+5. TemplateSelector.tsx - 8 errors
+6. page.tsx - 8 errors
+7. HeroChatErrorBoundary.tsx - 7 errors
+8. RAGPipelineDiagram.tsx - 7 errors
+9. StockChart.tsx - 7 errors
+10. Breadcrumbs.tsx - 6 errors
 
 ## Technical Approach
 1. Read file to find motion components
@@ -74,7 +77,7 @@ Estimated 100+ files remaining with 264 errors total.
 
 ## Estimated Time Remaining
 At current pace (~30 errors per hour):
-- 264 errors remaining ÷ 30 errors/hour = **~9 hours remaining**
+- 262 errors remaining ÷ 30 errors/hour = **~9 hours remaining**
 
 ## Last Updated
-2026-01-26 - 23% complete (77/341 fixed)
+2026-01-26 - 23% complete (79/341 fixed)

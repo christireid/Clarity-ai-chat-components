@@ -177,24 +177,7 @@ export function ChatMessage(props: any) {
 </div>
 ```
 
-### 3. Use Branded Types for IDs
-
-```tsx
-// ✅ Good: Type-safe IDs
-type MessageId = string & { readonly __brand: 'MessageId' }
-type ConversationId = string & { readonly __brand: 'ConversationId' }
-
-function deleteMessage(id: MessageId) {
-  // TypeScript ensures correct ID type
-}
-
-// ❌ Bad: Plain strings
-function deleteMessage(id: string) {
-  // Could accidentally pass wrong ID type
-}
-```
-
-### 4. Memoize Expensive Components
+### 3. Memoize Expensive Components
 
 ```tsx
 // ✅ Good: Memoized component
@@ -577,21 +560,7 @@ All text must meet WCAG 2.1 AA standards:
 
 ## Type Safety
 
-### 1. Branded Types for IDs
-
-```tsx
-// packages/react/src/types/branded.ts
-export type MessageId = string & { readonly __brand: 'MessageId' }
-export type ConversationId = string & { readonly __brand: 'ConversationId' }
-export type UserId = string & { readonly __brand: 'UserId' }
-
-// Type guards
-export function isMessageId(value: string): value is MessageId {
-  return typeof value === 'string' && value.length > 0
-}
-```
-
-### 2. Discriminated Unions
+### 1. Discriminated Unions
 
 ```tsx
 // ✅ Good: Discriminated union
@@ -612,7 +581,7 @@ function renderMessage(message: Message) {
 }
 ```
 
-### 3. Generic Components
+### 2. Generic Components
 
 ```tsx
 // ✅ Good: Generic component
@@ -633,7 +602,7 @@ function List<T>({ items, renderItem, keyExtractor }: ListProps<T>) {
 }
 ```
 
-### 4. Strict TypeScript Configuration
+### 3. Strict TypeScript Configuration
 
 ```json
 // tsconfig.json

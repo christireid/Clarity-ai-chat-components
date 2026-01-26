@@ -108,11 +108,9 @@ function MissingPeerWarning({ missingPeers }: { missingPeers: string[] }) {
 }
 
 /**
- * Decorator that simulates missing peer dependencies
+ * Component wrapper to use hooks properly
  */
-export const withPeerDependencySimulation: Decorator = (Story, context) => {
-  const missingPeers: string[] = context.globals.missingPeers || []
-
+function PeerDependencySimulator({ Story, missingPeers }: { Story: React.ComponentType; missingPeers: string[] }) {
   useEffect(() => {
     setupModuleInterception(missingPeers)
 
@@ -127,4 +125,13 @@ export const withPeerDependencySimulation: Decorator = (Story, context) => {
       <Story />
     </>
   )
+}
+
+/**
+ * Decorator that simulates missing peer dependencies
+ */
+export const withPeerDependencySimulation: Decorator = (Story, context) => {
+  const missingPeers: string[] = context.globals.missingPeers || []
+
+  return <PeerDependencySimulator Story={Story} missingPeers={missingPeers} />
 }

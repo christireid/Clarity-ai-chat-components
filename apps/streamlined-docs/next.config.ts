@@ -133,6 +133,16 @@ const nextConfig: NextConfig = {
   // Comprehensive security and ISR cache headers
   async headers() {
     return [
+      // Static assets - aggressive caching (immutable)
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       // ISR Cache optimization for static documentation
       {
         source: '/api/reference/:path*',
@@ -167,6 +177,26 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, s-maxage=21600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // Home page - 30 min cache (high traffic, more frequent updates)
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=1800, stale-while-revalidate=3600',
+          },
+        ],
+      },
+      // API routes - no caching (dynamic data)
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
           },
         ],
       },

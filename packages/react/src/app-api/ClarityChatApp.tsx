@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useMemo } from 'react'
 import type { Message } from '@clarity-chat/types'
-import type type, { ClarityChatAppProps, ClarityEvent, UseClarityChatAppReturn } from './types'
+import type { ClarityChatAppProps, ClarityEvent, UseClarityChatAppReturn } from './types'
 import { useClarityChatApp } from './use-clarity-chat-app'
 import { resolveConfig, isFeatureEnabled } from './resolve-config'
 import { formatErrorForDisplay, type ClarityError } from './dx-hints'

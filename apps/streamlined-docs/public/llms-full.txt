@@ -1,1637 +1,2373 @@
-# Clarity Chat - Complete Documentation
+# Clarity Chat - Complete API Reference
 
 > Clarity Chat is a React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
 
-This document contains comprehensive documentation for Clarity Chat optimized for AI consumption. Clarity Chat provides everything needed to build production-ready AI chat applications in React, from simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
+This document contains comprehensive API documentation for Clarity Chat optimized for AI consumption. It includes full type signatures, all props, return values, and code examples.
 
 ---
 
 ## Table of Contents
 
-### Getting Started
-1. [Quick Start](#learn-quick-start)
-2. [Installation](#learn-installation)
-3. [Tutorial](#learn-tutorial)
-4. [Interactive Playground](#playground)
-5. [Playground Guide](#playground-guide)
-6. [Why Clarity?](#learn-why-clarity)
-7. [What's New](#learn-whats-new)
-
-### Core Concepts
-8. [Components](#learn-concepts-components)
-9. [Hooks](#learn-concepts-hooks)
-10. [Theming](#learn-concepts-theming)
-11. [Animations](#learn-concepts-animations)
-
-### Core Components
-12. [ClarityChat](#reference-components-clarity-chat)
-13. [ClarityChatPresets](#reference-components-clarity-chat-presets)
-14. [ChatRecipes](#reference-components-chat-recipes)
-15. [ChatLayout](#reference-components-chat-layout)
-16. [ChatWindow](#reference-components-chat-window)
-17. [Message](#reference-components-message)
-18. [MessageList](#reference-components-message-list)
-19. [ChatInput](#reference-components-chat-input)
-20. [TypingIndicator](#reference-components-typing-indicator)
-
-### Streaming Components
-21. [StreamingMessage](#reference-components-streaming-message)
-22. [VirtualizedMessageList](#reference-components-virtualized-message-list)
-23. [StreamingTextRenderer](#reference-components-streaming-text-renderer)
-24. [StreamBlock](#reference-components-stream-block)
-25. [StreamCancellation](#reference-components-stream-cancellation)
-
-### AI Components
-26. [ChainOfThought](#reference-components-chain-of-thought)
-27. [ThinkingBar](#reference-components-thinking-bar)
-28. [ToolExecutionCard](#reference-components-tool-execution-card)
-29. [StreamingProgress](#reference-components-streaming-progress)
-30. [TextShimmer](#reference-components-text-shimmer)
-31. [SourceCitation](#reference-components-source-citation)
-32. [PromptContainer](#reference-components-prompt-container)
-33. [SuggestionCards](#reference-components-suggestion-cards)
-
-### Interactive Components
-34. [CommandPalette](#reference-components-command-palette)
-35. [ContextMenu](#reference-components-context-menu)
-36. [Draggable](#reference-components-draggable)
-37. [KeyboardHint](#reference-components-keyboard-hint)
-38. [AdvancedMessageSearch](#reference-components-advanced-message-search)
-39. [RetryButton](#reference-components-retry-button)
-40. [VoiceInput](#reference-components-voice-input)
-41. [FileUpload](#reference-components-file-upload)
-42. [StructuredInputBuilder](#reference-components-structured-input-builder)
-
-### UI Elements
-43. [Avatar](#reference-components-avatar)
-44. [Button](#reference-components-button)
-45. [Badge](#reference-components-badge)
-46. [CodeBlock](#reference-components-code-block)
-47. [Tooltip](#reference-components-tooltip)
-48. [Modal](#reference-components-modal)
-49. [NetworkStatus](#reference-components-network-status)
-50. [PromptLibrary](#reference-components-prompt-library)
-51. [PromptSuggestions](#reference-components-prompt-suggestions)
-52. [ToolInvocationCard](#reference-components-tool-invocation-card)
-
-### Token Optimization Components
-53. [TokenOptimizationBadge](#reference-components-token-optimization-badge)
-54. [TokenOptimizationPanel](#reference-components-token-optimization-panel)
-55. [TokenOptimizationDashboard](#reference-components-token-optimization-dashboard)
-
-### Dashboard Components
-56. [UsageDashboard](#reference-components-usage-dashboard)
-57. [PerformanceDashboard](#reference-components-performance-dashboard)
-58. [PerformanceAnalyticsDashboard](#reference-components-performance-analytics-dashboard)
-59. [ConversationAnalyticsDashboard](#reference-components-conversation-analytics-dashboard)
-60. [ABTestingDashboard](#reference-components-ab-testing-dashboard)
-61. [ProjectSidebar](#reference-components-project-sidebar)
-
-### Enterprise Components
-62. [AuthTenantDashboard](#reference-components-auth-tenant-dashboard)
-63. [ApiTokenManager](#reference-components-api-token-manager)
-64. [SeatInviteDialog](#reference-components-seat-invite-dialog)
-65. [SSOConfigWizard](#reference-components-sso-config-wizard)
-
-### Providers
-66. [MemoryProvider](#reference-components-memory-provider)
-
-### Core Hooks
-67. [Hook Selector](#reference-hooks-selector)
-68. [Compare Hooks](#reference-hooks-compare)
-69. [Hook Graph](#reference-hooks-graph)
-70. [useClarityChat](#reference-hooks-use-clarity-chat)
-71. [useClarityChatWithTools](#reference-hooks-use-clarity-chat-with-tools)
-72. [useChatHandlers](#reference-hooks-use-chat-handlers)
-73. [useChatEnhanced](#reference-hooks-use-chat-enhanced)
-74. [useAssistant](#reference-hooks-use-assistant)
-75. [useCompletion](#reference-hooks-use-completion)
-76. [useMessages](#reference-hooks-use-messages)
-77. [useTyping](#reference-hooks-use-typing)
-78. [useKeyboardShortcuts](#reference-hooks-use-keyboard-shortcuts)
-79. [useCommandPalette](#reference-hooks-use-command-palette)
-80. [useUndoRedo](#reference-hooks-use-undo-redo)
-81. [useHaptic](#reference-hooks-use-haptic)
-82. [useTheme](#reference-hooks-use-theme)
-83. [useDesignTokens](#reference-hooks-use-design-tokens)
-
-### Performance Hooks
-84. [useTokenOptimization](#reference-hooks-use-token-optimization)
-85. [useModelRouter](#reference-hooks-use-model-router)
-86. [usePerformance](#reference-hooks-use-performance)
-87. [useTokenTracker](#reference-hooks-use-token-tracker)
-88. [useSmartCache](#reference-hooks-use-smart-cache)
-
-### Streaming Hooks
-89. [useStreamingSSE](#reference-hooks-use-streaming-sse)
-90. [useStreamingWebSocket](#reference-hooks-use-streaming-websocket)
-91. [useStreamableUI](#reference-hooks-use-streamable-ui)
-
-### Operation Hooks
-92. [useMessageOperations](#reference-hooks-use-message-operations)
-93. [useDashboardData](#reference-hooks-use-dashboard-data)
-94. [useCircuitBreaker](#reference-hooks-use-circuit-breaker)
-95. [useRetryWithBackoff](#reference-hooks-use-retry-with-backoff)
-96. [useRequestDeduplication](#reference-hooks-use-request-deduplication)
-
-### Memory & Context Hooks
-97. [useMemoryContext](#reference-hooks-use-memory-context)
-98. [useIndexedDB](#reference-hooks-use-indexed-db)
-99. [useEmbeddings](#reference-hooks-use-embeddings)
-
-### Enterprise AI Hooks
-100. [useRAGPipeline](#reference-hooks-use-rag-pipeline)
-101. [useAgent](#reference-hooks-use-agent)
-102. [useVectorStore](#reference-hooks-use-vector-store)
-
-### API Reference
-103. [Quick Reference](#reference-quick-reference)
-104. [Cheat Sheet](#reference-cheat-sheet)
-105. [Types](#reference-api-types)
-106. [Utilities](#reference-utilities)
-107. [Configuration](#reference-api-configuration)
-
-### Guides
-108. [Components Guide](#guides-components)
-109. [Hooks Guide](#guides-hooks)
-110. [Theming Guide](#guides-theming)
-111. [Customization](#guides-customization)
-112. [Messages Guide](#guides-messages)
-113. [Common Patterns](#learn-guides-common-patterns)
-114. [Streaming](#guides-streaming)
-115. [Memory](#guides-memory)
-116. [Error Handling](#guides-error-handling)
-117. [File Upload](#guides-file-upload)
-118. [State Management](#guides-state-management)
-119. [Accessibility](#guides-accessibility)
-120. [Performance](#guides-performance)
-121. [Bundle Size](#learn-guides-bundle-size)
-122. [Testing](#learn-guides-testing)
-123. [RAG](#guides-rag)
-124. [Agents](#guides-agents)
-125. [Tool Calling](#guides-tools)
-126. [Token Optimization](#guides-token-optimization)
-127. [Prompt Caching](#guides-prompt-caching)
-128. [Prompts](#guides-prompts)
-129. [Model Adapters](#guides-model-adapters)
-130. [Plugins](#guides-plugins)
-131. [Webhooks](#guides-webhooks)
-132. [Observability](#guides-observability)
-133. [Vector Stores](#guides-vector-stores)
-134. [Reranking](#guides-reranking)
-
-### Enterprise Guides
-135. [RBAC](#guides-rbac)
-136. [Multi-Tenancy](#guides-multi-tenancy)
-137. [SSO Configuration](#guides-sso-configuration)
-138. [Audit Logging](#guides-audit-logging)
-139. [Usage Quotas](#guides-usage-quotas)
-140. [Safety](#guides-safety)
-141. [Security](#guides-security)
-
-### Tutorials
-142. [Building Your First Chatbot](#learn-tutorials-building-first-chatbot)
-143. [Adding RAG](#learn-tutorials-adding-rag)
-
-### Deployment
-144. [Deploy to Vercel](#learn-deployment-vercel)
-145. [Deploy to AWS](#learn-deployment-aws)
-146. [Docker Deployment](#learn-deployment-docker)
-
-### Cookbook
-147. [3-Line Quick Start](#cookbook-quick-start-3-lines)
-148. [Memory Integration](#cookbook-memory-integration)
-149. [Streaming Setup](#cookbook-streaming-setup)
-150. [Error Handling Recipe](#cookbook-error-handling)
-151. [Multi-Modal Chat](#cookbook-multi-modal-chat)
-152. [Voice Input Recipe](#cookbook-voice-input)
-153. [Custom Tool Integration](#cookbook-custom-tool-integration)
-154. [OpenAI Streaming Chat](#cookbook-openai-streaming-chat)
-155. [Next.js Integration](#cookbook-nextjs-integration)
-156. [Backend Integration Patterns](#cookbook-backend-integration-patterns)
-157. [Custom Theming](#cookbook-custom-theming)
-158. [Streaming with Memory](#cookbook-streaming-with-memory)
-159. [RAG Document Chat](#cookbook-rag-document-chat)
-160. [Agent with Tools](#cookbook-agent-with-tools)
-161. [Advanced Agent Workflow](#cookbook-advanced-agent-workflow)
-162. [Authentication](#cookbook-authentication)
-163. [Analytics Tracking](#cookbook-analytics-tracking)
-164. [Production Monitoring](#cookbook-production-monitoring)
-165. [Enterprise SSO Setup](#cookbook-enterprise-sso-setup)
-
-### Examples
-166. [Tool Calling Showcase](#examples-tool-calling-showcase)
-167. [Simple Chat](#examples-simple-chat)
-168. [Themed Chat](#examples-themed-chat)
-169. [Custom Styling](#examples-custom-styling)
-170. [Multi-user Chat](#examples-multi-user)
-171. [File Sharing](#examples-file-sharing)
-172. [Real-time Updates](#examples-realtime)
-173. [Custom Commands](#examples-custom-commands)
-174. [Token Optimization Example](#examples-token-optimization)
-175. [Command Palette Example](#examples-command-palette)
-176. [Drag & Drop](#examples-drag-drop)
-177. [Context Menus](#examples-context-menus)
-178. [Keyboard Shortcuts](#examples-keyboard-shortcuts)
-
-### Interactive Demos
-179. [All Demos](#demos)
-180. [Zero to Chat](#demos-zero-to-chat)
-181. [Provider Hot-Swap](#demos-provider-hotswap)
-182. [Streaming States](#demos-streaming-states)
-183. [Token Visualizer](#demos-token-visualizer)
-184. [Memory & Context](#demos-memory-context)
-185. [Customization Playground](#demos-customization-playground)
-186. [Tool Calling Demo](#demos-tool-calling)
-187. [Accessibility Audit](#demos-accessibility-audit)
-188. [Bundle Comparison](#demos-bundle-comparison)
-189. [Enterprise Production](#demos-enterprise-production)
-
-### Migration & Architecture
-190. [From Vercel AI SDK](#learn-migration-from-vercel-ai-sdk)
-191. [Architecture Overview](#learn-architecture)
-
-### Help
-192. [FAQ](#learn-faq)
-193. [Troubleshooting](#learn-troubleshooting)
-
-### Enterprise
-194. [Enterprise Features](#enterprise)
+1. [Installation](#installation)
+2. [Quick Start](#quick-start)
+3. [Core Components](#core-components)
+4. [Core Hooks](#core-hooks)
+5. [Memory Package](#memory-package)
+6. [Token Optimization Package](#token-optimization-package)
+7. [Utilities](#utilities)
+8. [Types](#types)
 
 ---
 
-## Getting Started
+## Installation
 
-<section id="learn-quick-start">
+```bash
+# npm
+npm install @clarity-chat/react
 
-### Quick Start
+# pnpm
+pnpm add @clarity-chat/react
 
-Get a working AI chat interface in 5 minutes with minimal configuration. This guide walks you through installing Clarity Chat, setting up your first chat component, and connecting to an AI provider. Covers the simplest possible setup using the `chat()` function that creates a complete chat interface in one line of code, as well as the `ClarityChat` component for more customization. Includes code examples for connecting to OpenAI, Anthropic, and other providers.
+# yarn
+yarn add @clarity-chat/react
+```
 
-**Key topics:** Installation, basic setup, one-line chat, ClarityChat component, API endpoint configuration, first message handling.
+**Peer Dependencies:**
+- React 18+ or React 19
+- Tailwind CSS 3.4+
 
-</section>
-
-<section id="learn-installation">
-
-### Installation
-
-Framework-specific installation guides for Next.js, Vite, Remix, and other React frameworks. Covers npm/yarn/pnpm installation, peer dependencies (React 18+, Tailwind CSS), TypeScript configuration, and framework-specific setup steps. Includes troubleshooting for common installation issues and configuration for monorepo setups.
-
-**Key topics:** npm install, peer dependencies, Tailwind setup, TypeScript config, Next.js App Router, Vite configuration, SSR considerations.
-
-</section>
-
-<section id="learn-tutorial">
-
-### Tutorial: Build Your First Chatbot
-
-Step-by-step tutorial for building a complete chatbot from scratch. Covers project setup, creating the chat interface, handling user input, connecting to an AI API, displaying responses with streaming, adding memory for context retention, and customizing the appearance. Includes full code examples and explanations of each step.
-
-**Key topics:** Project setup, ChatWindow, useClarityChat, API routes, streaming responses, memory integration, theming basics.
-
-</section>
-
-<section id="playground">
-
-### Interactive Playground
-
-Browser-based playground for trying Clarity Chat components without any setup. Experiment with different components, themes, and configurations in real-time. See live code examples that you can modify and see results instantly. Perfect for learning the API and prototyping chat interfaces.
-
-**Key topics:** Live editing, component explorer, theme switcher, code export, configuration options.
-
-</section>
-
-<section id="playground-guide">
-
-### Playground Guide
-
-Comprehensive guide to using the interactive playground effectively. Learn how to navigate the playground, use the component explorer, customize themes in real-time, export code to your project, and share playground configurations with teammates.
-
-**Key topics:** Navigation, component selection, theme customization, code export, sharing configurations.
-
-</section>
-
-<section id="learn-why-clarity">
-
-### Why Clarity Chat?
-
-Comparison of Clarity Chat with other solutions including Vercel AI SDK, LangChain, and building from scratch. Highlights key differentiators: 200+ pre-built components, 95+ hooks, built-in memory and RAG support, enterprise features, accessibility compliance, and comprehensive theming. Includes performance benchmarks and feature comparison tables.
-
-**Key topics:** Feature comparison, performance benchmarks, use case fit, migration paths, community and support.
-
-</section>
-
-<section id="learn-whats-new">
-
-### What's New
-
-Latest features, improvements, and releases in Clarity Chat. Covers new components, hooks, and utilities added in recent versions. Includes migration notes for breaking changes and deprecation warnings. Links to detailed changelogs and release notes.
-
-**Key topics:** New features, improvements, breaking changes, migration notes, roadmap.
-
-</section>
+**Optional Packages:**
+```bash
+npm install @clarity-chat/memory @clarity-chat/token-optimization
+```
 
 ---
 
-## Core Concepts
+## Quick Start
 
-<section id="learn-concepts-components">
+### 3-Line Chat (Recommended)
 
-### Component System
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
 
-Understanding Clarity Chat's composable component architecture. Explains the three-tier API design: Level 1 (one-line chat), Level 2 (preset configurations), and Level 3 (full customization). Covers component composition patterns, prop drilling alternatives, and when to use each component. Includes component hierarchy diagrams and decision trees for choosing the right components.
+function App() {
+  return <ClarityChatApp api="/api/chat" />
+}
+```
 
-**Key topics:** Three-tier API, component composition, ChatWindow vs ClarityChat, props patterns, component hierarchy.
+### With Memory Enabled
 
-</section>
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  features={{ memory: true }}
+/>
+```
 
-<section id="learn-concepts-hooks">
+### Enterprise Preset
 
-### React Hooks
+```tsx
+<ClarityChatApp
+  api="/api/chat"
+  preset="enterprise"
+/>
+```
 
-Overview of 95+ hooks for chat functionality, streaming, state management, and more. Explains hook categories: core chat hooks, streaming hooks, memory hooks, UI hooks, and enterprise hooks. Covers hook composition patterns, custom hook creation, and performance optimization with hooks. Includes a decision tree for selecting the right hook for your use case.
+### Using the Hook
 
-**Key topics:** Hook categories, useClarityChat, useStreamingSSE, useMemoryContext, hook composition, performance.
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
 
-</section>
+function ChatComponent() {
+  const { messages, append, isLoading, error } = useClarityChat({
+    api: '/api/chat',
+    memory: { enabled: true, strategy: 'vector-store' }
+  })
 
-<section id="learn-concepts-theming">
-
-### Theming System
-
-15 pre-built themes with full customization support using CSS variables and Tailwind. Explains the design token system, theme structure, and customization options. Covers creating custom themes, theme switching, dark mode support, and responsive theming. Includes examples of common customizations and theme migration from other libraries.
-
-**Key topics:** Built-in themes, CSS variables, Tailwind integration, custom themes, dark mode, design tokens.
-
-</section>
-
-<section id="learn-concepts-animations">
-
-### Animations & Motion
-
-150+ micro-interactions with Framer Motion integration. Covers animation tokens, timing functions, and motion presets. Explains how to customize animations, disable animations for accessibility, and create custom motion effects. Includes performance considerations for animations and reduced motion support.
-
-**Key topics:** Framer Motion, animation tokens, motion presets, accessibility, performance, reduced motion.
-
-</section>
+  return (
+    <div>
+      {messages.map(m => <div key={m.id}>{m.content}</div>)}
+      <button onClick={() => append({ role: 'user', content: 'Hello' })}>
+        Send
+      </button>
+    </div>
+  )
+}
+```
 
 ---
 
 ## Core Components
 
-<section id="reference-components-clarity-chat">
+### ClarityChatApp
+
+The unified App API component - the recommended entry point for most applications.
+
+```tsx
+import { ClarityChatApp } from '@clarity-chat/react'
+
+<ClarityChatApp
+  api="/api/chat"
+  preset="default"
+  features={{ memory: true, tools: true }}
+/>
+```
+
+**Props:**
+
+```typescript
+interface ClarityChatAppProps {
+  /** API endpoint URL (required) */
+  api: string
+
+  /** Preset configuration: 'default' | 'minimal' | 'enterprise' | 'developer' */
+  preset?: ClarityAppPreset
+
+  /** Feature flags */
+  features?: ClarityFeatureFlags
+
+  /** Memory configuration */
+  memory?: MemoryConfig
+
+  /** Token optimization configuration */
+  tokenOptimization?: TokenOptimizationConfig
+
+  /** Tools/function calling configuration */
+  tools?: ToolsConfig
+
+  /** RAG configuration */
+  rag?: RAGConfig
+
+  /** Safety configuration */
+  safety?: SafetyConfig
+
+  /** Observability configuration */
+  observability?: ObservabilityConfig
+
+  /** UI configuration */
+  ui?: UIConfig
+
+  /** Event callbacks */
+  onEvent?: (event: ClarityEvent) => void
+
+  /** Error handler */
+  onError?: (error: Error) => void
+
+  /** Custom className */
+  className?: string
+
+  /** Children for custom layouts */
+  children?: React.ReactNode
+}
+
+interface ClarityFeatureFlags {
+  memory?: boolean
+  tokenOptimization?: boolean
+  tools?: boolean
+  rag?: boolean
+  safety?: boolean
+  observability?: boolean
+}
+```
+
+---
 
 ### ClarityChat
 
-The all-in-one chat component with built-in streaming, memory, theming, and all features enabled by default. This is the recommended starting point for most applications. Accepts a single `api` prop to connect to your backend and handles everything else automatically. Supports extensive customization through grouped props for messages, input, streaming, memory, and appearance.
+The legacy all-in-one chat component with built-in streaming, memory, and theming.
 
-**Props:** api, messages, memory, streaming, theme, layout, input, handlers, accessibility, className.
-
-**Example:**
 ```tsx
-<ClarityChat api="/api/chat" />
+import { ClarityChat } from '@clarity-chat/react'
+
+<ClarityChat
+  api="/api/chat"
+  memory={{ enabled: true, strategy: 'vector-store' }}
+  theme="dark"
+/>
 ```
 
-</section>
+**Props:**
 
-<section id="reference-components-clarity-chat-presets">
+```typescript
+interface ClarityChatProps extends UseClarityChatOptions {
+  /** API endpoint URL (required) */
+  api: string
+
+  /** Optional chat ID for persistence */
+  chatId?: string
+
+  /** Optional className for the chat container */
+  className?: string
+
+  /** Custom empty state */
+  emptyState?: React.ReactNode
+
+  /** Header configuration */
+  header?: ClarityChatHeaderProps
+
+  /** Message action callbacks */
+  messageActions?: ClarityChatMessageActionsProps
+
+  /** Prompt configuration */
+  prompts?: ClarityChatPromptsProps
+
+  /** Rate limiting configuration */
+  rateLimiting?: ClarityChatRateLimitingProps
+
+  /** Show header with session info */
+  showHeader?: boolean
+
+  /** Session title */
+  sessionTitle?: string
+
+  /** Session subtitle */
+  sessionSubtitle?: string
+
+  /** Header actions */
+  headerActions?: React.ReactNode
+
+  /** Show message count badge */
+  showMessageCount?: boolean
+
+  /** Enable export functionality */
+  onExport?: () => void
+
+  /** Enable clear chat functionality */
+  onClear?: () => void
+
+  /** Auto-scroll to bottom on new messages */
+  autoScroll?: boolean
+
+  /** Theme for the chat interface */
+  theme?: string
+
+  /** Show token counter in input */
+  showTokenCounter?: boolean
+
+  /** Show network status indicator */
+  showNetworkStatus?: boolean
+
+  /** Enable message operations (edit, delete, branch) */
+  enableMessageOperations?: boolean
+
+  /** Memory strategy for conversation context */
+  memoryStrategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+
+  /** Error handler */
+  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
+}
+
+interface ClarityChatHeaderProps {
+  show?: boolean
+  title?: string
+  subtitle?: string
+  actions?: React.ReactNode
+  showMessageCount?: boolean
+}
+
+interface ClarityChatMessageActionsProps {
+  onCopy?: (id: string, content: string) => void
+  onFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+  onEdit?: (messageId: string) => void
+  onRegenerate?: (messageId: string) => void
+  onDelete?: (messageId: string) => void
+}
+
+interface ClarityChatPromptsProps {
+  starterPrompts?: Array<{ text: string; category?: string }>
+  enableSuggestions?: boolean
+  maxSuggestions?: number
+}
+
+interface ClarityChatRateLimitingProps {
+  enable?: boolean
+  maxConcurrentRequests?: number
+  maxQueueSize?: number
+  showQueueStatus?: boolean
+  compactQueueStatus?: boolean
+  onRequestQueued?: (position: number, estimatedWaitMs: number) => void
+  onRateLimited?: (resetAt: number) => void
+  onQueueFull?: () => void
+}
+```
+
+---
 
 ### ClarityChatPresets
 
-Pre-configured chat variants for common use cases including CustomerSupport, CodeAssistant, Enterprise, Minimal, and Creative. Each preset comes with optimized defaults for its use case. Use presets to get started quickly and customize as needed.
+Pre-configured chat variants for common use cases.
 
-**Presets:** CustomerSupport, CodeAssistant, Enterprise, Minimal, Creative, Documentation, Sales.
-
-**Example:**
 ```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+
+// Customer Support preset
+<ClarityChatPresets.CustomerSupport api="/api/chat" />
+
+// Code Assistant preset
+<ClarityChatPresets.CodeAssistant api="/api/chat" />
+
+// Enterprise preset
 <ClarityChatPresets.Enterprise api="/api/chat" />
+
+// Minimal preset
+<ClarityChatPresets.Minimal api="/api/chat" />
+
+// Creative preset
+<ClarityChatPresets.Creative api="/api/chat" />
 ```
 
-</section>
+**Available Presets:**
+- `CustomerSupport` - Optimized for customer service interactions
+- `CodeAssistant` - Optimized for coding assistance with syntax highlighting
+- `Enterprise` - Full features with audit logging and compliance
+- `Minimal` - Lightweight, minimal UI
+- `Creative` - Enhanced creative writing features
+- `Documentation` - Optimized for documentation Q&A
+- `Sales` - Optimized for sales conversations
 
-<section id="reference-components-chat-recipes">
-
-### ChatRecipes
-
-Ready-to-use chat configurations for specific industries and use cases. Includes recipes for e-commerce support, healthcare triage, education tutoring, legal consultation, and more. Each recipe includes optimized prompts, suggested tools, and UI configurations.
-
-**Recipes:** Ecommerce, Healthcare, Education, Legal, Finance, HR, ITSupport, Sales.
-
-</section>
-
-<section id="reference-components-chat-layout">
-
-### ChatLayout
-
-Flexible layout component for chat interfaces. Supports sidebar, header, and footer slots. Handles responsive layouts for mobile and desktop. Includes built-in support for conversation lists, settings panels, and user profiles.
-
-**Props:** sidebar, header, footer, children, responsive, collapsible, className.
-
-</section>
-
-<section id="reference-components-chat-window">
+---
 
 ### ChatWindow
 
-Container component for chat messages with automatic scroll management, virtualization support, and message grouping. Handles scroll-to-bottom behavior, new message indicators, and scroll restoration. Works with both regular and virtualized message lists.
+Container component for chat messages with automatic scroll management.
 
-**Props:** messages, onScroll, autoScroll, showScrollButton, virtualized, groupMessages, className.
+```tsx
+import { ChatWindow } from '@clarity-chat/react'
 
-</section>
+<ChatWindow
+  messages={messages}
+  autoScroll={true}
+  showScrollButton={true}
+  virtualized={true}
+/>
+```
 
-<section id="reference-components-message">
+**Props:**
 
-### Message
+```typescript
+interface ChatWindowProps {
+  /** Messages to display */
+  messages: CoreMessage[]
 
-Individual message display component with support for markdown rendering, code syntax highlighting, image attachments, and custom content. Supports user, assistant, and system message types with appropriate styling. Includes actions for copy, edit, delete, and regenerate.
+  /** Scroll event callback */
+  onScroll?: (event: React.UIEvent) => void
 
-**Props:** message, variant, showAvatar, showTimestamp, actions, onEdit, onDelete, onRegenerate, className.
+  /** Auto-scroll to bottom on new messages */
+  autoScroll?: boolean
 
-</section>
+  /** Show scroll-to-bottom button */
+  showScrollButton?: boolean
 
-<section id="reference-components-message-list">
+  /** Enable virtualization for large lists */
+  virtualized?: boolean
 
-### MessageList
+  /** Group messages by sender */
+  groupMessages?: boolean
 
-Virtualized message list for displaying large conversation histories efficiently. Only renders visible messages plus a small overscan buffer. Supports variable height messages, smooth scrolling, and keyboard navigation.
+  /** Custom className */
+  className?: string
 
-**Props:** messages, virtualized, overscan, estimatedItemSize, onScroll, renderMessage, className.
+  /** Custom message renderer */
+  renderMessage?: (message: CoreMessage) => React.ReactNode
 
-</section>
+  /** Empty state content */
+  emptyState?: React.ReactNode
+}
+```
 
-<section id="reference-components-chat-input">
+---
 
 ### ChatInput
 
-User input component with support for multi-line text, file attachments, voice input, emoji picker, and prompt suggestions. Handles submit on Enter, shift+Enter for new lines, and paste handling. Includes character count and token estimation.
+User input component with multi-line support, attachments, and voice input.
 
-**Props:** value, onChange, onSubmit, placeholder, attachments, voiceInput, suggestions, maxLength, className.
+```tsx
+import { ChatInput } from '@clarity-chat/react'
 
-</section>
+<ChatInput
+  value={input}
+  onChange={setInput}
+  onSubmit={handleSubmit}
+  placeholder="Type a message..."
+  attachments={true}
+  voiceInput={true}
+/>
+```
 
-<section id="reference-components-typing-indicator">
+**Props:**
 
-### TypingIndicator
+```typescript
+interface ChatInputProps {
+  /** Current input value */
+  value: string
 
-Animated indicator showing when the AI is processing or generating a response. Supports multiple animation styles: dots, pulse, wave, and custom. Includes text labels and accessibility announcements.
+  /** Value change handler */
+  onChange: (value: string) => void
 
-**Props:** isTyping, variant, text, showText, className.
+  /** Submit handler */
+  onSubmit: () => void
 
-</section>
+  /** Placeholder text */
+  placeholder?: string
+
+  /** Enable file attachments */
+  attachments?: boolean
+
+  /** Enable voice input */
+  voiceInput?: boolean
+
+  /** Prompt suggestions */
+  suggestions?: string[]
+
+  /** Maximum input length */
+  maxLength?: number
+
+  /** Disabled state */
+  disabled?: boolean
+
+  /** Loading state */
+  loading?: boolean
+
+  /** Custom className */
+  className?: string
+}
+```
 
 ---
 
-## Streaming Components
+### Message
 
-<section id="reference-components-streaming-message">
+Individual message display component.
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
+<Message
+  message={message}
+  showAvatar={true}
+  showTimestamp={true}
+  actions={['copy', 'edit', 'delete']}
+/>
+```
+
+**Props:**
+
+```typescript
+interface MessageProps {
+  /** Message data */
+  message: CoreMessage
+
+  /** Message variant */
+  variant?: 'default' | 'compact' | 'bubble'
+
+  /** Show avatar */
+  showAvatar?: boolean
+
+  /** Show timestamp */
+  showTimestamp?: boolean
+
+  /** Available actions */
+  actions?: Array<'copy' | 'edit' | 'delete' | 'regenerate'>
+
+  /** Edit handler */
+  onEdit?: (messageId: string) => void
+
+  /** Delete handler */
+  onDelete?: (messageId: string) => void
+
+  /** Regenerate handler */
+  onRegenerate?: (messageId: string) => void
+
+  /** Custom className */
+  className?: string
+}
+```
+
+---
 
 ### StreamingMessage
 
-Real-time streaming response display with character-by-character or word-by-word rendering. Supports markdown parsing during streaming, code block detection, and cursor animation. Handles stream cancellation and error states.
+Real-time streaming response display.
 
-**Props:** content, isStreaming, streamingSpeed, renderMode, showCursor, onComplete, className.
+```tsx
+import { StreamingMessage } from '@clarity-chat/react'
 
-</section>
+<StreamingMessage
+  content={streamingContent}
+  isStreaming={true}
+  showCursor={true}
+/>
+```
 
-<section id="reference-components-virtualized-message-list">
+**Props:**
 
-### VirtualizedMessageList
+```typescript
+interface StreamingMessageProps {
+  /** Current content */
+  content: string
 
-High-performance virtualized list optimized for conversations with thousands of messages. Uses windowing to render only visible items. Supports dynamic heights, sticky headers for date separators, and smooth scroll animations.
+  /** Whether currently streaming */
+  isStreaming: boolean
 
-**Props:** messages, height, itemSize, overscan, onEndReached, renderItem, className.
+  /** Streaming speed (chars per second) */
+  streamingSpeed?: number
 
-</section>
+  /** Render mode: 'character' | 'word' | 'line' */
+  renderMode?: 'character' | 'word' | 'line'
 
-<section id="reference-components-streaming-text-renderer">
+  /** Show cursor animation */
+  showCursor?: boolean
 
-### StreamingTextRenderer
+  /** Completion callback */
+  onComplete?: () => void
 
-Low-level component for character-by-character text animation. Configurable typing speed, pause on punctuation, and natural typing rhythm. Used internally by StreamingMessage but available for custom implementations.
-
-**Props:** text, speed, pauseOnPunctuation, naturalRhythm, onCharacter, onComplete, className.
-
-</section>
-
-<section id="reference-components-stream-block">
-
-### StreamBlock
-
-Container for block-level streaming content like code blocks, tables, and images. Handles progressive rendering of structured content. Shows loading state while content is being generated.
-
-**Props:** content, type, isStreaming, showLoading, onComplete, className.
-
-</section>
-
-<section id="reference-components-stream-cancellation">
-
-### StreamCancellation
-
-UI component for canceling ongoing stream requests. Shows cancel button during streaming with optional confirmation. Handles cleanup and state reset on cancellation.
-
-**Props:** isStreaming, onCancel, confirmCancel, label, className.
-
-</section>
+  /** Custom className */
+  className?: string
+}
+```
 
 ---
-
-## AI Components
-
-<section id="reference-components-chain-of-thought">
 
 ### ChainOfThought
 
-Visualizes step-by-step AI reasoning with collapsible sections. Shows thinking process, intermediate steps, and conclusions. Supports nested reasoning chains and confidence indicators. Useful for explainable AI interfaces.
+Step-by-step AI reasoning visualization.
 
-**Props:** steps, collapsed, showConfidence, onStepClick, className.
+```tsx
+import { ChainOfThought, useChainOfThought } from '@clarity-chat/react'
 
-</section>
+const { steps, addStep, updateStep } = useChainOfThought()
 
-<section id="reference-components-thinking-bar">
+<ChainOfThought
+  steps={steps}
+  collapsed={false}
+  showConfidence={true}
+/>
+```
 
-### ThinkingBar
+**Props:**
 
-Processing status indicator with progress tracking and status messages. Shows what the AI is currently doing (thinking, searching, analyzing). Supports indeterminate and determinate progress modes.
+```typescript
+interface ChainOfThoughtProps {
+  /** Reasoning steps */
+  steps: ChainOfThoughtStep[]
 
-**Props:** status, progress, showStatus, animated, className.
+  /** Collapsed state */
+  collapsed?: boolean
 
-</section>
+  /** Show confidence scores */
+  showConfidence?: boolean
 
-<section id="reference-components-tool-execution-card">
+  /** Step click handler */
+  onStepClick?: (step: ChainOfThoughtStep) => void
+
+  /** Variant: 'default' | 'compact' | 'detailed' */
+  variant?: ChainOfThoughtVariant
+
+  /** Custom className */
+  className?: string
+}
+
+interface ChainOfThoughtStep {
+  id: string
+  title: string
+  content: string
+  status: ChainOfThoughtStepStatus
+  confidence?: number
+  duration?: number
+  children?: ChainOfThoughtStep[]
+}
+
+type ChainOfThoughtStepStatus = 'pending' | 'running' | 'completed' | 'error'
+```
+
+---
 
 ### ToolExecutionCard
 
-Displays tool/function call execution with input parameters, output results, and execution status. Shows tool name, arguments, return value, and timing. Supports expandable details and error states.
+Display tool/function call execution.
 
-**Props:** tool, status, input, output, duration, expanded, onToggle, className.
+```tsx
+import { ToolExecutionCard, useToolExecution } from '@clarity-chat/react'
 
-</section>
+<ToolExecutionCard
+  tool={toolExecution}
+  expanded={true}
+/>
+```
 
-<section id="reference-components-streaming-progress">
+**Props:**
 
-### StreamingProgress
+```typescript
+interface ToolExecutionCardProps {
+  /** Tool execution data */
+  tool: ToolExecution
 
-Real-time progress indicator with token tracking during streaming. Shows tokens generated, estimated total, and generation speed. Includes progress bar and ETA estimation.
+  /** Execution status */
+  status?: ToolExecutionStatus
 
-**Props:** tokens, estimatedTotal, speed, showSpeed, showEta, className.
+  /** Input parameters */
+  input?: Record<string, unknown>
 
-</section>
+  /** Output result */
+  output?: unknown
 
-<section id="reference-components-text-shimmer">
+  /** Execution duration (ms) */
+  duration?: number
 
-### TextShimmer
+  /** Expanded state */
+  expanded?: boolean
 
-Animated loading placeholder for text content. Creates shimmer effect with configurable speed and color. Used as skeleton while waiting for AI response.
+  /** Toggle handler */
+  onToggle?: () => void
 
-**Props:** lines, width, animated, shimmerColor, className.
+  /** Custom className */
+  className?: string
+}
 
-</section>
+interface ToolExecution {
+  id: string
+  name: string
+  description?: string
+  parameters?: Record<string, unknown>
+  result?: unknown
+  status: ToolExecutionStatus
+  startedAt?: Date
+  completedAt?: Date
+  error?: Error
+}
 
-<section id="reference-components-source-citation">
+type ToolExecutionStatus = 'pending' | 'running' | 'completed' | 'error' | 'cancelled'
+```
+
+---
 
 ### SourceCitation
 
-Displays AI response sources with favicons, titles, URLs, and confidence scores. Supports expandable previews and source verification indicators. Used in RAG applications to show retrieved documents.
+Display AI response sources with confidence scores.
 
-**Props:** sources, showConfidence, showPreview, onSourceClick, className.
+```tsx
+import { SourceCitation, useSourceCitation } from '@clarity-chat/react'
 
-</section>
+<SourceCitation
+  sources={sources}
+  showConfidence={true}
+  showPreview={true}
+/>
+```
 
-<section id="reference-components-prompt-container">
+**Props:**
 
-### PromptContainer
+```typescript
+interface SourceCitationProps {
+  /** Source data */
+  sources: SourceCitationSource[]
 
-Comprehensive prompt input wrapper with suggestions, templates, and attachments. Includes prompt library integration, recent prompts, and smart suggestions based on context.
+  /** Show confidence scores */
+  showConfidence?: boolean
 
-**Props:** value, onChange, onSubmit, suggestions, templates, attachments, className.
+  /** Show preview on hover */
+  showPreview?: boolean
 
-</section>
+  /** Source click handler */
+  onSourceClick?: (source: SourceCitationSource) => void
 
-<section id="reference-components-suggestion-cards">
+  /** Variant: 'inline' | 'card' | 'list' */
+  variant?: SourceCitationVariant
 
-### SuggestionCards
+  /** Size: 'sm' | 'md' | 'lg' */
+  size?: SourceCitationSize
 
-Interactive grid of prompt suggestions with filtering and search. Supports categories, icons, and keyboard navigation. Useful for onboarding and helping users discover capabilities.
+  /** Custom className */
+  className?: string
+}
 
-**Props:** suggestions, categories, onSelect, searchable, columns, className.
-
-</section>
-
----
-
-## Interactive Components
-
-<section id="reference-components-command-palette">
-
-### CommandPalette
-
-Keyboard-driven command menu triggered by Cmd+K (or Ctrl+K on Windows). Supports fuzzy search, categories, keyboard navigation, and nested commands. Extensible with custom commands and actions.
-
-**Props:** commands, isOpen, onClose, onSelect, placeholder, categories, className.
-
-</section>
-
-<section id="reference-components-context-menu">
-
-### ContextMenu
-
-Right-click context menu for message actions. Includes copy, edit, delete, regenerate, and custom actions. Supports nested menus and keyboard shortcuts.
-
-**Props:** items, onSelect, trigger, position, className.
-
-</section>
-
-<section id="reference-components-draggable">
-
-### Draggable
-
-Drag and drop functionality for messages and components. Supports reordering, moving between containers, and custom drag previews. Includes drop zones and visual feedback.
-
-**Props:** children, onDragStart, onDragEnd, onDrop, dragPreview, className.
-
-</section>
-
-<section id="reference-components-keyboard-hint">
-
-### KeyboardHint
-
-Visual indicators for keyboard shortcuts. Shows key combinations with proper symbols for Mac/Windows. Supports inline and tooltip display modes.
-
-**Props:** keys, inline, showModifiers, className.
-
-</section>
-
-<section id="reference-components-advanced-message-search">
-
-### AdvancedMessageSearch
-
-Full-text search across conversation history with filters and highlighting. Supports date ranges, sender filters, and content type filters. Shows search results with context snippets.
-
-**Props:** messages, onSearch, filters, highlightMatches, className.
-
-</section>
-
-<section id="reference-components-retry-button">
-
-### RetryButton
-
-Button for retrying failed message generation. Shows loading state during retry and error count. Supports retry with modifications and alternative models.
-
-**Props:** onRetry, isLoading, errorCount, showCount, className.
-
-</section>
-
-<section id="reference-components-voice-input">
-
-### VoiceInput
-
-Speech-to-text input using Web Speech API. Supports continuous listening, interim results, and multiple languages. Includes visual feedback and noise cancellation hints.
-
-**Props:** onResult, language, continuous, interimResults, onError, className.
-
-</section>
-
-<section id="reference-components-file-upload">
-
-### FileUpload
-
-Document and image upload with drag-and-drop support. Handles multiple files, size limits, and type validation. Shows upload progress and preview for images.
-
-**Props:** onUpload, accept, maxSize, multiple, showPreview, className.
-
-</section>
-
-<section id="reference-components-structured-input-builder">
-
-### StructuredInputBuilder
-
-Form-based input for structured data collection. Supports dynamic field generation, validation, and conditional fields. Useful for collecting specific information from users.
-
-**Props:** schema, values, onChange, onSubmit, validation, className.
-
-</section>
+interface SourceCitationSource {
+  id: string
+  title: string
+  url?: string
+  favicon?: string
+  snippet?: string
+  confidence?: number
+  metadata?: Record<string, unknown>
+}
+```
 
 ---
-
-## UI Elements
-
-<section id="reference-components-avatar">
-
-### Avatar
-
-User and AI avatars with status indicators. Supports images, initials, and icon fallbacks. Includes online/offline status and typing indicators.
-
-**Props:** src, name, status, size, fallback, className.
-
-</section>
-
-<section id="reference-components-button">
-
-### Button
-
-Accessible button with multiple variants (primary, secondary, ghost, destructive) and sizes. Supports loading state, icons, and keyboard focus. Follows WAI-ARIA button pattern.
-
-**Props:** variant, size, loading, icon, iconPosition, disabled, className.
-
-</section>
-
-<section id="reference-components-badge">
-
-### Badge
-
-Status and info badges for labels, counts, and indicators. Multiple variants for different contexts (success, warning, error, info). Supports dismissible badges.
-
-**Props:** variant, size, dismissible, onDismiss, className.
-
-</section>
-
-<section id="reference-components-code-block">
-
-### CodeBlock
-
-Syntax-highlighted code display with copy button and language detection. Supports line numbers, line highlighting, and collapsible long blocks. Uses Prism or Shiki for highlighting.
-
-**Props:** code, language, showLineNumbers, highlightLines, copyButton, className.
-
-</section>
-
-<section id="reference-components-tooltip">
-
-### Tooltip
-
-Contextual tooltips and popovers with flexible positioning. Supports hover, click, and focus triggers. Includes arrow, delay, and animation options.
-
-**Props:** content, trigger, position, delay, arrow, className.
-
-</section>
-
-<section id="reference-components-modal">
-
-### Modal
-
-Dialog and modal components with focus trapping and accessibility. Supports sizes, close on escape, and close on overlay click. Includes header, body, and footer slots.
-
-**Props:** isOpen, onClose, size, closeOnEscape, closeOnOverlay, className.
-
-</section>
-
-<section id="reference-components-network-status">
-
-### NetworkStatus
-
-Online/offline status indicator with reconnection handling. Shows connection quality and latency. Provides callbacks for status changes.
-
-**Props:** showLabel, onOnline, onOffline, reconnectDelay, className.
-
-</section>
-
-<section id="reference-components-prompt-library">
-
-### PromptLibrary
-
-Saved prompts management interface. Supports categories, search, favorites, and import/export. Includes prompt editing and sharing capabilities.
-
-**Props:** prompts, categories, onSelect, onSave, onDelete, className.
-
-</section>
-
-<section id="reference-components-prompt-suggestions">
-
-### PromptSuggestions
-
-Smart prompt suggestions based on context and history. Shows relevant suggestions during typing. Supports custom suggestion sources and ranking.
-
-**Props:** context, onSelect, maxSuggestions, sources, className.
-
-</section>
-
-<section id="reference-components-tool-invocation-card">
-
-### ToolInvocationCard
-
-Detailed display of tool call information including name, description, parameters, and schema. Used in tool selection interfaces and debugging views.
-
-**Props:** tool, parameters, schema, onInvoke, className.
-
-</section>
-
----
-
-## Token Optimization Components
-
-<section id="reference-components-token-optimization-badge">
-
-### TokenOptimizationBadge
-
-Inline indicator showing token usage and optimization status. Displays current tokens, limit, and percentage. Color-coded for usage levels.
-
-**Props:** tokens, limit, showPercentage, variant, className.
-
-</section>
-
-<section id="reference-components-token-optimization-panel">
-
-### TokenOptimizationPanel
-
-Control panel for token optimization settings. Includes sliders for context window, summarization threshold, and optimization aggressiveness. Shows real-time impact preview.
-
-**Props:** settings, onChange, showPreview, className.
-
-</section>
-
-<section id="reference-components-token-optimization-dashboard">
 
 ### TokenOptimizationDashboard
 
-Full dashboard for token management with analytics. Shows usage over time, cost projections, and optimization recommendations. Includes comparison with and without optimization.
+Full dashboard for token management and analytics.
 
-**Props:** data, timeRange, showCosts, showRecommendations, className.
+```tsx
+import { TokenOptimizationDashboard } from '@clarity-chat/react'
 
-</section>
+<TokenOptimizationDashboard
+  data={tokenData}
+  timeRange="7d"
+  showCosts={true}
+  showRecommendations={true}
+/>
+```
 
----
+**Props:**
 
-## Dashboard Components
+```typescript
+interface TokenOptimizationDashboardProps {
+  /** Token usage data */
+  data: TokenUsageData
 
-<section id="reference-components-usage-dashboard">
+  /** Time range: '24h' | '7d' | '30d' | '90d' */
+  timeRange?: string
 
-### UsageDashboard
+  /** Show cost projections */
+  showCosts?: boolean
 
-API usage analytics dashboard showing requests, tokens, costs, and trends. Supports multiple time ranges and comparison periods. Includes export functionality.
+  /** Show optimization recommendations */
+  showRecommendations?: boolean
 
-**Props:** data, timeRange, comparison, onExport, className.
-
-</section>
-
-<section id="reference-components-performance-dashboard">
-
-### PerformanceDashboard
-
-Response time and latency metrics visualization. Shows p50, p95, p99 latencies, error rates, and throughput. Includes alerting thresholds.
-
-**Props:** metrics, timeRange, alertThresholds, className.
-
-</section>
-
-<section id="reference-components-performance-analytics-dashboard">
-
-### PerformanceAnalyticsDashboard
-
-Detailed performance analytics with drill-down capabilities. Shows performance by endpoint, model, and user segment. Includes anomaly detection.
-
-**Props:** data, dimensions, anomalyDetection, className.
-
-</section>
-
-<section id="reference-components-conversation-analytics-dashboard">
-
-### ConversationAnalyticsDashboard
-
-Conversation metrics and insights dashboard. Shows message counts, conversation lengths, user satisfaction, and topic analysis. Includes sentiment tracking.
-
-**Props:** conversations, metrics, showSentiment, className.
-
-</section>
-
-<section id="reference-components-ab-testing-dashboard">
-
-### ABTestingDashboard
-
-A/B test management and results visualization. Shows variant performance, statistical significance, and winner determination. Supports multiple metrics.
-
-**Props:** experiments, metrics, significanceLevel, className.
-
-</section>
-
-<section id="reference-components-project-sidebar">
-
-### ProjectSidebar
-
-Project navigation sidebar with conversation list, search, and filters. Supports folders, tags, and pinned conversations. Includes keyboard navigation.
-
-**Props:** projects, conversations, onSelect, filters, className.
-
-</section>
+  /** Custom className */
+  className?: string
+}
+```
 
 ---
-
-## Enterprise Components
-
-<section id="reference-components-auth-tenant-dashboard">
-
-### AuthTenantDashboard
-
-Multi-tenant authentication management interface. Shows tenant configurations, user counts, and authentication methods. Supports SAML, OIDC, and custom providers.
-
-**Props:** tenants, onSelect, onConfigure, className.
-
-</section>
-
-<section id="reference-components-api-token-manager">
-
-### ApiTokenManager
-
-API key management interface with creation, revocation, and usage tracking. Shows token permissions, expiration, and last used. Supports scoped tokens.
-
-**Props:** tokens, onCreate, onRevoke, onEdit, className.
-
-</section>
-
-<section id="reference-components-seat-invite-dialog">
-
-### SeatInviteDialog
-
-Team member invitation dialog with email input and role selection. Supports bulk invites and custom messages. Shows pending invitations.
-
-**Props:** isOpen, onClose, onInvite, roles, maxSeats, className.
-
-</section>
-
-<section id="reference-components-sso-config-wizard">
-
-### SSOConfigWizard
-
-Step-by-step SSO setup wizard supporting SAML, OIDC, and OAuth providers. Includes configuration testing and troubleshooting. Shows setup progress and validation.
-
-**Props:** provider, onComplete, onTest, className.
-
-</section>
-
----
-
-## Providers
-
-<section id="reference-components-memory-provider">
 
 ### MemoryProvider
 
-Context provider for conversation memory management. Wraps chat components to enable memory features. Configures memory strategy, storage, and limits.
+Context provider for conversation memory management.
 
-**Props:** config, strategy, maxTokens, storage, children.
-
-**Example:**
 ```tsx
-<MemoryProvider config={{ maxTokens: 10000 }}>
+import { MemoryProvider, useMemoryContext } from '@clarity-chat/react'
+
+<MemoryProvider config={{ maxTokens: 10000, strategy: 'vector-store' }}>
   <ChatApp />
 </MemoryProvider>
+
+// In child component
+const { memory, addMemory, searchMemory, clearMemory } = useMemoryContext()
 ```
 
-</section>
+**Props:**
+
+```typescript
+interface MemoryProviderProps {
+  /** Memory configuration */
+  config?: MemoryConfig
+
+  /** Memory strategy */
+  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+
+  /** Maximum tokens for context */
+  maxTokens?: number
+
+  /** Storage backend */
+  storage?: 'memory' | 'indexeddb' | 'custom'
+
+  /** Children */
+  children: React.ReactNode
+}
+
+interface UseMemoryContextReturn {
+  /** Current memory items */
+  memory: MemoryItem[]
+
+  /** Add item to memory */
+  addMemory: (content: string, metadata?: MemoryMetadata) => Promise<void>
+
+  /** Search memory */
+  searchMemory: (query: string, options?: SearchOptions) => Promise<MemorySearchResult[]>
+
+  /** Clear all memory */
+  clearMemory: () => Promise<void>
+
+  /** Context window information */
+  contextWindow: ContextWindowInfo
+
+  /** Memory statistics */
+  stats: MemoryStats
+}
+```
 
 ---
 
 ## Core Hooks
 
-<section id="reference-hooks-selector">
+### useClarityChatApp
 
-### Hook Selector
+Unified App API hook - the recommended hook for most applications.
 
-Interactive guide to choose the right hook for your use case. Answer questions about your requirements and get personalized hook recommendations with code examples.
-
-</section>
-
-<section id="reference-hooks-compare">
-
-### Compare Hooks
-
-Side-by-side comparison of similar hooks. Shows feature differences, performance characteristics, and use case recommendations. Helpful for choosing between useClarityChat, useChatEnhanced, and useChat.
-
-</section>
-
-<section id="reference-hooks-graph">
-
-### Hook Graph
-
-Visual dependency graph showing how hooks relate to each other. Shows which hooks use other hooks internally and recommended composition patterns.
-
-</section>
-
-<section id="reference-hooks-use-clarity-chat">
-
-### useClarityChat
-
-Primary hook for chat state management with built-in memory integration. Manages messages, streaming state, error handling, and API communication. The recommended hook for most applications.
-
-**Returns:** messages, append, reload, stop, isLoading, error, setMessages, input, setInput.
-
-**Example:**
 ```tsx
-const { messages, append, isLoading } = useClarityChat({
+import { useClarityChatApp } from '@clarity-chat/react'
+
+const {
+  messages,
+  append,
+  reload,
+  stop,
+  isLoading,
+  error,
+  // Memory
+  memory,
+  // Tools
+  tools,
+  pendingToolCalls,
+  // Token optimization
+  tokenStats,
+  // Meta information
+  meta
+} = useClarityChatApp({
   api: '/api/chat',
-  memory: { enabled: true }
+  features: { memory: true, tools: true }
 })
 ```
 
-</section>
+**Options:**
 
-<section id="reference-hooks-use-clarity-chat-with-tools">
+```typescript
+interface UseClarityChatAppOptions {
+  /** API endpoint URL */
+  api: string
+
+  /** Preset configuration */
+  preset?: ClarityAppPreset
+
+  /** Feature flags */
+  features?: ClarityFeatureFlags
+
+  /** Memory configuration */
+  memory?: MemoryConfig
+
+  /** Token optimization configuration */
+  tokenOptimization?: TokenOptimizationConfig
+
+  /** Tools configuration */
+  tools?: ToolsConfig
+
+  /** RAG configuration */
+  rag?: RAGConfig
+
+  /** Safety configuration */
+  safety?: SafetyConfig
+
+  /** Initial messages */
+  initialMessages?: CoreMessage[]
+
+  /** Event callbacks */
+  onEvent?: (event: ClarityEvent) => void
+
+  /** Error handler */
+  onError?: (error: Error) => void
+}
+```
+
+**Return Type:**
+
+```typescript
+interface UseClarityChatAppReturn {
+  // Core chat state
+  messages: CoreMessage[]
+  append: (message: CoreMessage | string) => Promise<void>
+  reload: () => Promise<void>
+  stop: () => void
+  setMessages: (messages: CoreMessage[]) => void
+
+  // Input state
+  input: string
+  setInput: (input: string) => void
+  handleSubmit: (e?: React.FormEvent) => void
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
+
+  // Loading/error state
+  isLoading: boolean
+  error: Error | null
+
+  // Memory integration
+  memory: MemoryContext | null
+  memoryStats: MemoryStats | null
+
+  // Tools integration
+  tools: ToolDefinition[]
+  pendingToolCalls: ToolCall[]
+  executeToolCall: (toolCallId: string) => Promise<void>
+
+  // Token optimization
+  tokenStats: TokenStats | null
+
+  // RAG integration
+  ragContext: RAGContext | null
+
+  // Safety
+  safetyStats: SafetyStats | null
+
+  // Meta information
+  meta: ClarityMeta
+}
+```
+
+---
+
+### useClarityChat
+
+Primary hook for chat state management with built-in memory integration.
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+const {
+  messages,
+  append,
+  reload,
+  stop,
+  isLoading,
+  error,
+  setMessages,
+  input,
+  setInput,
+  memoryInfo,
+  tokenStats
+} = useClarityChat({
+  api: '/api/chat',
+  memory: {
+    enabled: true,
+    strategy: 'vector-store',
+    maxTokens: 8000
+  },
+  promptOptimization: {
+    enabled: true,
+    targetTokens: 4000
+  }
+})
+```
+
+**Options:**
+
+```typescript
+interface UseClarityChatOptions {
+  /** API endpoint URL */
+  api: string
+
+  /** Initial messages */
+  initialMessages?: CoreMessage[]
+
+  /** Memory configuration */
+  memory?: ClarityMemoryOptions
+
+  /** Transport protocol */
+  transport?: 'sse' | 'websocket'
+
+  /** WebSocket options */
+  websocket?: ClarityWebSocketOptions
+
+  /** Prompt optimization */
+  promptOptimization?: ClarityPromptOptimizationOptions
+
+  /** Custom headers */
+  headers?: Record<string, string>
+
+  /** Request body */
+  body?: Record<string, unknown>
+
+  /** Credentials mode */
+  credentials?: RequestCredentials
+
+  /** Streaming enabled */
+  streamProtocol?: 'data' | 'text'
+
+  /** Callbacks */
+  onResponse?: (response: Response) => void
+  onFinish?: (message: CoreMessage) => void
+  onError?: (error: Error) => void
+}
+
+interface ClarityMemoryOptions {
+  /** Enable memory */
+  enabled?: boolean
+
+  /** Auto-capture messages */
+  autoCapture?: boolean
+
+  /** Require consent */
+  requireConsent?: boolean
+
+  /** Consent callback */
+  onConsentRequired?: () => Promise<boolean> | boolean
+
+  /** Memory strategy */
+  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+
+  /** Maximum tokens */
+  maxTokens?: number
+
+  /** Retry on error */
+  retryOnError?: boolean
+
+  /** Max retry attempts */
+  maxRetryAttempts?: number
+
+  /** Error callback */
+  onMemoryError?: (error: Error, operation: 'query' | 'store') => void
+}
+
+interface ClarityPromptOptimizationOptions {
+  /** Enable optimization */
+  enabled?: boolean
+
+  /** Target token budget */
+  targetTokens?: number
+
+  /** Optimization strategy */
+  strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
+
+  /** Model for token counting */
+  model?: string
+
+  /** Message priorities */
+  priorities?: Array<{ messageId: string; priority: number }>
+
+  /** Summarization function */
+  summarizeFn?: (messages: CoreMessage[]) => Promise<string> | string
+
+  /** Number of recent messages to keep */
+  keepRecent?: number
+}
+```
+
+**Return Type:**
+
+```typescript
+interface UseClarityChatReturn {
+  // Core state
+  messages: CoreMessage[]
+  append: (message: CoreMessage | string, options?: AppendOptions) => Promise<string | null | undefined>
+  reload: (options?: ReloadOptions) => Promise<string | null | undefined>
+  stop: () => void
+  setMessages: (messages: CoreMessage[] | ((messages: CoreMessage[]) => CoreMessage[])) => void
+
+  // Input state
+  input: string
+  setInput: React.Dispatch<React.SetStateAction<string>>
+  handleSubmit: (e?: React.FormEvent, options?: SubmitOptions) => void
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void
+
+  // Status
+  isLoading: boolean
+  error: Error | undefined
+
+  // Memory info
+  memoryInfo: ClarityChatMemoryInfo
+  memoryErrorInfo: ClarityChatErrorInfo
+
+  // Token stats (if prompt optimization enabled)
+  tokenStats?: ClarityChatTokenStats
+}
+
+interface ClarityChatMemoryInfo {
+  memoryCount: number
+  enabled: boolean
+  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+  lastContextSummary?: string
+}
+
+interface ClarityChatTokenStats {
+  inputTokens: number
+  remainingBudget: number
+  utilization: number
+  lastOptimizationReason?: string
+  wasOptimized: boolean
+}
+```
+
+---
 
 ### useClarityChatWithTools
 
-Extended version of useClarityChat with tool/function calling support. Handles tool execution, confirmation flows, and result streaming. Supports both automatic and manual tool execution.
+Chat with tool/function calling support.
 
-**Returns:** ...useClarityChat, tools, executeTool, pendingToolCalls, toolResults.
+```tsx
+import { useClarityChatWithTools } from '@clarity-chat/react'
 
-</section>
+const {
+  messages,
+  append,
+  tools,
+  pendingToolCalls,
+  executeTool,
+  toolResults
+} = useClarityChatWithTools({
+  api: '/api/chat',
+  tools: [
+    {
+      name: 'search',
+      description: 'Search the web',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string' }
+        }
+      },
+      execute: async ({ query }) => {
+        // Implementation
+        return { results: [] }
+      }
+    }
+  ]
+})
+```
 
-<section id="reference-hooks-use-chat-handlers">
+**Options:**
 
-### useChatHandlers
+```typescript
+interface UseClarityChatWithToolsOptions extends UseClarityChatOptions {
+  /** Tool definitions */
+  tools: ToolDefinition[]
 
-Pre-configured event handlers for ChatWindow integration. Provides handlers for submit, stop, regenerate, edit, and delete. Reduces boilerplate for common patterns.
+  /** Auto-execute tools */
+  autoExecute?: boolean
 
-**Returns:** handleSubmit, handleStop, handleRegenerate, handleEdit, handleDelete.
+  /** Tool execution confirmation */
+  requireConfirmation?: boolean
 
-</section>
+  /** Tool timeout (ms) */
+  toolTimeout?: number
 
-<section id="reference-hooks-use-chat-enhanced">
+  /** Tool error handler */
+  onToolError?: (tool: string, error: Error) => void
+}
 
-### useChatEnhanced
+interface ToolDefinition {
+  /** Tool name */
+  name: string
 
-Enhanced chat hook with additional features like branching, version history, and advanced state management. Designed for complex chat applications requiring sophisticated state handling.
+  /** Tool description */
+  description: string
 
-**Returns:** ...useClarityChat, branches, versions, fork, merge.
+  /** JSON Schema for parameters */
+  parameters: Record<string, unknown>
 
-</section>
+  /** Execution function */
+  execute: (params: Record<string, unknown>) => Promise<unknown>
 
-<section id="reference-hooks-use-assistant">
+  /** Requires confirmation */
+  requiresConfirmation?: boolean
 
-### useAssistant
+  /** Category for grouping */
+  category?: string
+}
+```
 
-Hook for OpenAI Assistants API integration. Manages assistant threads, runs, and tool outputs. Supports file uploads and retrieval augmentation.
+**Return Type:**
 
-**Returns:** messages, submitMessage, threadId, runStatus, submitToolOutputs.
+```typescript
+interface UseClarityChatWithToolsReturn extends UseClarityChatReturn {
+  /** Available tools */
+  tools: ToolDefinition[]
 
-</section>
+  /** Execute a tool */
+  executeTool: (toolCallId: string, params?: Record<string, unknown>) => Promise<unknown>
 
-<section id="reference-hooks-use-completion">
+  /** Pending tool calls awaiting execution */
+  pendingToolCalls: ToolCall[]
 
-### useCompletion
+  /** Results from executed tools */
+  toolResults: Map<string, unknown>
 
-Hook for text completion (non-chat) use cases. Manages single-turn completions with streaming support. Useful for autocomplete, summarization, and generation features.
+  /** Approve a pending tool call */
+  approveTool: (toolCallId: string) => Promise<void>
 
-**Returns:** completion, complete, isLoading, error, stop.
-
-</section>
-
-<section id="reference-hooks-use-messages">
-
-### useMessages
-
-Low-level hook for message state management without API integration. Provides CRUD operations for messages. Useful for building custom chat implementations.
-
-**Returns:** messages, addMessage, updateMessage, deleteMessage, clearMessages.
-
-</section>
-
-<section id="reference-hooks-use-typing">
-
-### useTyping
-
-Hook for managing typing indicator state. Tracks who is typing and provides automatic timeout. Supports multiple users in group chats.
-
-**Returns:** isTyping, startTyping, stopTyping, typingUsers.
-
-</section>
-
-<section id="reference-hooks-use-keyboard-shortcuts">
-
-### useKeyboardShortcuts
-
-Hook for registering and managing keyboard shortcuts. Handles modifier keys, key combinations, and scope management. Prevents conflicts with browser shortcuts.
-
-**Returns:** registerShortcut, unregisterShortcut, shortcuts.
-
-</section>
-
-<section id="reference-hooks-use-command-palette">
-
-### useCommandPalette
-
-Hook for command palette state management. Handles open/close, search, selection, and command execution. Integrates with useKeyboardShortcuts for Cmd+K.
-
-**Returns:** isOpen, open, close, search, selectedIndex, execute.
-
-</section>
-
-<section id="reference-hooks-use-undo-redo">
-
-### useUndoRedo
-
-Hook for undo/redo functionality in chat editing. Maintains history stack with configurable limit. Supports selective undo by message.
-
-**Returns:** undo, redo, canUndo, canRedo, history.
-
-</section>
-
-<section id="reference-hooks-use-haptic">
-
-### useHaptic
-
-Hook for haptic feedback on supported mobile devices. Provides tactile feedback for actions. Respects user preferences for reduced motion.
-
-**Returns:** trigger, isSupported.
-
-</section>
-
-<section id="reference-hooks-use-theme">
-
-### useTheme
-
-Hook for theme switching and management. Provides current theme, switch function, and available themes. Handles system preference detection.
-
-**Returns:** theme, setTheme, themes, systemPreference.
-
-</section>
-
-<section id="reference-hooks-use-design-tokens">
-
-### useDesignTokens
-
-Hook for accessing design tokens programmatically. Returns resolved token values for colors, spacing, typography. Useful for dynamic styling.
-
-**Returns:** tokens, getToken, resolveToken.
-
-</section>
+  /** Reject a pending tool call */
+  rejectTool: (toolCallId: string) => void
+}
+```
 
 ---
-
-## Performance Hooks
-
-<section id="reference-hooks-use-token-optimization">
-
-### useTokenOptimization
-
-Hook for optimizing context window usage and reducing API costs. Implements summarization, pruning, and smart truncation strategies. Can reduce token usage by up to 70%.
-
-**Returns:** optimize, optimizedMessages, savedTokens, strategy.
-
-</section>
-
-<section id="reference-hooks-use-model-router">
-
-### useModelRouter
-
-Hook for dynamic model selection based on task complexity, cost, and latency requirements. Routes simple queries to faster/cheaper models and complex queries to capable models.
-
-**Returns:** selectModel, currentModel, routingRules, addRule.
-
-</section>
-
-<section id="reference-hooks-use-performance">
-
-### usePerformance
-
-Hook for monitoring chat performance metrics. Tracks response times, token throughput, and error rates. Provides real-time metrics and historical data.
-
-**Returns:** metrics, startMeasurement, endMeasurement, getReport.
-
-</section>
-
-<section id="reference-hooks-use-token-tracker">
-
-### useTokenTracker
-
-Hook for real-time token consumption tracking. Counts input and output tokens, tracks costs, and provides budget warnings. Integrates with billing systems.
-
-**Returns:** tokens, cost, addTokens, resetCounter, budget.
-
-</section>
-
-<section id="reference-hooks-use-smart-cache">
-
-### useSmartCache
-
-Hook for intelligent response caching. Caches responses with semantic similarity matching. Reduces API calls for repeated or similar queries.
-
-**Returns:** get, set, invalidate, stats, hitRate.
-
-</section>
-
----
-
-## Streaming Hooks
-
-<section id="reference-hooks-use-streaming-sse">
 
 ### useStreamingSSE
 
-Hook for Server-Sent Events streaming. Handles connection management, reconnection, and event parsing. Supports custom event types and error recovery.
+Server-Sent Events streaming hook.
 
-**Returns:** connect, disconnect, isConnected, lastEvent, error.
+```tsx
+import { useStreamingSSE } from '@clarity-chat/react'
 
-</section>
+const {
+  connect,
+  disconnect,
+  isConnected,
+  lastEvent,
+  error
+} = useStreamingSSE({
+  url: '/api/stream',
+  onMessage: (event) => console.log(event)
+})
+```
 
-<section id="reference-hooks-use-streaming-websocket">
+**Options:**
+
+```typescript
+interface UseStreamingSSEOptions {
+  /** SSE endpoint URL */
+  url: string
+
+  /** Message handler */
+  onMessage?: (event: MessageEvent) => void
+
+  /** Open handler */
+  onOpen?: () => void
+
+  /** Error handler */
+  onError?: (error: Event) => void
+
+  /** Close handler */
+  onClose?: () => void
+
+  /** Auto-reconnect */
+  autoReconnect?: boolean
+
+  /** Reconnect delay (ms) */
+  reconnectDelay?: number
+
+  /** Max reconnect attempts */
+  maxReconnectAttempts?: number
+
+  /** Custom headers */
+  headers?: Record<string, string>
+
+  /** With credentials */
+  withCredentials?: boolean
+}
+```
+
+**Return Type:**
+
+```typescript
+interface UseStreamingSSEReturn {
+  /** Connect to SSE endpoint */
+  connect: () => void
+
+  /** Disconnect from SSE */
+  disconnect: () => void
+
+  /** Connection status */
+  isConnected: boolean
+
+  /** Last received event */
+  lastEvent: MessageEvent | null
+
+  /** Connection error */
+  error: Event | null
+
+  /** Reconnect count */
+  reconnectCount: number
+}
+```
+
+---
 
 ### useStreamingWebSocket
 
-Hook for WebSocket streaming with automatic reconnection. Handles connection lifecycle, heartbeats, and message queuing. Supports binary and text messages.
+WebSocket streaming with automatic reconnection.
 
-**Returns:** connect, disconnect, send, isConnected, lastMessage.
+```tsx
+import { useStreamingWebSocket } from '@clarity-chat/react'
 
-</section>
+const {
+  connect,
+  disconnect,
+  send,
+  isConnected,
+  lastMessage
+} = useStreamingWebSocket({
+  url: 'wss://api.example.com/ws',
+  onMessage: (data) => console.log(data)
+})
+```
 
-<section id="reference-hooks-use-streamable-ui">
+**Options:**
 
-### useStreamableUI
+```typescript
+interface UseStreamingWebSocketOptions {
+  /** WebSocket URL */
+  url: string
 
-Hook for React Server Components streaming UI. Enables progressive rendering of server-generated UI. Works with Next.js App Router and RSC.
+  /** Message handler */
+  onMessage?: (data: unknown) => void
 
-**Returns:** stream, isStreaming, error.
+  /** Open handler */
+  onOpen?: () => void
 
-</section>
+  /** Close handler */
+  onClose?: (event: CloseEvent) => void
+
+  /** Error handler */
+  onError?: (error: Event) => void
+
+  /** Auto-reconnect */
+  autoReconnect?: boolean
+
+  /** Reconnect delay (ms) */
+  reconnectDelay?: number
+
+  /** Max reconnect attempts */
+  maxReconnectAttempts?: number
+
+  /** Heartbeat interval (ms) */
+  heartbeatInterval?: number
+
+  /** Protocols */
+  protocols?: string | string[]
+}
+```
+
+**Return Type:**
+
+```typescript
+interface UseStreamingWebSocketReturn {
+  /** Connect to WebSocket */
+  connect: () => void
+
+  /** Disconnect from WebSocket */
+  disconnect: () => void
+
+  /** Send message */
+  send: (data: unknown) => void
+
+  /** Connection status */
+  isConnected: boolean
+
+  /** Last received message */
+  lastMessage: unknown | null
+
+  /** Ready state */
+  readyState: number
+
+  /** Reconnect count */
+  reconnectCount: number
+}
+```
 
 ---
 
-## Operation Hooks
+### useTokenOptimization
 
-<section id="reference-hooks-use-message-operations">
+Unified token optimization hook.
 
-### useMessageOperations
+```tsx
+import { useTokenOptimization } from '@clarity-chat/token-optimization'
 
-Hook for message CRUD operations including edit, delete, copy, and branch. Handles optimistic updates and rollback on failure.
+const {
+  count,
+  estimate,
+  optimize,
+  cache,
+  stats
+} = useTokenOptimization({
+  model: 'gpt-4o',
+  preset: 'balanced'
+})
+```
 
-**Returns:** editMessage, deleteMessage, copyMessage, branchMessage.
+**Options:**
 
-</section>
+```typescript
+interface UseTokenOptimizationConfig {
+  /** Model ID for token counting */
+  model?: ModelId
 
-<section id="reference-hooks-use-dashboard-data">
+  /** Optimization preset */
+  preset?: TokenOptimizationPreset
 
-### useDashboardData
+  /** Enable caching */
+  caching?: boolean
 
-Hook for fetching and managing dashboard data. Handles loading states, caching, and refresh intervals. Supports multiple data sources.
+  /** Cache configuration */
+  cacheConfig?: TieredCacheConfig
 
-**Returns:** data, isLoading, error, refresh, lastUpdated.
+  /** Compression enabled */
+  compression?: boolean
 
-</section>
+  /** Compression strategy */
+  compressionStrategy?: 'llmlingua' | 'extractive' | 'adaptive'
 
-<section id="reference-hooks-use-circuit-breaker">
+  /** Quality gate */
+  qualityGate?: QualityGateConfig
 
-### useCircuitBreaker
+  /** Cost awareness */
+  costAware?: CostAwareConfig
+}
 
-Hook implementing circuit breaker pattern for API resilience. Prevents cascade failures by stopping requests to failing services. Supports half-open state for recovery testing.
+type TokenOptimizationPreset = 'minimal' | 'balanced' | 'aggressive' | 'quality-first'
+```
 
-**Returns:** execute, state, failures, reset.
+**Return Type:**
 
-</section>
+```typescript
+interface UseTokenOptimizationReturn {
+  /** Count tokens in text */
+  count: (text: string) => number
 
-<section id="reference-hooks-use-retry-with-backoff">
+  /** Estimate tokens with cost */
+  estimate: (text: string) => TokenEstimate
 
-### useRetryWithBackoff
+  /** Optimize text for token budget */
+  optimize: (text: string, targetTokens: number) => OptimizationResult
 
-Hook for exponential backoff retry logic. Automatically retries failed requests with increasing delays. Configurable max retries and backoff factor.
+  /** Cache operations */
+  cache: {
+    get: (key: string) => CachedEntry | null
+    set: (key: string, value: unknown) => void
+    invalidate: (key: string) => void
+    stats: CacheStats
+  }
 
-**Returns:** execute, attempts, isRetrying, cancel.
-
-</section>
-
-<section id="reference-hooks-use-request-deduplication">
-
-### useRequestDeduplication
-
-Hook for preventing duplicate API requests. Deduplicates concurrent identical requests and shares results. Reduces unnecessary API calls.
-
-**Returns:** dedupe, pending, cache.
-
-</section>
+  /** Optimization statistics */
+  stats: OptimizationStats
+}
+```
 
 ---
 
-## Memory & Context Hooks
+### useTokenCount
 
-<section id="reference-hooks-use-memory-context">
+Simple token counting hook.
+
+```tsx
+import { useTokenCount } from '@clarity-chat/token-optimization'
+
+function TokenDisplay({ text }: { text: string }) {
+  const { count, isLoading, error } = useTokenCount(text, {
+    model: 'gpt-4o',
+    debounceMs: 100
+  })
+
+  return <span>{count} tokens</span>
+}
+```
+
+**Options:**
+
+```typescript
+interface UseTokenCountOptions {
+  /** Model for token counting */
+  model?: ModelId
+
+  /** Debounce delay (ms) */
+  debounceMs?: number
+
+  /** Enable caching */
+  cache?: boolean
+
+  /** Skip counting when empty */
+  skipEmpty?: boolean
+}
+```
+
+**Return Type:**
+
+```typescript
+interface UseTokenCountReturn {
+  /** Token count */
+  count: number
+
+  /** Loading state */
+  isLoading: boolean
+
+  /** Error state */
+  error: Error | null
+
+  /** Manually recount */
+  recount: () => void
+}
+```
+
+---
+
+### useModelRouter
+
+Dynamic model selection based on task complexity.
+
+```tsx
+import { useModelRouter } from '@clarity-chat/token-optimization'
+
+const {
+  selectModel,
+  currentModel,
+  routingStats
+} = useModelRouter({
+  strategy: 'cost-optimized',
+  models: {
+    simple: 'gpt-4o-mini',
+    moderate: 'gpt-4o',
+    complex: 'claude-3-opus'
+  }
+})
+
+// In your chat logic
+const model = selectModel(userMessage)
+```
+
+**Options:**
+
+```typescript
+interface UseModelRouterConfig {
+  /** Routing strategy */
+  strategy?: RoutingStrategy
+
+  /** Model mapping by complexity */
+  models?: {
+    simple?: ModelId
+    moderate?: ModelId
+    complex?: ModelId
+  }
+
+  /** Custom routing rules */
+  rules?: RoutingRule[]
+
+  /** Fallback model */
+  fallbackModel?: ModelId
+
+  /** Cost budget */
+  costBudget?: number
+
+  /** Latency budget (ms) */
+  latencyBudget?: number
+}
+
+type RoutingStrategy = 'cost-optimized' | 'quality-optimized' | 'balanced' | 'latency-optimized'
+```
+
+**Return Type:**
+
+```typescript
+interface UseModelRouterReturn {
+  /** Select model for a task */
+  selectModel: (input: string | RoutingOptions) => ModelId
+
+  /** Currently selected model */
+  currentModel: ModelId
+
+  /** Add custom routing rule */
+  addRule: (rule: RoutingRule) => void
+
+  /** Routing statistics */
+  routingStats: RouterStats
+}
+```
+
+---
 
 ### useMemoryContext
 
-Hook for accessing conversation memory from MemoryProvider. Provides memory operations, context window management, and retrieval functions.
+Access conversation memory from MemoryProvider.
 
-**Returns:** memory, addMemory, searchMemory, clearMemory, contextWindow.
+```tsx
+import { useMemoryContext } from '@clarity-chat/react'
 
-</section>
+const {
+  memory,
+  addMemory,
+  searchMemory,
+  clearMemory,
+  contextWindow
+} = useMemoryContext()
+```
 
-<section id="reference-hooks-use-indexed-db">
+**Return Type:**
 
-### useIndexedDB
+```typescript
+interface UseMemoryContextReturn {
+  /** Current memory items */
+  memory: MemoryItem[]
 
-Hook for browser IndexedDB storage. Provides persistent storage for conversations, memories, and settings. Handles migrations and quota management.
+  /** Add item to memory */
+  addMemory: (content: string, metadata?: MemoryMetadata) => Promise<void>
 
-**Returns:** get, set, delete, query, clear.
+  /** Search memory */
+  searchMemory: (query: string, options?: SearchOptions) => Promise<MemorySearchResult[]>
 
-</section>
+  /** Clear all memory */
+  clearMemory: () => Promise<void>
 
-<section id="reference-hooks-use-embeddings">
+  /** Context window info */
+  contextWindow: {
+    usedTokens: number
+    maxTokens: number
+    utilization: number
+  }
 
-### useEmbeddings
+  /** Memory statistics */
+  stats: MemoryStats
 
-Hook for generating and managing text embeddings. Supports multiple embedding providers. Handles batching and caching of embeddings.
+  /** Memory status */
+  status: 'idle' | 'loading' | 'error'
 
-**Returns:** embed, embedBatch, similarity, cache.
-
-</section>
-
----
-
-## Enterprise AI Hooks
-
-<section id="reference-hooks-use-rag-pipeline">
-
-### useRAGPipeline
-
-Hook for retrieval-augmented generation pipeline. Handles document retrieval, reranking, and context injection. Supports multiple vector stores.
-
-**Returns:** query, retrieve, rerank, context, sources.
-
-</section>
-
-<section id="reference-hooks-use-agent">
-
-### useAgent
-
-Hook for AI agent with autonomous tool execution. Manages agent loops, tool calls, and result handling. Supports planning and reasoning steps.
-
-**Returns:** run, stop, status, steps, tools, results.
-
-</section>
-
-<section id="reference-hooks-use-vector-store">
-
-### useVectorStore
-
-Hook for vector database operations. Supports Pinecone, Weaviate, Chroma, and in-memory stores. Handles upsert, query, and delete operations.
-
-**Returns:** upsert, query, delete, stats.
-
-</section>
+  /** Error state */
+  error: Error | null
+}
+```
 
 ---
 
-## API Reference
+## Memory Package
 
-<section id="reference-quick-reference">
+### clarityMemory
 
-### Quick Reference
+Zero-config memory factory function.
 
-One-page overview of the most commonly used APIs. Includes quick examples for ClarityChat, useClarityChat, streaming, memory, and theming. Perfect for experienced users needing a quick refresher.
+```typescript
+import { clarityMemory } from '@clarity-chat/memory'
 
-</section>
+// Zero-config usage
+const mem = clarityMemory()
+await mem.add("User prefers TypeScript", { type: 'semantic', importance: 0.9 })
+const results = await mem.recall("user preferences")
 
-<section id="reference-cheat-sheet">
+// With configuration
+const mem = clarityMemory({
+  storage: { type: 'indexeddb' },
+  embeddingProvider: { provider: 'openai', apiKey: '...' }
+})
+```
 
-### Cheat Sheet
+**Configuration:**
 
-PDF-friendly printable API reference. Organized by category with concise syntax examples. Includes prop tables and return value summaries.
+```typescript
+interface ClarityMemoryConfig {
+  /** Storage configuration */
+  storage?: {
+    type: 'memory' | 'indexeddb' | 'custom'
+    config?: StorageConfig
+  }
 
-</section>
+  /** Embedding provider */
+  embeddingProvider?: {
+    provider: 'openai' | 'cohere' | 'custom'
+    apiKey?: string
+    model?: string
+  }
 
-<section id="reference-api-types">
+  /** Memory decay */
+  decay?: DecayManagerConfig
 
-### Types
+  /** Token budget */
+  tokenBudget?: TokenBudgetConfig
 
-Complete TypeScript type definitions for all components, hooks, and utilities. Includes Message, ChatConfig, MemoryConfig, ThemeConfig, and all prop interfaces.
+  /** Consent management */
+  consent?: ConsentConfig
+}
+```
 
-</section>
+**Return Type:**
 
-<section id="reference-utilities">
+```typescript
+interface ClarityMemoryInstance {
+  /** Add memory item */
+  add: (content: string, metadata?: MemoryMetadata) => Promise<MemoryItem>
 
-### Utilities
+  /** Recall memories */
+  recall: (query: string, options?: RecallOptions) => Promise<MemorySearchResult[]>
 
-Helper functions and utilities including createMemoryStore, formatMessage, parseMarkdown, sanitizeInput, and more. Organized by category with usage examples.
+  /** Update memory item */
+  update: (id: string, content: string, metadata?: MemoryMetadata) => Promise<MemoryItem>
 
-</section>
+  /** Delete memory item */
+  delete: (id: string) => Promise<void>
 
-<section id="reference-api-configuration">
+  /** Clear all memories */
+  clear: () => Promise<void>
 
-### Configuration
+  /** Get statistics */
+  stats: () => Promise<MemoryStats>
 
-Global configuration options for Clarity Chat. Covers default settings, environment variables, and runtime configuration. Includes configuration recipes for common setups.
+  /** Export memories */
+  export: (options?: ExportOptions) => Promise<DataExportResult>
 
-</section>
+  /** Consent operations */
+  consent: ConsentManager
 
----
-
-## Guides
-
-<section id="guides-streaming">
-
-### Streaming Guide
-
-Comprehensive guide to implementing real-time streaming responses. Covers SSE, WebSocket, and RSC streaming. Includes server setup for Next.js, Express, and other frameworks. Explains streaming states, cancellation, and error handling.
-
-</section>
-
-<section id="guides-memory">
-
-### Memory Guide
-
-Deep dive into conversation memory and context management. Covers memory strategies (sliding window, summarization, vector), storage options, and optimization techniques. Includes examples for long conversations.
-
-</section>
-
-<section id="guides-rag">
-
-### RAG Guide
-
-Complete guide to Retrieval-Augmented Generation. Covers document processing, embedding, storage, retrieval, reranking, and prompt construction. Includes examples with Pinecone, Weaviate, and Chroma.
-
-</section>
-
-<section id="guides-agents">
-
-### Agents Guide
-
-Guide to building AI agents with tool execution. Covers tool definition, execution flow, confirmation UX, and result handling. Includes examples for common tools like web search, code execution, and API calls.
-
-</section>
-
-<section id="guides-tools">
-
-### Tool Calling Guide
-
-Detailed guide to the tool calling system. Covers tool schema definition, automatic vs manual execution, streaming tool calls, and error handling. Includes integration with OpenAI and Anthropic tool formats.
-
-</section>
-
-<section id="guides-token-optimization">
-
-### Token Optimization Guide
-
-Strategies for reducing API costs by up to 70%. Covers summarization, pruning, smart truncation, and caching. Includes ROI calculations and optimization dashboard setup.
-
-</section>
-
-<section id="guides-security">
-
-### Security Guide
-
-Security best practices for chat applications. Covers input validation, output sanitization, rate limiting, authentication, and data encryption. Includes OWASP compliance checklist.
-
-</section>
+  /** Audit logger */
+  audit: AuditLogger
+}
+```
 
 ---
 
-## Cookbook Recipes
+### MemoryService
 
-<section id="cookbook-quick-start-3-lines">
+Core memory service class.
 
-### 3-Line Quick Start
+```typescript
+import { MemoryService } from '@clarity-chat/memory'
 
-The absolute minimal setup for Clarity Chat in just 3 lines of code. Shows how to create a complete chat interface with the `chat()` function.
+const memoryService = new MemoryService({
+  storage: { type: 'indexeddb' },
+  tokenBudget: { maxTokens: 10000 }
+})
 
-</section>
+await memoryService.initialize()
+await memoryService.add('Important fact', { importance: 0.9 })
+const results = await memoryService.search('important')
+```
 
-<section id="cookbook-openai-streaming-chat">
+**Configuration:**
 
-### OpenAI Streaming Chat
+```typescript
+interface MemoryServiceConfig {
+  /** Storage backend */
+  storage: StorageConfig
 
-Complete recipe for integrating with OpenAI's Chat Completions API with streaming. Includes API route setup, client configuration, and error handling.
+  /** Token budget configuration */
+  tokenBudget?: TokenBudgetConfig
 
-</section>
+  /** Embedding configuration */
+  embedding?: EmbeddingConfig
 
-<section id="cookbook-rag-document-chat">
+  /** Decay configuration */
+  decay?: DecayManagerConfig
 
-### RAG Document Chat
+  /** Consent configuration */
+  consent?: ConsentConfig
 
-Recipe for building a document Q&A chatbot with RAG. Covers document upload, processing, embedding, and retrieval-augmented responses.
-
-</section>
-
-<section id="cookbook-agent-with-tools">
-
-### Agent with Tools
-
-Recipe for creating an AI agent that can use tools. Includes tool definitions, execution flow, and UI for tool confirmations.
-
-</section>
-
-<section id="cookbook-enterprise-sso-setup">
-
-### Enterprise SSO Setup
-
-Step-by-step recipe for configuring enterprise SSO with SAML or OIDC providers like Okta, Auth0, or Azure AD.
-
-</section>
-
----
-
-## Examples
-
-<section id="examples-tool-calling-showcase">
-
-### Tool Calling Showcase
-
-Advanced demo showcasing tool calling capabilities. Includes multiple tools (calculator, weather, web search) with confirmation UI and result display.
-
-</section>
-
-<section id="examples-simple-chat">
-
-### Simple Chat
-
-Minimal chat implementation demonstrating basic setup. Perfect starting point for understanding the core concepts.
-
-</section>
+  /** Audit configuration */
+  audit?: AuditLoggerConfig
+}
+```
 
 ---
 
-## Interactive Demos
+### LLMSummarizer
 
-<section id="demos">
+LLM-based summarization for 80-90% token reduction.
 
-### All Demos
+```typescript
+import { LLMSummarizer, createSummarizerWithFallback } from '@clarity-chat/memory'
 
-Browse all interactive demos showcasing Clarity Chat capabilities. Each demo is fully functional and includes source code.
+const summarizer = new LLMSummarizer({
+  provider: 'openai',
+  model: 'gpt-4o-mini',
+  apiKey: process.env.OPENAI_API_KEY
+})
 
-</section>
+const summary = await summarizer.summarize(longText)
+```
 
-<section id="demos-zero-to-chat">
+**Configuration:**
 
-### Zero to Chat
+```typescript
+interface LLMSummarizationConfig {
+  /** LLM provider */
+  provider: 'openai' | 'anthropic' | 'custom'
 
-Live coding demo showing how to build a chat interface from scratch in real-time.
+  /** Model to use */
+  model: string
 
-</section>
+  /** API key */
+  apiKey: string
 
-<section id="demos-tool-calling">
+  /** Target compression ratio (0-1) */
+  targetRatio?: number
 
-### Tool Calling Demo
+  /** Summarization style */
+  style?: SummaryStyle
 
-Interactive demo of AI agents with tool execution. Try tools like web search, calculations, and code execution.
+  /** Include timestamps */
+  includeTimestamps?: boolean
 
-</section>
+  /** Max output tokens */
+  maxOutputTokens?: number
+}
 
----
-
-## Migration
-
-<section id="learn-migration-from-vercel-ai-sdk">
-
-### From Vercel AI SDK
-
-Step-by-step migration guide from Vercel AI SDK to Clarity Chat. Covers API mapping, component equivalents, and feature additions. Includes codemods for automated migration.
-
-</section>
-
----
-
-## Architecture
-
-<section id="learn-architecture">
-
-### Architecture Overview
-
-System design and patterns used in Clarity Chat. Covers component architecture, state management, data flow, and extension points. Includes diagrams and best practices.
-
-</section>
+type SummaryStyle = 'concise' | 'detailed' | 'bullet-points' | 'narrative'
+```
 
 ---
 
-## Help
+### DecayManager
 
-<section id="learn-faq">
+Memory decay and forgetting management.
 
-### FAQ
+```typescript
+import { DecayManager, createDecayManager } from '@clarity-chat/memory'
 
-Frequently asked questions about Clarity Chat. Covers installation, configuration, troubleshooting, and feature questions.
+const decayManager = createDecayManager({
+  policy: 'exponential',
+  halfLife: 7 * 24 * 60 * 60 * 1000, // 7 days
+  minImportance: 0.1
+})
 
-</section>
+const decayedMemories = decayManager.applyDecay(memories)
+```
 
-<section id="learn-troubleshooting">
+**Configuration:**
 
-### Troubleshooting
+```typescript
+interface DecayManagerConfig {
+  /** Decay policy */
+  policy: DecayPolicy
 
-Common issues and solutions for Clarity Chat. Organized by symptom with step-by-step resolution guides.
+  /** Half-life for exponential decay (ms) */
+  halfLife?: number
 
-</section>
+  /** Minimum importance before removal */
+  minImportance?: number
+
+  /** Custom decay curve */
+  decayCurve?: DecayCurve
+
+  /** Access boost factor */
+  accessBoost?: number
+}
+
+type DecayPolicy = 'none' | 'linear' | 'exponential' | 'step' | 'custom'
+```
 
 ---
 
-## Enterprise
+### ConsentManager
 
-<section id="enterprise">
+GDPR/CCPA compliance consent management.
 
-### Enterprise Features
+```typescript
+import { ConsentManager } from '@clarity-chat/memory'
 
-Overview of enterprise features including SSO, RBAC, multi-tenancy, audit logging, and compliance certifications. Includes pricing and support options.
+const consentManager = new ConsentManager({
+  storageKey: 'clarity-consent',
+  purposes: ['memory', 'analytics']
+})
 
-</section>
+const hasConsent = await consentManager.checkConsent('memory')
+await consentManager.grantConsent('memory')
+```
+
+**Types:**
+
+```typescript
+interface ConsentManager {
+  /** Check if consent granted */
+  checkConsent: (purpose: ConsentPurpose) => Promise<boolean>
+
+  /** Grant consent */
+  grantConsent: (purpose: ConsentPurpose) => Promise<void>
+
+  /** Revoke consent */
+  revokeConsent: (purpose: ConsentPurpose) => Promise<void>
+
+  /** Get consent record */
+  getRecord: () => Promise<ConsentRecord>
+
+  /** Verify consent */
+  verify: () => Promise<ConsentVerification>
+}
+
+type ConsentPurpose = 'memory' | 'analytics' | 'personalization' | 'marketing'
+```
+
+---
+
+### AuditLogger
+
+GDPR Article 30 compliance audit logging.
+
+```typescript
+import { AuditLogger } from '@clarity-chat/memory'
+
+const auditLogger = new AuditLogger({
+  storage: 'indexeddb',
+  retention: 90 * 24 * 60 * 60 * 1000 // 90 days
+})
+
+await auditLogger.log({
+  type: 'DATA_ACCESS',
+  userId: 'user-123',
+  action: 'read',
+  resource: 'memory'
+})
+
+const logs = await auditLogger.query({
+  userId: 'user-123',
+  startDate: new Date('2024-01-01')
+})
+```
+
+---
+
+## Token Optimization Package
+
+### AccurateTokenCounter
+
+Accurate token counting using gpt-tokenizer.
+
+```typescript
+import { AccurateTokenCounter } from '@clarity-chat/token-optimization'
+
+const counter = new AccurateTokenCounter({
+  model: 'gpt-4o',
+  cache: true
+})
+
+const count = counter.count('Hello, world!')
+const messageCount = counter.countMessages([
+  { role: 'user', content: 'Hello' },
+  { role: 'assistant', content: 'Hi there!' }
+])
+```
+
+---
+
+### ModelRouter
+
+Model routing based on complexity analysis.
+
+```typescript
+import { ModelRouter, RoutingStrategy } from '@clarity-chat/token-optimization'
+
+// Using defaults
+const router = ModelRouter.default()
+
+// Using builder
+const router = ModelRouter.builder()
+  .useOpenAIModels()
+  .withStrategy(RoutingStrategy.CostOptimized)
+  .withFallback('gpt-4o-mini')
+  .build()
+
+const model = router.selectModel('complex technical question')
+```
+
+---
+
+### TieredCache
+
+Multi-tier caching system.
+
+```typescript
+import { TieredCache } from '@clarity-chat/token-optimization'
+
+const cache = new TieredCache({
+  tiers: [
+    { name: 'exact', maxSize: 1000, ttl: 60000 },
+    { name: 'semantic', maxSize: 500, ttl: 300000, similarity: 0.85 }
+  ]
+})
+
+// Set with semantic indexing
+await cache.set('greeting', 'Hello! How can I help?', {
+  semanticKey: 'greeting'
+})
+
+// Get (checks all tiers)
+const result = await cache.get('Hello there!')
+```
+
+---
+
+### LLMLinguaCompressor
+
+Advanced compression using LLMLingua algorithm.
+
+```typescript
+import { LLMLinguaCompressor, compressWithLLMLingua } from '@clarity-chat/token-optimization'
+
+const compressor = new LLMLinguaCompressor({
+  targetRatio: 0.5,
+  preserveKeywords: true
+})
+
+const result = await compressor.compress(longText)
+console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens} tokens`)
+```
+
+---
+
+### ProviderCachingFormatter
+
+Format messages for provider-native caching (Anthropic, OpenAI, Google).
+
+```typescript
+import {
+  ProviderCachingFormatter,
+  anthropicCache,
+  openaiCache
+} from '@clarity-chat/token-optimization'
+
+// Simple API
+const anthropicMessages = anthropicCache(messages, { systemPrompt })
+const openaiMessages = openaiCache(messages, { staticPrefix: systemPrompt })
+
+// Advanced API
+const formatter = new ProviderCachingFormatter({
+  provider: 'anthropic',
+  minCacheTokens: 1024
+})
+
+const formatted = formatter.format(messages)
+```
+
+---
+
+### QualityGate
+
+Quality validation before sending to LLM.
+
+```typescript
+import { QualityGate } from '@clarity-chat/token-optimization'
+
+const gate = new QualityGate({
+  minTokens: 10,
+  maxTokens: 4000,
+  minSemanticDensity: 0.3,
+  blockPatterns: [/spam/i]
+})
+
+const result = gate.check(text)
+if (result.passed) {
+  // Safe to send to LLM
+}
+```
+
+---
+
+### CostAwareOptimizer
+
+Cost-aware optimization with budget tracking.
+
+```typescript
+import { CostAwareOptimizer } from '@clarity-chat/token-optimization'
+
+const optimizer = new CostAwareOptimizer({
+  budget: 10.00, // $10 daily budget
+  model: 'gpt-4o',
+  strategy: 'balanced'
+})
+
+const result = await optimizer.optimize(messages)
+const status = optimizer.getBudgetStatus()
+```
+
+---
+
+## Utilities
+
+### Quick Start Helpers
+
+```typescript
+import { chat, chatWithMemory, enterpriseChat, ChatBuilder } from '@clarity-chat/react'
+
+// One-line chat
+const ChatComponent = chat('/api/chat')
+
+// With memory
+const MemoryChat = chatWithMemory('/api/chat')
+
+// Enterprise
+const EnterpriseChat = enterpriseChat('/api/chat')
+
+// Builder pattern
+const CustomChat = new ChatBuilder()
+  .api('/api/chat')
+  .theme('dark')
+  .memory({ enabled: true })
+  .build()
+```
+
+---
+
+### Message Helpers
+
+```typescript
+import {
+  createUserMessage,
+  createAssistantMessage,
+  createSystemMessage,
+  isUserMessage,
+  isAssistantMessage,
+  extractTextContent
+} from '@clarity-chat/react'
+
+const userMsg = createUserMessage('Hello')
+const assistantMsg = createAssistantMessage('Hi there!')
+const systemMsg = createSystemMessage('You are a helpful assistant')
+
+if (isUserMessage(message)) {
+  const text = extractTextContent(message)
+}
+```
+
+---
+
+### Animation Utilities
+
+```typescript
+import {
+  createFadeVariant,
+  createSlideVariant,
+  createStaggerContainerVariant,
+  createPulseAnimation,
+  createShimmerAnimation
+} from '@clarity-chat/react'
+
+// Framer Motion variants
+const fadeIn = createFadeVariant({ duration: 0.3 })
+const slideUp = createSlideVariant({ direction: 'up', distance: 20 })
+const stagger = createStaggerContainerVariant({ staggerChildren: 0.1 })
+```
+
+---
+
+### Testing Helpers
+
+```typescript
+import {
+  mockChatAPI,
+  createTestMessages,
+  renderChatWithDefaults,
+  TestWrapper,
+  chatAssertions
+} from '@clarity-chat/react'
+
+// Mock API
+const api = mockChatAPI({
+  delay: 100,
+  responses: ['Hello!', 'How can I help?']
+})
+
+// Create test messages
+const messages = createTestMessages(5)
+
+// Render with defaults
+const { result } = renderChatWithDefaults(<MyChat />)
+
+// Assertions
+chatAssertions.hasMessages(result, 3)
+chatAssertions.isLoading(result, false)
+```
+
+---
+
+### Security Utilities
+
+```typescript
+import {
+  sanitizeHTML,
+  sanitizeMarkdown,
+  sanitizeUserInput,
+  detectXSSPatterns,
+  generateCSPHeader,
+  auditComponentSecurity
+} from '@clarity-chat/react'
+
+// Sanitize user input
+const safe = sanitizeUserInput(userInput)
+
+// Detect XSS
+const threats = detectXSSPatterns(content)
+
+// Generate CSP header
+const csp = generateCSPHeader({
+  defaultSrc: ["'self'"],
+  scriptSrc: ["'self'", 'https://cdn.example.com']
+})
+
+// Audit component
+const report = auditComponentSecurity(MyComponent)
+```
+
+---
+
+## Types
+
+### Core Message Types
+
+```typescript
+interface CoreMessage {
+  id: string
+  role: 'user' | 'assistant' | 'system' | 'tool'
+  content: string | MessageContent[]
+  createdAt?: Date
+  name?: string
+  toolInvocations?: ToolInvocation[]
+}
+
+type MessageContent =
+  | { type: 'text'; text: string }
+  | { type: 'image'; image: string | URL }
+  | { type: 'file'; file: File | Blob }
+
+interface ToolInvocation {
+  toolCallId: string
+  toolName: string
+  args: Record<string, unknown>
+  result?: unknown
+  state: 'pending' | 'running' | 'completed' | 'error'
+}
+```
+
+### Memory Types
+
+```typescript
+interface MemoryItem {
+  id: string
+  content: string
+  type: MemoryType
+  scope: MemoryScope
+  priority: MemoryPriority
+  importance: number
+  embedding?: number[]
+  metadata: MemoryMetadata
+  createdAt: Date
+  updatedAt: Date
+  accessCount: number
+  lastAccessedAt: Date
+}
+
+type MemoryType = 'semantic' | 'episodic' | 'procedural' | 'working'
+type MemoryScope = 'session' | 'conversation' | 'user' | 'global'
+type MemoryPriority = 'critical' | 'high' | 'medium' | 'low'
+
+interface MemorySearchResult {
+  item: MemoryItem
+  score: number
+  relevance: number
+}
+
+interface MemoryStats {
+  totalItems: number
+  totalTokens: number
+  byType: Record<MemoryType, number>
+  byScope: Record<MemoryScope, number>
+  averageImportance: number
+}
+```
+
+### Token Types
+
+```typescript
+interface TokenEstimate {
+  tokens: number
+  cost: CostEstimate
+  model: ModelId
+}
+
+interface CostEstimate {
+  inputCost: number
+  outputCost: number
+  totalCost: number
+  currency: string
+}
+
+interface TokenBudget {
+  maxTokens: number
+  usedTokens: number
+  remaining: number
+  utilization: number
+}
+
+type ModelId =
+  | 'gpt-4o'
+  | 'gpt-4o-mini'
+  | 'gpt-4-turbo'
+  | 'claude-3-opus'
+  | 'claude-3-sonnet'
+  | 'claude-3-haiku'
+  | string
+```
+
+### Tool Types
+
+```typescript
+interface ToolDefinition {
+  name: string
+  description: string
+  parameters: JSONSchema
+  execute: (params: Record<string, unknown>) => Promise<unknown>
+  requiresConfirmation?: boolean
+  category?: string
+  timeout?: number
+}
+
+interface ToolCall {
+  id: string
+  toolName: string
+  arguments: Record<string, unknown>
+  status: 'pending' | 'approved' | 'rejected' | 'executing' | 'completed' | 'error'
+  result?: unknown
+  error?: Error
+}
+
+interface ToolExecutionResult {
+  success: boolean
+  result?: unknown
+  error?: Error
+  duration: number
+}
+```
+
+### RAG Types
+
+```typescript
+interface RAGConfig {
+  enabled: boolean
+  sources: RAGSource[]
+  chunkSize?: number
+  chunkOverlap?: number
+  topK?: number
+  similarityThreshold?: number
+  reranking?: boolean
+}
+
+interface RAGSource {
+  id: string
+  type: 'file' | 'url' | 'text' | 'database'
+  content?: string
+  url?: string
+  metadata?: Record<string, unknown>
+}
+
+interface RAGQueryResult {
+  chunks: RAGChunk[]
+  sources: RAGSource[]
+  relevanceScores: number[]
+}
+
+interface RAGChunk {
+  id: string
+  content: string
+  sourceId: string
+  metadata: ChunkMetadata
+  embedding?: number[]
+  score?: number
+}
+```
+
+### Event Types
+
+```typescript
+type ClarityEvent =
+  | { type: 'message:start'; message: CoreMessage }
+  | { type: 'message:chunk'; chunk: string; messageId: string }
+  | { type: 'message:complete'; message: CoreMessage }
+  | { type: 'message:error'; error: Error; messageId?: string }
+  | { type: 'tool:start'; toolCall: ToolCall }
+  | { type: 'tool:complete'; toolCall: ToolCall; result: unknown }
+  | { type: 'tool:error'; toolCall: ToolCall; error: Error }
+  | { type: 'memory:add'; item: MemoryItem }
+  | { type: 'memory:search'; query: string; results: MemorySearchResult[] }
+  | { type: 'rag:retrieve'; query: string; results: RAGQueryResult }
+  | { type: 'safety:block'; reason: string; content: string }
+  | { type: 'token:budget_warning'; usage: TokenBudget }
+```
 
 ---
 
 ## AI-Optimized APIs
 
-Programmatic access to Clarity Chat documentation for AI systems and RAG applications:
+### REST Endpoints
 
-- **Components API** (`/api/ai/components`): JSON endpoint returning all component documentation with props, examples, and metadata.
-- **Hooks API** (`/api/ai/hooks`): JSON endpoint returning all hook documentation with parameters, return values, and examples.
-- **Search API** (`/api/ai/search`): Full-text search across all documentation with relevance ranking.
-- **Health API** (`/api/ai/health`): API health and status monitoring endpoint.
-- **OpenAPI Spec** (`/openapi.json`): Full OpenAPI 3.0 specification for all API endpoints.
+- `GET /api/ai/components` - All component documentation (JSON)
+- `GET /api/ai/hooks` - All hook documentation (JSON)
+- `GET /api/ai/search?q={query}` - Full-text search
+- `GET /api/ai/health` - API health status
+- `GET /openapi.json` - OpenAPI 3.0 specification
 
 ### MCP Server
-
-Model Context Protocol server for Claude Code and other AI tools:
 
 ```json
 {
@@ -1644,10 +2380,20 @@ Model Context Protocol server for Claude Code and other AI tools:
 }
 ```
 
-**Available MCP tools:**
-- `list_components`: List all available components with basic info
-- `get_component`: Get detailed documentation for a specific component
-- `list_hooks`: List all available hooks with basic info
-- `get_hook`: Get detailed documentation for a specific hook
-- `search_docs`: Search across all documentation
-- `health_check`: Check API health and status
+**Available Tools:**
+- `list_components` - List all components with basic info
+- `get_component(name)` - Get detailed component documentation
+- `list_hooks` - List all hooks with basic info
+- `get_hook(name)` - Get detailed hook documentation
+- `search_docs(query)` - Search all documentation
+- `health_check` - Check API health
+
+---
+
+## Version Information
+
+- **Package Version:** 2.0.0
+- **React:** 18+ / 19
+- **TypeScript:** 5.0+
+- **Node.js:** 18+
+- **Last Updated:** 2026-01-26

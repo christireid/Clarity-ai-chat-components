@@ -229,22 +229,6 @@ export function ChatMessage(props: any) {
 </div>
 ```
 
-#### 3. Use Branded Types for IDs
-
-```tsx
-// ✅ Good: Type-safe IDs
-type MessageId = string & { readonly __brand: 'MessageId' }
-type ConversationId = string & { readonly __brand: 'ConversationId' }
-
-function deleteMessage(id: MessageId) {
-  // TypeScript ensures correct ID type
-}
-
-// ❌ Bad: Plain strings
-function deleteMessage(id: string) {
-  // Could accidentally pass wrong ID type
-}
-```
 
 ### Performance Patterns
 

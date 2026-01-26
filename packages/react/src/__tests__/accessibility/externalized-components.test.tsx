@@ -171,7 +171,7 @@ console.log(greeting)`}
 
         // Activate with Enter
         await user.keyboard('{Enter}')
-        expect(copyButton).toHaveBeenCalled
+        expect(copyButton).toHaveBeenCalled()
       })
     })
 

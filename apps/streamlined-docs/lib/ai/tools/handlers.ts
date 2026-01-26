@@ -2,6 +2,7 @@
  * Docs Assistant Tool Handlers
  *
  * Implements the execution logic for each tool available to the docs assistant.
+ * Includes handlers for documentation tools and user management CRUD operations.
  */
 
 import {
@@ -10,50 +11,44 @@ import {
   type ToolInputs,
   type ToolOutputs,
 } from './definitions'
+import {
+  USER_TOOL_NAMES,
+  type UserToolName,
+} from './user-management-tools'
+import { executeUserManagementTool } from './user-management-handlers'
+import {
+  MESSAGE_TOOL_NAMES,
+  type MessageToolName,
+} from './message-management-tools'
+import { executeMessageManagementTool } from './message-management-handlers'
 
-// Bundle size data for the calculator
-const BUNDLE_SIZES = {
-  full: { name: '@clarity-chat/react', size: '~120KB', features: ['all'] },
-  core: {
-    name: '@clarity-chat/react/core',
-    size: '~60KB',
-    features: ['chat', 'messages', 'input', 'streaming', 'theming', 'memory'],
-  },
-  coreMinimal: {
-    name: '@clarity-chat/react/core-minimal',
-    size: '~30KB',
-    features: ['chat', 'messages', 'input', 'streaming'],
-  },
-}
-
-const FEATURE_SIZES: Record<
-  string,
-  { size: string; entryPoint: string; lazyLoadable: boolean }
-> = {
-  chat: { size: '~15KB', entryPoint: 'core-minimal', lazyLoadable: false },
-  messages: { size: '~10KB', entryPoint: 'core-minimal', lazyLoadable: false },
-  input: { size: '~8KB', entryPoint: 'core-minimal', lazyLoadable: false },
-  streaming: { size: '~5KB', entryPoint: 'core-minimal', lazyLoadable: false },
-  theming: { size: '~12KB', entryPoint: 'core', lazyLoadable: false },
-  memory: { size: '~8KB', entryPoint: 'core', lazyLoadable: false },
-  rag: { size: '~15KB', entryPoint: 'full', lazyLoadable: true },
-  agents: { size: '~12KB', entryPoint: 'full', lazyLoadable: true },
-  analytics: { size: '~10KB', entryPoint: 'full', lazyLoadable: true },
-  tokenOptimization: { size: '~8KB', entryPoint: 'full', lazyLoadable: true },
-  vectorStores: { size: '~10KB', entryPoint: 'full', lazyLoadable: true },
-  enterprise: { size: '~20KB', entryPoint: 'full', lazyLoadable: true },
-  animations: { size: '~15KB', entryPoint: 'full', lazyLoadable: false },
-  voice: { size: '~12KB', entryPoint: 'full', lazyLoadable: true },
-  fileUpload: { size: '~10KB', entryPoint: 'full', lazyLoadable: true },
-}
+/**
+ * Bundle Optimization Context Path
+ *
+ * This file contains the documented patterns and size estimates for bundle reasoning.
+ * The AI should read and apply these patterns rather than using hardcoded lookups.
+ */
+const BUNDLE_OPTIMIZATION_CONTEXT_PATH =
+  './prompts/bundle-optimization-context.md'
 
 /**
  * Execute a tool and return the result
  */
 export async function executeToolCall(
-  toolName: ToolName,
+  toolName: ToolName | UserToolName | MessageToolName,
   input: ToolInputs[keyof ToolInputs]
 ): Promise<ToolOutputs[keyof ToolOutputs]> {
+  // Check if this is a user management tool
+  if (Object.values(USER_TOOL_NAMES).includes(toolName as UserToolName)) {
+    return executeUserManagementTool(toolName as UserToolName, input)
+  }
+
+  // Check if this is a message management tool
+  if (Object.values(MESSAGE_TOOL_NAMES).includes(toolName as MessageToolName)) {
+    return executeMessageManagementTool(toolName as MessageToolName, input)
+  }
+
+  // Handle documentation tools
   switch (toolName) {
     case TOOL_NAMES.GENERATE_DIAGRAM:
       return handleGenerateDiagram(input as ToolInputs['generate_diagram'])
@@ -320,124 +315,66 @@ function handleGenerateCodeExample(
 }
 
 /**
- * Handle calculate_bundle_impact tool
+ * Handle calculate_bundle_impact tool (Prompt-Native)
+ *
+ * This tool is prompt-native: it returns structured context that guides the AI's
+ * reasoning rather than performing hardcoded calculations.
+ *
+ * The AI should:
+ * 1. Read bundle-optimization-context.md patterns
+ * 2. Parse user requirements into feature needs
+ * 3. Reason about optimal entry point based on documented patterns
+ * 4. Calculate sizes using documented estimates
+ * 5. Provide optimization recommendations
  */
 function handleCalculateBundleImpact(
   input: ToolInputs['calculate_bundle_impact']
 ): ToolOutputs['calculate_bundle_impact'] {
-  const normalizedFeatures = input.features.map((f) =>
-    f.toLowerCase().replace(/[^a-z]/g, '')
-  )
-
-  // Determine which features are needed
-  const featureAnalysis = normalizedFeatures
-    .map((feature) => {
-      // Map user input to known features
-      const featureKey = Object.keys(FEATURE_SIZES).find(
-        (key) =>
-          key.toLowerCase() === feature ||
-          key.toLowerCase().includes(feature) ||
-          feature.includes(key.toLowerCase())
-      )
-      return featureKey ? FEATURE_SIZES[featureKey] : null
-    })
-    .filter(Boolean) as (typeof FEATURE_SIZES)[keyof typeof FEATURE_SIZES][]
-
-  // Determine recommended entry point
-  let recommendedEntryPoint = 'core-minimal'
-  let estimatedSize = '~30KB'
-
-  if (featureAnalysis.some((f) => f.entryPoint === 'full' && !f.lazyLoadable)) {
-    recommendedEntryPoint = 'full'
-    estimatedSize = '~120KB'
-  } else if (featureAnalysis.some((f) => f.entryPoint === 'core')) {
-    recommendedEntryPoint = 'core'
-    estimatedSize = '~60KB'
-  } else if (
-    featureAnalysis.some((f) => f.entryPoint === 'full' && f.lazyLoadable)
-  ) {
-    recommendedEntryPoint = 'core-minimal + lazy loading'
-    estimatedSize = '~30KB initial + lazy loaded'
-  }
-
-  // Features included in each bundle
-  const coreMinimalFeatures = ['chat', 'messages', 'input', 'streaming']
-  const coreFeatures = [...coreMinimalFeatures, 'theming', 'memory']
-
-  let includedFeatures: string[] = []
-  let lazyLoadFeatures: string[] = []
-
-  switch (recommendedEntryPoint) {
-    case 'core-minimal':
-      includedFeatures = coreMinimalFeatures
-      break
-    case 'core':
-      includedFeatures = coreFeatures
-      break
-    case 'core-minimal + lazy loading':
-      includedFeatures = coreMinimalFeatures
-      lazyLoadFeatures = featureAnalysis
-        .filter((f) => f.lazyLoadable)
-        .map((_, i) => normalizedFeatures[i])
-        .filter(Boolean)
-      break
-    case 'full':
-      includedFeatures = ['all features']
-      break
-  }
-
-  // Size breakdown
-  const sizeBreakdown = featureAnalysis.map((f, i) => ({
-    feature: input.features[i],
-    size: f.size,
-  }))
-
-  // Optimization tips
-  const optimizationTips: string[] = []
-
-  if (recommendedEntryPoint === 'full') {
-    optimizationTips.push(
-      'Consider using core-minimal with lazy loading to reduce initial bundle size'
-    )
-  }
-  if (featureAnalysis.some((f) => f.lazyLoadable)) {
-    optimizationTips.push(
-      'Use lazyLoadRAG, lazyLoadAnalytics, etc. for features not needed immediately'
-    )
-  }
-  if (
-    normalizedFeatures.includes('rag') ||
-    normalizedFeatures.includes('vectorstores')
-  ) {
-    optimizationTips.push('RAG features can be lazy loaded with lazyLoadRAG()')
-  }
-  if (normalizedFeatures.includes('analytics')) {
-    optimizationTips.push(
-      'Analytics can be lazy loaded with lazyLoadAnalytics()'
-    )
-  }
-  if (optimizationTips.length === 0) {
-    optimizationTips.push(
-      'Your feature set is well optimized for the recommended entry point'
-    )
-  }
-
+  // Return structured guidance for AI reasoning
   return {
     success: true,
     analysis: {
-      recommended_entry_point:
-        recommendedEntryPoint === 'core-minimal + lazy loading'
-          ? '@clarity-chat/react/core-minimal'
-          : recommendedEntryPoint === 'core'
-            ? '@clarity-chat/react/core'
-            : recommendedEntryPoint === 'full'
-              ? '@clarity-chat/react'
-              : '@clarity-chat/react/core-minimal',
-      estimated_size: estimatedSize,
-      features_included: includedFeatures,
-      features_requiring_lazy_load: lazyLoadFeatures,
-      size_breakdown: sizeBreakdown,
-      optimization_tips: optimizationTips,
+      user_requirements: input.user_requirements,
+      context: input.context,
+      reasoning_guidance: {
+        step_1: 'Parse user requirements into a list of needed features',
+        step_2:
+          'Categorize features: core-minimal (chat, messages, input, streaming), core (+ theming, memory), or full (advanced features)',
+        step_3:
+          'Identify which advanced features are lazy-loadable vs required immediately',
+        step_4:
+          'Calculate base bundle size + non-lazy features using documented estimates',
+        step_5: 'List lazy-loadable features for progressive enhancement',
+        step_6:
+          'Recommend optimal entry point and specific optimization strategies',
+      },
+      bundle_context_reference: BUNDLE_OPTIMIZATION_CONTEXT_PATH,
+      available_entry_points: [
+        {
+          name: '@clarity-chat/react/core-minimal',
+          base_size: '~30KB',
+          includes: ['chat', 'messages', 'input', 'streaming'],
+        },
+        {
+          name: '@clarity-chat/react/core',
+          base_size: '~60KB',
+          includes: [
+            'chat',
+            'messages',
+            'input',
+            'streaming',
+            'theming',
+            'memory',
+          ],
+        },
+        {
+          name: '@clarity-chat/react',
+          base_size: '~120KB',
+          includes: ['all features'],
+        },
+      ],
+      instruction:
+        'Use the bundle optimization context patterns to reason about the best approach for these requirements. Provide specific size estimates, identify lazy-loadable features, and give concrete optimization tips.',
     },
   }
 }

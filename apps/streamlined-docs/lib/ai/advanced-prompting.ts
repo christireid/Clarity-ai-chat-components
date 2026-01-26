@@ -14,17 +14,11 @@ import {
   type Source,
   type GroundedResponse,
 } from './citation-grounded-prompts'
-import {
-  checkForHallucinations,
-  quickHallucinationCheck,
-  type HallucinationCheck,
-} from './hallucination-detector'
 import { metricsLogger, type PromptMetrics } from './prompt-metrics'
 
 export interface AdvancedPromptConfig {
   enableCoT: boolean // Enable Chain-of-Thought for complex queries
   enableCitations: boolean // Require citations for all claims
-  enableHallucinationDetection: boolean // Verify response grounding
   strictMode: boolean // Extra strict citation requirements
 }
 
@@ -42,7 +36,6 @@ export interface AdvancedPromptResult {
 export interface ProcessedResponse {
   answer: string
   grounded: GroundedResponse
-  hallucination: HallucinationCheck
   metrics: PromptMetrics
 }
 
@@ -57,7 +50,6 @@ export async function generateAdvancedPrompt(
   config: AdvancedPromptConfig = {
     enableCoT: true,
     enableCitations: true,
-    enableHallucinationDetection: true,
     strictMode: false,
   }
 ): Promise<AdvancedPromptResult> {
@@ -120,34 +112,6 @@ export async function generateAdvancedPrompt(
       }
     }
 
-    // Check for hallucinations
-    let hallucination: HallucinationCheck
-    if (config.enableHallucinationDetection) {
-      // Quick check first (fast)
-      const passesQuickCheck = quickHallucinationCheck(response, sources)
-
-      if (!passesQuickCheck) {
-        // Full check if quick check fails
-        hallucination = checkForHallucinations(response, sources, query)
-      } else {
-        // Skip full check if quick check passes
-        hallucination = {
-          isGrounded: true,
-          confidence: 0.9,
-          issues: [],
-          summary: '✓ Response appears grounded (quick check)',
-        }
-      }
-    } else {
-      // Hallucination detection disabled
-      hallucination = {
-        isGrounded: true,
-        confidence: 1.0,
-        issues: [],
-        summary: 'Hallucination detection disabled',
-      }
-    }
-
     // Calculate metrics
     const responseTime = Date.now() - startTime
     const metrics: PromptMetrics = {
@@ -156,9 +120,8 @@ export async function generateAdvancedPrompt(
       complexity: classification.complexity,
       promptTokens: estimateTokens(systemPrompt + userPrompt),
       completionTokens: estimateTokens(response),
-      groundingConfidence: hallucination.confidence,
+      groundingConfidence: grounded.groundingScore || 1.0,
       citationCount: grounded.citations.length,
-      hallucinationIssues: hallucination.issues.length,
       responseTime,
       technique: requiresCitations ? 'citation' : config.enableCoT ? 'cot' : 'simple',
     }
@@ -169,7 +132,6 @@ export async function generateAdvancedPrompt(
     return {
       answer: response,
       grounded,
-      hallucination,
       metrics,
     }
   }

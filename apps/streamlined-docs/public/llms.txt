@@ -2,7 +2,7 @@
 
 > Clarity Chat is a React component library for building AI chat interfaces with 200+ components, 95+ hooks, streaming support, RAG, and enterprise features. Built with TypeScript, React 19, and Tailwind CSS.
 
-Clarity Chat provides everything you need to build production-ready AI chat applications in React. From simple chatbots to enterprise-grade conversational AI with memory, RAG, and multi-tenancy support.
+Clarity Chat provides everything you need to build production-ready AI chat applications in React. From simple chatbots to enterprise-grade conversational AI with memory, RAG, tool calling, and multi-tenancy support.
 
 ## Getting Started
 
@@ -21,8 +21,9 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 
 ## Core Components
 
+- [ClarityChatApp](/reference/components/clarity-chat-app): Unified App API - streaming chat in 3 minutes with one component
 - [ClarityChat](/reference/components/clarity-chat): All-in-one chat component with built-in streaming, memory, and theming
-- [ClarityChatPresets](/reference/components/clarity-chat-presets): Pre-configured chat variants for common use cases
+- [ClarityChatPresets](/reference/components/clarity-chat-presets): Pre-configured chat variants (CustomerSupport, CodeAssistant, Enterprise)
 - [ChatRecipes](/reference/components/chat-recipes): Ready-to-use chat configurations for specific industries
 - [ChatLayout](/reference/components/chat-layout): Flexible layout component for chat interfaces
 - [ChatWindow](/reference/components/chat-window): Container for chat messages with scroll management
@@ -30,25 +31,32 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [MessageList](/reference/components/message-list): Virtualized message list for performance
 - [ChatInput](/reference/components/chat-input): User input with suggestions, attachments, and voice support
 - [TypingIndicator](/reference/components/typing-indicator): AI typing/thinking state indicator
+- [FloatingChatWidget](/reference/components/floating-chat-widget): Floating chat bubble for websites
 
 ## Streaming Components
 
 - [StreamingMessage](/reference/components/streaming-message): Real-time streaming response display
 - [VirtualizedMessageList](/reference/components/virtualized-message-list): High-performance list for large conversations
+- [TanStackMessageList](/reference/components/tanstack-message-list): TanStack Virtual integration for message lists
 - [StreamingTextRenderer](/reference/components/streaming-text-renderer): Character-by-character text animation
 - [StreamBlock](/reference/components/stream-block): Block-level streaming content container
 - [StreamCancellation](/reference/components/stream-cancellation): Cancel ongoing stream requests
+- [StreamStatusProgress](/reference/components/stream-status-progress): Comprehensive streaming progress visualization
 
 ## AI Components
 
 - [ChainOfThought](/reference/components/chain-of-thought): Step-by-step reasoning visualization
 - [ThinkingBar](/reference/components/thinking-bar): Processing status with progress tracking
 - [ToolExecutionCard](/reference/components/tool-execution-card): Display tool/function call execution
-- [StreamingProgress](/reference/components/streaming-progress): Real-time progress with token tracking
 - [TextShimmer](/reference/components/text-shimmer): Animated text loading placeholder
 - [SourceCitation](/reference/components/source-citation): Display AI response sources with confidence scores
+- [Citation](/reference/components/citation): Inline citation display
 - [PromptContainer](/reference/components/prompt-container): Prompt input wrapper with suggestions
 - [SuggestionCards](/reference/components/suggestion-cards): Interactive suggestion grid
+- [EnhancedMarkdownRenderer](/reference/components/enhanced-markdown-renderer): Markdown with LaTeX, Mermaid, syntax highlighting
+- [EnhancedCodeBlock](/reference/components/enhanced-code-block): Advanced code block with diff support
+- [ModelSelector](/reference/components/model-selector): Model selection dropdown
+- [AgentRunFeed](/reference/components/agent-run-feed): Agent execution feed display
 
 ## Interactive Components
 
@@ -74,20 +82,25 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [PromptLibrary](/reference/components/prompt-library): Saved prompts management
 - [PromptSuggestions](/reference/components/prompt-suggestions): Smart prompt suggestions
 - [ToolInvocationCard](/reference/components/tool-invocation-card): Display tool call details
+- [Tabs](/reference/components/tabs): Tab navigation component
 
 ## Token Optimization Components
 
 - [TokenOptimizationBadge](/reference/components/token-optimization-badge): Inline token usage indicator
 - [TokenOptimizationPanel](/reference/components/token-optimization-panel): Token optimization controls
 - [TokenOptimizationDashboard](/reference/components/token-optimization-dashboard): Full dashboard for token management
+- [TokenCostPreview](/reference/components/token-cost-preview): Real-time cost estimation
+- [TokenUsageMeter](/reference/components/token-usage-meter): Visual token consumption meter
+- [TokenBudgetBar](/reference/components/token-budget-bar): Budget progress visualization
+- [TokenCounter](/reference/components/token-counter): Simple token count display
 
 ## Dashboard Components
 
 - [UsageDashboard](/reference/components/usage-dashboard): API usage analytics
 - [PerformanceDashboard](/reference/components/performance-dashboard): Response time and latency metrics
-- [PerformanceAnalyticsDashboard](/reference/components/performance-analytics-dashboard): Detailed performance analytics
+- [AnalyticsDashboard](/reference/components/analytics-dashboard): Comprehensive analytics view
 - [ConversationAnalyticsDashboard](/reference/components/conversation-analytics-dashboard): Conversation metrics and insights
-- [ABTestingDashboard](/reference/components/ab-testing-dashboard): A/B test management and results
+- [ResponseQualityMeter](/reference/components/response-quality-meter): Quality scoring display
 - [ProjectSidebar](/reference/components/project-sidebar): Project navigation sidebar
 
 ## Enterprise Components
@@ -96,24 +109,34 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [ApiTokenManager](/reference/components/api-token-manager): API key management interface
 - [SeatInviteDialog](/reference/components/seat-invite-dialog): Team member invitation flow
 - [SSOConfigWizard](/reference/components/sso-config-wizard): SSO setup wizard
+- [AuditLogViewer](/reference/components/audit-log-viewer): Compliance audit trails
+- [SafetyStatusCard](/reference/components/safety-status-card): Content safety status
 
-## Providers
+## Context & Memory Components
 
 - [MemoryProvider](/reference/components/memory-provider): Context provider for conversation memory
+- [ContextManager](/reference/components/context-manager): Context window management
+- [ContextCard](/reference/components/context-card): Context item display
+- [ContextVisualizer](/reference/components/context-visualizer): Visual context representation
+- [MemoryInspector](/reference/components/memory-inspector): Memory debugging tool
 
 ## Core Hooks
 
 - [Hook Selector](/reference/hooks/selector): Interactive guide to choose the right hook
 - [Compare Hooks](/reference/hooks/compare): Side-by-side hook comparison
 - [Hook Graph](/reference/hooks/graph): Visual hook dependency graph
+- [useClarityChatApp](/reference/hooks/use-clarity-chat-app): Unified App API hook
 - [useClarityChat](/reference/hooks/use-clarity-chat): Primary hook for chat state with memory integration
 - [useClarityChatWithTools](/reference/hooks/use-clarity-chat-with-tools): Chat with tool/function calling support
+- [useClarityObject](/reference/hooks/use-clarity-object): Structured output generation
+- [useHeadlessChat](/reference/hooks/use-headless-chat): 100% logic, 0% magic headless hook
 - [useChatHandlers](/reference/hooks/use-chat-handlers): Pre-configured event handlers
 - [useChatEnhanced](/reference/hooks/use-chat-enhanced): Enhanced chat with advanced features
+- [useChatSync](/reference/hooks/use-chat-sync): Cross-device chat synchronization
 - [useAssistant](/reference/hooks/use-assistant): OpenAI Assistants API integration
 - [useCompletion](/reference/hooks/use-completion): Text completion hook
 - [useMessages](/reference/hooks/use-messages): Message state management
-- [useTyping](/reference/hooks/use-typing): Typing indicator state
+- [useRealisticTyping](/reference/hooks/use-realistic-typing): Natural typing simulation
 - [useKeyboardShortcuts](/reference/hooks/use-keyboard-shortcuts): Keyboard shortcut handling
 - [useCommandPalette](/reference/hooks/use-command-palette): Command palette state
 - [useUndoRedo](/reference/hooks/use-undo-redo): Undo/redo functionality
@@ -123,8 +146,12 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 
 ## Performance Hooks
 
-- [useTokenOptimization](/reference/hooks/use-token-optimization): Optimize context window usage
+- [useTokenOptimization](/reference/hooks/use-token-optimization): Unified token optimization hook
+- [useTokenCount](/reference/hooks/use-token-count): Real-time token counting
+- [useTokenBudgetTracking](/reference/hooks/use-token-budget-tracking): Budget monitoring
 - [useModelRouter](/reference/hooks/use-model-router): Dynamic model selection based on task
+- [useTieredCache](/reference/hooks/use-tiered-cache): Multi-tier response caching
+- [useOptimizationPipeline](/reference/hooks/use-optimization-pipeline): Full optimization pipeline
 - [usePerformance](/reference/hooks/use-performance): Performance monitoring
 - [useTokenTracker](/reference/hooks/use-token-tracker): Real-time token consumption tracking
 - [useSmartCache](/reference/hooks/use-smart-cache): Intelligent response caching
@@ -134,6 +161,10 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [useStreamingSSE](/reference/hooks/use-streaming-sse): Server-Sent Events streaming
 - [useStreamingWebSocket](/reference/hooks/use-streaming-websocket): WebSocket streaming with reconnection
 - [useStreamableUI](/reference/hooks/use-streamable-ui): React Server Components streaming
+- [useStreaming](/reference/hooks/use-streaming): Generic streaming hook
+- [useStreamingChat](/reference/hooks/use-streaming-chat): Chat-specific streaming
+- [useSmoothedText](/reference/hooks/use-smoothed-text): Smooth text animation
+- [useStreamStatus](/reference/hooks/use-stream-status): Stream status tracking
 
 ## Operation Hooks
 
@@ -148,12 +179,33 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [useMemoryContext](/reference/hooks/use-memory-context): Access conversation memory context
 - [useIndexedDB](/reference/hooks/use-indexed-db): Browser IndexedDB for offline storage
 - [useEmbeddings](/reference/hooks/use-embeddings): Generate and manage text embeddings
+- [useLocalStorage](/reference/hooks/use-local-storage): Local storage persistence
+- [useContextMonitor](/reference/hooks/use-context-monitor): Context window monitoring
 
 ## Enterprise AI Hooks
 
 - [useRAGPipeline](/reference/hooks/use-rag-pipeline): Retrieval-augmented generation pipeline
 - [useAgent](/reference/hooks/use-agent): AI agent with tool execution
 - [useVectorStore](/reference/hooks/use-vector-store): Vector database operations
+
+## UI Hooks
+
+- [useDebounce](/reference/hooks/use-debounce): Debounce values
+- [useThrottledCallback](/reference/hooks/use-throttled-callback): Throttle function calls
+- [useClipboard](/reference/hooks/use-clipboard): Clipboard operations
+- [useWindowSize](/reference/hooks/use-window-size): Window dimensions
+- [usePrevious](/reference/hooks/use-previous): Previous value tracking
+- [useAutoScroll](/reference/hooks/use-auto-scroll): Auto-scroll management
+- [useVoiceInput](/reference/hooks/use-voice-input): Voice input handling
+
+## Accessibility Hooks
+
+- [useFocusManagement](/reference/hooks/use-focus-management): Focus management
+- [useScreenReaderAnnounce](/reference/hooks/use-screen-reader-announce): Screen reader announcements
+- [useHighContrastMode](/reference/hooks/use-high-contrast-mode): High contrast detection
+- [useReducedMotion](/reference/hooks/use-reduced-motion): Reduced motion preference
+- [useFocusTrap](/reference/hooks/use-focus-trap): Focus trapping
+- [useFocusRestoration](/reference/hooks/use-focus-restoration): Focus restoration
 
 ## API Reference
 
@@ -162,18 +214,36 @@ Clarity Chat provides everything you need to build production-ready AI chat appl
 - [Types](/reference/api/types): TypeScript type definitions
 - [Utilities](/reference/utilities): Helper functions and utilities
 - [createMemoryStore](/reference/utilities/create-memory-store): Create conversation memory store
-- [Performance Monitoring](/reference/utilities/performance-monitoring): Performance tracking utilities
-- [Accessibility Testing](/reference/utilities/accessibility-testing): A11y testing helpers
-- [Security Utilities](/reference/utilities/security): Input validation and sanitization
-- [Analytics & Tracking](/reference/utilities/analytics): Usage analytics helpers
-- [Quick Start Helpers](/reference/utilities/quick-start-helpers): Simplified setup functions
-- [Development Helpers](/reference/utilities/dev-helpers): Developer debugging tools
-- [Setup Wizard](/reference/utilities/setup-wizard): Interactive setup guide
-- [Lazy Loading](/reference/utilities/lazy-loading): Code splitting utilities
-- [IntelliSense Helpers](/reference/utilities/intellisense-helpers): IDE integration helpers
-- [Testing Helpers](/reference/utilities/testing-helpers): Test utilities and mocks
-- [Migration Helpers](/reference/utilities/migration-helpers): Migration from other libraries
+- [createRAGEngine](/reference/utilities/create-rag-engine): Create RAG engine
+- [createToolsEngine](/reference/utilities/create-tools-engine): Create tools engine
 - [Configuration](/reference/api/configuration): Global configuration options
+
+## Packages
+
+### @clarity-chat/react
+- [Components](/reference/packages/react/components): All React components
+- [Hooks](/reference/packages/react/hooks): All React hooks
+- [Utilities](/reference/packages/react/utilities): React utilities
+
+### @clarity-chat/memory
+- [clarityMemory](/reference/packages/memory/clarity-memory): Zero-config memory factory
+- [MemoryService](/reference/packages/memory/memory-service): Core memory service
+- [ConsentManager](/reference/packages/memory/consent-manager): GDPR/CCPA compliance
+- [AuditLogger](/reference/packages/memory/audit-logger): Audit logging
+- [LLMSummarizer](/reference/packages/memory/llm-summarizer): LLM-based summarization
+- [DecayManager](/reference/packages/memory/decay-manager): Memory decay/forgetting
+- [TokenBudgetManager](/reference/packages/memory/token-budget-manager): Token budget management
+
+### @clarity-chat/token-optimization
+- [useTokenCount](/reference/packages/token-optimization/use-token-count): Token counting hook
+- [useTokenOptimization](/reference/packages/token-optimization/use-token-optimization): Unified optimization hook
+- [ModelRouter](/reference/packages/token-optimization/model-router): Model routing
+- [TieredCache](/reference/packages/token-optimization/tiered-cache): Multi-tier caching
+- [AccurateTokenCounter](/reference/packages/token-optimization/accurate-token-counter): Accurate token counting
+- [LLMLinguaCompressor](/reference/packages/token-optimization/llmlingua-compressor): LLMLingua compression
+- [ProviderCachingFormatter](/reference/packages/token-optimization/provider-caching): Provider-native caching
+- [QualityGate](/reference/packages/token-optimization/quality-gate): Quality gates
+- [CostAwareOptimizer](/reference/packages/token-optimization/cost-aware-optimizer): Cost optimization
 
 ## Basic Guides
 

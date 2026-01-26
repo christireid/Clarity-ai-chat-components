@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import type type, { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { usePerformanceTracking } from '../../hooks/performance/usePerformanceMonitoring'
 import { ContentErrorBoundary } from '../ui/ErrorBoundary'

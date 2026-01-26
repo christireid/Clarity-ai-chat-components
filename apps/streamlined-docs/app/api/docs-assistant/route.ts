@@ -64,10 +64,6 @@ import {
   extractCitations,
   type Source,
 } from '@/lib/ai/prompts/citations'
-import {
-  checkForHallucinations,
-  shouldRegenerateResponse,
-} from '@/lib/ai/hallucination'
 import { metricsLogger } from '@/lib/ai/metrics'
 
 const logger = getLogger('docs-assistant-api')
@@ -407,15 +403,8 @@ ${citationPrompt.systemPrompt}`
       yield chunk
     }
 
-    // Step 5: Extract citations and check for hallucinations
+    // Step 5: Extract citations
     const grounded = citationPrompt.postProcessing(assistantResponse, sources)
-
-    // Check for hallucinations
-    const hallucinationCheck = await checkForHallucinations(
-      assistantResponse,
-      sources,
-      userMessage
-    )
 
     // Send grounding metadata to client
     yield {
@@ -423,58 +412,7 @@ ${citationPrompt.systemPrompt}`
       data: {
         groundingScore: grounded.groundingScore,
         citationCount: grounded.citations.length,
-        hallucinationConfidence: hallucinationCheck.confidence,
-        issues: hallucinationCheck.issues.length,
       },
-    }
-
-    // If response has low confidence, regenerate with stricter grounding
-    if (shouldRegenerateResponse(hallucinationCheck)) {
-      logger.warn('Low grounding confidence detected, regenerating...', {
-        confidence: hallucinationCheck.confidence,
-        issues: hallucinationCheck.issues.length,
-      })
-
-      yield {
-        type: 'metadata',
-        data: {
-          regenerating: true,
-          reason: hallucinationCheck.summary,
-        },
-      }
-
-      // Clear previous response
-      assistantResponse = ''
-
-      // Regenerate with stricter prompt
-      const stricterPrompt = {
-        ...citationPrompt,
-        systemPrompt:
-          citationPrompt.systemPrompt +
-          '\n\nWARNING: Previous response had grounding issues. Be EXTRA careful to cite every single factual claim.',
-      }
-
-      const stricterMessages = messages.map((msg, idx) => {
-        if (msg.role === 'system') {
-          return { ...msg, content: stricterPrompt.systemPrompt }
-        }
-        if (idx === messages.length - 1 && msg.role === 'user') {
-          return { ...msg, content: stricterPrompt.userPrompt }
-        }
-        return msg
-      })
-
-      const strictStream = streamingFn(stricterMessages, {
-        model: modelOverride,
-        temperature: 0.3, // Lower temperature for more deterministic output
-      })
-
-      for await (const chunk of strictStream) {
-        if (chunk.type === 'text' && chunk.content) {
-          assistantResponse += chunk.content
-        }
-        yield chunk
-      }
     }
 
     // Log metrics
@@ -491,11 +429,9 @@ ${citationPrompt.systemPrompt}`
       totalTokens: estimateTokens(
         updatedMessages.map((m) => m.content).join(' ') + assistantResponse
       ),
-      groundingConfidence: hallucinationCheck.confidence,
+      groundingConfidence: grounded.groundingScore,
       citationCount: grounded.citations.length,
-      hallucinationIssues: hallucinationCheck.issues.length,
       responseTime,
-      regenerated: shouldRegenerateResponse(hallucinationCheck),
     })
 
     // Save to session
