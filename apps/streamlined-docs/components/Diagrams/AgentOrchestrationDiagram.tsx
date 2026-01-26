@@ -45,6 +45,7 @@ export function AgentOrchestrationDiagram() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="flex flex-col items-center"
           >
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-700 text-white flex items-center justify-center shadow-xl">
@@ -60,6 +61,7 @@ export function AgentOrchestrationDiagram() {
           <motion.div
             initial={{ scaleY: 0 }}
             animate={{ scaleY: 1 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
             <svg width="32" height="48" viewBox="0 0 32 48">
@@ -72,6 +74,7 @@ export function AgentOrchestrationDiagram() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.4, type: 'spring' }}
             className="flex flex-col items-center"
           >
@@ -100,6 +103,7 @@ export function AgentOrchestrationDiagram() {
                   className="absolute inset-0 w-full h-full pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  viewport={{ once: true }}
                   transition={{ delay: 0.6 + index * 0.1 }}
                 >
                   <defs>
@@ -118,6 +122,7 @@ export function AgentOrchestrationDiagram() {
                     strokeDasharray="5 5"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
+                    viewport={{ once: true }}
                     transition={{ delay: 0.7 + index * 0.1, duration: 0.4 }}
                   />
                 </motion.svg>
@@ -132,6 +137,7 @@ export function AgentOrchestrationDiagram() {
                 key={agent.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: 0.8 + index * 0.1 }}
                 className="flex flex-col items-center"
               >
@@ -147,6 +153,7 @@ export function AgentOrchestrationDiagram() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  viewport={{ once: true }}
                   transition={{ delay: 1.2 + index * 0.1 }}
                   className="mt-2 px-3 py-1 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-xs"
                 >
@@ -160,6 +167,7 @@ export function AgentOrchestrationDiagram() {
           <motion.div
             initial={{ scaleY: 0 }}
             animate={{ scaleY: 1 }}
+            viewport={{ once: true }}
             transition={{ delay: 1.5, duration: 0.3 }}
           >
             <svg width="32" height="48" viewBox="0 0 32 48">
@@ -172,6 +180,7 @@ export function AgentOrchestrationDiagram() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ delay: 1.7, type: 'spring' }}
             className="flex flex-col items-center"
           >
@@ -189,6 +198,7 @@ export function AgentOrchestrationDiagram() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          viewport={{ once: true }}
           transition={{ delay: 2 }}
           className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 flex flex-wrap justify-center gap-6 text-xs"
         >
