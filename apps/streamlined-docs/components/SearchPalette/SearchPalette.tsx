@@ -344,6 +344,7 @@ export function SearchPalette() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.15 }}
               onClick={handleClose}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
@@ -358,6 +359,7 @@ export function SearchPalette() {
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
               className="fixed top-[10vh] left-1/2 -translate-x-1/2 w-full max-w-xl mx-4 z-50"
               onKeyDown={handleKeyDown}
