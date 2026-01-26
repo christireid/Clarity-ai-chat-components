@@ -35,5 +35,10 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "undici": ">=7.18.2"
+    }
   }
 }

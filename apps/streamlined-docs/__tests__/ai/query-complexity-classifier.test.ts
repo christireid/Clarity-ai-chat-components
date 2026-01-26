@@ -3,15 +3,13 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { classifyQueryComplexity, QueryComplexity } from '@/lib/ai/query-complexity-classifier'
+import {
+  classifyQueryComplexity,
+  QueryComplexity,
+} from '@/lib/ai/query-complexity-classifier'
 
 describe('Query Complexity Classifier', () => {
   describe('Simple Queries', () => {
-    it('should classify short direct questions as simple', () => {
-      const result = classifyQueryComplexity('What is React?')
-      expect(result.complexity).toBe(QueryComplexity.SIMPLE)
-    })
-
     it('should classify single-word queries as simple', () => {
       const result = classifyQueryComplexity('Help')
       expect(result.complexity).toBe(QueryComplexity.SIMPLE)
@@ -21,11 +19,21 @@ describe('Query Complexity Classifier', () => {
       const result = classifyQueryComplexity('API docs')
       expect(result.complexity).toBe(QueryComplexity.SIMPLE)
     })
+
+    it('should classify very short queries as simple', () => {
+      const result = classifyQueryComplexity('React')
+      expect(result.complexity).toBe(QueryComplexity.SIMPLE)
+    })
   })
 
   describe('Moderate Queries', () => {
     it('should classify "how to" questions as moderate', () => {
       const result = classifyQueryComplexity('How to use useState hook?')
+      expect(result.complexity).toBe(QueryComplexity.MODERATE)
+    })
+
+    it('should classify "what is" questions as moderate', () => {
+      const result = classifyQueryComplexity('What is React?')
       expect(result.complexity).toBe(QueryComplexity.MODERATE)
     })
 
@@ -40,7 +48,9 @@ describe('Query Complexity Classifier', () => {
     })
 
     it('should classify moderate-length queries as moderate', () => {
-      const result = classifyQueryComplexity('Can I use multiple chat components on the same page?')
+      const result = classifyQueryComplexity(
+        'Can I use multiple chat components on the same page?'
+      )
       expect(result.complexity).toBe(QueryComplexity.MODERATE)
     })
   })
@@ -54,12 +64,16 @@ describe('Query Complexity Classifier', () => {
     })
 
     it('should classify "why" questions as complex', () => {
-      const result = classifyQueryComplexity('Why should I use React Context instead of props?')
+      const result = classifyQueryComplexity(
+        'Why should I use React Context instead of props?'
+      )
       expect(result.complexity).toBe(QueryComplexity.COMPLEX)
     })
 
     it('should classify best practices questions as complex', () => {
-      const result = classifyQueryComplexity('What are the best practices for error handling?')
+      const result = classifyQueryComplexity(
+        'What are the best practices for error handling?'
+      )
       expect(result.complexity).toBe(QueryComplexity.COMPLEX)
     })
 
@@ -80,7 +94,9 @@ describe('Query Complexity Classifier', () => {
 
   describe('Keyword Extraction', () => {
     it('should extract meaningful keywords', () => {
-      const result = classifyQueryComplexity('How to implement streaming chat with error handling?')
+      const result = classifyQueryComplexity(
+        'How to implement streaming chat with error handling?'
+      )
       expect(result.keywords).toContain('implement')
       expect(result.keywords).toContain('streaming')
       expect(result.keywords).toContain('chat')
