@@ -9,9 +9,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle } from '@clarity-chat/primitives'
 import { Progress } from '../ui/progress'
 import {
   ClockIcon,

@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import Editor from '@monaco-editor/react'
+import Editor, { type Monaco } from '@monaco-editor/react'
+import type { editor as MonacoEditor } from 'monaco-editor'
 import { useTheme } from 'next-themes'
 import { NIGHT_OWL_MONACO_THEME } from '@clarity-chat/react'
 
@@ -21,7 +22,10 @@ export default function CodeEditor({
   const { theme } = useTheme()
 
   // Register Night Owl theme with Monaco
-  const handleEditorDidMount = (editor: any, monaco: any) => {
+  const handleEditorDidMount = (
+    editor: MonacoEditor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) => {
     // Register the Night Owl theme
     monaco.editor.defineTheme('night-owl', NIGHT_OWL_MONACO_THEME)
 

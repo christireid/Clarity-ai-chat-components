@@ -22,6 +22,7 @@ import {
 import { getVectorStore } from './vectorStore'
 import { searchDocumentation } from './keywordSearch'
 import { logger } from '@/lib/logger'
+import type { DocumentationIndexEntry } from '../../types/documentation'
 import fs from 'fs/promises'
 import path from 'path'
 
@@ -125,16 +126,21 @@ export class SearchService {
       // Load documentation data
       const docsPath = path.join(process.cwd(), 'lib', 'ai', 'docs-index.json')
       const docsData = await fs.readFile(docsPath, 'utf-8')
-      const docsIndex = JSON.parse(docsData)
+      const docsIndex = JSON.parse(docsData) as DocumentationIndexEntry[]
 
       // Convert to APIMetadata format
-      const documents: APIMetadata[] = docsIndex.map((doc: any) => ({
+      const documents: APIMetadata[] = docsIndex.map((doc) => ({
         id: doc.id,
         title: doc.title,
         content: doc.content,
         url: doc.url,
         category: doc.category,
-        metadata: doc.metadata,
+        metadata: {
+          lastUpdated: doc.metadata?.lastUpdated ?? new Date().toISOString(),
+          tags: doc.metadata?.tags ?? [],
+          section: doc.metadata?.section,
+          headings: doc.metadata?.headings,
+        },
       }))
 
       // Generate embeddings (in production, load pre-computed embeddings)
@@ -298,7 +304,7 @@ export class SearchService {
         title: r.chunk.title,
         content: r.chunk.content,
         url: r.chunk.url,
-        category: r.chunk.category as any,
+        category: r.chunk.category,
         metadata: r.chunk.metadata,
       },
       score: r.score,

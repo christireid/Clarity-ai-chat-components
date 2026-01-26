@@ -6,8 +6,9 @@
 
 'use client'
 
-import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import { motion, useSpring, useTransform } from 'framer-motion'
+import { ReactNode, useEffect } from 'react'
+import { durations } from '@/lib/animations'
 
 // Color palette from design system
 // These colors are used for SVG diagrams which don't support CSS variables well
@@ -495,18 +496,30 @@ export function AnimatedCounter({
   suffix = '',
   prefix = '',
 }: AnimatedCounterProps) {
+  const spring = useSpring(0, {
+    damping: 30,
+    stiffness: 100,
+  })
+
+  const display = useTransform(spring, (current) =>
+    Math.round(current)
+  )
+
+  useEffect(() => {
+    spring.set(value)
+  }, [spring, value])
+
   return (
     <motion.span
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="font-bold text-4xl text-brand-600 dark:text-brand-400"
+      viewport={{ once: true }}
     >
-      <motion.span
-        initial={{ textContent: 0 } as any}
-        animate={{ textContent: value } as any}
-        transition={{ duration: duration / 1000, ease: 'easeOut' }}
-      >
-        {prefix}{value}{suffix}
+      <motion.span>
+        {prefix}
+        {display}
+        {suffix}
       </motion.span>
     </motion.span>
   )

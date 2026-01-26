@@ -246,18 +246,26 @@ export class AdvancedSecurityMiddleware {
 
   /**
    * Check for circular references in objects
+   *
+   * Note: Uses `unknown` type as this function must accept any value
+   * for reflection-based circular reference detection. This is one of
+   * the few legitimate cases where runtime type checking is necessary.
    */
-  private hasCircularReference(obj: any, seen = new WeakSet()): boolean {
+  private hasCircularReference(obj: unknown, seen = new WeakSet<object>()): boolean {
+    // Primitive types cannot have circular references
     if (obj === null || typeof obj !== 'object') {
       return false
     }
 
+    // Check if we've seen this object before
     if (seen.has(obj)) {
       return true
     }
 
+    // Mark this object as seen
     seen.add(obj)
 
+    // Recursively check all values
     for (const value of Object.values(obj)) {
       if (this.hasCircularReference(value, seen)) {
         return true

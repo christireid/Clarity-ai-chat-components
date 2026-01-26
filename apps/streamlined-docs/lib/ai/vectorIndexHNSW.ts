@@ -531,7 +531,12 @@ export class HNSWVectorIndex {
   async load(filepath: string): Promise<void> {
     const startTime = performance.now()
     const content = await fs.readFile(filepath, 'utf-8')
-    const data = JSON.parse(content)
+    const data = JSON.parse(content) as {
+      config: HNSWConfig
+      nextId: number
+      entryPoint: number | null
+      nodes: SerializedHNSWNode[]
+    }
 
     this.config = data.config
     this.nextId = data.nextId
@@ -546,7 +551,7 @@ export class HNSWVectorIndex {
         metadata: nodeData.metadata,
         level: nodeData.level,
         neighbors: new Map(
-          nodeData.neighbors.map((n: any) => [n.level, new Set(n.neighbors)])
+          nodeData.neighbors.map((n) => [n.level, new Set(n.neighbors)])
         ),
       }
 

@@ -9,12 +9,8 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Switch, Label } from '@clarity-chat/primitives'
 import { Progress } from '../ui/progress'
-import { Switch } from '../ui/switch'
-import { Label } from '../ui/label'
 import {
   SyncIcon,
   WifiIcon,
