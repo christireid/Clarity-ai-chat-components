@@ -1,0 +1,98 @@
+name: 'Install Peer Dependencies'
+description: 'Installs peer dependencies for @clarity-chat/react based on preset configuration'
+
+inputs:
+  preset:
+    description: 'Preset to install (minimal, standard, full, document, custom)'
+    required: false
+    default: 'standard'
+  working-directory:
+    description: 'Working directory (defaults to packages/react)'
+    required: false
+    default: 'packages/react'
+  custom-features:
+    description: 'Space-separated list of features for custom preset'
+    required: false
+    default: ''
+
+outputs:
+  install-command:
+    description: 'The installation command that was executed'
+    value: ${{ steps.install.outputs.install-command }}
+  bundle-size:
+    description: 'Estimated bundle size for selected features'
+    value: ${{ steps.install.outputs.bundle-size }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate preset
+      shell: bash
+      run: |
+        PRESET="${{ inputs.preset }}"
+        VALID_PRESETS="minimal standard full document custom"
+
+        if [[ ! " $VALID_PRESETS " =~ " $PRESET " ]]; then
+          echo "❌ Invalid preset: $PRESET"
+          echo "Valid presets: $VALID_PRESETS"
+          exit 1
+        fi
+
+        echo "✅ Preset validated: $PRESET"
+
+    - name: Install peer dependencies
+      id: install
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "📦 Installing peer dependencies with preset: ${{ inputs.preset }}"
+
+        if [ "${{ inputs.preset }}" = "custom" ]; then
+          if [ -z "${{ inputs.custom-features }}" ]; then
+            echo "❌ Custom preset requires custom-features input"
+            exit 1
+          fi
+          node scripts/install-peers-ci.js custom ${{ inputs.custom-features }}
+        else
+          node scripts/install-peers-ci.js ${{ inputs.preset }}
+        fi
+
+        # Capture outputs from the script
+        # The script outputs install-command and bundle-size in GitHub Actions format
+        # We just need to mark the step as completed
+
+        echo "✅ Peer dependencies installed successfully"
+
+    - name: Verify installation
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "🔍 Verifying peer dependencies..."
+
+        # Check that node_modules exists
+        if [ ! -d "node_modules" ]; then
+          echo "❌ node_modules directory not found"
+          exit 1
+        fi
+
+        # Verify core dependencies are installed
+        CORE_DEPS=("react" "framer-motion" "lucide-react" "zod")
+
+        for dep in "${CORE_DEPS[@]}"; do
+          if [ ! -d "node_modules/$dep" ]; then
+            echo "❌ Required peer dependency not found: $dep"
+            exit 1
+          fi
+        done
+
+        echo "✅ Core peer dependencies verified"
+
+    - name: Summary
+      shell: bash
+      run: |
+        echo "## 📦 Peer Dependencies Installed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Preset:** ${{ inputs.preset }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Working Directory:** ${{ inputs.working-directory }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Installation completed successfully" >> $GITHUB_STEP_SUMMARY

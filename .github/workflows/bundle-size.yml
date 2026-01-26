@@ -1,0 +1,243 @@
+name: Bundle Size Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/react/src/**'
+      - 'packages/react/package.json'
+      - 'packages/react/tsup.config.ts'
+      - 'packages/**/src/**'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bundle-size:
+    name: Check Bundle Size
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build:packages
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Measure current bundle sizes
+        id: measure-current
+        run: |
+          cd packages/react
+          pnpm tsx scripts/bundle-size-tracker.ts
+          echo "current_sizes=$(cat .bundle-analysis/current.json)" >> $GITHUB_OUTPUT
+
+      - name: Checkout base branch
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git checkout origin/${{ github.base_ref }}
+
+      - name: Install dependencies (base)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages (base)
+        run: pnpm build:packages
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Measure base bundle sizes
+        id: measure-base
+        run: |
+          cd packages/react
+          pnpm tsx scripts/bundle-size-tracker.ts
+          echo "base_sizes=$(cat .bundle-analysis/current.json)" >> $GITHUB_OUTPUT
+
+      - name: Compare bundle sizes
+        id: compare
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read measurements
+            const currentData = JSON.parse(fs.readFileSync('packages/react/.bundle-analysis/current.json', 'utf8'));
+            const baseData = JSON.parse('${{ steps.measure-base.outputs.base_sizes }}');
+
+            // Calculate changes
+            const changes = [];
+            let totalChange = 0;
+            let totalChangePercent = 0;
+
+            const currentBundles = new Map(currentData.bundles.map(b => [b.file, b]));
+            const baseBundles = new Map(baseData.bundles.map(b => [b.file, b]));
+
+            for (const [file, current] of currentBundles) {
+              const base = baseBundles.get(file);
+              if (base) {
+                const sizeChange = current.gzipSize - base.gzipSize;
+                const percentChange = ((current.gzipSize - base.gzipSize) / base.gzipSize) * 100;
+
+                changes.push({
+                  file,
+                  baseSize: base.gzipSize,
+                  currentSize: current.gzipSize,
+                  change: sizeChange,
+                  percentChange
+                });
+
+                totalChange += sizeChange;
+              }
+            }
+
+            totalChangePercent = ((currentData.totalGzipSize - baseData.totalGzipSize) / baseData.totalGzipSize) * 100;
+
+            // Format output
+            function formatBytes(bytes) {
+              if (bytes === 0) return '0 B';
+              const k = 1024;
+              const sizes = ['B', 'KB', 'MB'];
+              const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(k));
+              return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+            }
+
+            function formatPercent(percent) {
+              const sign = percent > 0 ? '+' : '';
+              return `${sign}${percent.toFixed(2)}%`;
+            }
+
+            // Generate comment
+            const emoji = totalChange > 5000 ? '🚨' : totalChange > 0 ? '📈' : totalChange < -5000 ? '🎉' : '✅';
+            const status = totalChange > 10000 ? '⚠️ **Significant Increase**' :
+                          totalChange > 5000 ? '⚠️ Increased' :
+                          totalChange > 0 ? '📊 Slight Increase' :
+                          totalChange < -5000 ? '🎉 **Size Reduction!**' :
+                          '✅ No Significant Change';
+
+            let comment = `## ${emoji} Bundle Size Report\n\n`;
+            comment += `${status}\n\n`;
+            comment += `### Summary\n\n`;
+            comment += `| Metric | Base | Current | Change |\n`;
+            comment += `|--------|------|---------|--------|\n`;
+            comment += `| **Total (gzip)** | ${formatBytes(baseData.totalGzipSize)} | ${formatBytes(currentData.totalGzipSize)} | ${formatBytes(totalChange)} (${formatPercent(totalChangePercent)}) |\n`;
+            comment += `| **Total (raw)** | ${formatBytes(baseData.totalSize)} | ${formatBytes(currentData.totalSize)} | ${formatBytes(currentData.totalSize - baseData.totalSize)} |\n\n`;
+
+            // Significant changes
+            const significantChanges = changes.filter(c => Math.abs(c.change) > 1000 || Math.abs(c.percentChange) > 5);
+
+            if (significantChanges.length > 0) {
+              comment += `### 📊 Significant Changes\n\n`;
+              comment += `| Bundle | Base | Current | Change |\n`;
+              comment += `|--------|------|---------|--------|\n`;
+
+              for (const change of significantChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))) {
+                const changeEmoji = change.change > 0 ? '📈' : change.change < 0 ? '📉' : '➡️';
+                comment += `| ${changeEmoji} ${change.file} | ${formatBytes(change.baseSize)} | ${formatBytes(change.currentSize)} | ${formatBytes(change.change)} (${formatPercent(change.percentChange)}) |\n`;
+              }
+              comment += `\n`;
+            }
+
+            // All changes (collapsed)
+            comment += `<details>\n`;
+            comment += `<summary>📦 All Bundle Changes (${changes.length})</summary>\n\n`;
+            comment += `| Bundle | Base | Current | Change |\n`;
+            comment += `|--------|------|---------|--------|\n`;
+
+            for (const change of changes.sort((a, b) => b.currentSize - a.currentSize)) {
+              const changeEmoji = change.change > 0 ? '📈' : change.change < 0 ? '📉' : '➡️';
+              comment += `| ${changeEmoji} ${change.file} | ${formatBytes(change.baseSize)} | ${formatBytes(change.currentSize)} | ${formatBytes(change.change)} (${formatPercent(change.percentChange)}) |\n`;
+            }
+
+            comment += `\n</details>\n\n`;
+
+            // Recommendations
+            if (totalChange > 10000) {
+              comment += `### ⚠️ Recommendations\n\n`;
+              comment += `- Bundle size increased significantly (${formatBytes(totalChange)})\n`;
+              comment += `- Review new dependencies and imports\n`;
+              comment += `- Consider lazy loading for large features\n`;
+              comment += `- Check if peer dependencies are properly externalized\n`;
+              comment += `- Run \`pnpm size:why\` to analyze bundle composition\n\n`;
+            } else if (totalChange < -5000) {
+              comment += `### 🎉 Great job!\n\n`;
+              comment += `Bundle size reduced by ${formatBytes(Math.abs(totalChange))}! This improves load times and user experience.\n\n`;
+            }
+
+            comment += `---\n`;
+            comment += `<sub>📊 Generated by [Bundle Size Check](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/workflows/bundle-size.yml)</sub>`;
+
+            return comment;
+
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = ${{ steps.compare.outputs.result }};
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Bundle Size Report')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+      - name: Check size limits
+        run: |
+          cd packages/react
+          pnpm size || {
+            echo "::error::Bundle size exceeds limits defined in .size-limit.js"
+            exit 1
+          }
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bundle-analysis
+          path: |
+            packages/react/.bundle-analysis/
+          retention-days: 30
