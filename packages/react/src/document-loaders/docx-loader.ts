@@ -29,14 +29,15 @@ let jsZipLoadError: Error | null = null
 /**
  * Attempt to load JSZip as a peer dependency
  */
-async function loadJSZip(): Promise<typeof JSZip> {
+async function loadJSZip(): Promise<any> {
   if (JSZip !== null) return JSZip
   if (jsZipLoadError !== null) throw jsZipLoadError
 
   try {
     // Try dynamic import for Node.js/bundler environments
     const module = await import('jszip')
-    JSZip = module.default || module
+    // Handle both ESM default exports and CommonJS
+    JSZip = (module as any).default || module
     return JSZip
   } catch (error) {
     // Try global object for browser environments

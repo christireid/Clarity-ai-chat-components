@@ -217,13 +217,13 @@
       "optional": true
     },
     "react-markdown": {
-      "optional": false
+      "optional": true
     },
     "remark-gfm": {
-      "optional": false
+      "optional": true
     },
     "rehype-highlight": {
-      "optional": false
+      "optional": true
     }
   },
   "dependencies": {

@@ -101,11 +101,15 @@ Wave 3 successfully executed all planned improvements across 5 phases:
 1. `apps/streamlined-docs/CLAUDE.md` - Claude development guide
 2. `docs/patterns/lazy-loading.md` - Lazy loading patterns
 3. `docs/patterns/isr-caching.md` - ISR caching patterns
-4. `docs/patterns/advanced-prompting.md` - Advanced prompting techniques
-5. `docs/security/best-practices.md` - Security best practices
-6. `docs/runbooks/performance-debugging.md` - Performance runbook
-7. `docs/runbooks/cache-management.md` - Cache management runbook
-8. `WAVE_3_COMPLETE.md` - This document
+4. `docs/patterns/security-headers.md` - Security headers and CSRF protection
+5. `docs/patterns/data-validation.md` - Zod validation patterns
+6. `docs/patterns/advanced-prompting.md` - Advanced prompting techniques
+7. `docs/security/best-practices.md` - Security best practices
+8. `docs/security/headers.md` - HTTP security headers reference
+9. `docs/runbooks/performance-debugging.md` - Performance runbook
+10. `docs/runbooks/cache-management.md` - Cache management runbook
+11. `docs/runbooks/security.md` - Security audit runbook
+12. `WAVE_3_COMPLETE.md` - This document
 
 **Utilities & Hooks**:
 
