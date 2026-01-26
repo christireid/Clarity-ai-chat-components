@@ -85,6 +85,7 @@ export function PageTransition({
         animate="animate"
         exit="exit"
         variants={activeVariants}
+        viewport={{ once: true }}
         transition={{
           duration: activeDuration,
           ease: [0.4, 0, 0.2, 1], // Standard easing curve
@@ -134,6 +135,7 @@ export function PageSection({
       variants={fadeInVariants}
       initial="initial"
       animate="animate"
+      viewport={{ once: true }}
       transition={{
         delay: shouldReduceMotion ? 0 : delay,
         duration: shouldReduceMotion ? 0.1 : durations.normal,
