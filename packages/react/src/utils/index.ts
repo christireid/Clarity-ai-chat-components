@@ -51,6 +51,15 @@ export * from './security'
 // Search Utilities
 export * from './search'
 
+// Markdown Utilities
+export {
+  loadMarkdownDependencies,
+  getMarkdownDependencies,
+  PlainTextMarkdown,
+  useMarkdownAvailability,
+  type PlainTextMarkdownProps,
+} from './markdown/markdown-fallback'
+
 // Tokenization (explicit exports to avoid conflicts with optimization)
 export {
   // Core token counting
