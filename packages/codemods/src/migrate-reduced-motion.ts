@@ -10,7 +10,11 @@ import { API, FileInfo, Options } from 'jscodeshift'
  * - Ensures consistent import across codebase
  */
 
-export function migrateReducedMotion(file: FileInfo, api: API, options: Options) {
+export function migrateReducedMotion(
+  file: FileInfo,
+  api: API,
+  _options: Options
+) {
   const j = api.jscodeshift
   const root = j(file.source)
 
@@ -37,7 +41,8 @@ export function migrateReducedMotion(file: FileInfo, api: API, options: Options)
     .filter((path) => {
       return (
         path.node.source.value === '@clarity-chat/react' ||
-        path.node.source.value === '@clarity-chat/react/hooks/ui/use-reduced-motion'
+        path.node.source.value ===
+          '@clarity-chat/react/hooks/ui/use-reduced-motion'
       )
     })
     .forEach((path) => {
@@ -63,14 +68,20 @@ export function migrateReducedMotion(file: FileInfo, api: API, options: Options)
         // Add a separate import from primitives
         const existingPrimitivesImport = root
           .find(j.ImportDeclaration)
-          .filter((path) => path.node.source.value === '@clarity-chat/primitives')
+          .filter(
+            (path) => path.node.source.value === '@clarity-chat/primitives'
+          )
 
         if (existingPrimitivesImport.length > 0) {
           // Add to existing primitives import
           const primitivesImport = existingPrimitivesImport.get(0)
           const primitivesSpecifiers = primitivesImport.node.specifiers || []
 
-          if (!primitivesSpecifiers.some((spec: any) => spec.imported?.name === 'useReducedMotion')) {
+          if (
+            !primitivesSpecifiers.some(
+              (spec: any) => spec.imported?.name === 'useReducedMotion'
+            )
+          ) {
             primitivesSpecifiers.push(
               j.importSpecifier(j.identifier('useReducedMotion'))
             )

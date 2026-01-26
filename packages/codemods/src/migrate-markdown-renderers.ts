@@ -11,7 +11,11 @@ import { API, FileInfo, Options } from 'jscodeshift'
  * - Import updates
  */
 
-export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Options) {
+export function migrateMarkdownRenderers(
+  file: FileInfo,
+  api: API,
+  _options: Options
+) {
   const j = api.jscodeshift
   const root = j(file.source)
 
@@ -83,7 +87,7 @@ export function migrateMarkdownRenderers(file: FileInfo, api: API, options: Opti
         // Convert old props to config object
         let configProps: Record<string, any> = {}
 
-        attributes.forEach((attr, index) => {
+        attributes.forEach((attr, _index) => {
           if (
             attr.type === 'JSXAttribute' &&
             attr.name.type === 'JSXIdentifier'
