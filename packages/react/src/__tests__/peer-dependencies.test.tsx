@@ -169,20 +169,20 @@ line 3`
 
   describe('Document loaders without jszip', () => {
     it('DOCXLoader returns clear error when jszip missing', async () => {
-      // Create a mock DOCX file
-      const mockFile = new File(['mock docx content'], 'test.docx', {
+      // Create a mock DOCX file with invalid content to trigger error
+      const mockFile = new File(['invalid content'], 'test.docx', {
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       })
 
       const loader = new DOCXLoader()
 
-      // Since jszip is actually installed in dev, we need to test the error path
-      // by examining the error message structure
+      // With invalid content, should return error document
       const documents = await loader.load(mockFile)
 
-      // Should return a document with error metadata if parsing fails
+      // Should return a document with error metadata
       expect(documents).toHaveLength(1)
       expect(documents[0]).toHaveProperty('metadata')
+      expect(documents[0].content).toContain('Failed')
     })
 
     it('DOCXLoader error includes installation instructions', async () => {
@@ -206,7 +206,7 @@ line 3`
       }
     })
 
-    it('DOCXLoader provides multiple installation options', () => {
+    it('DOCXLoader provides multiple installation options', async () => {
       // Test that the error message includes npm, pnpm, and yarn options
       const loader = new DOCXLoader()
 
@@ -214,6 +214,15 @@ line 3`
       expect(loader).toBeDefined()
       expect(loader.name).toBe('docx')
       expect(loader.supportedTypes).toContain('docx')
+
+      // Test with empty file to see error handling
+      const emptyFile = new File([''], 'empty.docx', {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      })
+
+      const result = await loader.load(emptyFile)
+      expect(result).toBeDefined()
+      expect(result.length).toBeGreaterThan(0)
     })
 
     it('DOCXLoader error is actionable and developer-friendly', async () => {
