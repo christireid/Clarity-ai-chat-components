@@ -76,13 +76,13 @@ export function createFocusTrap(
   let previousActiveElement: HTMLElement | null = null
 
   const getFocusableElements = (): HTMLElement[] => {
-    return Array.from(container.querySelectorAll<HTMLElement>(focusableSelectors)).filter(
-      (el) => {
-        // Filter out elements with display: none or visibility: hidden
-        const style = window.getComputedStyle(el)
-        return style.display !== 'none' && style.visibility !== 'hidden'
-      }
-    )
+    return Array.from(
+      container.querySelectorAll<HTMLElement>(focusableSelectors)
+    ).filter((el) => {
+      // Filter out elements with display: none or visibility: hidden
+      const style = window.getComputedStyle(el)
+      return style.display !== 'none' && style.visibility !== 'hidden'
+    })
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -238,7 +238,11 @@ export function checkColorContrast(
     // Handle rgb/rgba colors
     const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
     if (match) {
-      return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])]
+      return [
+        parseInt(match[1], 10),
+        parseInt(match[2], 10),
+        parseInt(match[3], 10),
+      ]
     }
 
     throw new Error('Invalid color format')
@@ -247,7 +251,9 @@ export function checkColorContrast(
   const getRelativeLuminance = (rgb: [number, number, number]): number => {
     const [r, g, b] = rgb.map((val) => {
       const sRGB = val / 255
-      return sRGB <= 0.03928 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4)
+      return sRGB <= 0.03928
+        ? sRGB / 12.92
+        : Math.pow((sRGB + 0.055) / 1.055, 2.4)
     })
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
   }

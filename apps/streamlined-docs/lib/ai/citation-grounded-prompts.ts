@@ -38,7 +38,10 @@ export interface Citation {
  * @param sources - Source documents with IDs
  * @returns Citation-grounded prompt configuration
  */
-export function generateCitationPrompt(query: string, sources: Source[]): CitationGroundedPrompt {
+export function generateCitationPrompt(
+  query: string,
+  sources: Source[]
+): CitationGroundedPrompt {
   // Format sources with IDs
   const formattedSources = sources
     .map((source, idx) => `[${idx + 1}] ${source.title}\n${source.content}`)
@@ -76,7 +79,10 @@ If a source doesn't contain the answer, acknowledge this limitation rather than 
  * @param sources - Source documents
  * @returns Grounded response with citation metadata
  */
-export function extractCitations(response: string, sources: Source[]): GroundedResponse {
+export function extractCitations(
+  response: string,
+  sources: Source[]
+): GroundedResponse {
   // Find all citations [1], [2], etc.
   const citationRegex = /\[(\d+)\]/g
   const matches = [...response.matchAll(citationRegex)]
@@ -85,7 +91,7 @@ export function extractCitations(response: string, sources: Source[]): GroundedR
   const citedSourceIds = new Set<number>()
 
   for (const match of matches) {
-    const sourceIdx = parseInt(match[1]) - 1
+    const sourceIdx = parseInt(match[1], 10) - 1
 
     if (sourceIdx >= 0 && sourceIdx < sources.length) {
       const source = sources[sourceIdx]
