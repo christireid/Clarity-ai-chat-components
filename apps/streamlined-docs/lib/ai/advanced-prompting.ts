@@ -1,11 +1,14 @@
 /**
  * Advanced Prompting Integration
  *
- * Integrates Chain-of-Thought, citation-grounding, and hallucination detection
+ * Integrates Chain-of-Thought and citation-grounding
  * into the documentation assistant workflow
  */
 
-import { classifyQueryComplexity, type QueryComplexity } from './query-complexity-classifier'
+import {
+  classifyQueryComplexity,
+  type QueryComplexity,
+} from './query-complexity-classifier'
 import { generateCoTPrompt } from './chain-of-thought-prompts'
 import {
   generateCitationPrompt,
@@ -76,7 +79,11 @@ export async function generateAdvancedPrompt(
   } else if (config.enableCoT) {
     // Fall back to Chain-of-Thought
     const contextChunks = sources.map((s) => s.content)
-    const cotPrompt = generateCoTPrompt(query, classification.complexity, contextChunks)
+    const cotPrompt = generateCoTPrompt(
+      query,
+      classification.complexity,
+      contextChunks
+    )
 
     systemPrompt = cotPrompt.systemPrompt
     userPrompt = cotPrompt.userPrompt
@@ -108,7 +115,10 @@ export async function generateAdvancedPrompt(
     if (requiresCitations) {
       const validation = validateCitations(grounded)
       if (!validation.isValid && config.strictMode) {
-        console.warn('[Advanced Prompting] Citation validation failed:', validation.issues)
+        console.warn(
+          '[Advanced Prompting] Citation validation failed:',
+          validation.issues
+        )
       }
     }
 
@@ -123,7 +133,11 @@ export async function generateAdvancedPrompt(
       groundingConfidence: grounded.groundingScore || 1.0,
       citationCount: grounded.citations.length,
       responseTime,
-      technique: requiresCitations ? 'citation' : config.enableCoT ? 'cot' : 'simple',
+      technique: requiresCitations
+        ? 'citation'
+        : config.enableCoT
+          ? 'cot'
+          : 'simple',
     }
 
     // Log metrics
@@ -161,7 +175,6 @@ function estimateTokens(text: string): number {
 export const PRODUCTION_CONFIG: AdvancedPromptConfig = {
   enableCoT: true,
   enableCitations: true,
-  enableHallucinationDetection: true,
   strictMode: false,
 }
 
@@ -171,7 +184,6 @@ export const PRODUCTION_CONFIG: AdvancedPromptConfig = {
 export const DEVELOPMENT_CONFIG: AdvancedPromptConfig = {
   enableCoT: true,
   enableCitations: true,
-  enableHallucinationDetection: true,
   strictMode: false,
 }
 
@@ -181,7 +193,6 @@ export const DEVELOPMENT_CONFIG: AdvancedPromptConfig = {
 export const STRICT_CONFIG: AdvancedPromptConfig = {
   enableCoT: true,
   enableCitations: true,
-  enableHallucinationDetection: true,
   strictMode: true,
 }
 
