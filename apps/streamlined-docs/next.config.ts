@@ -2,6 +2,16 @@ import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
 import path from 'path'
 
+// Bundle analyzer (only loaded when ANALYZE=true)
+const withBundleAnalyzer =
+  process.env.ANALYZE === 'true'
+    ? // eslint-disable-next-line @typescript-eslint/no-require-imports -- Conditional require for optional dependency
+      require('@next/bundle-analyzer')({
+        enabled: true,
+        openAnalyzer: true,
+      })
+    : (config: NextConfig) => config
+
 /**
  * Next.js 16 Configuration for Documentation Site
  *
@@ -237,13 +247,13 @@ const nextConfig: NextConfig = {
       // Point to package root so package.json exports can resolve correctly
       '@clarity-chat/primitives': primitivesPath,
     }
-    
+
     // Also add to modules for better resolution
     if (!config.resolve.modules) {
       config.resolve.modules = ['node_modules']
     }
     config.resolve.modules.push(primitivesPath)
-    
+
     // Ensure package.json exports are respected
     config.resolve.conditionNames = ['import', 'require', 'default']
     config.resolve.mainFields = ['exports', 'module', 'main']
@@ -265,4 +275,5 @@ const withMDX = createMDX({
   },
 })
 
-export default withMDX(nextConfig)
+// Apply plugins in order: MDX -> Bundle Analyzer
+export default withBundleAnalyzer(withMDX(nextConfig))

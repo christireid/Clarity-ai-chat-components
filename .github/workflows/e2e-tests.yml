@@ -1,0 +1,279 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/4, 2/4, 3/4, 4/4]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run E2E tests
+        run: pnpm --filter @clarity-chat/streamlined-docs exec playwright test --config=playwright.e2e.config.ts --project=chromium --shard=${{ matrix.shard }}
+        env:
+          CI: true
+          BASE_URL: http://localhost:3000
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-results-${{ matrix.shard }}
+          path: |
+            apps/streamlined-docs/playwright-report/
+            apps/streamlined-docs/test-results/
+          retention-days: 7
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-screenshots-${{ matrix.shard }}
+          path: apps/streamlined-docs/test-results/**/*.png
+          retention-days: 7
+
+  visual-regression:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run visual regression tests
+        run: pnpm --filter @clarity-chat/streamlined-docs exec playwright test e2e/visual-regression --project=chromium
+        env:
+          CI: true
+
+      - name: Upload visual diff on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: visual-regression-diffs
+          path: |
+            apps/streamlined-docs/e2e/__snapshots__/**/*-diff.png
+            apps/streamlined-docs/test-results/**/*.png
+          retention-days: 7
+
+  accessibility:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run accessibility tests
+        run: pnpm --filter @clarity-chat/streamlined-docs exec playwright test e2e/accessibility --project=chromium
+        env:
+          CI: true
+
+      - name: Upload accessibility report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: accessibility-report
+          path: apps/streamlined-docs/playwright-report/
+          retention-days: 7
+
+  smoke-tests:
+    name: Smoke Tests (All Browsers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run smoke tests
+        run: pnpm --filter @clarity-chat/streamlined-docs exec playwright test --config=playwright.smoke.config.ts --project=${{ matrix.browser }}
+        env:
+          CI: true
+
+      - name: Upload smoke test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-test-results-${{ matrix.browser }}
+          path: apps/streamlined-docs/test-results/smoke-report/
+          retention-days: 3
+
+  mobile-tests:
+    name: Mobile Responsive Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        device: [mobile-chrome, mobile-safari, tablet]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Run mobile tests
+        run: pnpm --filter @clarity-chat/streamlined-docs exec playwright test --config=playwright.e2e.config.ts --project=${{ matrix.device }}
+        env:
+          CI: true
+
+      - name: Upload mobile test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: mobile-test-results-${{ matrix.device }}
+          path: apps/streamlined-docs/test-results/
+          retention-days: 3
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs:
+      [e2e-tests, visual-regression, accessibility, smoke-tests, mobile-tests]
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          echo "E2E Tests: ${{ needs.e2e-tests.result }}"
+          echo "Visual Regression: ${{ needs.visual-regression.result }}"
+          echo "Accessibility: ${{ needs.accessibility.result }}"
+          echo "Smoke Tests: ${{ needs.smoke-tests.result }}"
+          echo "Mobile Tests: ${{ needs.mobile-tests.result }}"
+
+      - name: Fail if any test failed
+        if: |
+          needs.e2e-tests.result == 'failure' ||
+          needs.visual-regression.result == 'failure' ||
+          needs.accessibility.result == 'failure' ||
+          needs.smoke-tests.result == 'failure' ||
+          needs.mobile-tests.result == 'failure'
+        run: exit 1

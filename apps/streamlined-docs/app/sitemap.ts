@@ -1,11 +1,17 @@
 import { MetadataRoute } from 'next'
 import { searchData } from '@/lib/search-data'
+import { hookMetadata, componentMetadata } from '@/lib/hook-metadata'
 
 /**
  * Dynamic sitemap generation
  *
  * Automatically includes all pages from the search index.
  * Regenerate search index to update sitemap: `node scripts/generate-search-index.mjs`
+ *
+ * Enhanced with:
+ * - All hook API reference pages
+ * - All component API reference pages
+ * - Proper priority and change frequency by content type
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://clarity-chat.dev'
@@ -48,9 +54,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Generate sitemap entries from search data
   const pages = searchData
-    .filter(item => {
+    .filter((item) => {
       // Filter out template pages and invalid hrefs
-      return !item.href.includes('[') && !item.href.includes('{') && item.href.startsWith('/')
+      return (
+        !item.href.includes('[') &&
+        !item.href.includes('{') &&
+        item.href.startsWith('/')
+      )
     })
     .map((item) => {
       const config = getPageConfig(item.type, item.href)
@@ -63,7 +73,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
 
   // Add homepage explicitly if not in search data
-  const hasHomepage = pages.some(p => p.url === baseUrl || p.url === `${baseUrl}/`)
+  const hasHomepage = pages.some(
+    (p) => p.url === baseUrl || p.url === `${baseUrl}/`
+  )
   if (!hasHomepage) {
     pages.unshift({
       url: baseUrl,
@@ -73,5 +85,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   }
 
-  return pages
+  // Add all hook API reference pages
+  const hookPages = hookMetadata.map((hook) => ({
+    url: `${baseUrl}${hook.href}`,
+    lastModified: currentDate,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8, // High priority for API documentation
+  }))
+
+  // Add all component API reference pages
+  const componentPages = componentMetadata.map((component) => ({
+    url: `${baseUrl}${component.href}`,
+    lastModified: currentDate,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8, // High priority for API documentation
+  }))
+
+  // Combine all pages and remove duplicates based on URL
+  const allPages = [...pages, ...hookPages, ...componentPages]
+  const uniquePages = Array.from(
+    new Map(allPages.map((page) => [page.url, page])).values()
+  )
+
+  // Sort by priority (highest first) then by URL
+  return uniquePages.sort((a, b) => {
+    if (b.priority !== a.priority) {
+      return b.priority - a.priority
+    }
+    return a.url.localeCompare(b.url)
+  })
 }

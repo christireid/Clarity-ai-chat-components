@@ -302,7 +302,7 @@ export function useFocusTrap(options: FocusTrapOptions) {
         deactivateTrap()
       }
     },
-    [getFocusableElements, escapeDeactivates]
+    [getFocusableElements, escapeDeactivates, deactivateTrap]
   )
 
   const handleClickOutside = useCallback(
@@ -313,7 +313,7 @@ export function useFocusTrap(options: FocusTrapOptions) {
         deactivateTrap()
       }
     },
-    [clickOutsideDeactivates, containerRef]
+    [clickOutsideDeactivates, containerRef, deactivateTrap]
   )
 
   const activateTrap = useCallback(() => {
@@ -357,7 +357,7 @@ export function useFocusTrap(options: FocusTrapOptions) {
       // Always deactivate trap on unmount
       deactivateTrap()
     }
-  }, [handleKeyDown, handleClickOutside, deactivateTrap])
+  }, [handleKeyDown, handleClickOutside, deactivateTrap, containerRef])
 
   return {
     activateTrap,

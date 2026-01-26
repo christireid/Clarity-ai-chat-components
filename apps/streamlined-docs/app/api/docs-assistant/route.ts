@@ -3,6 +3,11 @@
  *
  * Handles chat requests with RAG-powered responses using indexed documentation.
  * Supports streaming responses via Server-Sent Events.
+ *
+ * SECURITY:
+ * - DOMPurify sanitization for all user inputs
+ * - Redis-based rate limiting (10 req/min)
+ * - Input validation and injection detection
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -38,6 +43,18 @@ import {
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 import { getLogger } from '@/lib/logging'
+import {
+  sanitizeChatMessage,
+  sanitizeSessionId,
+  sanitizeUserId,
+  validateInputLength,
+  detectInjectionPatterns,
+} from '@/lib/security/sanitize'
+import {
+  checkDocsApiRateLimit,
+  getClientIdentifier,
+  createRateLimitHeaders,
+} from '@/lib/security/rate-limit'
 
 const logger = getLogger('docs-assistant-api')
 
@@ -77,7 +94,7 @@ export async function POST(request: NextRequest) {
     // Parse request body
     const body = (await request.json()) as RequestBody
 
-    // Input validation
+    // SECURITY: Input validation
     const MAX_MESSAGE_LENGTH = 10000 // 10KB max message length
     const MAX_MESSAGES_COUNT = 50 // Max conversation history
 
@@ -88,17 +105,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (
-      typeof body.message !== 'string' ||
-      body.message.length > MAX_MESSAGE_LENGTH
-    ) {
+    // SECURITY: Validate input length
+    const lengthValidation = validateInputLength(
+      body.message,
+      MAX_MESSAGE_LENGTH
+    )
+    if (!lengthValidation.valid) {
+      return NextResponse.json(
+        { error: lengthValidation.error },
+        { status: 400 }
+      )
+    }
+
+    // SECURITY: Detect injection patterns
+    const injectionCheck = detectInjectionPatterns(body.message)
+    if (injectionCheck.detected) {
+      logger.warn('Malicious input detected', {
+        patterns: injectionCheck.patterns,
+        timestamp: new Date().toISOString(),
+      })
       return NextResponse.json(
         {
-          error: `Message must be a string under ${MAX_MESSAGE_LENGTH} characters`,
+          error:
+            'Invalid input detected. Please avoid special characters and commands.',
         },
         { status: 400 }
       )
     }
+
+    // SECURITY: Sanitize message
+    const sanitizedMessage = sanitizeChatMessage(body.message)
 
     if (body.messages && body.messages.length > MAX_MESSAGES_COUNT) {
       return NextResponse.json(
@@ -109,18 +145,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user identifier for rate limiting (IP or userId)
-    // @ts-expect-error - request.ip exists in Next.js runtime but not in type definitions
-    const identifier = body.userId || request.ip || 'anonymous'
-
-    // Check rate limit
-    const rateLimit = checkRateLimit(
-      identifier,
-      parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
-      parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10)
+    // SECURITY: Get client identifier for rate limiting
+    const identifier = getClientIdentifier(
+      request,
+      body.userId ? sanitizeUserId(body.userId) : undefined
     )
 
-    if (!rateLimit.allowed) {
+    // SECURITY: Check rate limit with Redis
+    const rateLimitResult = await checkDocsApiRateLimit(identifier)
+
+    if (!rateLimitResult.allowed) {
       // Return rate limit error as streaming response
       const generator = async function* () {
         yield {
@@ -134,14 +168,14 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
           Connection: 'keep-alive',
-          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
+          ...createRateLimitHeaders(rateLimitResult),
         },
       })
     }
 
-    // Session management
-    const sessionId = body.sessionId || body.conversationId
+    // SECURITY: Sanitize and validate session ID
+    const rawSessionId = body.sessionId || body.conversationId
+    const sessionId = rawSessionId ? sanitizeSessionId(rawSessionId) : null
     let session = null
 
     if (sessionId) {
@@ -149,7 +183,7 @@ export async function POST(request: NextRequest) {
         // Get or create session
         session = await getOrCreateSessionForRequest(
           sessionId,
-          body.userId,
+          body.userId ? sanitizeUserId(body.userId) : undefined,
           request.headers.get('user-agent') || undefined
         )
       } catch (error) {
@@ -177,10 +211,10 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Add current user message to messages array
+    // Add current user message to messages array (use sanitized message)
     messages.push({
       role: 'user',
-      content: body.message,
+      content: sanitizedMessage,
     })
 
     // Validate request
@@ -247,8 +281,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
-        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-        'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
+        ...createRateLimitHeaders(rateLimitResult),
         ...(modelRouting && {
           'X-Model-Used': modelRouting.model,
           'X-Query-Complexity': modelRouting.classification.complexity,
