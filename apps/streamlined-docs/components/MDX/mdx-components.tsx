@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CodeBlock } from './CodeBlock'
 import { InlineCode } from '@clarity-chat/react'
 import { Callout } from './Callout'
+import { LazyMermaid } from './LazyMermaid'
 import clsx from 'clsx'
 
 // Custom components to use in MDX files
@@ -9,37 +10,55 @@ export const mdxComponents = {
   // Headings with anchor links
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1
-      className={clsx('scroll-mt-20 text-4xl font-bold mb-4 mt-8 first:mt-0', className)}
+      className={clsx(
+        'scroll-mt-20 text-4xl font-bold mb-4 mt-8 first:mt-0',
+        className
+      )}
       {...props}
     />
   ),
   h2: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2
-      className={clsx('scroll-mt-20 text-3xl font-bold mb-3 mt-8 border-b border-border pb-2', className)}
+      className={clsx(
+        'scroll-mt-20 text-3xl font-bold mb-3 mt-8 border-b border-border pb-2',
+        className
+      )}
       {...props}
     />
   ),
   h3: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h3
-      className={clsx('scroll-mt-20 text-2xl font-semibold mb-3 mt-6', className)}
+      className={clsx(
+        'scroll-mt-20 text-2xl font-semibold mb-3 mt-6',
+        className
+      )}
       {...props}
     />
   ),
   h4: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h4
-      className={clsx('scroll-mt-20 text-xl font-semibold mb-2 mt-4', className)}
+      className={clsx(
+        'scroll-mt-20 text-xl font-semibold mb-2 mt-4',
+        className
+      )}
       {...props}
     />
   ),
   h5: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h5
-      className={clsx('scroll-mt-20 text-lg font-semibold mb-2 mt-4', className)}
+      className={clsx(
+        'scroll-mt-20 text-lg font-semibold mb-2 mt-4',
+        className
+      )}
       {...props}
     />
   ),
   h6: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h6
-      className={clsx('scroll-mt-20 text-base font-semibold mb-2 mt-4', className)}
+      className={clsx(
+        'scroll-mt-20 text-base font-semibold mb-2 mt-4',
+        className
+      )}
       {...props}
     />
   ),
@@ -53,7 +72,11 @@ export const mdxComponents = {
   ),
 
   // Links
-  a: ({ className, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+  a: ({
+    className,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
     const isExternal = href?.startsWith('http')
     const Component = isExternal ? 'a' : Link
 
@@ -91,7 +114,10 @@ export const mdxComponents = {
   ),
 
   // Blockquote
-  blockquote: ({ className, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
+  blockquote: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
       className={clsx(
         'mt-6 border-l-4 border-brand-500 pl-6 italic text-text-secondary [&>p]:my-2',
@@ -105,23 +131,35 @@ export const mdxComponents = {
   table: ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
     <div className="my-6 w-full overflow-x-auto">
       <table
-        className={clsx('w-full border-collapse border border-border', className)}
+        className={clsx(
+          'w-full border-collapse border border-border',
+          className
+        )}
         {...props}
       />
     </div>
   ),
-  thead: ({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <thead
-      className={clsx('bg-bg-secondary', className)}
+  thead: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+    <thead className={clsx('bg-bg-secondary', className)} {...props} />
+  ),
+  tbody: ({
+    className,
+    ...props
+  }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+    <tbody
+      className={clsx('[&_tr:last-child]:border-0', className)}
       {...props}
     />
   ),
-  tbody: ({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <tbody className={clsx('[&_tr:last-child]:border-0', className)} {...props} />
-  ),
   tr: ({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
     <tr
-      className={clsx('border-b border-border transition-colors hover:bg-bg-secondary', className)}
+      className={clsx(
+        'border-b border-border transition-colors hover:bg-bg-secondary',
+        className
+      )}
       {...props}
     />
   ),
@@ -150,12 +188,16 @@ export const mdxComponents = {
   ),
 
   // Code blocks
-  pre: ({ className, children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
+  pre: ({
+    className,
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLPreElement>) => {
     // Extract code content and language from children
     const child = children as any
     const code = child?.props?.children || ''
     const language = child?.props?.className?.replace('language-', '') || 'text'
-    
+
     return (
       <CodeBlock
         code={typeof code === 'string' ? code : ''}
@@ -173,4 +215,5 @@ export const mdxComponents = {
   // Custom components
   CodeBlock,
   Callout,
+  Mermaid: LazyMermaid, // Lazy-loaded Mermaid diagrams
 }

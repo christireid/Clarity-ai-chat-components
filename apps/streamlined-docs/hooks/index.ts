@@ -6,3 +6,7 @@ export {
   type ProviderStatus,
   type ApiKeyStatus,
 } from './useApiKeyStatus'
+
+// Lazy Loading hooks
+export { useLazyBackground } from './useLazyBackground'
+export { useIntersectionObserver } from './useIntersectionObserver'
