@@ -679,9 +679,11 @@ export class ThemeBuilder {
       }
     } catch {
       // If contrast fixing fails, return original colors
-      console.warn(
-        '[ThemeBuilder] Auto-contrast adjustment failed, using original colors'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[ThemeBuilder] Auto-contrast adjustment failed, using original colors'
+        )
+      }
     }
 
     return fixed

@@ -165,7 +165,9 @@ export function ChatInput({
       validateFunctionProp(onChange, 'onChange', 'ChatInput')
       validateFunctionProp(onSubmit, 'onSubmit', 'ChatInput')
     } catch (error) {
-      console.error(error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error(error)
+      }
     }
   }
   const [isFocused, setIsFocused] = React.useState(false)
@@ -251,7 +253,9 @@ export function ChatInput({
         return
       }
       setButtonState('error')
-      console.error('[ChatInput] Submit error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ChatInput] Submit error:', error)
+      }
       // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }

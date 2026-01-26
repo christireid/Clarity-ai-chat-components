@@ -610,7 +610,9 @@ export function StreamingMessage({
         </div>
       )
     } catch (err) {
-      console.error('Error rendering streaming message content:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error rendering streaming message content:', err)
+      }
       return (
         <div className="text-destructive text-sm p-2 border border-destructive/20 bg-destructive/5 rounded">
           Error rendering content. Raw output:

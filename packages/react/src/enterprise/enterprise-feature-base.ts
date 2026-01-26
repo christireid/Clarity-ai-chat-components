@@ -58,18 +58,32 @@ function createLogger(namespace: string): Logger {
 
   return {
     debug: (message: string, ...args: unknown[]) => {
-      if (shouldLog('debug'))
-        console.debug(`[${namespace}] ${message}`, ...args)
+      if (shouldLog('debug')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(`[${namespace}] ${message}`, ...args)
+        }
+      }
     },
     info: (message: string, ...args: unknown[]) => {
-      if (shouldLog('info')) console.info(`[${namespace}] ${message}`, ...args)
+      if (shouldLog('info')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.info(`[${namespace}] ${message}`, ...args)
+        }
+      }
     },
     warn: (message: string, ...args: unknown[]) => {
-      if (shouldLog('warn')) console.warn(`[${namespace}] ${message}`, ...args)
+      if (shouldLog('warn')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[${namespace}] ${message}`, ...args)
+        }
+      }
     },
     error: (message: string, ...args: unknown[]) => {
-      if (shouldLog('error'))
-        console.error(`[${namespace}] ${message}`, ...args)
+      if (shouldLog('error')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`[${namespace}] ${message}`, ...args)
+        }
+      }
     },
     setLevel: (level: 'debug' | 'info' | 'warn' | 'error') => {
       currentLevel = level
@@ -302,28 +316,37 @@ export abstract class EnhancedEnterpriseFeature<
       this.logger.info('Processing started')
     })
 
-    this.on('processing-complete', (result: EnterpriseProcessingResult<unknown>) => {
-      const duration = this.startTime
-        ? Date.now() - this.startTime.getTime()
-        : 0
-      this.logger.info('Processing completed', {
-        success: result.success,
-        duration: `${duration}ms`,
-        warnings: result.warnings.length,
-        errors: result.errors.length,
-      })
-      this.startTime = null
-    })
+    this.on(
+      'processing-complete',
+      (result: EnterpriseProcessingResult<unknown>) => {
+        const duration = this.startTime
+          ? Date.now() - this.startTime.getTime()
+          : 0
+        this.logger.info('Processing completed', {
+          success: result.success,
+          duration: `${duration}ms`,
+          warnings: result.warnings.length,
+          errors: result.errors.length,
+        })
+        this.startTime = null
+      }
+    )
 
     // Debug logging
     if (this.config.logLevel === 'debug') {
-      this.on('metrics-updated', (metrics: { metricName: string; metricData: unknown }) => {
-        this.logger.debug('Metrics updated', metrics)
-      })
+      this.on(
+        'metrics-updated',
+        (metrics: { metricName: string; metricData: unknown }) => {
+          this.logger.debug('Metrics updated', metrics)
+        }
+      )
 
-      this.on('config-updated', (data: { oldConfig: TConfig; newConfig: TConfig }) => {
-        this.logger.debug('Configuration updated', data)
-      })
+      this.on(
+        'config-updated',
+        (data: { oldConfig: TConfig; newConfig: TConfig }) => {
+          this.logger.debug('Configuration updated', data)
+        }
+      )
     }
   }
 
@@ -470,7 +493,10 @@ export abstract class EnhancedEnterpriseFeature<
   /**
    * Update metrics with validation and cleanup
    */
-  protected updateMetrics(metricName: string, metricData: Record<string, unknown>): void {
+  protected updateMetrics(
+    metricName: string,
+    metricData: Record<string, unknown>
+  ): void {
     try {
       if (!this.metrics.has(metricName)) {
         this.metrics.set(metricName, [])

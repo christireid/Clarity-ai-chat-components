@@ -266,7 +266,9 @@ export function useTrackTiming() {
     (timerName: string, properties?: Record<string, any>) => {
       const startTime = timers.current[timerName]
       if (startTime === undefined) {
-        console.warn(`Timer "${timerName}" was not started`)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Timer "${timerName}" was not started`)
+        }
         return
       }
 

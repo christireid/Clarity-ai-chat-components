@@ -509,7 +509,9 @@ export function usePromptArchitect(
         localStorage.setItem(storageKey, JSON.stringify(toSave))
         dispatch({ type: 'MARK_SAVED' })
       } catch (e) {
-        console.warn('[PromptArchitect] Failed to save to localStorage:', e)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[PromptArchitect] Failed to save to localStorage:', e)
+        }
       }
     }, autoSaveDelay)
 

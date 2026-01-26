@@ -192,7 +192,9 @@ describe('E2E: Complete Flow - Auto Approve', () => {
     )
 
     if (cachedResult.status !== 'completed') {
-      console.error('Cached result failed:', cachedResult.error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Cached result failed:', cachedResult.error)
+      }
     }
 
     expect(cachedResult.status).toBe('completed')

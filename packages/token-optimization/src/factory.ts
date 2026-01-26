@@ -449,7 +449,9 @@ export function createOptimizer(config: OptimizerConfig = {}): Optimizer {
             }
           }
         } catch (error) {
-          console.warn('Provider caching failed:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Provider caching failed:', error)
+          }
         }
       }
 

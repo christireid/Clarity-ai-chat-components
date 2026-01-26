@@ -708,9 +708,11 @@ export const AdvancedSkeleton: React.FC<AdvancedSkeletonComponentProps> = ({
 
         if (renderTime > 16) {
           // More than one frame
-          console.warn(
-            `AdvancedSkeleton render took ${renderTime}ms (variant: ${variant})`
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              `AdvancedSkeleton render took ${renderTime}ms (variant: ${variant})`
+            )
+          }
         }
       }
     }

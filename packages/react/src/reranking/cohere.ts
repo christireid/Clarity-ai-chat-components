@@ -22,13 +22,21 @@
  * ```
  */
 
-import type { Reranker, RerankRequest, RerankResponse, RerankResult } from './types'
+import type {
+  Reranker,
+  RerankRequest,
+  RerankResponse,
+  RerankResult,
+} from './types'
 
 export interface CohereRerankerConfig {
   /** Cohere API key */
   apiKey: string
   /** Model to use for reranking */
-  model?: 'rerank-english-v3.0' | 'rerank-multilingual-v3.0' | 'rerank-english-v2.0'
+  model?:
+    | 'rerank-english-v3.0'
+    | 'rerank-multilingual-v3.0'
+    | 'rerank-english-v2.0'
   /** API endpoint (defaults to Cohere's production endpoint) */
   endpoint?: string
   /** Maximum retries on failure */
@@ -118,7 +126,9 @@ export class CohereReranker implements Reranker {
       }
     } catch (error) {
       // Fallback to original order if reranking fails
-      console.error('Cohere reranking failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Cohere reranking failed:', error)
+      }
 
       return {
         results: request.documents.map((doc, index) => ({
@@ -138,10 +148,7 @@ export class CohereReranker implements Reranker {
   /**
    * Call Cohere API with retry logic
    */
-  private async callCohereAPI(
-    request: any,
-    attempt: number = 1
-  ): Promise<any> {
+  private async callCohereAPI(request: any, attempt: number = 1): Promise<any> {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
@@ -149,9 +156,9 @@ export class CohereReranker implements Reranker {
       const response = await fetch(`${this.endpoint}/rerank`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(request),
         signal: controller.signal,
@@ -171,10 +178,7 @@ export class CohereReranker implements Reranker {
         }
 
         // Check if we should retry
-        if (
-          this.shouldRetry(response.status) &&
-          attempt < this.maxRetries
-        ) {
+        if (this.shouldRetry(response.status) && attempt < this.maxRetries) {
           const delay = this.calculateRetryDelay(attempt)
           await this.sleep(delay)
           return this.callCohereAPI(request, attempt + 1)

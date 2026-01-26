@@ -77,7 +77,9 @@ export function useSuggestions(
         setSuggestions(results)
       } catch (error) {
         if (config.debug) {
-          console.error('[AI] Failed to get suggestions:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[AI] Failed to get suggestions:', error)
+          }
         }
         setSuggestions([])
       } finally {
@@ -90,13 +92,7 @@ export function useSuggestions(
         clearTimeout(timeoutRef.current)
       }
     }
-  }, [
-    context,
-    getSuggestions,
-    config,
-    debounceMs,
-    minInputLength,
-  ])
+  }, [context, getSuggestions, config, debounceMs, minInputLength])
 
   return { suggestions, isLoading }
 }
@@ -216,7 +212,9 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
           setSentiment(result)
         } catch (error) {
           if (config.debug) {
-            console.error('[AI] Failed to analyze sentiment:', error)
+            if (process.env.NODE_ENV === 'development') {
+              console.error('[AI] Failed to analyze sentiment:', error)
+            }
           }
           setSentiment(null)
         } finally {

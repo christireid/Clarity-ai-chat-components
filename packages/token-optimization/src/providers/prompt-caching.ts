@@ -592,10 +592,12 @@ export class ProviderCachingFormatter {
     messages: CacheableMessage[],
     provider?: CachingProvider
   ): Promise<ProviderCachingResult> {
-    console.warn(
-      '[DEPRECATION] ProviderCachingFormatter.applyCaching() is deprecated. ' +
-      'Use formatMessagesForCaching() instead. See MIGRATION.md for details.'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[DEPRECATION] ProviderCachingFormatter.applyCaching() is deprecated. ' +
+          'Use formatMessagesForCaching() instead. See MIGRATION.md for details.'
+      )
+    }
     return this.formatMessagesForCaching(messages, provider)
   }
 
@@ -641,10 +643,12 @@ export async function applyProviderCaching(
   config: Partial<ProviderCachingConfig> = {},
   tokenCounter?: TokenCounter
 ): Promise<ProviderCachingResult> {
-  console.warn(
-    '[DEPRECATION] applyProviderCaching() is deprecated. ' +
-    'Use formatMessagesForProviderCaching() instead. See MIGRATION.md for details.'
-  )
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(
+      '[DEPRECATION] applyProviderCaching() is deprecated. ' +
+        'Use formatMessagesForProviderCaching() instead. See MIGRATION.md for details.'
+    )
+  }
   return formatMessagesForProviderCaching(messages, config, tokenCounter)
 }
 

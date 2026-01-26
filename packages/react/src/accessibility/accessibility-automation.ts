@@ -440,7 +440,9 @@ export function useAutoAccessibility(
     const componentConfig = componentMap[componentType]
 
     if (!componentConfig) {
-      console.warn(`Unknown component type: ${componentType}`)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Unknown component type: ${componentType}`)
+      }
       return attributes
     }
 

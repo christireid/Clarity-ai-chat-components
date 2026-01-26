@@ -267,7 +267,9 @@ export function ChatComplete({
     <ErrorBoundary
       onError={(error: Error, errorInfo: React.ErrorInfo) => {
         onError?.(error)
-        console.error('[ChatComplete] Error:', error, errorInfo)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[ChatComplete] Error:', error, errorInfo)
+        }
       }}
     >
       {chatComponent}

@@ -386,7 +386,9 @@ export class ToolExecutor {
           if (tool.hooks?.onTimeout) {
             Promise.resolve(tool.hooks.onTimeout(args, context)).catch(
               (err: Error) => {
-                console.error('Error in onTimeout hook:', err)
+                if (process.env.NODE_ENV === 'development') {
+                  console.error('Error in onTimeout hook:', err)
+                }
               }
             )
           }
@@ -404,7 +406,9 @@ export class ToolExecutor {
           if (tool.hooks?.onCancel) {
             Promise.resolve(tool.hooks.onCancel(args, context)).catch(
               (err: Error) => {
-                console.error('Error in onCancel hook:', err)
+                if (process.env.NODE_ENV === 'development') {
+                  console.error('Error in onCancel hook:', err)
+                }
               }
             )
           }

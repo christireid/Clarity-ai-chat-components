@@ -41,7 +41,9 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
         loadingStartTime.current = Date.now()
       } else if (loadingStartTime.current > 0) {
         const loadingDuration = Date.now() - loadingStartTime.current
-        console.log('Loading duration:', loadingDuration)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Loading duration:', loadingDuration)
+        }
         // TODO: Record with new performance API
       }
     }

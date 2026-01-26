@@ -139,11 +139,17 @@ export class WebhookManager implements WebhookHandler {
         const endpoint = this.endpoints.get(delivery.endpointId)
         if (endpoint && delivery.deliveryStatus === 'retrying') {
           // Retry in background
-          this.retryDelivery(delivery, endpoint).catch(console.error)
+          this.retryDelivery(delivery, endpoint).catch((err) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(err)
+            }
+          })
         }
       }
     } catch (error) {
-      console.error('Failed to load pending deliveries:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load pending deliveries:', error)
+      }
     }
   }
 
@@ -250,7 +256,9 @@ export class WebhookManager implements WebhookHandler {
 
       // Check rate limit
       if (!this.checkRateLimit(endpoint.id)) {
-        console.warn(`Rate limit exceeded for endpoint ${endpoint.id}`)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Rate limit exceeded for endpoint ${endpoint.id}`)
+        }
         continue
       }
 
@@ -436,11 +444,15 @@ export class WebhookManager implements WebhookHandler {
       if (timestamp) {
         const age = Date.now() - timestamp
         if (age > this.config.maxTimestampAge) {
-          console.warn('Webhook timestamp too old, possible replay attack')
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Webhook timestamp too old, possible replay attack')
+          }
           return false
         }
         if (age < -60000) {
-          console.warn('Webhook timestamp is in the future')
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Webhook timestamp is in the future')
+          }
           return false
         }
       }
@@ -459,7 +471,9 @@ export class WebhookManager implements WebhookHandler {
 
       return result === 0
     } catch (error) {
-      console.error('Signature verification error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Signature verification error:', error)
+      }
       return false
     }
   }

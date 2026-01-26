@@ -161,7 +161,9 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
         onCopy?.(token)
         setTimeout(() => setCopiedTokenId(null), 2000)
       } catch (err) {
-        console.error('Failed to copy token:', err)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to copy token:', err)
+        }
       }
     },
     [onCopy]

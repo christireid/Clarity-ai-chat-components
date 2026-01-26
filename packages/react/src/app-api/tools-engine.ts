@@ -331,10 +331,12 @@ export function createToolsEngine(config: ToolsConfig = {}): ToolsEngineState {
     }
 
     // Warn in non-production environments
-    console.warn(
-      '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-        'This should only be used in trusted development/testing environments.'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[Clarity Chat] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+          'This should only be used in trusted development/testing environments.'
+      )
+    }
   }
 
   return {

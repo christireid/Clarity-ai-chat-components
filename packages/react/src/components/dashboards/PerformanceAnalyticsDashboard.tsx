@@ -229,7 +229,9 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
         }
         return undefined
       } catch (error) {
-        console.warn('Failed to collect Web Vitals:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to collect Web Vitals:', error)
+        }
         return undefined
       }
     }

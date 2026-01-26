@@ -431,10 +431,12 @@ export function ClarityChat({
         memoryErrorOperation === 'store' ||
         memoryErrorOperation === 'query'
       ) {
-        console.warn(
-          `[ClarityChat] Memory error (${memoryErrorOperation}):`,
-          memoryError
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[ClarityChat] Memory error (${memoryErrorOperation}):`,
+            memoryError
+          )
+        }
         // We avoid showing error toasts for background memory operations to prevent user annoyance
         // unless it's critical. For now, logging is sufficient as useClarityChat handles retry logic.
       }
@@ -448,7 +450,9 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to send message:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to send message:', error)
+          }
           toast?.error('Failed to send message. Please try again.')
         }
       }

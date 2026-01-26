@@ -22,19 +22,21 @@ export const PerformanceSkeleton: React.FC<PerformanceSkeletonProps> = ({
       const metrics = PerformanceMonitor.stopObserver(performanceId)
 
       if (enableDetailedMetrics) {
-        console.log(`Performance metrics for ${performanceId}:`, {
-          metrics,
-          summary: {
-            totalEntries: metrics.length,
-            averageDuration:
-              metrics.reduce((sum, entry) => sum + entry.duration, 0) /
-              (metrics.length || 1),
-            totalDuration: metrics.reduce(
-              (sum, entry) => sum + entry.duration,
-              0
-            ),
-          },
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Performance metrics for ${performanceId}:`, {
+            metrics,
+            summary: {
+              totalEntries: metrics.length,
+              averageDuration:
+                metrics.reduce((sum, entry) => sum + entry.duration, 0) /
+                (metrics.length || 1),
+              totalDuration: metrics.reduce(
+                (sum, entry) => sum + entry.duration,
+                0
+              ),
+            },
+          })
+        }
       }
 
       if (onPerformanceReport) {

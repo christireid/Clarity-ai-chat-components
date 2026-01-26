@@ -177,7 +177,7 @@ export class ConsentManager {
         lastAccessed: now,
         createdAt: now,
         updatedAt: now,
-      },
+      }
       // 'consent'
     )
 
@@ -194,7 +194,12 @@ export class ConsentManager {
       metadata,
     })
 
-    console.info(`[ConsentManager] Consent granted for user ${userId}:`, purposes)
+    if (process.env.NODE_ENV === 'development') {
+      console.info(
+        `[ConsentManager] Consent granted for user ${userId}:`,
+        purposes
+      )
+    }
   }
 
   /**
@@ -206,7 +211,10 @@ export class ConsentManager {
    * @param purpose - Specific purpose to withdraw, or undefined for all
    * @throws {Error} If storage fails
    */
-  async withdrawConsent(userId: string, purpose?: ConsentPurpose): Promise<void> {
+  async withdrawConsent(
+    userId: string,
+    purpose?: ConsentPurpose
+  ): Promise<void> {
     const now = new Date()
 
     // Get current consent record
@@ -219,12 +227,12 @@ export class ConsentManager {
 
     // Determine which purposes to withdraw
     const withdrawPurposes = purpose
-      ? currentConsent.purposes.filter(p => p === purpose)
+      ? currentConsent.purposes.filter((p) => p === purpose)
       : currentConsent.purposes
 
     // Determine remaining purposes
     const remainingPurposes = purpose
-      ? currentConsent.purposes.filter(p => p !== purpose)
+      ? currentConsent.purposes.filter((p) => p !== purpose)
       : []
 
     // Mark old consent as withdrawn
@@ -258,7 +266,7 @@ export class ConsentManager {
         lastAccessed: now,
         createdAt: now,
         updatedAt: now,
-      },
+      }
       // 'consent'
     )
 
@@ -278,10 +286,12 @@ export class ConsentManager {
       version: this.version,
     })
 
-    console.info(
-      `[ConsentManager] Consent withdrawn for user ${userId}:`,
-      purpose || 'all purposes'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.info(
+        `[ConsentManager] Consent withdrawn for user ${userId}:`,
+        purpose || 'all purposes'
+      )
+    }
   }
 
   /**
@@ -324,7 +334,10 @@ export class ConsentManager {
    * @param purpose - Purpose to verify
    * @returns Detailed verification result
    */
-  async verifyConsent(userId: string, purpose: ConsentPurpose): Promise<ConsentVerification> {
+  async verifyConsent(
+    userId: string,
+    purpose: ConsentPurpose
+  ): Promise<ConsentVerification> {
     const record = await this.getConsentRecord(userId)
     const hasConsent = await this.hasConsent(userId, purpose)
 
@@ -348,7 +361,7 @@ export class ConsentManager {
    */
   async getConsentHistory(userId: string): Promise<ConsentEvent[]> {
     // Filter event log for this user
-    const userEvents = this.eventLog.filter(event => event.userId === userId)
+    const userEvents = this.eventLog.filter((event) => event.userId === userId)
 
     // Also fetch from persistent storage
     try {
@@ -362,25 +375,37 @@ export class ConsentManager {
       })
 
       // Parse stored events
-      const storedEvents: ConsentEvent[] = records.map((record: VectorStoreMatch) => ({
-        userId: record.metadata?.userId as string,
-        type: record.metadata?.type === 'consent_withdrawal' ? ('withdrawn' as const) : ('granted' as const),
-        purposes: (record.metadata?.purposes || []) as ConsentPurpose[],
-        timestamp: new Date(record.metadata?.timestamp as string),
-        version: (record.metadata?.version as string) || '1.0.0',
-      }))
+      const storedEvents: ConsentEvent[] = records.map(
+        (record: VectorStoreMatch) => ({
+          userId: record.metadata?.userId as string,
+          type:
+            record.metadata?.type === 'consent_withdrawal'
+              ? ('withdrawn' as const)
+              : ('granted' as const),
+          purposes: (record.metadata?.purposes || []) as ConsentPurpose[],
+          timestamp: new Date(record.metadata?.timestamp as string),
+          version: (record.metadata?.version as string) || '1.0.0',
+        })
+      )
 
       // Merge and deduplicate
       const allEvents = [...storedEvents, ...userEvents]
       const uniqueEvents = allEvents.filter(
         (event, index, self) =>
-          index === self.findIndex(e => e.timestamp.getTime() === event.timestamp.getTime())
+          index ===
+          self.findIndex(
+            (e) => e.timestamp.getTime() === event.timestamp.getTime()
+          )
       )
 
       // Sort by timestamp (oldest first)
-      return uniqueEvents.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+      return uniqueEvents.sort(
+        (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+      )
     } catch (error) {
-      console.error('[ConsentManager] Error fetching consent history:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ConsentManager] Error fetching consent history:', error)
+      }
       return userEvents
     }
   }
@@ -391,7 +416,9 @@ export class ConsentManager {
    * @param userId - User identifier
    * @returns Current consent record or null
    */
-  private async getConsentRecord(userId: string): Promise<ConsentRecord | null> {
+  private async getConsentRecord(
+    userId: string
+  ): Promise<ConsentRecord | null> {
     // Check cache first
     if (this.consentCache.has(userId)) {
       return this.consentCache.get(userId)!
@@ -416,7 +443,7 @@ export class ConsentManager {
 
       const content = records[0].metadata?.content as string
       if (!content) return null
-      
+
       const record = JSON.parse(content) as ConsentRecord
       record.grantedAt = new Date(record.grantedAt) // Parse date
       if (record.withdrawnAt) {
@@ -430,7 +457,9 @@ export class ConsentManager {
 
       return record
     } catch (error) {
-      console.error('[ConsentManager] Error fetching consent record:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[ConsentManager] Error fetching consent record:', error)
+      }
       return null
     }
   }
@@ -450,7 +479,7 @@ export class ConsentManager {
     if (!hasConsent) {
       throw new Error(
         `[ConsentManager] Consent required: User ${userId} has not granted consent for '${purpose}'. ` +
-        `Operation blocked for GDPR compliance.`
+          `Operation blocked for GDPR compliance.`
       )
     }
   }
@@ -463,7 +492,9 @@ export class ConsentManager {
   async clearAllConsent(): Promise<void> {
     this.consentCache.clear()
     this.eventLog = []
-    console.warn('[ConsentManager] All consent data cleared')
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[ConsentManager] All consent data cleared')
+    }
   }
 
   /**
@@ -478,12 +509,15 @@ export class ConsentManager {
     totalEvents: number
     eventsByType: Record<string, number>
   } {
-    const uniqueUsers = new Set(this.eventLog.map(e => e.userId))
+    const uniqueUsers = new Set(this.eventLog.map((e) => e.userId))
 
-    const eventsByType = this.eventLog.reduce((acc, event) => {
-      acc[event.type] = (acc[event.type] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const eventsByType = this.eventLog.reduce(
+      (acc, event) => {
+        acc[event.type] = (acc[event.type] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     return {
       totalUsers: uniqueUsers.size,

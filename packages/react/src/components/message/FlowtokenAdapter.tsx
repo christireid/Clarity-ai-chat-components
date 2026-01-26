@@ -191,10 +191,12 @@ export function FlowTokenStreamingText({
       } catch {
         if (mounted) {
           setLoadError(true)
-          console.info(
-            '[Clarity Chat] FlowToken not installed. Using fallback streaming display. ' +
-              'For enhanced animations, install: npm install flowtoken'
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.info(
+              '[Clarity Chat] FlowToken not installed. Using fallback streaming display. ' +
+                'For enhanced animations, install: npm install flowtoken'
+            )
+          }
         }
       }
     }

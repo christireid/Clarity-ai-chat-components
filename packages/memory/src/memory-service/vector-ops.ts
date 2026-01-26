@@ -66,7 +66,9 @@ export class VectorOperations {
       }))
     } catch (error) {
       if (this.debug) {
-        console.error('Vector search failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Vector search failed:', error)
+        }
       }
       return []
     }
@@ -101,7 +103,9 @@ export class VectorOperations {
       })
     } catch (error) {
       if (this.debug) {
-        console.error('Failed to update vector store:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to update vector store:', error)
+        }
       }
       // Re-throw to allow caller to handle sync failures
       throw error
@@ -118,7 +122,9 @@ export class VectorOperations {
       await this.vectorStore.delete(ids, this.namespace)
     } catch (error) {
       if (this.debug) {
-        console.error('Failed to delete from vector store:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to delete from vector store:', error)
+        }
       }
       throw error
     }

@@ -184,7 +184,9 @@ Here's how to use the API:
 
 \`\`\`javascript
 const result = await optimizer.optimize(text);
-console.log(result.tokens);
+if (process.env.NODE_ENV === 'development') {
+  console.log(result.tokens);
+}
 \`\`\`
 
 The result includes token count and optimized text.

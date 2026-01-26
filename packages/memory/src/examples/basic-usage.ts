@@ -27,25 +27,27 @@ async function basicExample() {
 
   // Recall memories
   const results = await memory.recall('user preferences')
-  console.log('Found memories:', results.length)
-  results.forEach((result) => {
-    console.log(
-      `- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`
-    )
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Found memories:', results.length)
+    results.forEach((result) => {
+      console.log(
+        `- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`
+      )
+    })
 
-  // Get optimized context
-  const context = await memory.context({ maxTokens: 1000 })
-  console.log('\nContext bundle:')
-  console.log(`Total tokens: ${context.tokenBreakdown.total}`)
-  console.log(`Semantic memories: ${context.semanticMemories?.length ?? 0}`)
-  console.log(`Episodic memories: ${context.episodicMemories?.length ?? 0}`)
-  console.log('\nFormatted context:')
-  console.log(context.formatted)
+    // Get optimized context
+    const context = await memory.context({ maxTokens: 1000 })
+    console.log('\nContext bundle:')
+    console.log(`Total tokens: ${context.tokenBreakdown.total}`)
+    console.log(`Semantic memories: ${context.semanticMemories?.length ?? 0}`)
+    console.log(`Episodic memories: ${context.episodicMemories?.length ?? 0}`)
+    console.log('\nFormatted context:')
+    console.log(context.formatted)
 
-  // Get stats
-  const stats = await memory.getStats()
-  console.log('\nMemory stats:', stats)
+    // Get stats
+    const stats = await memory.getStats()
+    console.log('\nMemory stats:', stats)
+  }
 
   await memory.close()
 }
@@ -86,20 +88,30 @@ async function withEmbeddingsExample() {
     minConfidence: 0.5,
   })
 
-  console.log(
-    'Semantic search results:',
-    results.map((r) => ({
-      content: r.memory.content,
-      score: r.score,
-      relevance: r.relevance,
-    }))
-  )
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      'Semantic search results:',
+      results.map((r) => ({
+        content: r.memory.content,
+        score: r.score,
+        relevance: r.relevance,
+      }))
+    )
+  }
 
   await memory.close()
 }
 
 // Run examples if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  basicExample().catch(console.error)
-  withEmbeddingsExample().catch(console.error)
+  basicExample().catch((error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error(error)
+    }
+  })
+  withEmbeddingsExample().catch((error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error(error)
+    }
+  })
 }

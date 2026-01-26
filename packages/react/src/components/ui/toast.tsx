@@ -405,15 +405,23 @@ export function useToast(): ToastContextValue {
  */
 export const toast = {
   success: (description: string, title?: string) => {
-    console.log('[Toast Success]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Toast Success]', title ? `${title}:` : '', description)
+    }
   },
   error: (description: string, title?: string) => {
-    console.error('[Toast Error]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Toast Error]', title ? `${title}:` : '', description)
+    }
   },
   info: (description: string, title?: string) => {
-    console.info('[Toast Info]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.info('[Toast Info]', title ? `${title}:` : '', description)
+    }
   },
   warning: (description: string, title?: string) => {
-    console.warn('[Toast Warning]', title ? `${title}:` : '', description)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Toast Warning]', title ? `${title}:` : '', description)
+    }
   },
 }

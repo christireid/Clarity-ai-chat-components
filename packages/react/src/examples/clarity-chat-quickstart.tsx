@@ -65,16 +65,24 @@ export function FullFeaturedExample() {
         sessionTitle="Full Featured Chat"
         showMessageCount
         onMessageCopy={(id, content) => {
-          console.log('Message copied:', id, content)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Message copied:', id, content)
+          }
         }}
         onMessageFeedback={(id, type) => {
-          console.log('Feedback:', id, type)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Feedback:', id, type)
+          }
         }}
         onExport={() => {
-          console.log('Export conversation')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Export conversation')
+          }
         }}
         onClear={() => {
-          console.log('Clear conversation')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Clear conversation')
+          }
         }}
         memory={{
           enabled: true,

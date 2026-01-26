@@ -247,39 +247,55 @@ export function useTokenBudgetMonitor(
     // Only warn once per session
     const warningKey = 'useTokenBudgetMonitor-deprecation-warned'
     if (typeof globalThis !== 'undefined' && !(globalThis as any)[warningKey]) {
-      console.warn(
-        '[Deprecation] useTokenBudgetMonitor: This hook will be renamed to useTokenBudgetTracking in v3.0.0. ' +
-          'Please update your imports:\n' +
-          '  - useTokenBudgetMonitor → useTokenBudgetTracking (for monitoring/analytics)\n' +
-          '  See: https://github.com/clarity-ai/token-optimization#migration'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[Deprecation] useTokenBudgetMonitor: This hook will be renamed to useTokenBudgetTracking in v3.0.0. ' +
+            'Please update your imports:\n' +
+            '  - useTokenBudgetMonitor → useTokenBudgetTracking (for monitoring/analytics)\n' +
+            '  See: https://github.com/clarity-ai/token-optimization#migration'
+        )
+      }
       ;(globalThis as any)[warningKey] = true
     }
   }
   // Validate config in development
   if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {
-      console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
+      }
     }
     const reserved =
       config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput
     if (reserved >= config.maxInputTokens) {
-      console.warn(
-        '[useTokenBudgetMonitor] reservedForOutput should be less than maxInputTokens'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[useTokenBudgetMonitor] reservedForOutput should be less than maxInputTokens'
+          )
+        }
+      }
     }
     const warning = config.warningThreshold ?? DEFAULT_CONFIG.warningThreshold
     const critical =
       config.criticalThreshold ?? DEFAULT_CONFIG.criticalThreshold
     if (warning >= critical) {
-      console.warn(
-        '[useTokenBudgetMonitor] warningThreshold should be less than criticalThreshold'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[useTokenBudgetMonitor] warningThreshold should be less than criticalThreshold'
+          )
+        }
+      }
     }
     if (warning < 0 || warning > 1 || critical < 0 || critical > 1) {
-      console.warn(
-        '[useTokenBudgetMonitor] thresholds should be between 0 and 1'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[useTokenBudgetMonitor] thresholds should be between 0 and 1'
+          )
+        }
+      }
     }
   }
 
@@ -289,7 +305,9 @@ export function useTokenBudgetMonitor(
       ...DEFAULT_CONFIG,
       ...config,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      // Intentionally listing specific properties for fine-grained memoization
       config.maxInputTokens,
       config.warningThreshold,
       config.criticalThreshold,

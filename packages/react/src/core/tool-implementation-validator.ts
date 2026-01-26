@@ -338,13 +338,15 @@ export function validateToolImplementationStrict(tool: ToolDefinition): void {
 
   // Log warnings
   if (result.warnings.length > 0) {
-    console.warn(`[Tool Validation] Warnings for tool "${tool.name}":`)
-    result.warnings.forEach((warning) => {
-      console.warn(`  - ${warning.message}`)
-      if (warning.suggestion) {
-        console.warn(`    Suggestion: ${warning.suggestion}`)
-      }
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`[Tool Validation] Warnings for tool "${tool.name}":`)
+      result.warnings.forEach((warning) => {
+        console.warn(`  - ${warning.message}`)
+        if (warning.suggestion) {
+          console.warn(`    Suggestion: ${warning.suggestion}`)
+        }
+      })
+    }
   }
 
   // Throw on errors

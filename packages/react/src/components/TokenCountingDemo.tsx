@@ -117,7 +117,9 @@ export const TokenCountingDemo: React.FC<TokenDemoProps> = ({
           type: 'input',
         })
       } catch (error) {
-        console.warn('Token counting error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Token counting error:', error)
+        }
         setTokenCount(0)
       } finally {
         setIsCounting(false)

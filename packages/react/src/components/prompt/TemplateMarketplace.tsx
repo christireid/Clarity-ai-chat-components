@@ -497,7 +497,9 @@ export function TemplateMarketplace({
         })
         setTemplates(sharedTemplates)
       } catch (error) {
-        console.error('Failed to load marketplace templates:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to load marketplace templates:', error)
+        }
       } finally {
         setLoading(false)
       }
@@ -539,7 +541,9 @@ export function TemplateMarketplace({
       await templateMarketplace.downloadTemplate(template.id)
       onTemplateInstall?.(template)
     } catch (error) {
-      console.error('Failed to install template:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to install template:', error)
+      }
     }
   }
 
@@ -557,7 +561,9 @@ export function TemplateMarketplace({
       setTemplates(updatedTemplates)
       onTemplateRate?.(templateId, rating, review)
     } catch (error) {
-      console.error('Failed to rate template:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to rate template:', error)
+      }
     }
   }
 

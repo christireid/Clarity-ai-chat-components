@@ -43,8 +43,10 @@ function ChatInput() {
         text={message}
         model="gpt-4"
         onCostChange={(cost, tokens) => {
-          if (cost > 0.10) {
-            console.log('Warning: message is expensive!')
+          if (process.env.NODE_ENV === 'development') {
+            if (cost > 0.10) {
+              console.log('Warning: message is expensive!')
+            }
           }
         }}
       />

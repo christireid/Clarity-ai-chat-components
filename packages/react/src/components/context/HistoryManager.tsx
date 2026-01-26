@@ -494,10 +494,12 @@ export function HistoryManager({
       const uniqueIds = new Set(ids)
       if (uniqueIds.size !== ids.length) {
         const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
-        console.warn(
-          `[HistoryManager] Duplicate message IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
-            'Each message must have a unique id for correct behavior.'
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[HistoryManager] Duplicate message IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
+              'Each message must have a unique id for correct behavior.'
+          )
+        }
       }
     }
   }, [messages])

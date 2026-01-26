@@ -185,7 +185,9 @@ function MessageOptimizedInner({
       onFeedback?.(type)
 
       if (type === 'up') {
-        console.log('🎉 Positive feedback received!')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🎉 Positive feedback received!')
+        }
       }
     },
     [onFeedback]

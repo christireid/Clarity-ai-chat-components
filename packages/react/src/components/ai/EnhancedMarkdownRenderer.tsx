@@ -182,7 +182,9 @@ const EnhancedMarkdownRendererComponent = React.memo(
             }
           })
           .catch((err: unknown) => {
-            console.warn('Failed to load Mermaid:', err)
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to load Mermaid:', err)
+            }
           })
       }
     }, [enableMermaid, codeTheme])
@@ -206,10 +208,12 @@ const EnhancedMarkdownRendererComponent = React.memo(
               } catch (error) {
                 // With suppressErrorRendering: true, errors won't be inserted into DOM
                 // We can handle them gracefully here
-                console.warn(
-                  'Mermaid rendering error (handled gracefully):',
-                  error
-                )
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn(
+                    'Mermaid rendering error (handled gracefully):',
+                    error
+                  )
+                }
               }
             }
           })

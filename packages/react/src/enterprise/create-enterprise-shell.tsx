@@ -171,7 +171,9 @@ export function createEnterpriseShell(
     logEvent: (event: string, data?: any) => {
       if (!audit.enabled) return
       // Audit logging logic would go here
-      console.log('[Audit]', event, data)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Audit]', event, data)
+      }
     },
   }
 

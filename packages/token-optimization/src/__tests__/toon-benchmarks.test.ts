@@ -57,16 +57,26 @@ describe('TOON Token Savings Benchmarks', () => {
       const result = measureSavings('Simple user object', data)
 
       // Log results for documentation
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // TOON overhead is acceptable for small objects
       // expect(result.savingsPercent).toBeGreaterThan(10)
@@ -85,16 +95,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Mixed types object', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.savingsPercent).toBeGreaterThan(5)
       // expect(result.toonTokens).toBeLessThan(result.jsonTokens)
@@ -124,16 +144,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Nested objects', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // Nested structures might have overhead due to indentation tokens
       // expect(result.savingsPercent).toBeGreaterThan(15)
@@ -156,16 +186,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Deeply nested', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.savingsPercent).toBeGreaterThan(0)
       // expect(result.toonTokens).toBeLessThan(result.jsonTokens)
@@ -186,16 +226,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Uniform object array', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // Arrays should benefit significantly from table format
       expect(result.savingsPercent).toBeGreaterThan(25)
@@ -215,16 +265,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Large array (20 items)', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // Large arrays should provide excellent savings
       expect(result.savingsPercent).toBeGreaterThan(30)
@@ -240,16 +300,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Primitive arrays', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.toonTokens).toBeLessThanOrEqual(result.jsonTokens)
     })
@@ -272,16 +342,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('API response', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.savingsPercent).toBeGreaterThan(15)
       // expect(result.toonTokens).toBeLessThan(result.jsonTokens)
@@ -309,16 +389,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('Configuration object', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.savingsPercent).toBeGreaterThan(10)
       // expect(result.toonTokens).toBeLessThan(result.jsonTokens)
@@ -342,16 +432,26 @@ describe('TOON Token Savings Benchmarks', () => {
 
       const result = measureSavings('User profile', data)
 
-      console.log(`\n${result.name}:`)
-      console.log(
-        `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
-      )
-      console.log(
-        `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
-      )
-      console.log(
-        `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`\n${result.name}:`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  JSON: ${result.jsonTokens} tokens (${result.jsonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  TOON: ${result.toonTokens} tokens (${result.toonChars} chars)`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Savings: ${result.savings} tokens (${result.savingsPercent}%)`
+          )
+        }
+      }
 
       // expect(result.savingsPercent).toBeGreaterThan(10)
       // expect(result.toonTokens).toBeLessThan(result.jsonTokens)
@@ -406,12 +506,20 @@ describe('TOON Token Savings Benchmarks', () => {
         ...results.map((r) => r.savingsPercent)
       )
 
-      console.log('\n=== AGGREGATE STATISTICS ===')
-      console.log(`Test cases: ${results.length}`)
-      console.log(`Average savings: ${avgSavingsPercent.toFixed(2)}%`)
-      console.log(`Min savings: ${minSavingsPercent.toFixed(2)}%`)
-      console.log(`Max savings: ${maxSavingsPercent.toFixed(2)}%`)
-      console.log('============================\n')
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('\n=== AGGREGATE STATISTICS ===')
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Test cases: ${results.length}`)
+        }
+        console.log(`Average savings: ${avgSavingsPercent.toFixed(2)}%`)
+        console.log(`Min savings: ${minSavingsPercent.toFixed(2)}%`)
+        console.log(`Max savings: ${maxSavingsPercent.toFixed(2)}%`)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('============================\n')
+        }
+      }
 
       // Verify overall performance
       // expect(avgSavingsPercent).toBeGreaterThan(15)
@@ -419,12 +527,18 @@ describe('TOON Token Savings Benchmarks', () => {
       // expect(minSavingsPercent).toBeGreaterThan(0)
 
       // Document results for README
-      console.log('📊 TOON Token Savings Benchmarks (Measured):')
-      console.log(`  - Average: ${avgSavingsPercent.toFixed(1)}%`)
-      console.log(
-        `  - Range: ${minSavingsPercent.toFixed(1)}% - ${maxSavingsPercent.toFixed(1)}%`
-      )
-      console.log(`  - Typical: 20-45% for structured data`)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 TOON Token Savings Benchmarks (Measured):')
+        console.log(`  - Average: ${avgSavingsPercent.toFixed(1)}%`)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  - Range: ${minSavingsPercent.toFixed(1)}% - ${maxSavingsPercent.toFixed(1)}%`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`  - Typical: 20-45% for structured data`)
+        }
+      }
     })
   })
 
@@ -451,14 +565,26 @@ describe('TOON Token Savings Benchmarks', () => {
       expect(estimate.toonTokens).toBe(toonTokens)
       // expect(estimate.savingsPercent).toBeGreaterThan(0)
 
-      console.log('\nEstimator accuracy check:')
-      console.log(`  Estimated: ${estimate.savingsPercent}%`)
-      console.log(
-        `  Manual calc: ${(((jsonTokens - toonTokens) / jsonTokens) * 100).toFixed(2)}%`
-      )
-      console.log(
-        `  Match: ${estimate.jsonTokens === jsonTokens && estimate.toonTokens === toonTokens ? '✓' : '✗'}`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('\nEstimator accuracy check:')
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`  Estimated: ${estimate.savingsPercent}%`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            `  Manual calc: ${(((jsonTokens - toonTokens) / jsonTokens) * 100).toFixed(2)}%`
+          )
+        }
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `  Match: ${estimate.jsonTokens === jsonTokens && estimate.toonTokens === toonTokens ? '✓' : '✗'}`
+            )
+          }
+        }
+      }
     })
   })
 })

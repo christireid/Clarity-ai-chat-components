@@ -80,12 +80,16 @@ import { isDev } from '@clarity-chat/utils/env'
 function safeDevLog(...args: unknown[]): void {
   if (!isDev()) return
   // Keep dev-only logs minimal and never include secrets.
-  console.debug(...args)
+  if (process.env.NODE_ENV === 'development') {
+    console.debug(...args)
+  }
 }
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  console.error(...args)
+  if (process.env.NODE_ENV === 'development') {
+    console.error(...args)
+  }
 }
 
 function hasLocalStorage(): boolean {
@@ -484,47 +488,53 @@ export function createConsoleErrorProvider(): ErrorProvider {
     name: 'console',
 
     reportError: (report: ErrorReport) => {
-      const style = `
-        color: white;
-        background: ${
-          report.severity === 'fatal' || report.severity === 'error'
-            ? '#dc2626'
-            : report.severity === 'warning'
-              ? '#f59e0b'
-              : '#3b82f6'
-        };
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-weight: bold;
-      `
+      if (process.env.NODE_ENV === 'development') {
+        const style = `
+          color: white;
+          background: ${
+            report.severity === 'fatal' || report.severity === 'error'
+              ? '#dc2626'
+              : report.severity === 'warning'
+                ? '#f59e0b'
+                : '#3b82f6'
+          };
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-weight: bold;
+        `
 
-      console.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
+        console.debug(
+          `%c${report.severity.toUpperCase()}`,
+          style,
+          report.message
+        )
 
-      if (report.stack) {
-        console.error('Stack:', report.stack)
+        if (report.stack) {
+          console.error('Stack:', report.stack)
+        }
+
+        if (report.componentStack) {
+          console.error('Component Stack:', report.componentStack)
+        }
+
+        if (report.context) {
+          console.debug('Context:', report.context)
+        }
+
+        if (report.environment) {
+          console.debug('Environment:', report.environment)
+        }
+
+        if (report.tags) {
+          console.debug('Tags:', report.tags)
+        }
+
+        if (report.userFeedback) {
+          console.debug('User Feedback:', report.userFeedback)
+        }
+
+        console.debug()
       }
-
-      if (report.componentStack) {
-        console.error('Component Stack:', report.componentStack)
-      }
-
-      if (report.context) {
-        console.debug('Context:', report.context)
-      }
-
-      if (report.environment) {
-        console.debug('Environment:', report.environment)
-      }
-
-      if (report.tags) {
-        console.debug('Tags:', report.tags)
-      }
-
-      if (report.userFeedback) {
-        console.debug('User Feedback:', report.userFeedback)
-      }
-
-      console.debug()
     },
 
     setUser: (
@@ -532,19 +542,25 @@ export function createConsoleErrorProvider(): ErrorProvider {
       email?: string,
       userData?: Record<string, unknown>
     ) => {
-      console.debug('[Error Reporter] Set user:', {
-        userId,
-        email,
-        ...userData,
-      })
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Set user:', {
+          userId,
+          email,
+          ...userData,
+        })
+      }
     },
 
     setContext: (context: Record<string, unknown>) => {
-      console.debug('[Error Reporter] Set context:', context)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Set context:', context)
+      }
     },
 
     addBreadcrumb: (message: string, data?: Record<string, unknown>) => {
-      console.debug('[Error Reporter] Breadcrumb:', message, data)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Error Reporter] Breadcrumb:', message, data)
+      }
     },
   }
 }

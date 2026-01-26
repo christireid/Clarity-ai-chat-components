@@ -959,10 +959,14 @@ export function registerModel(
 
   // Warn if overwriting existing model
   if (trimmedId in MODEL_REGISTRY) {
-    console.warn(
-      `[registerModel] Model '${trimmedId}' already exists in registry. ` +
-        'Overwriting with new configuration. This may affect existing code.'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[registerModel] Model '${trimmedId}' already exists in registry. ` +
+            'Overwriting with new configuration. This may affect existing code.'
+        )
+      }
+    }
   }
 
   // Validate required fields
@@ -1142,10 +1146,12 @@ export function unregisterModel(id: string): boolean {
   }
 
   if (!isCustomModel(id)) {
-    console.warn(
-      `[unregisterModel] Cannot unregister built-in model '${id}'. ` +
-        'Only custom models registered via registerModel() can be unregistered.'
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        `[unregisterModel] Cannot unregister built-in model '${id}'. ` +
+          'Only custom models registered via registerModel() can be unregistered.'
+      )
+    }
     return false
   }
 

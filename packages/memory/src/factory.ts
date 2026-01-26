@@ -1,9 +1,9 @@
 /**
  * Clarity Memory Factory
- * 
+ *
  * Creates and returns a configured ClarityMemory instance
  * with smart defaults and helpful error messages
- * 
+ *
  * Includes built-in optimizations:
  * - Embedding caching (LRU cache)
  * - Retry logic with exponential backoff
@@ -14,21 +14,24 @@
 
 import { ClarityMemory } from './memory-service/core'
 import type { MemoryConfig } from './types'
-import { detectEnvironment, getRecommendedStorageType } from './utils/environment'
+import {
+  detectEnvironment,
+  getRecommendedStorageType,
+} from './utils/environment'
 import { validateConfig, formatValidationResult } from './utils/validation'
 
 /**
  * Create a Clarity Memory instance with smart defaults
- * 
+ *
  * @param config - Optional configuration object
  * @returns Configured ClarityMemory instance
- * 
+ *
  * @example
  * ```typescript
  * // Zero-config usage (auto-detects environment)
  * const memory = clarityMemory()
  * await memory.initialize()
- * 
+ *
  * // With configuration and optimizations
  * const memory = clarityMemory({
  *   embeddingProvider: {
@@ -62,34 +65,38 @@ import { validateConfig, formatValidationResult } from './utils/validation'
 export function clarityMemory(config?: MemoryConfig): ClarityMemory {
   // Validate configuration early
   const validation = validateConfig(config)
-  
+
   if (!validation.valid) {
     const errorMessage = `Invalid Clarity Memory configuration:\n${formatValidationResult(validation)}`
-    
+
     // In production, throw immediately
     if (process.env.NODE_ENV === 'production') {
       throw new Error(errorMessage)
     }
-    
+
     // In development, log warnings but continue
-    console.warn(errorMessage)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(errorMessage)
+    }
   }
 
   // Log helpful setup information in debug mode
   if (config?.debug || config?.logLevel === 'info') {
     const env = detectEnvironment()
     const storageType = config?.storage?.type || getRecommendedStorageType()
-    
-    console.log('[ClarityMemory] Setup Info:', {
-      environment: env,
-      recommendedStorage: storageType,
-      configuredStorage: config?.storage?.type || 'auto',
-      hasEmbeddingProvider: !!config?.embeddingProvider,
-      hasTokenBudget: !!config?.tokenBudget,
-    })
-    
-    if (validation.warnings.length > 0 || validation.suggestions.length > 0) {
-      console.log('\n' + formatValidationResult(validation))
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[ClarityMemory] Setup Info:', {
+        environment: env,
+        recommendedStorage: storageType,
+        configuredStorage: config?.storage?.type || 'auto',
+        hasEmbeddingProvider: !!config?.embeddingProvider,
+        hasTokenBudget: !!config?.tokenBudget,
+      })
+
+      if (validation.warnings.length > 0 || validation.suggestions.length > 0) {
+        console.log('\n' + formatValidationResult(validation))
+      }
     }
   }
 
@@ -99,16 +106,16 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
 
 /**
  * Quick setup helper for common scenarios
- * 
+ *
  * Pre-configured helpers for different environments with optimal settings
  */
 export const clarityMemoryHelpers = {
   /**
    * Browser setup with IndexedDB persistence
-   * 
+   *
    * @param config - Optional configuration (storage type is auto-set)
    * @returns ClarityMemory instance configured for browser
-   * 
+   *
    * @example
    * ```typescript
    * const memory = clarityMemoryHelpers.browser({
@@ -130,12 +137,12 @@ export const clarityMemoryHelpers = {
 
   /**
    * Serverless setup with in-memory storage
-   * 
+   *
    * Optimized for stateless serverless functions (Vercel, AWS Lambda, etc.)
-   * 
+   *
    * @param config - Optional configuration (storage type is auto-set)
    * @returns ClarityMemory instance configured for serverless
-   * 
+   *
    * @example
    * ```typescript
    * const memory = clarityMemoryHelpers.serverless({
@@ -157,10 +164,10 @@ export const clarityMemoryHelpers = {
 
   /**
    * Node.js setup with in-memory storage
-   * 
+   *
    * @param config - Optional configuration (storage type is auto-set)
    * @returns ClarityMemory instance configured for Node.js
-   * 
+   *
    * @example
    * ```typescript
    * const memory = clarityMemoryHelpers.node({

@@ -92,13 +92,10 @@ export function useControllableState<T>(
 
   // Warn if switching between controlled and uncontrolled
   React.useEffect(() => {
-    // Safe check for development environment that works in all bundlers
-    const isDev =
+    if (
       typeof process !== 'undefined' &&
-      process.env &&
-      process.env.NODE_ENV !== 'production'
-
-    if (isDev) {
+      process.env.NODE_ENV === 'development'
+    ) {
       if (isControlledRef.current !== isControlled) {
         console.warn(
           `[useControllableState] Component is switching from ${

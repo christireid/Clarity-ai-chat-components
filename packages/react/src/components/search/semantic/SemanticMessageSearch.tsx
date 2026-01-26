@@ -184,7 +184,9 @@ export function SemanticMessageSearch({
         if (!isMountedRef.current) return
         if (err instanceof Error && err.name === 'AbortError') return
 
-        console.error('Search error:', err)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Search error:', err)
+        }
         setError(err instanceof Error ? err.message : 'Search failed')
       } finally {
         if (isMountedRef.current) {

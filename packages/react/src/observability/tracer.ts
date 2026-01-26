@@ -99,7 +99,11 @@ export class Tracer {
     span.error = error
 
     if (this.config.backend) {
-      this.config.backend.sendSpan(span).catch(console.error)
+      this.config.backend.sendSpan(span).catch((err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(err)
+        }
+      })
     }
   }
 
@@ -218,25 +222,31 @@ export class ConsoleBackend implements ObservabilityBackend {
   name = 'console'
 
   async sendTrace(trace: Trace): Promise<void> {
-    console.log('[Trace]', {
-      id: trace.id,
-      name: trace.name,
-      duration: trace.duration,
-      spans: trace.spans.length,
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Trace]', {
+        id: trace.id,
+        name: trace.name,
+        duration: trace.duration,
+        spans: trace.spans.length,
+      })
+    }
   }
 
   async sendSpan(span: TraceSpan): Promise<void> {
-    console.log('[Span]', {
-      id: span.id,
-      name: span.name,
-      type: span.type,
-      duration: span.duration,
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Span]', {
+        id: span.id,
+        name: span.name,
+        type: span.type,
+        duration: span.duration,
+      })
+    }
   }
 
   async sendEvaluation(evaluation: any): Promise<void> {
-    console.log('[Evaluation]', evaluation)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Evaluation]', evaluation)
+    }
   }
 }
 

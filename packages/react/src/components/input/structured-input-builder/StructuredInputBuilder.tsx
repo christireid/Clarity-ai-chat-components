@@ -103,10 +103,12 @@ export function StructuredInputBuilder({
       const ids = fields.map((f) => f.id)
       const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
       if (duplicates.length > 0) {
-        console.warn(
-          `[StructuredInputBuilder] Duplicate field IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
-            `Each field must have a unique ID to avoid accessibility and rendering issues.`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[StructuredInputBuilder] Duplicate field IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
+              `Each field must have a unique ID to avoid accessibility and rendering issues.`
+          )
+        }
       }
     }
   }, [fields])

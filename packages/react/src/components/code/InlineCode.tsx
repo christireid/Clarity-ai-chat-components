@@ -53,7 +53,9 @@ export const InlineCode = React.memo<InlineCodeProps>(function InlineCode({
       // Reset copied state after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Failed to copy inline code:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy inline code:', error)
+      }
     }
   }, [enableCopy, codeText, onCopy, trackInteraction])
 

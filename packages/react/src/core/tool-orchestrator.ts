@@ -150,10 +150,12 @@ export class ToolOrchestrator {
       }
 
       // Warn in non-production environments
-      console.warn(
-        '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
-          'This should only be used in trusted development/testing environments.'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[ToolOrchestrator] SECURITY WARNING: autoApprove is enabled. Tools will execute without user consent. ' +
+            'This should only be used in trusted development/testing environments.'
+        )
+      }
     }
 
     this.registry = new ToolRegistry()

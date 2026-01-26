@@ -246,10 +246,12 @@ export function OutputPreferenceSelector({
       process.env['NODE_ENV'] === 'development' &&
       !VALID_PREFERENCES.has(value)
     ) {
-      console.warn(
-        `[OutputPreferenceSelector] Invalid value "${value}" passed. ` +
-          'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `[OutputPreferenceSelector] Invalid value "${value}" passed. ` +
+            'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
+        )
+      }
     }
   }, [value])
 

@@ -87,9 +87,11 @@ export class SecurityEventStreamer extends EventEmitter {
     this.subscribers.set(subscriber.id, subscriber)
     this.metrics.subscribers = this.subscribers.size
 
-    console.log(
-      `[SECURITY STREAM] New subscriber: ${subscriber.name} (${subscriber.id})`
-    )
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `[SECURITY STREAM] New subscriber: ${subscriber.name} (${subscriber.id})`
+      )
+    }
   }
 
   // Unsubscribe from security events
@@ -99,9 +101,11 @@ export class SecurityEventStreamer extends EventEmitter {
       this.subscribers.delete(subscriberId)
       this.metrics.subscribers = this.subscribers.size
 
-      console.log(
-        `[SECURITY STREAM] Unsubscribed: ${subscriber.name} (${subscriberId})`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[SECURITY STREAM] Unsubscribed: ${subscriber.name} (${subscriberId})`
+        )
+      }
     }
   }
 
@@ -126,10 +130,14 @@ export class SecurityEventStreamer extends EventEmitter {
         try {
           notifications.push(Promise.resolve(subscriber.callback(event)))
         } catch (error) {
-          console.error(
-            `[SECURITY STREAM] Error notifying subscriber ${subscriber.id}:`,
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(
+                `[SECURITY STREAM] Error notifying subscriber ${subscriber.id}:`,
+                error
+              )
+            }
+          }
         }
       }
     }
@@ -138,7 +146,9 @@ export class SecurityEventStreamer extends EventEmitter {
     try {
       await Promise.allSettled(notifications)
     } catch (error) {
-      console.error('[SECURITY STREAM] Error in batch notification:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[SECURITY STREAM] Error in batch notification:', error)
+      }
     }
   }
 
@@ -231,7 +241,9 @@ export class SecurityEventStreamer extends EventEmitter {
     this.eventQueue = []
     this.removeAllListeners()
 
-    console.log('[SECURITY STREAM] Event streamer shutdown complete')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[SECURITY STREAM] Event streamer shutdown complete')
+    }
   }
 }
 
@@ -247,13 +259,19 @@ export class SecurityStreamSubscribers {
 
         switch (event.severity) {
           case 'critical':
-            console.error(logMessage, event)
+            if (process.env.NODE_ENV === 'development') {
+              console.error(logMessage, event)
+            }
             break
           case 'high':
-            console.warn(logMessage, event)
+            if (process.env.NODE_ENV === 'development') {
+              console.warn(logMessage, event)
+            }
             break
           default:
-            console.log(logMessage, event)
+            if (process.env.NODE_ENV === 'development') {
+              console.log(logMessage, event)
+            }
         }
       },
     }

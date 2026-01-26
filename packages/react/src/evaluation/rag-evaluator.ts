@@ -60,7 +60,10 @@ export interface RetrievedDoc {
 /**
  * Retrieval function type
  */
-export type RetrievalFunction = (query: string, k: number) => Promise<RetrievedDoc[]>
+export type RetrievalFunction = (
+  query: string,
+  k: number
+) => Promise<RetrievedDoc[]>
 
 /**
  * Evaluation metrics for a single query
@@ -164,13 +167,20 @@ export class RAGEvaluator {
         perQueryMetrics.push(metrics)
 
         if (options?.verbose) {
-          console.log(`Query ${i + 1}/${this.testSet.length}:`, testCase.query)
-          console.log(`  P@5: ${metrics.precision[5]?.toFixed(3)}`)
-          console.log(`  R@5: ${metrics.recall[5]?.toFixed(3)}`)
-          console.log(`  AP: ${metrics.averagePrecision.toFixed(3)}`)
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `Query ${i + 1}/${this.testSet.length}:`,
+              testCase.query
+            )
+            console.log(`  P@5: ${metrics.precision[5]?.toFixed(3)}`)
+            console.log(`  R@5: ${metrics.recall[5]?.toFixed(3)}`)
+            console.log(`  AP: ${metrics.averagePrecision.toFixed(3)}`)
+          }
         }
       } catch (error) {
-        console.error(`Failed to evaluate query: ${testCase.query}`, error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`Failed to evaluate query: ${testCase.query}`, error)
+        }
         // Add zero metrics for failed queries
         perQueryMetrics.push(this.getZeroMetrics(testCase))
       }
@@ -204,8 +214,7 @@ export class RAGEvaluator {
       const topK = retrievedIds.slice(0, k)
       const relevantInTopK = topK.filter((id) => relevantSet.has(id)).length
 
-      precision[k] =
-        topK.length > 0 ? relevantInTopK / topK.length : 0
+      precision[k] = topK.length > 0 ? relevantInTopK / topK.length : 0
       recall[k] =
         testCase.relevantDocs.length > 0
           ? relevantInTopK / testCase.relevantDocs.length
@@ -311,7 +320,11 @@ export class RAGEvaluator {
     })
 
     let idcg = 0
-    for (let i = 0; i < Math.min(idealRanking.length, retrievedIds.length); i++) {
+    for (
+      let i = 0;
+      i < Math.min(idealRanking.length, retrievedIds.length);
+      i++
+    ) {
       const relevance = getRelevance(idealRanking[i])
       const discount = Math.log2(i + 2)
       idcg += relevance / discount
@@ -420,7 +433,7 @@ export class RAGEvaluator {
   static formatReport(results: EvaluationResults): string {
     const lines: string[] = []
 
-    lines.push('=' .repeat(60))
+    lines.push('='.repeat(60))
     lines.push('RAG EVALUATION REPORT')
     lines.push('='.repeat(60))
     lines.push('')
@@ -438,7 +451,9 @@ export class RAGEvaluator {
     lines.push('')
 
     // Metrics at K
-    const kValues = Object.keys(results.precision).map(Number).sort((a, b) => a - b)
+    const kValues = Object.keys(results.precision)
+      .map(Number)
+      .sort((a, b) => a - b)
     lines.push('Metrics at K:')
     lines.push('K\tPrecision\tRecall\t\tF1\t\tNDCG')
     for (const k of kValues) {

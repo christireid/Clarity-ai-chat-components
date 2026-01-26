@@ -14,7 +14,14 @@ import type { ToonNode } from '../toon'
 import type { ModelProfile } from '../model-profiles'
 import type { OptimizationStrategy } from '../optimizer'
 // import type { CompressionStrategy } from '../compression-chain'
-export type CompressionStrategy = 'truncate' | 'summarize' | 'extract' | 'adaptive' | 'semantic-grouping' | 'tool-condensing' | 'intent-summarization' // Temp stub
+export type CompressionStrategy =
+  | 'truncate'
+  | 'summarize'
+  | 'extract'
+  | 'adaptive'
+  | 'semantic-grouping'
+  | 'tool-condensing'
+  | 'intent-summarization' // Temp stub
 import { toonToMessages } from '../toon'
 import { getModelProfileOrDefault } from '../model-profiles'
 import {
@@ -32,7 +39,10 @@ interface CompressionLog {
 }
 
 // Temporary stub for compressContext until compression-chain is added back
-async function compressContext(messages: any, _options: any): Promise<{
+async function compressContext(
+  messages: any,
+  _options: any
+): Promise<{
   messages: any
   logs: CompressionLog[]
   totalTokensSaved: number
@@ -186,7 +196,7 @@ export async function optimizePrompt(
   const originalTokens = estimateMessageTokens(messages, tokenizer)
   let currentTokens = originalTokens
 
-  if (debug) {
+  if (debug && process.env.NODE_ENV === 'development') {
     console.log(
       `[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`
     )
@@ -213,7 +223,7 @@ export async function optimizePrompt(
     modelProfile
   )
 
-  if (debug) {
+  if (debug && process.env.NODE_ENV === 'development') {
     console.log(
       `[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`
     )

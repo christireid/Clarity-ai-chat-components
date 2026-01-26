@@ -133,7 +133,9 @@ const CopyableInput: React.FC<{
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy:', err)
+      }
     }
   }
 

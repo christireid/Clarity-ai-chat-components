@@ -559,7 +559,10 @@ export interface EmailValidationOptions {
  * isValidEmail('user..name@example.com', { checkDoubleDots: true }) // false
  * ```
  */
-export function isValidEmail(email: unknown, options?: EmailValidationOptions): email is string {
+export function isValidEmail(
+  email: unknown,
+  options?: EmailValidationOptions
+): email is string {
   if (!isString(email)) return false
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -609,13 +612,16 @@ export interface UrlValidationOptions {
  * isValidUrl('http://192.168.1.1', { blockPrivateIPs: true }) // false
  * ```
  */
-export function isValidUrl(url: unknown, options?: UrlValidationOptions): url is string {
+export function isValidUrl(
+  url: unknown,
+  options?: UrlValidationOptions
+): url is string {
   if (!isString(url)) return false
 
   const {
     blockLocalhost = false,
     blockPrivateIPs = false,
-    allowedProtocols = ['http:', 'https:']
+    allowedProtocols = ['http:', 'https:'],
   } = options || {}
 
   try {
@@ -630,7 +636,11 @@ export function isValidUrl(url: unknown, options?: UrlValidationOptions): url is
 
     if (blockLocalhost) {
       // Block localhost
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+      if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1'
+      ) {
         return false
       }
     }
@@ -693,7 +703,10 @@ export function isValidJson(jsonString: unknown): boolean {
  * sanitizeUrl('  https://example.com  ') // 'https://example.com'
  * ```
  */
-export function sanitizeUrl(urlString: string, options?: UrlValidationOptions): string {
+export function sanitizeUrl(
+  urlString: string,
+  options?: UrlValidationOptions
+): string {
   const trimmed = urlString?.trim()
   if (!trimmed || !isValidUrl(trimmed, options)) {
     // Safe fallback for invalid or unsafe URLs
@@ -748,11 +761,13 @@ export function parseJson<T = unknown>(
     }
     return { success: true, data: parsed as T }
   } catch (parseError) {
-    console.error('JSON parsing failed', {
-      jsonString,
-      error:
-        parseError instanceof Error ? parseError.message : String(parseError),
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.error('JSON parsing failed', {
+        jsonString,
+        error:
+          parseError instanceof Error ? parseError.message : String(parseError),
+      })
+    }
     return {
       success: false,
       errors: [

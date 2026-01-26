@@ -743,7 +743,12 @@ export class ToolLifecycleManager {
         try {
           listener(event as any)
         } catch (error) {
-          console.error(`Error in lifecycle listener for ${event.type}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `Error in lifecycle listener for ${event.type}:`,
+              error
+            )
+          }
         }
       }
     }
@@ -755,7 +760,9 @@ export class ToolLifecycleManager {
         try {
           listener(event)
         } catch (error) {
-          console.error(`Error in lifecycle listener for 'all':`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`Error in lifecycle listener for 'all':`, error)
+          }
         }
       }
     }
@@ -788,7 +795,9 @@ export class ToolLifecycleManager {
       try {
         this.auditLogConfig.persister.persist(entry)
       } catch (error) {
-        console.error('Error persisting audit log entry:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error persisting audit log entry:', error)
+        }
       }
     }
   }

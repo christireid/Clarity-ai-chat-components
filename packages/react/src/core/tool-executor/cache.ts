@@ -202,7 +202,9 @@ export class ToolResultCache {
       return `${toolName}:${argsHash}`
     } catch (error) {
       // Fallback to JSON.stringify if hashing fails
-      console.warn('Cache key generation failed, using fallback:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cache key generation failed, using fallback:', error)
+      }
       const sortedArgs = Object.keys(args)
         .sort()
         .reduce(

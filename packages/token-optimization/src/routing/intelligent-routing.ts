@@ -761,7 +761,9 @@ export class IntelligentRoutingSystem {
     context?: RoutingContext,
     error?: Error
   ): Promise<RoutingDecision> {
-    console.warn('Applying fallback routing due to error:', error?.message)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Applying fallback routing due to error:', error?.message)
+    }
 
     const fallbackModel = this.getFallbackModel()
 

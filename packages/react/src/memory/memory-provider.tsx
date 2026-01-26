@@ -670,7 +670,9 @@ export function useMemoryOptimization(options: {
 
       setOptimizedContext(result)
     } catch (err) {
-      console.error('Optimization failed:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Optimization failed:', err)
+      }
     } finally {
       setIsOptimizing(false)
     }

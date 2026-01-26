@@ -76,16 +76,24 @@ export function createConsoleProvider(): AnalyticsProvider {
   return {
     name: 'console',
     track: (event) => {
-      console.debug('[Analytics] Event:', event)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Event:', event)
+      }
     },
     identify: (user) => {
-      console.debug('[Analytics] User identified:', user)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] User identified:', user)
+      }
     },
     page: (pageView) => {
-      console.debug('[Analytics] Page view:', pageView)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Page view:', pageView)
+      }
     },
     reset: () => {
-      console.debug('[Analytics] Reset')
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Reset')
+      }
     },
   }
 }
@@ -375,7 +383,12 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(payload),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to send event to custom API:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            '[Analytics] Failed to send event to custom API:',
+            error
+          )
+        }
       }
     },
     identify: async (user) => {
@@ -389,7 +402,9 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(user),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to identify user:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to identify user:', error)
+        }
       }
     },
     page: async (pageView) => {
@@ -403,7 +418,9 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(pageView),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to track page view:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to track page view:', error)
+        }
       }
     },
   }
@@ -433,7 +450,9 @@ export function createLocalStorageProvider(
 
         localStorage.setItem(storageKey, JSON.stringify(events))
       } catch (error) {
-        console.error('[Analytics] Failed to store event:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to store event:', error)
+        }
       }
     },
     identify: (user) => {
@@ -442,7 +461,9 @@ export function createLocalStorageProvider(
       try {
         localStorage.setItem(`${storageKey}_user`, JSON.stringify(user))
       } catch (error) {
-        console.error('[Analytics] Failed to store user:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to store user:', error)
+        }
       }
     },
     reset: () => {
@@ -452,7 +473,9 @@ export function createLocalStorageProvider(
         localStorage.removeItem(storageKey)
         localStorage.removeItem(`${storageKey}_user`)
       } catch (error) {
-        console.error('[Analytics] Failed to reset:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to reset:', error)
+        }
       }
     },
   }

@@ -585,7 +585,9 @@ export function ConversationAnalyticsDashboard({
       setAnalytics(result)
       onAnalyticsGenerated?.(result)
     } catch (err) {
-      console.error('Analytics generation error:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Analytics generation error:', err)
+      }
       setError(
         err instanceof Error ? err.message : 'Failed to generate analytics'
       )

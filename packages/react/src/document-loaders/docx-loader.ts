@@ -145,11 +145,13 @@ export class DOCXLoader implements DocumentLoader {
     // Check if mammoth is available
     if (typeof window !== 'undefined' && !(window as any).mammoth) {
       // Try to load from global if available
-      console.warn(
-        'DOCXLoader: mammoth library not found. Please install:\n' +
-          'npm install mammoth\n' +
-          'Then import: import mammoth from "mammoth"'
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          'DOCXLoader: mammoth library not found. Please install:\n' +
+            'npm install mammoth\n' +
+            'Then import: import mammoth from "mammoth"'
+        )
+      }
       // Fallback to basic extraction using JSZip
       return this.fallbackParse(arrayBuffer, options)
     }
@@ -173,12 +175,16 @@ export class DOCXLoader implements DocumentLoader {
 
       // Report any warnings
       if (result.messages && result.messages.length > 0) {
-        console.warn('DOCX parsing warnings:', result.messages)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('DOCX parsing warnings:', result.messages)
+        }
       }
 
       return content
     } catch (error) {
-      console.error('Mammoth parsing failed, trying fallback:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Mammoth parsing failed, trying fallback:', error)
+      }
       return this.fallbackParse(arrayBuffer, options)
     }
   }

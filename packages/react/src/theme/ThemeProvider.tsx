@@ -239,7 +239,9 @@ export function ThemeProvider({
         }
       }
     } catch (error) {
-      console.warn('Failed to load theme from localStorage:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to load theme from localStorage:', error)
+      }
     }
 
     setIsHydrated(true)
@@ -295,7 +297,8 @@ export function ThemeProvider({
 
     // Listen for changes
     highContrastQuery.addEventListener('change', updateContrastMode)
-    return () => highContrastQuery.removeEventListener('change', updateContrastMode)
+    return () =>
+      highContrastQuery.removeEventListener('change', updateContrastMode)
   }, [])
 
   // Listen to forced colors mode (Windows High Contrast)
@@ -316,7 +319,8 @@ export function ThemeProvider({
 
     // Listen for changes
     forcedColorsQuery.addEventListener('change', updateForcedColorsMode)
-    return () => forcedColorsQuery.removeEventListener('change', updateForcedColorsMode)
+    return () =>
+      forcedColorsQuery.removeEventListener('change', updateForcedColorsMode)
   }, [])
 
   // Helper to get theme by preset name
@@ -326,7 +330,7 @@ export function ThemeProvider({
         return modernThemes[preset]
       }
       // Warn about invalid preset and fallback to default
-      if (process.env['NODE_ENV'] !== 'production') {
+      if (process.env['NODE_ENV'] === 'development') {
         console.warn(
           `[Clarity Chat] Unknown theme preset "${preset}". ` +
             `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
@@ -435,7 +439,9 @@ export function ThemeProvider({
 
         localStorage.setItem(storageKey, JSON.stringify(toStore))
       } catch (error) {
-        console.warn('Failed to save theme to localStorage:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to save theme to localStorage:', error)
+        }
       }
     }
   }, [
@@ -466,7 +472,9 @@ export function ThemeProvider({
       }
     } catch (error) {
       // BroadcastChannel may not be available in some environments
-      console.warn('Cross-tab theme sync not available:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cross-tab theme sync not available:', error)
+      }
     }
 
     return () => {
@@ -484,7 +492,7 @@ export function ThemeProvider({
     if (!enableCrossTabSync || typeof window === 'undefined') return
     if (typeof BroadcastChannel === 'undefined') {
       // Log warning in development only
-      if (process.env['NODE_ENV'] !== 'production') {
+      if (process.env['NODE_ENV'] === 'development') {
         console.warn(
           '[Clarity Chat] BroadcastChannel API not available. ' +
             'Cross-tab theme sync will fall back to localStorage-only persistence. ' +

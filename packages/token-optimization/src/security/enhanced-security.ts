@@ -171,7 +171,9 @@ export class EnhancedSecurityManager {
       return result
     } catch (error: unknown) {
       // Fail-safe response with detailed error information
-      console.error(`[SECURITY ERROR] Request ${requestId} failed:`, error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[SECURITY ERROR] Request ${requestId} failed:`, error)
+      }
 
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error'
@@ -278,7 +280,12 @@ export class EnhancedSecurityManager {
           }
         }
       } catch (rateLimitError) {
-        console.warn(`[RATE LIMIT ERROR] Request ${requestId}:`, rateLimitError)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[RATE LIMIT ERROR] Request ${requestId}:`,
+            rateLimitError
+          )
+        }
         // Continue processing - don't fail open, but log and proceed
       }
     }
@@ -311,10 +318,14 @@ export class EnhancedSecurityManager {
           }
         }
       } catch (threatError) {
-        console.warn(
-          `[THREAT INTELLIGENCE ERROR] Request ${requestId}:`,
-          threatError
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              `[THREAT INTELLIGENCE ERROR] Request ${requestId}:`,
+              threatError
+            )
+          }
+        }
         // Continue processing - don't fail open, but log and proceed
       }
     }
@@ -335,7 +346,12 @@ export class EnhancedSecurityManager {
           }
         }
       } catch (zeroTrustError) {
-        console.warn(`[ZERO TRUST ERROR] Request ${requestId}:`, zeroTrustError)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[ZERO TRUST ERROR] Request ${requestId}:`,
+            zeroTrustError
+          )
+        }
         // Continue processing - don't fail open, but log and proceed
       }
     }
@@ -425,7 +441,9 @@ export class EnhancedSecurityManager {
   // Helper methods
   private setupRealTimeMonitoring(): void {
     if (this.config.enableRealTimeMonitoring) {
-      console.log('[SECURITY] Real-time monitoring enabled')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SECURITY] Real-time monitoring enabled')
+      }
       // Implementation for real-time monitoring
     }
   }
@@ -770,9 +788,13 @@ export class EnhancedSecurityManager {
       await this.redisStore.addToAuditLog(key, event.type)
     }
 
-    console.log(
-      `[QUARANTINE] Event quarantined for user ${context.userId || 'anonymous'}`
-    )
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[QUARANTINE] Event quarantined for user ${context.userId || 'anonymous'}`
+        )
+      }
+    }
 
     // In a real implementation, this would integrate with external security systems
     // For now, we just log and queue for review

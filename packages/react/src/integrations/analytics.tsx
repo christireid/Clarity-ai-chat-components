@@ -154,7 +154,9 @@ export function AnalyticsProvider({
         })
       })
       .catch((err) => {
-        console.warn('[Clarity Chat] PostHog not available:', err.message)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[Clarity Chat] PostHog not available:', err.message)
+        }
         setIsReady(true)
       })
 
@@ -175,10 +177,12 @@ export function AnalyticsProvider({
         inject({ debug: vercelConfig.debug ?? false })
       })
       .catch((err) => {
-        console.warn(
-          '[Clarity Chat] Vercel Analytics not available:',
-          err.message
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            '[Clarity Chat] Vercel Analytics not available:',
+            err.message
+          )
+        }
       })
   }, [disabled, vercelConfig])
 
@@ -387,11 +391,13 @@ export function useWebVitals(): void {
   React.useEffect(() => {
     import('web-vitals')
       .then(({ onCLS, onFID, onLCP, onFCP, onTTFB }) => {
-        onCLS(console.log)
-        onFID(console.log)
-        onLCP(console.log)
-        onFCP(console.log)
-        onTTFB(console.log)
+        if (process.env.NODE_ENV === 'development') {
+          onCLS(console.log)
+          onFID(console.log)
+          onLCP(console.log)
+          onFCP(console.log)
+          onTTFB(console.log)
+        }
       })
       .catch(() => {
         // web-vitals not available

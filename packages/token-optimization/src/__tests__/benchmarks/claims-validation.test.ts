@@ -10,7 +10,10 @@
 import { describe, test, expect } from 'vitest'
 import { AccurateTokenCounter } from '../../tokenizers/accurate-counter'
 import { LLMLinguaCompressor } from '../../compression/strategies/llmlingua'
-import { quickCache, estimateCacheSavings } from '../../providers/simple-caching'
+import {
+  quickCache,
+  estimateCacheSavings,
+} from '../../providers/simple-caching'
 import { performance } from 'perf_hooks'
 
 describe('Claims Validation: Bundle Size', () => {
@@ -27,8 +30,12 @@ describe('Claims Validation: Bundle Size', () => {
     expect(actualRatio).toBeLessThan(6)
 
     // Document the accurate claim
-    console.log(`✓ Validated: gpt-tokenizer is ${actualRatio.toFixed(1)}x smaller than tiktoken`)
-    console.log('  (Not 20x as claimed in README - needs correction)')
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✓ Validated: gpt-tokenizer is ${actualRatio.toFixed(1)}x smaller than tiktoken`
+      )
+      console.log('  (Not 20x as claimed in README - needs correction)')
+    }
   })
 })
 
@@ -58,11 +65,15 @@ describe('Claims Validation: Token Counting Speed', () => {
     // Actual test threshold: <1ms
     expect(avgMs).toBeLessThan(1)
 
-    console.log(`✓ Token counting speed: ${avgMs.toFixed(3)}ms per operation`)
-    console.log(`  Throughput: ${Math.floor(1000 / avgMs)} ops/sec`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✓ Token counting speed: ${avgMs.toFixed(3)}ms per operation`)
+      console.log(`  Throughput: ${Math.floor(1000 / avgMs)} ops/sec`)
 
-    if (avgMs > 0.1) {
-      console.log(`  ⚠️  README claims <0.1ms, but actual is ${avgMs.toFixed(3)}ms`)
+      if (avgMs > 0.1) {
+        console.log(
+          `  ⚠️  README claims <0.1ms, but actual is ${avgMs.toFixed(3)}ms`
+        )
+      }
     }
 
     counter.destroy()
@@ -73,7 +84,7 @@ describe('Claims Validation: Token Counting Speed', () => {
     const texts = Array(100).fill('Test message with some content')
 
     const start = performance.now()
-    texts.forEach(text => counter.count(text))
+    texts.forEach((text) => counter.count(text))
     const end = performance.now()
 
     const totalMs = end - start
@@ -81,8 +92,10 @@ describe('Claims Validation: Token Counting Speed', () => {
 
     expect(totalMs).toBeLessThan(100) // <100ms for 100 items
 
-    console.log(`✓ Batch counting (100 items): ${totalMs.toFixed(2)}ms total`)
-    console.log(`  Average: ${avgMs.toFixed(2)}ms per item`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✓ Batch counting (100 items): ${totalMs.toFixed(2)}ms total`)
+      console.log(`  Average: ${avgMs.toFixed(2)}ms per item`)
+    }
 
     counter.destroy()
   })
@@ -109,11 +122,13 @@ describe('Claims Validation: Compression Ratios', () => {
 
     // Test moderate compression (targetRatio: 0.5 = 50% kept = 2x compression)
     const moderate = await compressor.compress(document, 0.5)
-    const moderateCompression = moderate.originalTokens / moderate.compressedTokens
+    const moderateCompression =
+      moderate.originalTokens / moderate.compressedTokens
 
     // Test aggressive compression (targetRatio: 0.2 = 20% kept = 5x compression)
     const aggressive = await compressor.compress(document, 0.2)
-    const aggressiveCompression = aggressive.originalTokens / aggressive.compressedTokens
+    const aggressiveCompression =
+      aggressive.originalTokens / aggressive.compressedTokens
 
     // Validate achievable compression ranges
     expect(moderateCompression).toBeGreaterThanOrEqual(1.5)
@@ -122,9 +137,17 @@ describe('Claims Validation: Compression Ratios', () => {
     expect(aggressiveCompression).toBeGreaterThanOrEqual(3)
     expect(aggressiveCompression).toBeLessThanOrEqual(10)
 
-    console.log(`✓ Moderate compression (50% target): ${moderateCompression.toFixed(1)}x`)
-    console.log(`✓ Aggressive compression (20% target): ${aggressiveCompression.toFixed(1)}x`)
-    console.log(`  Tested range: 2-10x (README claims "up to 20x" - not validated)`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✓ Moderate compression (50% target): ${moderateCompression.toFixed(1)}x`
+      )
+      console.log(
+        `✓ Aggressive compression (20% target): ${aggressiveCompression.toFixed(1)}x`
+      )
+      console.log(
+        `  Tested range: 2-10x (README claims "up to 20x" - not validated)`
+      )
+    }
   }, 30000) // 30s timeout for compression
 
   test('typical compression is 4-5x', async () => {
@@ -140,7 +163,11 @@ describe('Claims Validation: Compression Ratios', () => {
     expect(compressionRatio).toBeGreaterThan(3)
     expect(compressionRatio).toBeLessThan(7)
 
-    console.log(`✓ Typical compression: ${compressionRatio.toFixed(1)}x at 20% target`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✓ Typical compression: ${compressionRatio.toFixed(1)}x at 20% target`
+      )
+    }
   }, 30000)
 })
 
@@ -168,9 +195,17 @@ describe('Claims Validation: Provider Caching Savings', () => {
     expect(result.estimatedSavings.percentage).toBeGreaterThanOrEqual(0.85)
     expect(result.estimatedSavings.percentage).toBeLessThanOrEqual(0.95)
 
-    console.log(`✓ Provider caching savings: ${(result.estimatedSavings.percentage * 100).toFixed(0)}%`)
-    console.log(`  Cached tokens: ${result.estimatedSavings.tokens}`)
-    console.log(`  Status: VALIDATED - matches provider documentation`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✓ Provider caching savings: ${(result.estimatedSavings.percentage * 100).toFixed(0)}%`
+      )
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`  Cached tokens: ${result.estimatedSavings.tokens}`)
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`  Status: VALIDATED - matches provider documentation`)
+      }
+    }
   })
 
   test('savings estimation is accurate', async () => {
@@ -191,7 +226,11 @@ describe('Claims Validation: Provider Caching Savings', () => {
     expect(estimate.estimatedSavingsPercent).toBeGreaterThan(80)
     expect(estimate.estimatedSavingsPercent).toBeLessThan(100)
 
-    console.log(`✓ Estimated savings: ${estimate.estimatedSavingsPercent.toFixed(0)}%`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✓ Estimated savings: ${estimate.estimatedSavingsPercent.toFixed(0)}%`
+      )
+    }
   })
 })
 
@@ -205,7 +244,10 @@ describe('Claims Validation: Accuracy', () => {
     // Known token counts (approximate - exact validation would require tiktoken comparison)
     const testCases = [
       { text: 'Hello, world!', expectedRange: [2, 4] },
-      { text: 'The quick brown fox jumps over the lazy dog', expectedRange: [9, 11] },
+      {
+        text: 'The quick brown fox jumps over the lazy dog',
+        expectedRange: [9, 11],
+      },
       { text: 'a '.repeat(100), expectedRange: [95, 105] },
     ]
 
@@ -217,9 +259,19 @@ describe('Claims Validation: Accuracy', () => {
       expect(count).toBeLessThanOrEqual(max)
     })
 
-    console.log('✓ Token counting produces expected ranges')
-    console.log('  Note: 99%+ accuracy claim is based on gpt-tokenizer library')
-    console.log('  No comparative test against tiktoken exists in codebase')
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✓ Token counting produces expected ranges')
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '  Note: 99%+ accuracy claim is based on gpt-tokenizer library'
+        )
+      }
+      if (process.env.NODE_ENV === 'development') {
+        console.log('  No comparative test against tiktoken exists in codebase')
+      }
+    }
 
     counter.destroy()
   })
@@ -227,8 +279,6 @@ describe('Claims Validation: Accuracy', () => {
 
 describe('Claims Summary Report', () => {
   test('generate claims validation report', () => {
-    console.log('\n=== CLAIMS VALIDATION SUMMARY ===\n')
-
     const claims = [
       {
         claim: '90% cost reduction (provider caching)',
@@ -251,7 +301,8 @@ describe('Claims Summary Report', () => {
         claim: 'Up to 20x compression',
         status: '⚠️  ASPIRATIONAL',
         evidence: 'Typical: 4-5x; Tested max: 10x',
-        correction: 'Change to "2-10x compression" with note about typical 4-5x',
+        correction:
+          'Change to "2-10x compression" with note about typical 4-5x',
       },
       {
         claim: '99%+ token counting accuracy',
@@ -261,14 +312,28 @@ describe('Claims Summary Report', () => {
       },
     ]
 
-    claims.forEach(({ claim, status, evidence, correction }) => {
-      console.log(`${status} ${claim}`)
-      console.log(`   Evidence: ${evidence}`)
-      if (correction) {
-        console.log(`   Fix: ${correction}`)
+    if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('\n=== CLAIMS VALIDATION SUMMARY ===\n')
       }
-      console.log()
-    })
+
+      claims.forEach(({ claim, status, evidence, correction }) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`${status} ${claim}`)
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`   Evidence: ${evidence}`)
+        }
+        if (correction) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`   Fix: ${correction}`)
+          }
+        }
+        if (process.env.NODE_ENV === 'development') {
+          console.log()
+        }
+      })
+    }
 
     // This test always passes but generates report
     expect(claims).toHaveLength(5)

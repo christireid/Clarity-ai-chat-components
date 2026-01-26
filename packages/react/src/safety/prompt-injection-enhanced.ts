@@ -594,7 +594,9 @@ Respond with JSON:
         explanation: result.explanation,
       }
     } catch (error) {
-      console.error('LLM-as-judge detection failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('LLM-as-judge detection failed:', error)
+      }
       return {
         safe: true,
         confidence: 0,

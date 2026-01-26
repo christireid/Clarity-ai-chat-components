@@ -325,7 +325,9 @@ export class MemoryService {
         memory.embedding = await this.embeddings.embedText(content)
       } catch (error) {
         if (this.config.debug) {
-          console.error('Failed to generate embedding:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to generate embedding:', error)
+          }
         }
       }
     } else if (options.embedding) {
@@ -426,7 +428,9 @@ export class MemoryService {
       // Run decay in background (don't block recall)
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          console.error('Auto-decay failed:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Auto-decay failed:', error)
+          }
         }
       })
     }
@@ -554,7 +558,9 @@ export class MemoryService {
           updated.embedding = await this.embeddings.embedText(updates.content)
         } catch (error) {
           if (this.config.debug) {
-            console.error('Failed to regenerate embedding:', error)
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Failed to regenerate embedding:', error)
+            }
           }
         }
       }
@@ -572,10 +578,12 @@ export class MemoryService {
         this.cache.set(id, originalMemory)
 
         if (this.config.debug) {
-          console.error(
-            'Vector store update failed, rolled back cache changes:',
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              'Vector store update failed, rolled back cache changes:',
+              error
+            )
+          }
         }
 
         throw new Error(
@@ -614,10 +622,12 @@ export class MemoryService {
       this.cache.set(id, originalMemory)
 
       if (this.config.debug) {
-        console.error(
-          'Vector store delete failed, rolled back cache deletion:',
-          error
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            'Vector store delete failed, rolled back cache deletion:',
+            error
+          )
+        }
       }
 
       throw new Error(
@@ -722,7 +732,9 @@ export class MemoryService {
       await this.vectorOps.update(items)
     } catch (error) {
       if (this.config.debug) {
-        console.error('Failed to flush buffer to vector store:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to flush buffer to vector store:', error)
+        }
       }
       throw new Error(
         'Buffer flush failed: vector store sync error. Buffer preserved for retry.'
@@ -849,7 +861,9 @@ export class MemoryService {
     this.cleanupInterval = setInterval(() => {
       this.cleanup().catch((error) => {
         if (this.config.debug) {
-          console.error('Cleanup task failed:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Cleanup task failed:', error)
+          }
         }
       })
     }, this.config.cleanupInterval!)
@@ -862,7 +876,9 @@ export class MemoryService {
     this.summarizationInterval = setInterval(() => {
       this.runSummarizationCycle().catch((error) => {
         if (this.config.debug) {
-          console.error('Summarization task failed:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Summarization task failed:', error)
+          }
         }
       })
     }, this.config.summarizationInterval!)
@@ -875,7 +891,9 @@ export class MemoryService {
     this.decayInterval = setInterval(() => {
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          console.error('Decay task failed:', error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Decay task failed:', error)
+          }
         }
       })
     }, this.config.decay!.decayInterval!)
@@ -928,16 +946,20 @@ export class MemoryService {
         }
       } catch (error) {
         if (this.config.debug) {
-          console.error(`Failed to process decay for ${result.id}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`Failed to process decay for ${result.id}:`, error)
+          }
         }
       }
     }
 
     if (this.config.debug && candidates.length > 0) {
-      console.log(
-        `[MemoryService] Decay cycle complete: ` +
-          `${deleted} deleted, ${compressed} compressed, ${kept} kept`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[MemoryService] Decay cycle complete: ` +
+            `${deleted} deleted, ${compressed} compressed, ${kept} kept`
+        )
+      }
     }
 
     return {
@@ -1036,29 +1058,35 @@ export class MemoryService {
           bytesSaved += memory.content.length - summary.length
 
           if (this.config.debug) {
-            console.log(
-              `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
-            )
+            if (process.env.NODE_ENV === 'development') {
+              console.log(
+                `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
+              )
+            }
           }
         } else {
           skippedCount++
         }
       } catch (error) {
         if (this.config.debug) {
-          console.error(`Failed to summarize memory ${memory.id}:`, error)
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`Failed to summarize memory ${memory.id}:`, error)
+          }
         }
       }
     }
 
     // Log cycle metrics
     if (this.config.debug && (summarizedCount > 0 || batch.length > 0)) {
-      console.log(
-        `[MemoryService] Summarization cycle complete: ` +
-          `${summarizedCount}/${batch.length} memories compressed, ` +
-          `${bytesSaved} bytes saved, ` +
-          `${skippedCount} skipped (insufficient compression), ` +
-          `${candidatesForSummarization.length - batch.length} queued for next cycle`
-      )
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[MemoryService] Summarization cycle complete: ` +
+            `${summarizedCount}/${batch.length} memories compressed, ` +
+            `${bytesSaved} bytes saved, ` +
+            `${skippedCount} skipped (insufficient compression), ` +
+            `${candidatesForSummarization.length - batch.length} queued for next cycle`
+        )
+      }
     }
   }
 
@@ -1194,7 +1222,9 @@ export class MemoryService {
           listener(event)
         } catch (error) {
           if (this.config.debug) {
-            console.error('Event listener error:', error)
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Event listener error:', error)
+            }
           }
         }
       }

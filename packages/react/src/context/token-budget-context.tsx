@@ -109,9 +109,11 @@ export function TokenBudgetProvider({
   const setModel = React.useCallback(
     (newModel: BudgetMonitorModel) => {
       if (!isValidBudgetMonitorModel(newModel)) {
-        console.warn(
-          `[TokenBudgetProvider] Invalid model: "${newModel}". Ignoring.`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `[TokenBudgetProvider] Invalid model: "${newModel}". Ignoring.`
+          )
+        }
         return
       }
 

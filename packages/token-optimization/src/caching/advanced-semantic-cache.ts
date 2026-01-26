@@ -502,9 +502,13 @@ export class AdvancedSemanticCache {
       if (prediction.confidence > 0.7) {
         // Pre-cache predicted content
         // This would typically fetch content from external sources
-        console.log(
-          `Predictive caching: Preparing content for ${prediction.key}`
-        )
+        if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `Predictive caching: Preparing content for ${prediction.key}`
+            )
+          }
+        }
       }
     }
   }
@@ -744,7 +748,9 @@ class CacheMonitoring {
   }
 
   recordError(operation: string, error: Error): void {
-    console.error(`[Cache Error] ${operation}:`, error.message)
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`[Cache Error] ${operation}:`, error.message)
+    }
   }
 
   getMetrics(): CacheMetric[] {

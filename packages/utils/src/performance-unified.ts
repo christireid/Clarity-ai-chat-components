@@ -601,7 +601,7 @@ export class UnifiedPerformanceMonitor {
     try {
       performance.mark(`${id}-end`)
       performance.measure(id, `${id}-start`, `${id}-end`)
-    } catch (_error) {
+    } catch {
       // Marks might not exist, ignore
     }
 
@@ -1108,7 +1108,9 @@ export class MemoryManager {
       try {
         callback()
       } catch (error) {
-        console.error('Memory cleanup error:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Memory cleanup error:', error)
+        }
       }
     })
 
@@ -1127,7 +1129,9 @@ export class MemoryManager {
     if (!performance.memory) return true
 
     // @ts-expect-error - memory is Chrome-specific
-    const usedMemory = Math.round((performance.memory.usedJSHeapSize || 0) / 1024 / 1024)
+    const usedMemory = Math.round(
+      (performance.memory.usedJSHeapSize || 0) / 1024 / 1024
+    )
     return usedMemory < this.maxMemoryUsage
   }
 

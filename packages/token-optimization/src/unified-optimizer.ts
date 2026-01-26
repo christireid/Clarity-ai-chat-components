@@ -224,7 +224,9 @@ export class UnifiedTokenOptimizer {
           // For now, keep content as-is since the caching happens at API layer
         }
       } catch (error) {
-        console.warn('Provider caching failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Provider caching failed:', error)
+        }
         // Continue with optimization even if provider caching fails
       }
     }
@@ -251,7 +253,9 @@ export class UnifiedTokenOptimizer {
         modelUsed = routingDecision.modelId
         techniquesApplied.push('model_routing')
       } catch (error) {
-        console.warn('Model routing failed:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Model routing failed:', error)
+        }
       }
     }
 

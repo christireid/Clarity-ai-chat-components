@@ -97,7 +97,9 @@ export function AnalyticsProvider({
         (navigator as any).msDoNotTrack
       if (doNotTrack === '1' || doNotTrack === 'yes') {
         if (config.debug) {
-          console.debug('[Analytics] Disabled due to Do Not Track setting')
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('[Analytics] Disabled due to Do Not Track setting')
+          }
         }
         return false
       }
@@ -115,10 +117,12 @@ export function AnalyticsProvider({
 
     const initializeProviders = async () => {
       if (config.debug) {
-        console.debug(
-          '[Analytics] Initializing providers:',
-          config.providers?.map((p) => p.name)
-        )
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(
+            '[Analytics] Initializing providers:',
+            config.providers?.map((p) => p.name)
+          )
+        }
       }
 
       try {
@@ -128,10 +132,14 @@ export function AnalyticsProvider({
         setIsInitialized(true)
 
         if (config.debug) {
-          console.debug('[Analytics] Providers initialized successfully')
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('[Analytics] Providers initialized successfully')
+          }
         }
       } catch (error) {
-        console.error('[Analytics] Failed to initialize providers:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Analytics] Failed to initialize providers:', error)
+        }
         setIsInitialized(true) // Continue even if initialization fails
       }
     }
@@ -159,7 +167,9 @@ export function AnalyticsProvider({
       }
 
       if (config.debug) {
-        console.debug('[Analytics] Track:', event)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Track:', event)
+        }
       }
 
       // Send to all providers
@@ -167,10 +177,12 @@ export function AnalyticsProvider({
         try {
           provider.track(event)
         } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
         }
       })
     },
@@ -183,17 +195,21 @@ export function AnalyticsProvider({
       if (!isEnabled || !isInitialized) return
 
       if (config.debug) {
-        console.debug('[Analytics] Page:', pageView)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Page:', pageView)
+        }
       }
 
       config.providers?.forEach((provider) => {
         try {
           provider.page?.(pageView)
         } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
         }
       })
     },
@@ -279,17 +295,21 @@ export function AnalyticsProvider({
       currentUserId.current = user.id
 
       if (config.debug) {
-        console.debug('[Analytics] Identify:', user)
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[Analytics] Identify:', user)
+        }
       }
 
       config.providers?.forEach((provider) => {
         try {
           provider.identify?.(user)
         } catch (error) {
-          console.error(
-            `[Analytics] Error in provider ${provider.name}:`,
-            error
-          )
+          if (process.env.NODE_ENV === 'development') {
+            console.error(
+              `[Analytics] Error in provider ${provider.name}:`,
+              error
+            )
+          }
         }
       })
     },
@@ -303,14 +323,21 @@ export function AnalyticsProvider({
     currentUserId.current = undefined
 
     if (config.debug) {
-      console.debug('[Analytics] Reset')
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[Analytics] Reset')
+      }
     }
 
     config.providers?.forEach((provider) => {
       try {
         provider.reset?.()
       } catch (error) {
-        console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error(
+            `[Analytics] Error in provider ${provider.name}:`,
+            error
+          )
+        }
       }
     })
   }, [isEnabled, isInitialized, config])

@@ -62,7 +62,9 @@ export function CodeWindowHeader({
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } catch (err) {
-      console.error('Failed to download code:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to download code:', err)
+      }
     }
   }
 
