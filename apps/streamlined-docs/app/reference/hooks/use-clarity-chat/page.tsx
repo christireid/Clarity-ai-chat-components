@@ -26,6 +26,7 @@ import {
   Brain,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodeBlock } from '@/components/Docs/CodeBlock'
 

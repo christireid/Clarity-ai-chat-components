@@ -20,6 +20,7 @@ import {
   MessageSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 
 // ISR Configuration
