@@ -63,6 +63,7 @@ export function WeatherCard({
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       className="w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
     >
@@ -74,6 +75,7 @@ export function WeatherCard({
             <motion.div
               className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-yellow-200/30 blur-3xl"
               animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.7, 0.5] }}
+              viewport={{ once: true }}
               transition={{ duration: durations.slower, repeat: Infinity }}
             />
           )}
@@ -85,6 +87,7 @@ export function WeatherCard({
                   className="absolute w-0.5 h-4 bg-white/30 rounded-full"
                   style={{ left: `${Math.random() * 100}%`, top: -20 }}
                   animate={{ y: [0, 200], opacity: [0.7, 0] }}
+                  viewport={{ once: true }}
                   transition={{
                     duration: 0.8 + Math.random() * 0.4,
                     repeat: Infinity,
@@ -106,6 +109,7 @@ export function WeatherCard({
                     x: [0, Math.random() * 40 - 20],
                     opacity: [0.8, 0],
                   }}
+                  viewport={{ once: true }}
                   transition={{
                     duration: 3 + Math.random() * 2,
                     repeat: Infinity,
@@ -129,6 +133,7 @@ export function WeatherCard({
             </div>
             <motion.div
               animate={{ rotate: condition === 'sunny' ? 360 : 0 }}
+              viewport={{ once: true }}
               transition={{
                 duration: durations.slower,
                 repeat: Infinity,
@@ -145,6 +150,7 @@ export function WeatherCard({
               className="text-7xl font-light"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
               {Math.round(temperature)}
@@ -164,6 +170,7 @@ export function WeatherCard({
                 className="flex items-center gap-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
               >
                 <Droplet className="w-4 h-4" />
@@ -175,6 +182,7 @@ export function WeatherCard({
                 className="flex items-center gap-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
               >
                 <Gauge className="w-4 h-4" />
@@ -197,6 +205,7 @@ export function WeatherCard({
                   className="flex flex-col items-center gap-1"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                 >
                   <span className="text-xs text-slate-500 dark:text-slate-400">
