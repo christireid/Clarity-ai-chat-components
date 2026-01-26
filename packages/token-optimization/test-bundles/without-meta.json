@@ -1,0 +1,492 @@
+{
+  "inputs": {
+    "../dist/chunk-6UAVPQGN.js": {
+      "bytes": 16089,
+      "imports": [],
+      "format": "esm"
+    },
+    "../dist/chunk-W25PVK3C.js": {
+      "bytes": 29334,
+      "imports": [
+        {
+          "path": "../dist/chunk-6UAVPQGN.js",
+          "kind": "import-statement",
+          "original": "./chunk-6UAVPQGN.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/bpeRanks/cl100k_base.js": {
+      "bytes": 1058563,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/constants.js": {
+      "bytes": 127,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/utfUtil.js": {
+      "bytes": 3369,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/util.js": {
+      "bytes": 500,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/BytePairEncodingCore.js": {
+      "bytes": 16904,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/utfUtil.js",
+          "kind": "import-statement",
+          "original": "./utfUtil.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/util.js",
+          "kind": "import-statement",
+          "original": "./util.js"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/models.js": {
+      "bytes": 27049,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js": {
+      "bytes": 397,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/mapping.js": {
+      "bytes": 1248,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/models.js",
+          "kind": "import-statement",
+          "original": "./models.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "./specialTokens.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js": {
+      "bytes": 320,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/cl100k_base.js": {
+      "bytes": 710,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/o200k_base.js": {
+      "bytes": 708,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/p50k_base.js": {
+      "bytes": 429,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/modelParams.js",
+          "kind": "import-statement",
+          "original": "../modelParams.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/p50k_edit.js": {
+      "bytes": 577,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/modelParams.js",
+          "kind": "import-statement",
+          "original": "../modelParams.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/r50k_base.js": {
+      "bytes": 429,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/modelParams.js",
+          "kind": "import-statement",
+          "original": "../modelParams.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/modelParams.js": {
+      "bytes": 1011,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/cl100k_base.js",
+          "kind": "import-statement",
+          "original": "./encodingParams/cl100k_base.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/o200k_base.js",
+          "kind": "import-statement",
+          "original": "./encodingParams/o200k_base.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/p50k_base.js",
+          "kind": "import-statement",
+          "original": "./encodingParams/p50k_base.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/p50k_edit.js",
+          "kind": "import-statement",
+          "original": "./encodingParams/p50k_edit.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encodingParams/r50k_base.js",
+          "kind": "import-statement",
+          "original": "./encodingParams/r50k_base.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/GptEncoding.js": {
+      "bytes": 15535,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/BytePairEncodingCore.js",
+          "kind": "import-statement",
+          "original": "./BytePairEncodingCore.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/constants.js",
+          "kind": "import-statement",
+          "original": "./constants.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/mapping.js",
+          "kind": "import-statement",
+          "original": "./mapping.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/modelParams.js",
+          "kind": "import-statement",
+          "original": "./modelParams.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/models.js",
+          "kind": "import-statement",
+          "original": "./models.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "./specialTokens.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/utfUtil.js",
+          "kind": "import-statement",
+          "original": "./utfUtil.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/util.js",
+          "kind": "import-statement",
+          "original": "./util.js"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encoding/cl100k_base.js": {
+      "bytes": 829,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/bpeRanks/cl100k_base.js",
+          "kind": "import-statement",
+          "original": "../bpeRanks/cl100k_base.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/GptEncoding.js",
+          "kind": "import-statement",
+          "original": "../GptEncoding.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/constants.js",
+          "kind": "import-statement",
+          "original": "../constants.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/specialTokens.js",
+          "kind": "import-statement",
+          "original": "../specialTokens.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/main.js": {
+      "bytes": 204,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encoding/cl100k_base.js",
+          "kind": "import-statement",
+          "original": "./encoding/cl100k_base.js"
+        },
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/encoding/cl100k_base.js",
+          "kind": "import-statement",
+          "original": "./encoding/cl100k_base.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../dist/chunk-EOW3UENY.js": {
+      "bytes": 22607,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/main.js",
+          "kind": "import-statement",
+          "original": "gpt-tokenizer"
+        }
+      ],
+      "format": "esm"
+    },
+    "../dist/chunk-6E472JNC.js": {
+      "bytes": 1167,
+      "imports": [],
+      "format": "esm"
+    },
+    "../dist/chunk-AB5NWHTN.js": {
+      "bytes": 67981,
+      "imports": [
+        {
+          "path": "../dist/chunk-EOW3UENY.js",
+          "kind": "import-statement",
+          "original": "./chunk-EOW3UENY.js"
+        },
+        {
+          "path": "../dist/chunk-6E472JNC.js",
+          "kind": "import-statement",
+          "original": "./chunk-6E472JNC.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../dist/chunk-VLOEGHY4.js": {
+      "bytes": 28346,
+      "imports": [
+        {
+          "path": "../dist/chunk-6UAVPQGN.js",
+          "kind": "import-statement",
+          "original": "./chunk-6UAVPQGN.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../dist/chunk-M6223QPK.js": {
+      "bytes": 35240,
+      "imports": [
+        {
+          "path": "../../../node_modules/.pnpm/gpt-tokenizer@2.9.0/node_modules/gpt-tokenizer/esm/main.js",
+          "kind": "import-statement",
+          "original": "gpt-tokenizer"
+        }
+      ],
+      "format": "esm"
+    },
+    "../dist/index.js": {
+      "bytes": 217830,
+      "imports": [
+        {
+          "path": "../dist/chunk-W25PVK3C.js",
+          "kind": "import-statement",
+          "original": "./chunk-W25PVK3C.js"
+        },
+        {
+          "path": "../dist/chunk-W25PVK3C.js",
+          "kind": "import-statement",
+          "original": "./chunk-W25PVK3C.js"
+        },
+        {
+          "path": "../dist/chunk-AB5NWHTN.js",
+          "kind": "import-statement",
+          "original": "./chunk-AB5NWHTN.js"
+        },
+        {
+          "path": "../dist/chunk-VLOEGHY4.js",
+          "kind": "import-statement",
+          "original": "./chunk-VLOEGHY4.js"
+        },
+        {
+          "path": "../dist/chunk-VLOEGHY4.js",
+          "kind": "import-statement",
+          "original": "./chunk-VLOEGHY4.js"
+        },
+        {
+          "path": "../dist/chunk-6UAVPQGN.js",
+          "kind": "import-statement",
+          "original": "./chunk-6UAVPQGN.js"
+        },
+        {
+          "path": "../dist/chunk-6UAVPQGN.js",
+          "kind": "import-statement",
+          "original": "./chunk-6UAVPQGN.js"
+        },
+        {
+          "path": "../dist/chunk-M6223QPK.js",
+          "kind": "import-statement",
+          "original": "./chunk-M6223QPK.js"
+        },
+        {
+          "path": "../dist/chunk-EOW3UENY.js",
+          "kind": "import-statement",
+          "original": "./chunk-EOW3UENY.js"
+        },
+        {
+          "path": "../dist/chunk-EOW3UENY.js",
+          "kind": "import-statement",
+          "original": "./chunk-EOW3UENY.js"
+        },
+        {
+          "path": "../dist/chunk-6E472JNC.js",
+          "kind": "import-statement",
+          "original": "./chunk-6E472JNC.js"
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "test-without-tokenizers.ts": {
+      "bytes": 265,
+      "imports": [
+        {
+          "path": "../dist/index.js",
+          "kind": "import-statement",
+          "original": "@clarity-chat/token-optimization"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "without-tokenizers.bundle.js": {
+      "imports": [
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "react/jsx-runtime",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "exports": [],
+      "entryPoint": "test-without-tokenizers.ts",
+      "inputs": {
+        "../dist/chunk-W25PVK3C.js": {
+          "bytesInOutput": 11717
+        },
+        "../dist/index.js": {
+          "bytesInOutput": 16147
+        },
+        "test-without-tokenizers.ts": {
+          "bytesInOutput": 40
+        }
+      },
+      "bytes": 28040
+    }
+  }
+}
