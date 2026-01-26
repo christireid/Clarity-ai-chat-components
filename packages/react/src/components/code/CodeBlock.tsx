@@ -3,7 +3,6 @@
 import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
-import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
 import { cn } from '@clarity-chat/primitives'
 import { usePerformanceTracking } from '../../hooks/performance/usePerformanceMonitoring'
 import {
@@ -22,6 +21,31 @@ import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
 import { ContentErrorBoundary } from '../ui/ErrorBoundary'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
+
+// Try to import shiki, but handle gracefully if not installed
+let shikiModule: {
+  codeToHtml: typeof import('shiki').codeToHtml
+  BundledLanguage?: unknown
+  BundledTheme?: unknown
+} | null = null
+
+let shikiImportError: Error | null = null
+
+try {
+  shikiModule = require('shiki')
+} catch (err) {
+  shikiImportError =
+    err instanceof Error ? err : new Error('Failed to load shiki')
+  if (typeof window === 'undefined') {
+    // Only log on server to avoid spamming browser console
+    logger.warn(
+      'shiki peer dependency not found. CodeBlock will use basic syntax highlighting. Install with: npm install shiki'
+    )
+  }
+}
+
+type BundledLanguage = string
+type BundledTheme = string
 
 /**
  * Font family options
@@ -263,7 +287,7 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [enableKeyboardShortcuts, handleCopy, handleDownload])
 
-  // Highlight code with Shiki
+  // Highlight code with Shiki (or fallback to basic highlighting)
   React.useEffect(() => {
     let cancelled = false
 
@@ -271,8 +295,20 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       setIsLoading(true)
       setError(null)
 
+      // Check if shiki is available
+      if (!shikiModule?.codeToHtml) {
+        // Fallback to basic pre/code display
+        if (!cancelled) {
+          const fallbackHtml = `<pre class="shiki"><code>${escapeHtml(code)}</code></pre>`
+          setHighlightedHtml(fallbackHtml)
+          setError(shikiImportError)
+          setIsLoading(false)
+        }
+        return
+      }
+
       try {
-        const html = await codeToHtml(code, {
+        const html = await shikiModule.codeToHtml(code, {
           lang: language as BundledLanguage,
           theme: shikiTheme,
           transformers: [
@@ -370,6 +406,46 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       data-language={language}
       tabIndex={enableKeyboardShortcuts ? 0 : undefined}
     >
+      {/* Shiki Missing Warning */}
+      {!shikiModule && (
+        <div
+          className={cn(
+            'px-4 py-3',
+            'bg-amber-500/10 border-b border-amber-500/20',
+            'text-amber-200 text-sm'
+          )}
+          role="alert"
+        >
+          <div className="flex items-start gap-2">
+            <span className="text-amber-400 font-semibold" aria-hidden="true">
+              ⚠
+            </span>
+            <div className="flex-1 space-y-1">
+              <p className="font-medium">
+                CodeBlock requires &apos;shiki&apos; for syntax highlighting.
+              </p>
+              <p className="text-amber-300/90">
+                Install it with:{' '}
+                <code className="px-1.5 py-0.5 bg-black/20 rounded font-mono text-xs">
+                  npm install shiki
+                </code>
+              </p>
+              <p className="text-xs text-amber-300/80">
+                See:{' '}
+                <a
+                  href="https://clarity-chat.dev/docs/peer-dependencies"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-amber-200 transition-colors"
+                >
+                  https://clarity-chat.dev/docs/peer-dependencies
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <CodeBlockHeader
         title={title}

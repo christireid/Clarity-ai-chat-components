@@ -25,6 +25,12 @@ const commonConfig = {
     'shiki',
     'lucide-react',
     'jszip',
+    // Phase 2 externalizations (required features - ~175KB savings)
+    'react-markdown',
+    'remark-gfm',
+    'rehype-highlight',
+    'prismjs',
+    'zod',
   ],
   sourcemap: false,
   minify: true,

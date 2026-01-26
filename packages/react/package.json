@@ -169,19 +169,27 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "lucide-react": "^0.500.0",
+    "zod": "^3.24.0",
     "flowtoken": "^1.0.0",
     "mermaid": "^11.0.0",
     "pdfjs-dist": "^3.0.0 || ^4.0.0",
     "mammoth": "^1.0.0",
     "cohere-ai": "^7.0.0",
     "shiki": "^3.0.0",
-    "jszip": "^3.10.0"
+    "jszip": "^3.10.0",
+    "prismjs": "^1.29.0",
+    "react-markdown": "^10.0.0",
+    "remark-gfm": "^4.0.0",
+    "rehype-highlight": "^7.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
       "optional": true
     },
     "lucide-react": {
+      "optional": false
+    },
+    "zod": {
       "optional": false
     },
     "flowtoken": {
@@ -204,6 +212,18 @@
     },
     "jszip": {
       "optional": true
+    },
+    "prismjs": {
+      "optional": true
+    },
+    "react-markdown": {
+      "optional": false
+    },
+    "remark-gfm": {
+      "optional": false
+    },
+    "rehype-highlight": {
+      "optional": false
     }
   },
   "dependencies": {
@@ -216,17 +236,11 @@
     "@clarity-chat/utils": "workspace:*",
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-virtual": "^3.11.2",
-    "@types/prismjs": "^1.26.5",
     "isomorphic-dompurify": "^2.21.0",
-    "prismjs": "^1.30.0",
-    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
     "react-virtualized-auto-sizer": "^1.0.26",
     "react-window": "^1.8.11",
-    "sonner": "^1.7.1",
-    "rehype-highlight": "^7.0.2",
-    "remark-gfm": "^4.0.1",
-    "zod": "^3.24.0"
+    "sonner": "^1.7.1"
   },
   "devDependencies": {
     "@storybook/react": "^10.1.4",
@@ -234,6 +248,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.10.2",
+    "@types/prismjs": "^1.26.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/react-window": "^1.8.8",
@@ -242,6 +257,11 @@
     "@vitest/ui": "^4.0.15",
     "happy-dom": "^20.0.11",
     "jsdom": "^27.2.0",
+    "prismjs": "^1.30.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "rehype-highlight": "^7.0.2",
+    "zod": "^3.24.0",
     "size-limit": "^12.0.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",

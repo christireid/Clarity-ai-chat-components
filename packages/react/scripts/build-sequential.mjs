@@ -26,6 +26,12 @@ const externals = [
   'shiki',
   'lucide-react',
   'jszip',
+  // Phase 2 externalizations (required features - ~175KB savings)
+  'react-markdown',
+  'remark-gfm',
+  'rehype-highlight',
+  'prismjs',
+  'zod',
 ]
 
 const entries = [

@@ -6,7 +6,14 @@ import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 
-// Dynamic import of Prism to handle cases where it's not available
+/**
+ * Dynamic import of Prism to handle cases where it's not available
+ *
+ * PEER DEPENDENCY: prismjs is an optional peer dependency
+ * - If not installed, code blocks will render without syntax highlighting
+ * - Install with: npm install prismjs
+ * - Supports graceful degradation with plain text fallback
+ */
 let Prism: typeof import('prismjs') | null = null
 let prismLoaded = false
 let prismLoadPromise: Promise<typeof import('prismjs') | null> | null = null
@@ -50,8 +57,10 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
       prismLoaded = true
       return Prism
     } catch (error) {
+      // Graceful degradation: prismjs is optional
+      // Code will render as plain text without syntax highlighting
       logger.warn(
-        'Prism.js not available, syntax highlighting disabled:',
+        'Prism.js not available (install with: npm install prismjs), syntax highlighting disabled:',
         error
       )
       prismLoadPromise = null
