@@ -103,6 +103,7 @@ export function FeedbackButtons({ messageId, onFeedback, className }: FeedbackBu
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
+              viewport={{ once: true }}
               className="text-xs text-muted-foreground ml-2"
             >
               Thanks for your feedback!
@@ -118,6 +119,7 @@ export function FeedbackButtons({ messageId, onFeedback, className }: FeedbackBu
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            viewport={{ once: true }}
             className="space-y-2"
           >
             <label htmlFor={`feedback-comment-${messageId}`} className="sr-only">
