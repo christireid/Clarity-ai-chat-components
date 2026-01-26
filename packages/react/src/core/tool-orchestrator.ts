@@ -17,13 +17,13 @@
 import { ToolRegistry } from './tool-registry'
 import { ToolExecutor } from './tool-executor'
 import { ToolLifecycleManager } from './tool-lifecycle'
+import type type, { ToolCallRecord, ToolCallStatus } from './tool-lifecycle'
 import type {
   ToolDefinition,
   ToolArguments,
   ToolResult,
   ToolExecutionContext,
 } from '../types/tool-definition'
-import type { ToolCallStatus, ToolCallRecord } from './tool-lifecycle'
 
 // =============================================================================
 // Orchestrator Configuration

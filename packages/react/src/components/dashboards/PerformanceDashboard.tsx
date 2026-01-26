@@ -7,8 +7,7 @@ import {
   CardTitle,
   CardContent,
 } from '@clarity-chat/primitives'
-import { Badge } from '@clarity-chat/primitives'
-import { cn } from '@clarity-chat/primitives'
+import { Badge, cn } from '@clarity-chat/primitives'
 import { UnifiedPerformanceMonitor as PerformanceMonitor } from '@clarity-chat/utils'
 
 interface PerformanceDashboardProps {

@@ -9,13 +9,12 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
 import { Skeleton } from './skeleton'
 

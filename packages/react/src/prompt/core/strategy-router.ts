@@ -7,8 +7,8 @@
  * - Model capabilities
  */
 
-import type { ModelProfile } from './model-profiles'
-import { getModelProfileOrDefault, MODEL_PROFILES } from './model-profiles'
+import { MODEL_PROFILES, getModelProfileOrDefault } from './model-profiles'
+import type type, { ModelProfile } from './model-profiles'
 import type { OptimizationStrategy } from './optimizer'
 // Import stub type from prompt-optimizer until compression-chain is added back
 import type { CompressionStrategy } from './engine/prompt-optimizer'

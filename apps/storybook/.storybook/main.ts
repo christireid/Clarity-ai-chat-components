@@ -26,6 +26,8 @@ const config: StorybookConfig = {
     getAbsolutePath('@vueless/storybook-dark-mode'),
     getAbsolutePath('@storybook/addon-docs'),
     './.storybook/addons/clarity-a11y/register.tsx',
+    './.storybook/addons/peer-dependency-simulator/register.tsx',
+    './.storybook/addons/bundle-size-display/register.tsx',
   ],
 
   framework: {

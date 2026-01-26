@@ -2,13 +2,12 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

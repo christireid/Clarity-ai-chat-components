@@ -17,3 +17,20 @@ export {
 } from './env-validation'
 
 export * from './runtime-validation'
+
+export {
+  isFeatureEnabled,
+  isFeatureDisabled,
+  isFeatureAvailable,
+  isPeerDependencyAvailable,
+  getMissingDependencies,
+  getFeatureStatusMessage,
+  setFeatureFlags,
+  getRuntimeConfig,
+  getFeatureFlagSummary,
+  logFeatureFlagStatus,
+  clearFeatureFlagCache,
+  type FeatureFlag,
+  type Feature,
+  type FeatureFlagConfig,
+} from './feature-flags'

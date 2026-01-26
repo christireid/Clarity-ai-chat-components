@@ -6,7 +6,7 @@
  */
 
 import { render } from '@testing-library/react'
-import type { RenderOptions } from '@testing-library/react'
+import type type, { RenderOptions } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { ThemeProvider, themes } from '../theme'
 import { AnalyticsProvider } from '../analytics'

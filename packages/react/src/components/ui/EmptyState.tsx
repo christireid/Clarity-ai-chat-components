@@ -11,7 +11,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   BotIcon,
   SearchIcon,
@@ -29,7 +29,6 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/PromptSuggestions'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

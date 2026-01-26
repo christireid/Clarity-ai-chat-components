@@ -16,12 +16,11 @@ import {
 } from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 import type { ThemeContextValue } from './theme-types'
-import { useReducedMotion } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../animations/motion-safe'
-import { cn } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, ANIMATION_PRESETS } from '../animations/constants'
 
 export type ThemeMode = 'light' | 'dark' | 'system'

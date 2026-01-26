@@ -15,8 +15,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn, Kbd } from '@clarity-chat/primitives'
-import { useReducedMotion } from '@clarity-chat/primitives'
+import { Kbd, cn, useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
 import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 

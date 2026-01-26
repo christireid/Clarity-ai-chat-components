@@ -418,7 +418,7 @@ import { useChat } from 'ai/react'
 const { messages, input, handleSubmit } = useChat()
 
 // After
-import { useClarityChat } from '@clarity-chat/react'
+import { OpenAIAdapter, useClarityChat } from '@clarity-chat/react'
 const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
 \`\`\`
       `,
@@ -438,7 +438,6 @@ const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
 ## Code Changes
 \`\`\`tsx
 // API Route (app/api/chat/route.ts)
-import { OpenAIAdapter } from '@clarity-chat/react'
 
 export async function POST(request: Request) {
   return OpenAIAdapter.createAPIAdapter({
@@ -448,7 +447,6 @@ export async function POST(request: Request) {
 }
 
 // Frontend
-import { useClarityChat } from '@clarity-chat/react'
 const chat = useClarityChat({ api: '/api/chat' })
 \`\`\`
       `,

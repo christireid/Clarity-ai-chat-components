@@ -10,9 +10,12 @@
  */
 
 import type { CoreMessage } from '../../../hooks/chat/use-chat-enhanced'
-import type { ToonNode } from '../toon'
-import type { ModelProfile } from '../model-profiles'
-import type { OptimizationStrategy } from '../optimizer'
+import { toonToMessages } from '../toon'
+import type type, { ToonNode } from '../toon'
+import { getModelProfileOrDefault } from '../model-profiles'
+import type type, { ModelProfile } from '../model-profiles'
+import { optimizeMessagesForBudget } from '../optimizer'
+import type type, { OptimizationStrategy } from '../optimizer'
 // import type { CompressionStrategy } from '../compression-chain'
 export type CompressionStrategy =
   | 'truncate'
@@ -22,14 +25,11 @@ export type CompressionStrategy =
   | 'semantic-grouping'
   | 'tool-condensing'
   | 'intent-summarization' // Temp stub
-import { toonToMessages } from '../toon'
-import { getModelProfileOrDefault } from '../model-profiles'
 import {
   estimateMessageTokens,
   getTokenizerForModel,
   estimateCost,
 } from '../tokenizer'
-import { optimizeMessagesForBudget } from '../optimizer'
 // import { compressContext } from '../compression-chain' // TODO: Re-enable when compression-chain exists
 
 // Temporary stub types for compression-chain

@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Button } from '@clarity-chat/primitives'
-import { cn } from '@clarity-chat/primitives'
+import { Button, cn } from '@clarity-chat/primitives'
 
 /**
  * Props for StreamCancellation component

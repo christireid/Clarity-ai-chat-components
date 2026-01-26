@@ -10,8 +10,8 @@
 
 import type { AdapterError } from './errors'
 import type { TokenUsage, FinishReason } from './types'
-import type { ProviderHealthMetrics } from './monitoring'
 import { globalHealthMonitorRegistry } from './monitoring'
+import type type, { ProviderHealthMetrics } from './monitoring'
 import { globalCircuitBreakerRegistry } from './circuit-breaker'
 
 /**

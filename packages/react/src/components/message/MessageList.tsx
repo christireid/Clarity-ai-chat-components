@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import type type, { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
@@ -34,7 +35,6 @@ import {
   getTimeSeparator,
   shouldShowTimeSeparator,
 } from '../../utils/message/message-grouping'
-import type { ReactNode } from 'react'
 import { ClarityError } from '../../error/clarity-error'
 
 export interface MessageListProps {

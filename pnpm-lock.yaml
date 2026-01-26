@@ -377,12 +377,36 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -417,12 +441,27 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.62.14
         version: 5.91.1(@tanstack/react-query@5.90.12(react@19.2.0))(react@19.2.0)
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
       zustand:
         specifier: ^4.4.7
         version: 4.5.7(@types/react@19.2.3)(react@19.2.0)
@@ -454,9 +493,15 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
       framer-motion:
         specifier: ^12.23.25
         version: 12.23.25(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -472,6 +517,9 @@ importers:
       recharts:
         specifier: ^2.10.3
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
@@ -497,6 +545,15 @@ importers:
 
   apps/examples/analytics-console-demo:
     dependencies:
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -512,6 +569,9 @@ importers:
       recharts:
         specifier: ^2.10.3
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -546,12 +606,24 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -571,6 +643,12 @@ importers:
 
   apps/examples/code-assistant:
     dependencies:
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -586,6 +664,18 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.10.0
@@ -626,12 +716,27 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -669,12 +774,42 @@ importers:
       '@clarity-chat/utils':
         specifier: workspace:*
         version: link:../../../packages/utils
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
+      prismjs:
+        specifier: '>=1.30.0'
+        version: 1.30.0
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      shiki:
+        specifier: ^3.0.0
+        version: 3.19.0
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -700,12 +835,36 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -737,6 +896,9 @@ importers:
       framer-motion:
         specifier: ^12.23.25
         version: 12.23.25(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -752,6 +914,9 @@ importers:
       recharts:
         specifier: ^2.10.3
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
@@ -789,6 +954,15 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.39.0
         version: 2.86.2
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       next:
         specifier: ^16.0.9
         version: 16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -798,6 +972,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
       zustand:
         specifier: ^4.4.7
         version: 4.5.7(@types/react@19.2.3)(react@19.2.0)
@@ -823,12 +1000,24 @@ importers:
       '@clarity-chat/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -857,12 +1046,27 @@ importers:
       framer-motion:
         specifier: ^12.23.25
         version: 12.23.25(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
+      prismjs:
+        specifier: '>=1.30.0'
+        version: 1.30.0
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      shiki:
+        specifier: ^3.0.0
+        version: 3.19.0
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -897,6 +1101,12 @@ importers:
       formdata-node:
         specifier: ^6.0.3
         version: 6.0.3
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -952,12 +1162,21 @@ importers:
       framer-motion:
         specifier: ^11.0.0
         version: 11.18.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -989,6 +1208,12 @@ importers:
       date-fns:
         specifier: ^3.0.0
         version: 3.6.0
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -1004,6 +1229,9 @@ importers:
       recharts:
         specifier: ^2.10.3
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
@@ -1038,15 +1266,42 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       next:
         specifier: ^16.0.9
         version: 16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      pdfjs-dist:
+        specifier: ^3.0.0 || ^4.0.0
+        version: 4.10.38
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -1081,6 +1336,15 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1090,6 +1354,9 @@ importers:
       react-router-dom:
         specifier: ^6.20.0
         version: 6.30.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1109,6 +1376,18 @@ importers:
 
   apps/examples/gallery:
     dependencies:
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      flowtoken:
+        specifier: ^1.0.0
+        version: 1.0.40(@types/react@19.2.3)(react@19.2.0)
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -1118,6 +1397,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1149,12 +1431,21 @@ importers:
       '@clarity-chat/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1183,6 +1474,15 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       next:
         specifier: ^16.0.9
         version: 16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1192,6 +1492,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -1238,9 +1541,18 @@ importers:
       express:
         specifier: ^4.21.2
         version: 4.22.1
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       isbot:
         specifier: ^5.1.17
         version: 5.1.32
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1253,6 +1565,9 @@ importers:
       socket.io-client:
         specifier: ^4.7.2
         version: 4.8.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@remix-run/dev':
         specifier: ^2.16.4
@@ -1287,6 +1602,15 @@ importers:
       '@clarity-chat/testing-utils':
         specifier: workspace:*
         version: link:../../../packages/testing-utils
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1296,6 +1620,9 @@ importers:
       recharts:
         specifier: ^2.10.3
         version: 2.15.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1324,15 +1651,42 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       next:
         specifier: ^16.0.9
         version: 16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      pdfjs-dist:
+        specifier: ^3.0.0 || ^4.0.0
+        version: 4.10.38
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-markdown:
+        specifier: ^10.0.0
+        version: 10.1.0(@types/react@19.2.3)(react@19.2.0)
+      rehype-highlight:
+        specifier: ^7.0.0
+        version: 7.0.2
+      remark-gfm:
+        specifier: ^4.0.0
+        version: 4.0.1
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -1358,6 +1712,12 @@ importers:
 
   apps/examples/streaming-chat:
     dependencies:
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)
@@ -1370,6 +1730,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -1407,6 +1770,12 @@ importers:
       '@clarity-chat/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1416,6 +1785,9 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1438,12 +1810,27 @@ importers:
       '@clarity-chat/react':
         specifier: workspace:*
         version: link:../../../packages/react
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1475,12 +1862,27 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      cohere-ai:
+        specifier: ^7.0.0
+        version: 7.20.0
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3
@@ -1509,12 +1911,24 @@ importers:
       '@clarity-chat/types':
         specifier: workspace:*
         version: link:../../../packages/types
+      framer-motion:
+        specifier: ^12.23.25
+        version: 12.27.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      jszip:
+        specifier: ^3.10.0
+        version: 3.10.1
+      lucide-react:
+        specifier: ^0.500.0
+        version: 0.500.0(react@19.2.0)
       react:
         specifier: 19.2.0
         version: 19.2.0
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       '@types/react':
         specifier: 19.2.3

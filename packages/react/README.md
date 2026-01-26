@@ -222,6 +222,32 @@ npm install -D @types/react @types/react-dom
 
 Note: framer-motion, lucide-react, and shiki include their own types.
 
+## Feature Flags (Bundle Size Optimization)
+
+You can **explicitly disable** optional features to reduce bundle size, even when peer dependencies are installed:
+
+```bash
+# .env or .env.local
+CLARITY_DISABLE_SYNTAX_HIGHLIGHTING=true  # Save ~200KB
+CLARITY_DISABLE_MARKDOWN=true             # Save ~95KB
+CLARITY_DISABLE_EXPORTS=true              # Save ~110KB
+```
+
+**Why use feature flags?**
+- Reduce bundle size by up to **405KB**
+- Faster initial page loads
+- Control which features ship to production
+- Skip features you don't need
+
+**What happens when disabled:**
+- `CLARITY_DISABLE_SYNTAX_HIGHLIGHTING`: Code blocks render as plain text (still readable)
+- `CLARITY_DISABLE_MARKDOWN`: Messages use plain text formatting (basic structure preserved)
+- `CLARITY_DISABLE_EXPORTS`: Batch exports disabled (single exports still work)
+
+See [Feature Flags Documentation](./src/utils/config/FEATURE-FLAGS.md) for complete guide.
+
+---
+
 ## Quick Start (3 Minutes)
 
 ```tsx

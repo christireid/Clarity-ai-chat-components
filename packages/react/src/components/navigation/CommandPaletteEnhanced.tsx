@@ -18,12 +18,11 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
+import { Kbd, cn, useBodyScrollLock, useReducedMotion } from '@clarity-chat/primitives'
 import {
   useFocusTrap,
   useFocusRestoration,
 } from '../../accessibility/focus-management'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
 import { EASING_FRAMER, ANIMATION_PRESETS } from '../../animations/constants'
 

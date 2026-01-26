@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   AlertCircleIcon,
   AlertTriangleIcon,
@@ -10,7 +10,6 @@ import {
   InfoIcon,
 } from '../ui/icons'
 import { RetryButton, type RetryErrorType } from './RetryButton'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

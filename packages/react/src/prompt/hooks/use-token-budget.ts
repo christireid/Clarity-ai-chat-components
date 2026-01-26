@@ -7,13 +7,13 @@
 import { useMemo, useCallback } from 'react'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ModelMetadata } from '../core/tokenizer'
-import type { OptimizationStrategy, MessagePriority } from '../core/optimizer'
+import { optimizeMessagesForBudget } from '../core/optimizer'
+import type type, { MessagePriority, OptimizationStrategy } from '../core/optimizer'
 import {
   estimateMessageTokens,
   getTokenizerForModel,
   MODEL_PRESETS,
 } from '../core/tokenizer'
-import { optimizeMessagesForBudget } from '../core/optimizer'
 
 /**
  * Options for useTokenBudget

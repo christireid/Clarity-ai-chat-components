@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { MemoryContext } from '../../memory/memory-provider'
-import type { MemoryContextValue } from '../../memory/memory-provider'
+import type type, { MemoryContextValue } from '../../memory/memory-provider'
 import { classifyError as classifyErrorUtil } from '../../utils/resilience/error-handling'
 import { devWarning, performanceWarning } from '../../internal/dev-warnings'
 import { debug } from '../../internal/debug'

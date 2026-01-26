@@ -3,13 +3,12 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { cn, Kbd } from '@clarity-chat/primitives'
+import { Kbd, cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   useFocusTrap,
   useFocusRestoration,

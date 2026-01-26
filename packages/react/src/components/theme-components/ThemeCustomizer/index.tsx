@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { useTheme, type ThemePresetName } from '../../../theme/ThemeProvider'
 import {
   modernThemes,
@@ -17,7 +17,6 @@ import {
 } from '../../../theme/modern-presets'
 import type { ColorConfig } from '../../../theme/theme-config'
 import { createTheme } from '../../../theme/create-theme'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import { useLocalStorage } from '../../../hooks/storage/use-local-storage'
 import { ColorPicker, SmartPaletteGenerator } from './ColorPicker'
 import { ThemePreviewCard } from './PresetSelector'

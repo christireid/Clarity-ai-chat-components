@@ -215,3 +215,17 @@ export {
   type ToonOptimizationResult,
   type AutoToonOptions,
 } from './toon'
+
+// Peer Detection
+export {
+  detectPeerCapabilities,
+  getPeerModule,
+  isPeerAvailable,
+  clearPeerCache,
+  getPeerDetectionStats,
+  usePeerCapabilities,
+  usePeerAvailable,
+  usePeerModule,
+  getInstallationInstructions,
+  type PeerCapabilities,
+} from './peer-detection'

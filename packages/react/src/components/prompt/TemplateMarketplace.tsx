@@ -58,8 +58,8 @@ import {
   ShieldIcon,
   ZapIcon,
 } from '../ui/icons'
-import type { SharedTemplate } from '../../prompts/sharing'
 import { templateMarketplace } from '../../prompts/sharing'
+import type type, { SharedTemplate } from '../../prompts/sharing'
 
 import {
   DURATION_SECONDS as durations,

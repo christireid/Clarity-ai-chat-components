@@ -19,6 +19,7 @@ import * as React from 'react'
 import { logger } from '@clarity-chat/utils/logger'
 import { cn } from '@clarity-chat/primitives'
 import { sanitizeMarkdownHtml } from './sanitize'
+import { isFeatureDisabled } from '../config/feature-flags'
 
 /**
  * Lazy-loaded react-markdown modules
@@ -30,12 +31,25 @@ let rehypeHighlight: typeof import('rehype-highlight').default | null = null
 
 let markdownLoadAttempted = false
 let markdownLoadPromise: Promise<boolean> | null = null
+let markdownExplicitlyDisabled = false
 
 /**
  * Attempt to load react-markdown and related plugins
- * Returns true if successful, false if packages not available
+ * Returns true if successful, false if packages not available or explicitly disabled
  */
 export async function loadMarkdownDependencies(): Promise<boolean> {
+  // Check if markdown is explicitly disabled via feature flag
+  if (isFeatureDisabled('markdown')) {
+    markdownExplicitlyDisabled = true
+    markdownLoadAttempted = true
+    if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
+      logger.info(
+        'Markdown rendering disabled via CLARITY_DISABLE_MARKDOWN. Using plain text fallback.'
+      )
+    }
+    return false
+  }
+
   if (markdownLoadAttempted) {
     return ReactMarkdown !== null
   }
@@ -146,12 +160,21 @@ export function PlainTextMarkdown({
           role="status"
           aria-live="polite"
         >
-          <strong className="font-semibold">Note:</strong> Enhanced markdown
-          rendering is unavailable. Install{' '}
-          <code className="bg-background px-1 py-0.5 rounded text-xs">
-            react-markdown
-          </code>{' '}
-          for full markdown support.
+          {markdownExplicitlyDisabled ? (
+            <>
+              <strong className="font-semibold">Info:</strong> Markdown rendering
+              is disabled via CLARITY_DISABLE_MARKDOWN.
+            </>
+          ) : (
+            <>
+              <strong className="font-semibold">Note:</strong> Enhanced markdown
+              rendering is unavailable. Install{' '}
+              <code className="bg-background px-1 py-0.5 rounded text-xs">
+                react-markdown
+              </code>{' '}
+              for full markdown support.
+            </>
+          )}
         </div>
       )}
       <div

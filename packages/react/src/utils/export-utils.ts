@@ -11,6 +11,7 @@
 
 import type { Message as BaseMessage } from '@clarity-chat/types'
 import { escapeHtml } from './security/sanitize-html'
+import { isFeatureAvailable, isFeatureDisabled } from './config/feature-flags'
 
 // ============================================================================
 // Types
@@ -541,6 +542,14 @@ export async function exportMultipleConversations(
   conversations: Array<{ id: string; messages: Message[]; title?: string }>,
   options: ExportOptions
 ): Promise<Blob> {
+  // Check if batch exports are explicitly disabled via feature flag
+  if (isFeatureDisabled('batch-exports')) {
+    throw new Error(
+      'Batch exports are disabled via CLARITY_DISABLE_EXPORTS environment variable. ' +
+        'To enable, unset the environment variable or set it to false.'
+    )
+  }
+
   // Dynamic import for optional dependency
   // Note: jszip must be installed separately: npm install jszip
   try {
@@ -555,9 +564,16 @@ export async function exportMultipleConversations(
     }
 
     return await zip.generateAsync({ type: 'blob' })
-  } catch (_error) {
+  } catch (error) {
+    // If it's our own error, re-throw it
+    if (error instanceof Error && error.message.includes('disabled via')) {
+      throw error
+    }
+
+    // Otherwise, it's a missing dependency error
     throw new Error(
-      'jszip is required for batch exports. Install it with: npm install jszip'
+      'jszip is required for batch exports. Install it with: npm install jszip\n' +
+        'Or disable batch exports with: CLARITY_DISABLE_EXPORTS=true'
     )
   }
 }

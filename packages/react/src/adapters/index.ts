@@ -149,17 +149,14 @@ export { anthropicAdapter, anthropicModels } from './anthropic'
 export { googleAdapter, googleModels } from './google'
 
 // Export combined model list
-import { openAIModels } from './openai'
-import { anthropicModels } from './anthropic'
-import { googleModels } from './google'
+import { openAIAdapter, openAIModels } from './openai'
+import { anthropicAdapter, anthropicModels } from './anthropic'
+import { googleAdapter, googleModels } from './google'
 
 export const allModels = [...openAIModels, ...anthropicModels, ...googleModels]
 
 // Helper to get adapter by provider name
 import type { ModelAdapter } from './types'
-import { openAIAdapter } from './openai'
-import { anthropicAdapter } from './anthropic'
-import { googleAdapter } from './google'
 
 export function getAdapter(provider: string): ModelAdapter {
   switch (provider) {

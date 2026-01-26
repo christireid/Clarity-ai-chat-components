@@ -94,6 +94,7 @@ function CopyConfetti({ show }: { show: boolean }) {
                 opacity: [1, 1, 0],
               }}
               exit={{ opacity: 0 }}
+              viewport={{ once: true }}
               transition={{
                 duration: durations.slow,
                 delay: particle.delay,
@@ -145,12 +146,14 @@ function InstallCommand({ command }: { command: string }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{ duration: durations.slow, delay: 0.35 }}
       className="flex items-center justify-center mb-8"
     >
       <div className="relative group">
         <motion.div
           animate={copied ? { scale: [1, 1.02, 1] } : {}}
+          viewport={{ once: true }}
           transition={{ duration: durations.normal, type: 'tween' }}
           className="rounded-xl bg-bg-tertiary/90 dark:bg-slate-800/90 backdrop-blur-sm border border-border hover:border-brand-300 transition-all shadow-lg overflow-hidden"
         >
@@ -179,6 +182,7 @@ function InstallCommand({ command }: { command: string }) {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
+                      viewport={{ once: true }}
                       transition={{ duration: durations.normal }}
                     >
                       <Check className="w-4 h-4 text-green-500" />
@@ -189,6 +193,7 @@ function InstallCommand({ command }: { command: string }) {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
+                      viewport={{ once: true }}
                       transition={{ duration: durations.normal }}
                     >
                       <Copy className="w-4 h-4 text-text-secondary" />
@@ -207,6 +212,7 @@ function InstallCommand({ command }: { command: string }) {
             y: copied ? 0 : -4,
             scale: copied ? 1 : 0.9,
           }}
+          viewport={{ once: true }}
           className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-medium text-white bg-green-500 rounded-lg pointer-events-none shadow-lg"
         >
           Copied!
@@ -222,6 +228,7 @@ function GitHubStarsSkeleton() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      viewport={{ once: true }}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-secondary/80 border border-border"
     >
       <div className="w-4 h-4 rounded-full bg-bg-tertiary animate-pulse" />
@@ -333,6 +340,7 @@ function GitHubStarsBadge() {
       rel="noopener noreferrer"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
       transition={{ duration: durations.moderate }}
       whileHover={{ scale: 1.05 }}
       className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full bg-bg-secondary/80 border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:border-brand-300 transition-all focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -370,6 +378,7 @@ export function HeroSection({
             'radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 60%)',
           ],
         }}
+        viewport={{ once: true }}
         transition={{
           duration: 8,
           repeat: Infinity,
@@ -402,6 +411,7 @@ export function HeroSection({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: durations.slow, delay: 0.1 }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300 text-xs font-medium"
             >
@@ -410,6 +420,7 @@ export function HeroSection({
                   rotate: [0, 15, -15, 15, 0],
                   scale: [1, 1.2, 1, 1.2, 1],
                 }}
+                viewport={{ once: true }}
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
@@ -427,6 +438,7 @@ export function HeroSection({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: durations.slow, delay: 0.2 }}
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance leading-tight bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent"
           >
@@ -437,6 +449,7 @@ export function HeroSection({
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: durations.slow, delay: 0.3 }}
             className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 text-balance max-w-2xl mx-auto leading-relaxed px-2 sm:px-0"
           >
@@ -450,10 +463,11 @@ export function HeroSection({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: durations.slow, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <motion.div viewport={{ once: true }} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href={primaryCta.href}
                 className="group relative inline-flex items-center gap-2 px-5 py-2.5 min-h-[40px] bg-gradient-to-r from-brand-500 via-purple-500 to-brand-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white text-sm rounded-lg font-medium transition-all duration-500 shadow-md hover:shadow-[0_8px_30px_rgba(99,102,241,0.35)] overflow-hidden focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary focus-visible:outline-none"
@@ -467,6 +481,7 @@ export function HeroSection({
 
             {secondaryCta && (
               <motion.div
+                viewport={{ once: true }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -484,6 +499,7 @@ export function HeroSection({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: durations.slow, delay: 0.5 }}
             className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto px-2 sm:px-0"
           >
@@ -497,6 +513,7 @@ export function HeroSection({
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{
                   duration: durations.slow,
                   delay: 0.6 + index * 0.1,
@@ -525,6 +542,7 @@ export function HeroSection({
                   <motion.div
                     className="text-xl sm:text-2xl font-bold text-brand-500 tracking-tight tabular-nums"
                     initial={{ scale: 1 }}
+                    viewport={{ once: true }}
                     whileHover={{ scale: 1.05 }}
                   >
                     <AnimatedCounter value={stat.value} duration={1.5} />

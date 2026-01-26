@@ -13,7 +13,7 @@
 
 import * as React from 'react'
 import { Toaster as SonnerToaster, toast as sonnerToast } from 'sonner'
-import type { ToasterProps } from 'sonner'
+import type type, { ToasterProps } from 'sonner'
 
 export type ToastPosition =
   | 'top-left'

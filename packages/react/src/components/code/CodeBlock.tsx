@@ -21,8 +21,9 @@ import { CodeBlockCopyButton } from './CodeBlockCopyButton'
 import { ChevronDownIcon, ChevronUpIcon, DownloadIcon } from '../ui/icons'
 import { ContentErrorBoundary } from '../ui/ErrorBoundary'
 import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
+import { isFeatureAvailable, isFeatureDisabled } from '../../utils/config/feature-flags'
 
-// Try to import shiki, but handle gracefully if not installed
+// Try to import shiki, but handle gracefully if not installed or disabled
 let shikiModule: {
   codeToHtml: typeof import('shiki').codeToHtml
   BundledLanguage?: unknown
@@ -30,17 +31,29 @@ let shikiModule: {
 } | null = null
 
 let shikiImportError: Error | null = null
+let shikiExplicitlyDisabled = false
 
-try {
-  shikiModule = require('shiki')
-} catch (err) {
-  shikiImportError =
-    err instanceof Error ? err : new Error('Failed to load shiki')
-  if (typeof window === 'undefined') {
-    // Only log on server to avoid spamming browser console
-    logger.warn(
-      'shiki peer dependency not found. CodeBlock will use basic syntax highlighting. Install with: npm install shiki'
+// Check if syntax highlighting is explicitly disabled via feature flag
+if (isFeatureDisabled('syntax-highlighting')) {
+  shikiExplicitlyDisabled = true
+  if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
+    logger.info(
+      'Syntax highlighting disabled via CLARITY_DISABLE_SYNTAX_HIGHLIGHTING. CodeBlock will use basic display.'
     )
+  }
+} else {
+  // Only try to import if not explicitly disabled
+  try {
+    shikiModule = require('shiki')
+  } catch (err) {
+    shikiImportError =
+      err instanceof Error ? err : new Error('Failed to load shiki')
+    if (typeof window === 'undefined') {
+      // Only log on server to avoid spamming browser console
+      logger.warn(
+        'shiki peer dependency not found. CodeBlock will use basic syntax highlighting. Install with: npm install shiki'
+      )
+    }
   }
 }
 
@@ -412,7 +425,7 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
       data-language={language}
       tabIndex={enableKeyboardShortcuts ? 0 : undefined}
     >
-      {/* Shiki Missing Warning */}
+      {/* Shiki Missing or Disabled Warning */}
       {!shikiModule && (
         <div
           className={cn(
@@ -424,29 +437,42 @@ const CodeBlockComponent = React.memo<CodeBlockProps>(function CodeBlock({
         >
           <div className="flex items-start gap-2">
             <span className="text-amber-400 font-semibold" aria-hidden="true">
-              ⚠
+              {shikiExplicitlyDisabled ? 'ℹ️' : '⚠'}
             </span>
             <div className="flex-1 space-y-1">
-              <p className="font-medium">
-                CodeBlock requires &apos;shiki&apos; for syntax highlighting.
-              </p>
-              <p className="text-amber-300/90">
-                Install it with:{' '}
-                <code className="px-1.5 py-0.5 bg-black/20 rounded font-mono text-xs">
-                  npm install shiki
-                </code>
-              </p>
-              <p className="text-xs text-amber-300/80">
-                See:{' '}
-                <a
-                  href="https://clarity-chat.dev/docs/peer-dependencies"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-amber-200 transition-colors"
-                >
-                  https://clarity-chat.dev/docs/peer-dependencies
-                </a>
-              </p>
+              {shikiExplicitlyDisabled ? (
+                <>
+                  <p className="font-medium">
+                    Syntax highlighting is disabled via CLARITY_DISABLE_SYNTAX_HIGHLIGHTING.
+                  </p>
+                  <p className="text-amber-300/90">
+                    To re-enable, unset the environment variable or set it to false.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-medium">
+                    CodeBlock requires &apos;shiki&apos; for syntax highlighting.
+                  </p>
+                  <p className="text-amber-300/90">
+                    Install it with:{' '}
+                    <code className="px-1.5 py-0.5 bg-black/20 rounded font-mono text-xs">
+                      npm install shiki
+                    </code>
+                  </p>
+                  <p className="text-xs text-amber-300/80">
+                    See:{' '}
+                    <a
+                      href="https://clarity-chat.dev/docs/peer-dependencies"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-amber-200 transition-colors"
+                    >
+                      https://clarity-chat.dev/docs/peer-dependencies
+                    </a>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

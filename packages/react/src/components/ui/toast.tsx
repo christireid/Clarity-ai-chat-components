@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -17,7 +17,6 @@ import {
   CloseIcon,
 } from './icons'
 import { ANIMATION_DURATION, ANIMATION_PRESETS } from '../../animations'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

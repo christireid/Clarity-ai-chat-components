@@ -8,8 +8,8 @@
  * - Feature capabilities
  */
 
-import type { Tokenizer } from './tokenizer'
 import { ApproximateTokenizer, ClaudeTokenizer } from './tokenizer'
+import type type, { Tokenizer } from './tokenizer'
 
 /**
  * Prompt style preference

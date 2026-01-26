@@ -2,11 +2,10 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
+import { Button, Tooltip, cn, type ButtonProps, useReducedMotion } from '@clarity-chat/primitives'
 import { useClipboard } from '../../hooks/ui/use-clipboard'
 import { CopyIcon, CheckIcon } from '../ui/icons'
 import { useToast } from '../ui/toast'
-import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
 import {
   DURATION_SECONDS as durations,

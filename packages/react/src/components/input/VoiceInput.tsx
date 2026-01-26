@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import type type, { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../../hooks/input/use-voice-input'
@@ -9,7 +10,6 @@ import {
   DURATION_SECONDS as durations,
   ANIMATION_PRESETS,
 } from '../../animations/constants'
-import type { ReactNode } from 'react'
 import { useReducedMotion } from '@/hooks/ui/use-reduced-motion'
 
 // Animation constants for pulse rings

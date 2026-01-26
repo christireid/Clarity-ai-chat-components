@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { InputValidator } from './input-validator'
-import type { ValidationResult, InputConstraints } from './input-validator'
+import type type, { InputConstraints, ValidationResult } from './input-validator'
 
 /**
  * Hook for token validation with React integration
