@@ -3,6 +3,12 @@
  *
  * Provides animation variants that automatically respect `prefers-reduced-motion`.
  * When reduced motion is preferred, animations are simplified or disabled entirely.
+ *
+ * @requires framer-motion - Animation library (peer dependency)
+ * @installation npm install framer-motion
+ * @bundleImpact ~80KB when framer-motion is installed
+ * @note framer-motion is a required peer dependency for @clarity-chat/react
+ * @docs https://clarity-chat.dev/docs/animations/motion-safe
  */
 
 import type { Variant } from 'framer-motion'

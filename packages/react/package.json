@@ -1,8 +1,8 @@
 {
   "name": "@clarity-chat/react",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "type": "module",
-  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, production-ready RAG (PDF/DOCX loaders, reranking, evaluation), rate limiting, cross-device sync, template marketplace, enterprise-ready",
+  "description": "Premium AI chat components for React - 200+ components, 95+ hooks, production-ready RAG (PDF/DOCX loaders, reranking, evaluation), rate limiting, cross-device sync, template marketplace, enterprise-ready. Optimized bundle: core peer dependencies externalized (React, Framer Motion, Lucide, Zod) + optional heavy libraries (Mermaid, PDF.js, Mammoth, Cohere, Shiki, JSZip, Prism, React Markdown)",
   "keywords": [
     "react",
     "chat",
@@ -162,7 +162,9 @@
     "perf:benchmark": "tsx scripts/performance-benchmark.ts",
     "size": "size-limit",
     "size:why": "size-limit --why",
-    "prepublishOnly": "npm run clean && npm run build && npm run test"
+    "size:analyze": "size-limit --json > size-report.json",
+    "verify:externals": "node -e \"console.log('Verifying peer dependencies externalized...'); const pkg = require('./package.json'); const peers = Object.keys(pkg.peerDependencies); console.log('Required peers:', peers.filter(p => !pkg.peerDependenciesMeta[p]?.optional)); console.log('Optional peers:', peers.filter(p => pkg.peerDependenciesMeta[p]?.optional));\"",
+    "prepublishOnly": "npm run clean && npm run build && npm run test && npm run verify:externals"
   },
   "peerDependencies": {
     "framer-motion": "^12.23.25",
@@ -183,6 +185,9 @@
     "rehype-highlight": "^7.0.0"
   },
   "peerDependenciesMeta": {
+    "framer-motion": {
+      "optional": false
+    },
     "react-dom": {
       "optional": true
     },

@@ -7,8 +7,20 @@
  * Cohere Rerank uses cross-encoder models that consider query-document pairs
  * jointly, providing much higher accuracy than bi-encoder retrieval alone.
  *
+ * @requires cohere-ai - Cohere API client (optional peer dependency)
+ * @installation npm install cohere-ai
+ * @bundleImpact ~50KB when cohere-ai is installed
+ * @note Requires Cohere API key (get free key at https://cohere.com)
+ * @alternative Use SimpleReranker for local reranking without API calls
+ * @docs https://clarity-chat.dev/docs/rag/reranking
+ *
  * @example
  * ```tsx
+ * // 1. Install cohere-ai
+ * // npm install cohere-ai
+ *
+ * // 2. Get API key from https://cohere.com
+ * // 3. Use reranker
  * const reranker = new CohereReranker({
  *   apiKey: process.env.COHERE_API_KEY,
  *   model: 'rerank-english-v3.0'

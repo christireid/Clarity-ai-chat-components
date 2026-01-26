@@ -5,6 +5,12 @@
  * FlowToken provides specialized LLM streaming animations like fade,
  * blur-in, drop-in, typewriter, and more.
  *
+ * @requires flowtoken - Specialized LLM streaming animations (optional peer dependency)
+ * @installation npm install flowtoken
+ * @bundleImpact ~15KB when flowtoken is installed
+ * @fallback Shows static text without animations if flowtoken is not installed
+ * @docs https://clarity-chat.dev/docs/animations/flowtoken
+ *
  * @example
  * ```tsx
  * import { FlowTokenStreamingText } from '@clarity-chat/react'

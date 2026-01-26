@@ -18,6 +18,7 @@
 import * as React from 'react'
 import { logger } from '@clarity-chat/utils/logger'
 import { cn } from '@clarity-chat/primitives'
+import { sanitizeMarkdownHtml, escapeHtml } from './sanitize'
 
 /**
  * Lazy-loaded react-markdown modules
@@ -155,7 +156,9 @@ export function PlainTextMarkdown({
       )}
       <div
         className="markdown-fallback"
-        dangerouslySetInnerHTML={{ __html: formattedContent }}
+        dangerouslySetInnerHTML={{
+          __html: sanitizeMarkdownHtml(formattedContent),
+        }}
       />
     </div>
   )
