@@ -4,5 +4,5 @@
  * Input and control components for chat interfaces
  */
 
-export { tokenCounter } from './token-counter'
-export { modelSelector } from './model-selector'
+export { tokenCounter } from './TokenCounter'
+export { modelSelector } from './ModelSelector'

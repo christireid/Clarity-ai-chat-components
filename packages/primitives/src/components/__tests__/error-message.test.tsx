@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ErrorMessage } from '../error-message'
+import { ErrorMessage } from '../ErrorMessage'
 
 describe('ErrorMessage Component', () => {
   describe('Rendering', () => {
@@ -45,7 +45,9 @@ describe('ErrorMessage Component', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<ErrorMessage error="Error" className="custom-error" />)
+      const { container } = render(
+        <ErrorMessage error="Error" className="custom-error" />
+      )
       const errorElement = container.querySelector('.custom-error')
       expect(errorElement).toBeInTheDocument()
     })
@@ -96,14 +98,17 @@ describe('ErrorMessage Component', () => {
 
   describe('Content', () => {
     it('should render long error messages', () => {
-      const longError = 'This is a very long error message that should still be displayed correctly'
+      const longError =
+        'This is a very long error message that should still be displayed correctly'
       render(<ErrorMessage error={longError} />)
       expect(screen.getByText(longError)).toBeInTheDocument()
     })
 
     it('should render error messages with special characters', () => {
       render(<ErrorMessage error="Error: Field <required> & 'invalid'" />)
-      expect(screen.getByText("Error: Field <required> & 'invalid'")).toBeInTheDocument()
+      expect(
+        screen.getByText("Error: Field <required> & 'invalid'")
+      ).toBeInTheDocument()
     })
 
     it('should render error messages with HTML entities', () => {

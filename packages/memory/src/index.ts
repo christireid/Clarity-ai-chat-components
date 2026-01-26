@@ -139,7 +139,7 @@ export {
 } from './utils/decay-manager'
 
 // Token optimization utilities (internal)
-export { TokenCounter } from './utils/token-counter'
+export { TokenCounter } from './utils/TokenCounter'
 export type {
   ModelFamily,
   ContentType,

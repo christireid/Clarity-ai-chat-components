@@ -16,7 +16,11 @@ import {
   useEscapeKey,
   announceToScreenReader,
 } from '../utils/accessibility'
-import { ErrorBoundary, LoadingSpinner, EmptyState } from '../utils/error-boundary'
+import {
+  ErrorBoundary,
+  LoadingSpinner,
+  EmptyState,
+} from '../utils/ErrorBoundary'
 
 // =============================================================================
 // Interactive Accessibility Demo
@@ -29,8 +33,9 @@ export function AccessibilityDemo() {
         <header className="border-b pb-4">
           <h1 className="text-3xl font-bold">Accessibility Demo</h1>
           <p className="text-muted-foreground mt-2">
-            Interactive examples of accessibility patterns and utilities.
-            Test with keyboard navigation (Tab, Enter, Space, Escape) and screen readers.
+            Interactive examples of accessibility patterns and utilities. Test
+            with keyboard navigation (Tab, Enter, Space, Escape) and screen
+            readers.
           </p>
         </header>
 
@@ -55,7 +60,11 @@ function AccessibleClickDemo() {
   const [selectedCard, setSelectedCard] = React.useState<string | null>(null)
 
   const cards = [
-    { id: 'card-1', title: 'First Card', description: 'Click or press Enter/Space' },
+    {
+      id: 'card-1',
+      title: 'First Card',
+      description: 'Click or press Enter/Space',
+    },
     { id: 'card-2', title: 'Second Card', description: 'Keyboard accessible' },
     { id: 'card-3', title: 'Third Card', description: 'Focus ring visible' },
   ]
@@ -64,14 +73,15 @@ function AccessibleClickDemo() {
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold">1. Accessible Click Handler</h2>
       <p className="text-sm text-muted-foreground">
-        Makes any element keyboard-accessible with role="button", tabIndex, and keyboard handlers.
+        Makes any element keyboard-accessible with role="button", tabIndex, and
+        keyboard handlers.
       </p>
 
       {/* Simple clickable div */}
       <div className="space-y-2">
         <h3 className="text-lg font-medium">Simple Clickable Div</h3>
         <div
-          {...accessibleClickHandler(() => setClickCount(c => c + 1))}
+          {...accessibleClickHandler(() => setClickCount((c) => c + 1))}
           className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           Click me ({clickCount})
@@ -82,7 +92,7 @@ function AccessibleClickDemo() {
       <div className="space-y-2">
         <h3 className="text-lg font-medium">Selectable Cards</h3>
         <div className="grid grid-cols-3 gap-4">
-          {cards.map(card => (
+          {cards.map((card) => (
             <div
               key={card.id}
               {...accessibleClickHandler(() => setSelectedCard(card.id))}
@@ -125,8 +135,8 @@ function FocusTrapDemo() {
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold">2. Focus Trap</h2>
       <p className="text-sm text-muted-foreground">
-        Keeps keyboard focus within a container (essential for modals).
-        Press Tab to cycle through elements, Escape to close.
+        Keeps keyboard focus within a container (essential for modals). Press
+        Tab to cycle through elements, Escape to close.
       </p>
 
       <button
@@ -148,7 +158,7 @@ function FocusTrapDemo() {
             aria-modal="true"
             aria-labelledby="modal-title"
             className="bg-background p-6 rounded-lg shadow-xl max-w-md w-full mx-4"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h3 id="modal-title" className="text-xl font-semibold">
@@ -164,8 +174,8 @@ function FocusTrapDemo() {
             </div>
 
             <p className="mb-4">
-              Focus is trapped within this modal. Press Tab to cycle through
-              the interactive elements below:
+              Focus is trapped within this modal. Press Tab to cycle through the
+              interactive elements below:
             </p>
 
             <div className="space-y-4">
@@ -232,7 +242,10 @@ function AutoFocusDemo() {
 
       {showSearch && (
         <div className="p-4 border rounded-lg">
-          <label htmlFor="search-input" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="search-input"
+            className="block text-sm font-medium mb-2"
+          >
             Search (auto-focused when shown)
           </label>
           <input
@@ -301,9 +314,14 @@ function EscapeKeyDemo() {
 // =============================================================================
 
 function ScreenReaderDemo() {
-  const [lastAnnouncement, setLastAnnouncement] = React.useState<string | null>(null)
+  const [lastAnnouncement, setLastAnnouncement] = React.useState<string | null>(
+    null
+  )
 
-  const handleAnnounce = (message: string, priority: 'polite' | 'assertive') => {
+  const handleAnnounce = (
+    message: string,
+    priority: 'polite' | 'assertive'
+  ) => {
     announceToScreenReader(message, priority)
     setLastAnnouncement(`[${priority}] ${message}`)
   }
@@ -312,7 +330,8 @@ function ScreenReaderDemo() {
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold">5. Screen Reader Announcements</h2>
       <p className="text-sm text-muted-foreground">
-        Announces dynamic content changes to screen readers using ARIA live regions.
+        Announces dynamic content changes to screen readers using ARIA live
+        regions.
       </p>
 
       <div className="flex gap-2 flex-wrap">
@@ -323,13 +342,17 @@ function ScreenReaderDemo() {
           Announce Success (Polite)
         </button>
         <button
-          onClick={() => handleAnnounce('Error: Please check your input', 'assertive')}
+          onClick={() =>
+            handleAnnounce('Error: Please check your input', 'assertive')
+          }
           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
           Announce Error (Assertive)
         </button>
         <button
-          onClick={() => handleAnnounce('Loading complete, 5 items found', 'polite')}
+          onClick={() =>
+            handleAnnounce('Loading complete, 5 items found', 'polite')
+          }
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Announce Update (Polite)
@@ -368,11 +391,11 @@ function KeyboardNavigationDemo() {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
-        setFocusedIndex(prev => Math.min(prev + 1, items.length - 1))
+        setFocusedIndex((prev) => Math.min(prev + 1, items.length - 1))
         break
       case 'ArrowUp':
         e.preventDefault()
-        setFocusedIndex(prev => Math.max(prev - 1, 0))
+        setFocusedIndex((prev) => Math.max(prev - 1, 0))
         break
       case 'Home':
         e.preventDefault()
@@ -403,10 +426,12 @@ function KeyboardNavigationDemo() {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold">6. Keyboard Navigation (Arrow Keys)</h2>
+      <h2 className="text-2xl font-semibold">
+        6. Keyboard Navigation (Arrow Keys)
+      </h2>
       <p className="text-sm text-muted-foreground">
-        Navigate with arrow keys, Home/End for first/last item.
-        This pattern is used for menus and lists.
+        Navigate with arrow keys, Home/End for first/last item. This pattern is
+        used for menus and lists.
       </p>
 
       <div className="p-4 border rounded-lg max-w-xs">
@@ -425,7 +450,9 @@ function KeyboardNavigationDemo() {
                 data-index={index}
                 tabIndex={index === 0 ? 0 : -1}
                 className={`w-full text-left px-3 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
-                  focusedIndex === index ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                  focusedIndex === index
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-accent'
                 }`}
               >
                 {item.label}

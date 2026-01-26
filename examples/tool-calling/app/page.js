@@ -1,8 +1,11 @@
-'use client';
-import { jsx as _jsx } from "react/jsx-runtime";
-import { ToolCallingChat } from '@/components/tool-calling-chat';
-import { ErrorBoundary } from '@/components/error-boundary';
+'use client'
+import { jsx as _jsx } from 'react/jsx-runtime'
+import { ToolCallingChat } from '@/components/tool-calling-chat'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 export default function Home() {
-    return (_jsx("main", { className: "min-h-screen bg-background", children: _jsx(ErrorBoundary, { children: _jsx(ToolCallingChat, {}) }) }));
+  return _jsx('main', {
+    className: 'min-h-screen bg-background',
+    children: _jsx(ErrorBoundary, { children: _jsx(ToolCallingChat, {}) }),
+  })
 }
 //# sourceMappingURL=page.js.map

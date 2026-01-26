@@ -2,7 +2,11 @@
  * Token Counter Tests
  */
 import { describe, it, expect, beforeEach } from 'vitest'
-import { TokenCounter, countTokens, countTokensWithConfidence } from './token-counter'
+import {
+  TokenCounter,
+  countTokens,
+  countTokensWithConfidence,
+} from './TokenCounter'
 
 describe('TokenCounter', () => {
   describe('count', () => {
@@ -71,7 +75,8 @@ describe('TokenCounter', () => {
     })
 
     it('should truncate text exceeding budget', () => {
-      const text = 'Hello World, this is a long sentence that should be truncated.'
+      const text =
+        'Hello World, this is a long sentence that should be truncated.'
       const result = TokenCounter.truncate(text, 5)
       // Result should be shorter than original
       expect(result.length).toBeLessThan(text.length)
@@ -137,7 +142,7 @@ describe('TokenCounter', () => {
     it('should filter empty sentences', () => {
       const text = 'One.. Two... Three.'
       const sentences = TokenCounter.splitSentences(text)
-      expect(sentences.every(s => s.length > 0)).toBe(true)
+      expect(sentences.every((s) => s.length > 0)).toBe(true)
     })
   })
 })
@@ -188,7 +193,8 @@ describe('TokenCounter - Enhanced Features', () => {
     })
 
     it('should detect prose content', () => {
-      const text = 'The quick brown fox jumps over the lazy dog. This is a simple sentence.'
+      const text =
+        'The quick brown fox jumps over the lazy dog. This is a simple sentence.'
       const result = TokenCounter.countWithConfidence(text)
 
       expect(result.contentType).toBe('prose')
@@ -284,7 +290,8 @@ describe('TokenCounter - Enhanced Features', () => {
     })
 
     it('should return false if text exceeds budget', () => {
-      const text = 'Hello World this is a very long text that exceeds the budget'
+      const text =
+        'Hello World this is a very long text that exceeds the budget'
       expect(TokenCounter.fitsInBudget(text, 1)).toBe(false)
     })
 
@@ -327,14 +334,16 @@ describe('TokenCounter - Enhanced Features', () => {
 
   describe('URL and number handling', () => {
     it('should handle URLs in text', () => {
-      const textWithUrl = 'Check out https://example.com/very/long/path/to/resource for more info'
+      const textWithUrl =
+        'Check out https://example.com/very/long/path/to/resource for more info'
       const result = TokenCounter.countWithConfidence(textWithUrl)
 
       expect(result.count).toBeGreaterThan(0)
     })
 
     it('should handle long numbers', () => {
-      const textWithNumbers = 'The order number is 1234567890 and the amount is 9876543210'
+      const textWithNumbers =
+        'The order number is 1234567890 and the amount is 9876543210'
       const result = TokenCounter.countWithConfidence(textWithNumbers)
 
       expect(result.count).toBeGreaterThan(0)

@@ -5,7 +5,7 @@
  */
 
 import type { Memory } from '../types'
-import { countTokens } from '../utils/token-counter'
+import { countTokens } from '../utils/TokenCounter'
 
 /**
  * Compression strategy interface

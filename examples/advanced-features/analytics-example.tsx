@@ -19,11 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@clarity-chat/react'
-import type {
-  ExperimentResult,
-  ExperimentVariant,
-} from '@clarity-chat/react'
-import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
+import type { ExperimentResult, ExperimentVariant } from '@clarity-chat/react'
+import {
+  ErrorBoundary,
+  LoadingSpinner,
+  ErrorState,
+} from '../utils/ErrorBoundary'
 
 // 💡 Type definitions for this example
 interface ChatMessage {
@@ -93,8 +94,8 @@ export function FeatureDiscoveryExample() {
   const discoveries = React.useMemo(() => {
     const counts = new Map<string, number>()
     events
-      .filter(e => e.type === 'feature_discovery')
-      .forEach(e => {
+      .filter((e) => e.type === 'feature_discovery')
+      .forEach((e) => {
         const name = e.metadata?.featureName || 'unknown'
         counts.set(name, (counts.get(name) || 0) + 1)
       })
@@ -111,7 +112,7 @@ export function FeatureDiscoveryExample() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-3">
-            {features.map(feature => (
+            {features.map((feature) => (
               <Button
                 key={feature.id}
                 variant="outline"
@@ -168,13 +169,15 @@ export function ABTestingExample() {
     recordMetric,
   } = useABTesting()
 
-  const [userId] = React.useState(`user-${Math.random().toString(36).substr(2, 9)}`)
+  const [userId] = React.useState(
+    `user-${Math.random().toString(36).substr(2, 9)}`
+  )
 
   // Track if demo data has been initialized (intentionally runs once)
   const hasInitialized = React.useRef(false)
 
   // 🎯 Intentionally runs once on mount to seed demo data
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   React.useEffect(() => {
     // Only initialize once
     if (hasInitialized.current || experiments.length > 0) return
@@ -234,11 +237,11 @@ export function ABTestingExample() {
   }, [])
 
   const simulateMetrics = (expId: string, variants: ExperimentVariant[]) => {
-    variants.forEach(variant => {
+    variants.forEach((variant) => {
       const impressions = Math.floor(Math.random() * 500) + 100
       const conversionRate = variant.isControl
-        ? 0.10
-        : 0.10 + (Math.random() * 0.08) // Variants have 0-8% lift
+        ? 0.1
+        : 0.1 + Math.random() * 0.08 // Variants have 0-8% lift
 
       recordMetric(expId, variant.id, {
         variantId: variant.id,
@@ -284,7 +287,13 @@ export function ABTestingExample() {
  * Chat application with A/B testing for UI variants
  */
 export function ChatWithABTestExample() {
-  const { getVariant, recordMetric, experiments, createExperiment, startExperiment } = useABTesting()
+  const {
+    getVariant,
+    recordMetric,
+    experiments,
+    createExperiment,
+    startExperiment,
+  } = useABTesting()
   const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [userId] = React.useState(`user-${Date.now()}`)
   const [variant, setVariant] = React.useState<ExperimentVariant | null>(null)
@@ -293,7 +302,7 @@ export function ChatWithABTestExample() {
   const hasInitialized = React.useRef(false)
 
   // 🎯 Intentionally runs once on mount to seed demo data
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   React.useEffect(() => {
     // Only initialize once
     if (hasInitialized.current || experiments.length > 0) return
@@ -302,9 +311,24 @@ export function ChatWithABTestExample() {
     const exp = createExperiment(
       'Chat Theme Test',
       [
-        { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
-        { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
-        { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
+        {
+          id: 'control',
+          name: 'Default Theme',
+          isControl: true,
+          config: { theme: 'default' },
+        },
+        {
+          id: 'variant-dark',
+          name: 'Dark Theme',
+          isControl: false,
+          config: { theme: 'dark' },
+        },
+        {
+          id: 'variant-minimal',
+          name: 'Minimal Theme',
+          isControl: false,
+          config: { theme: 'minimal' },
+        },
       ],
       'Testing chat theme impact on engagement'
     )
@@ -329,12 +353,15 @@ export function ChatWithABTestExample() {
   }, [])
 
   const handleSendMessage = (content: string) => {
-    setMessages(prev => [...prev, {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: Date.now(),
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: 'user',
+        content,
+        timestamp: Date.now(),
+      },
+    ])
 
     // Record conversion (message sent)
     if (variant && experiments.length > 0) {
@@ -350,13 +377,11 @@ export function ChatWithABTestExample() {
       <div className="col-span-2">
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>
-              Chat (Theme: {variant?.name || 'Loading...'})
-            </CardTitle>
+            <CardTitle>Chat (Theme: {variant?.name || 'Loading...'})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 mb-4">
-              {messages.map(msg => (
+              {messages.map((msg) => (
                 <div key={msg.id} className="p-2 border rounded">
                   {msg.content}
                 </div>
@@ -386,10 +411,7 @@ export function ChatWithABTestExample() {
       {/* A/B test results */}
       <div>
         {experiments.length > 0 && (
-          <ABTestingDashboard
-            experiments={experiments}
-            showStatistics
-          />
+          <ABTestingDashboard experiments={experiments} showStatistics />
         )}
       </div>
     </div>
@@ -420,7 +442,9 @@ export function ProductionAnalyticsExample() {
         setExperiments(data.experiments)
       } catch (err) {
         console.error('Failed to load experiments:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load experiments'))
+        setError(
+          err instanceof Error ? err : new Error('Failed to load experiments')
+        )
       } finally {
         setIsLoading(false)
       }
@@ -429,7 +453,10 @@ export function ProductionAnalyticsExample() {
     loadExperiments()
   }, [])
 
-  const handleDeclareWinner = async (experimentId: string, winnerId: string) => {
+  const handleDeclareWinner = async (
+    experimentId: string,
+    winnerId: string
+  ) => {
     try {
       await fetch(`/api/experiments/${experimentId}/winner`, {
         method: 'POST',
@@ -545,7 +572,10 @@ export function CompleteAnalyticsSuiteExample() {
             console.log('[Analytics] Event:', event.type, event.target)
           }}
           onAnalyticsGenerated={(metrics) => {
-            console.log('[Analytics] Engagement score:', metrics.engagementScore)
+            console.log(
+              '[Analytics] Engagement score:',
+              metrics.engagementScore
+            )
             console.log('[Analytics] Top features:', metrics.topFeatures)
           }}
         />

@@ -1,4 +1,4 @@
-import { TokenCounter } from '@clarity-chat/react/components/token-counter';
+import { TokenCounter } from '@clarity-chat/react/components/TokenCounter';
 const meta = {
     title: 'Components/TokenCounter/Essentials',
     component: TokenCounter,
