@@ -1125,12 +1125,12 @@ export class MemoryManager {
    */
   isMemoryUsageAcceptable(): boolean {
     if (typeof performance === 'undefined') return true
-    // @ts-expect-error - memory is Chrome-specific
-    if (!performance.memory) return true
+    // memory is Chrome-specific
+    if (!(performance as any).memory) return true
 
-    // @ts-expect-error - memory is Chrome-specific
+    // memory is Chrome-specific
     const usedMemory = Math.round(
-      (performance.memory.usedJSHeapSize || 0) / 1024 / 1024
+      ((performance as any).memory.usedJSHeapSize || 0) / 1024 / 1024
     )
     return usedMemory < this.maxMemoryUsage
   }
