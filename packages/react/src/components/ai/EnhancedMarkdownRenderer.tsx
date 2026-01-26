@@ -1,9 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import ReactMarkdown from 'react-markdown'
-// rehypeHighlight is now loaded async (react-markdown v10 feature)
-import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
 import { usePerformanceTracking } from '../../hooks/performance/usePerformanceMonitoring'
 import { ContentErrorBoundary } from '../ui/ErrorBoundary'
@@ -11,6 +8,10 @@ import { useAnalytics, useInteractionTracking } from '../../utils/analytics'
 import { MarkdownCodeBlock } from '../message/MarkdownCodeBlock'
 import { CopyButton } from '../message/CopyButton'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import {
+  useMarkdownAvailability,
+  PlainTextMarkdown,
+} from '../../utils/markdown/markdown-fallback'
 
 /** Mermaid theme types */
 type MermaidTheme = 'default' | 'dark' | 'neutral' | 'forest' | 'base' | 'null'
@@ -117,6 +118,15 @@ const EnhancedMarkdownRendererComponent = React.memo(
     config = {},
     isStreaming = false,
   }: EnhancedMarkdownRendererProps) {
+    // Check for react-markdown availability
+    const {
+      isAvailable,
+      isLoading,
+      ReactMarkdown,
+      remarkGfm,
+      rehypeHighlight,
+    } = useMarkdownAvailability()
+
     // Performance monitoring
     usePerformanceTracking({
       componentName: 'EnhancedMarkdownRenderer',
@@ -127,6 +137,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
         enableMermaid: config.enableMermaid,
         enableSyntaxHighlight: config.enableSyntaxHighlight,
         isStreaming,
+        markdownAvailable: isAvailable,
       },
     })
 
@@ -229,12 +240,21 @@ const EnhancedMarkdownRendererComponent = React.memo(
 
     const rehypePlugins: any[] = []
 
-    if (enableSyntaxHighlight) {
-      // Async plugin loading for rehypeHighlight (heavy dependency)
+    if (enableSyntaxHighlight && rehypeHighlight) {
+      // Use loaded rehype-highlight plugin if available
+      rehypePlugins.push(rehypeHighlight)
+    } else if (enableSyntaxHighlight && !rehypeHighlight) {
+      // Try async plugin loading for rehypeHighlight (heavy dependency)
       // Improves initial bundle size by deferring syntax highlighter loading
       rehypePlugins.push(async () => {
-        const { default: rehypeHighlight } = await import('rehype-highlight')
-        return rehypeHighlight
+        try {
+          const { default: rehypeHighlightModule } =
+            await import('rehype-highlight')
+          return rehypeHighlightModule
+        } catch {
+          // Silently fail if not available - graceful degradation
+          return undefined
+        }
       })
     }
 
@@ -415,12 +435,31 @@ const EnhancedMarkdownRendererComponent = React.memo(
 
     // Lazy rendering effect for streaming performance
     React.useEffect(() => {
+      // If react-markdown is not available, use fallback
+      if (!isAvailable) {
+        setRenderedContent(
+          <PlainTextMarkdown
+            content={content}
+            showFallbackMessage={!isStreaming}
+          />
+        )
+        return undefined
+      }
+
+      // If ReactMarkdown is not loaded yet, show loading or plain text
+      if (!ReactMarkdown) {
+        setRenderedContent(
+          <PlainTextMarkdown content={content} showFallbackMessage={false} />
+        )
+        return undefined
+      }
+
       if (enableLazyRendering) {
         // Defer expensive markdown rendering to prevent blocking UI
         const timer = setTimeout(() => {
           setRenderedContent(
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={remarkGfm ? [remarkGfm] : []}
               rehypePlugins={rehypePlugins}
               components={customComponents}
             >
@@ -434,7 +473,7 @@ const EnhancedMarkdownRendererComponent = React.memo(
         // Render immediately
         setRenderedContent(
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={remarkGfm ? [remarkGfm] : []}
             rehypePlugins={rehypePlugins}
             components={customComponents}
           >
@@ -446,7 +485,33 @@ const EnhancedMarkdownRendererComponent = React.memo(
       // Note: rehypePlugins is an array of async functions, deeply stable but not referentially stable
       // We intentionally omit it to prevent re-renders on every content change
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [content, enableLazyRendering, customComponents])
+    }, [
+      content,
+      enableLazyRendering,
+      customComponents,
+      isAvailable,
+      ReactMarkdown,
+      remarkGfm,
+    ])
+
+    // If still loading markdown availability, show loading state
+    if (isLoading) {
+      return (
+        <div
+          ref={containerRef}
+          className={cn(
+            'prose prose-sm max-w-none',
+            'animate-pulse',
+            className
+          )}
+          role="status"
+          aria-label="Loading markdown renderer"
+        >
+          <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-muted rounded w-1/2"></div>
+        </div>
+      )
+    }
 
     return (
       <div

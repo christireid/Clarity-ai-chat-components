@@ -57,6 +57,18 @@ import {
 } from '@/lib/security/rate-limit'
 import { validateRequestBody, validationErrorResponse } from '@/lib/validation'
 import { docsAssistantRequestSchema } from './schema'
+import { classifyQueryComplexity } from '@/lib/ai/complexity'
+import { generateCoTPrompt } from '@/lib/ai/prompts/cot'
+import {
+  generateCitationPrompt,
+  extractCitations,
+  type Source,
+} from '@/lib/ai/prompts/citations'
+import {
+  checkForHallucinations,
+  shouldRegenerateResponse,
+} from '@/lib/ai/hallucination'
+import { metricsLogger } from '@/lib/ai/metrics'
 
 const logger = getLogger('docs-assistant-api')
 
@@ -71,6 +83,9 @@ const USE_SMART_ROUTING = process.env.SMART_MODEL_ROUTING !== 'false' // Default
 
 // Feature flag for tool use (diagrams, code examples, lookups, bundle calculator)
 const USE_TOOLS = process.env.DOCS_ASSISTANT_TOOLS !== 'false' // Default: enabled
+
+// Feature flag for advanced prompting (CoT, citations, hallucination detection)
+const USE_ADVANCED_PROMPTING = process.env.ADVANCED_PROMPTING !== 'false' // Default: enabled
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -196,10 +211,13 @@ export async function POST(request: NextRequest) {
       content: sanitizedMessage,
     })
 
-    // Validate request
-    const validation = validateRequest(messages)
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 })
+    // Validate request structure (message array format check)
+    const requestValidation = validateRequest(messages)
+    if (!requestValidation.valid) {
+      return NextResponse.json(
+        { error: requestValidation.error },
+        { status: 400 }
+      )
     }
 
     // Determine if we should use RAG (enhanced or legacy)
@@ -291,6 +309,233 @@ export async function POST(request: NextRequest) {
 }
 
 /**
+ * Stream response with Advanced Prompting (CoT + Citations + Hallucination Detection)
+ */
+async function* streamWithAdvancedPrompting(
+  userMessage: string,
+  messages: ChatMessage[],
+  currentPath?: string,
+  sessionId?: string,
+  modelOverride?: string
+): AsyncGenerator<StreamChunk> {
+  const startTime = Date.now()
+  let assistantResponse = ''
+  let promptTokens = 0
+  let completionTokens = 0
+
+  try {
+    // Step 1: Classify query complexity
+    const classification = classifyQueryComplexity(userMessage)
+
+    // Send complexity info to client
+    yield {
+      type: 'metadata',
+      data: {
+        complexity: classification.complexity,
+        reasoning: classification.reasoning,
+      },
+    }
+
+    // Step 2: Retrieve sources from RAG
+    const { ragContext } = await enhanceMessageWithRAG(userMessage, {
+      currentPath,
+      topK: 5,
+      minScore: 0.7,
+    })
+
+    // Convert RAG sources to Citation sources format
+    const sources: Source[] = ragContext.sources.map((s, idx) => ({
+      id: `source-${idx}`,
+      title: s.title,
+      url: s.url,
+      content: s.content,
+    }))
+
+    // Step 3: Generate citation-grounded prompt
+    const citationPrompt = generateCitationPrompt(userMessage, sources)
+
+    // Step 4: Generate CoT prompt based on complexity
+    const cotPrompt = generateCoTPrompt(
+      userMessage,
+      classification.complexity,
+      sources.map((s) => s.content)
+    )
+
+    // Combine CoT and Citation prompts
+    const enhancedSystemPrompt = `${cotPrompt.systemPrompt}
+
+${citationPrompt.systemPrompt}`
+
+    // Send sources to client
+    if (sources.length > 0) {
+      yield {
+        type: 'sources',
+        data: {
+          sources: sources.map((s) => ({
+            url: s.url,
+            title: s.title,
+            score: 0.8,
+          })),
+          count: sources.length,
+        },
+      }
+    }
+
+    // Update messages with enhanced prompts
+    const updatedMessages = messages.map((msg, idx) => {
+      if (msg.role === 'system') {
+        return { ...msg, content: enhancedSystemPrompt }
+      }
+      // Replace the last user message with citation-aware version
+      if (idx === messages.length - 1 && msg.role === 'user') {
+        return { ...msg, content: citationPrompt.userPrompt }
+      }
+      return msg
+    })
+
+    // Stream response from LLM
+    const streamingFn = getStreamingFunction()
+    const stream = streamingFn(updatedMessages, {
+      model: modelOverride,
+      temperature: cotPrompt.temperature,
+    })
+
+    for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
+      }
+      yield chunk
+    }
+
+    // Step 5: Extract citations and check for hallucinations
+    const grounded = citationPrompt.postProcessing(assistantResponse, sources)
+
+    // Check for hallucinations
+    const hallucinationCheck = await checkForHallucinations(
+      assistantResponse,
+      sources,
+      userMessage
+    )
+
+    // Send grounding metadata to client
+    yield {
+      type: 'metadata',
+      data: {
+        groundingScore: grounded.groundingScore,
+        citationCount: grounded.citations.length,
+        hallucinationConfidence: hallucinationCheck.confidence,
+        issues: hallucinationCheck.issues.length,
+      },
+    }
+
+    // If response has low confidence, regenerate with stricter grounding
+    if (shouldRegenerateResponse(hallucinationCheck)) {
+      logger.warn('Low grounding confidence detected, regenerating...', {
+        confidence: hallucinationCheck.confidence,
+        issues: hallucinationCheck.issues.length,
+      })
+
+      yield {
+        type: 'metadata',
+        data: {
+          regenerating: true,
+          reason: hallucinationCheck.summary,
+        },
+      }
+
+      // Clear previous response
+      assistantResponse = ''
+
+      // Regenerate with stricter prompt
+      const stricterPrompt = {
+        ...citationPrompt,
+        systemPrompt:
+          citationPrompt.systemPrompt +
+          '\n\nWARNING: Previous response had grounding issues. Be EXTRA careful to cite every single factual claim.',
+      }
+
+      const stricterMessages = messages.map((msg, idx) => {
+        if (msg.role === 'system') {
+          return { ...msg, content: stricterPrompt.systemPrompt }
+        }
+        if (idx === messages.length - 1 && msg.role === 'user') {
+          return { ...msg, content: stricterPrompt.userPrompt }
+        }
+        return msg
+      })
+
+      const strictStream = streamingFn(stricterMessages, {
+        model: modelOverride,
+        temperature: 0.3, // Lower temperature for more deterministic output
+      })
+
+      for await (const chunk of strictStream) {
+        if (chunk.type === 'text' && chunk.content) {
+          assistantResponse += chunk.content
+        }
+        yield chunk
+      }
+    }
+
+    // Log metrics
+    const responseTime = Date.now() - startTime
+    metricsLogger.log({
+      queryId: crypto.randomUUID(),
+      timestamp: Date.now(),
+      query: userMessage,
+      complexity: classification.complexity,
+      promptTokens: estimateTokens(
+        updatedMessages.map((m) => m.content).join(' ')
+      ),
+      completionTokens: estimateTokens(assistantResponse),
+      totalTokens: estimateTokens(
+        updatedMessages.map((m) => m.content).join(' ') + assistantResponse
+      ),
+      groundingConfidence: hallucinationCheck.confidence,
+      citationCount: grounded.citations.length,
+      hallucinationIssues: hallucinationCheck.issues.length,
+      responseTime,
+      regenerated: shouldRegenerateResponse(hallucinationCheck),
+    })
+
+    // Save to session
+    if (sessionId && assistantResponse) {
+      try {
+        await updateSessionWithMessages(sessionId, [
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+            metadata: {
+              complexity: classification.complexity,
+              groundingScore: grounded.groundingScore,
+              citationCount: grounded.citations.length,
+            },
+          },
+        ])
+      } catch (error) {
+        console.error('Failed to save session', error)
+      }
+    }
+  } catch (error) {
+    console.error('Advanced prompting error', error)
+    yield handleStreamError(error)
+  }
+}
+
+/**
+ * Estimate token count (simple heuristic: ~4 chars per token)
+ */
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4)
+}
+
+/**
  * Stream response with RAG (Retrieval-Augmented Generation)
  */
 async function* streamWithRAG(
@@ -303,6 +548,19 @@ async function* streamWithRAG(
   let assistantResponse = ''
 
   try {
+    // If advanced prompting is enabled, use that instead
+    if (USE_ADVANCED_PROMPTING) {
+      yield* streamWithAdvancedPrompting(
+        userMessage,
+        messages,
+        currentPath,
+        sessionId,
+        modelOverride
+      )
+      return
+    }
+
+    // Legacy RAG flow (fallback)
     // Enhance message with RAG context
     const { enhancedMessage, ragContext } = await enhanceMessageWithRAG(
       userMessage,
@@ -961,11 +1219,24 @@ export async function GET() {
       enhancedRAG: USE_ENHANCED_RAG,
       smartRouting: USE_SMART_ROUTING,
       tools: USE_TOOLS && !!process.env.ANTHROPIC_API_KEY,
+      advancedPrompting: USE_ADVANCED_PROMPTING,
       streaming: true,
       rateLimit: true,
       caching: true,
       feedback: true,
     },
+    advancedPrompting: USE_ADVANCED_PROMPTING
+      ? {
+          enabled: true,
+          features: [
+            'Chain-of-Thought reasoning for complex queries',
+            'Citation-grounded responses',
+            'Hallucination detection and auto-regeneration',
+            'Query complexity classification',
+          ],
+          metrics: metricsLogger.getStats(),
+        }
+      : null,
     tools:
       USE_TOOLS && !!process.env.ANTHROPIC_API_KEY
         ? {

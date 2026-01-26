@@ -220,6 +220,37 @@ export default function App() {
 
 **[→ View Complete Wave 3 Report](./WAVE_3_COMPLETE.md)**
 
+#### 📖 **Wave 3 Documentation**
+
+New comprehensive guides covering all Wave 3 improvements:
+
+**Performance Patterns:**
+
+- [Lazy Loading Patterns](./docs/patterns/lazy-loading.md) - Progressive enhancement and
+  network-aware loading
+- [ISR Caching Patterns](./docs/patterns/isr-caching.md) - Incremental Static Regeneration
+  strategies
+- [Performance Debugging Runbook](./docs/runbooks/performance-debugging.md) - Bundle analysis, TTFB
+  measurement, optimization
+
+**Security Guides:**
+
+- [Security Headers](./docs/patterns/security-headers.md) - CSP, CSRF protection, secure cookies
+- [Data Validation with Zod](./docs/patterns/data-validation.md) - Type-safe validation patterns
+- [Security Best Practices](./docs/security/best-practices.md) - OWASP LLM Top 10 compliance
+- [Security Runbook](./docs/runbooks/security.md) - Audit procedures and testing
+- [Cache Management Runbook](./docs/runbooks/cache-management.md) - ISR revalidation and debugging
+
+**AI Quality:**
+
+- [Advanced Prompting Patterns](./docs/patterns/advanced-prompting.md) - Chain-of-Thought,
+  citation-grounding, hallucination detection
+
+**Development:**
+
+- [CLAUDE.md](./apps/streamlined-docs/CLAUDE.md) - AI assistant development guide
+- [Architecture Documentation](./docs/architecture.md) - System design and patterns
+
 ---
 
 ### **v1.0+: Enterprise-Grade Foundation**

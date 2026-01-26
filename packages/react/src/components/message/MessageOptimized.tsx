@@ -25,10 +25,11 @@ import {
   ANIMATION_PRESETS,
 } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-import ReactMarkdown from 'react-markdown'
 import type { Components, ExtraProps } from 'react-markdown'
-import rehypeHighlight from 'rehype-highlight'
-import remarkGfm from 'remark-gfm'
+import {
+  useMarkdownAvailability,
+  PlainTextMarkdown,
+} from '../../utils/markdown/markdown-fallback'
 
 // Type for markdown component props that have children
 interface MarkdownElementProps
@@ -157,6 +158,10 @@ function MessageOptimizedInner({
     'up' | 'down' | null
   >(message.feedback?.type || null)
 
+  // Check for react-markdown availability
+  const { isAvailable, ReactMarkdown, remarkGfm, rehypeHighlight } =
+    useMarkdownAvailability()
+
   const isUser = message.role === 'user'
   const isAssistant = message.role === 'assistant'
   const isStreaming = message.status === 'streaming'
@@ -165,18 +170,38 @@ function MessageOptimizedInner({
   const markdownContent = React.useMemo(() => {
     if (isUser) return null
 
+    // Use fallback if react-markdown is not available
+    if (!isAvailable || !ReactMarkdown) {
+      return (
+        <PlainTextMarkdown
+          content={message.content}
+          showFallbackMessage={false}
+          className="max-w-3xl mx-auto"
+        />
+      )
+    }
+
     return (
-      <>
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight as unknown as typeof remarkGfm]}
-          components={markdownComponents}
-        >
-          {message.content}
-        </ReactMarkdown>
-      </>
+      <ReactMarkdown
+        remarkPlugins={remarkGfm ? [remarkGfm] : []}
+        rehypePlugins={
+          rehypeHighlight
+            ? [rehypeHighlight as unknown as typeof remarkGfm]
+            : []
+        }
+        components={markdownComponents}
+      >
+        {message.content}
+      </ReactMarkdown>
     )
-  }, [message.content, isUser])
+  }, [
+    message.content,
+    isUser,
+    isAvailable,
+    ReactMarkdown,
+    remarkGfm,
+    rehypeHighlight,
+  ])
 
   // Memoize event handlers with useCallback
   const handleFeedback = React.useCallback(
